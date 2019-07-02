@@ -1,6 +1,7 @@
 id: Recorded Future Test
 version: -1
 name: Recorded Future Test
+fromversion: 4.1.0
 starttaskid: "0"
 tasks:
   "0":

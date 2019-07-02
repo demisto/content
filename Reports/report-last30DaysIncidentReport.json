@@ -832,7 +832,6 @@
   "recipients": [],
   "type": "pdf",
   "tags": [],
-  "releaseNotes": "changed occurred time format in decoder",
   "createdBy": "DBot",
   "fromVersion": "3.5.0",
   "description": "Last 30 days summary of incidents statistics, followed by a list of all current open incidents.",

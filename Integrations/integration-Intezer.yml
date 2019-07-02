@@ -28,6 +28,8 @@ script:
     var FILE_UPLOAD_URL = 'v1-2/analyze';
     var ANALYSIS_RESULT_URL = 'v1-2/analyses/';
     var SHA_256_REGEXP = new RegExp('[A-Fa-f0-9]{64}');
+    var SHA_1_REGEXP = new RegExp('[A-Fa-f0-9]{40}');
+    var MD_5_REGEXP = new RegExp('[A-Fa-f0-9]{32}');
     var SUCCESS_STATUS = 'succeeded';
     var ERROR_PREFIX = 'Error from Intezer: ';
 
@@ -125,7 +127,7 @@ script:
     var analyzeSHA256 = function(hash, codeItemType, maxRetries, delay) {
         // validate file is indeed sha256
         if (!SHA_256_REGEXP.test(hash)) {
-            var warning = ERROR_PREFIX + 'File hash is not valid sha256.\nIntezer file hash reputation supports only sha256 hash.\n\n';
+            var warning = 'Intezer file hash reputation supports only SHA256.\n';
             return {
               Type: 11, // warning type
               Contents: warning,
@@ -148,13 +150,14 @@ script:
             ec[outputPaths.file] = file;
             ec.DBotScore = dBotScore;
 
-            return [{
+            return {
                 Type: entryTypes.note,
                 Contents: '',
                 ContentsFormat: formats.json,
                 HumanReadable: 'Hash ' + hash + ' does not exist on Intezer genome database',
+                ReadableContentsFormat: formats.markdown,
                 EntryContext: ec
-              }];
+              };
         } else if (res.statusCode === 201) {
             analysisId = res.obj.analysis_id;
         } else {
@@ -175,7 +178,7 @@ script:
     };
 
     var waitForResponse = function(analysisId, maxRetries, delay) {
-        var entries = [];
+        var entry;
         // perform wait loop
         res = getAnalysis(analysisId);
         var tries = 0;
@@ -232,25 +235,41 @@ script:
             }
             md += 'Verdict: **' + data.verdict + '** (' + data.sub_verdict + ')\n';
             md += '[' + 'Analysis Link' + '](' + data.analysis_url + ')\n';
-
             // set return entry with context
-            entries.push({
+            entry = {
               Type: entryTypes.note,
               Contents: res.body,
               ContentsFormat: formats.json,
               HumanReadable: md,
+              ReadableContentsFormat: formats.markdown,
               EntryContext: ec
-            });
+            };
         }
-        return entries;
+        return entry;
     };
 
     switch (command) {
         case 'test-module':
             // send is available
             return sendRequest('GET', IS_AVAILABLE_URL).obj.is_available;
+
         case 'file':
-            return analyzeSHA256(args.file, args.codeItuemType, args.maxRetries, args.delay);
+            if ((args.sha256 && args.file) || (!args.sha256 && !args.file)) {
+                var error = 'Specify only 1 of the arguments: file, sha256';
+                return {
+                    Type: entryTypes.error,
+                    HumanReadable: error,
+                    ReadableContentsFormat: formats.text
+                };
+            }
+            var inputs = args.sha256? argToList(args.sha256) : argToList(args.file);
+            var entries = [];
+            for (i=0; i < inputs.length; i++) {
+                var entry = analyzeSHA256(inputs[i], args.codeItuemType, args.maxRetries, args.delay);
+                entries.push(entry);
+            }
+            return entries;
+
         case 'intezer-upload':
             return analyzeUploadedFile(args.fileEntryId, args.codeItemType, args.maxRetries, args.delay);
         default:
@@ -260,9 +279,12 @@ script:
   - name: file
     arguments:
     - name: file
-      required: true
       default: true
       description: Hash of the file to query. Supports SHA256
+      isArray: true
+    - name: sha256
+      description: SHA256 hash of the file to query
+      isArray: true
     - name: codeItemType
       auto: PREDEFINED
       predefined:
@@ -353,3 +375,5 @@ script:
         retuned only for supported files.
     description: Checks file reputation for uploaded file (up to 20MB)
   runonce: false
+tests:
+- Intezer Testing

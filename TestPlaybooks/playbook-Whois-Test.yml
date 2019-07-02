@@ -1,6 +1,7 @@
 id: whois_test
 version: -1
 name: whois_test
+fromversion: 4.1.0
 description: This is a test playbook for Whois. It will retrieve details for google.com
   and confirm the domain name is the same.
 starttaskid: "0"
@@ -84,7 +85,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: GOOGLE.COM
+              simple: google.com
     view: |-
       {
         "position": {

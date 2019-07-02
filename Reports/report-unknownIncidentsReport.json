@@ -1,7 +1,6 @@
 {
   "id": "unknownIncidentsReport",
   "name": "Unknown severity incidents",
-  "releaseNotes": "changed occurred time format in decoder",
   "description": "Report about all unknown severity incidents that may need the analyst attention.",
   "fromVersion": "3.5.0",
   "modified": "2018-01-25T10:36:51.123317415Z",

@@ -5,7 +5,6 @@
   "fromVersion": "3.1.0",
   "tags": [],
   "createdBy": "DBot",
-  "releaseNotes": "changed occurred time format in decoder",
   "type": "docx",
   "orientation": "portrait",
   "recipients": [],

@@ -29,7 +29,6 @@ args:
   defaultValue: "no"
 scripttarget: 0
 runonce: false
-releaseNotes: Script to check if a docker image is accessible to for 'pull' command 
 tests:
   - CheckDockerImageAvailableTest
 runas: DBotWeakRole

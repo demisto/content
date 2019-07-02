@@ -19,7 +19,7 @@ mapping:
   type:
     type: str
     required: yes
-    enum: ['javascript', 'python']
+    enum: ['javascript', 'python', 'powershell']
   tags:
     type: seq
     required: yes
@@ -59,6 +59,10 @@ mapping:
     type: text
   dockerimage:
     type: str
+  alt_dockerimages:
+    type: seq
+    sequence:
+    - type: str
   runonce:
     type: bool
   releaseNotes:
@@ -71,6 +75,9 @@ mapping:
     type: bool
   runas:
     type: str
+  subtype:
+    type: str
+    enum: ['python2', 'python3']
 
 # script->args
 schema;argument_schema:

@@ -410,6 +410,5 @@ script:
     name: azure-vm-delete-instance
   isfetch: false
   runonce: false
-releaseNotes: "Quickfix bug in 'azure-vm-create-instance' command"
 tests:
 - No test

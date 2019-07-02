@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from __future__ import print_function
 import os
 import io
 import sys
@@ -11,12 +11,14 @@ import re
 
 DIR_TO_PREFIX = {
     'Integrations': 'integration',
+    'Beta_Integrations': 'integration',
     'Scripts': 'script'
 }
 
 TYPE_TO_EXTENSION = {
     'python': '.py',
-    'javascript': '.js'
+    'javascript': '.js',
+    'powershell': '.ps1'
 }
 
 IMAGE_PREFIX = 'data:image/png;base64,'
@@ -56,7 +58,7 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
 
     if dir_name == 'Scripts':
         script_type = TYPE_TO_EXTENSION[yml_data['type']]
-    elif dir_name == 'Integrations':
+    elif dir_name == 'Integrations' or 'Beta_Integrations':
         script_type = TYPE_TO_EXTENSION[yml_data['script']['type']]
 
     with io.open(yml_path, mode='r', encoding='utf-8') as yml_file:
@@ -131,6 +133,11 @@ def get_code_file(package_path, script_type):
     """
 
     ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|demistomock\.py|test_.*\.py|_test\.py'
+    if not package_path.endswith('/'):
+        package_path += '/'
+    if package_path.endswith('Scripts/CommonServerPython/'):
+        return package_path + 'CommonServerPython.py'
+
     script_path = list(filter(lambda x: not re.search(ignore_regex, x),
                               glob.glob(package_path + '*' + script_type)))[0]
     return script_path
@@ -153,7 +160,7 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
                 raise ValueError("Please change the script to be blank or a dash(-) for package {}"
                                  .format(package_path))
 
-    elif dir_name == 'Integrations':
+    elif dir_name == 'Integrations' or dir_name == 'Beta_Integrations':
         if yml_data.get('script', {}).get('script'):
             if yml_data['script']['script'] != '-' and yml_data['script']['script'] != '':
                 raise ValueError("Please change the script to be blank or a dash(-) for package {}"
@@ -199,8 +206,8 @@ def get_package_path():
             directory_name = dir_name
 
     if not directory_name:
-        print "You have failed to provide a legal file path, a legal file path " \
-              "should contain either Integrations or Scripts directories"
+        print("You have failed to provide a legal file path, a legal file path "
+              "should contain either Integrations or Scripts directories")
         sys.exit(1)
 
     return package_path, directory_name, dest_path

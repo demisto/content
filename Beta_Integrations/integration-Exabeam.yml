@@ -42,7 +42,7 @@ script:
         del os.environ['https_proxy']
 
     ''' GLOBALS '''
-    URL = demisto.params()['url'']
+    URL = demisto.params()['url']
     if URL[-1] != '/':
         URL += '/'
     URL_LOGIN = URL + 'api/'

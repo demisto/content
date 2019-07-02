@@ -30,9 +30,22 @@ if [ "$NOT_FOUND_MESSAGE" != 'null' ]
     curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
       --location "https://api.github.com/repos/demisto/content-test-conf/contents/demisto.lic" -o "$DEMISTO_LIC_PATH"
 
-    echo "Downloading server conf file..."
-    curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-      --location "https://api.github.com/repos/demisto/content-test-conf/contents/server.conf" -o "$DEMISTO_SEVERCONF_PATH"
+    echo "Creating server conf file..."
+    # curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
+    #   --location "https://api.github.com/repos/demisto/content-test-conf/contents/server.conf" -o "$DEMISTO_SEVERCONF_PATH"
+    cat >> "$DEMISTO_SEVERCONF_PATH" <<-EOF
+{
+  "Server": {
+    "HttpsPort": "443"
+  },
+  "version.control.enabled": false,
+  "reputation.calc.algorithm.manual": 3,
+  "reputation.calc.algorithm.tasks": 3,
+  "log.level": "debug",
+  "content.install.always.sync": true,
+  "builtin.commands.hidden.getcontext": true
+}
+EOF
 
     echo "Downloading instance conf file..."
     if [ -n "${NIGHTLY}" ]

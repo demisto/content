@@ -29,11 +29,13 @@ def print_warning(warning_str):
     print_color(warning_str, LOG_COLORS.YELLOW)
 
 
-def run_command(command, is_silenced=True):
+def run_command(command, is_silenced=True, exit_on_error=True):
     """Run a bash command in the shell.
 
     Args:
         command (string): The string of the command you want to execute.
+        is_silenced (bool): Whether to print command output.
+        exit_on_error (bool): Whether to exit on command error.
 
     Returns:
         string. The output of the command you are trying to execute.
@@ -45,8 +47,12 @@ def run_command(command, is_silenced=True):
 
     output, err = p.communicate()
     if err:
-        print_error("Failed to run command " + command)
-        sys.exit(1)
+        if exit_on_error:
+            print_error('Failed to run command {}\nerror details:\n{}'.format(command, err))
+            sys.exit(1)
+        else:
+            raise RuntimeError('Failed to run command {}\nerror details:\n{}'.format(command, err))
+
     return output
 
 
@@ -117,7 +123,7 @@ def get_to_version(file_path):
     data_dictionary = get_yaml(file_path)
 
     if data_dictionary:
-        to_version = data_dictionary.get('fromversion', '99.99.99')
+        to_version = data_dictionary.get('toversion', '99.99.99')
         if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", to_version):
             raise ValueError("{} toversion is invalid \"{}\". "
                              "Should be of format: 4.0.0 or 4.5.0".format(file_path, to_version))
@@ -134,8 +140,62 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
+def get_release_notes_file_path(file_path):
+    file_name = os.path.basename(file_path)
+    return os.path.join('Releases', 'LatestRelease', os.path.splitext(file_name)[0] + '.md')
+
+
 def checked_type(file_path, compared_regexes=CHECKED_TYPES_REGEXES):
     for regex in compared_regexes:
         if re.match(regex, file_path, re.IGNORECASE):
             return True
     return False
+
+
+def server_version_compare(v1, v2):
+    """compare Demisto versions
+
+    Args:
+        v1 (string): string representing Demisto version (first comparable)
+        v2 (string): string representing Demisto version (second comparable)
+
+
+    Returns:
+        int.
+        0 for equal versions.
+        positive if v1 later version than v2.
+        negative if v2 later version than v1.
+    """
+
+    v1 = re.sub('[\'\"]', '', v1)
+    v2 = re.sub('[\'\"]', '', v2)
+
+    if v1 == "" or v2 == "":
+        return 0
+
+    v1_nums = [int(d) for d in v1.split(".")]
+    v2_nums = [int(d) for d in v2.split(".")]
+
+    for i in range(min(len(v1_nums), len(v2_nums))):
+        if v1_nums[i] != v2_nums[i]:
+            return v1_nums[i] - v2_nums[i]
+
+    # versions are equal to the i th number
+
+    # versions are equal
+    return 0
+
+
+def run_threads_list(threads_list):
+    """
+    Start a list of threads and wait for completion (join)
+
+    Arguments:
+        threads_list (list of threads) -- list of threads to start and wait for join
+    """
+    # run each command in a separate thread
+    for t in threads_list:
+        t.start()
+    # wait for the commands to complete
+    for t in threads_list:
+        t.join()

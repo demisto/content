@@ -624,7 +624,7 @@ script:
 
     function submitUrl(url, environmentID) {
         var cmdUrl = '/api/v2/submit/url-for-analysis';
-        var body = 'url=' + url + '&environment_id=' + environmentID;
+        var body = 'url=' + encodeURIComponent(url) + '&environment_id=' + environmentID;
         HEADERS['Content-Type'] = ['application/x-www-form-urlencoded'];
         return sendRequest('POST', cmdUrl, body);
     }
@@ -1214,8 +1214,9 @@ script:
     - name: timeout
       description: Total wait time (in seconds)
       defaultValue: "60"
-    description: Detonate file through Falcon Sandbox
+    description: (Deprecated - Please use CrowdStrike Falcon Sandbox - Detonate file playbook instead) Detonate file through Falcon Sandbox
   - name: crowdstrike-detonate-file
+    deprecated: true
     arguments:
     - name: entryId
       required: true
@@ -1290,7 +1291,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
-    description: Detonate file through Falcon Sandbox
+    description: (Deprecated - Please use CrowdStrike Falcon Sandbox - Detonate file playbook instead) Detonate file through Falcon Sandbox
   - name: crowdstrike-submit-url
     arguments:
     - name: url
@@ -1367,6 +1368,7 @@ script:
       type: string
     description: ' Retrieves screenshots from a report (Supported only in v2)'
   - name: crowdstrike-detonate-url
+    deprecated: true
     arguments:
     - name: url
       required: true
@@ -1407,7 +1409,8 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
-    description: Detonates URL address through Falcon Sandbox (supported only in v2)
+    description: "(Deprecated - Please use CrowdStrike Falcon Sandbox - Detonate URL playbook instead)
+    Detonates URL address through Falcon Sandbox (supported only in v2)"
   - name: crowdstrike-submit-file-by-url
     arguments:
     - name: environmentID

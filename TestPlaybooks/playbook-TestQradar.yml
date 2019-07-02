@@ -1,6 +1,7 @@
 id: test_Qradar
 version: -1
 name: test_Qradar
+fromversion: 4.1.0
 starttaskid: "0"
 tasks:
   "0":

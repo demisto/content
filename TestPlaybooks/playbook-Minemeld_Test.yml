@@ -6,32 +6,34 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 05bca0af-5c91-46c3-8245-a35f7071cbaa
+    taskid: 8f1e0e6d-e664-4ba9-89ec-ef3fe53b2f4a
     type: start
     task:
-      id: 05bca0af-5c91-46c3-8245-a35f7071cbaa
+      id: 8f1e0e6d-e664-4ba9-89ec-ef3fe53b2f4a
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "21"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 50
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 87c04657-3126-417c-8593-47539e86689a
+    taskid: 75134e13-d82e-407b-8380-afaafa7d7c74
     type: regular
     task:
-      id: 87c04657-3126-417c-8593-47539e86689a
+      id: 75134e13-d82e-407b-8380-afaafa7d7c74
       version: -1
       name: Add indicator to miner
       script: '|||minemeld-add-to-miner'
@@ -52,17 +54,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 368
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 2b524649-449e-450a-895d-47eac4831c8c
+    taskid: e98dc494-38eb-47e1-8808-f417ba48b14b
     type: regular
     task:
-      id: 2b524649-449e-450a-895d-47eac4831c8c
+      id: e98dc494-38eb-47e1-8808-f417ba48b14b
       version: -1
       name: Delete Context
       description: Clear context before process starts
@@ -81,17 +85,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 195
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: 4c81c788-ada0-414b-8289-3402aa63812e
+    taskid: 67908e44-fcec-4942-883b-5a9fd97c9bae
     type: regular
     task:
-      id: 4c81c788-ada0-414b-8289-3402aa63812e
+      id: 67908e44-fcec-4942-883b-5a9fd97c9bae
       version: -1
       name: Retrieve indicator from miner's list
       script: '|||minemeld-get-indicator-from-miner'
@@ -110,17 +116,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 543
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 51aaf517-a13f-4e27-8b47-393b61f5b7c7
+    taskid: b6251e62-f2f6-4325-83c9-63645036688e
     type: condition
     task:
-      id: 51aaf517-a13f-4e27-8b47-393b61f5b7c7
+      id: b6251e62-f2f6-4325-83c9-63645036688e
       version: -1
       name: Test if indicator exists
       type: condition
@@ -164,17 +172,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 719
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: dfcf44a3-4479-4f74-8ccc-3425ce4aba31
+    taskid: fee45270-1dfb-4927-8ba6-6dfe6c1699b1
     type: regular
     task:
-      id: dfcf44a3-4479-4f74-8ccc-3425ce4aba31
+      id: fee45270-1dfb-4927-8ba6-6dfe6c1699b1
       version: -1
       name: Remove indicator from miner
       script: '|||minemeld-remove-from-miner'
@@ -193,17 +203,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 895
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: 4aafabcb-ef19-4b54-8499-bb79dd020a3d
+    taskid: 3c9e3521-3818-4221-8209-443bb642d3ce
     type: condition
     task:
-      id: 4aafabcb-ef19-4b54-8499-bb79dd020a3d
+      id: 3c9e3521-3818-4221-8209-443bb642d3ce
       version: -1
       name: Test if indicator exists
       type: condition
@@ -247,17 +259,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1419
+          "x": 50,
+          "y": 2295
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
-    taskid: a7cb0143-b01c-4940-8522-f25e4acb855f
+    taskid: c1f3b180-a55a-4e00-8e07-c4245309fefd
     type: title
     task:
-      id: a7cb0143-b01c-4940-8522-f25e4acb855f
+      id: c1f3b180-a55a-4e00-8e07-c4245309fefd
       version: -1
       name: Test finished successfuly
       type: title
@@ -267,17 +281,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 30,
-          "y": 2435
+          "x": 50,
+          "y": 3345
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
-    taskid: a0dbc017-443b-4155-846b-f9e44a2d595b
+    taskid: cd15864d-a9bc-4725-8429-83587fc6fb63
     type: regular
     task:
-      id: a0dbc017-443b-4155-846b-f9e44a2d595b
+      id: cd15864d-a9bc-4725-8429-83587fc6fb63
       version: -1
       name: Retrieve miner's indicators list
       script: '|||minemeld-retrieve-miner'
@@ -294,17 +310,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1245
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: 497bdfdd-9ad4-41e8-88f8-7c6250668103
+    taskid: 87a7b849-5bc8-4a59-8f58-14ba4002f973
     type: regular
     task:
-      id: 497bdfdd-9ad4-41e8-88f8-7c6250668103
+      id: 87a7b849-5bc8-4a59-8f58-14ba4002f973
       version: -1
       name: Delete Context
       description: Clear context before process starts
@@ -323,17 +341,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1070
+          "x": 50,
+          "y": 1945
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
-    taskid: 4950fab1-0e98-4aaa-86ca-8114e57e21e3
+    taskid: 3a9de53d-0b04-4ed1-820c-747fd0f6b9b5
     type: regular
     task:
-      id: 4950fab1-0e98-4aaa-86ca-8114e57e21e3
+      id: 3a9de53d-0b04-4ed1-820c-747fd0f6b9b5
       version: -1
       name: Delete Context
       description: Clear context before process starts
@@ -352,17 +372,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 58,
-          "y": 1595
+          "x": 50,
+          "y": 2470
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
-    taskid: 18ba68fd-56ac-4a15-8af3-63ce6a8c820b
+    taskid: c1b6cb73-da0f-4285-8479-e06719db3f95
     type: regular
     task:
-      id: 18ba68fd-56ac-4a15-8af3-63ce6a8c820b
+      id: c1b6cb73-da0f-4285-8479-e06719db3f95
       version: -1
       name: Check IP
       script: Palo Alto Minemeld|||ip
@@ -379,17 +401,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 58,
-          "y": 1949
+          "x": 50,
+          "y": 2820
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
-    taskid: 5752345c-afde-49d1-86cf-a64ac929c0a2
+    taskid: fa28a063-576b-4e42-8981-59570024ca9b
     type: regular
     task:
-      id: 5752345c-afde-49d1-86cf-a64ac929c0a2
+      id: fa28a063-576b-4e42-8981-59570024ca9b
       version: -1
       name: Add IP indicator to miner
       script: '|||minemeld-add-to-miner'
@@ -410,17 +434,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 58,
-          "y": 1778
+          "x": 50,
+          "y": 2645
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "18":
     id: "18"
-    taskid: ae97403f-6bde-459f-88f9-d16366b84b49
+    taskid: aea30b1b-ad75-46ea-82c6-62ae51b92b72
     type: condition
     task:
-      id: ae97403f-6bde-459f-88f9-d16366b84b49
+      id: aea30b1b-ad75-46ea-82c6-62ae51b92b72
       version: -1
       name: Test if indicator exists
       type: condition
@@ -465,17 +491,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 58,
-          "y": 2122
+          "x": 50,
+          "y": 2995
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "20":
     id: "20"
-    taskid: c38c65c0-3638-4fee-8953-c60215e304c5
+    taskid: e7b9ee11-4449-44d9-8ecd-73c169420261
     type: regular
     task:
-      id: c38c65c0-3638-4fee-8953-c60215e304c5
+      id: e7b9ee11-4449-44d9-8ecd-73c169420261
       version: -1
       name: Remove indicator from miner
       script: '|||minemeld-remove-from-miner'
@@ -494,19 +522,195 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -330,
-          "y": 2270
+          "x": 50,
+          "y": 3170
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: f988472b-8fb8-4eb7-86b1-5979cde1e56f
+    type: regular
+    task:
+      id: f988472b-8fb8-4eb7-86b1-5979cde1e56f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: a14d6707-1a81-4545-8b0b-4bbc821d13e0
+    type: regular
+    task:
+      id: a14d6707-1a81-4545-8b0b-4bbc821d13e0
+      version: -1
+      name: Add indicators to miner
+      description: Add indicator to a miner.
+      script: '|||minemeld-add-to-miner'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      comment: {}
+      indicator:
+        simple: '["koko.com","bobo.com"]'
+      miner:
+        simple: Unmalicious
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: f90e77aa-110c-4dc7-8b07-9b6b3c3353c3
+    type: regular
+    task:
+      id: f90e77aa-110c-4dc7-8b07-9b6b3c3353c3
+      version: -1
+      name: Retrieve indicator from miner's list
+      description: Get indicator from a miner's list
+      script: '|||minemeld-get-indicator-from-miner'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      indicator:
+        simple: koko.com
+      miner:
+        simple: Unmalicious
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: ffc355cb-8d54-42ae-84a1-09cbe138bfae
+    type: condition
+    task:
+      id: ffc355cb-8d54-42ae-84a1-09cbe138bfae
+      version: -1
+      name: Test if indicator Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MineMeld
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: MineMeld.Indicators.indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: koko.com
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 85603ccf-7761-4212-8eae-bbd213a8614c
+    type: regular
+    task:
+      id: 85603ccf-7761-4212-8eae-bbd213a8614c
+      version: -1
+      name: Remove indicator from miner
+      description: Remove an indicator from a miner.
+      script: '|||minemeld-remove-from-miner'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      indicator:
+        simple: '["koko.com","bobo.com"]'
+      miner:
+        simple: Unmalicious
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2450,
-        "width": 1190,
-        "x": -330,
+        "height": 3360,
+        "width": 380,
+        "x": 50,
         "y": 50
       }
     }
