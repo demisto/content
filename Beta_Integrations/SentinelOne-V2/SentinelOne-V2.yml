@@ -50,67 +50,6 @@ script:
   commands:
   - arguments:
     - default: false
-      description: A list of agent IDs (Comma separated list). You can also enter
-        only one agent ID and decommission it.
-      isArray: false
-      name: agentIds
-      required: false
-      secret: false
-    - default: false
-      description: List of Site IDs to filter by
-      isArray: false
-      name: siteIds
-      required: false
-      secret: false
-    - default: false
-      description: Only include uninstalled agents
-      isArray: false
-      name: isUninstalled
-      required: false
-      secret: false
-    - default: false
-      description: Include active, decommissioned or both
-      isArray: false
-      name: isDecommissioned
-      required: false
-      secret: false
-    - default: false
-      description: 'A free-text search term, will match applicable attributes (sub-string
-        match). Note: Device''s physical addresses will be matched if they start with
-        the search term only (instead of being matched if they contain the term).'
-      isArray: false
-      name: query
-      required: false
-      secret: false
-    - default: false
-      description: A list of network groups
-      isArray: false
-      name: groupIds
-      required: false
-      secret: false
-    - default: false
-      description: Include all agents matching this saved filter
-      isArray: false
-      name: filterId
-      required: false
-      secret: false
-    deprecated: false
-    description: 'Decommissions all agents matching the input filter. Note: One of
-      the following filter arguments must be supplied: ids, groupIds, filterId.'
-    execution: false
-    name: sentinelone-agents-decommission
-    outputs:
-    - contextPath: SentinelOne.Agents.Decommission.Date
-      description: Recommission date and time (UTC)
-      type: date
-    - contextPath: SentinelOne.Agents.Decommission.Decommissioned
-      description: Boolean to check if the agent is decommissioned or not
-      type: boolean
-    - contextPath: SentinelOne.Agents.Decommission.AffectedCount
-      description: Number of agents affected in decommission request.
-      type: number
-  - arguments:
-    - default: false
       description: Filter by computer name
       isArray: false
       name: computer_name
@@ -203,143 +142,6 @@ script:
     - contextPath: SentinelOne.Agents.SiteName
       description: Site name involved with the agent.
       type: string
-  - arguments:
-    - default: false
-      description: The agents ids
-      isArray: true
-      name: agentIds
-      required: true
-      secret: false
-    deprecated: false
-    description: Sends a "connect to network" command to all agents matching the input
-      filter.
-    execution: false
-    name: sentinelone-agents-unquarantine
-    outputs:
-    - contextPath: SentinelOne.Agents.UnQuarantine.Date
-      description: Recommission date and time (UTC)
-      type: date
-    - contextPath: SentinelOne.Agents.UnQuarantine.UnQuarantined
-      description: A boolean to check if the respective agent was quarantined or not.
-      type: boolean
-    - contextPath: SentinelOne.Agents.UnQuarantine.AffectedCount
-      description: Number of agents affected per request.
-      type: number
-  - arguments:
-    - default: false
-      description: List of Site IDs to filter by
-      isArray: false
-      name: siteIds
-      required: false
-      secret: false
-    - default: false
-      description: Include all agents matching this saved filter
-      isArray: false
-      name: filterId
-      required: false
-      secret: false
-    - default: false
-      description: A list of Agent IDs
-      isArray: false
-      name: agentIds
-      required: false
-      secret: false
-    - default: false
-      description: Only include uninstalled agents
-      isArray: false
-      name: isUninstalled
-      required: false
-      secret: false
-    - default: false
-      description: Include active, decommissioned or both
-      isArray: false
-      name: isDecommissioned
-      required: false
-      secret: false
-    - default: false
-      description: 'A free-text search term, will match applicable attributes (sub-string
-        match). Note: Device''s physical addresses will be matched if they start with
-        the search term only (instead of being matched if they contain the term).'
-      isArray: false
-      name: query
-      required: false
-      secret: false
-    - default: false
-      description: A list of network groups
-      isArray: false
-      name: groupIds
-      required: false
-      secret: false
-    deprecated: false
-    description: Sends an uninstall command to all agents matching the input filter.
-    execution: false
-    name: sentinelone-agents-uninstall
-    outputs:
-    - contextPath: SentinelOne.Agents. Uninstall.Date
-      description: Recommission date and time (UTC)
-      type: date
-    - contextPath: SentinelOne.Agents. Uninstall .Uninstalled
-      description: A boolean to check if the respective agent was quarantined or not.
-      type: boolean
-    - contextPath: SentinelOne.Agents.Uninstall.AffectedCount
-      description: Number of agents affected per request.
-      type: number
-  - arguments:
-    - default: false
-      description: A list of Agent IDs (Comma separated fields). You can also use
-        only one Agent ID and quarantine it.
-      isArray: false
-      name: agentIds
-      required: false
-      secret: false
-    - default: false
-      description: List of Site IDs to filter by
-      isArray: false
-      name: siteIds
-      required: false
-      secret: false
-    - default: false
-      description: Only include uninstalled agents
-      isArray: false
-      name: isUninstalled
-      required: false
-      secret: false
-    - default: false
-      description: Include active, decommissioned or both
-      isArray: false
-      name: isDecommissioned
-      required: false
-      secret: false
-    - default: false
-      description: 'A free-text search term, will match applicable attributes (sub-string
-        match). Note: Device''s physical addresses will be matched if they start with
-        the search term only (instead of being matched if they contain the term).'
-      isArray: false
-      name: query
-      required: false
-      secret: false
-    - default: false
-      description: A list of network groups
-      isArray: false
-      name: groupIds
-      required: false
-      secret: false
-    deprecated: false
-    description: 'Sends a "disconnect from network" command to all agents matching
-      the input filter. Note: One of the following filter arguments must be supplied:
-      ids, groupIds, filterId.'
-    execution: true
-    name: sentinelone-agents-quarantine
-    outputs:
-    - contextPath: SentinelOne.Agents.Quarantine.Date
-      description: Recommission date and time (UTC)
-      type: date
-    - contextPath: SentinelOne.Agents.Quarantine.Quarantined
-      description: A boolean to check if the respective agent was quarantined or not.
-      type: boolean
-    - contextPath: SentinelOne.Agents.Quarantine.AffectedCount
-      description: Number of agents affected per request.
-      type: number
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -693,11 +495,10 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Scope to be used for exclusions. Can be group, site or tenant
+      description: Scope to be used for exclusions. Can be site or tenant
       isArray: false
       name: target_scope
       predefined:
-      - group
       - site
       - tenant
       required: true
@@ -769,120 +570,6 @@ script:
       description: A boolean to check if the  threat was resolved successfully or
         not
       type: boolean
-  - arguments:
-    - default: false
-      description: List of Site IDs to filter by
-      isArray: true
-      name: siteIds
-      required: false
-      secret: false
-    - default: false
-      description: Include all agents matching this saved filter
-      isArray: false
-      name: filterId
-      required: false
-      secret: false
-    - default: false
-      description: A list of Agent IDs
-      isArray: true
-      name: agentIds
-      required: false
-      secret: false
-    - default: false
-      description: Only include uninstalled agents
-      isArray: false
-      name: isUninstalled
-      required: false
-      secret: false
-    - default: false
-      description: Include active, decommissioned or both
-      isArray: false
-      name: isDecommissioned
-      required: false
-      secret: false
-    - default: false
-      description: 'A free-text search term, will match applicable attributes (sub-string
-        match). Note: Device''s physical addresses will be matched if they start with
-        the search term only (instead of being matched if they contain the term).'
-      isArray: false
-      name: query
-      required: false
-      secret: false
-    - default: false
-      description: A list of network groups
-      isArray: true
-      name: groupIds
-      required: false
-      secret: false
-    deprecated: false
-    description: 'Sends a shutdown command to all agents matching the input filter.
-      Note: One of the following filter arguments must be supplied: ids, groupIds,
-      filterId.'
-    execution: false
-    name: sentinelone-agents-shutdown
-    outputs:
-    - contextPath: SentinelOne.Agents.Shutdown.Date
-      description: Shutdown date and time (UTC)
-      type: number
-    - contextPath: SentinelOne.Agents.Shutdown.IsShutdown
-      description: A boolean to check if the agent is shutdown successfully or not.
-      type: boolean
-    - contextPath: SentinelOne.Agents.Shutdown.Affected
-      description: Number of agents affected
-      type: number
-  - arguments:
-    - default: false
-      description: A list of Agent IDs (Comma separated list). You can also use only
-        one Agent ID and recommission it.
-      isArray: true
-      name: agent_ids
-      required: false
-      secret: false
-    - default: false
-      description: Only include uninstalled agents
-      isArray: false
-      name: is_uninstalled
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Include active, decommissioned or both
-      isArray: false
-      name: is_decommissioned
-      predefined:
-      - active
-      - decommissioned
-      - both
-      required: false
-      secret: false
-    - default: false
-      description: 'A free-text search term, will match applicable attributes (sub-string
-        match). Note: Device''s physical addresses will be matched if they start with
-        the search term only (instead of being matched if they contain the term).'
-      isArray: false
-      name: query
-      required: false
-      secret: false
-    - default: false
-      description: A list of network groups
-      isArray: true
-      name: group_ids
-      required: false
-      secret: false
-    deprecated: false
-    description: Sends a restart command to all agents matching the input filter.
-    execution: false
-    name: sentinelone-agents-recommission
-    outputs:
-    - contextPath: SentinelOne.Agents.Recommission.Date
-      description: Recommission date and time (UTC)
-      type: date
-    - contextPath: SentinelOne.Agents.Recommission.Recommissioned
-      description: A boolean to check if the agent was restarted successfully or not.
-      type: boolean
-    - contextPath: SentinelOne.Agents.Recommission.Affected
-      description: Number of agents affected
-      type: number
   - arguments:
     - default: false
       description: The agent ID
@@ -957,12 +644,6 @@ script:
       description: The threat IDs to be added to blacklist.
       isArray: false
       name: threatIds
-      required: false
-      secret: false
-    - default: false
-      description: Site IDs which can be used to find related threat hashes.
-      isArray: false
-      name: siteIds
       required: false
       secret: false
     deprecated: false
@@ -1227,72 +908,6 @@ script:
       type: boolean
   - arguments:
     - default: false
-      description: 'ID of the site to be delelted. Site ID. Example: "225494730938493804".'
-      isArray: false
-      name: site_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Delete a site now.
-    execution: false
-    name: sentinelone-delete-site
-    outputs:
-    - contextPath: SentinelOne.Sites.ID
-      description: ID of the site.
-      type: string
-    - contextPath: SentinelOne.Sites.Deleted
-      description: A boolean to check if the site was deleted or not.
-      type: boolean
-  - arguments:
-    - auto: PREDEFINED
-      default: false
-      description: The IOC type to be searched
-      isArray: false
-      name: indicator
-      predefined:
-      - Dst.IP
-      - Dst.Port
-      - File.FullName
-      - File.MD5
-      - File.SHA1
-      - File.SHA256
-      - Network.URL
-      - PID
-      - Process.Name
-      - src.IP
-      - src.Port
-      - User
-      required: true
-      secret: false
-    - default: false
-      description: The IOC value to be searched
-      isArray: false
-      name: indicatorValue
-      required: true
-      secret: false
-    - default: false
-      description: 'Events created after this timestamp. Example: "2018-02-19T16:32:00.000Z".'
-      isArray: false
-      name: fromDate
-      required: false
-      secret: false
-    - default: false
-      description: 'Events created before or at this timestamp. Example: "2018-02-20T16:32:00.000Z".'
-      isArray: false
-      name: toDate
-      required: false
-      secret: false
-    deprecated: false
-    description: Get events that are related to specified indicators, either fromDate
-      or toDate are mandatory.
-    execution: false
-    name: sentinelone-search-indicators
-    outputs:
-    - contextPath: SentinelOne.Event.ID
-      description: The ID of the event
-      type: string
-  - arguments:
-    - default: false
       description: 'Return activities created after this timestamp. Example: "2018-02-27T04:49:26.257525Z".'
       isArray: false
       name: created_after
@@ -1388,6 +1003,272 @@ script:
     description: Get a list of activities.
     execution: false
     name: sentinelone-get-activities
+    outputs:
+    - contextPath: SentinelOne.Activity.agentId
+      description: Related agent (If applicable)
+      type: String
+    - contextPath: SentinelOne.Activity.agentUpdatedVersion
+      description: Agent's new version (If applicable)
+      type: String
+    - contextPath: SentinelOne.Activity.siteId
+      description: Related site (If applicable)
+      type: String
+    - contextPath: SentinelOne.Activity.userId
+      description: The user who invoked the activity (If applicable)
+      type: String
+    - contextPath: SentinelOne.Activity.secondaryDescription
+      description: Secondary description
+      type: String
+    - contextPath: SentinelOne.Activity.osFamily
+      description: Agent's OS type (if applicable). Can be linux, macos, windows or
+        windows_legacy
+      type: String
+    - contextPath: SentinelOne.Activity.activityType
+      description: Activity type
+      type: Number
+    - contextPath: SentinelOne.Activity.data.siteId
+      description: The site ID
+      type: String
+    - contextPath: SentinelOne.Activity.data.siteName
+      description: The site name
+      type: String
+    - contextPath: SentinelOne.Activity.data.username
+      description: The name of the site creator
+      type: String
+    - contextPath: SentinelOne.Activity.hash
+      description: Threat file hash (If applicable)
+      type: String
+    - contextPath: SentinelOne.Activity.updatedAt
+      description: Activity last updated time (UTC)
+      type: Date
+    - contextPath: SentinelOne.Activity.comments
+      description: Comments for the activity
+      type: String
+    - contextPath: SentinelOne.Activity.threatId
+      description: Related threat (If applicable)
+      type: String
+    - contextPath: SentinelOne.Activity.primaryDescription
+      description: Primary description for the activity
+      type: String
+    - contextPath: SentinelOne.Activity.groupId
+      description: Related group (If applicable)
+      type: String
+    - contextPath: SentinelOne.Activity.id
+      description: Activity ID
+      type: String
+    - contextPath: SentinelOne.Activity.createdAt
+      description: Activity creation time (UTC)
+      type: Date
+    - contextPath: SentinelOne.Activity.description
+      description: Extra activity information
+      type: String
+  - arguments:
+    - default: false
+      description: 'Group type. Example: "static".'
+      isArray: false
+      name: group_type
+      required: false
+      secret: false
+    - default: false
+      description: 'List of Group IDs to filter by. Example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: group_ids
+      required: false
+      secret: false
+    - default: false
+      description: 'Id. Example: "225494730938493804".'
+      isArray: false
+      name: group_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Is this the default group?
+      isArray: false
+      name: is_default
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The name of the group
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: Free text search on fields name
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: 'The rank sets the priority of a dynamic group over others. Example:
+        "1".'
+      isArray: false
+      name: rank
+      required: false
+      secret: false
+    - default: false
+      description: 'Limit number of returned items (1-200). Example: "10".'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the group data.
+    execution: false
+    name: sentinelone-get-groups
+    outputs:
+    - contextPath: SentinelOne.Group.siteId
+      description: The id of the site this group is part of
+      type: String
+    - contextPath: SentinelOne.Group.filterName
+      description: If the group is dynamic the name of the filter which is used to
+        associate agents
+      type: String
+    - contextPath: SentinelOne.Group.creatorId
+      description: The ID of the user that created the group
+      type: String
+    - contextPath: SentinelOne.Group.name
+      description: The name of the group
+      type: String
+    - contextPath: SentinelOne.Group.creator
+      description: The user that created the group
+      type: String
+    - contextPath: SentinelOne.Group.rank
+      description: The rank sets the priority of a dynamic group over others
+      type: Number
+    - contextPath: SentinelOne.Group.updatedAt
+      description: Timestamp of last update
+      type: Date
+    - contextPath: SentinelOne.Group.totalAgents
+      description: Count of agents in the group
+      type: Number
+    - contextPath: SentinelOne.Group.filterId
+      description: If the group is dynamic id of the filter which is used to associate
+        agents
+      type: String
+    - contextPath: SentinelOne.Group.isDefault
+      description: True only for the default group of the Site
+      type: Boolean
+    - contextPath: SentinelOne.Group.inherits
+      description: True if the policy is inherited from Site, False if the group has
+        its own edited policy
+      type: Boolean
+    - contextPath: SentinelOne.Group.type
+      description: Group type. Can be static or dynamic
+      type: String
+    - contextPath: SentinelOne.Group.id
+      description: The ID of the group
+      type: String
+    - contextPath: SentinelOne.Group.createdAt
+      description: Timestamp of group creation
+      type: Date
+  - arguments:
+    - default: false
+      description: The ID of the group to move the agent to
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    - default: false
+      description: The IDs of the agents
+      isArray: true
+      name: agents_ids
+      required: false
+      secret: false
+    deprecated: false
+    description: Move agents to a new group.
+    execution: false
+    name: sentinelone-move-agent
+    outputs:
+    - contextPath: SentinelOne.Agents.AgentsMoved
+      description: The number of agent that moved to another group
+      type: Number
+  - arguments:
+    - default: false
+      description: The ID of the group to delete
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a group by the group ID
+    execution: false
+    name: sentinelone-delete-group
+  - arguments:
+    - default: false
+      description: 'The ID of the agent from which to retrive the processes from '
+      isArray: false
+      name: agents_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve running processes for a specific agent.
+    execution: false
+    name: sentinelone-agent-processes
+    outputs:
+    - contextPath: SentinelOne.Agents.memoryUsage
+      description: Memory usage (MB)
+      type: Number
+    - contextPath: SentinelOne.Agents.startTime
+      description: The process start time
+      type: Date
+    - contextPath: SentinelOne.Agents.pid
+      description: The process ID
+      type: Number
+    - contextPath: SentinelOne.Agents.processName
+      description: 'The name of the process '
+      type: String
+    - contextPath: SentinelOne.Agents.cpuUsage
+      description: CPU Usage (%)
+      type: Number
+    - contextPath: SentinelOne.Agents.executablePath
+      description: Executable path
+      type: String
+  - arguments:
+    - default: false
+      description: Events matching the query search term will be returned
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: Events from a specific date
+      isArray: false
+      name: from_date
+      required: true
+      secret: false
+    - default: false
+      description: Events to a specific date
+      isArray: false
+      name: to_date
+      required: true
+      secret: false
+    deprecated: false
+    description: Start a Deep Visibility Query and get the queryId, use queryId for
+      all other APIs such as Get All Events and Get Query Status
+    execution: false
+    name: sentinelone-create-query
+  - arguments:
+    - default: false
+      description: The query ID. Get query_id from create-query command
+      isArray: false
+      name: query_id
+      required: true
+      secret: false
+    - default: false
+      description: The limit of the results to be returned
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get all Deep Visibility events from query
+    execution: false
+    name: sentinelone-get-events
   isfetch: true
   runonce: false
   script: '-'
