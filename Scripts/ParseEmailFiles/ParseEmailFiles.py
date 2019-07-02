@@ -3328,7 +3328,7 @@ def unfold(s):
     whitespace adjacent to line breaks) to a single space and removing leading
     & trailing whitespace.
     From: https://github.com/jwodder/headerparser/blob/master/headerparser/types.py#L39
-    >>> unfold('This is a \n folded string.\n')
+    unfold('This is a \n folded string.\n')
     'This is a folded string.'
     :param string s: a string to unfold
     :rtype: string
@@ -3404,9 +3404,14 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                     if os.path.isabs(attachment_file_name):
                         attachment_file_name = os.path.basename(attachment_file_name)
 
-                if "message/rfc822" in part.get("Content-Type", ""):
+                if "message/rfc822" in part.get("Content-Type", "") \
+                    or ("application/octet-stream" in part.get("Content-Type", "")
+                        and attachment_file_name.endswith(".eml")):
+
                     # .eml files
-                    file_content = None
+                    file_content = ""  # type: str
+                    base64_encoded = "base64" in part.get("Content-Transfer-Encoding", "")
+
                     if isinstance(part.get_payload(), list) and len(part.get_payload()) > 0:
                         if attachment_file_name is None or attachment_file_name == "":
                             # in case there is no filename for the eml
@@ -3415,10 +3420,19 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             attachment_name = part.get_payload()[0].get('Subject', "no_name_mail_attachment")
                             attachment_file_name = convert_to_unicode(attachment_name) + '.eml'
 
-                        file_content = part.get_payload()[0].as_string()
-                        demisto.results(fileResult(attachment_file_name, file_content))
+                        if base64_encoded:
+                            file_content = b64decode(part.get_payload()[0].as_string())
+                        else:
+                            file_content = part.get_payload()[0].as_string()
+
+                    elif isinstance(part.get_payload(), basestring) and base64_encoded:
+                        file_content = part.get_payload(decode=True)
                     else:
                         demisto.debug("found eml attachment with Content-Type=message/rfc822 but has no payload")
+
+                    if file_content:
+                        # save the eml to war room as file entry
+                        demisto.results(fileResult(attachment_file_name, file_content))
 
                     if file_content and max_depth - 1 > 0:
                         f = tempfile.NamedTemporaryFile(delete=False)
@@ -3430,6 +3444,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                                                                           max_depth=max_depth - 1)
                             attached_emails.append(inner_eml)
                             attached_emails.extend(inner_attached_emails)
+
                             return_outputs(readable_output=data_to_md(inner_eml, attachment_file_name, file_name),
                                            outputs=None)
                         finally:
