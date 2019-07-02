@@ -36,7 +36,7 @@ configuration:
   - '3'
   - '4'
   required: false
-  type: 16
+  type: 15
 - defaultvalue: View it on
   display: General footer to display in Slack messages with links
   name: general_footer
@@ -215,7 +215,7 @@ script:
     description: Send a file to a slack user, channel or group.
     execution: false
     name: slack-send-file
-  dockerimage: devtesting/slack:1.0.0.1558884736
+  dockerimage: demisto/slack:1.0.0.814
   isfetch: false
   longRunning: true
   runonce: false
