@@ -38,7 +38,7 @@ tasks:
       id: 99a631c1-8dd8-4a8a-8608-98f964655794
       version: -1
       name: Is Palo Alto Networks PAN-OS enabled?
-      description: Verify that there is a valid instance of Palo Alto Networks PAN-OS enabled.
+      description: Checks if there is a valid instance of the Palo Alto Networks PAN-OS integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -116,7 +116,7 @@ tasks:
       id: 0a3a3ded-4ea5-4225-8e50-90f4d3096604
       version: -1
       name: panorama-query-traffic-logs
-      description: Query traffic logs
+      description: Queries traffic logs.
       script: '|||panorama-query-traffic-logs'
       type: regular
       iscommand: true
@@ -171,7 +171,7 @@ tasks:
       id: a15dbada-1559-4c04-80b9-5219290608ce
       version: -1
       name: panorama-check-traffic-logs-status
-      description: Check traffic logs query status
+      description: Checks the status of a traffic logs query.
       script: '|||panorama-check-traffic-logs-status'
       type: regular
       iscommand: true
@@ -356,13 +356,12 @@ inputs:
   value:
     simple: "100"
   required: false
-  description: Specify the number of logs to retrieve. The maximum is 5000.
+  description: The number of logs to retrieve. The maximum is 5,000.
 - key: direction
   value:
     simple: backward
   required: false
-  description: Specify whether logs are shown oldest first (forward) or newest first
-    (backward). Default is backward.
+  description: Specify the log display order; "forward" - oldest first, "backward" - newest first. Default is backward.
 - key: query
   value: {}
   required: false
@@ -375,24 +374,24 @@ inputs:
 - key: destination
   value: {}
   required: false
-  description: destination address for the query
+  description: Destination address for the query,
 - key: receive_time
   value: {}
   required: false
-  description: receive_time greater than for the query, e.g, YYYY/MM/DD HH:MM:SS
+  description: 'Start time for the query, for example: YYYY/MM/DD HH:MM:SS.'
 - key: application
   value: {}
   required: false
-  description: application for the query
+  description: Application for the query.
 - key: to_port
   value: {}
   required: false
-  description: to_port(destination port) for the query
+  description: Destination port for the query.
 - key: action
   value:
     simple: allow
   required: false
-  description: action for the query
+  description: Action for the query.
 outputs: []
 tests:
 - palo_alto_firewall_test_pb
