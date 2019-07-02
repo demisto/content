@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Run pylint and pytest in the current directory. 
-# Used by pkg_dev_tasks_in_docker.py to run pylint and pytest 
+# Used by pkg_dev_test_tasks.py to run pylint and pytest 
 # inside a docker. Since this is meant to run inside a minimal docker
 # image it uses sh and not bash. Additionally, script tries to keep it 
 # simply and not use any shell utilities that may be missing in a minimal docker.

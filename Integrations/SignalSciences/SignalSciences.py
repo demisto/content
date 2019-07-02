@@ -434,7 +434,7 @@ def gen_entries_data_for_update_list_request(entries_list, method):
     entries = {
         "additions": [],
         "deletions": []
-    }
+    }  # type: Dict
     entries_list_in_list_format = entries_list.split(',')
     if method == "Add":
         entries["additions"] = entries_list_in_list_format
@@ -513,7 +513,7 @@ def remove_milliseconds_from_iso(date_in_iso_format):
 
 
 def get_events_from_given_sites(list_of_site_names_to_fetch, desired_from_time_in_posix):
-    events_from_given_sites = []
+    events_from_given_sites = []  # type: List[Any]
     for site_name in list_of_site_names_to_fetch:
         fetch_from_site_response_json = get_events(siteName=site_name, from_time=desired_from_time_in_posix)
 

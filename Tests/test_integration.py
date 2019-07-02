@@ -4,7 +4,7 @@ from pprint import pformat
 import uuid
 import urllib
 
-from test_utils import print_error
+from Tests.test_utils import print_error
 from Tests.scripts.constants import PB_Status
 
 # ----- Constants ----- #
@@ -26,6 +26,17 @@ def __get_integration_config(client, integration_name):
     })
 
     res = res.json()
+    TIMEOUT = 180
+    SLEEP_INTERVAL = 5
+    total_sleep = 0
+    while 'configurations' not in res:
+        if total_sleep == TIMEOUT:
+            print_error("Timeout - failed to get integration {} configuration. Error: {}".format(integration_name, res))
+            return None
+
+        time.sleep(SLEEP_INTERVAL)
+        total_sleep += SLEEP_INTERVAL
+
     all_configurations = res['configurations']
     match_configurations = [x for x in all_configurations if x['name'] == integration_name]
 
@@ -305,7 +316,7 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
             break
 
         if i % DEFAULT_INTERVAL == 0:
-            print 'loop no.' + str(i / DEFAULT_INTERVAL) + ', playbook state is ' + playbook_state
+            print('loop no. {}, playbook state is {}'.format(i / DEFAULT_INTERVAL, playbook_state))
         i = i + 1
 
     __disable_integrations_instances(client, module_instances)
@@ -319,3 +330,27 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
         __delete_integrations_instances(client, module_instances)
 
     return playbook_state, inc_id
+
+
+def disable_all_integrations(client):
+    """
+    Disable all enabled integrations. Should be called at start of test loop to start out clean
+
+    Arguments:
+        client -- demisto py client
+    """
+    res = client.req('POST', '/settings/integration/search', {'size': 1000})
+    if res.status_code != 200:
+        print_error('Get all integration instances failed with status code: {}'.format(res.status_code))
+        return
+    int_instances = res.json()
+    if 'instances' not in int_instances:
+        print("No integrations instances found to disable all")
+        return
+    to_disable = []
+    for instance in int_instances['instances']:
+        if instance.get('enabled') == 'true' and instance.get("isIntegrationScript"):
+            print("Adding to disable list. Name: {}. Brand: {}".format(instance.get("name"), instance.get("brand")))
+            to_disable.append(instance)
+    if len(to_disable) > 0:
+        __disable_integrations_instances(client, to_disable)

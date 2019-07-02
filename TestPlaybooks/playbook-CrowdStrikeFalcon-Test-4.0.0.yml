@@ -1,15 +1,15 @@
 id: Test - CrowdStrike Falcon
-version: -1
+version: 1
 name: Test - CrowdStrike Falcon
 toversion: 4.0.9
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5f81682e-574b-47b8-8020-81fe0afaf712
+    taskid: e8316381-4811-44a6-8808-155aeaa8e65f
     type: start
     task:
-      id: 5f81682e-574b-47b8-8020-81fe0afaf712
+      id: e8316381-4811-44a6-8808-155aeaa8e65f
       version: -1
       name: ""
       iscommand: false
@@ -21,18 +21,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 09c01451-3f8d-4560-8b09-dfcf8af97170
+    taskid: 1238a501-92ac-41b0-86e4-739ff45a8e04
     type: regular
     task:
-      id: 09c01451-3f8d-4560-8b09-dfcf8af97170
+      id: 1238a501-92ac-41b0-86e4-739ff45a8e04
       version: -1
       name: Get multiple detections by IDs
       script: '|||cs-falcon-search-detection'
@@ -50,18 +51,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 370
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: 4741a3ad-8b22-476a-894c-d17ebe82eb8f
+    taskid: ac92cafe-0520-4e3c-8ea5-5c93ffe836c8
     type: condition
     task:
-      id: 4741a3ad-8b22-476a-894c-d17ebe82eb8f
+      id: ac92cafe-0520-4e3c-8ea5-5c93ffe836c8
       version: -1
       name: Assert 2 detections were fetched
       type: condition
@@ -89,18 +91,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 545
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 077e679b-e480-41cf-8314-13a1a838e621
+    taskid: b1360fcb-1a45-42f2-80e6-0ec5ce15961d
     type: regular
     task:
-      id: 077e679b-e480-41cf-8314-13a1a838e621
+      id: b1360fcb-1a45-42f2-80e6-0ec5ce15961d
       version: -1
       name: Get behavior
       script: '|||cs-falcon-get-behavior'
@@ -117,18 +120,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 720
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: fe1b974f-38f1-4f51-8510-fe6387769072
+    taskid: 64819739-42c5-42ab-87da-641aeaf5ea42
     type: condition
     task:
-      id: fe1b974f-38f1-4f51-8510-fe6387769072
+      id: 64819739-42c5-42ab-87da-641aeaf5ea42
       version: -1
       name: Assert 'known_malware' scenario
       type: condition
@@ -154,18 +158,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 895
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: 2654955d-0c3b-4b01-8e4e-64323327a9c3
+    taskid: 37ae0724-0403-4092-83e3-e213aa9114fe
     type: regular
     task:
-      id: 2654955d-0c3b-4b01-8e4e-64323327a9c3
+      id: 37ae0724-0403-4092-83e3-e213aa9114fe
       version: -1
       name: Get multiple devices
       script: '|||cs-falcon-search-device'
@@ -180,27 +185,28 @@ tasks:
       hostname: {}
       ids:
         simple: 336474ea6a524e7c68575f6508d84781,459146dbe524472e73751a43c63324f3
-      platform_name: {}
+      platfrom_name: {}
       site_name: {}
       status: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 1070
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: 3d55ac3f-d210-40ad-82b7-ff7bd6713d0e
+    taskid: 50e7f322-a706-4c43-89c0-9e4a394e3bcc
     type: condition
     task:
-      id: 3d55ac3f-d210-40ad-82b7-ff7bd6713d0e
+      id: 50e7f322-a706-4c43-89c0-9e4a394e3bcc
       version: -1
-      name: Assert 2 devices were fetched
+      name: Assert 1 device was fetched
       type: condition
       iscommand: false
       brand: ""
@@ -222,22 +228,23 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: "1"
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 1245
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: 529f29ec-d50d-4f6e-86ae-77e73cfd2d04
+    taskid: 4aee1efa-ebfd-43cc-83a8-51993dbb46e2
     type: title
     task:
-      id: 529f29ec-d50d-4f6e-86ae-77e73cfd2d04
+      id: 4aee1efa-ebfd-43cc-83a8-51993dbb46e2
       version: -1
       name: Done
       type: title
@@ -247,18 +254,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 1420
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
-    taskid: e04242ea-2cfd-4680-8175-13f01ef7f51c
+    taskid: d1c3894a-f0f1-479c-8881-fff8b000eb33
     type: regular
     task:
-      id: e04242ea-2cfd-4680-8175-13f01ef7f51c
+      id: d1c3894a-f0f1-479c-8881-fff8b000eb33
       version: -1
       name: Clear context
       scriptName: DeleteContext
@@ -279,20 +287,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1435,
-        "width": 380,
-        "x": 50,
+        "width": 595,
+        "x": 265,
         "y": 50
       }
     }

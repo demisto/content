@@ -404,6 +404,10 @@ def get(obj, field):
     return obj
 
 
+def gets(obj, field):
+    return str(get(obj, field))
+
+
 def context():
     return {}
 
@@ -430,6 +434,10 @@ def error(*args):
 
 def debug(*args):
     log(args)
+
+
+def getAllSupportedCommands():
+    return {}
 
 
 def results(results):
@@ -495,3 +503,7 @@ def demistoUrls():
 
 def appendContext(key, data, dedup=False):
     return None
+
+def dt(obj=None, trnsfrm=None):
+    return ""
+

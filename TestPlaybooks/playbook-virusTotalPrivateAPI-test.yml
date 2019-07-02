@@ -5,63 +5,34 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c2fdb80f-d9ba-41d7-8fb8-15a770dabfe7
+    taskid: 202eec0b-d500-4619-830c-8f244cbf010f
     type: start
     task:
-      id: c2fdb80f-d9ba-41d7-8fb8-15a770dabfe7
+      id: 202eec0b-d500-4619-830c-8f244cbf010f
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "27"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": -30
         }
       }
     note: false
     timertriggers: []
-  "1":
-    id: "1"
-    taskid: cb996a01-c0e3-447c-83d1-6328a0dcefbb
-    type: regular
-    task:
-      id: cb996a01-c0e3-447c-83d1-6328a0dcefbb
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
-    taskid: deae3ffc-3937-4a5e-83d0-96bb78723bf0
+    taskid: 893a5941-58c7-4375-82ca-4e891e473550
     type: title
     task:
-      id: deae3ffc-3937-4a5e-83d0-96bb78723bf0
+      id: 893a5941-58c7-4375-82ca-4e891e473550
       version: -1
       name: Done
       type: title
@@ -77,12 +48,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: 3a154399-9055-486c-8328-e52bd4f78894
+    taskid: 8e45cad7-1838-4362-80aa-1ab2c3990abd
     type: regular
     task:
-      id: 3a154399-9055-486c-8328-e52bd4f78894
+      id: 8e45cad7-1838-4362-80aa-1ab2c3990abd
       version: -1
       name: vt-get-domain-report
       description: Retrieves a report on a given domain (including the information
@@ -109,12 +81,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
-    taskid: 411efc82-26ce-48f6-819f-89e8aa236a49
+    taskid: b290f1c4-052f-417b-80dc-ed7678a5e0bb
     type: condition
     task:
-      id: 411efc82-26ce-48f6-819f-89e8aa236a49
+      id: b290f1c4-052f-417b-80dc-ed7678a5e0bb
       version: -1
       name: Verify Domain Whois Contains
       description: "Checks whether substring is within string. Returns: \nyes - string
@@ -151,12 +124,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
-    taskid: 18f5ac65-12c7-4ec6-88bf-9b5431308e2b
+    taskid: 35055630-fa9a-4c0c-8694-fce6ac495ec1
     type: regular
     task:
-      id: 18f5ac65-12c7-4ec6-88bf-9b5431308e2b
+      id: 35055630-fa9a-4c0c-8694-fce6ac495ec1
       version: -1
       name: vt-get-file-report
       description: Retrieves a concluded url scan report for a given url.
@@ -183,12 +157,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "18":
     id: "18"
-    taskid: 54d72653-d27b-4549-8619-daabc2e14f1a
+    taskid: 5747d0cb-7e7b-41d7-83f7-8b71d355e8cc
     type: condition
     task:
-      id: 54d72653-d27b-4549-8619-daabc2e14f1a
+      id: 5747d0cb-7e7b-41d7-83f7-8b71d355e8cc
       version: -1
       name: Verify File Malicious
       description: |-
@@ -223,12 +198,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "19":
     id: "19"
-    taskid: 99c0783e-3341-4ff2-893b-733447e200fe
+    taskid: aa69bfff-d8ff-4419-8a58-99c7cae77448
     type: regular
     task:
-      id: 99c0783e-3341-4ff2-893b-733447e200fe
+      id: aa69bfff-d8ff-4419-8a58-99c7cae77448
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -253,12 +229,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "20":
     id: "20"
-    taskid: c0d85491-fc4a-4912-8a48-9611b94a80d6
+    taskid: 65591055-4c3d-4d2a-8885-62b01e5635df
     type: regular
     task:
-      id: c0d85491-fc4a-4912-8a48-9611b94a80d6
+      id: 65591055-4c3d-4d2a-8885-62b01e5635df
       version: -1
       name: vt-private-get-url-report
       description: Retrieves a concluded url scan report for a given url.
@@ -288,12 +265,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "21":
     id: "21"
-    taskid: 0e538c1a-778d-4a3c-8be0-e455d29d1649
+    taskid: 0e44b030-1867-48e7-872b-bbb3902545fd
     type: regular
     task:
-      id: 0e538c1a-778d-4a3c-8be0-e455d29d1649
+      id: 0e44b030-1867-48e7-872b-bbb3902545fd
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -321,12 +299,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "22":
     id: "22"
-    taskid: 95324590-ddd8-40c5-83ef-f108df7255df
+    taskid: 82070893-72cd-4ab3-8fb0-533d98c4b9b7
     type: regular
     task:
-      id: 95324590-ddd8-40c5-83ef-f108df7255df
+      id: 82070893-72cd-4ab3-8fb0-533d98c4b9b7
       version: -1
       name: vt-private-get-ip-report
       description: Retrieves a report on a given IP address (including the information
@@ -353,12 +332,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "23":
     id: "23"
-    taskid: f4854eef-e673-4943-8b2e-5aa5d7f62e99
+    taskid: a74d2ce7-9836-458f-8707-436f3df2513c
     type: condition
     task:
-      id: f4854eef-e673-4943-8b2e-5aa5d7f62e99
+      id: a74d2ce7-9836-458f-8707-436f3df2513c
       version: -1
       name: Verify DBot Score of ip
       type: condition
@@ -390,12 +370,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "24":
     id: "24"
-    taskid: 4dc0b7d1-7450-4308-8c50-35888456b6c5
+    taskid: 2b8b8a3a-133b-4401-833e-1d54eefe79cc
     type: regular
     task:
-      id: 4dc0b7d1-7450-4308-8c50-35888456b6c5
+      id: 2b8b8a3a-133b-4401-833e-1d54eefe79cc
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -419,12 +400,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "25":
     id: "25"
-    taskid: 1193046c-e6e9-4190-8ca0-de86abea0703
+    taskid: 9b37088c-30fd-467a-8170-21f296771743
     type: regular
     task:
-      id: 1193046c-e6e9-4190-8ca0-de86abea0703
+      id: 9b37088c-30fd-467a-8170-21f296771743
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -452,15 +434,49 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: e1997659-45af-4d2b-86d9-ac52cf8cedda
+    type: regular
+    task:
+      id: e1997659-45af-4d2b-86d9-ac52cf8cedda
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2335,
+        "height": 2415,
         "width": 380,
         "x": 50,
-        "y": 50
+        "y": -30
       }
     }
   }

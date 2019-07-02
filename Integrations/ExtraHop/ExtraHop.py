@@ -130,7 +130,7 @@ def format_alerts(alerts):
         "ExtraHop": {
             "Alert": []
         }
-    }
+    }  # type: dict
     for alert in alerts:
         hr += tableToMarkdown('Found Alert', alert, headerTransform=string_to_table_header, removeNull=True)
         ec['ExtraHop']['Alert'].append(createContext(alert, keyTransform=string_to_context_key, removeNull=True))
@@ -152,7 +152,7 @@ def format_device_results(data):
         "ExtraHop": {
             "Device": []
         }
-    }
+    }  # type: dict
     for device in data:
         hr = {}
         if 'id' in device:
@@ -331,7 +331,7 @@ def query_records_command():
         "ExtraHop": {
             "Query": []
         }
-    }
+    }  # type: dict
     for record in source:
         hr += tableToMarkdown('Incident result for ID {id}'.format(id=record['_id']), record['_source'])
         ec['ExtraHop']['Query'].append(createContext(record, keyTransform=string_to_context_key, removeNull=True))

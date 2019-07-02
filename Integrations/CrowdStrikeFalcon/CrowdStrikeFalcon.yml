@@ -327,6 +327,6 @@ script:
   runonce: false
   script: ''
   type: python
-releaseNotes: "Updated descriptions and fixed a typo for argument in cs-falcon-search-device command"
+  subtype: python3
 tests:
   - Test - CrowdStrike Falcon

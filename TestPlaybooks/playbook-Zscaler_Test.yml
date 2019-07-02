@@ -560,12 +560,45 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: e26d1c1e-4b20-4561-8778-5ec2adedc24c
+    type: regular
+    task:
+      id: e26d1c1e-4b20-4561-8778-5ec2adedc24c
+      version: -1
+      name: test SandBox Report
+      description: asasd
+      script: '|||zscaler-sandbox-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      details:
+        simple: full
+      md5:
+        simple: 3FD0EA0AE759D58274310C022FB0CBBA
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 285,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2425,
+        "height": 2615,
         "width": 3290,
         "x": -2430,
         "y": -590

@@ -80,7 +80,7 @@ def convert_datetime_to_string(v):
         return v.strftime('%Y-%m-%d %H:%M:%S.%f %z').strip()
     elif isinstance(v, date):
         return v.strftime('%Y-%m-%d').strip()
-    elif isinstance(v, dttime) or isinstance(v, timedelta):
+    elif isinstance(v, dttime):
         return v.strftime('%H:%M:%S.%f').strip()
     return v
 
@@ -171,7 +171,7 @@ def format_to_json_serializable(column_descriptions, results):
     name = 0
     type_code = 1
 
-    checks = {}
+    checks: dict = {}
     # Screen by type_code
     for col in column_descriptions:
         # if col[type_code] == 0:
@@ -205,7 +205,7 @@ def get_connection_params(args):
     returns:
         Snowflake connection params
     """
-    params = {}
+    params: dict = {}
     set_provided(params, 'user', USER)
     set_provided(params, 'password', PASSWORD)
     set_provided(params, 'account', ACCOUNT)
@@ -283,7 +283,7 @@ def test_module():
         An 'ok' message if valid, otherwise an error message
     """
     params = get_connection_params({})
-    with snowflake.connector.connect(**params) as _:
+    with snowflake.connector.connect(**params):
         demisto.results('ok')
 
 
