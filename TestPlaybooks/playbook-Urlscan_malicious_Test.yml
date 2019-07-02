@@ -606,7 +606,7 @@ tasks:
       - - operator: in
           left:
             value:
-              simple: http://demisto.com/
+              simple: demisto.com
           right:
             value:
               simple: URLScan.httpTransaction
