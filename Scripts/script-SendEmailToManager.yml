@@ -2,84 +2,167 @@ commonfields:
   id: SendEmailToManager
   version: 1
 name: SendEmailToManager
-fromversion: 3.5.0
 script: |-
-  email = demisto.get(demisto.args(), 'email')
-  if not email:
-      for t in demisto.incidents()[0]['labels']:
-          if t['type'] == 'Email/from':
-              email = t['value'].lower()
-  if not email:
-      demisto.results('Could not find employee email. Quiting.')
-      sys.exit(0)
-  managerAttrubute = demisto.get(demisto.args(), 'manager')
-  if not managerAttrubute:
-      managerAttrubute = 'manager'
-  res = demisto.executeCommand('AdSearch', {'filter':  r'(&(objectClass=user)(mail=' + email + '))', 'attributes': 'displayname,' + managerAttrubute})
-  if isError(res[0]):
-      demisto.results(res)
-      sys.exit(0)
-  managerDN = demisto.get(res[0]['Contents'][0], managerAttrubute)
-  empName = demisto.get(res[0]['Contents'][0], 'displayname')
-  if not managerDN:
-      demisto.results('Unable to get manager email')
-      sys.exit(0)
-  filterstr = r'(&(objectClass=User)(distinguishedName=' + managerDN + '))'
-  res = demisto.executeCommand('AdSearch', {'filter': filterstr, 'attributes': 'displayname,mail'})
-  if isError(res[0]):
-      demisto.results(res)
-      sys.exit(0)
-  managerEmail = demisto.get(res[0]['Contents'][0], 'mail')
-  managerName = demisto.get(res[0]['Contents'][0], 'displayname')
-  if not managerDN:
-      demisto.results('Unable to get manager email from DN - ' + managerDN)
-      sys.exit(0)
-  allowReply = demisto.get(demisto.args(), 'allowReply')
-  if allowReply:
-      res = demisto.executeCommand('addEntitlement', {'persistent': demisto.get(demisto.args(), 'persistent', 'replyEntriesTag': demisto.get(demisto.args(), 'replyEntriesTag'})
-      if isError(res[0]):
-          demisto.results(res)
-          sys.exit(0)
-      entitlement = demisto.get(res[0], 'Contents')
-      if not entitlement:
-          demisto.results('Unable to get entitlement')
-          sys.exit(0)
-      subject = demisto.gets(demisto.incidents()[0], 'name') + ' - #' + demisto.investigation()['id'] + ' ' + entitlement
-  else:
-      subject = demisto.gets(demisto.incidents()[0], 'name') + ' - #' + demisto.investigation()['id']
   from string import Template
   import textwrap
-  body = demisto.get(demisto.args(), 'body')
-  if not body:
-      body = """\
-          Hi $managerName,
-          We've received the following request below from $empName. Please reply to this email with either "approve" or "deny".
-          Cheers,
-          Your friendly security team"""
-  actualBody = Template(body)
-  empRequest = demisto.get(demisto.args(), 'request')
-  if not empRequest:
-      empRequest = demisto.incidents()[0]['details']
-  demisto.results(demisto.executeCommand('send-mail', {'to': managerEmail, 'subject': subject, 'body': textwrap.dedent(actualBody.safe_substitute(managerName=managerName, empName=empName)) + '\n----------' + empRequest}))
+
+  def parse_attributes(attributes: str) -> dict:
+      """
+      Parse the attributes from an AD query
+      :param attributes: raw AD return results
+      :return: dict of the results of the query
+      """
+      # split out contents to dictionary
+      attributes = dict(
+          map(
+              lambda s: s.split(': ', 1),
+              attributes.split('\n')
+          )
+      )
+
+      return attributes
+
+  def incident_email_from() -> str:
+      """
+      Gets the Email/from from the current incident
+      :return: Email/from field content from the incident
+      """
+      labels = demisto.incidents()[0]['labels']
+      if labels is None:
+          return ''
+      for label in labels:
+          if label['type'] == 'Email/from':
+              return label['value'].lower()
+
+
+  def send_email_to_manager(email: str=incident_email_from(),
+                            manager: str='manager',
+                            allowReply: bool=False,
+                            body: str='',
+                            request: str='',
+                            persistent: bool=False,
+                            replyTag: str='',
+                            managerEmail: str='',
+                            replyTo: str='') -> dict:
+      """
+      Sends an email to the manager of the employee specified by email
+      :param email: the employee's email
+      :param manager: the AD attribute for an employee's manager. Default: manager
+      :param allowReply: Whether to allow the manager to reply to the email
+      :param body: the body for the email.
+      :param request: the request given to the manager. Default is the incident details
+      :param persistent: Whether to use one-time or persistent entitlement
+      :param replyTag: Tag to apply to email replies
+      :param managerEmail: overrides the manager email from the AD query
+      :param replyTo: sets the replyTo header for the email
+      :return: dict representing the results of the command
+      """
+
+      # booleans come in as JSON strings. Must parse them.
+      allowReply = json.loads(allowReply)
+
+      if email is None:
+          return {'Type': 'error', 'ContentsFormat': 'text', 'Contents': 'Could not find employee email.'}
+
+
+      # search for user info
+      ldap_filter = f'(&(objectClass=user)(mail={email}))'
+      # res comes as a string, NOT as a dict
+      res = demisto.executeCommand('AdSearch', {'filter': ldap_filter, 'attributes': f'displayName,{manager}'})[0]
+
+      if is_error(res):
+          return res
+
+      attributes = parse_attributes(res['Contents'][0]['attributes'])
+
+      if manager in attributes:
+          managerDN = attributes[manager]
+      else:
+          return {'Type':'error', 'ContentsFormat':'text', 'Contents':'Unable to get manager email'}
+
+      # set the employee's display name
+      empName = attributes['displayName']
+
+      # search for manager info
+      ldap_filter = f'(&(objectClass=User)(distinguishedName={managerDN}))'
+      res = demisto.executeCommand('AdSearch', {'filter': ldap_filter, 'attributes': 'displayName,mail'})[0]
+
+      if isError(res):
+          return res
+
+      attributes = parse_attributes(res['Contents'][0]['attributes'])
+
+      managerEmail = managerEmail if managerEmail != '' else attributes['mail']
+      managerName = attributes['displayName']
+
+
+      if not managerDN:
+          return {'Type':'error', 'ContentsFormat':'text', 'Contents': f'Unable to get manager email from {managerDN}'}
+
+      subject = f"{demisto.incidents()[0]['name']} - #{demisto.investigation()['id']}"
+
+      if allowReply:
+          res = demisto.executeCommand('addEntitlement', {'persistent': persistent, 'replyEntriesTag': replyTag})[0]
+
+          if isError(res):
+              return res
+
+          entitlement = res['Contents']
+
+          if not entitlement:
+              return {'Type': 'error', 'ContentsFormat':'text', 'Contents':'Unable to get entitlement'}
+
+          subject += f' {entitlement}'
+
+      if body == '':
+          body = """\
+              Hi $managerName,
+              We've received the following request below from $empName. Please reply to this email with either "approve" or "deny".
+              Cheers,
+              Your friendly security team"""
+
+      body = Template(body)
+
+      if request == '':
+          request = demisto.incidents()[0]['details']
+
+      # horizontal line from the double unicode char
+      hline = "\u2550" * 10
+
+      message = {'to': managerEmail,
+                 'replyTo': replyTo,
+                 # TODO: add a from header
+                 'subject': subject,
+                 'body': f"{textwrap.dedent(body.safe_substitute(managerName=managerName, empName=empName))}\n{hline}\n{request}"}
+      return demisto.executeCommand('send-mail', message)
+
+
+  # Extract args and pass to function
+  args = demisto.args()
+
+  # call the script and return the results or errors
+  demisto.results(send_email_to_manager(**args))
 type: python
 tags:
 - communication
-comment: Send an approval email to the manager of the employee with the given email
-  allowing the manager to reply directly into the incident
-system: true
+comment: |-
+  This fixes the syntax error in the builtin. SHOULD SWITCH WHEN BUILTIN FIXED
+  Send an approval email to the manager of the employee with the given email allowing the manager to reply directly into the incident
 args:
 - name: email
   description: The employee email. We will send an email to his manager. If not provided
     will be taken from incident label 'Email/from'
 - name: manager
   description: The manager attribute in Active Directory. Default is 'manager'.
+  defaultValue: manager
 - name: allowReply
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
-  description: If true, we will add an entitlement to the subject
-    allowing manager to reply to war room
+  description: If true, we will add an entitlement to the subject allowing manager
+    to reply to war room
+  defaultValue: "false"
 - name: body
   description: The contents of the email body. It's a template that can include $empName
     and $managerName which will be replaced with actual values.
@@ -89,15 +172,19 @@ args:
 - name: replyEntriesTag
   description: Tag to add on email reply entries
 - name: persistent
-  description: Indicates whether to use one-time entitlement or a persistent one
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
+  description: Indicates whether to use one-time entitlement or a persistent one
   defaultValue: "false"
+- name: managerEmail
+  description: Overrides the manager email from the AD query
+- name: replyTo
+  description: The email address which will be the replyTo header value.
 scripttarget: 0
 dependson:
   must:
   - ad-search
   - send-mail
-timeout: 0s
+runonce: false
