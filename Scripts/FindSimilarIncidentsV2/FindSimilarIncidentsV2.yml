@@ -148,4 +148,3 @@ runonce: false
 tests:
 - No test
 fromversion: 4.5.0
-releaseNotes: "Support list value in context key"

@@ -147,4 +147,3 @@ runonce: false
 tests:
 - No test
 toversion: 4.1.0
-releaseNotes: "Support list value in context key"
