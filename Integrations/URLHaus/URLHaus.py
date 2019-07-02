@@ -146,7 +146,13 @@ def url_command():
         }
 
         if url_information['query_status'] == 'ok':
-            # URLHaus output
+            # URLhaus output
+            blacklist_information = []
+            blacklists = url_information.get('blacklists', {})
+            for bl_name, bl_status in blacklists.items():
+                blacklist_information.append({'Name': bl_name,
+                                              'Status': bl_status})
+
             date_added = reformat_date(url_information.get('date_added'))
             urlhaus_data = {
                 'ID': url_information.get('id', ''),
@@ -154,20 +160,27 @@ def url_command():
                 'Host': url_information.get('host', ''),
                 'DateAdded': date_added,
                 'Threat': url_information.get('threat', ''),
-                'Blacklist': url_information.get('blacklists', {}),
+                'Blacklist': blacklist_information,
                 'Tags': url_information.get('tags', [])
             }
 
             payloads = []
             for payload in url_information.get('payloads', []):
+                vt_data = payload.get('virustotal', None)
+                vt_information = None
+                if vt_data:
+                    vt_information = {
+                        'Result': float(vt_data['percent']),
+                        'Link': vt_data['link']
+                    }
                 payloads.append({
                     'Name': payload.get('filename', 'unknown'),
                     'Type': payload.get('file_type', ''),
                     'MD5': payload.get('response_md5', ''),
-                    'VT': payload.get('virustotal', None)
+                    'VT': vt_information
                 })
 
-            urlhaus_data['Payloads'] = payloads
+            urlhaus_data['Payload'] = payloads
 
             # DBot score calculation
             dbot_score, description = calculate_dbot_score(url_information.get('blacklists', {}), THRESHOLD,
@@ -182,11 +195,14 @@ def url_command():
 
             ec['URLhaus.URL(val.ID && val.ID === obj.ID)'] = urlhaus_data
 
-            human_readable = f'## URLhaus reputation for {url}\n' \
-                f'URLhaus link: {url_information.get("urlhaus_reference", "None")}\n' \
-                f'Threat: {url_information.get("threat", "")}\n' \
-                f'Date added: {date_added}'
-
+            human_readable = tableToMarkdown(f'URLhaus reputation for {url}',
+                                             {
+                                                 'URLhaus link': url_information.get("urlhaus_reference", "None"),
+                                                 'URLhaus ID': urlhaus_data['ID'],
+                                                 'Status': urlhaus_data['Status'],
+                                                 'Threat': url_information.get("threat", ""),
+                                                 'Date added': date_added
+                                             })
             demisto.results({
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['json'],
@@ -252,12 +268,18 @@ def domain_command():
 
         if domain_information['query_status'] == 'ok':
             # URLHaus output
+            blacklist_information = []
+            blacklists = domain_information.get('blacklists', {})
+            for bl_name, bl_status in blacklists.items():
+                blacklist_information.append({'Name': bl_name,
+                                              'Status': bl_status})
+
             first_seen = reformat_date(domain_information.get('firstseen'))
 
             urlhaus_data = {
                 'FirstSeen': first_seen,
-                'Blacklist': domain_information.get('blacklists', {}),
-                'URLs': domain_information.get('urls', [])
+                'Blacklist': blacklists,
+                'URL': domain_information.get('urls', [])
             }
 
             # DBot score calculation
@@ -273,10 +295,11 @@ def domain_command():
 
             ec['URLhaus.Domain(val.Name && val.Name === obj.Name)'] = urlhaus_data
 
-            human_readable = f'## URLhaus reputation for {domain}\n' \
-                f'URLhaus link: {domain_information.get("urlhaus_reference", "None")}\n' \
-                f'First seen: {first_seen}'
-
+            human_readable = tableToMarkdown(f'URLhaus reputation for {domain}',
+                                             {
+                                                 'URLhaus link': domain_information.get('urlhaus_reference', 'None'),
+                                                 'First seen': first_seen,
+                                             })
             demisto.results({
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['json'],
@@ -333,7 +356,7 @@ def file_command():
         file_information = query_payload_information(hash_type, hash).json()
 
         if file_information['query_status'] == 'ok' and file_information['md5_hash']:
-            # URLHaus output
+            # URLhaus output
             first_seen = reformat_date(file_information.get('firstseen'))
             last_seen = reformat_date(file_information.get('lastseen'))
 
@@ -346,7 +369,7 @@ def file_command():
                 'FirstSeen': first_seen,
                 'LastSeen': last_seen,
                 'DownloadLink': file_information.get('urlhaus_download', ''),
-                'URLs': file_information.get('urls', [])
+                'URL': file_information.get('urls', [])
             }
 
             virus_total_data = file_information.get('virustotal')
@@ -365,14 +388,15 @@ def file_command():
                 'URLhaus.File(val.MD5 && val.MD5 === obj.MD5)': urlhaus_data
             }
 
-            human_readable = f'## URLhaus reputation for {hash_type.upper()} : {hash}\n' \
-                f'URLhaus link: {urlhaus_data["DownloadLink"]}\n' \
-                f'Signature: {urlhaus_data["Signature"]}\n' \
-                f'MD5: {urlhaus_data["MD5"]}\n' \
-                f'SHA256: {urlhaus_data["SHA256"]}\n' \
-                f'First seen: {first_seen}\n' \
-                f'Last seen: {last_seen}\n'
-
+            human_readable = tableToMarkdown(f'URLhaus reputation for {hash_type.upper()} : {hash}',
+                                             {
+                                                 'URLhaus link': urlhaus_data['DownloadLink'],
+                                                 'Signature': urlhaus_data['Signature'],
+                                                 'MD5': urlhaus_data['MD5'],
+                                                 'SHA256': urlhaus_data['SHA256'],
+                                                 'First seen': first_seen,
+                                                 'Last seen': last_seen
+                                             })
             demisto.results({
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['json'],
