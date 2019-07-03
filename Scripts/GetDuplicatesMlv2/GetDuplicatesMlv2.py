@@ -373,16 +373,17 @@ def get_my_duplicate_incidents_features(incident_type, days_to_fetch_duplicates,
 
     related_features = {}  # type: dict
     for incident in incidents.values():
-        related_incidents = incident['linkedIncidents']
-        for related_incident_id in related_incidents:
-            if related_incident_id in incidents:
-                related_incidents += list(set(incidents[related_incident_id]['linkedIncidents']).difference(related_incidents))
-        for related_incident_id in related_incidents:
-            key = get_unique_key_for_pair(incident['id'], related_incident_id)
-            if incident['id'] == related_incident_id or key in related_features or related_incident_id not in incidents:
-                continue
-            related_features[key] = IncidentFeatures(incident, incidents[related_incident_id]).calculate_features()
-            related_features[key][DUPLICATE_COL] = 1
+        related_incidents = incident.get('linkedIncidents')
+        if related_incidents:
+            for related_incident_id in related_incidents:
+                if related_incident_id in incidents:
+                    related_incidents += list(set(incidents[related_incident_id]['linkedIncidents']).difference(related_incidents))  # noqa E501 line too long
+            for related_incident_id in related_incidents:
+                key = get_unique_key_for_pair(incident['id'], related_incident_id)
+                if incident['id'] == related_incident_id or key in related_features or related_incident_id not in incidents:
+                    continue
+                related_features[key] = IncidentFeatures(incident, incidents[related_incident_id]).calculate_features()
+                related_features[key][DUPLICATE_COL] = 1
     return pd.DataFrame.from_dict(related_features.values())
 
 
@@ -512,7 +513,7 @@ def main():
         candidates_features_list.append(feature_dict)
     if len(candidates_features_list) == 0:
         demisto.results('Did not find any duplicate incidents candidates')
-        sys.exit(0)
+        return
 
     candidates_features = pd.DataFrame.from_dict(candidates_features_list)
     candidates_features = candidates_features.dropna(axis=0, thresh=(len(use_features) * (1 - CANDIDATES_FEATURES_NA_RATIO)))
