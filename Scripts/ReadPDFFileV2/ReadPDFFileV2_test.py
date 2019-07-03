@@ -53,8 +53,7 @@ def test_get_metadata_without_encrypted(tmp_path):
     except ShellException as e:
         assert 'Command Line Error: Incorrect password\nShell error code: 1' == str(e)
 
-    metadata = get_pdf_metadata(f'{CWD}/text-only.pdf')
-    print(metadata)
+    metadata = get_pdf_metadata(f'{CWD}/text-only.pdf')    
     expected = {
         'Title': 'Microsoft Word - Document1',
         'Keywords': '',
