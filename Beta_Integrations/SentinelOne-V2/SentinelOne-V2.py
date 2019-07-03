@@ -55,7 +55,7 @@ def http_request(method, url_suffix, params={}, data=None):
                 errors = '\n' + errors + error.get('detail')
             return_error(f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}] \n'
                          f'Error details: [{errors}]')
-        except Exception as e:
+        except Exception:
             return_error(f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}')
 
     return res.json()
@@ -1464,13 +1464,14 @@ def create_query_request(query, from_date, to_date):
 
     endpoint_url = 'dv/init-query'
 
-    payload = {
+    params = {
         "query": query,
         "fromDate": from_date,
         "toDate": to_date
     }
 
-    response = http_request('POST', endpoint_url, data=payload)
+    response = http_request('POST', endpoint_url, params)
+
     if response.get('errors'):
         return_error(response.get('errors'))
     if 'data' in response:
