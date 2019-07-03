@@ -404,7 +404,7 @@ script:
     }
 
     function doIP(ip) {
-        return doIndicator(ip, 'ip_address', 'Falcon Intel IP reputation for', function(ec) {
+        return doIndicator(ip, 'ip', 'Falcon Intel IP reputation for', function(ec) {
             addMalicious(ec, outputPaths.ip, {Address: ip, Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}});
         });
     }
