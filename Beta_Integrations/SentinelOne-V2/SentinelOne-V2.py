@@ -1137,7 +1137,6 @@ def expire_site_command():
     Expire specific site by ID
     """
     # Init main vars
-    contents = []
     context = {}
     title = ''
 
@@ -1149,7 +1148,7 @@ def expire_site_command():
 
     # Parse response into context & content entries
     if site:
-        title = 'Sentinel One - Expire Site: ' + site_id + '\n' + 'Site has been expired successfully'
+        title = f'Sentinel One - Expire Site: {site_id} \nSite has been expired successfully'
         contents = {
             'ID': site.get('id'),
             'Expired': True
