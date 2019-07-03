@@ -398,7 +398,13 @@ def edl_dump_internal_list_command():
 
     dict_of_lists = demisto.getIntegrationContext()
     list_data = dict_of_lists.get(list_name, None)
-
+    if not list_data:
+        demisto.results({
+            'Type': 11,
+            'Contents': 'List was not found in instance context or has no data.',
+            'ContentsFormat': formats['text']
+        })
+        sys.exit(0)
     if destination == 'file':  # dump list as file
         internal_file_path = demisto.uniqueFile()
 
@@ -406,7 +412,7 @@ def edl_dump_internal_list_command():
             with open(internal_file_path, 'w') as f:
                 f.write("\n".join(list_data))
             file_type = entryTypes['entryInfoFile']
-            with open(internal_file_path, 'r') as f:
+            with open(internal_file_path, 'rb') as f:
                 file_entry = fileResult(internal_file_path, f.read(), file_type)
             demisto.results(file_entry)
         finally:
@@ -443,6 +449,7 @@ def edl_compare_command():
             'Contents': 'List was not found in instance context.',
             'ContentsFormat': formats['text']
         })
+        sys.exit(0)
 
     file_data = edl_get_external_file(file_path)
     if not file_data:
@@ -451,6 +458,7 @@ def edl_compare_command():
             'Contents': 'file was not found in external web-server.',
             'ContentsFormat': formats['text']
         })
+        sys.exit(0)
 
     set_internal = set(list_data)
     set_external = set(file_data.split('\n'))
