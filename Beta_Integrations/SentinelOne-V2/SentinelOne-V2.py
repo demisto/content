@@ -465,7 +465,6 @@ def get_hash_command():
     Get hash reputation and classification.
     """
     # Init main vars
-    contents = []
     context = {}
     headers = ['Hash', 'Rank', 'Classification Source', 'Classification']
 
@@ -479,7 +478,14 @@ def get_hash_command():
     # Parse response into context & content entries
     title = 'Sentinel One - Hash Reputation and Classification \n' + \
             'Provides hash reputation (rank from 0 to 10):'
-    contents = context_entries = {
+    contents = {
+        'Rank': hash_reputation.get('rank'),
+        'Hash': hash_,
+        'Classification Source': hash_classification.get('classificationSource'),
+        'Classification': hash_classification.get('classification')
+    }
+
+    context_entries = {
         'Rank': hash_reputation.get('rank'),
         'Hash': hash_,
         'Classification Source': hash_classification.get('classificationSource'),
@@ -665,7 +671,6 @@ def resolve_threat_command():
     Mark threats as resolved
     """
     # Init main vars
-    headers = []
     contents = []
     context = {}
     context_entries = []
@@ -701,8 +706,7 @@ def resolve_threat_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One - Resolving threats \n' + title, contents, headers,
-                                         removeNull=True),
+        'HumanReadable': tableToMarkdown('Sentinel One - Resolving threats \n' + title, contents, removeNull=True),
         'EntryContext': context
     })
 
@@ -729,7 +733,6 @@ def get_white_list_command():
     List all white items matching the input filter
     """
     # Init main vars
-    headers = []
     contents = []
     context = {}
     context_entries = []
@@ -782,7 +785,7 @@ def get_white_list_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
         'EntryContext': context
     })
 
@@ -811,7 +814,6 @@ def create_white_item_command():
     Create white item.
     """
     # Init main vars
-    headers = []
     contents = []
     context = {}
     context_entries = []
@@ -853,7 +855,7 @@ def create_white_item_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
         'EntryContext': context
     })
 
@@ -953,7 +955,6 @@ def get_sites_command():
     List all sites with filtering options
     """
     # Init main vars
-    headers = []
     contents = []
     context = {}
     context_entries = []
@@ -1020,7 +1021,7 @@ def get_sites_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
         'EntryContext': context
     })
 
@@ -1058,7 +1059,6 @@ def get_site_command():
     Get a specific site by ID
     """
     # Init main vars
-    headers = []
     contents = []
     context = {}
     context_entries = []
@@ -1116,7 +1116,7 @@ def get_site_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
         'EntryContext': context
     })
 
@@ -1137,7 +1137,6 @@ def expire_site_command():
     Expire specific site by ID
     """
     # Init main vars
-    headers = []
     contents = []
     context = {}
     title = ''
@@ -1151,7 +1150,11 @@ def expire_site_command():
     # Parse response into context & content entries
     if site:
         title = 'Sentinel One - Expire Site: ' + site_id + '\n' + 'Site has been expired successfully'
-        context_entries = contents = {
+        contents = {
+            'ID': site.get('id'),
+            'Expired': True
+        }
+        context_entries = {
             'ID': site.get('id'),
             'Expired': True
         }
@@ -1163,7 +1166,7 @@ def expire_site_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
         'EntryContext': context
     })
 
@@ -1184,8 +1187,6 @@ def reactivate_site_command():
     Reactivate specific site by ID
     """
     # Init main vars
-    headers = []
-    contents = []
     context = {}
     title = ''
 
@@ -1198,7 +1199,11 @@ def reactivate_site_command():
     # Parse response into context & content entries
     if site:
         title = 'Sentinel One - Reactivated Site: ' + site_id + '\n' + 'Site has been reactivated successfully'
-        context_entries = contents = {
+        contents = {
+            'ID': site.get('id'),
+            'Reactivated': site.get('success')
+        }
+        context_entries = {
             'ID': site.get('id'),
             'Reactivated': site.get('success')
         }
@@ -1210,7 +1215,7 @@ def reactivate_site_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
         'EntryContext': context
     })
 
@@ -1218,11 +1223,7 @@ def reactivate_site_command():
 def reactivate_site_request(site_id):
     endpoint_url = f'sites/{site_id}/reactivate'
 
-    payload = {
-        "data": {}
-    }
-
-    response = http_request('PUT', endpoint_url, data=json.dumps(payload))
+    response = http_request('PUT', endpoint_url)
     if response.get('errors'):
         return_error(response.get('errors'))
     if response.get('data'):
@@ -1235,8 +1236,6 @@ def get_threat_summary_command():
     Get dashboard threat summary
     """
     # Init main vars
-    headers = []
-    contents = []
     context = {}
     title = ''
 
@@ -1250,7 +1249,15 @@ def get_threat_summary_command():
     # Parse response into context & content entries
     if threat_summary:
         title = 'Sentinel One - Dashboard Threat Summary'
-        context_entries = contents = {
+        contents = {
+            'Active': threat_summary.get('active'),
+            'Total': threat_summary.get('total'),
+            'Mitigated': threat_summary.get('mitigated'),
+            'Suspicious': threat_summary.get('suspicious'),
+            'Blocked': threat_summary.get('blocked')
+        }
+
+        context_entries = {
             'Active': threat_summary.get('active'),
             'Total': threat_summary.get('total'),
             'Mitigated': threat_summary.get('mitigated'),
@@ -1265,7 +1272,7 @@ def get_threat_summary_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
         'EntryContext': context
     })
 
@@ -1291,7 +1298,6 @@ def list_agents_command():
     List all agents matching the input filter
     """
     # Init main vars
-    headers = []
     contents = []
     context = {}
     context_entries = []
@@ -1354,7 +1360,7 @@ def list_agents_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
         'EntryContext': context
     })
 
@@ -1383,7 +1389,6 @@ def get_agent_command():
     Get single agent via ID
     """
     # Init main vars
-    headers = []
     contents = []
     context = {}
     context_entries = []
@@ -1440,7 +1445,7 @@ def get_agent_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
         'EntryContext': context
     })
 
@@ -1639,6 +1644,6 @@ try:
 
 
 except Exception as e:
-    LOG(e.message)
+    LOG(str(e))
     LOG.print_log()
     raise
