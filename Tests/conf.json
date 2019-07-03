@@ -212,7 +212,7 @@
             "nightly": true
         },
         {
-            "integrations": "Hybrid Analysis",
+            "integrations": "VxStream",
             "playbookID": "Detonate File - HybridAnalysis - Test",
             "timeout": 2400
         },
@@ -549,6 +549,9 @@
             "integrations": "McAfee Advanced Threat Defense",
             "playbookID": "Test Playbook McAfee ATD",
             "timeout": 700
+        },
+        {
+            "playbookID": "stripChars - Test"
         },
         {
             "integrations": "McAfee Advanced Threat Defense",
