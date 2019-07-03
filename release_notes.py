@@ -166,7 +166,7 @@ class Content(object):
                         return None
 
                     if ans is None:
-                        print_error("Error:\n[{}] is missing releaseNotes entry: {}".format(
+                        print_error("Error:\n[{}] is missing releaseNotes entry, Please add it under {}".format(
                             path, get_release_notes_file_path(path)))
                         self.is_missing_release_notes = True
                     elif ans:
