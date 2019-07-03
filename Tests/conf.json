@@ -1732,6 +1732,7 @@
         "XFE": "License expired",
         "RedLock": "Credentials and API problems (issue 15493)",
         "Salesforce": "User and password expired (issue 15901)",
+        "Zscaler": "License expired (issue 17784)",
         "RedCanary": "License expired",
         "LogRhythm": "Need to fix SOAP api",
         "ANYRUN": "No instance",
