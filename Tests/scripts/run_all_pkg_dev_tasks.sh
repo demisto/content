@@ -25,8 +25,18 @@ if [[ -z "${SKIP_GIT_COMPARE_FILTER}" ]]; then
     fi
 fi
 
-if [[ -n "${DIFF_COMPARE}" ]] && [[ $(git diff --name-status $DIFF_COMPARE Scripts/CommonServerPython ${d}) ]]; then
+if [[ -n "${DIFF_COMPARE}" ]] && [[ $(git diff --name-status $DIFF_COMPARE Scripts/CommonServerPython ) ]]; then
     echo "CommonServerPython modified. Going to ignore git changes and run all tests"
+    DIFF_COMPARE=""
+fi
+
+if [[ -n "${DIFF_COMPARE}" ]] && [[ $(git diff --name-status $DIFF_COMPARE Tests/scripts/dev_envs ) ]]; then
+    echo "Files in Tests/scripts/dev_envs modified. Going to ignore git changes and run all tests"
+    DIFF_COMPARE=""
+fi
+
+if [[ -n "${DIFF_COMPARE}" ]] && [[ $(git diff --name-status $DIFF_COMPARE Tests/scripts/pkg_dev_test_tasks.py ) ]]; then
+    echo "Tests/scripts/pkg_dev_test_tasks.py modified. Going to ignore git changes and run all tests"
     DIFF_COMPARE=""
 fi
 
