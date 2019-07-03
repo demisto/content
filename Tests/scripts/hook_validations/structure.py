@@ -43,10 +43,8 @@ class StructureValidator(object):
         REPORT_REGEX,
         SCRIPT_PY_REGEX,
         SCRIPT_JS_REGEX,
-        SCRIPT_PS_REGEX,
         INTEGRATION_JS_REGEX,
         INTEGRATION_PY_REGEX,
-        INTEGRATION_PS_REGEX,
         REPUTATION_REGEX
     ]
     REGEXES_TO_SCHEMA_DICT = {

@@ -49,7 +49,7 @@ mapping:
         required: yes
       type:
         type: str
-        enum: ['javascript', 'python', 'powershell']
+        enum: ['javascript', 'python']
         required: yes
       dockerimage:
         type: str
