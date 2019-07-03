@@ -260,7 +260,7 @@ script:
             n.KillChains = v.kill_chains;
         }
         if (score === 3) {
-            n.Malicious = {Vendor: 'CrowdStrike', Description: 'High confidence'};
+            n.Malicious = {Vendor: 'FalconIntel', Description: 'High confidence'};
         }
         if (!ec[path]) {
             ec[path] = [];
@@ -324,7 +324,7 @@ script:
                     ec.DBotScore.push({
                         Indicator: res.obj[i].indicator,
                         Type: dbotType,
-                        Vendor: 'CrowdStrike',
+                        Vendor: 'FalconIntel',
                         Score: dbotScore
                     });
                 }
@@ -347,10 +347,13 @@ script:
     function doIndicator(ind, type, title, appendContextFunc) {
         var a = {'indicator.equal': ind};
         if (type === 'hash') {
-            var hashType = ind.length === 32 ? 'hash_md5' : ind.length === 40 ? 'hash_sha1' : 'hash_sha256';
+            var hashType = ind.length === 32 ? 'hash_md5' : ind.length === 40 ? 'hash_sha1' : ind.length === 64 ? 'hash_sha256' : null;
+            if (!hashType) {
+                throw 'Please provide a valid hash.';
+            }
             a['type.equal'] = hashType;
         } else if (type == 'ip') {
-                a['type.equal'] = 'ip_address';
+            a['type.equal'] = 'ip_address';
         } else {
             a['type.equal'] = type;
         }
@@ -374,7 +377,7 @@ script:
                 ec.DBotScore = {
                     Indicator: ind,
                     Type: type,
-                    Vendor: 'CrowdStrike',
+                    Vendor: 'FalconIntel',
                     Score: dbotScore
                 }; // ok to override, we expect only one
                 found = true;
@@ -382,7 +385,11 @@ script:
         }
         if (!found) {
             md += 'No result found';
-            ec.DBotScore = {Indicator: ind, Type: type, Vendor: 'CrowdStrike', Score: 0};
+            ec.DBotScore = {
+                Indicator: ind,
+                Type: type,
+                Vendor: 'FalconIntel',
+                Score: 0};
         }
         return {
             Type: entryTypes.note,
@@ -396,7 +403,7 @@ script:
 
     function doFile(hash) {
         return doIndicator(hash, 'hash', 'Falcon Intel file reputation for', function(ec) {
-            var malFile = {Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}};
+            var malFile = {Malicious: {Vendor: 'FalconIntel', Description: 'High confidence'}};
             var hashType = hash.length === 32 ? 'MD5' : hash.length === 40 ? 'SHA1' : 'SHA256';
             malFile[hashType] = hash;
             addMalicious(ec, outputPaths.file, malFile);
@@ -405,19 +412,19 @@ script:
 
     function doIP(ip) {
         return doIndicator(ip, 'ip', 'Falcon Intel IP reputation for', function(ec) {
-            addMalicious(ec, outputPaths.ip, {Address: ip, Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}});
+            addMalicious(ec, outputPaths.ip, {Address: ip, Malicious: {Vendor: 'FalconIntel', Description: 'High confidence'}});
         });
     }
 
     function doURL(url) {
         return doIndicator(url, 'url', 'Falcon Intel URL reputation for', function(ec) {
-            addMalicious(ec, outputPaths.url, {Data: url, Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}});
+            addMalicious(ec, outputPaths.url, {Data: url, Malicious: {Vendor: 'FalconIntel', Description: 'High confidence'}});
         });
     }
 
     function doDomain(domain) {
         return doIndicator(domain, 'domain', 'Falcon Intel domain reputation for', function(ec) {
-            addMalicious(ec, outputPaths.domain, {Name: domain, Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}});
+            addMalicious(ec, outputPaths.domain, {Name: domain, Malicious: {Vendor: 'FalconIntel', Description: 'High confidence'}});
         });
     }
 
