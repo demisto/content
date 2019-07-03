@@ -347,9 +347,19 @@ script:
     function doIndicator(ind, type, title, appendContextFunc) {
         var a = {'indicator.equal': ind};
         if (type === 'hash') {
-            var hashType = ind.length === 32 ? 'hash_md5' : ind.length === 40 ? 'hash_sha1' : ind.length === 64 ? 'hash_sha256' : null;
-            if (!hashType) {
-                throw 'Please provide a valid hash.';
+            var hashType = '';
+            switch (ind.length) {
+                case '32':
+                    hashType = 'hash_md5';
+                    break;
+                case '40':
+                    hashType = 'hash_sha1';
+                    break;
+                case '64':
+                    hashType = 'hash_sha256';
+                    break;
+                default:
+                    throw 'Invalid hash. Hash length is: ' + ind.length + '. Please provide either MD5 (32 length), SHA1 (40 length), or SHA256 (64 length) hash.';
             }
             a['type.equal'] = hashType;
         } else if (type == 'ip') {
