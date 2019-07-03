@@ -370,6 +370,10 @@
             "timeout": 600
         },
         {
+            "integrations": "Symantec Site Review",
+            "playbookID": "Symantec Site Review Test"
+        },
+        {
             "integrations": [
                 "Palo Alto Minemeld",
                 "Panorama"
@@ -545,6 +549,9 @@
             "integrations": "McAfee Advanced Threat Defense",
             "playbookID": "Test Playbook McAfee ATD",
             "timeout": 700
+        },
+        {
+            "playbookID": "stripChars - Test"
         },
         {
             "integrations": "McAfee Advanced Threat Defense",
@@ -1607,6 +1614,9 @@
         {
             "integrations": "LogRhythmRest",
             "playbookID": "LogRhythm REST test"
+        },
+        {
+            "playbookID": "URL regex - Test"
         },
         {
             "integrations": "AlienVault USM Anywhere",
