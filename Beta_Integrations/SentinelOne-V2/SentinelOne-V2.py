@@ -460,38 +460,40 @@ def get_threats_request(content_hash=None, mitigation_status=None, created_befor
     return {}
 
 
-def get_hash_reputation_command():
+def get_hash_command():
     """
-    Get hash reputation.
+    Get hash reputation and classification.
     """
     # Init main vars
     contents = []
     context = {}
-    title = ''
+    headers = ['Hash', 'Rank', 'Classification Source', 'Classification']
 
     # Get arguments
     hash_ = demisto.args().get('hash')
 
     # Make request and get raw response
     hash_reputation = get_hash_reputation_request(hash_)
+    hash_classification = get_hash_classification_request(hash_)
 
     # Parse response into context & content entries
-    if hash_reputation:
-        title = 'Sentinel One - Hash Reputation \n' + \
-                'Provides hash reputation (rank from 0 to 10):'
-        contents = context_entries = {
-            'Rank': hash_reputation.get('rank'),
-            'Hash': hash_,
-        }
+    title = 'Sentinel One - Hash Reputation and Classification \n' + \
+            'Provides hash reputation (rank from 0 to 10):'
+    contents = context_entries = {
+        'Rank': hash_reputation.get('rank'),
+        'Hash': hash_,
+        'Classification Source': hash_classification.get('classificationSource'),
+        'Classification': hash_classification.get('classification')
+    }
 
-        context['SentinelOne.Hashes(val.Hash && val.Hash === obj.Hash)'] = context_entries
+    context['SentinelOne.Hash(val.Hash && val.Hash === obj.Hash)'] = context_entries
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
+        'HumanReadable': tableToMarkdown(title, contents, headers, removeNull=True),
         'EntryContext': context
     })
 
@@ -505,48 +507,6 @@ def get_hash_reputation_request(hash_):
     if 'data' in response:
         return response.get('data')
     return {}
-
-
-def get_hash_classification_command():
-    """
-    Get hash classification.
-    """
-    # Init main vars
-    contents = []
-    context = {}
-    title = ''
-
-    # Get arguments
-    hash_ = demisto.args().get('hash')
-
-    # Make request and get raw response
-    hash_classification = get_hash_classification_request(hash_)
-
-    # Parse response into context & content entries
-    if hash_classification:
-        title = 'Sentinel One - Hash Classification \n' + \
-                'Provides hash classification info for the following hash: ' + hash_
-        contents = {
-            'Classification Source': hash_classification.get('classificationSource'),
-            'Classification': hash_classification.get('classification'),
-            'Hash': hash_,
-        }
-        context_entries = {
-            'ClassificationSource': hash_classification.get('classificationSource'),
-            'Classification': hash_classification.get('classification'),
-            'Hash': hash_,
-        }
-
-        context['SentinelOne.Hashes(val.Hash && val.Hash === obj.Hash)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
-        'EntryContext': context
-    })
 
 
 def get_hash_classification_request(hash_):
@@ -1560,19 +1520,19 @@ def get_events():
     if events:
         for event in events:
             contents.append({
-                'sha1': event.get('sha1'),
-                'dstIp': event.get('dstIp'),
-                'srcIp': event.get('srcIp'),
-                'fileFullName': event.get('fileFullName'),
-                'processName': event.get('processName')
+                'Sha1': event.get('sha1'),
+                'DstIp': event.get('dstIp'),
+                'SrcIp': event.get('srcIp'),
+                'FileFullName': event.get('fileFullName'),
+                'ProcessName': event.get('processName')
             })
 
             context_entries.append({
-                'sha1': event.get('sha1'),
-                'dstIp': event.get('dstIp'),
-                'srcIp': event.get('srcIp'),
-                'fileFullName': event.get('fileFullName'),
-                'processName': event.get('processName')
+                'Sha1': event.get('sha1'),
+                'DstIp': event.get('dstIp'),
+                'SrcIp': event.get('srcIp'),
+                'FileFullName': event.get('fileFullName'),
+                'ProcessName': event.get('processName')
             })
 
         context['SentinelOne.Event(val.sha1 && val.sha1 === obj.sha1)'] = context_entries
@@ -1644,10 +1604,8 @@ try:
         get_static_indicators_command()
     elif demisto.command() == 'sentinelone-threat-summary':
         get_threat_summary_command()
-    elif demisto.command() == 'sentinelone-get-hash-reputation':
-        get_hash_reputation_command()
-    elif demisto.command() == 'sentinelone-get-hash-classification':
-        get_hash_classification_command()
+    elif demisto.command() == 'sentinelone-get-hash':
+        get_hash_command()
     elif demisto.command() == 'sentinelone-get-exclusion-list':
         get_exclusion_list_command()
     elif demisto.command() == 'sentinelone-create-exclusion-item':
