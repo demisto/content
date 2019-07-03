@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 try:
     maxFileSize = int(demisto.args().get('maxFileSize'))
-except:
+except Exception:
     maxFileSize = 1024**2
 
 res = demisto.executeCommand('getFilePath', {
@@ -13,7 +13,7 @@ res = demisto.executeCommand('getFilePath', {
 
 try:
     filePath = res[0]['Contents']['path']
-except:
+except Exception:
     return_error("File was not found")
 
 with open(filePath, mode='r') as f:
@@ -22,9 +22,9 @@ with open(filePath, mode='r') as f:
     # Extract indicators (omitting context output, letting auto-extract work)
     indicators_hr = demisto.executeCommand("extractIndicators", {
         'text': data})[0][u'Contents']
-    demisto.results( {
+    demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': indicators_hr,
         'HumanReadable': indicators_hr
-                     })
+    })
