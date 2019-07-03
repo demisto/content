@@ -24,5 +24,6 @@ dockerimage: demisto/sane-doc-reports:1.0.0.789
 runas: DBotWeakRole
 runonce: false
 deprecated: true
+releaseNotes: changed version
 tests:
 - No Test
