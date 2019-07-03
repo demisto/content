@@ -57,7 +57,7 @@ def ssl_bad_socket_server():
         sock.bind(('127.0.0.1', 9636))
         sock.listen(5)
         with context.wrap_socket(sock, server_side=True) as ssock:
-            conn, addr = ssock.accept()            
+            conn, addr = ssock.accept()
             conn.recv(32)
             msg = b'THIS IS A TEST SERVER WHICH IGNORES PROTOCOL\n\n'
             for x in range(10):
