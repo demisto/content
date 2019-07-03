@@ -53,10 +53,10 @@ def http_request(method, url_suffix, params={}, data=None):
             errors = ''
             for error in res.json().get('errors'):
                 errors = '\n' + errors + error.get('detail')
-            return_error('Error in API call to Sentinel One [%d] - %s \nError details: %s' % (
-            res.status_code, res.reason, errors))
+            return_error(f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}] \n'
+                         f'Error details: [{errors}]')
         except Exception as e:
-            return_error('Error in API call to Sentinel One [%d] - %s' % (res.status_code, res.reason))
+            return_error(f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}')
 
     return res.json()
 
@@ -499,7 +499,8 @@ def get_hash_command():
 
 
 def get_hash_reputation_request(hash_):
-    endpoint_url = 'hashes/' + hash_ + '/reputation'
+
+    endpoint_url = f'hashes/{hash_}/reputation'
 
     response = http_request('GET', endpoint_url)
     if response.get('errors'):
@@ -511,7 +512,7 @@ def get_hash_reputation_request(hash_):
 
 def get_hash_classification_request(hash_):
 
-    endpoint_url = 'hashes/' + hash_ + '/classification'
+    endpoint_url = f'hashes/{hash_}/classification'
 
     response = http_request('GET', endpoint_url)
     if response.get('errors'):
@@ -643,7 +644,7 @@ def mitigate_threat_command():
 
 
 def mitigate_threat_request(threat_ids, action):
-    endpoint_url = 'threats/mitigate/' + action
+    endpoint_url = f'threats/mitigate/{action}'
 
     payload = {
         "filter": {
@@ -723,7 +724,7 @@ def resolve_threat_request(threat_ids):
     return {}
 
 
-def get_exclusion_list_command():
+def get_white_list_command():
     """
     List all white items matching the input filter
     """
@@ -741,7 +742,7 @@ def get_exclusion_list_command():
     limit = int(demisto.args().get('limit', 10))
 
     # Make request and get raw response
-    exclusion_items = get_exclusion_list_request(item_ids, os_types, exclusion_type, limit)
+    exclusion_items = get_white_list_request(item_ids, os_types, exclusion_type, limit)
 
     # Parse response into context & content entries
     if exclusion_items:
@@ -786,7 +787,7 @@ def get_exclusion_list_command():
     })
 
 
-def get_exclusion_list_request(item_ids, os_types, exclusion_type, limit):
+def get_white_list_request(item_ids, os_types, exclusion_type, limit):
 
     endpoint_url = 'exclusions'
 
@@ -805,7 +806,7 @@ def get_exclusion_list_request(item_ids, os_types, exclusion_type, limit):
     return {}
 
 
-def create_exclusion_item_command():
+def create_white_item_command():
     """
     Create white item.
     """
@@ -1121,7 +1122,7 @@ def get_site_command():
 
 
 def get_site_request(site_id):
-    endpoint_url = 'sites/' + site_id
+    endpoint_url = f'sites/{site_id}'
 
     response = http_request('GET', endpoint_url)
     if response.get('errors'):
@@ -1168,7 +1169,7 @@ def expire_site_command():
 
 
 def expire_site_request(site_id):
-    endpoint_url = 'sites/' + site_id + '/expire-now'
+    endpoint_url = f'sites/{site_id}/expire-now'
 
     response = http_request('POST', endpoint_url)
     if response.get('errors'):
@@ -1215,7 +1216,7 @@ def reactivate_site_command():
 
 
 def reactivate_site_request(site_id):
-    endpoint_url = 'sites/' + site_id + '/reactivate'
+    endpoint_url = f'sites/{site_id}/reactivate'
 
     payload = {
         "data": {}
@@ -1606,10 +1607,10 @@ try:
         get_threat_summary_command()
     elif demisto.command() == 'sentinelone-get-hash':
         get_hash_command()
-    elif demisto.command() == 'sentinelone-get-exclusion-list':
-        get_exclusion_list_command()
-    elif demisto.command() == 'sentinelone-create-exclusion-item':
-        create_exclusion_item_command()
+    elif demisto.command() == 'sentinelone-get-white-list':
+        get_white_list_command()
+    elif demisto.command() == 'sentinelone-create-white-list-item':
+        create_white_item_command()
     elif demisto.command() == 'sentinelone-get-sites':
         get_sites_command()
     elif demisto.command() == 'sentinelone-get-site':
