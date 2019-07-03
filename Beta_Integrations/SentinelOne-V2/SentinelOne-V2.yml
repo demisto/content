@@ -199,7 +199,7 @@ script:
     deprecated: false
     description: Create exclusion item matching the input filter
     execution: false
-    name: sentinelone-create-exclusion-item
+    name: sentinelone-create-white-list-item
     outputs:
     - contextPath: SentinelOne.Exclusions.ID
       description: The whitelisted entity id.
@@ -252,7 +252,7 @@ script:
     deprecated: false
     description: List all exclusion items matching the input filter.
     execution: false
-    name: sentinelone-get-exclusion-list
+    name: sentinelone-get-white-list
     outputs:
     - contextPath: SentinelOne.Exclusions.ID
       description: The item ID
@@ -294,35 +294,20 @@ script:
     deprecated: false
     description: Get hash reputation.
     execution: false
-    name: sentinelone-get-hash-reputation
+    name: sentinelone-get-hash
     outputs:
-    - contextPath: SentinelOne.Hashes.Rank
+    - contextPath: SentinelOne.Hash.Rank
       description: The hash reputation measure in a 1-10 scale
-      type: string
-    - contextPath: SentinelOne.Hashes.Hash
+      type: Number
+    - contextPath: SentinelOne.Hash.Hash
       description: The content hash.
-      type: string
-  - arguments:
-    - default: false
-      description: The content hash.
-      isArray: false
-      name: hash
-      required: true
-      secret: false
-    deprecated: false
-    description: Get hash classification.
-    execution: false
-    name: sentinelone-get-hash-classification
-    outputs:
-    - contextPath: SentinelOne.Hashes.Hash
-      description: The content hash.
-      type: string
-    - contextPath: SentinelOne.Hashes.Classification
-      description: The hash classification type.
-      type: string
-    - contextPath: SentinelOne.Hashes.ClassificationSource
-      description: The hash classification source.
-      type: string
+      type: String
+    - contextPath: SentinelOne.Hash.Classification
+      description: 'The Hash classification '
+      type: String
+    - contextPath: SentinelOne.Hash.Classification Source
+      description: The hash classification source
+      type: String
   - arguments:
     - default: false
       description: Threat's content hash.
@@ -1269,6 +1254,7 @@ script:
     description: Get all Deep Visibility events from query
     execution: false
     name: sentinelone-get-events
+  dockerimage: demisto/python3:3.7.3.286
   isfetch: true
   runonce: false
   script: '-'
