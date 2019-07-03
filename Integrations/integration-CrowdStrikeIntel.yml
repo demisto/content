@@ -347,15 +347,18 @@ script:
     function doIndicator(ind, type, title, appendContextFunc) {
         var a = {'indicator.equal': ind};
         if (type === 'hash') {
+            if (!ind || ind.length === 0) {
+                ind = '';
+            }
             var hashType = '';
             switch (ind.length) {
-                case '32':
+                case 32:
                     hashType = 'hash_md5';
                     break;
-                case '40':
+                case 40:
                     hashType = 'hash_sha1';
                     break;
-                case '64':
+                case 64:
                     hashType = 'hash_sha256';
                     break;
                 default:
