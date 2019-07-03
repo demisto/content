@@ -142,7 +142,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               complex:
@@ -151,7 +151,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: bar-from-6.6.6.5
+              simple: test-1-to-10.10.10.10
     view: |-
       {
         "position": {
