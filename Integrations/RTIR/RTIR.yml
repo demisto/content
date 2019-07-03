@@ -44,7 +44,7 @@ configuration:
   name: fetch_queue
   required: false
   type: 0
-- display: Referer
+- display: Referer request header
   name: referer
   required: false
   type: 0
