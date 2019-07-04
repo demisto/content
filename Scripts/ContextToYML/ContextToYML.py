@@ -1,4 +1,5 @@
 from CommonServerPython import *
+import demistomock as demisto
 
 import yaml
 
@@ -134,7 +135,7 @@ def parse_json(data, command_name, base_path):
     return yaml_output
 
 
-if __name__ in ['__main__', '__builtin__', 'builtins']:
+def main():
     command_name = demisto.args().get("command_name", '')
     base_path = demisto.args().get("base_path", '')
     entry_id = demisto.getArg("json_file_entry_id")
@@ -163,3 +164,7 @@ if __name__ in ['__main__', '__builtin__', 'builtins']:
         'HumanReadable': yaml_output,
     })
     demisto.results(fileResult(filename, yaml_output, file_type=entryTypes['entryInfoFile']))
+
+
+if __name__ in ['__main__', '__builtin__', 'builtins']:
+    main()
