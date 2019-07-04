@@ -1477,8 +1477,6 @@ try:
         mitigate_threat_command()
     elif demisto.command() == 'sentinelone-resolve-threat':
         resolve_threat_command()
-    elif demisto.command() == 'sentinelone-get-static-indicators':
-        get_static_indicators_command()
     elif demisto.command() == 'sentinelone-threat-summary':
         get_threat_summary_command()
     elif demisto.command() == 'sentinelone-get-hash':
