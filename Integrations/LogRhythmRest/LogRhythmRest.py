@@ -30,8 +30,8 @@ HOSTS_HEADERS = ["ID", "Name", "EntityId", "EntityName", "OS", "Status", "Locati
                  "ThreatLevelComments", "DateUpdated", "HostZone"]
 LOGS_HEADERS = ["Level", "Computer", "Channel", "Keywords", "EventData"]
 PERSON_HEADERS = ["ID", "HostStatus", "IsAPIPerson", "FirstName", "LastName", "UserID", "UserLogin", "DateUpdated"]
-NETWORK_HEADERS = ["ID", "BeganIP", "EndIP", "HostStatus", "Name", "RiskLevel", "EntityId", "EntityName", "Location", "ThreatLevel",
-                   "DateUpdated", "HostZone"]
+NETWORK_HEADERS = ["ID", "BeganIP", "EndIP", "HostStatus", "Name", "RiskLevel", "EntityId", "EntityName", "Location",
+                   "ThreatLevel", "DateUpdated", "HostZone"]
 ALARM_SUMMARY_HEADERS = ["PIFType", "DrillDownSummaryLogs"]
 
 PIF_TYPES = {
@@ -517,7 +517,7 @@ def get_alarm_data(data_args):
     alarm_data = res['Data']['DrillDownResults']
     alarm_summaries = res['Data']['DrillDownResults']['RuleBlocks']
     del alarm_data['RuleBlocks']
-    aie_message = xml2json(str(alarm_data.get('AIEMsgXml'))).replace('\"@','\"')
+    aie_message = xml2json(str(alarm_data.get('AIEMsgXml'))).replace('\"@', '\"')
     alarm_data['AIEMsgXml'] = json.loads(aie_message).get('aie')
     alarm_data['Status'] = ALARM_STATUS[str(alarm_data['Status'])]
     alarm_data['ID'] = alarm_data['AlarmID']
@@ -540,7 +540,8 @@ def get_alarm_data(data_args):
 
     del alarm_data['AIEMsgXml']
     del alarm_data['Summary']
-    human_readable = tableToMarkdown('Alarm information for alarm id ' + id, alarm_data) + tableToMarkdown('Alarm summaries', DDS_summaries, ALARM_SUMMARY_HEADERS)
+    human_readable = tableToMarkdown('Alarm information for alarm id ' + id, alarm_data) + tableToMarkdown(
+        'Alarm summaries', dds_summaries, ALARM_SUMMARY_HEADERS)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 
@@ -548,7 +549,7 @@ def get_alarm_events(data_args):
     id = data_args.get('alarm-id')
     count = int(data_args.get('count'))
     fields = data_args.get('fields')
-    show_log_message = data_args.get('get-log-message') =='True'
+    show_log_message = data_args.get('get-log-message') == 'True'
 
     res = http_request('GET', 'lr-drilldown-cache-api/drilldown/' + id)
     res = res['Data']['DrillDownResults']['RuleBlocks']
@@ -567,7 +568,7 @@ def get_alarm_events(data_args):
     human_readable = tableToMarkdown('Events information for alarm ' + id, events)
 
     if fields:
-        fields = string.split(fields,',')
+        fields = string.split(fields, ',')
         for event in events:
             for key in event.keys():
                 if key not in fields:
