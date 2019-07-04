@@ -69,8 +69,6 @@ async def get_slack_name(slack_id: str, client) -> str:
             if conversation:
                 conversation = conversation[0]
         if not conversation:
-            #loop = asyncio.get_event_loop()
-            # client = slack.WebClient(token=TOKEN, proxy=PROXY, loop=loop)
             conversation = (await client.conversations_info(channel=slack_id)).get('channel', {})
         slack_name = conversation.get('name', '')
     elif prefix == 'U':
@@ -81,8 +79,6 @@ async def get_slack_name(slack_id: str, client) -> str:
             if user:
                 user = user[0]
         if not user:
-            #loop = asyncio.get_event_loop()
-            # client = slack.WebClient(token=TOKEN, proxy=PROXY, loop=loop)
             user = (await client.users_info(user=slack_id)).get('user', {})
 
         slack_name = user.get('name', '')
@@ -305,8 +301,12 @@ def long_running_loop():
 
 
 async def slack_loop():
+    """
+    Starts a Slack RTM client while checking the connection.
+    """
     while True:
         loop = asyncio.get_running_loop()
+        rtm_client = None
         try:
             rtm_client = slack.RTMClient(
                 token=TOKEN,
@@ -314,18 +314,19 @@ async def slack_loop():
                 auto_reconnect=False)
             client_future = rtm_client.start()
             while True:
-                await asyncio.sleep(5)
+                await asyncio.sleep(10)
                 if rtm_client._websocket is None or rtm_client._websocket.closed or client_future.done():
                     ex = client_future.exception()
                     if ex:
                         demisto.updateModuleHealth('Slack client raised an exception: {}'.format(ex))
                     demisto.info('Slack - websocket is closed or done')
-                    rtm_client.stop()
                     break
                 demisto.updateModuleHealth("")
         except Exception as e:
             demisto.updateModuleHealth('Slack client raised an exception: {}'.format(e))
         finally:
+            if rtm_client and not rtm_client._stopped:
+                rtm_client.stop()
             await asyncio.sleep(5)
 
 
@@ -419,6 +420,7 @@ async def listen(**payload):
                 mirror['mirrored'] = True
 
             mirrors.append(mirror)
+            integration_context['mirrors'] = json.dumps(mirrors)
 
             if text:
                 user = ''
@@ -431,12 +433,12 @@ async def listen(**payload):
                 if not user:
                     user = (await client.users_info(user=user_id)).get('user', {})
                     users.append(user)
+                    integration_context['users'] = json.dumps(users)
                 demisto.addEntry(id=mirror['investigation_id'],
                                  entry=await clean_message(text, client), username=user.get('name', ''),
                                  email=user.get('profile', {}).get('email', ''),
                                  footer='\n**From Slack**')
-                # TODO: do we want to set context if we don't have text?
-                demisto.setIntegrationContext({'mirrors': json.dumps(mirrors), 'users': json.dumps(users)})
+            demisto.setIntegrationContext(integration_context)
         # Reset module health
         demisto.updateModuleHealth("")
         end = timer()
@@ -460,6 +462,8 @@ def slack_send():
     ignore_add_url = demisto.args().get('IgnoreAddURL', 'false')
     thread_id = demisto.args().get('threadID')
     severity = demisto.args().get('severity')
+
+    demisto.info('Sending to slack - to: {}, channel: {}, group: {}'.format(to, channel, group))
 
     response = slack_send_request(to, channel, group, entry, severity, ignore_add_url, thread_id, message=message)
 
@@ -501,6 +505,16 @@ def slack_send_file():
 
 def send_message(destinations, entry, ignore_add_url, integration_context, message,
                  thread_id):
+    """
+    Sends a message to Slack.
+    :param destinations: The destinations to send to.
+    :param entry: A WarRoom entry to send.
+    :param ignore_add_url: Do not add a Demisto URL to the message.
+    :param integration_context: Current integration context.
+    :param message: The message to send.
+    :param thread_id: The Slack thread ID to send the message to.
+    :return: The Slack send response.
+    """
     demisto.info('Sending message, to={}, msg={}'.format(str(destinations), message))
     if not message:
         message = '\n'
@@ -542,6 +556,14 @@ def send_message(destinations, entry, ignore_add_url, integration_context, messa
 
 
 def send_file(destinations, file, integration_context, thread_id):
+    """
+    Sends a file to Slack.
+    :param destinations: Destinations to send the file to.
+    :param file: The file to send.
+    :param integration_context: The current integration context.
+    :param thread_id: The Slack thread to send to.
+    :return: The Slack send response.
+    """
     response = None
     try:
         for destination in destinations:
@@ -575,6 +597,19 @@ def send_file(destinations, file, integration_context, thread_id):
 
 def slack_send_request(to, channel, group, entry=None, severity=MAX_SEVERITY, ignore_add_url=None, thread_id=None,
                        message=None, file=None):
+    """
+    Requests to send a message or a file to Slack.
+    :param to: A Slack user to send to.
+    :param channel: A Slack channel to send to.
+    :param group: A Slack private channel to send to.
+    :param entry: WarRoom entry to send.
+    :param severity: If it's a notification regrading an incident - it's the incident severity.
+    :param ignore_add_url: Do not add a Demisto URL to the message.
+    :param thread_id: The Slack thread ID to send to.
+    :param message: A message to send.
+    :param file: A file to send,
+    :return: The Slack send response.
+    """
     if not (to or group or channel):
         return_error('Either a user, group or channel must be provided')
 
@@ -695,6 +730,9 @@ def add_entry_test():
 
 
 def long_running_main():
+    """
+    Starts the long running thread.
+    """
     asyncio.run(start_listening())
 
 
