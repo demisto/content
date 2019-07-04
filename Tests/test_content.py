@@ -121,7 +121,7 @@ def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playb
         succeed_playbooks.append(playbook_id)
 
     else:
-        print('Failed: {} failed'.format(test_message))
+        print_error('Failed: {} failed'.format(test_message))
         playbook_id_with_mock = playbook_id
         if not is_mock_run:
             playbook_id_with_mock += " (Mock Disabled)"

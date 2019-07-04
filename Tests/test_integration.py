@@ -292,6 +292,7 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
     if investigation_id is None or len(investigation_id) == 0:
         print_error('Failed to get investigation id of incident:' + incident)
         return False, -1
+    print('Investigation ID: {}'.format(investigation_id))
 
     timeout_amount = options['timeout'] if 'timeout' in options else DEFAULT_TIMEOUT
     timeout = time.time() + timeout_amount
