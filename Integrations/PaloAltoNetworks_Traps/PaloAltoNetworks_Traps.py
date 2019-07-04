@@ -61,21 +61,25 @@ OUTPUTS = {
     'endpoint_isolate': {
         'OperationID': 'operationId'
     },
-    'traps_endpoint_scan': {
+    'endpoint_scan': {
         'OperationID': 'operationId'
     },
     'event_bulk_update_status': {
         'EventID': 'eventGuid'
     },
     'hashes_blacklist_status': {
-        'HashID': 'hash',
+        'MD5': 'hash',
         'BlacklistStatus': 'status'
     },
-    'event_quarantine_status': {
+    'event_quarantine_result': {
         'FileHash': 'fileHash',
         'FilePath': 'filePath'
+    },
+    'endpoint_scan_result': {
+        'FileScanned': 'filesScanned',
+        'FilesFailed': 'filesFailed',
+        'MalwareFound': 'malwareFound'
     }
-
 }
 
 # OUTPUT_EXCEPTIONS
@@ -118,8 +122,12 @@ def parse_http_response(resp, operation_err_message, test=False):
     except requests.exceptions.HTTPError:
         try:
             err_message = resp.json().get('message')
-        except Exception as err:
-            err_message = err
+        except Exception:
+            try:
+                err_obj = json.loads(xml2json(resp.text))
+                err_message = demisto.get(err_obj, 'Error.Message')
+            except Exception:
+                err_message = f'Could not parse error'
         return_error(f'{operation_err_message}: \n{err_message}')
 
 
@@ -189,6 +197,14 @@ def endpoint_scan(endpoint_id):
         'Type': 'endpoint-scan'
     })
     return operation_obj
+
+
+def endpoint_scan_result(operation_id):
+    status, additional_data = sam_operation(operation_id, f'Could not get scan results')
+    scan_data = parse_data_from_response(additional_data.get('scanData'))
+    scan_data['Status'] = status
+    scan_data['OperationID'] = operation_id
+    return scan_data
 
 
 def update_event_status(event_ids, status):
@@ -268,16 +284,6 @@ def hashes_blacklist_status(hash_ids):
 def event_quarantine(event_id):
     path = f'events/{event_id}/quarantine'
     resp = http_request('POST', path, operation_err=f'Quarantine event {event_id} failed')
-    resp = {
-        "operationId": {
-            "samMessageIds": [
-                "90eb5bf99d9311e997c606493deb1400",
-                "90eb5bf99d9311e997c606493deb1401",
-                "90eb5bf99d9311e997c606493deb1410",
-                "90eb5bf99d9311e997c606493deb1411"
-            ]
-        }
-    }
     message_ids = resp.get('operationId').get('samMessageIds')
     operations = []
     for op_id in message_ids:
@@ -313,20 +319,24 @@ def sam_operation(operation_id, operation_err):
     for status_obj in result.get('statuses'):
         if status_obj.get('count') > 0:
             return status_obj.get('status'), result.get('additionalData')
+    return_error(f'{operation_err}: Could not retrieve status')
 
 
 def endpoint_isolate_status(operation_id):
     status, _ = sam_operation(operation_id, f'Could not get endpoint isolate status')
-    return {'Status': status}
+    return {'Status': status, 'OperationID': operation_id}
 
 
-def event_quarantine_status(operation_id):
+def event_quarantine_result(operation_id):
     status, additional_data = sam_operation(operation_id, f'Could not get event quarantine status')
     quarantine_data = parse_data_from_response(additional_data.get('quarantineData'))
     quarantine_data['Status'] = status
+    quarantine_data['OperationID'] = operation_id
     return quarantine_data
 
+
 # 15a8bb669e3211e9b66f06493deb1492
+# 235ff77f9e2b11e9b66f06493deb1492
 
 def endpoint_files_retrieve_result(operation_id):
     status, additional_data = sam_operation(operation_id, f'Failed to get file retrieve results')
@@ -335,9 +345,9 @@ def endpoint_files_retrieve_result(operation_id):
         file_name = file_info.get('fileName')
         url = file_info.get('downloadUrl')
         # url = "https://demisto-agent-uploads-40.s3.us-west-2.amazonaws.com/sam%3Ac33cf8881313db8d3e1ad8979d698faeb9d590aac7d8c059f29ff5b3841746a0?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIA4FSZU6GK3NMOF4UQ%2F20190704%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20190704T071746Z&X-Amz-Expires=604200&X-Amz-Security-Token=AgoJb3JpZ2luX2VjEJ%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJIMEYCIQDnkL3cgzgW0xSG0L6uFub3%2BWs6AdAoqCFLMZnYDNlcewIhAOqRuD0mJltKxMGmCt2xfHB2lYNsYyLkMnjQZOax2p2bKuMDCOj%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQABoMODM2NjMyODk5OTg5Igw8hoUgNZyoXUb9L2gqtwOJG9m9drhgzm5q4gNAwtMds3QDSD1s3558ZLC1B1Iqb44ajoFCrzkIU9xYUU5%2B239J7dYm6F%2Fn8dTTty3fYbrktvGZBMnyZfVcqloTJswXlik9sFgrx43tGQ8SbYwk0hjeBm%2BTzkaWh%2FohEllLk5PMX1NiQnijRlu6stxlUwvBkmWj9vIiJGdxCKT0bUw1TH1UfUrRBBz2hEz2qvcNkkclpP5im2Xb%2BrwwU%2BHe9098Uy93ZkiM%2Fxmw2AqpWp3pYLad3tLCVSA6A4b3Oklmnoe4J6CN6LHDjepumZapstmmpCeyqTMWBs%2B%2B%2BQQrN9VHabiZiQBbzZt05LSRTPvRG71%2FQAkQTJoU75muSfv5Fh93t4NbvOx9XrbbnRUX8k9jk11NDHGPVuidjGcafxz8aX8CbPxDEbMNgA3V7N4XjJsiB8SV%2B71n%2FvT%2BJenX7VNEQrqpMx52kDOVrPiLxrjOiiikTDrahfzMDfBJwli7NTnWTd7x8%2FR1hnZ9TNJusiulsN1wPMkYfIzL4FXkj%2F7x6GGryZH6JX0F12viQxG9i6P5sJ62%2FYZ0Xr01GmfDNfa0%2BSWIlkxVdx4UMNu29ugFOrMBGD%2FfbH2N2hvZmxMm2fnMewPFpwNmlH%2FHL51mdQvofrptU%2F7H8ea9ScWDFPKVsvGUKIODY7z%2F2w0Ag9DJzsRSxqUV6iRpmGHOv1rDca7UVUtFs8yPTUiNJAd39kwnyBZkkdQ%2FGHQxGGJcIQ7zOqWRhaSNQ5ov%2F9InMGUmncjX%2BPAiyKDFB%2FjpopMP0RPNL3ivHPlwKdgoXEMOubWT6RR7uJfUMLeKupbrpBcAau6g25poMqQ%3D&X-Amz-Signature=a0228494af45875d07ee97bf044bc1e32e9a7a9a5f86a6bed83438b184c0aa6c&X-Amz-SignedHeaders=host"
-        data = http_request('GET', url, plain_url=True)
+        data = http_request('GET', url, plain_url=True, operation_err=f'Unable to download file.')
         demisto.results(fileResult(filename=file_name, data=data))
-    return status
+    return {'Status': status, 'OperationId': operation_id}
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -365,16 +375,16 @@ def endpoint_files_retrieve_command():
     operation_obj = endpoint_files_retrieve(endpoint_id, file_name, event_id)
     md = tableToMarkdown(f'Files retrieve command on endpoint: {endpoint_id} received', operation_obj,
                          headerTransform=pascalToSpace)
-    context = {'Traps.Operation(val.OperationID == obj.OperationID)': operation_obj}
+    context = {'Traps.FileRetrieve(val.OperationID == obj.OperationID)': operation_obj}
     return_outputs(md, context)
 
 
 def endpoint_files_retrieve_result_command():
     args = demisto.args()
     operation_id = args.get('operation_id')
-    status = endpoint_files_retrieve_result(operation_id)
-    md = f'### File retrieval status is: {status}'
-    context = {'Traps.Operation'}
+    status_obj = endpoint_files_retrieve_result(operation_id)
+    md = f'### File retrieval status is: {status_obj.get("Status")}'
+    context = {'Traps.FileRetrieveResult(val.OperationID == obj.OperationID)': status_obj}
     return_outputs(md, context)
 
 
@@ -384,8 +394,18 @@ def endpoint_scan_command():
     operation_obj = endpoint_scan(endpoint_id)
     md = tableToMarkdown(f'Scan command on endpoint: {endpoint_id} received', operation_obj,
                          headerTransform=pascalToSpace)
-    context = {'Traps.Operation(val.OperationID == obj.OperationID)': operation_obj}
+    context = {'Traps.Scan(val.OperationID == obj.OperationID)': operation_obj}
     return_outputs(md, context)
+
+
+def endpoint_scan_result_command():
+    args = demisto.args()
+    operation_id = args.get('operation_id')
+    status_obj = endpoint_scan_result(operation_id)
+    context = {f'Traps.ScanResult(val.OperationID == obj.OperationID)': status_obj}
+    md = tableToMarkdown(f'Status of scan operation: {operation_id}', status_obj, headerTransform=pascalToSpace)
+    return_outputs(md, context)
+
 
 
 def event_update_command():
@@ -397,12 +417,7 @@ def event_update_command():
     md = f'### Event: {event_id} was updated'
     md += f'\n##### New status: {status}' if status else ''
     md += f'\n##### New comment: {comment}' if comment else ''
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': md,
-        'HumanReadable': md
-    })
+    return_outputs(md, {})
 
 
 def event_bulk_update_status_command():
@@ -413,12 +428,7 @@ def event_bulk_update_status_command():
     md = tableToMarkdown('Successfully updated', results.get('UpdateSuccess'), headerTransform=pascalToSpace)
     md += tableToMarkdown('Failed to update', results.get('UpdateFail'), headerTransform=pascalToSpace)
     md += tableToMarkdown('Ignored', results.get('UpdateIgnored'), headerTransform=pascalToSpace)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': md,
-        'HumanReadable': md
-    })
+    return_outputs(md, {})
 
 
 def event_quarantine_command():
@@ -427,20 +437,15 @@ def event_quarantine_command():
     operations = event_quarantine(event_id)
     md = tableToMarkdown(f'Quarantine command on event: {event_id} received', operations,
                          headerTransform=pascalToSpace)
-    context = {'Traps.Operation(val.OperationID == obj.OperationID)': operations}
+    context = {'Traps.Quarantine(val.OperationID == obj.OperationID)': operations}
     return_outputs(md, context)
 
 
-def event_quarantine_status_command():
+def event_quarantine_result_command():
     args = demisto.args()
     operation_id = args.get('operation_id')
-    status_obj = event_quarantine_status(operation_id)
-    # curr_context_obj = demisto.dt(demisto.context(), f'Traps.Operation.Quarantine(val.OperationID == "{operation_id}")')
-    # status_obj.update(curr_context_obj)
-    # print(status_obj)
-    # print(curr_context_obj)
-    # sys.exit(0)
-    context = {f'Traps.Operation(val.OperationID == obj.OperationID)': status_obj}
+    status_obj = event_quarantine_result(operation_id)
+    context = {f'Traps.QuarantineResult(val.OperationID == obj.OperationID)': status_obj}
     md = tableToMarkdown(f'Status of quarantine operation: {operation_id}', status_obj, headerTransform=pascalToSpace)
     return_outputs(md, context)
 
@@ -449,34 +454,38 @@ def hash_blacklist_command():
     args = demisto.args()
     hash_id = args.get('hash_id')
     status = hash_blacklist(hash_id)
+    context = {}
     if status == 'success':
         md = f'#### Successfully blacklisted: {hash_id}'
+        status_obj = {
+            'MD5': hash_id,
+            'BlacklistStatus': 'blacklisted'
+        }
+        context = {'Traps.File(val.MD5 == obj.MD5)': status_obj}
+
     elif status == 'ignore':
         md = f'#### Hash: {hash_id} already appears in blacklist'
     else:
         md = f'#### Failed to blacklist: {hash_id}'
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': md,
-        'HumanReadable': md
-    })
+    return_outputs(md, context)
 
 
 def hash_blacklist_remove_command():
     args = demisto.args()
     hash_id = args.get('hash_id')
     status = remove_hash_from_blacklist(hash_id)
-    md = f'#### Successfully removed {hash_id} from blacklist' if status == 'success' \
-        else f'#### Failed to remove {hash_id} from blacklist:'
+    context = {}
+    if status == 'success':
+        md = f'#### Successfully removed {hash_id} from blacklist'
+        status_obj = {
+            'MD5': hash_id,
+            'BlacklistStatus': 'none'
+        }
+        context = {'Traps.File(val.MD5 == obj.MD5)': status_obj}
+    else:
+        md = f'#### Failed to remove {hash_id} from blacklist:'
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': md,
-        'HumanReadable': md
-    })
+    return_outputs(md, context)
 
 
 def hashes_blacklist_status_command():
@@ -484,7 +493,7 @@ def hashes_blacklist_status_command():
     hash_ids = args.get('hash_ids').split(',')
     ids_obj = hashes_blacklist_status(hash_ids)
     md = tableToMarkdown('Hashes status:', ids_obj, headerTransform=pascalToSpace)
-    context = {'Traps.Hash(val.HashID == obj.HashID)': ids_obj}
+    context = {'Traps.File(val.MD5 == obj.MD5)': ids_obj}
     return_outputs(md, context)
 
 
@@ -494,7 +503,7 @@ def endpoint_isolate_command():
     operation_obj = endpoint_isolate(endpoint_id)
     md = tableToMarkdown(f'Isolate command on endpoint {endpoint_id} received', operation_obj,
                          headerTransform=pascalToSpace)
-    context = {'Traps.Operation(val.OperationID == obj.OperationID)': operation_obj}
+    context = {'Traps.Isolate(val.OperationID == obj.OperationID)': operation_obj}
     return_outputs(md, context)
 
 
@@ -502,8 +511,9 @@ def endpoint_isolate_status_command():
     args = demisto.args()
     operation_id = args.get('operation_id')
     isolate_status = endpoint_isolate_status(operation_id)
-    md = f'### Isolate status is: {isolate_status.get("status")}'
-    context = {f'Traps.Operation.Isolate.'}
+    md = f'### Isolate status is: {isolate_status.get("Status")}'
+    context = {f'Traps.IsolateResult(val.OperationID == obj.OperationID)': isolate_status}
+    return_outputs(md, context)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -523,6 +533,8 @@ try:
         endpoint_files_retrieve_result_command()
     elif demisto.command() == 'traps-endpoint-scan':
         endpoint_scan_command()
+    elif demisto.command() == 'traps-endpoint-scan-result':
+        endpoint_scan_result_command()
     elif demisto.command() == 'traps-event-update':
         event_update_command()
     elif demisto.command() == 'traps-event-bulk-update-status':
@@ -535,8 +547,8 @@ try:
         hashes_blacklist_status_command()
     elif demisto.command() == 'traps-event-quarantine':
         event_quarantine_command()
-    elif demisto.command() == 'traps-event-quarantine-status':
-        event_quarantine_status_command()
+    elif demisto.command() == 'traps-event-quarantine-result':
+        event_quarantine_result_command()
     elif demisto.command() == 'traps-endpoint-isolate':
         endpoint_isolate_command()
     elif demisto.command() == 'traps-endpoint-isolate-status':
