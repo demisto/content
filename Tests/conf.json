@@ -853,7 +853,7 @@
         {
             "integrations": "urlscan.io",
             "playbookID": "urlscan_malicious_Test",
-            "timeout": 300
+            "timeout": 500
         },
         {
             "integrations": "EWS v2",
@@ -1263,7 +1263,7 @@
         },
         {
             "playbookID": "Phishing v2 Test - Attachment",
-            "timeout": 600,
+            "timeout": 1200,
             "nightly": true,            
             "integrations": [
                 "EWS Mail Sender",
@@ -1275,7 +1275,7 @@
         },
         {
             "playbookID": "Phishing v2 Test - Inline",
-            "timeout": 500,
+            "timeout": 1200,
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
@@ -1626,9 +1626,6 @@
         {
             "integrations": "LogRhythmRest",
             "playbookID": "LogRhythm REST test"
-        },
-        {
-            "playbookID": "URL regex - Test"
         },
         {
             "integrations": "AlienVault USM Anywhere",
