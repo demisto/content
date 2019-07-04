@@ -11,7 +11,7 @@ from datetime import datetime
 import demisto
 from slackclient import SlackClient
 
-from Tests.test_integration import test_integration
+from Tests.test_integration import test_integration, disable_all_integrations
 from Tests.mock_server import MITMProxy, AMIConnection
 from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool, server_version_compare
 from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
@@ -113,7 +113,7 @@ def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playb
                    circle_ci, build_number, server_url, build_name, is_mock_run=False):
     status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run)
     if status == PB_Status.COMPLETED:
-        print('PASS: {} succeed'.format(test_message))
+        print_color('PASS: {} succeed'.format(test_message), LOG_COLORS.GREEN)
         succeed_playbooks.append(playbook_id)
 
     elif status == PB_Status.NOT_SUPPORTED_VERSION:
@@ -159,7 +159,7 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
         # use results
         proxy.stop()
         if status == PB_Status.COMPLETED:
-            print('PASS: {} succeed'.format(test_message))
+            print_color('PASS: {} succeed'.format(test_message), LOG_COLORS.GREEN)
             succeed_playbooks.append(playbook_id)
             print('------ Test {} end ------'.format(test_message))
 
@@ -402,7 +402,7 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
 
     # Skip nightly test
     if skip_nightly_test:
-        print('------ Test {} start ------'.format(test_message))
+        print('\n------ Test {} start ------'.format(test_message))
         print('Skip test')
         print('------ Test {} end ------'.format(test_message))
 
@@ -427,7 +427,7 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
     test_to_version = t.get('toversion', '99.99.99')
     if (server_version_compare(test_from_version, server_numeric_version) > 0
             or server_version_compare(test_to_version, server_numeric_version) < 0):
-        print('------ Test {} start ------'.format(test_message))
+        print('\n------ Test {} start ------'.format(test_message))
         print_warning('Test {} ignored due to version mismatch (test versions: {}-{})'.format(test_message,
                                                                                               test_from_version,
                                                                                               test_to_version))
@@ -524,6 +524,8 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     succeed_playbooks = []
     skipped_tests = set([])
     skipped_integration = set([])
+
+    disable_all_integrations(c)
 
     if is_ami:
         # move all mock tests to the top of the list
