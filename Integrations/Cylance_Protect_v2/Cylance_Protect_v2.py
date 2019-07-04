@@ -1226,7 +1226,7 @@ def get_policy_details():
         # timestamp in response comes back as bugged string, convert to actual timestamp.
         timestamp = policy_details.get('policy_utctimestamp')
         if timestamp:
-            reg = re.search("d{13}", timestamp)
+            reg = re.search(r"\d{13}", timestamp)
             if reg:
                 ts = float(reg.group())
                 date_time = datetime.fromtimestamp(ts / 1000).strftime('%Y-%m-%dT%H:%M:%S.%f+00:00')
