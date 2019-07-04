@@ -979,6 +979,5 @@ script:
   runonce: false
   script: '-'
   type: python
-image: ''
 tests:
 - Cylance Protect v2 Test
