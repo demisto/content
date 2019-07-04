@@ -3,11 +3,6 @@ commonfields:
   id: Whois
   version: -1
 configuration:
-- defaultvalue: 'false'
-  display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - display: Return Errors
   name: with_error
   required: false
