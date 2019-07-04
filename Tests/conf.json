@@ -1782,7 +1782,6 @@
         "AWS - S3": "Integration requires SSL",
         "Luminate": "Integration has no proxy checkbox",
         "Pwned": "Integration has no proxy checkbox",
-        "Gmail": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
         "Google BigQuery": "Integration has no proxy checkbox",
         "Cisco Umbrella Investigate": "Pending merge of branch proxy-unsecure-checks",
