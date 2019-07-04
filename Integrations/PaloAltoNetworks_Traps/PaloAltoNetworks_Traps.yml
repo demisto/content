@@ -60,11 +60,172 @@ script:
       description: Endpoint ID
       isArray: false
       name: endpoint_id
-      required: false
+      required: true
+      secret: false
+    - default: false
+      description: File name to retieve (including path)
+      isArray: false
+      name: file_name
+      required: true
+      secret: false
+    - default: false
+      description: Event ID
+      isArray: false
+      name: event_id
+      required: true
       secret: false
     deprecated: false
     execution: false
     name: traps-endpoint-files-retrieve
+  - arguments:
+    - default: false
+      description: Endpoint ID
+      isArray: false
+      name: endpoint_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Perform scan operation on specified endpoint.
+    execution: false
+    name: traps-endpoint-scan
+  - arguments:
+    - default: false
+      description: Event ID
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Event status
+      isArray: false
+      name: status
+      predefined:
+      - new
+      - investigating
+      - closed
+      required: false
+      secret: false
+    - default: false
+      description: Event comment
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Change status and add a comment to an existing event.
+    execution: false
+    name: traps-event-update
+  - arguments:
+    - default: false
+      description: Event IDs
+      isArray: true
+      name: event_ids
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Event status
+      isArray: false
+      name: status
+      predefined:
+      - new
+      - investigating
+      - closed
+      required: true
+      secret: false
+    deprecated: false
+    description: Change the status of multiple events.
+    execution: false
+    name: traps-event-bulk-update-status
+  - arguments:
+    - default: false
+      description: Hash ID (MD5)
+      isArray: false
+      name: hash_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Blacklist specified hash.
+    execution: false
+    name: traps-hash-blacklist
+  - arguments:
+    - default: false
+      description: Hash ID (MD5)
+      isArray: false
+      name: hash_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove a given hash from blacklist
+    execution: false
+    name: traps-hash-blacklist-remove
+  - arguments:
+    - default: false
+      description: List of hash IDs (MD5)
+      isArray: true
+      name: hash_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Get blacklist status of guven hashes.
+    execution: false
+    name: traps-hashes-blacklist-status
+  - arguments:
+    - default: false
+      description: Event ID
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Create quarantine entry for given event.
+    execution: false
+    name: traps-event-quarantine
+  - arguments:
+    - default: false
+      description: Endpoint ID
+      isArray: false
+      name: endpoint_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Isolate an endpoint.
+    execution: false
+    name: traps-endpoint-isolate
+  - arguments:
+    - default: false
+      description: Operation ID
+      isArray: false
+      name: operation_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Status of event quarantine operation
+    execution: false
+    name: traps-event-quarantine-status
+  - arguments:
+    - default: false
+      description: Operation ID
+      isArray: false
+      name: operation_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Status of endpoint isolate operation
+    execution: false
+    name: traps-endpoint-isolate-status
+  - arguments:
+    - default: false
+      description: Operation ID
+      isArray: false
+      name: operation_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get endpoint file retrieve result
+    execution: false
+    name: traps-endpoint-files-retrieve-result
   dockerimage: demisto/python3:3.7.3.286
   isfetch: false
   runonce: false
