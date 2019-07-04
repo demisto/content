@@ -41,7 +41,7 @@ configuration:
 - defaultvalue: '5'
   display: Threats minimum risk level when importing incidents (0-10 where 10 is the
     highest)
-  name: fetch_threat_rank
+  name: fetch_threshold
   required: false
   type: 0
 description: End point protection
