@@ -201,9 +201,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Status of event quarantine operation
+    description: Get result of event quarantine operation
     execution: false
-    name: traps-event-quarantine-status
+    name: traps-event-quarantine-result
   - arguments:
     - default: false
       description: Operation ID
@@ -226,6 +226,17 @@ script:
     description: Get endpoint file retrieve result
     execution: false
     name: traps-endpoint-files-retrieve-result
+  - arguments:
+    - default: false
+      description: Operation ID
+      isArray: false
+      name: operation_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get results of an endpoint scam operation
+    execution: false
+    name: traps-endpoint-scan-result
   dockerimage: demisto/python3:3.7.3.286
   isfetch: false
   runonce: false
