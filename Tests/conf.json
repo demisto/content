@@ -370,6 +370,10 @@
             "timeout": 600
         },
         {
+            "integrations": "Symantec Site Review",
+            "playbookID": "Symantec Site Review Test"
+        },
+        {
             "integrations": [
                 "Palo Alto Minemeld",
                 "Panorama"
@@ -468,6 +472,10 @@
             "playbookID": "Wildfire Test"
         },
         {
+            "integrations": "WildFire-v2",
+            "playbookID": "Detonate URL - WildFire-v2 - Test"
+        },
+        {
             "integrations": "GRR",
             "playbookID": "grr_test",
             "nightly": true
@@ -543,6 +551,9 @@
             "timeout": 700
         },
         {
+            "playbookID": "stripChars - Test"
+        },
+        {
             "integrations": "McAfee Advanced Threat Defense",
             "playbookID": "Test Playbook McAfee ATD Upload File"
         },
@@ -584,11 +595,17 @@
             "timeout": 240
         },
         {
+            "playbookID": "GetIndicatorDBotScore Test"
+        },
+        {
             "integrations": "EWS Mail Sender",
             "playbookID": "EWS Mail Sender Test"
         },
         {
-            "integrations": "EWS Mail Sender",
+            "integrations": [
+                "EWS Mail Sender",
+                "Rasterize"
+            ],
             "playbookID": "EWS Mail Sender Test 2"
         },
         {
@@ -620,6 +637,18 @@
         {
             "integrations": "McAfee ESM-v10",
             "instance_names": "v10.2.0",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
+        },
+        {
+            "integrations": "McAfee ESM-v10",
+            "instance_names": "v10.3.0",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
+        },
+        {
+            "integrations": "McAfee ESM-v10",
+            "instance_names": "v11.1.3",
             "playbookID": "McAfeeESMTest",
             "timeout": 500
         },
@@ -824,7 +853,7 @@
         {
             "integrations": "urlscan.io",
             "playbookID": "urlscan_malicious_Test",
-            "timeout": 300
+            "timeout": 500
         },
         {
             "integrations": "EWS v2",
@@ -1216,7 +1245,8 @@
                 "EWS Mail Sender",
                 "Pwned",
                 "Demisto REST API",
-                "Palo Alto Minemeld"
+                "Palo Alto Minemeld",
+                "Rasterize"
             ]
         },
         {
@@ -1227,18 +1257,20 @@
                 "EWS Mail Sender",
                 "Pwned",
                 "Demisto REST API",
-                "Palo Alto Minemeld"
+                "Palo Alto Minemeld",
+                "Rasterize"
             ]
         },
         {
             "playbookID": "Phishing v2 Test - Attachment",
             "timeout": 600,
-            "nightly": true,
+            "nightly": true,            
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
                 "Demisto REST API",
-                "Palo Alto Minemeld"
+                "Palo Alto Minemeld",
+                "Rasterize"
             ]
         },
         {
@@ -1249,7 +1281,8 @@
                 "EWS Mail Sender",
                 "Pwned",
                 "Demisto REST API",
-                "Palo Alto Minemeld"
+                "Palo Alto Minemeld",
+                "Rasterize"
             ]
         },
         {

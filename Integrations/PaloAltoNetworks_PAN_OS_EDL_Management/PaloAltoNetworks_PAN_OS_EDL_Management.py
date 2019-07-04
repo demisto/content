@@ -86,6 +86,14 @@ def ssh_execute(command: str):
                     'Permission denied, check your username and certificate.\n' + 'Got error: ' + result.stderr)
             else:
                 return_error(result.stderr)
+        elif command.find('grep') != -1 and result.returncode == 1:
+            #  a search command that did not find any value
+            demisto.results({
+                'Type': 11,
+                'Contents': 'Search string was not found in the external file path given.',
+                'ContentsFormat': formats['text']
+            })
+            sys.exit(0)
         else:
             return_error('Command failed with exit status: ' + str(result.returncode))
 
@@ -155,20 +163,14 @@ def edl_search_external_file_command():
     search_string = demisto.args().get('search_string')
 
     result = edl_search_external_file(file_path, search_string)
-    if len(result) > 0:
-        md = tableToMarkdown('Search Results', result, headers=['Result'])
 
-        demisto.results({
-            'ContentsFormat': formats['markdown'],
-            'Type': entryTypes['note'],
-            'Contents': md
-        })
-    else:
-        demisto.results({
-            'Type': 11,
-            'Contents': 'Search string was not found in the external file path given.',
-            'ContentsFormat': formats['text']
-        })
+    md = tableToMarkdown('Search Results', result, headers=['Result'])
+
+    demisto.results({
+        'ContentsFormat': formats['markdown'],
+        'Type': entryTypes['note'],
+        'Contents': md
+    })
 
 
 def edl_update_external_file(file_path: str, list_name: str, verbose: bool) -> bool:
@@ -398,7 +400,13 @@ def edl_dump_internal_list_command():
 
     dict_of_lists = demisto.getIntegrationContext()
     list_data = dict_of_lists.get(list_name, None)
-
+    if not list_data:
+        demisto.results({
+            'Type': 11,
+            'Contents': 'List was not found in instance context or has no data.',
+            'ContentsFormat': formats['text']
+        })
+        sys.exit(0)
     if destination == 'file':  # dump list as file
         internal_file_path = demisto.uniqueFile()
 
@@ -406,8 +414,8 @@ def edl_dump_internal_list_command():
             with open(internal_file_path, 'w') as f:
                 f.write("\n".join(list_data))
             file_type = entryTypes['entryInfoFile']
-            with open(internal_file_path, 'r') as f:
-                file_entry = fileResult(internal_file_path, f.read(), file_type)
+            with open(internal_file_path, 'rb') as file:
+                file_entry = fileResult(internal_file_path, file.read(), file_type)
             demisto.results(file_entry)
         finally:
             shutil.rmtree(internal_file_path, ignore_errors=True)
@@ -443,6 +451,7 @@ def edl_compare_command():
             'Contents': 'List was not found in instance context.',
             'ContentsFormat': formats['text']
         })
+        sys.exit(0)
 
     file_data = edl_get_external_file(file_path)
     if not file_data:
@@ -451,6 +460,7 @@ def edl_compare_command():
             'Contents': 'file was not found in external web-server.',
             'ContentsFormat': formats['text']
         })
+        sys.exit(0)
 
     set_internal = set(list_data)
     set_external = set(file_data.split('\n'))
