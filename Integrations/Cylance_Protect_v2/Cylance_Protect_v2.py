@@ -127,10 +127,11 @@ def get_authentication_token(scope=None):
 
 
 def threat_to_incident(threat):
-    incident = {}
-    incident['name'] = 'Cylance Protect v2 threat ' + threat['name']
-    incident['occurred'] = threat['last_found'] + 'Z'
-    incident['rawJSON'] = json.dumps(threat)
+    incident = {
+        'name': 'Cylance Protect v2 threat ' + threat['name'],
+        'occurred': threat['last_found'] + 'Z',
+        'rawJSON': json.dumps(threat)
+    }
 
     host_name = None
     devices = get_threat_devices_request(threat['sha256'], None, None)['page_items']
@@ -138,12 +139,9 @@ def threat_to_incident(threat):
         if device['date_found'] == threat['last_found']:
             host_name = device['name']
 
-    labels = []
-    labels.append({'type': 'Classification', 'value': threat['classification']})
-    labels.append({'type': 'MD5', 'value': threat['md5']})
-    labels.append({'type': 'SHA256', 'value': threat['sha256']})
-    labels.append({'type': 'ThreatLastFound', 'value': threat['last_found']})
-    labels.append({'type': 'HostName', 'value': host_name})
+    labels = [{'type': 'Classification', 'value': threat['classification']}, {'type': 'MD5', 'value': threat['md5']},
+              {'type': 'SHA256', 'value': threat['sha256']}, {'type': 'ThreatLastFound', 'value': threat['last_found']},
+              {'type': 'HostName', 'value': host_name}]
     incident['labels'] = labels
     return incident
 
@@ -1425,4 +1423,9 @@ try:
         get_policy_details()
 
 except Exception as e:
-    return_error(str(e))
+    demisto.error('#### error in Cylance Protect v2: ' + str(e))
+    if demisto.command() == 'fetch-incidents':
+        LOG.print_log()
+        raise
+    else:
+        return_error(str(e))

@@ -1,1 +1,1 @@
-Move integration code to package, handleerrors and logs more gracefully
+Handle error messages gracefully and improve logging
