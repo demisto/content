@@ -1709,7 +1709,7 @@
         "okta_test_playbook": "test failed (Issue 17041)",
         "Detonate File - FireEye AX - Test": "No instance",
         "Cofense Triage Test": "Creds only works on demo4",
-        "Intezer": "Old test for old version of inteze"
+        "Intezer Testing": "Old test for old version of inteze"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
