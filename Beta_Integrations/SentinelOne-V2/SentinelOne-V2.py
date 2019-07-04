@@ -39,6 +39,7 @@ if not demisto.params().get('proxy'):
 
 
 def http_request(method, url_suffix, params={}, data=None):
+    LOG(f'Attempting {method} request to {BASE_URL + url_suffix}\nWith params:{params}\nWith body:\n{data}')
     res = requests.request(
         method,
         BASE_URL + url_suffix,
@@ -109,6 +110,7 @@ def get_activities_command():
     Get a list of activities.
     """
     context = {}
+    context_entries = []
     contents = []
     headers = ['ID', 'Primary description', 'Data', 'User ID', 'Created at', 'Updated at', 'Threat ID']
 
@@ -142,7 +144,27 @@ def get_activities_command():
                 'Updated at': activity.get('updatedAt')
             })
 
-        context['SentinelOne.Activity(val.ID && val.ID === obj.ID)'] = activities
+            context_entries.append({
+                'Hash': activity.get('hash'),
+                'ActivityType': activity.get('activityType'),
+                'OsFamily': activity.get('osFamily'),
+                'PrimaryDescription': activity.get('primaryDescription'),
+                'Comments': activity.get('comments'),
+                'AgentUpdatedVersion': activity.get('agentUpdatedVersion'),
+                'UserID': activity.get('userId'),
+                'ID': activity.get('id'),
+                'Data': activity.get('data'),
+                'CreatedAt': activity.get('createdAt'),
+                'SecondaryDescription': activity.get('secondaryDescription'),
+                'ThreatID': activity.get('threatId'),
+                'GroupID': activity.get('groupId'),
+                'UpdatedAt': activity.get('updatedAt'),
+                'Description': activity.get('description'),
+                'AgentID': activity.get('agentId'),
+                'SiteID': activity.get('siteId')
+            })
+
+        context['SentinelOne.Activity(val.ID && val.ID === obj.ID)'] = context_entries
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -189,8 +211,8 @@ def get_groups_command():
 
     group_type = demisto.args().get('type')
     group_id = demisto.args().get('id')
-    group_ids = argToList(demisto.args().get('groupIds', []))
-    is_default = demisto.args().get('isDefault')
+    group_ids = argToList(demisto.args().get('group_ids', []))
+    is_default = demisto.args().get('is_default')
     name = demisto.args().get('name')
     query = demisto.args().get('query')
     rank = demisto.args().get('rank')
@@ -223,7 +245,7 @@ def get_groups_command():
 
 def delete_group_request(group_id=None):
 
-    endpoint_url = 'groups/' + group_id
+    endpoint_url = f'groups/{group_id}'
 
     response = http_request('DELETE', endpoint_url)
     if response.get('errors'):
@@ -245,7 +267,7 @@ def delete_group():
 
 def move_agent_request(group_id, agents_id):
 
-    endpoint_url = 'groups/' + group_id + '/move-agents'
+    endpoint_url = f'groups/{group_id}/move-agents'
 
     payload = {
         "filter": {
@@ -266,7 +288,7 @@ def move_agent_to_group_command():
     Move agents to a new group.
     """
     group_id = demisto.args().get('group_id')
-    agents_id = argToList(demisto.args().get('agents_ids'))
+    agents_id = argToList(demisto.args().get('agents_ids', []))
     context = {}
 
     agents_groups = move_agent_request(group_id, agents_id)
@@ -283,15 +305,15 @@ def move_agent_to_group_command():
         'AffectedAgents': agents_moved
     }
 
-    context['SentinelOne.Agents(val.Date && val.Date === obj.Date)'] = context_entries
+    context['SentinelOne.Agent(val.Date && val.Date === obj.Date)'] = context_entries
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One - Shutdown Agents \n' + 'Total of: ' + str(
-            agents_groups.get('AgentsMoved')) + ' agents were Shutdown successfully', contents, removeNull=True),
+        'HumanReadable': tableToMarkdown('Sentinel One - Moved Agents \n' + 'Total of: ' + str(
+            agents_groups.get('AgentsMoved')) + ' agents were Moved successfully', contents, removeNull=True),
         'EntryContext': context
     })
 
@@ -334,14 +356,14 @@ def get_agent_processes():
                 'ExecutablePath': process.get('executablePath'),
                 'Pid': process.get('pid')
             })
-        context['SentinelOne.Agents(val.Pid && val.Pid === obj.Pid)'] = processes
+        context['SentinelOne.Agent(val.Pid && val.Pid === obj.Pid)'] = processes
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One Agent processes', contents, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('Sentinel One Agent Processes', contents, headers, removeNull=True),
         'EntryContext': context
     })
 
@@ -354,7 +376,6 @@ def get_threats_command():
     contents = []
     context = {}
     context_entries = []
-    title = ''
 
     # Get arguments
     content_hash = demisto.args().get('content_hash')
@@ -419,7 +440,7 @@ def get_threats_command():
 
                 })
 
-        context['SentinelOne.Threats(val.ID && val.ID === obj.ID)'] = context_entries
+        context['SentinelOne.Threat(val.ID && val.ID === obj.ID)'] = context_entries
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -565,7 +586,7 @@ def mark_as_threat_command():
             'ID': threat_id,
         })
 
-    context['SentinelOne.Threats(val.ID && val.ID === obj.ID)'] = context_entries
+    context['SentinelOne.Threat(val.ID && val.ID === obj.ID)'] = context_entries
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -636,7 +657,7 @@ def mitigate_threat_command():
             }
         })
 
-    context['SentinelOne.Threats(val.ID && val.ID === obj.ID)'] = context_entries
+    context['SentinelOne.Threat(val.ID && val.ID === obj.ID)'] = context_entries
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -699,7 +720,7 @@ def resolve_threat_command():
             'ID': threat_id
         })
 
-    context['SentinelOne.Threats(val.ID && val.ID === obj.ID)'] = context_entries
+    context['SentinelOne.Threat(val.ID && val.ID === obj.ID)'] = context_entries
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -848,7 +869,7 @@ def create_white_item_command():
             'CreatedAt': new_item.get('createdAt')
         })
 
-        context['SentinelOne.Exclusions(val.ID && val.ID === obj.ID)'] = context_entries
+        context['SentinelOne.Exclusion(val.ID && val.ID === obj.ID)'] = context_entries
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -886,67 +907,6 @@ def create_exclusion_item_request(exclusion_type, exclusion_value, os_type, desc
         return_error(response.get('errors'))
     if 'data' in response:
         return response.get('data')[0]
-    return {}
-
-
-def get_static_indicators_command():
-    """
-    Get an export of all threat static indicators
-    """
-    # Init main vars
-    headers = ['Category ID', 'ID', 'Category Name', 'Description']
-    contents = []
-    context = {}
-    context_entries = []
-    title = ''
-
-    # Get arguments
-    limit = int(demisto.args().get('limit', 50))
-
-    # Make request and get raw response
-    static_indicators = get_static_indicators_request()
-    if limit:
-        static_indicators = static_indicators[:limit]
-
-    # Parse response into context & content entries
-    if static_indicators:
-        title = 'Sentinel One - Getting Static Indicators \n' + \
-                'Provides summary information and details for all threat static indicators.'
-        for static_indicator in static_indicators:
-            contents.append({
-                'ID': static_indicator.get('id'),
-                'Description': static_indicator.get('description'),
-                'Category Name': static_indicator.get('categoryName'),
-                'Category ID': static_indicator.get('categoryId')
-            })
-            context_entries.append({
-                'ID': static_indicator.get('id'),
-                'Description': static_indicator.get('description'),
-                'CategoryName': static_indicator.get('categoryName'),
-                'CategoryID': static_indicator.get('categoryId')
-            })
-
-        context['SentinelOne.Indicators(val.ID && val.ID === obj.ID)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, headers, removeNull=True),
-        'EntryContext': context
-    })
-
-
-def get_static_indicators_request():
-    endpoint_url = 'threats/static-indicators'
-
-    response = http_request('GET', endpoint_url)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        if 'indicators' in response.get('data'):
-            return response.get('data').get('indicators')
     return {}
 
 
@@ -1014,7 +974,7 @@ def get_sites_command():
                 'ActiveLicenses': all_sites.get('activeLicenses')
             })
 
-        context['SentinelOne.Sites(val.ID && val.ID === obj.ID)'] = context_entries
+        context['SentinelOne.Site(val.ID && val.ID === obj.ID)'] = context_entries
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1109,7 +1069,7 @@ def get_site_command():
             'IsDefault': site.get('isDefault')
         })
 
-        context['SentinelOne.Sites(val.ID && val.ID === obj.ID)'] = context_entries
+        context['SentinelOne.Site(val.ID && val.ID === obj.ID)'] = context_entries
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1158,7 +1118,7 @@ def expire_site_command():
             'Expired': True
         }
 
-        context['SentinelOne.Sites(val.ID && val.ID === obj.ID)'] = context_entries
+        context['SentinelOne.Site(val.ID && val.ID === obj.ID)'] = context_entries
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1207,7 +1167,7 @@ def reactivate_site_command():
             'Reactivated': site.get('success')
         }
 
-        context['SentinelOne.Sites(val.ID && val.ID === obj.ID)'] = context_entries
+        context['SentinelOne.Site(val.ID && val.ID === obj.ID)'] = context_entries
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1264,7 +1224,7 @@ def get_threat_summary_command():
             'Blocked': threat_summary.get('blocked')
         }
 
-        context['SentinelOne.ThreatSummary(val && val === obj)'] = context_entries
+        context['SentinelOne.Threat(val && val === obj)'] = context_entries
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1437,7 +1397,7 @@ def get_agent_command():
             'SiteName': agent.get('siteName')
         })
 
-        context['SentinelOne.Agents(val.ID && val.ID === obj.ID)'] = context_entries
+        context['SentinelOne.Agent(val.ID && val.ID === obj.ID)'] = context_entries
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1462,95 +1422,6 @@ def get_agent_request(agent_id):
     if 'data' in response:
         return response.get('data')[0]
     return {}
-
-
-def create_query_request(query, from_date, to_date):
-
-    endpoint_url = 'dv/init-query'
-
-    params = {
-        "query": query,
-        "fromDate": from_date,
-        "toDate": to_date
-    }
-
-    response = http_request('POST', endpoint_url, params)
-
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
-
-
-def create_query():
-
-    query = demisto.args().get('query')
-    from_date = demisto.args().get('from_date')
-    to_date = demisto.args().get('to_date')
-
-    query_id = create_query_request(query, from_date, to_date)
-
-    demisto.results('The query ID is ' + query_id)
-
-
-def get_events_request(query_id=None, limit=None):
-
-    endpoint_url = 'events'
-
-    params = {
-        'query_id': query_id,
-        'limit': limit
-    }
-
-    response = http_request('GET', endpoint_url, params)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
-
-
-def get_events():
-    """
-    Get all Deep Visibility events from query
-    """
-    contents = []
-    context_entries = []
-    context = {}
-
-    query_id = demisto.args().get('query_id')
-    limit = int(demisto.args().get('limit', 10))
-
-    events = get_events_request(query_id, limit)
-    if events:
-        for event in events:
-            contents.append({
-                'Sha1': event.get('sha1'),
-                'DstIp': event.get('dstIp'),
-                'SrcIp': event.get('srcIp'),
-                'FileFullName': event.get('fileFullName'),
-                'ProcessName': event.get('processName')
-            })
-
-            context_entries.append({
-                'Sha1': event.get('sha1'),
-                'DstIp': event.get('dstIp'),
-                'SrcIp': event.get('srcIp'),
-                'FileFullName': event.get('fileFullName'),
-                'ProcessName': event.get('processName')
-            })
-
-        context['SentinelOne.Event(val.sha1 && val.sha1 === obj.sha1)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('SentinelOne Events', contents, removeNull=True),
-        'EntryContext': context
-    })
 
 
 def fetch_incidents():
@@ -1636,10 +1507,6 @@ try:
         delete_group()
     elif demisto.command() == 'sentinelone-agent-processes':
         get_agent_processes()
-    elif demisto.command() == 'sentinelone-create-query':
-        create_query()
-    elif demisto.command() == 'sentinelone-get-events':
-        get_events()
 
 
 except Exception as e:
