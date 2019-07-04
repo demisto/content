@@ -30,8 +30,9 @@ HOSTS_HEADERS = ["ID", "Name", "EntityId", "EntityName", "OS", "Status", "Locati
                  "ThreatLevelComments", "DateUpdated", "HostZone"]
 LOGS_HEADERS = ["Level", "Computer", "Channel", "Keywords", "EventData"]
 PERSON_HEADERS = ["ID", "HostStatus", "IsAPIPerson", "FirstName", "LastName", "UserID", "UserLogin", "DateUpdated"]
-NETWORK_HEADERS = ["ID", "EIP", "HostStatus", "Name", "RiskLevel", "EntityId", "EntityName", "Location", "ThreatLevel",
-                   "DateUpdated", "HostZone", "BIP"]
+NETWORK_HEADERS = ["ID", "BeganIP", "EndIP", "HostStatus", "Name", "RiskLevel", "EntityId", "EntityName", "Location", "ThreatLevel",
+                   "DateUpdated", "HostZone"]
+ALARM_SUMMARY_HEADERS = ["PIFType", "DrillDownSummaryLogs"]
 
 PIF_TYPES = {
     "1": "Direction",
@@ -191,7 +192,6 @@ ALARM_STATUS = {
     "4": "Completed",
 }
 
-
 ''' HELPER FUNCTIONS '''
 
 
@@ -300,7 +300,7 @@ def update_networks_keys(networks):
 
     for network in networks:
         tmp_network = {
-            'EIP': network.get('eip'),
+            'EndIP': network.get('eip'),
             'HostStatus': network.get('recordStatusName'),
             'Name': network.get('name'),
             'RiskLevel': network.get('riskLevel'),
@@ -311,7 +311,7 @@ def update_networks_keys(networks):
             'DateUpdated': network.get('dateUpdated'),
             'HostZone': network.get('hostZone'),
             'ID': network.get('id'),
-            'BIP': network.get('bip')
+            'BeganIP': network.get('bip')
         }
         new_networks.append(tmp_network)
     return new_networks
@@ -492,7 +492,7 @@ def get_persons(data_args):
     res = update_persons_keys(res)
     context = createContext(res, removeNull=True)
     outputs = {'Logrhythm.Person(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Persons information:', context, PERSON_HEADERS)
+    human_readable = tableToMarkdown('Persons information', context, PERSON_HEADERS)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 
@@ -506,64 +506,51 @@ def get_networks(data_args):
     res = update_networks_keys(res)
     context = createContext(res, removeNull=True)
     outputs = {'Logrhythm.Network(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Networks information:', context)
-    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
-
-
-def get_logs_by_alarm(data_args):
-    id = data_args.get('alarm-id')
-    res = http_request('GET', 'lr-drilldown-cache-api/drilldown/' + id)
-    res = json.loads(res['Data']['DrillDownResults']['RuleBlocks'][0]['DrillDownLogs'])
-
-    if isinstance(res, list):
-        for item in res:
-            item['LogMessage'] = json.loads(xml2json(str(item['logMessage'])))
-            del item['logMessage']
-    else:
-        res['LogMessage'] = json.loads(xml2json(str(res['logMessage'])))
-        del res['logMessage']
-
-    alarm = {}
-    alarm['AlarmId'] = id
-    alarm['AlarmLogs'] = res
-
-    context = createContext(alarm, removeNull=True)
-    outputs = {'Logrhythm.Alarm(val.AlarmId === obj.AlarmId)': context}
-    human_readable = tableToMarkdown('Logs for alarm ' + id + ':', alarm['AlarmLogs'])
+    human_readable = tableToMarkdown('Networks information', context, NETWORK_HEADERS)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 
 def get_alarm_data(data_args):
     id = data_args.get('alarm-id')
     res = http_request('GET', 'lr-drilldown-cache-api/drilldown/' + id)
-    # res = json.loads(RESPONSE)
+
     alarm_data = res['Data']['DrillDownResults']
     alarm_summaries = res['Data']['DrillDownResults']['RuleBlocks']
     del alarm_data['RuleBlocks']
-    alarm_data['AIEMsgXml'] = json.loads(xml2json(str(alarm_data.get('AIEMsgXml')))).get('aie')
+    aie_message = xml2json(str(alarm_data.get('AIEMsgXml'))).replace('\"@','\"')
+    alarm_data['AIEMsgXml'] = json.loads(aie_message).get('aie')
     alarm_data['Status'] = ALARM_STATUS[str(alarm_data['Status'])]
+    alarm_data['ID'] = alarm_data['AlarmID']
+    del alarm_data['AlarmID']
 
-    DDS_summaries = []
+    dds_summaries = []
     for block in alarm_summaries:
         for item in block['DDSummaries']:
             item['PIFType'] = PIF_TYPES[str(item['PIFType'])]
-            del item['DrillDownSummaryLogs']
-            DDS_summaries.append(item)
+            m = re.findall(r'"field": "(([^"]|\\")*)"', item['DrillDownSummaryLogs'])
+            fields = [k[0] for k in m]
+            item['DrillDownSummaryLogs'] = ", ".join(fields)
+            del item['DefaultValue']
+            dds_summaries.append(item)
 
-    alarm_data['AlarmSummaries'] = DDS_summaries
+    alarm_data['Summary'] = dds_summaries
 
     context = createContext(alarm_data, removeNull=True)
-    outputs = {'Logrhythm.Alarm(val.AlarmID === obj.AlarmID)': context}
+    outputs = {'Logrhythm.Alarm(val.ID === obj.ID)': context}
 
-    del alarm_data['AlarmSummaries']
-    human_readable = tableToMarkdown('Alarm information:', alarm_data) + tableToMarkdown('Alarm summaries:', DDS_summaries)
+    del alarm_data['AIEMsgXml']
+    del alarm_data['Summary']
+    human_readable = tableToMarkdown('Alarm information for alarm id ' + id, alarm_data) + tableToMarkdown('Alarm summaries', DDS_summaries, ALARM_SUMMARY_HEADERS)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 
 def get_alarm_events(data_args):
     id = data_args.get('alarm-id')
+    count = int(data_args.get('count'))
+    fields = data_args.get('fields')
+    show_log_message = data_args.get('get-log-message') =='True'
+
     res = http_request('GET', 'lr-drilldown-cache-api/drilldown/' + id)
-    # res = json.loads(RESPONSE)
     res = res['Data']['DrillDownResults']['RuleBlocks']
 
     events = []
@@ -572,13 +559,24 @@ def get_alarm_events(data_args):
         logs = json.loads(block['DrillDownLogs'])
         for log in logs:
             fix_date_values(log)
+            if not show_log_message:
+                del log['logMessage']
             events.append((log))
 
-    ec = {"AlarmID": int(id), "Events": events}
+    events = events[:count]
+    human_readable = tableToMarkdown('Events information for alarm ' + id, events)
 
+    if fields:
+        fields = string.split(fields,',')
+        for event in events:
+            for key in event.keys():
+                if key not in fields:
+                    del event[key]
+
+    ec = {"ID": int(id), "Event": events}
     context = createContext(ec, removeNull=True)
-    outputs = {'Logrhythm.Alarm(val.AlarmID === obj.AlarmID)': context}
-    human_readable = tableToMarkdown('Alarm events information:', events)
+    outputs = {'Logrhythm.Alarm(val.ID === obj.ID)': context}
+
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
 
@@ -607,8 +605,6 @@ def main():
             get_persons(demisto.args())
         elif demisto.command() == 'lr-get-networks':
             get_networks(demisto.args())
-        elif demisto.command() == 'lr-get-drilldown-alarm-by-id':
-            get_logs_by_alarm(demisto.args())
         elif demisto.command() == 'lr-get-alarm-data':
             get_alarm_data(demisto.args())
         elif demisto.command() == 'lr-get-alarm-events':

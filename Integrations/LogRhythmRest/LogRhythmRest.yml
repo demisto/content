@@ -415,7 +415,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '100'
+      defaultValue: '30'
       description: Number of persons to return.
       isArray: false
       name: count
@@ -458,14 +458,14 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '100'
+      defaultValue: '30'
       description: Number of networks to return.
       isArray: false
       name: count
       required: false
       secret: false
     deprecated: false
-    description: Retrieves a list of persons
+    description: Retrieves a list of networks
     execution: false
     name: lr-get-networks
     outputs:
@@ -513,7 +513,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '100'
+      defaultValue: '30'
       description: Number of hosts to return.
       isArray: false
       name: count
@@ -571,9 +571,55 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: get alarm logs
+    description: Retrieves alarm data
     execution: false
-    name: lr-get-drilldown-alarm-by-id
+    name: lr-get-alarm-data
+    outputs:
+    - contextPath: Logrhythm.Alarm.Status
+      description: The alarm status
+      type: String
+    - contextPath: Logrhythm.Alarm.EventID
+      description: The alarm event ID
+      type: String
+    - contextPath: Logrhythm.Alarm.LastDxTimeStamp
+      description: The alarm LastDxTimeStamp
+      type: String
+    - contextPath: Logrhythm.Alarm.DateInserted
+      description: The alarm DateInserted
+      type: String
+    - contextPath: Logrhythm.Alarm.AIERuleName
+      description: The alarm AIERuleName
+      type: String
+    - contextPath: Logrhythm.Alarm.Priority
+      description: The alarm Priority
+      type: String
+    - contextPath: Logrhythm.Alarm.AIERuleID
+      description: The alarm AIERule ID
+      type: String
+    - contextPath: Logrhythm.Alarm.ID
+      description: The alarm ID
+      type: String
+    - contextPath: Logrhythm.Alarm.NotificationSent
+      description: Alarm notification Sent
+      type: String
+    - contextPath: Logrhythm.Alarm.AlarmGuid
+      description: The alarm Guid
+      type: String
+    - contextPath: Logrhythm.Alarm.RetryCount
+      description: The alarm retry count
+      type: String
+    - contextPath: Logrhythm.Alarm.NormalMessageDate
+      description: The alarm message date
+      type: String
+    - contextPath: Logrhythm.Alarm.WebConsoleIds
+      description: The alarm webConsole Ids
+      type: String
+    - contextPath: Logrhythm.Alarm.Summary.PIFType
+      description: Alarm summary type
+      type: String
+    - contextPath: Logrhythm.Alarm.Summary.DrillDownSummaryLogs
+      description: Drill down summary logs
+      type: String
   - arguments:
     - default: false
       description: The alarm ID
@@ -581,21 +627,44 @@ script:
       name: alarm-id
       required: true
       secret: false
-    deprecated: false
-    description: Retrieves alarm data
-    execution: false
-    name: lr-get-alarm-data
-  - arguments:
     - default: false
-      description: The alarm ID
+      defaultValue: '10'
+      description: Number of events to return.
       isArray: false
-      name: alarm-id
-      required: true
+      name: count
+      required: false
+      secret: false
+    - default: false
+      description: Comma separated fields (outputs) we want to see in the context,
+        when empty - all the fields be there
+      isArray: false
+      name: fields
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: Retrieves the log message from the event
+      isArray: false
+      name: get-log-message
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
       secret: false
     deprecated: false
     description: Retrieves a list of events by alarm id
     execution: false
     name: lr-get-alarm-events
+    outputs:
+    - contextPath: Logrhythm.Alarm.Event
+      description: alarm event information
+      type: String
+    - contextPath: Logrhythm.Alarm.ID
+      description: The alarm ID
+      type: String
   isfetch: false
   runonce: false
   script: '-'
