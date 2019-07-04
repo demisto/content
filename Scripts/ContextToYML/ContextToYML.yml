@@ -5,12 +5,18 @@ name: ContextToYML
 script: ''
 type: python
 tags: []
+comment: |-
+  Demisto integrations have a YAML file that defines them.
+  Creating the YAML file is a tedious and error-prone task of manually copying outputs from the API result to the file/UI/PyCharm.
+  This script auto generates the YAML for a command from the JSON result of the relevant API call.
 enabled: true
 args:
 - name: command_name
-  description: Command name.
+  required: true
+  description: the name of the command
 - name: base_path
-  description: Base path for context outputs.
+  required: true
+  defaultValue: base context path of the outputs
 - name: json_file_entry_id
   description: Raw output file in json format. Will return context outputs as should
     be in the yml file.
@@ -35,6 +41,5 @@ scripttarget: 0
 runonce: false
 dockerimage: demisto/python3:3.7.3.221
 runas: DBotWeakRole
-comment: Turns context output into yml formatted file with the context path of each field.
 tests:
   - No test
