@@ -1263,7 +1263,7 @@
         },
         {
             "playbookID": "Phishing v2 Test - Attachment",
-            "timeout": 600,
+            "timeout": 1200,
             "nightly": true,            
             "integrations": [
                 "EWS Mail Sender",
@@ -1275,7 +1275,7 @@
         },
         {
             "playbookID": "Phishing v2 Test - Inline",
-            "timeout": 500,
+            "timeout": 1200,
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
