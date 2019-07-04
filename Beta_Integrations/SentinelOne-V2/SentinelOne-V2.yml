@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: SentinelOne RC
+  id: SentinelOne Beta
   version: -1
 configuration:
 - display: Server URL (e.g. https://usea1.sentinelone.net)
@@ -39,13 +39,14 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '5'
-  display: Threats minimum risk level when importing incidents (0-10)
+  display: Threats minimum risk level when importing incidents (0-10 where 10 is the
+    highest)
   name: fetch_threat_rank
   required: false
   type: 0
 description: End point protection
-display: SentinelOne RC
-name: SentinelOne RC
+display: SentinelOne Beta
+name: SentinelOne Beta
 script:
   commands:
   - arguments:
@@ -164,11 +165,16 @@ script:
       name: exclusion_value
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: OS type Can be windows, windows_legacy, macos or linux. Need OS
         type for hash exclusions.
       isArray: false
       name: os_type
+      predefined:
+      - windows
+      - windows_legacy.macos
+      - linux
       required: true
       secret: false
     - default: false
@@ -177,11 +183,18 @@ script:
       name: description
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Exclusion mode (path exclusion only) Can be suppress, disable_in_process_monitor_deep,
         disable_in_process_monitor, disable_all_monitors or disable_all_monitors_deep
       isArray: false
       name: exclusion_mode
+      predefined:
+      - suppress
+      - disable_in_process_monitor_deep
+      - disable_in_process_monitor
+      - disable_all_monitors
+      - disable_all_monitors_deep
       required: false
       secret: false
     - default: false
@@ -191,7 +204,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: List of Group IDs to filter by (Either siteIds or groupIds is mandatory)
+      description: List of Group IDs to filter by (Either site_ids or group_ids is
+        mandatory)
       isArray: true
       name: group_ids
       required: false
@@ -375,7 +389,7 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: Limit the number of threats in the response. Default is 50
+      description: Limit the number of threats in the response. Default is 20
       isArray: false
       name: limit
       required: false
@@ -417,33 +431,33 @@ script:
     execution: false
     name: sentinelone-get-threats
     outputs:
-    - contextPath: SentinelOne.Threats.ID
+    - contextPath: SentinelOne.Threat.ID
       description: The threat ID
-      type: string
-    - contextPath: SentinelOne.Threats.AgentComputerName
+      type: String
+    - contextPath: SentinelOne.Threat.AgentComputerName
       description: The agent computer name
-      type: string
-    - contextPath: SentinelOne.Threats.CreatedDate
+      type: String
+    - contextPath: SentinelOne.Threat.CreatedDate
       description: File created date
-      type: date
-    - contextPath: SentinelOne.Threats.SiteID
+      type: Date
+    - contextPath: SentinelOne.Threat.SiteID
       description: The site ID
-      type: string
-    - contextPath: SentinelOne.Threats.Classification
+      type: String
+    - contextPath: SentinelOne.Threat.Classification
       description: Classification name
       type: string
-    - contextPath: SentinelOne.Threats.MitigationStatus
+    - contextPath: SentinelOne.Threat.MitigationStatus
       description: The agent Status
-      type: string
-    - contextPath: SentinelOne.Threats.AgentID
+      type: String
+    - contextPath: SentinelOne.Threat.AgentID
       description: The agent ID.
-      type: string
-    - contextPath: SentinelOne.Threats.Rank
+      type: String
+    - contextPath: SentinelOne.Threat.Rank
       description: Number 1-10 representing cloud reputation
-      type: number
-    - contextPath: SentinelOne.Threats.MarkedAsBenign
+      type: Number
+    - contextPath: SentinelOne.Threat.MarkedAsBenign
       description: Marked as benign
-      type: boolean
+      type: Boolean
   - arguments:
     - default: false
       description: 'List of Group IDs to filter by. Example: "225494730938493804,225494730938493915".'
@@ -456,21 +470,21 @@ script:
     execution: false
     name: sentinelone-threat-summary
     outputs:
-    - contextPath: SentinelOne.ThreatSummary.Active
+    - contextPath: SentinelOne.Threat.Active
       description: Active number of threats in the system.
-      type: number
-    - contextPath: SentinelOne.ThreatSummary.Total
+      type: Number
+    - contextPath: SentinelOne.Threat.Total
       description: Total number of threats in the system.
-      type: number
-    - contextPath: SentinelOne.ThreatSummary.Mitigated
+      type: Number
+    - contextPath: SentinelOne.Threat.Mitigated
       description: Number of threats mitigated in the system.
-      type: number
-    - contextPath: SentinelOne.ThreatSummary.Suspicious
+      type: Number
+    - contextPath: SentinelOne.Threat.Suspicious
       description: Suspicious number of threats in the system.
-      type: number
-    - contextPath: SentinelOne.ThreatSummary.Blocked
+      type: Number
+    - contextPath: SentinelOne.Threat.Blocked
       description: Number of threats blocked in the system.
-      type: number
+      type: Number
   - arguments:
     - default: false
       description: A list of threat IDs (Comma separated list).
@@ -493,13 +507,13 @@ script:
     execution: false
     name: sentinelone-mark-as-threat
     outputs:
-    - contextPath: SentinelOne.Threats.ID
+    - contextPath: SentinelOne.Threat.ID
       description: The threat ID.
-      type: string
-    - contextPath: SentinelOne.Threats.MarkedAsThreat
+      type: String
+    - contextPath: SentinelOne.Threat.MarkedAsThreat
       description: A boolean to check if the suspicious threat was marked as threat
         successfully or not.
-      type: boolean
+      type: Boolean
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -526,16 +540,16 @@ script:
     execution: false
     name: sentinelone-mitigate-threat
     outputs:
-    - contextPath: SentinelOne.Threats.ID
+    - contextPath: SentinelOne.Threat.ID
       description: The threat ID.
-      type: string
-    - contextPath: SentinelOne.Threats.Mitigated
+      type: String
+    - contextPath: SentinelOne.Threat.Mitigated
       description: A boolean to check if the  threat was mitigated successfully or
         not.
-      type: boolean
-    - contextPath: SentinelOne.Threats.Mitigation.Action
+      type: Boolean
+    - contextPath: SentinelOne.Threat.Mitigation.Action
       description: Number of threats affected.
-      type: string
+      type: Number
   - arguments:
     - default: false
       description: A list of threat IDs (Comma separated list).
@@ -548,13 +562,13 @@ script:
     execution: false
     name: sentinelone-resolve-threat
     outputs:
-    - contextPath: SentinelOne.Threats.ID
+    - contextPath: SentinelOne.Threat.ID
       description: The threat ID
-      type: string
-    - contextPath: SentinelOne.Threats.Resolved
+      type: String
+    - contextPath: SentinelOne.Threat.Resolved
       description: A boolean to check if the  threat was resolved successfully or
         not
-      type: boolean
+      type: Boolean
   - arguments:
     - default: false
       description: The agent ID
@@ -567,99 +581,51 @@ script:
     execution: false
     name: sentinelone-get-agent
     outputs:
-    - contextPath: SentinelOne.Agents.NetworkStatus
+    - contextPath: SentinelOne.Agent.NetworkStatus
       description: The agent network status
       type: string
-    - contextPath: SentinelOne.Agents.ID
+    - contextPath: SentinelOne.Agent.ID
       description: The agent ID
       type: string
-    - contextPath: SentinelOne.Agents.AgentVersion
+    - contextPath: SentinelOne.Agent.AgentVersion
       description: The agent software version
       type: string
-    - contextPath: SentinelOne.Agents.IsDecomissioned
+    - contextPath: SentinelOne.Agent.IsDecomissioned
       description: Is the agent decommissioned
       type: boolean
-    - contextPath: SentinelOne.Agents.IsActive
+    - contextPath: SentinelOne.Agent.IsActive
       description: Is the agent active
       type: boolean
-    - contextPath: SentinelOne.Agents.LastActiveDate
+    - contextPath: SentinelOne.Agent.LastActiveDate
       description: The last active date of the agent
       type: date
-    - contextPath: SentinelOne.Agents.RegisteredAt
+    - contextPath: SentinelOne.Agent.RegisteredAt
       description: The registration date of the agent
       type: date
-    - contextPath: SentinelOne.Agents.ExternalIP
+    - contextPath: SentinelOne.Agent.ExternalIP
       description: The agent IP address
       type: string
-    - contextPath: SentinelOne.Agents.ThreatCount
+    - contextPath: SentinelOne.Agent.ThreatCount
       description: Number of active threats
       type: number
-    - contextPath: SentinelOne.Agents.EncryptedApplications
+    - contextPath: SentinelOne.Agent.EncryptedApplications
       description: Is disk encryption on
       type: boolean
-    - contextPath: SentinelOne.Agents.OSName
+    - contextPath: SentinelOne.Agent.OSName
       description: Name of operation system
       type: string
-    - contextPath: SentinelOne.Agents.ComputerName
+    - contextPath: SentinelOne.Agent.ComputerName
       description: Name of agent computer
       type: string
-    - contextPath: SentinelOne.Agents.Domain
+    - contextPath: SentinelOne.Agent.Domain
       description: Domain name of agent
       type: string
-    - contextPath: SentinelOne.Agents.CreatedAt
+    - contextPath: SentinelOne.Agent.CreatedAt
       description: Agent creation time
       type: date
-    - contextPath: SentinelOne.Agents.SiteName
+    - contextPath: SentinelOne.Agent.SiteName
       description: Site name involved with the agent.
       type: string
-  - arguments:
-    - default: false
-      description: The content hash to be added to blacklist.
-      isArray: false
-      name: contentHash
-      required: false
-      secret: false
-    - default: false
-      description: List of sha1 hashes to be added to blacklist.
-      isArray: false
-      name: contentHashes
-      required: false
-      secret: false
-    - default: false
-      description: The threat IDs to be added to blacklist.
-      isArray: false
-      name: threatIds
-      required: false
-      secret: false
-    deprecated: false
-    description: Add threat hash to blacklist.
-    execution: false
-    name: sentinelone-add-threat-to-blacklist
-  - arguments:
-    - default: false
-      defaultValue: '50'
-      description: limit number of retrieved results. (0 for all results)
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    deprecated: false
-    description: Return an export of all threat static indicators.
-    execution: false
-    name: sentinelone-get-static-indicators
-    outputs:
-    - contextPath: SentinelOne.Indicators.ID
-      description: ID of the indicator.
-      type: number
-    - contextPath: SentinelOne.Indicators.Description
-      description: Description of the indicator.
-      type: string
-    - contextPath: SentinelOne.Indicators. CategoryName
-      description: Category name of the indicator.
-      type: string
-    - contextPath: SentinelOne.Indicators.CategoryID
-      description: Category ID of the indicator.
-      type: number
   - arguments:
     - default: false
       description: 'Timestamp of last update. Example: "2018-02-27T04:49:26.257525Z".'
@@ -759,43 +725,43 @@ script:
     execution: false
     name: sentinelone-get-sites
     outputs:
-    - contextPath: SentinelOne.Sites.Creator
+    - contextPath: SentinelOne.Site.Creator
       description: The creator name.
       type: string
-    - contextPath: SentinelOne.Sites.Name
+    - contextPath: SentinelOne.Site.Name
       description: The site name.
       type: string
-    - contextPath: SentinelOne.Sites.Type
+    - contextPath: SentinelOne.Site.Type
       description: The site type.
       type: string
-    - contextPath: SentinelOne.Sites.AccountName
+    - contextPath: SentinelOne.Site.AccountName
       description: The account name.
       type: string
-    - contextPath: SentinelOne.Sites.State
+    - contextPath: SentinelOne.Site.State
       description: The site state.
       type: string
-    - contextPath: SentinelOne.Sites.HealthStatus
+    - contextPath: SentinelOne.Site.HealthStatus
       description: The health status of the site.
       type: boolean
-    - contextPath: SentinelOne.Sites.Suite
+    - contextPath: SentinelOne.Site.Suite
       description: The suite site belongs to.
       type: string
-    - contextPath: SentinelOne.Sites.ActiveLicenses
+    - contextPath: SentinelOne.Site.ActiveLicenses
       description: Number of active licenses on the site.
       type: number
-    - contextPath: SentinelOne.Sites.ID
+    - contextPath: SentinelOne.Site.ID
       description: ID of the site.
       type: string
-    - contextPath: SentinelOne.Sites.TotalLicenses
+    - contextPath: SentinelOne.Site.TotalLicenses
       description: Number of total licenses on the site.
       type: number
-    - contextPath: SentinelOne.Sites.CreatedAt
+    - contextPath: SentinelOne.Site.CreatedAt
       description: Timestamp when the site was created.
       type: date
-    - contextPath: SentinelOne.Sites.Expiration
+    - contextPath: SentinelOne.Site.Expiration
       description: Timestamp when the site will get expired.
       type: string
-    - contextPath: SentinelOne.Sites.UnlimitedLicenses
+    - contextPath: SentinelOne.Site.UnlimitedLicenses
       description: Unlimited licenses boolean.
       type: boolean
   - arguments:
@@ -810,49 +776,49 @@ script:
     execution: false
     name: sentinelone-get-site
     outputs:
-    - contextPath: SentinelOne.Sites.Creator
+    - contextPath: SentinelOne.Site.Creator
       description: The creator name.
       type: string
-    - contextPath: SentinelOne.Sites.Name
+    - contextPath: SentinelOne.Site.Name
       description: The site name.
       type: string
-    - contextPath: SentinelOne.Sites.Type
+    - contextPath: SentinelOne.Site.Type
       description: The site type.
       type: string
-    - contextPath: SentinelOne.Sites.AccountName
+    - contextPath: SentinelOne.Site.AccountName
       description: The account name.
       type: string
-    - contextPath: SentinelOne.Sites.State
+    - contextPath: SentinelOne.Site.State
       description: The site state.
       type: string
-    - contextPath: SentinelOne.Sites.HealthStatus
+    - contextPath: SentinelOne.Site.HealthStatus
       description: The health status of the site.
       type: boolean
-    - contextPath: SentinelOne.Sites.Suite
+    - contextPath: SentinelOne.Site.Suite
       description: The suite site belongs to.
       type: string
-    - contextPath: SentinelOne.Sites.ActiveLicenses
+    - contextPath: SentinelOne.Site.ActiveLicenses
       description: Number of active licenses on the site.
       type: number
-    - contextPath: SentinelOne.Sites.ID
+    - contextPath: SentinelOne.Site.ID
       description: ID of the site.
       type: string
-    - contextPath: SentinelOne.Sites.TotalLicenses
+    - contextPath: SentinelOne.Site.TotalLicenses
       description: Number of total licenses on the site.
       type: number
-    - contextPath: SentinelOne.Sites.CreatedAt
+    - contextPath: SentinelOne.Site.CreatedAt
       description: Timestamp when the site was created.
       type: date
-    - contextPath: SentinelOne.Sites.Expiration
+    - contextPath: SentinelOne.Site.Expiration
       description: Timestamp when the site will get expired.
       type: string
-    - contextPath: SentinelOne.Sites.UnlimitedLicenses
+    - contextPath: SentinelOne.Site.UnlimitedLicenses
       description: Unlimited licenses boolean.
       type: boolean
-    - contextPath: SentinelOne.Sites.AccountID
+    - contextPath: SentinelOne.Site.AccountID
       description: Account ID
       type: string
-    - contextPath: SentinelOne.Sites.IsDefault
+    - contextPath: SentinelOne.Site.IsDefault
       description: Is site default
       type: boolean
   - arguments:
@@ -867,10 +833,10 @@ script:
     execution: false
     name: sentinelone-reactivate-site
     outputs:
-    - contextPath: SentinelOne.Sites.ID
+    - contextPath: SentinelOne.Site.ID
       description: ID of the site.
       type: string
-    - contextPath: SentinelOne.Sites.Reactivated
+    - contextPath: SentinelOne.Site.Reactivated
       description: A boolean to check if the site was reactivated or not.
       type: boolean
   - arguments:
@@ -885,12 +851,12 @@ script:
     execution: false
     name: sentinelone-expire-site
     outputs:
-    - contextPath: SentinelOne.Sites.ID
+    - contextPath: SentinelOne.Site.ID
       description: ID of the site.
-      type: string
-    - contextPath: SentinelOne.Sites.Expired
+      type: String
+    - contextPath: SentinelOne.Site.Expired
       description: A boolean to check if the site was expired or not.
-      type: boolean
+      type: Boolean
   - arguments:
     - default: false
       description: 'Return activities created after this timestamp. Example: "2018-02-27T04:49:26.257525Z".'
@@ -989,62 +955,62 @@ script:
     execution: false
     name: sentinelone-get-activities
     outputs:
-    - contextPath: SentinelOne.Activity.agentId
+    - contextPath: SentinelOne.Activity.AgentID
       description: Related agent (If applicable)
       type: String
-    - contextPath: SentinelOne.Activity.agentUpdatedVersion
+    - contextPath: SentinelOne.Activity.AgentUpdatedVersion
       description: Agent's new version (If applicable)
       type: String
-    - contextPath: SentinelOne.Activity.siteId
+    - contextPath: SentinelOne.Activity.SiteID
       description: Related site (If applicable)
       type: String
-    - contextPath: SentinelOne.Activity.userId
+    - contextPath: SentinelOne.Activity.UserID
       description: The user who invoked the activity (If applicable)
       type: String
-    - contextPath: SentinelOne.Activity.secondaryDescription
+    - contextPath: SentinelOne.Activity.SecondaryDescription
       description: Secondary description
       type: String
-    - contextPath: SentinelOne.Activity.osFamily
+    - contextPath: SentinelOne.Activity.OsFamily
       description: Agent's OS type (if applicable). Can be linux, macos, windows or
         windows_legacy
       type: String
-    - contextPath: SentinelOne.Activity.activityType
+    - contextPath: SentinelOne.Activity.ActivityType
       description: Activity type
       type: Number
-    - contextPath: SentinelOne.Activity.data.siteId
+    - contextPath: SentinelOne.Activity.data.SiteID
       description: The site ID
       type: String
-    - contextPath: SentinelOne.Activity.data.siteName
+    - contextPath: SentinelOne.Activity.data.SiteName
       description: The site name
       type: String
     - contextPath: SentinelOne.Activity.data.username
       description: The name of the site creator
       type: String
-    - contextPath: SentinelOne.Activity.hash
+    - contextPath: SentinelOne.Activity.Hash
       description: Threat file hash (If applicable)
       type: String
-    - contextPath: SentinelOne.Activity.updatedAt
+    - contextPath: SentinelOne.Activity.UpdatedAt
       description: Activity last updated time (UTC)
       type: Date
-    - contextPath: SentinelOne.Activity.comments
+    - contextPath: SentinelOne.Activity.Comments
       description: Comments for the activity
       type: String
-    - contextPath: SentinelOne.Activity.threatId
+    - contextPath: SentinelOne.Activity.ThreatID
       description: Related threat (If applicable)
       type: String
-    - contextPath: SentinelOne.Activity.primaryDescription
+    - contextPath: SentinelOne.Activity.PrimaryDescription
       description: Primary description for the activity
       type: String
-    - contextPath: SentinelOne.Activity.groupId
+    - contextPath: SentinelOne.Activity.GroupID
       description: Related group (If applicable)
       type: String
-    - contextPath: SentinelOne.Activity.id
+    - contextPath: SentinelOne.Activity.ID
       description: Activity ID
       type: String
-    - contextPath: SentinelOne.Activity.createdAt
+    - contextPath: SentinelOne.Activity.CreatedAt
       description: Activity creation time (UTC)
       type: Date
-    - contextPath: SentinelOne.Activity.description
+    - contextPath: SentinelOne.Activity.Description
       description: Extra activity information
       type: String
   - arguments:
@@ -1090,7 +1056,7 @@ script:
       secret: false
     - default: false
       description: 'The rank sets the priority of a dynamic group over others. Example:
-        "1".'
+        "1". (1 is the highest priority)'
       isArray: false
       name: rank
       required: false
@@ -1169,7 +1135,7 @@ script:
     execution: false
     name: sentinelone-move-agent
     outputs:
-    - contextPath: SentinelOne.Agents.AgentsMoved
+    - contextPath: SentinelOne.Agent.AgentsMoved
       description: The number of agent that moved to another group
       type: Number
   - arguments:
@@ -1195,65 +1161,24 @@ script:
     execution: false
     name: sentinelone-agent-processes
     outputs:
-    - contextPath: SentinelOne.Agents.memoryUsage
+    - contextPath: SentinelOne.Agent.memoryUsage
       description: Memory usage (MB)
       type: Number
-    - contextPath: SentinelOne.Agents.startTime
+    - contextPath: SentinelOne.Agent.startTime
       description: The process start time
       type: Date
-    - contextPath: SentinelOne.Agents.pid
+    - contextPath: SentinelOne.Agent.pid
       description: The process ID
       type: Number
-    - contextPath: SentinelOne.Agents.processName
+    - contextPath: SentinelOne.Agent.processName
       description: 'The name of the process '
       type: String
-    - contextPath: SentinelOne.Agents.cpuUsage
+    - contextPath: SentinelOne.Agent.cpuUsage
       description: CPU Usage (%)
       type: Number
-    - contextPath: SentinelOne.Agents.executablePath
+    - contextPath: SentinelOne.Agent.executablePath
       description: Executable path
       type: String
-  - arguments:
-    - default: false
-      description: Events matching the query search term will be returned
-      isArray: false
-      name: query
-      required: true
-      secret: false
-    - default: false
-      description: Events from a specific date
-      isArray: false
-      name: from_date
-      required: true
-      secret: false
-    - default: false
-      description: Events to a specific date
-      isArray: false
-      name: to_date
-      required: true
-      secret: false
-    deprecated: false
-    description: Start a Deep Visibility Query and get the queryId, use queryId for
-      all other APIs such as Get All Events and Get Query Status
-    execution: false
-    name: sentinelone-create-query
-  - arguments:
-    - default: false
-      description: The query ID. Get query_id from create-query command
-      isArray: false
-      name: query_id
-      required: true
-      secret: false
-    - default: false
-      description: The limit of the results to be returned
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    deprecated: false
-    description: Get all Deep Visibility events from query
-    execution: false
-    name: sentinelone-get-events
   dockerimage: demisto/python3:3.7.3.286
   isfetch: true
   runonce: false
