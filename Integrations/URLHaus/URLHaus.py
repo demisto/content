@@ -23,10 +23,10 @@ USE_SSL = not demisto.params().get('insecure', False)
 
 # Remove proxy if not set to true in params
 if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+    os.environ.pop('HTTP_PROXY', None)
+    os.environ.pop('HTTPS_PROXY', None)
+    os.environ.pop('http_proxy', None)
+    os.environ.pop('https_proxy', None)
 
 THRESHOLD = int(demisto.params().get('threshold', 1))
 
@@ -446,13 +446,25 @@ def urlhaus_download_sample_command():
     res = download_malware_sample(file_sha256)
 
     try:
-        if res.json()['query_status'] == 'not_found':
+        if len(res.content) == 0:
+            demisto.results({
+                'Type': entryTypes['note'],
+                'HumanReadable': f'No results for SHA256: {file_sha256}',
+                'HumanReadableFormat': formats['markdown']
+            })
+        elif res.json()['query_status'] == 'not_found':
             demisto.results({
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['json'],
-                'Contents': res.content,
+                'Contents': res.json(),
                 'HumanReadable': f'No results for SHA256: {file_sha256}',
                 'HumanReadableFormat': formats['markdown']
+            })
+        else:
+            demisto.results({
+                'Type': entryTypes['error'],
+                'ContentsFormat': formats['text'],
+                'Contents': res.content
             })
     except json.JSONDecodeError:
         demisto.results(fileResult(file_sha256, extract_zipped_buffer(res.content)))
