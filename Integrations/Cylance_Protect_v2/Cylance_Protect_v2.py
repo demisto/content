@@ -82,12 +82,7 @@ def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=Fals
     res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params)
     if res.status_code < 200 or res.status_code >= 300:
         if res.status_code == 409 and str(res.content).find('already an entry for this threat') != -1:
-            demisto.results({
-                'Type': 11,
-                'Contents': res.content,
-                'ContentsFormat': formats['text']
-            })
-            sys.exit(0)
+            raise Warning(res.content)
         if not res.status_code == 404 and not accept_404:
             return_error(
                 'Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(
@@ -1421,6 +1416,13 @@ try:
 
     elif demisto.command() == 'cylance-protect-get-policy-details':
         get_policy_details()
+
+except Warning as w:
+    demisto.results({
+        'Type': 11,
+        'Contents': str(w),
+        'ContentsFormat': formats['text']
+    })
 
 except Exception as e:
     demisto.error('#### error in Cylance Protect v2: ' + str(e))
