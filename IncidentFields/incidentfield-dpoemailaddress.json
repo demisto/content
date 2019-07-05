@@ -1,7 +1,6 @@
 {
 	"id": "incident_dpoemailaddress",
 	"version": -1,
-	"releaseNotes": "New incident field for GDPR Data Breach incident",
 	"modified": "2019-04-14T12:05:03.812194029Z",
 	"name": "DPO E-mail Address",
 	"ownerOnly": false,
@@ -11,7 +10,7 @@
 	"type": "shortText",
 	"closeForm": false,
 	"editForm": true,
-	"required": true,
+	"required": false,
 	"script": "",
 	"fieldCalcScript": "",
 	"neverSetAsRequired": false,

@@ -1,7 +1,6 @@
 {
 	"id": "incident_sizenumberofemployees",
 	"version": -1,
-	"releaseNotes": "New incident field for GDPR Data Breach incident",
 	"modified": "2019-04-14T11:27:37.886534316Z",
 	"name": "Size - number of employees",
 	"ownerOnly": false,

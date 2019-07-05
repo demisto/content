@@ -299,13 +299,15 @@ script:
   type: javascript
   commands:
   - name: opswat-hash
+    deprecated: true
     arguments:
     - name: hash
       required: true
       default: true
       description: File hash (Can be any hash type)
-    description: Check file hash on OPSWAT (Deprecated)
+    description: Check file hash on OPSWAT
   - name: opswat-scan-file
+    deprecated: true
     arguments:
     - name: fileId
       required: true
@@ -316,14 +318,15 @@ script:
       description: OPSWAT file name to scan
     - contextPath: OPSWAT.ScanId
       description: OPSWAT scan id of the scan
-    description: Scan file in OPSWAT (Deprecated)
+    description: Scan file in OPSWAT
   - name: opswat-scan-result
+    deprecated: true
     arguments:
     - name: id
       required: true
       default: true
       description: OPSWAT scan id
-    description: Get OPSWAT result (Deprecated)
+    description: Get OPSWAT result
   runonce: false
 tests:
   - No tests - no instance

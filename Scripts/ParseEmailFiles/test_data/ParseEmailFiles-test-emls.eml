@@ -1,0 +1,129 @@
+Received: from foo@demisto.com (35.165.118.153) by
+ foo@demisto.com (10.238.89.39) with Microsoft SMTP Server (TLS)
+ id 93.184.216.34 via Mailbox Transport; Tue, 23 Apr 2019 12:44:48 +0200
+Received: from foo@demisto.com (8.3.3.3) by
+ foo@demisto.com (8.3.3.3) with Microsoft SMTP Server (TLS)
+ id 93.184.216.34; Tue, 23 Apr 2019 12:44:48 +0200
+Received: from foo@demisto.com (8.3.3.3) by
+ dfoo@demisto.com (8.3.3.3) with Microsoft SMTP Server (TLS) id
+ 93.184.216.34; Tue, 23 Apr 2019 12:44:47 +0200
+Received: from foo@demisto.com (8.3.3.3) by
+ foo@demisto.com (8.3.3.3) with Microsoft SMTP Server (TLS) id
+ 93.184.216.34 via Frontend Transport; Tue, 23 Apr 2019 12:44:47 +0200
+Received: from foo@demisto.com (8.3.3.3) by
+ foo@demisto.com (10.238.89.39) with Microsoft SMTP Server (TLS) id
+ 93.184.216.34; Tue, 23 Apr 2019 12:44:47 +0200
+Received: from foo@demisto.com (35.165.118.153) by
+ foo@demisto.com (35.165.118.153) with Microsoft SMTP Server (TLS)
+ id 93.184.216.34; Tue, 23 Apr 2019 12:44:33 +0200
+Received: from foo@demisto.com (2603:10b6:208:160::47)
+ by foo@demisto.com (2603:10b6:208:160::47) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 35.165.118.153; Tue, 23 Apr
+ 2019 10:44:40 +0000
+Received: from foo@demisto.com
+ (2603:10b6:208:160::47) by foo@demisto.com
+ (2603:10b6:208:160::47) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 35.165.118.153 via Frontend
+ Transport; Tue, 23 Apr 2019 10:44:39 +0000
+Received: from momo@demisto.com (35.165.118.153) by
+ foo@demisto.com (35.165.118.153) with Microsoft SMTP
+ Server (version=TLS1_1, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id
+ 35.165.118.153 via Frontend Transport; Tue, 23 Apr 2019 10:44:39 +0000
+Received: from localhost	by momo@demisto.com; Tue, 23 Apr 2019 13:44:36 +0300
+From: Mail Delivery Subsystem <momo@demisto.com>
+To: "Admin, Admin" <momo@demisto.com>
+Subject:
+	=?utf-8?B?RGVsYXllZCBtZXNzYWdlOiBGVzogRk9PRExJTksgzqDOm86XzqHOqc6czpc=?=
+Thread-Topic:
+	=?utf-8?B?RGVsYXllZCBtZXNzYWdlOiBGVzogRk9PRExJTksgzqDOm86XzqHOqc6czpc=?=
+Thread-Index: AQHU+cGSjxNaevLX8EWI3TI6F8qK3A==
+X-MS-Exchange-MessageSentRepresentingType: 1
+Date: Tue, 23 Apr 2019 10:44:36 +0000
+Message-ID: <foo@demisto.com>
+Content-Language: en-US
+X-MS-Exchange-Organization-AuthAs: Anonymous
+X-MS-Exchange-Organization-AuthSource: foo@demisto.com
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator:
+received-spf: None (foo@demisto.com: foo@demisto.com does not
+ designate permitted sender hosts)
+Content-Type: multipart/mixed; boundary="_003_96678384422316mailfdl_"
+MIME-Version: 1.0
+
+--_003_96678384422316mailfdlr_
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <foo@demisto.com>
+Content-Transfer-Encoding: base64
+
+VGhpcyBpcyBhbiBpbmZvcm1hdGl2ZSBtZXNzYWdlIHNlbnQgYnkgbW9tb0BkZW1pc3RvLmNvbQoKVGhlIHNlcnZlciB3YXMgbm90IGFibGUgdG8gZGVsaXZlciB5b3VyIG1haWwgbWVzc2FnZSAKCiAgU3ViamVjdDogRlc6IE5FVyBldmRvbcOhZGEKICBEYXRlOiBUdWUsIDIzIEFwciAyMDE5IDA5OjQ0OjE3ICswMDAwCgoKCnRvIHRoZSBmb2xsb3dpbmcgYWRkcmVzc2VzOgoKICA8a29rb0BkZW1pc3RvLmNvbT4gKGtva29AZGVtaXN0by5jb206IFVzZXIgcXVvdGEgZXhjZWVkZWQpCgoKVGhpcyBpcyBqdXN0IGEgdGVtcG9yYXJ5IGVycm9yLiBUaGUgc2VydmVyIHdpbGwgY29udGludWUgdG8gYXR0ZW1wdCB0byBkZWxpdmVyCnRoZSBtZXNzYWdlLiBJZiB0aGUgbWVzc2FnZSBjYW5ub3QgYmUgZGVsaXZlcmVkIGluIHRoZSBkZWZpbmVkIHRpbWUgbGltaXQgeW91IHdpbGwKYmUgaW5mb3JtZWQgYWdhaW4uCg==
+
+--_003_96678384422316mailfdl_
+Content-Type: message/delivery-status; name="ABC00004"
+Content-Description: ABC00004
+Content-Disposition: attachment; filename="ABC00004"; size=518;
+	creation-date="Tue, 23 Apr 2019 10:44:48 GMT";
+	modification-date="Tue, 23 Apr 2019 10:44:48 GMT"
+Content-ID: <foo@demisto.com>
+Content-Transfer-Encoding: base64
+
+UmVwb3J0aW5nLU1UQTogZG5zOyBmb29AZGVtaXN0by5jb20KQXJyaXZhbC1EYXRlOiBUdWUsIDIzIEFwciAyMDE5IDEyOjQ0OjI4ICswMzAwCgpPcmlnaW5hbC1SZWNpcGllbnQ6IGZvb0BkZW1pc3RvLmNvbQpGaW5hbC1SZWNpcGllbnQ6IHJmYzgyMjtmb29AZGVtaXN0by5jb20KQWN0aW9uOiBkZWxheWVkClN0YXR1czogNC4yLjIKRGlhZ25vc3RpYy1Db2RlOiBTTVRQOyBVc2VyIHF1b3RhIGV4Y2VlZGVk
+
+--_003_96678384422316mailfdl_
+Content-Type: message/rfc822
+Content-Disposition: attachment;
+	creation-date="Tue, 23 Apr 2019 10:44:48 GMT";
+	modification-date="Tue, 23 Apr 2019 10:44:48 GMT"
+
+Received: from foo@demisto.com ([35.165.118.153])
+	by mail.fdlgroup.gr with ESMTPS
+	(using TLSv1.2 with cipher AES256-GCM-SHA384 (256 bits));
+	Tue, 23 Apr 2019 12:44:27 +0300
+Received: from foo@demisto.com (2603:10b6:3:10::10)
+ by foo@demisto.com (2001:db8::100f) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 35.165.118.153; Tue, 23 Apr
+ 2019 09:44:23 +0000
+Received: from foo@demisto.com
+ (2603:10b6:208:160::47) by foo@demisto.com
+ (2603:10b6:208:160::47) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1835.12 via Frontend
+ Transport; Tue, 23 Apr 2019 09:44:23 +0000
+Received: from foo@demisto.com (35.165.118.153) by
+ foo@demisto.com (8.3.3.3) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 93.184.216.34 via Frontend Transport; Tue, 23 Apr 2019 09:44:23 +0000
+Received: fromfoo@demisto.com (8.3.3.3) by
+ foo@demisto.com (8.3.3.3) with Microsoft SMTP Server id
+ 93.184.216.34; Tue, 23 Apr 2019 11:44:20 +0200
+Received: from foo@demisto.com (8.3.3.3) by
+ foo@demisto.com (93.184.216.34) with Microsoft SMTP Server (TLS) id
+ 93.184.216.34; Tue, 23 Apr 2019 11:44:18 +0200
+Received: from foo@demisto.com (10.80.80.0) by
+ foo@demisto.com (93.184.216.34) with Microsoft SMTP Server (TLS) id
+ 93.184.216.34; Tue, 23 Apr 2019 11:44:17 +0200
+Received: from foo@demisto.com ([93.184.216.34]) by
+ foo@demisto.com ([93.184.216.34]) with mapi id 15.00.1367.000;
+ Tue, 23 Apr 2019 11:44:18 +0200
+From: "Admin, Admin" <momo@demisto.com>
+To: =?iso-8859-7?B?1/He8/Tv8iDK9fHp4ebe8g==?= <momo@demisto.com>
+CC: "admin, test (third party)" <momo@demisto.com>, "Admin,
+ Admin" <momo@demisto.com>
+Subject: =?iso-8859-7?B?Rlc6IEZPT0RMSU5LINDLx9HZzMc=?=
+Thread-Topic: =?iso-8859-7?B?Rk9PRExJTksg0MvH0dnMxw==?=
+Thread-Index: AdS+J6kczfeANHc6SVWJVG5dt1pMmw==
+X-MS-Exchange-MessageSentRepresentingType: 1
+Date: Tue, 23 Apr 2019 09:44:17 +0000
+Message-ID: <momo@demisto.com>
+References: <foo@demisto.com>
+	<momo@demisto.com>
+	<koko@demisto.com>    
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="iso-8859-7"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+
+
+--_003_96678384422316mailfdlgroupgr_--

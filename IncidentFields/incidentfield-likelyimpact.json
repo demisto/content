@@ -1,7 +1,6 @@
 {
 	"id": "incident_likelyimpact",
 	"version": -1,
-	"releaseNotes": "New incident field for GDPR Data Breach incident",
 	"modified": "2019-04-17T13:37:07.009127127Z",
 	"name": "Likely Impact",
 	"ownerOnly": false,

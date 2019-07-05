@@ -1,0 +1,405 @@
+commonfields:
+  id: AutoFocus V2
+  version: -1
+name: AutoFocus V2
+display: Palo Alto Networks AutoFocus V2
+category: Data Enrichment & Threat Intelligence
+description: Palo Alto Networks AutoFocus enables you to distinguish the most important threats from everyday commodity attacks.
+configuration:
+- display: API Key
+  name: api_key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (insecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: '-'
+  subtype: python3
+  type: python
+  commands:
+  - name: autofocus-search-samples
+    arguments:
+    - name: query
+      required: true
+      description: The query for which to retrieve samples. For additional information on how to build your query using the
+        AF GUI, see the deatiled description.
+    - name: max_results
+      description: Number of results to return.
+      defaultValue: "30"
+    - name: sort
+      auto: PREDEFINED
+      predefined:
+      - App Name
+      - App Packagename
+      - File type
+      - Size
+      - Finish Date
+      - First Seen (Create Date)
+      - Last Updated (Update Date)
+      - MD5
+      - SHA1
+      - SHA256
+      - Ssdeep Fuzzy Hash
+      description: The field by which to sort the results.
+    - name: order
+      auto: PREDEFINED
+      predefined:
+      - Ascending
+      - Descending
+      description: Result order ("Ascending" or "Descending").
+    - name: scope
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Private
+      - Public
+      - Global
+      description: ' Scope of the search ("Private", "Public", or "Global").'
+    outputs:
+    - contextPath: AutoFocus.SamplesSearch.AFCookie
+      description: AutoFocus search ID. Use this ID to get search results. The AF
+        Cookie expires 120 seconds after the search completes.
+      type: String
+    - contextPath: AutoFocus.SamplesSearch.Status
+      description: Search status ("in progress" or "complete").
+      type: String
+    description: 'Search for samples. To view results run the autofocus-samples-search-results command 
+      with the returned Af Cookie. The AF Cookie expires 120 seconds after the
+      search completes.'
+  - name: autofocus-search-sessions
+    arguments:
+    - name: query
+      required: true
+      description: The query for which to retrieve samples. For additional information on how to build your query using the
+        AF GUI, see the deatiled description.
+    - name: max_results
+      description: Maximum number of results to return. Default is 30.
+      defaultValue: "30"
+    - name: sort
+      auto: PREDEFINED
+      predefined:
+      - Application
+      - Device Country
+      - Device Country Code
+      - Device Hostname
+      - Device Serial
+      - Device vsys
+      - Destination Country
+      - Destination Country Code
+      - Destination IP
+      - Destination Port
+      - Email Charset
+      - Industry
+      - Source Country
+      - Source Country Code
+      - Source IP
+      - Source Port
+      - SHA256
+      - Time
+      - Upload source
+      description: Field to sort by
+    - name: order
+      auto: PREDEFINED
+      predefined:
+      - Ascending
+      - Descending
+      description: Order of sort
+    outputs:
+    - contextPath: AutoFocus.SessionsSearch.AFCookie
+      description: AutoFocus search ID. Use this ID to get search results. The AF
+        Cookie expires 120 seconds after the search completes.
+      type: String
+    - contextPath: AutoFocus.SessionsSearch.Status
+      description: Search status ("in progress" or "complete").
+      type: String
+    description: 'Search for sessions. To view results run the autofocus-sessions-search-results command
+      with the returned AF Cookie. The AF Cookie expires 120 seconds after the
+      search completes.'
+  - name: autofocus-samples-search-results
+    arguments:
+    - name: af_cookie
+      required: true
+      description: 'The AF Cookie for retrieving results of previous searches. The AF Cookie expires 120 seconds after the search completes.'
+    outputs:
+    - contextPath: AutoFocus.SamplesResults.Size
+      description: File size in bytes.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.SHA1
+      description: SHA1 hash of the file.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.SHA256
+      description: SHA256 hash of the file.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Created
+      description: Date created.
+      type: Date
+    - contextPath: AutoFocus.SamplesResults.Finished
+      description: Date finshed.
+      type: Date
+    - contextPath: AutoFocus.SamplesResults.Region
+      description: Region of the sample.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.FileType
+      description: File type.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Tags
+      description: Attached tags.
+      type: String
+    - contextPath: AutoFocus.SamplesResults.Verdict
+      description: Sample verdict.
+      type: Number
+    - contextPath: AutoFocus.SamplesResults.TagGroups
+      description: Groups of relevant tags.
+      type: String
+    description: Returns results of a previous samples search.
+  - name: autofocus-sessions-search-results
+    arguments:
+    - name: af_cookie
+      required: true
+      description: 'The AF Cookie for retrieving results of a previous search. The AF Cookie expires 120 seconds after the search completes.'
+    outputs:
+    - contextPath: AutoFocus.SessionsResults.FileName
+      description: File name.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.ID
+      description: Session ID. Used to get session details.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.Industry
+      description: Related industry.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.Region
+      description: Session regions.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.SHA256
+      description: SHA256 hash of the file.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.Seen
+      description: Seen date
+      type: Date
+    - contextPath: AutoFocus.SessionsResults.UploadSource
+      description: Source of the uploaded sample.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.FileURL
+      description: File URL.
+      type: String
+    - contextPath: AutoFocus.SessionsResults.Tags
+      description: Relevant tags.
+      type: String
+    description: Returns results of a previous sessions search.
+  - name: autofocus-get-session-details
+    arguments:
+    - name: session_id
+      required: true
+      description: The session ID
+    outputs:
+    - contextPath: AutoFocus.Sessions.FileName
+      description: File name.
+      type: String
+    - contextPath: AutoFocus.Sessions.ID
+      description: Session ID.
+      type: String
+    - contextPath: AutoFocus.Sessions.Industry
+      description: Related industry.
+      type: String
+    - contextPath: AutoFocus.Sessions.Region
+      description: Session regions.
+      type: String
+    - contextPath: AutoFocus.Sessions.SHA256
+      description: SHA256 hash of the file.
+      type: String
+    - contextPath: AutoFocus.Sessions.Seen
+      description: Seen date.
+      type: Date
+    - contextPath: AutoFocus.Sessions.UploadSource
+      description: Source uploaded the sample
+      type: String
+    description: Get session details by session ID
+  - name: autofocus-sample-analysis
+    arguments:
+    - name: sample_id
+      required: true
+      description: SHA256 hash of the sample to analyze.
+    - name: os
+      auto: PREDEFINED
+      predefined:
+      - win7
+      - winxp
+      - android
+      - static_analyzer
+      - mac
+      - bare_metal
+      description: Analysis environment.
+    - name: filter_data
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: 'If "False", the data returned will not be smartly filtered, and will significantly reduce integration performance.
+        We recommend setting this to "True".'
+      defaultValue: "True"
+    outputs:
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Http
+      description: HTTP requests made when the sample was executed.
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Coverage
+      description: WildFire signatures that matched to the sample.
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Behavior
+      description: 'Sample behavior: created or modified files, started a process,
+        spawned new processes, modified the registry, or installed browser help objects.'
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Registry
+      description: Registry settings and options that showed activity when the sample
+        was executed in the analysis environment.
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Files
+      description: Files that showed activity as a result of the sample being executed.
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Processes
+      description: Processes that showed activity when the sample was executed.
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Connections
+      description: Connections to other hosts on the network when the sample was executed.
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Dns
+      description: DNS activity observed when the sample was executed.
+      type: Unknown
+    - contextPath: AutoFocus.SampleAnalysis.Analysis.Mutex
+      description: the mutex created when the programs start is listed along with the parent process if the sample generates other program threads when
+        executed in the analysis environment.
+      type: Unknown
+    description: Returns properties, behaviors, and activities observed for a sample.
+      Run the command a single time to get the fields and operating systems under HTTP, Coverage, Behavior, Registry, Files, Processes, Connections, and DNS.
+  - name: autofocus-tag-details
+    arguments:
+    - name: tag_name
+      required: true
+      description: The public tag name, can be retreived from the top-tags command.
+    outputs:
+    - contextPath: AutoFocus.Tag.TagName
+      description: Tag simple name
+      type: String
+    - contextPath: AutoFocus.Tag.PublicTagName
+      description: Tag public name. Usesd as an ID of the tag.
+      type: String
+    - contextPath: AutoFocus.Tag.Count
+      description: Amount of samples matched this tag.
+      type: Number
+    - contextPath: AutoFocus.Tag.Lasthit
+      description: Tag last encounter date.
+      type: Date
+    - contextPath: AutoFocus.Tag.TagDefinitionScope
+      description: Scope of the tag - public/private/Unit42
+      type: String
+    - contextPath: AutoFocus.Tag.CustomerName
+      description: Organization that created the tag.
+      type: String
+    - contextPath: AutoFocus.Tag.Source
+      description: Organization or individual that discovered the threat defined in
+        the tag
+      type: String
+    - contextPath: AutoFocus.Tag.TagClass
+      description: Tag classification
+      type: String
+    - contextPath: AutoFocus.Tag.TagDefinitionStatus
+      description: enabled/disabled/removing/rescoping
+      type: String
+    description: Get details on a given tag
+  - name: autofocus-top-tags-search
+    arguments:
+    - name: scope
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - industry
+      - organization
+      - all
+      - global
+      description: Scope of the search
+    - name: class
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Actor
+      - Campaign
+      - Exploit
+      - Malicious Behavior
+      - Malware Family
+      description: |-
+        Tag class.
+        - Malware Family: group of malware that have shared properties or common function.
+        - Campaign:  targeted attack which might include several incidents or sets of activities.
+        - Actor: individual or group that initiates campaign using malware families.
+        - Exploit: an attack, that takes advantage
+        of a software or network weakness, bug, or vulnerability to manipulate the behavior of the system.
+        - Malicious Behavior: behavior that is not specific to a malware family or campaign, but indicates that your sys tem has been compromised.
+    - name: private
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Tag scope - private
+      defaultValue: "False"
+    - name: public
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Tag scope - public
+      defaultValue: "False"
+    - name: commodity
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Tag scope - commodity
+      defaultValue: "False"
+    - name: unit42
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Tag scope - unit42
+      defaultValue: "False"
+    outputs:
+    - contextPath: AutoFocus.TopTagsSearch.AFCookie
+      description: AutoFocus search ID. Use this ID to get search results. The AF
+        Cookie expires 120 seconds after the search completes.
+      type: String
+    - contextPath: AutoFocus.TopTagsSearch.Status
+      description: in progress / complete
+      type: String
+    description: Perform a search to Identify the most popular tags
+  - name: autofocus-top-tags-results
+    arguments:
+    - name: af_cookie
+      required: true
+      description: 'The AF Cookie for retrieving results of previous search. Note:
+        The AF Cookie expires 120 seconds after the search completes.'
+    outputs:
+    - contextPath: AutoFocus.TopTagsResults.Count
+      description: Amount of samples matched this tag.
+      type: Number
+    - contextPath: AutoFocus.TopTagsResults.PublicTagName
+      description: Tag public name. Usesd as an ID of the tag.
+      type: String
+    - contextPath: AutoFocus.TopTagsResults.TagName
+      description: Tag simple name.
+      type: String
+    - contextPath: AutoFocus.TopTagsResults.Lasthit
+      description: Tag last encounter date.
+      type: Date
+    description: Get the results of a previous top tags search
+  dockerimage: demisto/python3:3.7.2.214
+  runonce: false
+tests:
+  - AutoFocus V2 test

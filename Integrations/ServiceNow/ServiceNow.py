@@ -178,9 +178,9 @@ def send_request(path, method='get', body=None, params=None, headers=None, file=
                                        auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
             shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
         except Exception as e:
-            raise Exception('Failed to upload file - ' + e.message)
+            raise Exception('Failed to upload file - ' + str(e))
     else:
-        res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params,
+        res = requests.request(method, url, headers=headers, data=json.dumps(body) if body else {}, params=params,
                                auth=(USERNAME, PASSWORD), verify=VERIFY_SSL)
 
     try:
@@ -188,7 +188,7 @@ def send_request(path, method='get', body=None, params=None, headers=None, file=
     except Exception as e:
         if not res.content:
             return ''
-        raise Exception('Error parsing reply - {} - {}'.format(res.content, e.message))
+        raise Exception('Error parsing reply - {} - {}'.format(res.content, str(e)))
 
     if 'error' in obj:
         message = obj.get('error', {}).get('message')
@@ -1419,7 +1419,7 @@ def test_module():
     if 'result' not in res:
         return_error('ServiceNow error: ' + str(res))
     ticket = res['result']
-    if demisto.params().get('isFetch'):
+    if ticket and demisto.params().get('isFetch'):
         if isinstance(ticket, list):
             ticket = ticket[0]
         if TIMESTAMP_FIELD not in ticket:
@@ -1486,6 +1486,6 @@ except Exception as e:
     LOG(e)
     LOG.print_log()
     if not raise_exception:
-        return_error(str(e.message))
+        return_error(str(e))
     else:
         raise

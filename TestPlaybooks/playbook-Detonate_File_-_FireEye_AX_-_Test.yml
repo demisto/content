@@ -1,0 +1,164 @@
+id: Detonate File - FireEye AX - Test
+version: -1
+name: Detonate File - FireEye AX - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 174acddf-ed5a-44a0-8dda-0b03a9fbcbd5
+    type: start
+    task:
+      id: 174acddf-ed5a-44a0-8dda-0b03a9fbcbd5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: dc33e5cc-884c-45e7-8c11-4a22e4269dd3
+    type: regular
+    task:
+      id: dc33e5cc-884c-45e7-8c11-4a22e4269dd3
+      version: -1
+      name: Start fresh
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 1201acf6-1e7a-4d50-835b-0e70b09cf2d5
+    type: regular
+    task:
+      id: 1201acf6-1e7a-4d50-835b-0e70b09cf2d5
+      version: -1
+      name: Create sample file
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: test_file.pdf
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/pdfworking.pdf
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: c6694f8d-b09f-4d54-8f9e-5ff608b7a716
+    type: title
+    task:
+      id: c6694f8d-b09f-4d54-8f9e-5ff608b7a716
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 77ea7d58-2070-4a89-833f-87dd431a0a80
+    type: playbook
+    task:
+      id: 77ea7d58-2070-4a89-833f-87dd431a0a80
+      version: -1
+      name: Detonate File - FireEye AX
+      description: Detonate File - FireEye AX
+      playbookName: Detonate File - FireEye AX
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
