@@ -8,23 +8,23 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d69484dc-b1a2-4792-8c58-4ff1a84d514f
+    taskid: d9a177e9-a194-44e1-8631-dbda8dd9ae63
     type: start
     task:
-      id: d69484dc-b1a2-4792-8c58-4ff1a84d514f
+      id: d9a177e9-a194-44e1-8631-dbda8dd9ae63
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "8"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -80
+          "x": 50,
+          "y": 50
         }
       }
     note: false
@@ -32,10 +32,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: a5714c07-5cd9-43a1-8d44-7eb715783817
+    taskid: 082d8bac-54c6-45f6-8d3e-ca3f4c541ce6
     type: regular
     task:
-      id: a5714c07-5cd9-43a1-8d44-7eb715783817
+      id: 082d8bac-54c6-45f6-8d3e-ca3f4c541ce6
       version: -1
       name: whois
       description: Provides data enrichment for Domains, URLs, and IP addresses.
@@ -53,8 +53,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 220
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -62,10 +62,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 9321667f-f097-4b41-8cc0-d779504accbb
+    taskid: 033356a6-1fb8-497b-88db-69a06d050f24
     type: condition
     task:
-      id: 9321667f-f097-4b41-8cc0-d779504accbb
+      id: 033356a6-1fb8-497b-88db-69a06d050f24
       version: -1
       name: Check results
       type: condition
@@ -115,8 +115,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 410
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -124,10 +124,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 79b81c76-2e8e-4833-8ac1-9b4f0def1d69
+    taskid: 9ee88de7-a14e-4ab7-8577-484def16beb1
     type: regular
     task:
-      id: 79b81c76-2e8e-4833-8ac1-9b4f0def1d69
+      id: 9ee88de7-a14e-4ab7-8577-484def16beb1
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -149,8 +149,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -158,10 +158,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 30368ef9-f399-4219-8fe2-a9053cb07fa7
+    taskid: 2caabdba-774c-4c09-8627-f88d5e1e04ee
     type: regular
     task:
-      id: 30368ef9-f399-4219-8fe2-a9053cb07fa7
+      id: 2caabdba-774c-4c09-8627-f88d5e1e04ee
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -179,8 +179,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 610
+          "x": 380,
+          "y": 900
         }
       }
     note: false
@@ -188,10 +188,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: cac83a93-7a25-42aa-85b0-64c5609e4cd2
+    taskid: 1e92db4d-6564-46c3-8932-c06de3c831b9
     type: regular
     task:
-      id: cac83a93-7a25-42aa-85b0-64c5609e4cd2
+      id: 1e92db4d-6564-46c3-8932-c06de3c831b9
       version: -1
       name: Print
       description: Prints text to war room (Markdown supprted)
@@ -206,8 +206,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1090
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
@@ -215,10 +215,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 96b2e000-963e-43ce-8264-cc58dad66aef
+    taskid: 98cdc8e8-de95-483e-87ac-451b8997b178
     type: regular
     task:
-      id: 96b2e000-963e-43ce-8264-cc58dad66aef
+      id: 98cdc8e8-de95-483e-87ac-451b8997b178
       version: -1
       name: whois
       description: Provides data enrichment for Domains, URLs, and IP addresses.
@@ -236,8 +236,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 770
+          "x": 380,
+          "y": 1070
         }
       }
     note: false
@@ -245,10 +245,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: d66596a2-6f56-478f-8269-adb7760e4f89
+    taskid: 16b1e6f0-7785-4cdf-8017-f02f957079bd
     type: condition
     task:
-      id: d66596a2-6f56-478f-8269-adb7760e4f89
+      id: 16b1e6f0-7785-4cdf-8017-f02f957079bd
       version: -1
       name: Check results
       type: condition
@@ -288,8 +288,38 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 920
+          "x": 380,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 2ce6e538-8935-465e-8f74-e20600533e2a
+    type: regular
+    task:
+      id: 2ce6e538-8935-465e-8f74-e20600533e2a
+      version: -1
+      name: Sleep
+      description: Sleep for 5 seconds, due to whois rate limit
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -300,10 +330,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1265,
-        "width": 660,
-        "x": 200,
-        "y": -80
+        "height": 1465,
+        "width": 710,
+        "x": 50,
+        "y": 50
       }
     }
   }
