@@ -7,7 +7,6 @@ from spellchecker import SpellChecker
 
 from Tests.test_utils import print_error
 
-ENGLISH = enchant.Dict("en_US")
 DISPLAYABLE_LINES = [
     "description",
     "name",
@@ -32,7 +31,7 @@ def check_yaml(spellchecker, yml_info, unknown_words):
                         check_yaml(spellchecker, sub_list, unknown_words)
 
 
-def check_md_file(md_data, unknown_words):
+def check_md_file(spellchecker, md_data, unknown_words):
     for line in md_data:
         for word in line.split():
             if word.isalpha() and spellchecker.unknown([word]):
@@ -42,6 +41,7 @@ def check_md_file(md_data, unknown_words):
 def spell_checker(path, is_md=False):
     unknown_words = set([])
     spellchecker = SpellChecker()
+    spellchecker.word_frequency.load_text_file('Tests/known_words.txt')
 
     if is_md:
         with open(path, 'r') as md_file:
@@ -63,7 +63,7 @@ def spell_checker(path, is_md=False):
 
 
 if __name__ == "__main__":
-    description = """Run spell check on a given yml file. """
+    description = """Run spell check on a given yml/md file. """
     parser = argparse.ArgumentParser(description=description, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-p", "--path", help="Specify path of yml/md file", required=True)
     parser.add_argument("-i", "--isMD", help="Whether the path is to a yml file or an md.", action='store_true')

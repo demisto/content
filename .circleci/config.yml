@@ -24,7 +24,6 @@ jobs:
               pyenv versions
               python --version
               python3 --version
-              pip install pyenchant
       - add_ssh_keys:
           fingerprints:
               - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
