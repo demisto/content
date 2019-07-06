@@ -1,0 +1,378 @@
+id: Intezer - scan host
+version: -1
+rolename:
+  - Administrator
+fromversion: 4.0.0
+name: Intezer - scan host
+description: |-
+  Uses Demisto D2 agent to scan a host using Intezer scanner.
+
+  Input:
+  * Hostname (default: ${Endpoint.Hostname})
+  * OS (default: windows)
+  * Credentials (default: Admin)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 209ca9d9-6cd1-43d6-8917-34828b27d69a
+    type: start
+    task:
+      id: 209ca9d9-6cd1-43d6-8917-34828b27d69a
+      version: -1
+      name: ""
+      description: "start"
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 85dde700-9f3a-41c8-8e00-028cf4b91808
+    type: regular
+    task:
+      id: 85dde700-9f3a-41c8-8e00-028cf4b91808
+      version: -1
+      name: Add the endpoint as a System to this incident
+      description: Adds the relevant endpoint to the System.
+      scriptName: IncidentAddSystem
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      arch: {}
+      credentialSet:
+        simple: ${inputs.Credentials}
+      dmbPort: {}
+      host:
+        simple: ${inputs.Host}
+      name:
+        simple: ${inputs.Host}
+      os:
+        simple: ${inputs.OS}
+      password: {}
+      sshPort: {}
+      username: {}
+      workgroup: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 24cabd05-fad2-4940-8241-3ee3763d4f8d
+    type: regular
+    task:
+      id: 24cabd05-fad2-4940-8241-3ee3763d4f8d
+      version: -1
+      name: d2 agent - Scan host by Intezer
+      description: "Runs IntezerScanHost script"
+      scriptName: IntezerScanHost
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      host:
+        simple: ${inputs.Host}
+      intezer_api_key:
+        complex:
+          root: inputs.INTEZER_API_KEY
+      os:
+        simple: ${inputs.OS}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 33071f86-45fc-4c71-8fa3-ad933acbe3a8
+    type: condition
+    task:
+      id: 33071f86-45fc-4c71-8fa3-ad933acbe3a8
+      version: -1
+      name: Does 'Host' input exist?
+      description: Checks if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "12"
+      "yes":
+      - "3"
+    scriptarguments:
+      value:
+        simple: ${inputs.Host}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 3a2e28f7-a697-4281-8285-cd2dad5e7a63
+    type: title
+    task:
+      id: 3a2e28f7-a697-4281-8285-cd2dad5e7a63
+      version: -1
+      name: Done
+      description: "Done"
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 2e1213d1-3ff8-41c7-8ec9-d1c50ced85e8
+    type: condition
+    task:
+      id: 2e1213d1-3ff8-41c7-8ec9-d1c50ced85e8
+      version: -1
+      name: Is the OS type Windows?
+      description: "Checks if OS type is windows"
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "6"
+    scriptarguments:
+      left:
+        simple: ${inputs.OS}
+      right:
+        simple: windows
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 98eeed9c-3ef1-4a28-8347-537ae2c48945
+    type: playbook
+    task:
+      id: 98eeed9c-3ef1-4a28-8347-537ae2c48945
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: analysis_type
+      AdditionalPollingCommandArgValues:
+        simple: Endpoint
+      Ids:
+        complex:
+          root: Intezer
+          accessor: Analysis.ID
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: analysis_id
+      PollingCommandName:
+        simple: intezer-get-analysis-result
+      Timeout:
+        simple: "15"
+      dt:
+        simple: Intezer.Analysis(val.Status !== 'Done').Status
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: d9b795b6-6dfe-4dca-80d4-2b988df75f76
+    type: regular
+    task:
+      id: d9b795b6-6dfe-4dca-80d4-2b988df75f76
+      version: -1
+      name: get-analysis-result
+      description: "Runs intezer-get-analysis-result command"
+      script: Intezer v2|||intezer-get-analysis-result
+      type: regular
+      iscommand: true
+      brand: Intezer v2
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      analysis_id:
+        complex:
+          root: Intezer
+          accessor: Analysis.ID
+      analysis_type:
+        simple: Endpoint
+      indicator_name:
+        complex:
+          root: inputs.Host
+      result_url: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 60302e3d-4e42-4237-8050-eb4ae370d90e
+    type: regular
+    task:
+      id: 60302e3d-4e42-4237-8050-eb4ae370d90e
+      version: -1
+      name: D2-remove
+      description: "Runs D2Remove script"
+      script: D2Remove
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      system:
+        complex:
+          root: inputs.Host
+      system_name:
+        complex:
+          root: inputs.Host
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_12_#default#": 0.11,
+      "15_6_yes": 0.58,
+      "7_12_no": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Host
+  value:
+    simple: 10.254.7.24
+  required: true
+  description: Deploy Demist D2 agent on the target Host.
+- key: OS
+  value:
+    simple: windows
+  required: false
+  description: The default OS type of target host.
+- key: INTEZER_API_KEY
+  value: {}
+  required: true
+  description: The Intezer api-key
+- key: Credentials
+  value:
+    simple: Admin
+  required: false
+  description: 'Name of the credential set. Credentials are located in Demisto: Settings
+    > Integrations > Credentials.'
+outputs: []
+tests:
+  - No Tests
