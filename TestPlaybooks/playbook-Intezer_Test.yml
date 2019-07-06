@@ -792,7 +792,7 @@ tasks:
               complex:
                 root: DBotScore
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: DBotScore.Indicator
@@ -800,14 +800,7 @@ tasks:
                     right:
                       value:
                         simple: fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DBotScore.Vendor
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Intezer
+                accessor: Indicator
             iscontext: true
     view: |-
       {

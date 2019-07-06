@@ -6,11 +6,12 @@ import random
 import argparse
 import requests
 from time import sleep
+from datetime import datetime
 
 import demisto
 from slackclient import SlackClient
 
-from Tests.test_integration import test_integration
+from Tests.test_integration import test_integration, disable_all_integrations
 from Tests.mock_server import MITMProxy, AMIConnection
 from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool, server_version_compare
 from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
@@ -23,7 +24,7 @@ FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, p
 
 AMI_NAMES = ["Demisto GA", "Server Master", "Demisto one before GA", "Demisto two before GA"]
 
-SERVICE_RESTART_TIMEOUT = 90
+SERVICE_RESTART_TIMEOUT = 300
 SERVICE_RESTART_POLLING_INTERVAL = 5
 
 
@@ -112,7 +113,7 @@ def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playb
                    circle_ci, build_number, server_url, build_name, is_mock_run=False):
     status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run)
     if status == PB_Status.COMPLETED:
-        print('PASS: {} succeed'.format(test_message))
+        print_color('PASS: {} succeed'.format(test_message), LOG_COLORS.GREEN)
         succeed_playbooks.append(playbook_id)
 
     elif status == PB_Status.NOT_SUPPORTED_VERSION:
@@ -120,7 +121,7 @@ def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playb
         succeed_playbooks.append(playbook_id)
 
     else:
-        print('Failed: {} failed'.format(test_message))
+        print_error('Failed: {} failed'.format(test_message))
         playbook_id_with_mock = playbook_id
         if not is_mock_run:
             playbook_id_with_mock += " (Mock Disabled)"
@@ -158,16 +159,16 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
         # use results
         proxy.stop()
         if status == PB_Status.COMPLETED:
-            print('PASS: {} succeed'.format(test_message))
+            print_color('PASS: {} succeed'.format(test_message), LOG_COLORS.GREEN)
             succeed_playbooks.append(playbook_id)
-            print('------ Test {} end ------'.format(test_message))
+            print('------ Test {} end ------\n'.format(test_message))
 
             return
 
         elif status == PB_Status.NOT_SUPPORTED_VERSION:
             print('PASS: {} skipped - not supported version'.format(test_message))
             succeed_playbooks.append(playbook_id)
-            print('------ Test {} end ------'.format(test_message))
+            print('------ Test {} end ------\n'.format(test_message))
 
             return
 
@@ -183,7 +184,7 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
 
     if rerecord and succeed:
         proxy.rerecorded_tests.append(playbook_id)
-    print('------ Test {} end ------'.format(test_message))
+    print('------ Test {} end ------\n'.format(test_message))
 
 
 def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id, succeed_playbooks,
@@ -194,7 +195,7 @@ def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, 
         print(start_message + ' (Mock: Disabled)')
         run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options,
                        slack, circle_ci, build_number, server_url, build_name)
-        print('------ Test %s end ------' % (test_message,))
+        print('------ Test %s end ------\n' % (test_message,))
 
         return
 
@@ -401,9 +402,9 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
 
     # Skip nightly test
     if skip_nightly_test:
-        print('------ Test {} start ------'.format(test_message))
+        print('\n------ Test {} start ------'.format(test_message))
         print('Skip test')
-        print('------ Test {} end ------'.format(test_message))
+        print('------ Test {} end ------\n'.format(test_message))
 
         return
 
@@ -426,11 +427,11 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
     test_to_version = t.get('toversion', '99.99.99')
     if (server_version_compare(test_from_version, server_numeric_version) > 0
             or server_version_compare(test_to_version, server_numeric_version) < 0):
-        print('------ Test {} start ------'.format(test_message))
+        print('\n------ Test {} start ------'.format(test_message))
         print_warning('Test {} ignored due to version mismatch (test versions: {}-{})'.format(test_message,
                                                                                               test_from_version,
                                                                                               test_to_version))
-        print('------ Test {} end ------'.format(test_message))
+        print('------ Test {} end ------\n'.format(test_message))
         return
 
     are_params_set = set_integration_params(demisto_api_key, integrations,
@@ -448,12 +449,21 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
 
 def restart_demisto_service(ami, c):
     ami.check_call(['sudo', 'service', 'demisto', 'restart'])
+    exit_code = 1
     for _ in range(0, SERVICE_RESTART_TIMEOUT, SERVICE_RESTART_POLLING_INTERVAL):
         sleep(SERVICE_RESTART_POLLING_INTERVAL)
-        exit_code = ami.call(['/usr/sbin/service', 'demisto', 'status', '--lines', '0'])
-        res = c.Login()
-        if exit_code == 0 and res.status_code == 200:
-            return
+        if exit_code != 0:
+            exit_code = ami.call(['/usr/sbin/service', 'demisto', 'status', '--lines', '0'])
+        if exit_code == 0:
+            print("{}: Checking login to the server...".format(datetime.now()))
+            try:
+                res = c.Login()
+                if res.status_code == 200:
+                    return
+                else:
+                    print("Failed verifying login (will retry). status: {}. text: {}".format(res.status_code, res.text))
+            except Exception as ex:
+                print_error("Failed verifying server start via login: {}".format(ex))
 
     raise Exception('Timeout waiting for demisto service to restart')
 
@@ -514,6 +524,8 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     succeed_playbooks = []
     skipped_tests = set([])
     skipped_integration = set([])
+
+    disable_all_integrations(c)
 
     if is_ami:
         # move all mock tests to the top of the list
