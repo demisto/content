@@ -1,121 +1,100 @@
+category: Vulnerability Management
 commonfields:
   id: VulnDB
   version: -1
-name: VulnDB
-display: VulnDB
-category: Vulnerability Management
-image: data:image/png;base64,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
+configuration:
+- defaultvalue: https://vulndb.cyberriskanalytics.com/
+  display: Hostname, IP address, or server URL
+  name: api_url
+  required: true
+  type: 0
+- display: client_id
+  name: client_id
+  required: true
+  type: 0
+- display: client_secret
+  name: client_secret
+  required: true
+  type: 0
+- display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Lists all of the security vulnerabilities for various products (OS,Applications)
   etc)
-# About the drop some mean regex right now disable-secrets-detection-start
-detaileddescription: |
+detaileddescription: |-
   The Authentication is done via Oauth2
   Provided details are client_id and client_secret which together provide the authentication key. The key is generated for every command execution.
   For more details check this API docs https://vulndb.cyberriskanalytics.com/documentation/overview
-# Drops the mic disable-secrets-detection-end
-configuration:
-- display: ""
-  name: Hostname, IP address, or server URL
-  defaultvalue: https://vulndb.cyberriskanalytics.com/ # disable-secrets-validation
-  type: 0
-  required: true
-- display: client_id
-  name: client_id
-  defaultvalue: ""
-  type: 0
-  required: true
-- display: client_secret
-  name: client_secret
-  defaultvalue: ""
-  type: 0
-  required: true
-- display: Trust any certificate (unsecure)
-  name: insecure
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  defaultvalue: ""
-  type: 8
-  required: false
+display: VulnDB
+name: VulnDB
 script:
-  script: |-
-    # The command demisto.command() holds the command sent from the user.
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        demisto.results('ok')
-        sys.exit(0)
-    if demisto.command() == 'fetch-incidents':
-        # You can store the last run time...
-        demisto.setLastRun({'time': 'now'})
-        # And retrieve it for use later:
-        lastRun = demisto.getLastRun()
-        # lastRun is a dictionary, with value "now" for key "time".
-        # JSON of the incident type created by this integration
-        demisto.incidents([{"Name":"Incident #1"},{"Name":"Incident #2"}])
-        sys.exit(0)
-    # You can use demisto.args()[argName] to get a specific arg. args are strings.
-    # You can use demisto.params()[paramName] to get a specific params.
-    # Params are of the type given in the integration page creation.
-  type: python
   commands:
-  - name: vulndb-get-vuln-by-id
-    arguments:
-    - name: vulen_id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Vulnerability id
+      isArray: false
+      name: vuln_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Provides full details about a specific vulnerability by id
+    execution: false
+    name: vulndb-get-vuln-by-id
     outputs:
-    - contextPath: VulenDB.Vulnerability.ID
+    - contextPath: VulnDB.Vulnerability.ID
       description: Vulnerability id
       type: string
-    - contextPath: VulenDB.Vulnerability.Title
+    - contextPath: VulnDB.Vulnerability.Title
       description: Vulnerability title (only human readable)
       type: string
-    - contextPath: VulenDB.Vulnerability.Keywords
+    - contextPath: VulnDB.Vulnerability.Keywords
       description: Vulnerability keywords
       type: string
-    - contextPath: VulenDB.Vulnerability.Description
+    - contextPath: VulnDB.Vulnerability.Description
       description: Vulnerability description (only human readable)
       type: string
-    - contextPath: VulenDB.Vulnerability.Solution
+    - contextPath: VulnDB.Vulnerability.Solution
       description: Vulnerability solution (only human readable)
       type: string
-    - contextPath: VulenDB.Vulnerability.PublishedDate
+    - contextPath: VulnDB.Vulnerability.PublishedDate
       description: Vulnerability published date
       type: date
-    - contextPath: VulenDB.Vulnerability.TDescription
+    - contextPath: VulnDB.Vulnerability.TDescription
       description: Vulnerability description (only human readable)
       type: string
-    - contextPath: VulenDB.Vulnerability.SolutionDate
+    - contextPath: VulnDB.Vulnerability.SolutionDate
       description: Vulnerability solution date
       type: date
-    - contextPath: VulenDB.Vulnerability.DiscoveryDate
+    - contextPath: VulnDB.Vulnerability.DiscoveryDate
       description: Vulnerability discovery date
       type: date
-    - contextPath: VulenDB.Vulnerability.ExploitPublishDate
+    - contextPath: VulnDB.Vulnerability.ExploitPublishDate
       description: Exploit publish date
       type: date
-    - contextPath: VulenDB.CVE-ExtReferences.Value
+    - contextPath: VulnDB.CVE-ExtReferences.Value
       description: CVE- is a constant string
       type: string
-    - contextPath: VulenDB.CvssMetrics.Id
+    - contextPath: VulnDB.CvssMetrics.Id
       description: Cvss reference value
       type: number
-    - contextPath: VulenDB.CvssMetrics.AccessVector
+    - contextPath: VulnDB.CvssMetrics.AccessVector
       description: Cvss access vector
       type: string
-    - contextPath: VulenDB.CvssMetrics.AccessComplexity
+    - contextPath: VulnDB.CvssMetrics.AccessComplexity
       description: Cvss access complexity
       type: string
-    - contextPath: VulenDB.CvssMetrics.Authentication
+    - contextPath: VulnDB.CvssMetrics.Authentication
       description: Cvss metric authentication
       type: string
-    - contextPath: VulenDB.CvssMetrics.ConfidentialityImpact
+    - contextPath: VulnDB.CvssMetrics.ConfidentialityImpact
       description: Cvss confidentiality impact
       type: string
-    - contextPath: VulenDB.cvssMetrics.integrityImpact
+    - contextPath: VulnDB.cvssMetrics.IntegrityImpact
       description: Cvss integrity impact
       type: string
     - contextPath: VulnDB.CvssMetrics.AvailabilityImpact
@@ -127,7 +106,7 @@ script:
     - contextPath: VulnDB.CvssMetrics.Score
       description: Cvss score
       type: number
-    - contextPath: VulnDB.Vendors.Id
+    - contextPath: VulnDB.Vendor.Id
       description: Vendor id
       type: number
     - contextPath: VulnDB.Vendor.Name
@@ -151,13 +130,24 @@ script:
     - contextPath: VulnDB.Classification.Description
       description: Classification description (only human readable)
       type: string
-    description: Provides full details about a specific vulnerability by id
-  - name: vulndb-get-vendor
-    arguments:
-    - name: vendor_id
+  - arguments:
+    - default: false
       description: specific vendor id
-    - name: vendor_name
+      isArray: false
+      name: vendor_id
+      required: false
+      secret: false
+    - default: false
       description: specific vendor name (only human readable)
+      isArray: false
+      name: vendor_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Provides all or specific vendor details to include vendor name and
+      id
+    execution: false
+    name: vulndb-get-vendor
     outputs:
     - contextPath: VulnDB.Results.Id
       description: Result id
@@ -171,14 +161,23 @@ script:
     - contextPath: VulnDB.Results.VendorUrl
       description: Result vendor url (only human readable)
       type: string
-    description: Provides all or specific vendor details to include vendor name and
-      id
-  - name: vulndb-get-product
-    arguments:
-    - name: vendor_id
+  - arguments:
+    - default: false
       description: Vendor id
-    - name: vendor_name
+      isArray: false
+      name: vendor_id
+      required: false
+      secret: false
+    - default: false
       description: Vendor name
+      isArray: false
+      name: vendor_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Provides a list of versions by product name or id
+    execution: false
+    name: vulndb-get-product
     outputs:
     - contextPath: VulnDB.Results.Id
       description: Result id
@@ -186,173 +185,104 @@ script:
     - contextPath: VulnDB.Results.Name
       description: Result name
       type: string
-    description: Provides a list of versions by product name or id
-  - name: vulndb-get-version
-    arguments:
-    - name: product_name
+  - arguments:
+    - default: false
       description: Product name
-    - name: product_id
+      isArray: false
+      name: product_name
+      required: false
+      secret: false
+    - default: false
       description: Product id
+      isArray: false
+      name: product_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Provides the versions for the specified product by product name or
+      id
+    execution: false
+    name: vulndb-get-version
     outputs:
-    - contextPath: Vulendb.Results.Id
+    - contextPath: VulnDB.Results.Id
       description: Version id
       type: number
-    - contextPath: Vulendb.Results.Name
+    - contextPath: VulnDB.Results.Name
       description: Version name
-    description: Provides the versions for the specified product by product name or id
-  - name: vulndb-get-updates-by-dates-or-hours
-    arguments:
-    - name: start_date
-      required: true
+      type: Unknown
+  - arguments:
+    - default: false
       description: Date YYYY-MM-dd starting date (earliest)
-    - name: end_date
+      isArray: false
+      name: start_date
+      required: true
+      secret: false
+    - default: false
       description: Date YYYY-MM-dd finishing date (latest)
-    - name: hours ago
+      isArray: false
+      name: end_date
+      required: false
+      secret: false
+    - default: false
       description: How many hours ago
-    outputs:
-    - contextPath: VulenDB.Vulnerability.ID
-      description: Vulnerability id
-      type: string
-    - contextPath: VulenDB.Vulnerability.Title
-      description: Vulnerability title (only human readable)
-      type: string
-    - contextPath: VulenDB.Vulnerability.Keywords
-      description: Vulnerability keywords
-      type: string
-    - contextPath: VulenDB.Vulnerability.Description
-      description: Vulnerability description (only human readable)
-      type: string
-    - contextPath: VulenDB.Vulnerability.Solution
-      description: Vulnerability solution (only human readable)
-      type: string
-    - contextPath: VulenDB.Vulnerability.PublishedDate
-      description: Vulnerability published date
-      type: date
-    - contextPath: VulenDB.Vulnerability.TDescription
-      description: Vulnerability description (only human readable)
-      type: string
-    - contextPath: VulenDB.Vulnerability.SolutionDate
-      description: Vulnerability solution date
-      type: date
-    - contextPath: VulenDB.Vulnerability.DiscoveryDate
-      description: Vulnerability discovery date
-      type: date
-    - contextPath: VulenDB.Vulnerability.ExploitPublishDate
-      description: Exploit publish date
-      type: date
-    - contextPath: VulenDB.CVE-ExtReferences.Value
-      description: CVE- is a constant string
-      type: string
-    - contextPath: VulenDB.CvssMetrics.Id
-      description: Cvss reference value
-      type: number
-    - contextPath: VulenDB.CvssMetrics.AccessVector
-      description: Cvss access vector
-      type: string
-    - contextPath: VulenDB.CvssMetrics.AccessComplexity
-      description: Cvss access complexity
-      type: string
-    - contextPath: VulenDB.CvssMetrics.Authentication
-      description: Cvss metric authentication
-      type: string
-    - contextPath: VulenDB.CvssMetrics.ConfidentialityImpact
-      description: Cvss confidentiality impact
-      type: string
-    - contextPath: VulenDB.cvssMetrics.integrity_impact
-      description: Cvss integrity impact
-      type: string
-    - contextPath: VulnDB.CvssMetrics.AvailabilityImpact
-      description: Cvss  availability impact
-      type: string
-    - contextPath: VulnDB.CvssMetrics.Generated_on
-      description: Cvss Metric date
-      type: date
-    - contextPath: VulnDB.CvssMetrics.Score
-      description: Cvss score
-      type: number
-    - contextPath: VulnDB.Vendors.Id
-      description: Vendor id
-      type: number
-    - contextPath: VulnDB.Vendor.Name
-      description: Vendor name
-      type: string
-    - contextPath: VulnDB.Products.Id
-      description: Products id
-      type: number
-    - contextPath: VulnDB.Products.Name
-      description: Products name
-      type: string
-    - contextPath: VulnDB.Products.Versions.Id
-      description: Product version id
-      type: number
-    - contextPath: VulnDB.Products.Versions.Name
-      description: Product versions name
-      type: string
-    - contextPath: VulnDB.Classification.Longname
-      description: Classification long name
-      type: string
-    - contextPath: VulnDB.Classification.Description
-      description: Classification description (only human readable)
-      type: string
+      isArray: false
+      name: hours ago
+      required: false
+      secret: false
+    deprecated: false
     description: Provides the recent vulnerabilities by dates or hours
-  - name: vulndb-get-vuln-by-vendor-and-product-name
-    arguments:
-    - name: vendor_name
-      required: true
-      description: Vendor name
-    - name: product_name
-      required: true
-      description: Product name
+    execution: false
+    name: vulndb-get-updates-by-dates-or-hours
     outputs:
-    - contextPath: VulenDB.Vulnerability.ID
+    - contextPath: VulnDB.Vulnerability.ID
       description: Vulnerability id
       type: string
-    - contextPath: VulenDB.Vulnerability.Title
+    - contextPath: VulnDB.Vulnerability.Title
       description: Vulnerability title (only human readable)
       type: string
-    - contextPath: VulenDB.Vulnerability.Keywords
+    - contextPath: VulnDB.Vulnerability.Keywords
       description: Vulnerability keywords
       type: string
-    - contextPath: VulenDB.Vulnerability.Description
+    - contextPath: VulnDB.Vulnerability.Description
       description: Vulnerability description (only human readable)
       type: string
-    - contextPath: VulenDB.Vulnerability.Solution
+    - contextPath: VulnDB.Vulnerability.Solution
       description: Vulnerability solution (only human readable)
       type: string
-    - contextPath: VulenDB.Vulnerability.PublishedDate
+    - contextPath: VulnDB.Vulnerability.PublishedDate
       description: Vulnerability published date
       type: date
-    - contextPath: VulenDB.Vulnerability.TDescription
+    - contextPath: VulnDB.Vulnerability.TDescription
       description: Vulnerability description (only human readable)
       type: string
-    - contextPath: VulenDB.Vulnerability.SolutionDate
+    - contextPath: VulnDB.Vulnerability.SolutionDate
       description: Vulnerability solution date
       type: date
-    - contextPath: VulenDB.Vulnerability.DiscoveryDate
+    - contextPath: VulnDB.Vulnerability.DiscoveryDate
       description: Vulnerability discovery date
       type: date
-    - contextPath: VulenDB.Vulnerability.ExploitPublishDate
+    - contextPath: VulnDB.Vulnerability.ExploitPublishDate
       description: Exploit publish date
       type: date
-    - contextPath: VulenDB.CVE-ExtReferences.Value
+    - contextPath: VulnDB.CVE-ExtReferences.Value
       description: CVE- is a constant string
       type: string
-    - contextPath: VulenDB.CvssMetrics.Id
+    - contextPath: VulnDB.CvssMetrics.Id
       description: Cvss reference value
       type: number
-    - contextPath: VulenDB.CvssMetrics.AccessVector
+    - contextPath: VulnDB.CvssMetrics.AccessVector
       description: Cvss access vector
       type: string
-    - contextPath: VulenDB.CvssMetrics.AccessComplexity
+    - contextPath: VulnDB.CvssMetrics.AccessComplexity
       description: Cvss access complexity
       type: string
-    - contextPath: VulenDB.CvssMetrics.Authentication
+    - contextPath: VulnDB.CvssMetrics.Authentication
       description: Cvss metric authentication
       type: string
-    - contextPath: VulenDB.CvssMetrics.ConfidentialityImpact
+    - contextPath: VulnDB.CvssMetrics.ConfidentialityImpact
       description: Cvss confidentiality impact
       type: string
-    - contextPath: VulenDB.cvssMetrics.integrity_impact
+    - contextPath: VulnDB.cvssMetrics.integrity_impact
       description: Cvss integrity impact
       type: string
     - contextPath: VulnDB.CvssMetrics.AvailabilityImpact
@@ -388,66 +318,74 @@ script:
     - contextPath: VulnDB.Classification.Description
       description: Classification description (only human readable)
       type: string
+  - arguments:
+    - default: false
+      description: Vendor name
+      isArray: false
+      name: vendor_name
+      required: true
+      secret: false
+    - default: false
+      description: Product name
+      isArray: false
+      name: product_name
+      required: true
+      secret: false
+    deprecated: false
     description: Provides full details about a specific vulnerability by vendor and
       product name
-  - name: vulndb-get-vuln-by-vendor-and-product-id
-    arguments:
-    - name: vendor_name
-      required: true
-      description: Vendor name
-    - name: product_name
-      required: true
-      description: Product name
+    execution: false
+    name: vulndb-get-vuln-by-vendor-and-product-name
     outputs:
-    - contextPath: VulenDB.Vulnerability.ID
+    - contextPath: VulnDB.Vulnerability.ID
       description: Vulnerability id
       type: string
-    - contextPath: VulenDB.Vulnerability.Title
+    - contextPath: VulnDB.Vulnerability.Title
       description: Vulnerability title (only human readable)
       type: string
-    - contextPath: VulenDB.Vulnerability.Keywords
+    - contextPath: VulnDB.Vulnerability.Keywords
       description: Vulnerability keywords
       type: string
-    - contextPath: VulenDB.Vulnerability.Description
+    - contextPath: VulnDB.Vulnerability.Description
       description: Vulnerability description (only human readable)
       type: string
-    - contextPath: VulenDB.Vulnerability.Solution
+    - contextPath: VulnDB.Vulnerability.Solution
       description: Vulnerability solution (only human readable)
       type: string
-    - contextPath: VulenDB.Vulnerability.PublishedDate
+    - contextPath: VulnDB.Vulnerability.PublishedDate
       description: Vulnerability published date
       type: date
-    - contextPath: VulenDB.Vulnerability.TDescription
+    - contextPath: VulnDB.Vulnerability.TDescription
       description: Vulnerability description (only human readable)
       type: string
-    - contextPath: VulenDB.Vulnerability.SolutionDate
+    - contextPath: VulnDB.Vulnerability.SolutionDate
       description: Vulnerability solution date
       type: date
-    - contextPath: VulenDB.Vulnerability.DiscoveryDate
+    - contextPath: VulnDB.Vulnerability.DiscoveryDate
       description: Vulnerability discovery date
       type: date
-    - contextPath: VulenDB.Vulnerability.ExploitPublishDate
+    - contextPath: VulnDB.Vulnerability.ExploitPublishDate
       description: Exploit publish date
       type: date
-    - contextPath: VulenDB.CVE-ExtReferences.Value
+    - contextPath: VulnDB.CVE-ExtReferences.Value
       description: CVE- is a constant string
       type: string
-    - contextPath: VulenDB.CvssMetrics.Id
+    - contextPath: VulnDB.CvssMetrics.Id
       description: Cvss reference value
       type: number
-    - contextPath: VulenDB.CvssMetrics.AccessVector
+    - contextPath: VulnDB.CvssMetrics.AccessVector
       description: Cvss access vector
       type: string
-    - contextPath: VulenDB.CvssMetrics.AccessComplexity
+    - contextPath: VulnDB.CvssMetrics.AccessComplexity
       description: Cvss access complexity
       type: string
-    - contextPath: VulenDB.CvssMetrics.Authentication
+    - contextPath: VulnDB.CvssMetrics.Authentication
       description: Cvss metric authentication
       type: string
-    - contextPath: VulenDB.CvssMetrics.ConfidentialityImpact
+    - contextPath: VulnDB.CvssMetrics.ConfidentialityImpact
       description: Cvss confidentiality impact
       type: string
-    - contextPath: VulenDB.cvssMetrics.integrity_impact
+    - contextPath: VulnDB.cvssMetrics.integrity_impact
       description: Cvss integrity impact
       type: string
     - contextPath: VulnDB.CvssMetrics.AvailabilityImpact
@@ -483,64 +421,74 @@ script:
     - contextPath: VulnDB.Classification.Description
       description: Classification description (only human readable)
       type: string
+  - arguments:
+    - default: false
+      description: Vendor name
+      isArray: false
+      name: vendor_name
+      required: true
+      secret: false
+    - default: false
+      description: Product name
+      isArray: false
+      name: product_name
+      required: true
+      secret: false
+    deprecated: false
     description: Provides full details about a specific vulnerability by vendor and
       product id
-  - name: vulndb-get-vuln-by-vendor-id
-    arguments:
-    - name: vendor_id
-      required: true
-      default: true
-      description: Vendor id
+    execution: false
+    name: vulndb-get-vuln-by-vendor-and-product-id
     outputs:
-    - contextPath: VulenDB.Vulnerability.ID
+    - contextPath: VulnDB.Vulnerability.ID
       description: Vulnerability id
       type: string
-    - contextPath: VulenDB.Vulnerability.Title
+    - contextPath: VulnDB.Vulnerability.Title
       description: Vulnerability title (only human readable)
       type: string
-    - contextPath: VulenDB.Vulnerability.Keywords
+    - contextPath: VulnDB.Vulnerability.Keywords
       description: Vulnerability keywords
       type: string
-    - contextPath: VulenDB.Vulnerability.Description
+    - contextPath: VulnDB.Vulnerability.Description
       description: Vulnerability description (only human readable)
       type: string
-    - contextPath: VulenDB.Vulnerability.Solution
+    - contextPath: VulnDB.Vulnerability.Solution
       description: Vulnerability solution (only human readable)
       type: string
-    - contextPath: VulenDB.Vulnerability.PublishedDate
+    - contextPath: VulnDB.Vulnerability.PublishedDate
       description: Vulnerability published date
       type: date
-    - contextPath: VulenDB.Vulnerability.TDescription
+    - contextPath: VulnDB.Vulnerability.TDescription
       description: Vulnerability description (only human readable)
       type: string
-    - contextPath: VulenDB.Vulnerability.SolutionDate
+    - contextPath: VulnDB.Vulnerability.SolutionDate
       description: Vulnerability solution date
       type: date
-    - contextPath: VulenDB.Vulnerability.DiscoveryDate
+    - contextPath: VulnDB.Vulnerability.DiscoveryDate
       description: Vulnerability discovery date
       type: date
-    - contextPath: VulenDB.Vulnerability.ExploitPublishDate
+    - contextPath: VulnDB.Vulnerability.ExploitPublishDate
       description: Exploit publish date
       type: date
-    - contextPath: VulenDB.CVE-ExtReferences.Value
+    - contextPath: VulnDB.CVE-ExtReferences.Value
       description: CVE- is a constant string
       type: string
-    - contextPath: VulenDB.CvssMetrics.Id
+    - contextPath: VulnDB.CvssMetrics.Id
       description: Cvss reference value
       type: number
-    - contextPath: VulenDB.CvssMetrics.AccessVector
+    - contextPath: VulnDB.CvssMetrics.AccessVector
       description: Cvss access vector
       type: string
-    - contextPath: VulenDB.CvssMetrics.AccessComplexity
+    - contextPath: VulnDB.CvssMetrics.AccessComplexity
       description: Cvss access complexity
       type: string
-    - contextPath: VulenDB.CvssMetrics.Authentication
+    - contextPath: VulnDB.CvssMetrics.Authentication
       description: Cvss metric authentication
       type: string
-    - contextPath: VulenDB.CvssMetrics.ConfidentialityImpact
+    - contextPath: VulnDB.CvssMetrics.ConfidentialityImpact
       description: Cvss confidentiality impact
       type: string
-    - contextPath: VulenDB.cvssMetrics.integrity_impact
+    - contextPath: VulnDB.cvssMetrics.integrity_impact
       description: Cvss integrity impact
       type: string
     - contextPath: VulnDB.CvssMetrics.AvailabilityImpact
@@ -576,155 +524,163 @@ script:
     - contextPath: VulnDB.Classification.Description
       description: Classification description (only human readable)
       type: string
+  - arguments:
+    - default: true
+      description: Vendor id
+      isArray: false
+      name: vendor_id
+      required: true
+      secret: false
+    deprecated: false
     description: Provides full details about vulnerabilities by vendor id
-  - name: vulndb-get-vuln-by-product-id
-    arguments:
-    - name: product_id
-      required: true
-      default: true
+    execution: false
+    name: vulndb-get-vuln-by-vendor-id
+    outputs:
+    - contextPath: VulnDB.Vulnerability.ID
+      description: Vulnerability id
+      type: string
+    - contextPath: VulnDB.Vulnerability.Title
+      description: Vulnerability title (only human readable)
+      type: string
+    - contextPath: VulnDB.Vulnerability.Keywords
+      description: Vulnerability keywords
+      type: string
+    - contextPath: VulnDB.Vulnerability.Description
+      description: Vulnerability description (only human readable)
+      type: string
+    - contextPath: VulnDB.Vulnerability.Solution
+      description: Vulnerability solution (only human readable)
+      type: string
+    - contextPath: VulnDB.Vulnerability.PublishedDate
+      description: Vulnerability published date
+      type: date
+    - contextPath: VulnDB.Vulnerability.TDescription
+      description: Vulnerability description (only human readable)
+      type: string
+    - contextPath: VulnDB.Vulnerability.SolutionDate
+      description: Vulnerability solution date
+      type: date
+    - contextPath: VulnDB.Vulnerability.DiscoveryDate
+      description: Vulnerability discovery date
+      type: date
+    - contextPath: VulnDB.Vulnerability.ExploitPublishDate
+      description: Exploit publish date
+      type: date
+    - contextPath: VulnDB.CVE-ExtReferences.Value
+      description: CVE- is a constant string
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Id
+      description: Cvss reference value
+      type: number
+    - contextPath: VulnDB.CvssMetrics.AccessVector
+      description: Cvss access vector
+      type: string
+    - contextPath: VulnDB.CvssMetrics.AccessComplexity
+      description: Cvss access complexity
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Authentication
+      description: Cvss metric authentication
+      type: string
+    - contextPath: VulnDB.CvssMetrics.ConfidentialityImpact
+      description: Cvss confidentiality impact
+      type: string
+    - contextPath: VulnDB.cvssMetrics.integrity_impact
+      description: Cvss integrity impact
+      type: string
+    - contextPath: VulnDB.CvssMetrics.AvailabilityImpact
+      description: Cvss  availability impact
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Generated_on
+      description: Cvss Metric date
+      type: date
+    - contextPath: VulnDB.CvssMetrics.Score
+      description: Cvss score
+      type: number
+    - contextPath: VulnDB.Vendors.Id
+      description: Vendor id
+      type: number
+    - contextPath: VulnDB.Vendor.Name
+      description: Vendor name
+      type: string
+    - contextPath: VulnDB.Products.Id
+      description: Products id
+      type: number
+    - contextPath: VulnDB.Products.Name
+      description: Products name
+      type: string
+    - contextPath: VulnDB.Products.Versions.Id
+      description: Product version id
+      type: number
+    - contextPath: VulnDB.Products.Versions.Name
+      description: Product versions name
+      type: string
+    - contextPath: VulnDB.Classification.Longname
+      description: Classification long name
+      type: string
+    - contextPath: VulnDB.Classification.Description
+      description: Classification description (only human readable)
+      type: string
+  - arguments:
+    - default: true
       description: Product id
-    outputs:
-    - contextPath: VulenDB.Vulnerability.ID
-      description: Vulnerability id
-      type: string
-    - contextPath: VulenDB.Vulnerability.Title
-      description: Vulnerability title (only human readable)
-      type: string
-    - contextPath: VulenDB.Vulnerability.Keywords
-      description: Vulnerability keywords
-      type: string
-    - contextPath: VulenDB.Vulnerability.Description
-      description: Vulnerability description (only human readable)
-      type: string
-    - contextPath: VulenDB.Vulnerability.Solution
-      description: Vulnerability solution (only human readable)
-      type: string
-    - contextPath: VulenDB.Vulnerability.PublishedDate
-      description: Vulnerability published date
-      type: date
-    - contextPath: VulenDB.Vulnerability.TDescription
-      description: Vulnerability description (only human readable)
-      type: string
-    - contextPath: VulenDB.Vulnerability.SolutionDate
-      description: Vulnerability solution date
-      type: date
-    - contextPath: VulenDB.Vulnerability.DiscoveryDate
-      description: Vulnerability discovery date
-      type: date
-    - contextPath: VulenDB.Vulnerability.ExploitPublishDate
-      description: Exploit publish date
-      type: date
-    - contextPath: VulenDB.CVE-ExtReferences.Value
-      description: CVE- is a constant string
-      type: string
-    - contextPath: VulenDB.CvssMetrics.Id
-      description: Cvss reference value
-      type: number
-    - contextPath: VulenDB.CvssMetrics.AccessVector
-      description: Cvss access vector
-      type: string
-    - contextPath: VulenDB.CvssMetrics.AccessComplexity
-      description: Cvss access complexity
-      type: string
-    - contextPath: VulenDB.CvssMetrics.Authentication
-      description: Cvss metric authentication
-      type: string
-    - contextPath: VulenDB.CvssMetrics.ConfidentialityImpact
-      description: Cvss confidentiality impact
-      type: string
-    - contextPath: VulenDB.cvssMetrics.integrity_impact
-      description: Cvss integrity impact
-      type: string
-    - contextPath: VulnDB.CvssMetrics.AvailabilityImpact
-      description: Cvss  availability impact
-      type: string
-    - contextPath: VulnDB.CvssMetrics.Generated_on
-      description: Cvss Metric date
-      type: date
-    - contextPath: VulnDB.CvssMetrics.Score
-      description: Cvss score
-      type: number
-    - contextPath: VulnDB.Vendors.Id
-      description: Vendor id
-      type: number
-    - contextPath: VulnDB.Vendor.Name
-      description: Vendor name
-      type: string
-    - contextPath: VulnDB.Products.Id
-      description: Products id
-      type: number
-    - contextPath: VulnDB.Products.Name
-      description: Products name
-      type: string
-    - contextPath: VulnDB.Products.Versions.Id
-      description: Product version id
-      type: number
-    - contextPath: VulnDB.Products.Versions.Name
-      description: Product versions name
-      type: string
-    - contextPath: VulnDB.Classification.Longname
-      description: Classification long name
-      type: string
-    - contextPath: VulnDB.Classification.Description
-      description: Classification description (only human readable)
-      type: string
-    description: Provides full details about vulnerabilities by product id
-  - name: vulndb-get-vuln-by-cve-id
-    arguments:
-    - name: cve_id
+      isArray: false
+      name: product_id
       required: true
-      default: true
-      description: CVE id
+      secret: false
+    deprecated: false
+    description: Provides full details about vulnerabilities by product id
+    execution: false
+    name: vulndb-get-vuln-by-product-id
     outputs:
-    - contextPath: VulenDB.Vulnerability.ID
+    - contextPath: VulnDB.Vulnerability.ID
       description: Vulnerability id
       type: string
-    - contextPath: VulenDB.Vulnerability.Title
+    - contextPath: VulnDB.Vulnerability.Title
       description: Vulnerability title (only human readable)
       type: string
-    - contextPath: VulenDB.Vulnerability.Keywords
+    - contextPath: VulnDB.Vulnerability.Keywords
       description: Vulnerability keywords
       type: string
-    - contextPath: VulenDB.Vulnerability.Description
+    - contextPath: VulnDB.Vulnerability.Description
       description: Vulnerability description (only human readable)
       type: string
-    - contextPath: VulenDB.Vulnerability.Solution
+    - contextPath: VulnDB.Vulnerability.Solution
       description: Vulnerability solution (only human readable)
       type: string
-    - contextPath: VulenDB.Vulnerability.PublishedDate
+    - contextPath: VulnDB.Vulnerability.PublishedDate
       description: Vulnerability published date
       type: date
-    - contextPath: VulenDB.Vulnerability.TDescription
+    - contextPath: VulnDB.Vulnerability.TDescription
       description: Vulnerability description (only human readable)
       type: string
-    - contextPath: VulenDB.Vulnerability.SolutionDate
+    - contextPath: VulnDB.Vulnerability.SolutionDate
       description: Vulnerability solution date
       type: date
-    - contextPath: VulenDB.Vulnerability.DiscoveryDate
+    - contextPath: VulnDB.Vulnerability.DiscoveryDate
       description: Vulnerability discovery date
       type: date
-    - contextPath: VulenDB.Vulnerability.ExploitPublishDate
+    - contextPath: VulnDB.Vulnerability.ExploitPublishDate
       description: Exploit publish date
       type: date
-    - contextPath: VulenDB.CVE-ExtReferences.Value
+    - contextPath: VulnDB.CVE-ExtReferences.Value
       description: CVE- is a constant string
       type: string
-    - contextPath: VulenDB.CvssMetrics.Id
+    - contextPath: VulnDB.CvssMetrics.Id
       description: Cvss reference value
       type: number
-    - contextPath: VulenDB.CvssMetrics.AccessVector
+    - contextPath: VulnDB.CvssMetrics.AccessVector
       description: Cvss access vector
       type: string
-    - contextPath: VulenDB.CvssMetrics.AccessComplexity
+    - contextPath: VulnDB.CvssMetrics.AccessComplexity
       description: Cvss access complexity
       type: string
-    - contextPath: VulenDB.CvssMetrics.Authentication
+    - contextPath: VulnDB.CvssMetrics.Authentication
       description: Cvss metric authentication
       type: string
-    - contextPath: VulenDB.CvssMetrics.ConfidentialityImpact
+    - contextPath: VulnDB.CvssMetrics.ConfidentialityImpact
       description: Cvss confidentiality impact
       type: string
-    - contextPath: VulenDB.cvssMetrics.integrity_impact
+    - contextPath: VulnDB.cvssMetrics.integrity_impact
       description: Cvss integrity impact
       type: string
     - contextPath: VulnDB.CvssMetrics.AvailabilityImpact
@@ -760,7 +716,106 @@ script:
     - contextPath: VulnDB.Classification.Description
       description: Classification description (only human readable)
       type: string
+  - arguments:
+    - default: true
+      description: CVE id
+      isArray: false
+      name: cve_id
+      required: true
+      secret: false
+    deprecated: false
     description: Provides full details about vulnerabilities by cve id
+    execution: false
+    name: vulndb-get-vuln-by-cve-id
+    outputs:
+    - contextPath: VulnDB.Vulnerability.ID
+      description: Vulnerability id
+      type: string
+    - contextPath: VulnDB.Vulnerability.Title
+      description: Vulnerability title (only human readable)
+      type: string
+    - contextPath: VulnDB.Vulnerability.Keywords
+      description: Vulnerability keywords
+      type: string
+    - contextPath: VulnDB.Vulnerability.Description
+      description: Vulnerability description (only human readable)
+      type: string
+    - contextPath: VulnDB.Vulnerability.Solution
+      description: Vulnerability solution (only human readable)
+      type: string
+    - contextPath: VulnDB.Vulnerability.PublishedDate
+      description: Vulnerability published date
+      type: date
+    - contextPath: VulnDB.Vulnerability.TDescription
+      description: Vulnerability description (only human readable)
+      type: string
+    - contextPath: VulnDB.Vulnerability.SolutionDate
+      description: Vulnerability solution date
+      type: date
+    - contextPath: VulnDB.Vulnerability.DiscoveryDate
+      description: Vulnerability discovery date
+      type: date
+    - contextPath: VulnDB.Vulnerability.ExploitPublishDate
+      description: Exploit publish date
+      type: date
+    - contextPath: VulnDB.CVE-ExtReferences.Value
+      description: CVE- is a constant string
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Id
+      description: Cvss reference value
+      type: number
+    - contextPath: VulnDB.CvssMetrics.AccessVector
+      description: Cvss access vector
+      type: string
+    - contextPath: VulnDB.CvssMetrics.AccessComplexity
+      description: Cvss access complexity
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Authentication
+      description: Cvss metric authentication
+      type: string
+    - contextPath: VulnDB.CvssMetrics.ConfidentialityImpact
+      description: Cvss confidentiality impact
+      type: string
+    - contextPath: VulnDB.cvssMetrics.integrity_impact
+      description: Cvss integrity impact
+      type: string
+    - contextPath: VulnDB.CvssMetrics.AvailabilityImpact
+      description: Cvss  availability impact
+      type: string
+    - contextPath: VulnDB.CvssMetrics.Generated_on
+      description: Cvss Metric date
+      type: date
+    - contextPath: VulnDB.CvssMetrics.Score
+      description: Cvss score
+      type: number
+    - contextPath: VulnDB.Vendors.Id
+      description: Vendor id
+      type: number
+    - contextPath: VulnDB.Vendor.Name
+      description: Vendor name
+      type: string
+    - contextPath: VulnDB.Products.Id
+      description: Products id
+      type: number
+    - contextPath: VulnDB.Products.Name
+      description: Products name
+      type: string
+    - contextPath: VulnDB.Products.Versions.Id
+      description: Product version id
+      type: number
+    - contextPath: VulnDB.Products.Versions.Name
+      description: Product versions name
+      type: string
+    - contextPath: VulnDB.Classification.Longname
+      description: Classification long name
+      type: string
+    - contextPath: VulnDB.Classification.Description
+      description: Classification description (only human readable)
+      type: string
+  dockerimage: demisto/python3:3.7.3.373
+  isfetch: false
   runonce: false
+  script: '-'
+  type: python
 tests:
-  - No tests
+- No tests
