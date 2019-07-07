@@ -369,6 +369,27 @@ def split_fields(fields):
     return dic_fields
 
 
+# Converts unicode elements of obj (incl. dictionary and list) to string recursively
+def unicode_to_str_recur(obj):
+    if isinstance(obj, dict):
+        obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k, v in obj.iteritems()}
+    elif isinstance(obj, list):
+        obj = map(unicode_to_str_recur, obj)
+    elif isinstance(obj, unicode):
+        obj = obj.encode('utf-8')
+    return obj
+
+
+# Converts to an str
+def convert_to_str(obj):
+    if isinstance(obj, unicode):
+        return obj.encode('utf-8')
+    try:
+        return str(obj)
+    except ValueError:
+        return obj
+
+
 ''' FUNCTIONS '''
 
 
@@ -1046,12 +1067,13 @@ def get_computer_command():
 
 def query_computers_command():
     table_name = 'cmdb_ci_computer'
-    computer_id = demisto.args().get('computer_id')
-    computer_name = demisto.args().get('computer_name')
-    asset_tag = demisto.args().get('asset_tag')
-    computer_query = demisto.args().get('query', {})
-    offset = demisto.args().get('offset', DEFAULTS['offset'])
-    limit = demisto.args().get('limit', DEFAULTS['limit'])
+    args = unicode_to_str_recur(demisto.args())
+    computer_id = args.get('computer_id')
+    computer_name = args.get('computer_name')
+    asset_tag = args.get('asset_tag')
+    computer_query = args.get('query', {})
+    offset = args.get('offset', DEFAULTS['offset'])
+    limit = args.get('limit', DEFAULTS['limit'])
 
     if computer_id:
         res = get(table_name, computer_id)
@@ -1109,11 +1131,12 @@ def query_computers_command():
 
 def query_groups_command():
     table_name = 'sys_user_group'
-    group_id = demisto.args().get('group_id')
-    group_name = demisto.args().get('group_name')
-    group_query = demisto.args().get('query', {})
-    offset = demisto.args().get('offset', DEFAULTS['offset'])
-    limit = demisto.args().get('limit', DEFAULTS['limit'])
+    args = unicode_to_str_recur(demisto.args())
+    group_id = args.get('group_id')
+    group_name = args.get('group_name')
+    group_query = args.get('query', {})
+    offset = args.get('offset', DEFAULTS['offset'])
+    limit = args.get('limit', DEFAULTS['limit'])
 
     if group_id:
         res = get(table_name, group_id)
@@ -1161,11 +1184,12 @@ def query_groups_command():
 
 def query_users_command():
     table_name = 'sys_user'
-    user_id = demisto.args().get('user_id')
-    user_name = demisto.args().get('user_name')
-    user_query = demisto.args().get('query', {})
-    offset = demisto.args().get('offset', DEFAULTS['offset'])
-    limit = demisto.args().get('limit', DEFAULTS['limit'])
+    args = unicode_to_str_recur(demisto.args())
+    user_id = args.get('user_id')
+    user_name = args.get('user_name')
+    user_query = args.get('query', {})
+    offset = args.get('offset', DEFAULTS['offset'])
+    limit = args.get('limit', DEFAULTS['limit'])
 
     if user_id:
         res = get(table_name, user_id)
@@ -1194,7 +1218,7 @@ def query_users_command():
         'Created': user.get('sys_created_on'),
         'Updated': user.get('sys_updated_on'),
     } for user in users]
-
+    mapped_users = unicode_to_str_recur(mapped_users)
     entry = {
         'Type': entryTypes['note'],
         'Contents': res,
