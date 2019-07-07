@@ -53,7 +53,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -80,16 +80,15 @@ tasks:
       layer:
         simple: 8a5e96fb-c793-457f-b78f-c667074223a5
       name:
-        simple: bar-from-6.6.6.5
+        simple: bar-from-1.2.3.4
       rule_number: {}
       uid: {}
-    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -137,12 +136,12 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "17"
+      - "21"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               complex:
@@ -151,12 +150,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: bar-from-6.6.6.5
+              simple: bar-from-1.2.3.4
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -178,7 +177,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1595
         }
       }
     note: false
@@ -196,7 +195,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "2"
+      - "20"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -252,12 +251,79 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 09bfc8d9-79d4-429d-80c6-24b52f6c8a64
+    type: regular
+    task:
+      id: 09bfc8d9-79d4-429d-80c6-24b52f6c8a64
+      version: -1
+      name: checkpoint-block-ip
+      script: '|||checkpoint-block-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      direction: {}
+      ip:
+        simple: 1.2.3.4
+      ipname:
+        simple: 1.2.3.4
+      rulename:
+        simple: bar
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 206fbaba-4069-4651-80f7-41be03786f64
+    type: regular
+    task:
+      id: 206fbaba-4069-4651-80f7-41be03786f64
+      version: -1
+      name: checkpoint-delete-rule
+      script: '|||checkpoint-delete-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      layer:
+        simple: 8a5e96fb-c793-457f-b78f-c667074223a5
+      name:
+        simple: bar-from-1.2.3.4
+      uid: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1260,
+        "height": 1610,
         "width": 380,
         "x": 50,
         "y": 50
