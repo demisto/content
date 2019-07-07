@@ -18,7 +18,7 @@ PASSWORD = demisto.params().get('credentials').get('password')
 TOKEN = demisto.params().get('token')
 SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) \
     else demisto.params()['url']
-USE_SSL = not demisto.params().get('unsecure', False)
+USE_SSL = not demisto.params().get('insecure', False)
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 FETCH_THREAT_RANK = int(demisto.params().get('fetch_threshold', 5))
 BASE_URL = SERVER + '/web/api/v2.0/'
@@ -28,12 +28,6 @@ HEADERS = {
     'Accept': 'application/json'
 }
 
-# remove proxy if not set to true in params
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 ''' HELPER FUNCTIONS '''
 
@@ -1416,6 +1410,7 @@ def threat_to_incident(threat):
 LOG('command is %s' % (demisto.command()))
 
 try:
+    handle_proxy()
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
         test_module()
