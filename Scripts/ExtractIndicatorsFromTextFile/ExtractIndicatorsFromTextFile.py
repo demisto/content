@@ -17,7 +17,7 @@ except Exception:
     return_error("File was not found")
 
 with open(filePath, mode='r') as f:
-    data = f.read(maxFileSize).decode('unicode_escape').encode('utf-8')
+    data = f.read(maxFileSize).encode('utf-8')
 
     # Extract indicators (omitting context output, letting auto-extract work)
     indicators_hr = demisto.executeCommand("extractIndicators", {
