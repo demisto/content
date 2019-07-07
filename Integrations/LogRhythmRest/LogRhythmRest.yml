@@ -427,28 +427,28 @@ script:
     name: lr-get-persons
     outputs:
     - contextPath: Logrhythm.Person.DateUpdated
-      description: Date Updated
+      description: Date updated
       type: String
     - contextPath: Logrhythm.Person.FirstName
-      description: First Name
+      description: First name
       type: String
     - contextPath: Logrhythm.Person.LastName
-      description: Last Name
+      description: Last name
       type: String
     - contextPath: Logrhythm.Person.HostStatus
-      description: Host Status
+      description: Host status
       type: string
     - contextPath: Logrhythm.Person.ID
       description: Person ID
       type: String
     - contextPath: Logrhythm.Person.IsAPIPerson
-      description: Is API Person
-      type: String
+      description: Is API person
+      type: Boolean
     - contextPath: Logrhythm.Person.UserID
       description: User ID
       type: String
     - contextPath: Logrhythm.Person.UserLogin
-      description: User Login
+      description: User login
       type: String
   - arguments:
     - default: false
@@ -470,40 +470,40 @@ script:
     name: lr-get-networks
     outputs:
     - contextPath: Logrhythm.Network.BIP
-      description: BIP
+      description: Began ip address
       type: String
     - contextPath: Logrhythm.Network.ThreatLevel
-      description: Threat Level
+      description: Threat level
       type: String
     - contextPath: Logrhythm.Network.Name
-      description: Network Name
+      description: Network name
       type: String
     - contextPath: Logrhythm.Network.EIP
-      description: EIP
+      description: End ip address
       type: String
     - contextPath: Logrhythm.Network.DateUpdated
-      description: Date Updated
+      description: Date updated
       type: String
     - contextPath: Logrhythm.Network.EntityName
-      description: Entity Name
+      description: Entity name
       type: String
     - contextPath: Logrhythm.Network.HostZone
-      description: Host Zone
+      description: Host zone
       type: String
     - contextPath: Logrhythm.Network.RiskLevel
-      description: Risk Level
+      description: Risk level
       type: String
     - contextPath: Logrhythm.Network.Location
-      description: Network Location
+      description: Network location
       type: String
     - contextPath: Logrhythm.Network.HostStatus
-      description: Host Status
+      description: Host status
       type: String
     - contextPath: Logrhythm.Network.ID
       description: Network ID
       type: String
     - contextPath: Logrhythm.Network.EntityId
-      description: Entity Id
+      description: Entity ID
       type: String
   - arguments:
     - default: false
@@ -565,7 +565,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The alarm ID
+      description: The alarm ID.
       isArray: false
       name: alarm-id
       required: true
@@ -582,26 +582,27 @@ script:
       description: The alarm event ID
       type: String
     - contextPath: Logrhythm.Alarm.LastDxTimeStamp
-      description: The alarm LastDxTimeStamp
+      description: The timestamp of the last time the drilldown returned new results
+        from the Data Indexer
       type: String
     - contextPath: Logrhythm.Alarm.DateInserted
-      description: The alarm DateInserted
+      description: The alarm date inserted
       type: String
     - contextPath: Logrhythm.Alarm.AIERuleName
-      description: The alarm AIERuleName
+      description: The alarm AI engine(AIE) rule
       type: String
     - contextPath: Logrhythm.Alarm.Priority
-      description: The alarm Priority
+      description: The alarm priority
       type: String
     - contextPath: Logrhythm.Alarm.AIERuleID
-      description: The alarm AIERule ID
+      description: The alarm AI engine(AIE) rule ID
       type: String
     - contextPath: Logrhythm.Alarm.ID
       description: The alarm ID
       type: String
     - contextPath: Logrhythm.Alarm.NotificationSent
       description: Alarm notification Sent
-      type: String
+      type: Boolean
     - contextPath: Logrhythm.Alarm.AlarmGuid
       description: The alarm Guid
       type: String
@@ -612,10 +613,11 @@ script:
       description: The alarm message date
       type: String
     - contextPath: Logrhythm.Alarm.WebConsoleIds
-      description: The alarm webConsole Ids
+      description: The alarm web console Ids
       type: String
     - contextPath: Logrhythm.Alarm.Summary.PIFType
-      description: Alarm summary type
+      description: Alarm Primary Inspection Field (the original name for "Summary
+        Field")
       type: String
     - contextPath: Logrhythm.Alarm.Summary.DrillDownSummaryLogs
       description: Drill down summary logs
@@ -660,7 +662,7 @@ script:
     name: lr-get-alarm-events
     outputs:
     - contextPath: Logrhythm.Alarm.Event
-      description: alarm event information
+      description: Alarm event information
       type: String
     - contextPath: Logrhythm.Alarm.ID
       description: The alarm ID
