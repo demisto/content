@@ -593,6 +593,7 @@ tasks:
       id: 371fb092-fd79-4550-8b2e-d3c945d2cc10
       version: -1
       name: No File To Parse
+      description: No File To Parse
       type: title
       iscommand: false
       brand: ""
