@@ -1037,4 +1037,4 @@ script:
     description: Retrieves a brief XML report of a given submission
   runonce: false
 tests:
-- No Test - beta integration
+- No Test - run "Test Playbook TrendMicroDDA" manually
