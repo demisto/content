@@ -334,6 +334,10 @@
             "playbookID": "minemeld_test"
         },
         {
+            "integrations": "SentinelOne V2",
+            "playbookID": "SentinelOne Beta Test"
+        },
+        {
             "integrations": "InfoArmor VigilanteATI",
             "playbookID": "InfoArmorVigilanteATITest"
         },
