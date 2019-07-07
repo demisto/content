@@ -518,7 +518,7 @@ def updateModuleHealth(error):
 def directMessage(message, username = None, email = None, anyoneCanOpenIncidents = None):
     return ""
 
-def createIncidents(incidents, lastRun = None):
+def createIncidents(incidents, lastRun = None, userID = None):
     return []
 
 def findUser(username, email):
