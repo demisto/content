@@ -237,14 +237,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
               simple: PP.Released
             iscontext: true
-          right:
-            value:
-              simple: "80052041"
     view: |-
       {
         "position": {
