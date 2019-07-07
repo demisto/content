@@ -184,6 +184,41 @@ def vulndb_get_vuln_by_vendor_and_product_name_command():
                 'EntryContext': ec
             })
 
+
+def vulndb_get_vuln_by_vendor_and_product_id_command():
+    vendor_id = demisto.args()['vendor_id']
+    product_id = demisto.args()['product_id']
+
+    res = requests.get(f'{API_URL}/vulnerabilities/find_by_vendor_and_product_id?vendor_id={vendor_id}&product_id={product_id}',
+                       verify=USE_SSL,
+                       headers={'Authorization': f'Bearer {get_oath_toekn()}'}
+                       ).json()
+
+    if 'error' in res:
+        return_error(res['error'])
+    else:
+        results = res['results']
+        for result in results:
+            ec = {
+                'VulnDB': vulndb_vulnerability_to_entry(result)
+            }
+
+            human_readable = tableToMarkdown(f'Result for vulnerability ID: {ec["VulnDB"]["Vulnerability"]["ID"]}', {
+                'Title': ec['VulnDB']['Vulnerability']['Title'],
+                'Description': ec['VulnDB']['Vulnerability']['Description'],
+                'Publish Date': ec['VulnDB']['Vulnerability']['PublishedDate'],
+                'Solution Date': ec['VulnDB']['Vulnerability']['SolutionDate']
+            })
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': res,
+                'ContentsFormat': formats['json'],
+                'HumanReadable': human_readable,
+                'HumanReadableFormat': formats['markdown'],
+                'EntryContext': ec
+            })
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
@@ -196,3 +231,5 @@ if demisto.command() == 'vulndb-get-vuln-by-id':
     vulndb_get_vuln_by_id_command()
 elif demisto.command() == 'vulndb-get-vuln-by-vendor-and-product-name':
     vulndb_get_vuln_by_vendor_and_product_name_command()
+elif demisto.command() == 'vulndb-get-vuln-by-vendor-and-product-id':
+    vulndb_get_vuln_by_vendor_and_product_id_command()
