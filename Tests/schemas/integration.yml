@@ -16,6 +16,10 @@ mapping:
   display:
       type: str
       required: yes
+  deprecated:
+    type: bool
+  beta:
+    type: bool
   category:
     type: str
     enum: [
