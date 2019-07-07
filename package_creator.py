@@ -66,7 +66,7 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
     yml_text, script_path = insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data)
     image_path = None
     desc_path = None
-    if dir_name == 'Integrations':
+    if dir_name == 'Integrations' or dir_name == 'Beta_Integrations':
         yml_text, image_path = insert_image_to_yml(dir_name, package_path, yml_data, yml_text)
         yml_text, desc_path = insert_description_to_yml(dir_name, package_path, yml_data, yml_text)
 
