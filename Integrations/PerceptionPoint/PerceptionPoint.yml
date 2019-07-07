@@ -12,7 +12,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: No. of API loops
+- display: Number of API loops
   name: api_loops
   defaultvalue: "1"
   type: 0
