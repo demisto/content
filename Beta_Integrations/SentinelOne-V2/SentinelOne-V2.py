@@ -1092,55 +1092,6 @@ def get_site_request(site_id):
     return {}
 
 
-def expire_site_command():
-    """
-    Expire specific site by ID
-    """
-    # Init main vars
-    context = {}
-    title = ''
-
-    # Get arguments
-    site_id = demisto.args().get('site_id')
-
-    # Make request and get raw response
-    site = expire_site_request(site_id)
-
-    # Parse response into context & content entries
-    if site:
-        title = f'Sentinel One - Expire Site: {site_id} \nSite has been expired successfully'
-        contents = {
-            'ID': site.get('id'),
-            'Expired': True
-        }
-        context_entries = {
-            'ID': site.get('id'),
-            'Expired': True
-        }
-
-        context['SentinelOne.Site(val.ID && val.ID === obj.ID)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
-        'EntryContext': context
-    })
-
-
-def expire_site_request(site_id):
-    endpoint_url = f'sites/{site_id}/expire-now'
-
-    response = http_request('POST', endpoint_url)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if response.get('data'):
-        return response.get('data')
-    return {}
-
-
 def reactivate_site_command():
     """
     Reactivate specific site by ID
@@ -1493,8 +1444,6 @@ try:
         get_sites_command()
     elif demisto.command() == 'sentinelone-get-site':
         get_site_command()
-    elif demisto.command() == 'sentinelone-expire-site':
-        expire_site_command()
     elif demisto.command() == 'sentinelone-reactivate-site':
         reactivate_site_command()
     elif demisto.command() == 'sentinelone-list-agents':
