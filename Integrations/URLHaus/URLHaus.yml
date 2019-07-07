@@ -152,18 +152,7 @@ script:
     - default: false
       description: MD5 or SHA256 of the file to query
       isArray: false
-      name: hash
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: MD5
-      description: MD5 or SHA256
-      isArray: false
-      name: hash_type
-      predefined:
-      - MD5
-      - SHA256
+      name: file
       required: true
       secret: false
     deprecated: false

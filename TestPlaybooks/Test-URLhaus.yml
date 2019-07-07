@@ -1,5 +1,5 @@
 id: c48ce58e-79ec-460f-818e-8b41689453cd
-version: 17
+version: 20
 name: Test-URLhaus
 starttaskid: "0"
 tasks:
@@ -196,7 +196,7 @@ tasks:
       submitWait: {}
       threshold: {}
       url:
-        simple: http://gfrewdfsersfsfersfgergre.com
+        simple: http://gfrewdfsersfsfersfgergre.com # disable-secrets-detection
       wait: {}
     separatecontext: false
     view: |-
@@ -424,10 +424,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: daf3b708-ce8c-4d90-8334-6789d3d0517a
+    taskid: f2fa7790-b361-4547-881d-d8ac97d2b5d3
     type: regular
     task:
-      id: daf3b708-ce8c-4d90-8334-6789d3d0517a
+      id: f2fa7790-b361-4547-881d-d8ac97d2b5d3
       version: -1
       name: file - no data
       description: Retrieve file information from URLhaus
@@ -439,7 +439,8 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      file: {}
+      file:
+        simple: 01fa56184fcaa42b6ee1882787a34098c79898c182814774fd81dc18a6af0b01
       hash:
         simple: 01fa56184fcaa42b6ee1882787a34098c79898c182814774fd81dc18a6af0b01
       hash_type:
@@ -452,8 +453,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
-          "y": 370
+          "x": 1770,
+          "y": 545
         }
       }
     note: false
@@ -499,7 +500,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 2200,
           "y": 545
         }
       }
@@ -596,6 +597,9 @@ tasks:
       type: regular
       iscommand: true
       brand: URLhaus
+    nexttasks:
+      '#none#':
+      - "4"
     scriptarguments:
       file:
         simple: 254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337c
@@ -604,7 +608,7 @@ tasks:
       {
         "position": {
           "x": 3060,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -612,10 +616,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 89d4f512-c69e-4eda-8b79-1d5b58bf58cb
+    taskid: e4ce9205-b8a7-48b4-896c-ece17cf89354
     type: regular
     task:
-      id: 89d4f512-c69e-4eda-8b79-1d5b58bf58cb
+      id: e4ce9205-b8a7-48b4-896c-ece17cf89354
       version: -1
       name: file - with data
       description: Retrieve file information from URLhaus
@@ -627,7 +631,8 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      file: {}
+      file:
+        simple: 01fa56184fcaa42b6ee1882787a34098c79898c182814774fd81dc18a6af0b00
       hash:
         simple: 01fa56184fcaa42b6ee1882787a34098c79898c182814774fd81dc18a6af0b00
       hash_type:
@@ -640,8 +645,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1760,
-          "y": 380
+          "x": 2200,
+          "y": 370
         }
       }
     note: false

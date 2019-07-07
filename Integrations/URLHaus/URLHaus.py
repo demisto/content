@@ -30,6 +30,10 @@ if not demisto.params().get('proxy'):
 
 THRESHOLD = int(demisto.params().get('threshold', 1))
 
+# disable-secrets-detection-start
+# Whether compromised websites are considered malicious or not. See the blacklists output in
+# https://urlhaus-api.abuse.ch/
+# disable-secrets-detection-end
 COMPROMISED_IS_MALICIOUS = demisto.params().get('compromised_is_malicious', False)
 
 # Headers to be sent in requests
@@ -43,7 +47,6 @@ HEADERS = {
 
 def http_request(method, command, data=None):
     url = f'{API_URL}/{command}/'
-    demisto.info(f'{method} {url}')
     res = requests.request(method,
                            url,
                            verify=USE_SSL,
@@ -104,6 +107,8 @@ def test_module():
 
 
 def calculate_dbot_score(blacklists, threshold, compromised_is_malicious):
+    dbot_score = 0
+    description = 'Not listed in any blacklist'
     blacklist_appearances = []
     for blacklist, status in blacklists.items():
         if blacklist == 'spamhaus_dbl':
@@ -115,16 +120,17 @@ def calculate_dbot_score(blacklists, threshold, compromised_is_malicious):
     if len(blacklist_appearances) >= threshold:
         description = ''
         for appearance in blacklist_appearances:
-            if not appearance[1]:
+            if appearance[1] is not None:
                 description += f'Listed in {appearance[0]}. '
             else:
                 description += f'Listed as {appearance[1]} in {appearance[0]}. '
-
-        return 3, description
+        dbot_score = 3
     elif len(blacklist_appearances) > 0:
-        return 2, None
+        dbot_score = 2
     else:
-        return 1, None
+        dbot_score = 1
+
+    return dbot_score, description
 
 
 def url_command():
@@ -168,8 +174,8 @@ def url_command():
                 vt_information = None
                 if vt_data:
                     vt_information = {
-                        'Result': float(vt_data['percent']),
-                        'Link': vt_data['link']
+                        'Result': float(vt_data.get('percent', 0)),
+                        'Link': vt_data.get('link', '')
                     }
                 payloads.append({
                     'Name': payload.get('filename', 'unknown'),
@@ -196,6 +202,7 @@ def url_command():
             human_readable = tableToMarkdown(f'URLhaus reputation for {url}',
                                              {
                                                  'URLhaus link': url_information.get("urlhaus_reference", "None"),
+                                                 'Description': description,
                                                  'URLhaus ID': urlhaus_data['ID'],
                                                  'Status': urlhaus_data['Status'],
                                                  'Threat': url_information.get("threat", ""),
@@ -296,6 +303,7 @@ def domain_command():
             human_readable = tableToMarkdown(f'URLhaus reputation for {domain}',
                                              {
                                                  'URLhaus link': domain_information.get('urlhaus_reference', 'None'),
+                                                 'Description': description,
                                                  'First seen': first_seen,
                                              })
             demisto.results({
@@ -345,10 +353,13 @@ def domain_command():
 
 
 def file_command():
-    hash = demisto.args()['hash']
-    hash_type = demisto.args()['hash_type'].lower()
-    if hash_type not in ['md5', 'sha256']:
-        return_error('Only accepting MD5 or SHA256 hash types')
+    hash = demisto.args()['file']
+    if len(hash) == 32:
+        hash_type = 'md5'
+    elif len(hash) == 64:
+        hash_type = 'sha256'
+    else:
+        return_error('Only accepting MD5 (32 bytes) or SHA256 (64 bytes) hash types')
 
     try:
         file_information = query_payload_information(hash_type, hash).json()
@@ -379,19 +390,19 @@ def file_command():
 
             ec = {
                 'File': {
-                    'Size': urlhaus_data['Size'],
-                    'MD5': urlhaus_data['MD5'],
-                    'SHA256': urlhaus_data['SHA256']
+                    'Size': urlhaus_data.get('Size', 0),
+                    'MD5': urlhaus_data.get('MD5', ''),
+                    'SHA256': urlhaus_data.get('SHA256')
                 },
                 'URLhaus.File(val.MD5 && val.MD5 === obj.MD5)': urlhaus_data
             }
 
             human_readable = tableToMarkdown(f'URLhaus reputation for {hash_type.upper()} : {hash}',
                                              {
-                                                 'URLhaus link': urlhaus_data['DownloadLink'],
-                                                 'Signature': urlhaus_data['Signature'],
-                                                 'MD5': urlhaus_data['MD5'],
-                                                 'SHA256': urlhaus_data['SHA256'],
+                                                 'URLhaus link': urlhaus_data.get('DownloadLink', ''),
+                                                 'Signature': urlhaus_data.get('Signature', ''),
+                                                 'MD5': urlhaus_data.get('MD5', ''),
+                                                 'SHA256': urlhaus_data.get('SHA256', ''),
                                                  'First seen': first_seen,
                                                  'Last seen': last_seen
                                              })
@@ -440,6 +451,10 @@ def file_command():
 
 
 def urlhaus_download_sample_command():
+    """
+    The response can be either the zipped sample (content-type = application/zip), or JSON (content-type = text/html)
+    containing the query status.
+    """
     file_sha256 = demisto.args()['file']
     res = download_malware_sample(file_sha256)
 
@@ -450,7 +465,7 @@ def urlhaus_download_sample_command():
                 'HumanReadable': f'No results for SHA256: {file_sha256}',
                 'HumanReadableFormat': formats['markdown']
             })
-        elif res.json()['query_status'] == 'not_found':
+        elif res.headers['content-type'] == 'text/html' and res.json()['query_status'] == 'not_found':
             demisto.results({
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['json'],
@@ -458,14 +473,17 @@ def urlhaus_download_sample_command():
                 'HumanReadable': f'No results for SHA256: {file_sha256}',
                 'HumanReadableFormat': formats['markdown']
             })
+        elif res.headers['content-type'] == 'application/zip':
+            demisto.results(fileResult(file_sha256, extract_zipped_buffer(res.content)))
         else:
-            demisto.results({
-                'Type': entryTypes['error'],
-                'ContentsFormat': formats['text'],
-                'Contents': res.content
-            })
-    except json.JSONDecodeError:
-        demisto.results(fileResult(file_sha256, extract_zipped_buffer(res.content)))
+            raise Exception
+            # Handle like an exception
+    except Exception:
+        demisto.results({
+            'Type': entryTypes['error'],
+            'ContentsFormat': formats['text'],
+            'Contents': res.content
+        })
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
