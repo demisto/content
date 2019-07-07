@@ -1251,6 +1251,198 @@ script:
     - contextPath: MISP.Event.ID
       description: IDs of new created events
       type: number
+  - arguments:
+    - default: false
+      description: Entry ID of email
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of event to add object to
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: adds an email object to given event id
+    execution: false
+    name: misp-add-email-object
+  - arguments:
+    - default: false
+      description: ID of MISP event
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    - default: false
+      description: The domain name e.g. google.com
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: IPs resolved by DNS. List of IP objects
+      isArray: true
+      name: dns
+      required: true
+      secret: false
+    - default: false
+      description: Date the domain was created
+      isArray: false
+      name: creation_date
+      required: false
+      secret: false
+    - default: false
+      description: Datetime of last seen `2019-02-03`
+      isArray: false
+      name: last_seen
+      required: false
+      secret: false
+    - default: false
+      description: Datetime of first seen `2019-02-03`
+      isArray: false
+      name: first_seen
+      required: false
+      secret: false
+    - default: false
+      description: A description of the domain
+      isArray: false
+      name: text
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds a domain object
+    execution: false
+    name: misp-add-domain-object
+  - arguments:
+    - default: false
+      description: Full URL
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    - default: false
+      description: First time this URL has been seen `2019-02-03`
+      isArray: false
+      name: first_seen
+      required: false
+      secret: false
+    - default: false
+      description: Description of the URL
+      isArray: false
+      name: text
+      required: false
+      secret: false
+    - default: false
+      description: Last time this URL has been seen `2019-02-03`
+      isArray: false
+      name: last_seen
+      required: false
+      secret: false
+    - default: false
+      description: ID of event
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Add URL object to MISP event
+    execution: false
+    name: misp-add-url-object
+  - arguments:
+    - default: false
+      description: ID of event to add object to
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    - default: false
+      description: template name (can be found https://www.misp-project.org/objects.html)
+      isArray: false
+      name: template
+      required: true
+      secret: false
+    - default: false
+      description: 'attributes '
+      isArray: false
+      name: attributes
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds any other object to misp
+    execution: false
+    name: misp-add-object
+  - arguments:
+    - default: false
+      description: ID of event
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    - default: false
+      description: ip (require one of)
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: dst-port (require one of)
+      isArray: false
+      name: dst_port
+      required: false
+      secret: false
+    - default: false
+      description: src-port (require one of)
+      isArray: false
+      name: src_port
+      required: false
+      secret: false
+    - default: false
+      description: domain (require one of)
+      isArray: false
+      name: domain
+      required: false
+      secret: false
+    - default: false
+      description: hostname (require one of)
+      isArray: false
+      name: hostname
+      required: false
+      secret: false
+    - default: false
+      description: ip-src (require one of)
+      isArray: false
+      name: ip_src
+      required: false
+      secret: false
+    - default: false
+      description: ip-dst (require one of)
+      isArray: false
+      name: ip_dst
+      required: false
+      secret: false
+    - default: false
+      description: First time the tuple has been seen.
+      isArray: false
+      name: first_seen
+      required: false
+      secret: false
+    - default: false
+      description: Last time the tuple has been seen.
+      isArray: false
+      name: last_seen
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: text
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds an IP Object to MISP event
+    execution: false
+    name: misp-add-ip-object
   dockerimage: demisto/pymisp:1.0.0.52
   isfetch: false
   runonce: false

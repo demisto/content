@@ -1,15 +1,15 @@
-from typing import Union
-
-import demistomock as demisto
-from CommonServerPython import *
+import logging
+import warnings
+from typing import Union, List, Any, Tuple
+from urllib.parse import urlparse
 
 import requests
-import time
-import warnings
-from pymisp import ExpandedPyMISP, PyMISPError  # type: ignore
-import logging
+from pymisp import ExpandedPyMISP, PyMISPError, MISPObject  # type: ignore
+from pymisp.tools import EMailObject, GenericObjectGenerator  # type: ignore
 
-logging.getLogger("pymisp").setLevel(logging.ERROR)
+from CommonServerPython import *
+
+logging.getLogger("pymisp").setLevel(logging.CRITICAL)
 
 
 def warn(*args, **kwargs):
@@ -25,13 +25,12 @@ requests.packages.urllib3.disable_warnings()
 # Disable python warnings
 warnings.warn = warn
 
-proxy = handle_proxy()
-
 ''' GLOBALS/PARAMS '''
 MISP_KEY = demisto.params().get('api_key')
 MISP_URL = demisto.params().get('url')
 USE_SSL = not demisto.params().get('insecure')
 MISP_PATH = 'MISP.Event(obj.ID === val.ID)'
+MISP = ExpandedPyMISP(MISP_URL, MISP_KEY, ssl=USE_SSL)  # type: ExpandedPyMISP
 
 """
 dict format :
@@ -72,18 +71,13 @@ ENTITIESDICT = {
     'orgc_name': 'OwnerOrganisation.Name',
     'event_uuid': 'EventUUID',
     'proposal_to_delete': 'ProposalToDelete',
-    'Comment': 'comment',
-    'Category': 'category',
-    'UUID': 'uuid',
-    'SharingGroupID': 'sharing_group_id',
-    'Timestamp': 'timestamp',
-    'ToIDs': 'to_ids', 'Value': 'value',
-    'Deleted': 'deleted',
-    'EventID': 'event_id',
-    'Distribution': 'distribution',
-    'DisableCorrelation': 'disable_correlation',
     'description': 'Description',
-    'version': 'Version'
+    'version': 'Version',
+    'Object': 'Object',
+    'object_id': 'ObjectID',
+    'object_relation': 'ObjectRelation',
+    'template_uuid': 'TemplateUUID',
+    'meta-category': 'MetaCategory'
 }
 
 THREAT_LEVELS_WORDS = {
@@ -119,6 +113,29 @@ DISTRIBUTION_NUMBERS = {
     'All_communities': 3
 }
 ''' HELPER FUNCTIONS '''
+
+
+def build_generic_object(template_name: str, args: List[dict]) -> GenericObjectGenerator:
+    """
+
+    Args:
+        template_name: template name as described in
+        args: arguments to create the generic object
+
+    Returns:
+        GenericObjectGenerator: object created in MISP
+
+    Example:
+        args should look like:
+             [{'analysis_submitted_at': '2018-06-15T06:40:27'},
+             {'threat_score': {value=95, to_ids=False}},
+             {'permalink': 'https://panacea.threatgrid.com/mask/samples/2e445ef5389d8b'},
+             {'heuristic_raw_score': 7.8385159793597}, {'heuristic_score': 96},
+             {'original_filename': 'juice.exe'}, {'id':  '2e445ef5389d8b'}]
+    """
+    misp_object = GenericObjectGenerator(template_name)
+    misp_object.generate_attributes(args)
+    return misp_object
 
 
 def convert_timestamp(timestamp: Union[str, int]) -> str:
@@ -179,44 +196,49 @@ def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ig
         'ShadowAttribute',
         'RelatedEvent',
         'Galaxy',
-        'Tag'
+        'Tag',
+        'Object'
     ]
-    # Sometimes, the pymisp will return str instead of a dict. json.loads() wouldn't work unless we'll dumps it first
+    # Sometimes, PyMISP will return str instead of a dict. json.loads() wouldn't work unless we'll dumps it first
     if isinstance(response, str):
         response = json.loads(json.dumps(response))
     # Remove 'Event' keyword
     events = [event.get('Event') for event in response]  # type: ignore
     for i in range(0, len(events)):
         # Filter object from keys in event_args
-        events[i] = {key: events[i].get(key) for key in event_args if key in events[i]}
+        events[i] = {
+            key: events[i].get(key)
+            for key in event_args if key in events[i]
+        }
 
         # Remove 'Event' keyword from 'RelatedEvent'
         if events[i].get('RelatedEvent'):
-            events[i]['RelatedEvent'] = [r_event.get('Event') for r_event in events[i].get('RelatedEvent')]
+            events[i]['RelatedEvent'] = [
+                r_event.get('Event') for r_event in events[i].get('RelatedEvent')
+            ]
 
             # Get only IDs from related event
-            related_events = list()
-            for r_event in events[i].get('RelatedEvent'):
-                related_events.append({'id': r_event.get('id')})
-            events[i]['RelatedEvent'] = related_events
+            events[i]['RelatedEvent'] = [
+                {
+                    'id': r_event.get('id')
+                } for r_event in events[i].get('RelatedEvent')
+            ]
 
         # Build Galaxy
         if events[i].get('Galaxy'):
-            galaxy = list()
-            for star in events[i]['Galaxy']:
-                new_star = {
+            events[i]['Galaxy'] = [
+                {
                     'name': star.get('name'),
                     'type': star.get('type'),
                     'description': star.get('description')
-                }
-                galaxy.append(new_star)
-            events[i]['Galaxy'] = galaxy
+                } for star in events[i]['Galaxy']
+            ]
+
         # Build tag
         if events[i].get('Tag'):
-            tag_list = list()
-            for tag in events[i].get('Tag'):
-                tag_list.append({'Name': tag.get('name')})
-            events[i]['Tag'] = tag_list
+            events[i]['Tag'] = [
+                {'Name': tag.get('name')} for tag in events[i].get('Tag')
+            ]
     events = replace_keys(events)  # type: ignore
     return events  # type: ignore
 
@@ -656,7 +678,7 @@ def check_url():
         demisto.results(f'No events found in MISP for URL: {url}')
 
 
-def search():
+def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
     """
     will search in MISP
     Returns
@@ -664,14 +686,26 @@ def search():
     """
     d_args = demisto.args()
     # List of all applicable search arguments
-    search_args = ['event_id', 'value', 'type', 'category', 'org', 'tags', 'from', 'to', 'last', 'eventid', 'uuid',
-                   'to_ids']
+    search_args = [
+        'event_id',
+        'value',
+        'type',
+        'category',
+        'org',
+        'tags',
+        'from',
+        'to',
+        'last',
+        'eventid',
+        'uuid',
+        'to_ids'
+    ]
 
     args = dict()
     # Create dict to pass into the search
     for arg in search_args:
         if arg in d_args:
-            args[arg] = d_args.get(arg)
+            args[arg] = d_args[arg]
     # Replacing keys and values from Demisto to Misp's keys
     if 'type' in args:
         args['type_attribute'] = d_args.pop('type')
@@ -680,39 +714,39 @@ def search():
         args['to_ids'] = 1 if d_args.get('to_ids') in ('true', '1', 1) else 0
 
     response = MISP.search(**args)
-
     if response:
         response_for_context = build_context(response)
 
         # Prepare MD. getting all keys and values if exists
         args_for_md = {key: value for key, value in args.items() if value}
-
-        md = tableToMarkdown('Results in MISP for search:', args_for_md)
-        md_event = response_for_context[0]
-        md += f'Total of {len(response_for_context)} events found\n'
-        event_highlights = {
-            'Info': md_event.get('Info'),
-            'Timestamp': convert_timestamp(md_event.get('Timestamp')),
-            'Analysis': ANALYSIS_WORDS[md_event.get('Analysis')],
-            'Threat Level ID': THREAT_LEVELS_WORDS[md_event.get('ThreatLevelID')],
-            'Event Creator Email': md_event.get('EventCreateorEmail'),
-            'Attributes': json.dumps(md_event.get('Attribute'), indent=4),
-            'Related Events': md_event.get('RelatedEvent')
-        }
-        md += tableToMarkdown(f'Event ID: {md_event.get("ID")}', event_highlights)
-        if md_event.get('Galaxy'):
-            md += tableToMarkdown(f'Galaxy:', md_event.get('Galaxy'))
-
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': response,
-            'ContentsFormat': formats['json'],
-            'HumanReadable': md,
-            'ReadableContentsFormat': formats['markdown'],
-            'EntryContext': {
-                MISP_PATH: response_for_context
+        if post_to_warroom:
+            md = tableToMarkdown('Results in MISP for search:', args_for_md)
+            md_event = response_for_context[0]
+            md += f'Total of {len(response_for_context)} events found\n'
+            event_highlights = {
+                'Info': md_event.get('Info'),
+                'Timestamp': convert_timestamp(md_event.get('Timestamp')),
+                'Analysis': ANALYSIS_WORDS[md_event.get('Analysis')],
+                'Threat Level ID': THREAT_LEVELS_WORDS[md_event.get('ThreatLevelID')],
+                'Event Creator Email': md_event.get('EventCreateorEmail'),
+                'Attributes': json.dumps(md_event.get('Attribute'), indent=4),
+                'Related Events': md_event.get('RelatedEvent')
             }
-        })
+            md += tableToMarkdown(f'Event ID: {md_event.get("ID")}', event_highlights)
+            if md_event.get('Galaxy'):
+                md += tableToMarkdown(f'Galaxy:', md_event.get('Galaxy'))
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': response,
+                'ContentsFormat': formats['json'],
+                'HumanReadable': md,
+                'ReadableContentsFormat': formats['markdown'],
+                'EntryContext': {
+                    MISP_PATH: response_for_context
+                }
+            })
+        return response_for_context, response
     else:
         demisto.results(f"No events found in MISP for {args}")
 
@@ -748,7 +782,7 @@ def add_tag():
     ec = {
         MISP_PATH: build_context(event)
     }
-    md = f'Tag {tag} has been succefully added to event {uuid}'
+    md = f'Tag {tag} has been successfully added to event {uuid}'
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': event,
@@ -839,36 +873,201 @@ command = demisto.command()
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG(f'command is {demisto.command()}')
-try:
-    MISP = ExpandedPyMISP(MISP_URL, MISP_KEY, ssl=USE_SSL)
-    if command == 'test-module':
-        #  This is the call made when pressing the integration test button.
-        test()
-    elif command == 'misp-upload-sample':
-        upload_sample()
-    elif command == 'misp-download-sample':
-        download_file()
-    elif command in ('internal-misp-create-event', 'misp-create-event'):
-        create_event()
-    elif command in ('internal-misp-add-attribute', 'misp-add-attribute'):
-        add_attribute()
-    elif command == 'misp-search':
-        search()
-    elif command == 'misp-delete-event':
-        delete_event()
-    elif command == 'misp-add-sighting':
-        add_sighting()
-    elif command == 'misp-add-tag':
-        add_tag()
-    elif command == 'misp-add-feed':
-        add_feed()
-    elif command == 'file':
-        check_file()
-    elif command == 'url':
-        check_url()
-    elif command == 'ip':
-        check_ip()
-except PyMISPError as e:
-    return_error(e.message)
-except Exception as e:
-    return_error(e)
+
+
+def add_object(event_id: str, obj: MISPObject):
+    """
+
+    Args:
+        obj: object to add to MISP
+        event_id (str): ID of event
+    """
+    response = MISP.add_object(event_id, misp_object=obj)
+    if 'errors' in response:
+        return_error(f'Error in {command}: {json.dumps(response["errors"], indent=4)}')
+    for ref in obj.ObjectReference:
+        MISP.add_object_reference(ref)
+    entry_context, raw_response = search(
+        post_to_warroom=False)  # Run search on event ID (in demisto.args) and add object to context
+    return_outputs(
+        f"### Object has been added to MISP event ID {event_id}",
+        {MISP_PATH: entry_context},
+        raw_response
+    )  # type: ignore
+
+
+def add_email_object():
+    entry_id = demisto.getArg('entry_id')
+    event_id = demisto.getArg('event_id')
+    email_path = demisto.getFilePath(entry_id).get('path')
+    if email_path:
+        obj = EMailObject(email_path)
+        add_object(event_id, obj)
+    else:
+        return_error(f'No file path has found for entry ID: {entry_id}')
+
+
+def add_domain_object():
+    """Adds a domain object to MISP
+    domain-ip description: https://www.misp-project.org/objects.html#_domain_ip
+    """
+    template = 'domain-ip'
+    args = [
+        'text'
+        'creation_date',
+        'first_seen',
+        'last_seen'
+    ]
+    event_id = demisto.getArg('event_id')
+    domain = demisto.getArg('name')
+    obj = MISPObject(template)
+    ips = argToList(demisto.getArg('dns'))
+    for ip in ips:
+        obj.add_attribute('ip', value=ip)
+    obj.add_attribute('domain', value=domain)
+    for arg in args:
+        value = demisto.getArg(arg)
+        if value:
+            obj.add_attribute(arg, value=value)
+    add_object(event_id, obj)
+
+
+def add_url_object():
+    """Building url object in MISP scheme
+    Scheme described https://www.misp-project.org/objects.html#_url
+    """
+    template = 'url'
+    url_args = [
+        'text',
+        'last_seen',
+        'first_seen'
+    ]
+    event_id = demisto.getArg('event_id')
+    url = demisto.getArg('url')
+    url_parse = urlparse(url)
+    url_obj = [
+        {'url': url}
+    ]
+    if url_parse.scheme:
+        url_obj.append({'scheme': url_parse.scheme})
+    if url_parse.path:
+        url_obj.append({'resource_path': url_parse.path})
+    if url_parse.query:
+        url_obj.append({'query_string': url_parse.query})
+    if url_parse.netloc:
+        url_obj.append({'domain': url_parse.netloc})
+    if url_parse.fragment:
+        url_obj.append({'fragment': url_parse.fragment})
+    if url_parse.port:
+        url_obj.append({'port': url_parse.port})
+    if url_parse.username and url_parse.password:
+        url_obj.append({'credential': (url_parse.username, url_parse.password)})
+    for arg in url_args:
+        new_arg = demisto.getArg(arg)
+        if new_arg:
+            url_obj.append({arg.replace('_', '-'): new_arg})
+
+    g_object = build_generic_object(template, url_obj)
+    add_object(event_id, g_object)
+
+
+def build_list_from_dict(args: dict):
+    return [{k: v} for k, v in args.items()]
+
+
+def add_generic_object_command():
+    event_id = demisto.getArg('event_id')
+    template = demisto.getArg('template')
+    attributes = demisto.getArg('attributes')  # type: str
+    attributes = attributes.replace("'", '"')
+    # return_error(MISP.get_object_templates_list())
+    # if template not in MISP.get_object_templates_list():
+    #    return_error(f'Template `{template}` does not exist in MISP')
+    try:
+        args = json.loads(attributes)
+        if not isinstance(args, list):
+            args = build_list_from_dict(args)
+        obj = build_generic_object(template, args)
+        add_object(event_id, obj)
+    except ValueError as e:
+        return_error(f'`attribute` parameter could not be decoded\nattribute: {attributes}', str(e))
+
+
+def add_ip_object():
+    template = 'ip-port'
+    event_id = demisto.getArg('event_id')
+    args = [
+        'dst_port',
+        'src_port',
+        'domain',
+        'hostname',
+        'ip',
+        'ip_src',
+        'ip_dst'
+    ]
+    attr = [{arg: demisto.getArg(arg)} for arg in args if demisto.getArg(arg)]
+    if attr:
+        non_req_args = [
+            'first_seen',
+            'last_seen',
+            'text'
+        ]
+        attr.extend({arg.replace('_', '-'): demisto.getArg(arg)} for arg in non_req_args if demisto.getArg(arg))
+        obj = build_generic_object(template, attr)
+        add_object(event_id, obj)
+    else:
+        return_error(f'None of required arguments presents. command {command} requires one of {args}')
+
+
+def main():
+    handle_proxy()
+    try:
+        if command == 'test-module':
+            #  This is the call made when pressing the integration test button.
+            test()
+        elif command == 'misp-upload-sample':
+            upload_sample()
+        elif command == 'misp-download-sample':
+            download_file()
+        elif command in ('internal-misp-create-event', 'misp-create-event'):
+            create_event()
+        elif command in ('internal-misp-add-attribute', 'misp-add-attribute'):
+            add_attribute()
+        elif command == 'misp-search':
+            search()
+        elif command == 'misp-delete-event':
+            delete_event()
+        elif command == 'misp-add-sighting':
+            add_sighting()
+        elif command == 'misp-add-tag':
+            add_tag()
+        elif command == 'misp-add-feed':
+            add_feed()
+        elif command == 'file':
+            check_file()
+        elif command == 'url':
+            check_url()
+        elif command == 'ip':
+            check_ip()
+        #  Object commands
+        elif command == 'misp-add-email-object':
+            add_email_object()
+        elif command == 'misp-add-domain-object':
+            add_domain_object()
+        elif command == 'misp-add-url-object':
+            add_url_object()
+        elif command == 'misp-add-ip-object':
+            add_ip_object()
+        elif command == 'misp-add-object':
+            add_generic_object_command()
+    except PyMISPError as e:
+        return_error(e.message)
+    except Exception as e:
+        return_error(str(e))
+
+
+if __name__ in ('__builtin__', 'builtins'):
+    main()
+
+# TODO: in 5.0
+#   * Add !file (need docker change).
