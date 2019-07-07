@@ -2375,5 +2375,5 @@ script:
       type: string
     description: Enumerates all users that are members of a group
   runonce: false
-releaseNotes: Fixed bug where filters were being double encoded and returning failure to apply filter.
+releaseNotes: "Fixed bug where filters were being double encoded and returning failure to apply filter."
 fromversion: 3.6.0
