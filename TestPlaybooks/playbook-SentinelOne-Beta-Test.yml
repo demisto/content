@@ -10,7 +10,7 @@ tasks:
     task:
       id: 83597dae-ec05-4b08-8365-4d4b885734c2
       version: -1
-      name: ""ff
+      name: ""
       iscommand: false
       brand: ""
     nexttasks:
