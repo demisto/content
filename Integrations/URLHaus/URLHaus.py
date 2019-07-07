@@ -110,17 +110,15 @@ def calculate_dbot_score(blacklists, threshold, compromised_is_malicious):
             if status.endswith('domain') or (status.startswith('abused') and compromised_is_malicious):
                 blacklist_appearances.append((blacklist, status))
         elif status == 'listed':
-            blacklist_appearances.append((blacklist,))
+            blacklist_appearances.append((blacklist, None))
 
     if len(blacklist_appearances) >= threshold:
         description = ''
         for appearance in blacklist_appearances:
-            if len(appearance) == 1:
+            if not appearance[1]:
                 description += f'Listed in {appearance[0]}. '
-            elif len(appearance) == 2:
-                description += f'Listed as {appearance[1]} in {appearance[0]}. '
             else:
-                raise Exception('Unknown blacklist format in the response')
+                description += f'Listed as {appearance[1]} in {appearance[0]}. '
 
         return 3, description
     elif len(blacklist_appearances) > 0:
