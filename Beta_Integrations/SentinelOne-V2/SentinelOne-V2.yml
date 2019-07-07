@@ -1184,6 +1184,5 @@ script:
   runonce: false
   script: '-'
   type: python
-releaseNotes: New integration - SentinelOne V2
 tests:
-- no tests
+- SentinelOne Beta Test
