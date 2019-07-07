@@ -9,6 +9,7 @@ description: Search CVE Information - powered by Circl.lu
 configuration: []
 script:
   script: |-
+    ''' IMPORTS '''
     import requests
 
     ''' HELPER FUNCTIONS '''
@@ -21,16 +22,21 @@ script:
 
     @logger
     def api_request(url):
-        try:
-            r = requests.get(url, timeout=(3.05, 5))
-            if r.status_code == 200:
-              return r
+        """
+        Makes an API call with the supplied URL
+        """
+        LOG(f'running request with {url}')
+        res = requests.get(url, timeout=(3.05, 5))
+        if res.status_code < 200 or res.status_code >= 300:
+            if res.status_code == 401:
+                return_error('Request Failed with status: 401 Unauthorized - Invalid Username or Password')
+            elif res.status_code == 415:
+               return_error('Request Failed with status: 415 - Invalid accept header or content type header')
+            else:
+                return_error('Request Failed with status: ' + str(res.status_code) + '. Reason is: ' + str(res.reason))
+        return res
 
-        except ConnectionError as conn_err:
-            print('Connection error occurred: {}'.format(conn_err))
-
-        except HTTPError as http_err:
-            print('HTTP error occurred: {}'.format(http_err))
+    ''' FUNCTIONS '''
 
     def cve_to_md(o):
         if o and o['id']:
@@ -104,7 +110,7 @@ script:
         url = 'http://cve.circl.lu/api/last/' + demisto.args()['limit']
         res = api_request(url)
         o = res.json()
-        md = '## cicle.lu Latest CVEs\n'
+        md = '## Circl.lu Latest CVEs\n'
         context = {}
         ec = []
         if o and isinstance(o, list):
@@ -132,13 +138,10 @@ script:
         if demisto.command() == 'test-module':
             res = requests.get('http://cve.circl.lu/api/last/1')
             demisto.results('ok')
-            sys.exit(0)
         if demisto.command() == 'Circl-cve-get-latest':
             get_latest_cve()
-            sys.exit(0)
         if demisto.command() == 'Circl-cve-search':
             get_cve()
-            sys.exit(0)
     except Exception as e:
         return_error(e.message)
   type: python
