@@ -1644,6 +1644,11 @@
             "playbookID": "VMRay-Test"
         },
         {
+            "integrations": "PerceptionPoint",
+            "playbookID": "PerceptionPoint Test",
+            "fromversion": "4.1.0"
+        },
+        {
             "integrations": "AutoFocus V2",
             "playbookID": "AutoFocus V2 test"
         },
