@@ -490,6 +490,7 @@ script:
             md += '#### Attachments\n';
             resComments.comments[0].attachments.forEach(function(attachment) {
                 md += '- ' +  attachment.id.toString() + ': ' + attachment.file_name + '\n';
+                newContext.attachments.push({id: attachment.id.toString(), filename: attachment.file_name});
             });
         }
 
