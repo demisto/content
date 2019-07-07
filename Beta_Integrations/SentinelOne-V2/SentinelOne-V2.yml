@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: SentinelOne Beta
+  id: SentinelOne V2
   version: -1
 configuration:
 - display: Server URL (e.g. https://usea1.sentinelone.net)
@@ -45,8 +45,8 @@ configuration:
   required: false
   type: 0
 description: End point protection
-display: SentinelOne Beta
-name: SentinelOne Beta
+display: SentinelOne V2
+name: SentinelOne V2
 script:
   commands:
   - arguments:
