@@ -47,10 +47,14 @@ configuration:
   name: footer
   required: false
   type: 0
-- display: Should anyone be allowed to create incidents by DM
+- display: Should anyone be allowed to create incidents by DM.
   name: allowIncidents
   required: false
   type: 8
+- display: Type of the incidents created by Slack.
+  name: incident_type
+  required: false
+  type: 0
 description: Send messages and notifications to your Slack Team.
 display: SlackV2
 name: SlackV2

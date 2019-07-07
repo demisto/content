@@ -30,6 +30,7 @@ CLIENT = slack.WebClient(token=TOKEN, proxy=PROXY)
 CHANNEL_CLIENT = slack.WebClient(token=CHANNEL_TOKEN, proxy=PROXY)
 SEVERITY_THRESHOLD = demisto.args().get('min_severity', 1)
 ALLOW_INCIDENTS = bool(strtobool(demisto.args().get('allowIncidents', 'false')))
+INCIDENT_TYPE = demisto.params().get('incident_type')
 RTM_CLIENT = slack.RTMClient(token=TOKEN, run_async=False)
 
 
@@ -321,7 +322,6 @@ async def slack_loop():
                         demisto.updateModuleHealth('Slack client raised an exception: {}'.format(ex))
                     demisto.info('Slack - websocket is closed or done')
                     break
-                demisto.updateModuleHealth("")
         except Exception as e:
             demisto.updateModuleHealth('Slack client raised an exception: {}'.format(e))
         finally:
@@ -360,13 +360,65 @@ async def handle_dm(user_id, text, client):
     if message.find('incident') != -1 and (message.find('create') != -1
                                            or message.find('open') != -1
                                            or message.find('new') != -1):
-        data = "hhhh"
+        user_email = user.get('profile', {}).get('email')
+        if user_email:
+            demisto_user = demisto.findUser(email=user_email)
+        else:
+            demisto_user = demisto.findUser(username=user.get('name'))
+
+        if not demisto_user and not ALLOW_INCIDENTS:
+            data = 'Sorry, you are not allowed to create incidents.'
+        else:
+            data = await translate_create(demisto_user, message)
     else:
         data = demisto.directMessage(message, user.get('name'), user.get('profile', {}).get('email'), ALLOW_INCIDENTS)
 
     im = await client.im_open(user=user.get('id'))
     channel = im.get('channel', {}).get('id')
     client.chat_postMessage(channel=channel, text=data)
+
+
+async def translate_create(demisto_user, message):
+    json_pattern = r'(?<=json:).*'
+    name_pattern = r'(?<=name:).*'
+    type_pattern = r'(?<=type:).*'
+    json_match = re.search(json_pattern, message)
+    if json_match:
+        incidents_json = json_match.group()
+        incidents = json.loads(incidents_json)
+        if not isinstance(incidents, list):
+            incidents = [incidents]
+        data = await create_incidents(demisto_user, incidents)
+    else:
+        name_match = re.search(name_pattern, message)
+        if not name_match:
+            data = 'Please specify a name in the following manner: name:<name>.'
+        else:
+            incident_name = re.sub('type:.*', '', name_match.group()).strip()
+            incident_type = ''
+
+            type_match = re.search(type_pattern, message)
+            if type_match:
+                incident_type = re.sub('name:.*', '', type_match.group()).strip()
+
+            incident = {'name': incident_name}
+
+            incident_type = incident_type or INCIDENT_TYPE
+            if incident_type:
+                incident['type'] = incident_type
+
+            data = await create_incidents(demisto_user, [incident])
+    return data
+
+
+async def create_incidents(demisto_user, incidents_json):
+    demisto.info(incidents_json)
+    if demisto_user:
+        data = demisto.createIncidents(incidents_json, userID=demisto_user['id'])
+    else:
+        data = demisto.createIncidents(incidents_json)
+
+    return data
 
 
 @slack.RTMClient.run_on(event='message')
