@@ -388,7 +388,6 @@ def get_hosts(data_args):
     else:
         res = http_request('GET', 'lr-admin-api/hosts?count=' + data_args['count'])
 
-    demisto.info(res)
     res = fix_location_value(res)
     res = update_hosts_keys(res)
     context = createContext(res, removeNull=True)
@@ -488,7 +487,7 @@ def get_persons(data_args):
     if id:
         res = [http_request('GET', 'lr-admin-api/persons/' + id)]
     else:
-        res = http_request('GET', 'lr-admin-api/persons' + '?count=' + data_args['count'])
+        res = http_request('GET', 'lr-admin-api/persons?count=' + data_args['count'])
     res = update_persons_keys(res)
     context = createContext(res, removeNull=True)
     outputs = {'Logrhythm.Person(val.ID === obj.ID)': context}
@@ -501,7 +500,7 @@ def get_networks(data_args):
     if id:
         res = [http_request('GET', 'lr-admin-api/networks/' + id)]
     else:
-        res = http_request('GET', 'lr-admin-api/networks' + '?count=' + data_args['count'])
+        res = http_request('GET', 'lr-admin-api/networks?count=' + data_args['count'])
     res = fix_location_value(res)
     res = update_networks_keys(res)
     context = createContext(res, removeNull=True)
