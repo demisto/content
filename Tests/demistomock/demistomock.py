@@ -520,3 +520,6 @@ def directMessage(message, username = None, email = None, anyoneCanOpenIncidents
 
 def createIncidents(incidents, lastRun = None):
     return []
+
+def findUser(username, email):
+    return {}
