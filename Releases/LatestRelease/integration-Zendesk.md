@@ -1,0 +1,1 @@
+fix zendesk-ticket-details command - attachments dont shows up in the context
