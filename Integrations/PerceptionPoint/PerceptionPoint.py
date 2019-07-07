@@ -3,9 +3,7 @@ from CommonServerPython import *
 
 ''' IMPORTS'''
 import requests
-import copy
 import json
-import sys
 from collections import defaultdict
 
 ''' INTEGRATION PARAMS '''
