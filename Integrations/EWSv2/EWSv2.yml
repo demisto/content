@@ -1048,3 +1048,4 @@ image: ''
 tests:
 - pyEWS_Test
 - EWS search-mailbox test
+releaseNotes: '-'

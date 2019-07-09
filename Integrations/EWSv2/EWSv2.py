@@ -1,11 +1,31 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import sys, traceback, json, os, hashlib
+import sys
+import traceback
+import json
+import os
+import hashlib
 from datetime import timedelta
 from cStringIO import StringIO
-import logging, warnings
+import logging
+import warnings
 import subprocess
+from requests.exceptions import ConnectionError
+
+import exchangelib
+from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
+    ErrorInvalidIdMalformed, \
+    ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, \
+    AutoDiscoverFailed, ErrorNameResolutionNoResults
+from exchangelib.items import Item, Message
+from exchangelib.services import EWSService, EWSAccountService
+from exchangelib.util import create_element, add_xml_child
+from exchangelib import IMPERSONATION, DELEGATE, Account, Credentials, \
+    EWSDateTime, EWSTimeZone, Configuration, NTLM, DIGEST, BASIC, FileAttachment, \
+    Version, Folder, HTMLBody, Body, Build
+from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016
+from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
 
 # Define utf8 as default encoding
 reload(sys)
@@ -13,23 +33,6 @@ sys.setdefaultencoding('utf8')
 
 # Ignore warnings print to stdout
 warnings.filterwarnings("ignore")
-
-import exchangelib
-from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
-    ErrorInvalidIdMalformed, \
-    ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, \
-    ErrorInvalidPropertyRequest, \
-    AutoDiscoverFailed, ErrorNameResolutionNoResults
-from exchangelib.items import Item, Message
-from exchangelib.services import EWSService, EWSAccountService
-from exchangelib.util import create_element, add_xml_child
-from exchangelib import IMPERSONATION, DELEGATE, Account, Credentials, \
-    EWSDateTime, EWSTimeZone, Configuration, NTLM, DIGEST, BASIC, FileAttachment, ItemAttachment, \
-    Version, Folder, HTMLBody, Body, Build
-from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016
-from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
-
-from requests.exceptions import ConnectionError
 
 # Docker BC
 MNS = None
@@ -297,9 +300,10 @@ def fix_2010():
     version = SERVER_BUILD if SERVER_BUILD else get_build(VERSION_STR)
     if version <= EXCHANGE_2010_SP2:
         for m in (
-        Item, Message, exchangelib.items.CalendarItem, exchangelib.items.Contact, exchangelib.items.DistributionList,
-        exchangelib.items.PostItem, exchangelib.items.Task, exchangelib.items.MeetingRequest,
-        exchangelib.items.MeetingResponse, exchangelib.items.MeetingCancellation):
+                Item, Message, exchangelib.items.CalendarItem, exchangelib.items.Contact,
+                exchangelib.items.DistributionList,
+                exchangelib.items.PostItem, exchangelib.items.Task, exchangelib.items.MeetingRequest,
+                exchangelib.items.MeetingResponse, exchangelib.items.MeetingCancellation):
             for i, f in enumerate(m.FIELDS):
                 if f.name == 'text_body':
                     m.FIELDS.pop(i)
@@ -323,8 +327,8 @@ def fix_2010():
         def repr3(self):
             return self.__class__.__name__ + \
                    repr((
-                        self.account, '[self]', self.name, self.total_count, self.child_folder_count, self.folder_class,
-                        self.changekey))
+                       self.account, '[self]', self.name, self.total_count, self.child_folder_count, self.folder_class,
+                       self.changekey))
 
         exchangelib.Folder.__repr__ = repr1
         exchangelib.folders.Inbox.__repr__ = exchangelib.folders.JunkEmail.__repr__ = repr2
@@ -1193,7 +1197,7 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     limit = int(limit)
     if folder_path:
-        public_folder = is_default_folder(folder_path, is_public)
+        is_public = is_default_folder(folder_path, is_public)
         folders = [get_folder_by_path(account, folder_path, is_public)]
     else:
         folders = account.inbox.parent.walk()
