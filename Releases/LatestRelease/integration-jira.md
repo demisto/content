@@ -1,0 +1,1 @@
+add deprecated tag to jira v1
