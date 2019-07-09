@@ -245,7 +245,7 @@ def construct_config_args(context_dict, credentials):
 
 def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):
     account = None
-    original_exc = None
+    original_exc = None  # type: Exception
     context_dict = demisto.getIntegrationContext()
 
     if context_dict:
@@ -563,7 +563,7 @@ class ExpandGroup(EWSService):
             raise NotImplementedError('%s is only supported for Exchange 2010 servers and later' % self.SERVICE_NAME)
         try:
             if recursive_expansion == 'True':
-                group_members = {}
+                group_members = {}  # type: dict
                 self.expand_group_recursive(email_address, group_members)
                 return group_members.values()
             else:
@@ -1035,7 +1035,7 @@ def delete_attachments_for_message(item_id, target_mailbox=None, attachment_ids=
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     attachments = get_attachments_for_item(item_id, account, attachment_ids)
     deleted_file_attachments = []
-    deleted_item_attachments = []
+    deleted_item_attachments = []  # type : list
     for attachment in attachments:
         attachment_deleted_action = {
             ATTACHMENT_ID: attachment.attachment_id.id,
@@ -1198,7 +1198,7 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
     else:
         folders = account.inbox.parent.walk()
 
-    items = []
+    items = []  # type : list
     for folder in folders:
         if Message not in folder.supported_item_models:
             continue
