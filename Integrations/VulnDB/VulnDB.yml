@@ -143,6 +143,14 @@ script:
       name: vendor_name
       required: false
       secret: false
+    - default: false
+      defaultValue: '20'
+      description: Maximum number of entries returned from the query, to avoid slow
+        response.
+      isArray: false
+      name: max_size
+      required: false
+      secret: false
     deprecated: false
     description: Provides all or specific vendor details to include vendor name and
       id
@@ -174,6 +182,14 @@ script:
       name: vendor_name
       required: false
       secret: false
+    - default: false
+      defaultValue: '20'
+      description: Maximum number of entries returned from the query, to avoid slow
+        response.
+      isArray: false
+      name: max_size
+      required: false
+      secret: false
     deprecated: false
     description: Provides a list of versions by product name or id
     execution: false
@@ -196,6 +212,14 @@ script:
       description: Product id
       isArray: false
       name: product_id
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: Maximum number of entries returned from the query, to avoid slow
+        response.
+      isArray: false
+      name: max_size
       required: false
       secret: false
     deprecated: false
@@ -227,6 +251,14 @@ script:
       description: How many hours ago
       isArray: false
       name: hours_ago
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: Maximum number of entries returned from the query, to avoid slow
+        response.
+      isArray: false
+      name: max_size
       required: false
       secret: false
     deprecated: false
@@ -331,6 +363,14 @@ script:
       name: product_name
       required: true
       secret: false
+    - default: false
+      defaultValue: '20'
+      description: Maximum number of entries returned from the query, to avoid slow
+        response.
+      isArray: false
+      name: max_size
+      required: false
+      secret: false
     deprecated: false
     description: Provides full details about a specific vulnerability by vendor and
       product name
@@ -434,6 +474,14 @@ script:
       name: product_id
       required: true
       secret: false
+    - default: false
+      defaultValue: '20'
+      description: Maximum number of entries returned from the query, to avoid slow
+        response.
+      isArray: false
+      name: max_size
+      required: false
+      secret: false
     deprecated: false
     description: Provides full details about a specific vulnerability by vendor and
       product id
@@ -531,6 +579,14 @@ script:
       name: vendor_id
       required: true
       secret: false
+    - default: false
+      defaultValue: '20'
+      description: Maximum number of entries returned from the query, to avoid slow
+        response.
+      isArray: false
+      name: max_size
+      required: false
+      secret: false
     deprecated: false
     description: Provides full details about vulnerabilities by vendor id
     execution: false
@@ -627,6 +683,14 @@ script:
       name: product_id
       required: true
       secret: false
+    - default: false
+      defaultValue: '20'
+      description: Maximum number of entries returned from the query, to avoid slow
+        response.
+      isArray: false
+      name: max_size
+      required: false
+      secret: false
     deprecated: false
     description: Provides full details about vulnerabilities by product id
     execution: false
@@ -722,6 +786,14 @@ script:
       isArray: false
       name: cve_id
       required: true
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: Maximum number of entries returned from the query, to avoid slow
+        response.
+      isArray: false
+      name: max_size
+      required: false
       secret: false
     deprecated: false
     description: Provides full details about vulnerabilities by cve id
