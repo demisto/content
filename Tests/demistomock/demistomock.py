@@ -521,5 +521,5 @@ def directMessage(message, username = None, email = None, anyoneCanOpenIncidents
 def createIncidents(incidents, lastRun = None, userID = None):
     return []
 
-def findUser(username, email):
+def findUser(username = None, email = None):
     return {}
