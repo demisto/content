@@ -22,8 +22,8 @@ SERVER_URL = demisto.params()['url']
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 USE_PROXY = demisto.params()['proxy']
-WHITELISTS = []  # type: ignore
-BLACKLISTS = []  # type: ignore
+WHITELISTS = []  # type: list
+BLACKLISTS = []  # type: list
 WHITELISTS = argToList(demisto.params().get('whitelist'))
 BLACKLISTS = argToList(demisto.params().get('blacklist'))
 
@@ -72,7 +72,7 @@ class APIClient(object):
         )
 
         if method is not None:
-            api_request.get_method = lambda: method  # type: ignore
+            api_request.get_method = lambda: method  # type: method
 
         try:
             result = urllib2.urlopen(
@@ -180,7 +180,7 @@ def remove_indicator_from_miner(MineMeldClient, miner, indicators):
     updated_miner_list = {
         e['indicator']: json.dumps(e, sort_keys=True) for e in miner_list
     }
-    request_params = {}  # type: ignore
+    request_params = {}  # type: dict
 
     if not isinstance(indicators, list):
         indicators = indicators.split(',')
@@ -273,8 +273,8 @@ def domain():
     result_indicator = []  # type: list
     miner_name = ''
     dbotscore = 0
-    indicator_context_data = {}  # type: ignore
-    entry_context = {}  # type: ignore
+    indicator_context_data = {}  # type:  dict
+    entry_context = {}  # type: dict
 
     # search for indicator in all miners defined by user
     for blacklist in BLACKLISTS:
@@ -348,11 +348,11 @@ def domain():
 def url():
     url = demisto.args()['url']
     # output vars
-    result_indicator = []  # type: ignore
+    result_indicator = []  # type: list
     miner_name = ''
     dbotscore = 0
-    indicator_context_data = {}  # type: ignore
-    entry_context = {}  # type: ignore
+    indicator_context_data = {}  # type: dict
+    entry_context = {}  # type: dict
 
     # search for indicator in all miners defined by user
     for blacklist in BLACKLISTS:
@@ -426,11 +426,11 @@ def url():
 def file():
     file = demisto.args()['file']
     # output vars
-    result_indicator = []  # type: ignore
+    result_indicator = []  # type: list
     miner_name = ''
     dbotscore = 0
-    indicator_context_data = {}  # type: ignore
-    entry_context = {}  # type: ignore
+    indicator_context_data = {}  # type: dict
+    entry_context = {}  # type: dict
 
     # search for indicator in all miners defined by user
     for blacklist in BLACKLISTS:
@@ -504,11 +504,11 @@ def file():
 def ip():
     ip = demisto.args()['ip']
     # output vars
-    result_indicator = []  # type: ignore
+    result_indicator = []  # type: list
     miner_name = ''
     dbotscore = 0
-    indicator_context_data = {}  # type: ignore
-    entry_context = {}  # type: ignore
+    indicator_context_data = {}  # type: dict
+    entry_context = {}  # type: dict
 
     # search for indicator in all miners defined by user
     for blacklist in BLACKLISTS:
@@ -611,7 +611,7 @@ def get_all_miner_names():
 def get_indicator_from_miner():
     miner_name = demisto.args()['miner']
     indicator = demisto.args()['indicator']
-    supported_miners = []  # type: ignore
+    supported_miners = []  # type: list
 
     supported_miners = get_indicators_from_miner(miner_name, indicator)
 
@@ -635,7 +635,7 @@ def get_indicator_from_miner():
 
 def retrieve_miner_indicators():
     miner_name = demisto.args()['miner']
-    result_list = []  # type: ignore
+    result_list = []  # type: list
     markdown_headers = ['indicator', 'comment', 'type']
     miners_context = []
 
@@ -657,7 +657,7 @@ def retrieve_miner_indicators():
 
     else:
         result_list = get_indicators_from_miner(miner_name)
-        miners_context = {'name': miner_name}  # type: ignore
+        miners_context = {'name': miner_name}  # type: dict
 
     demisto.results({
         'Type': entryTypes['note'],
