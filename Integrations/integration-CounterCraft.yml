@@ -646,28 +646,20 @@ script:
         Fetch incidents (user notifications)
         '''
 
-        demisto.debug("ASFSFDSFDSFASFSAFSDFNOOOOOOOOOOOOOOOOO>>>")
         last_run = demisto.getLastRun()
         if not last_run:
-            demisto.debug("ASFSFDSFDSFASFSAFSDFNOOOOOOOOOOOOOOOOO")
             last_run = {}
         if 'time' not in last_run:
-            demisto.debug("ASFSFDSFDSFASFSAFSDFNOOOOOOOOOOOOOOOOO2")
             # get timestamp in seconds
             timestamp, _ = parse_date_range(FETCH_DELTA, to_timestamp=True)
             timestamp /= 1000
         else:
-            demisto.debug("ASFSFDSFDSFASFSAFSDFNOOOOOOOOOOOOOOOOO3")
             timestamp = last_run['time']
 
         max_timestamp = timestamp
 
-        demisto.debug("AFSAFDSFSDFS2")
-
         # All alerts retrieved from get_alerts are newer than last_fetch and are in a chronological order
         notifications = list_notifications(timestamp)
-
-        demisto.debug("AFSAFDSFSDFS3")
 
         incidents = []
 
