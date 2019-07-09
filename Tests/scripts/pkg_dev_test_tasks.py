@@ -7,6 +7,8 @@ import os
 import hashlib
 import sys
 import shutil
+import time
+from datetime import datetime
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
@@ -23,8 +25,12 @@ RUN_MYPY_SCRIPT = '{}/run_mypy.sh'.format(SCRIPT_DIR)
 LOG_VERBOSE = False
 
 
-def get_docker_image(script_obj):
-    return script_obj.get('dockerimage') or DEF_DOCKER
+def get_docker_images(script_obj):
+    imgs = [script_obj.get('dockerimage') or DEF_DOCKER]
+    alt_imgs = script_obj.get('alt_dockerimages')
+    if alt_imgs:
+        imgs.extend(alt_imgs)
+    return imgs
 
 
 def print_v(msg):
@@ -59,14 +65,12 @@ def get_python_version(project_dir, docker_image):
     return py_num
 
 
-def get_dev_requirements(project_dir, py_version):
+def get_dev_requirements(py_version):
     """
-    Get the requirements for the specified project. Will detect if python 2 or 3 is used and
-    generate requirements file based on default required dev libs.
+    Get the requirements for the specified py version.
 
     Arguments:
         py_version {float} -- python version as float (2.7, 3.7)
-        docker_image {stiring} -- Docker image being used by the project
 
     Raises:
         ValueError -- If can't detect python version
@@ -103,13 +107,34 @@ def docker_image_create(docker_base_image, requirements):
     if ':' not in docker_base_image:
         docker_base_image += ':latest'
     target_image = 'devtest' + docker_base_image + '-' + hashlib.md5(requirements.encode('utf-8')).hexdigest()
-    images_ls = subprocess.check_output(['docker', 'image', 'ls', '--format',
-                                         '{{.Repository}}:{{.Tag}}', target_image], universal_newlines=True).strip()
-    if images_ls == target_image:
-        print('Using already existing docker image: {}'.format(target_image))
-        return target_image
-    print("Creating docker image: {} (this may take a minute or two...)".format(target_image))
+    lock_file = ".lock-" + target_image.replace("/", "-")
     try:
+        if (time.time() - os.path.getctime(lock_file)) > (60 * 5):
+            print("{}: Deleting old lock file: {}".format(datetime.now(). lock_file))
+            os.remove(lock_file)
+    except Exception as ex:
+        print_v("Failed check and delete for lock file: {}. Error: {}".format(lock_file, ex))
+    wait_print = True
+    for x in range(60):
+        images_ls = subprocess.check_output(['docker', 'image', 'ls', '--format',
+                                            '{{.Repository}}:{{.Tag}}', target_image], universal_newlines=True).strip()
+        if images_ls == target_image:
+            print('{}: Using already existing docker image: {}'.format(datetime.now(), target_image))
+            return target_image
+        if wait_print:
+            print("{}: Existing image: {} not found will obtain lock file or wait for image".format(datetime.now(), target_image))
+            wait_print = False
+        print_v("Trying to obtain lock file: " + lock_file)
+        try:
+            f = open(lock_file, "x")
+            f.close()
+            print("{}: Obtained lock file: {}".format(datetime.now(), lock_file))
+            break
+        except Exception as ex:
+            print_v("Failed getting lock. Will wait {}".format(str(ex)))
+            time.sleep(5)
+    try:
+        print("{}: Creating docker image: {} (this may take a minute or two...)".format(datetime.now(), target_image))
         container_id = subprocess.check_output(
             ['docker', 'create', '-i', docker_base_image, 'sh', '/' + CONTAINER_SETUP_SCRIPT_NAME],
             universal_newlines=True).strip()
@@ -125,7 +150,12 @@ def docker_image_create(docker_base_image, requirements):
     except subprocess.CalledProcessError as err:
         print("Failed executing command with  error: {} Output: \n{}".format(err, err.output))
         raise err
-    print('Done creating docker image: {}'.format(target_image))
+    finally:
+        try:
+            os.remove(lock_file)
+        except Exception as ex:
+            print("{}: Error removing file: {}".format(datetime.now(), ex))
+    print('{}: Done creating docker image: {}'.format(datetime.now(), target_image))
     return target_image
 
 
@@ -155,13 +185,16 @@ def run_flake8(project_dir, py_num):
     print("========= Running flake8 ===============")
     python_exe = 'python2' if py_num < 3 else 'python3'
     print_v('Using: {} to run flake8'.format(python_exe))
+    sys.stdout.flush()
     subprocess.check_call([python_exe, '-m', 'flake8', project_dir], cwd=CONTENT_DIR)
     print("flake8 completed")
 
 
 def run_mypy(project_dir, py_num):
-    print("========= Running mypy ===============")
-    subprocess.check_call(['bash', RUN_MYPY_SCRIPT, str(py_num), get_lint_files(project_dir)], cwd=project_dir)
+    lint_files = get_lint_files(project_dir)
+    print("========= Running mypy on: {} ===============".format(lint_files))
+    sys.stdout.flush()
+    subprocess.check_call(['bash', RUN_MYPY_SCRIPT, str(py_num), lint_files], cwd=project_dir)
     print("mypy completed")
 
 
@@ -170,9 +203,9 @@ def setup_dev_files(project_dir):
     shutil.copy(CONTENT_DIR + '/Tests/demistomock/demistomock.py', project_dir)
     open(project_dir + '/CommonServerUserPython.py', 'a').close()  # create empty file
     shutil.rmtree(project_dir + '/__pycache__', ignore_errors=True)
-    subprocess.check_call(['python2', CONTENT_DIR + '/package_extractor.py', '-i',
-                           'Scripts/script-CommonServerPython.yml', '-o',
-                           project_dir + '/CommonServerPython.py'], cwd=CONTENT_DIR)
+    if "/Scripts/CommonServerPython" not in project_dir:  # Otherwise we already have the CommonServerPython.py file
+        subprocess.check_call(['cp', CONTENT_DIR + '/Scripts/CommonServerPython/CommonServerPython.py',
+                               project_dir + '/CommonServerPython.py'], cwd=CONTENT_DIR)
 
 
 def main():
@@ -210,22 +243,26 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
     if script_type != 'python':
         print('Script is not of type "python". Found type: {}. Nothing to do.'.format(script_type))
         return 1
-    docker = get_docker_image(script_obj)
-    print_v("Using docker image: {}".format(docker))
-    py_num = get_python_version(project_dir, docker)
-    setup_dev_files(project_dir)
-    try:
-        if not args.no_flake8:
-            run_flake8(project_dir, py_num)
-        if not args.no_mypy:
-            run_mypy(project_dir, py_num)
-        if not args.no_test or not args.no_pylint:
-            requirements = get_dev_requirements(project_dir, py_num)
-            docker_image_created = docker_image_create(docker, requirements)
-            docker_run(project_dir, docker_image_created, args.no_test, args.no_pylint, args.keep_container)
-    except subprocess.CalledProcessError as ex:
-        sys.stderr.write("[FAILED {}] Error: {}\n".format(project_dir, str(ex)))
-        return 2
+    dockers = get_docker_images(script_obj)
+    for docker in dockers:
+        print_v("Using docker image: {}".format(docker))
+        py_num = get_python_version(project_dir, docker)
+        setup_dev_files(project_dir)
+        try:
+            if not args.no_flake8:
+                run_flake8(project_dir, py_num)
+            if not args.no_mypy:
+                run_mypy(project_dir, py_num)
+            if not args.no_test or not args.no_pylint:
+                requirements = get_dev_requirements(py_num)
+                docker_image_created = docker_image_create(docker, requirements)
+                docker_run(project_dir, docker_image_created, args.no_test, args.no_pylint, args.keep_container)
+        except subprocess.CalledProcessError as ex:
+            sys.stderr.write("[FAILED {}] Error: {}\n".format(project_dir, str(ex)))
+            return 2
+        finally:
+            sys.stdout.flush()
+            sys.stderr.flush()
     return 0
 
 

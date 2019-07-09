@@ -1,0 +1,533 @@
+category: IT Services
+commonfields:
+  id: AWS - S3
+  version: -1
+configuration:
+- display: Role Arn
+  name: roleArn
+  required: false
+  type: 0
+- display: Role Session Name
+  name: roleSessionName
+  required: false
+  type: 0
+- display: AWS Default Region
+  name: defaultRegion
+  options:
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  - us-west-2
+  - ca-central-1
+  - eu-west-1
+  - eu-central-1
+  - eu-west-2
+  - ap-northeast-1
+  - ap-northeast-2
+  - ap-southeast-1
+  - ap-southeast-2
+  - ap-south-1
+  - sa-east-1
+  - eu-north-1
+  - eu-west-3
+  required: false
+  type: 15
+- display: Role Session Duration
+  name: sessionDuration
+  required: false
+  type: 0
+- display: Access Key
+  name: access_key
+  required: false
+  type: 0
+- display: Secret Key
+  name: secret_key
+  required: false
+  type: 4
+- display: Trust any cert (Not Secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+description: Amazon Web Services Simple Storage Service (S3)
+display: AWS - S3
+name: AWS - S3
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The name of S3 bucket to create (in lowercase).
+      isArray: false
+      name: bucket
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: ACL for S3 bucket.
+      isArray: false
+      name: acl
+      predefined:
+      - private
+      - public-read
+      - public-read-write
+      - authenticated-read
+      required: false
+      secret: false
+    - default: false
+      description: Specifies the region where the bucket will be created. If you don't
+        specify a region, the bucket will be created in US Standard.
+      isArray: false
+      name: locationConstraint
+      required: false
+      secret: false
+    - default: false
+      description: Allows grantee the read, write, read ACP, and write ACP permissions
+        on the bucket.
+      isArray: false
+      name: grantFullControl
+      required: false
+      secret: false
+    - default: false
+      description: Allows grantee to list the objects in the bucket.
+      isArray: false
+      name: grantRead
+      required: false
+      secret: false
+    - default: false
+      description: Allows grantee to read the bucket ACL.
+      isArray: false
+      name: grantReadACP
+      required: false
+      secret: false
+    - default: false
+      description: Allows grantee to create, overwrite, and delete any object in the
+        bucket.
+      isArray: false
+      name: grantWrite
+      required: false
+      secret: false
+    - default: false
+      description: Allows grantee to write the ACL for the applicable bucket.
+      isArray: false
+      name: grantWriteACP
+      required: false
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Create AWS S3 bucket.
+    execution: false
+    name: aws-s3-create-bucket
+    outputs:
+    - contextPath: AWS.S3.Buckets.BucketName
+      description: The name of the bucket that was created.
+      type: string
+    - contextPath: AWS.S3.Buckets.Location
+      description: The AWS Region the bucket was created.
+      type: string
+  - arguments:
+    - default: false
+      description: Name of S3 bucket to delete.
+      isArray: false
+      name: bucket
+      required: true
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Delete AWS S3 bucket.
+    execution: false
+    name: aws-s3-delete-bucket
+  - arguments:
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: List all S3 buckets in AWS account
+    execution: false
+    name: aws-s3-list-buckets
+    outputs:
+    - contextPath: AWS.S3.Buckets.BucketName
+      description: The name of the bucket.
+      type: string
+    - contextPath: AWS.S3.Buckets.CreationDate
+      description: Date the bucket was created.
+      type: date
+  - arguments:
+    - default: false
+      description: Name of bucket.
+      isArray: false
+      name: bucket
+      required: true
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Get AWS S3 Bucket Policy
+    execution: false
+    name: aws-s3-get-bucket-policy
+    outputs:
+    - contextPath: AWS.S3.Buckets.Policy.Version
+      description: S3 Bucket Policy Version.
+      type: string
+    - contextPath: AWS.S3.Buckets.Policy.PolicyId
+      description: S3 Bucket Policy ID.
+      type: string
+    - contextPath: AWS.S3.Buckets.Policy.Sid
+      description: S3 Bucket Policy Statment ID.
+      type: string
+    - contextPath: AWS.S3.Buckets.Policy.Action
+      description: S3 Bucket Policy Statment Action.
+      type: string
+    - contextPath: AWS.S3.Buckets.Policy.Principal
+      description: S3 Bucket Policy Statment Principal.
+      type: string
+    - contextPath: AWS.S3.Buckets.Policy.Resource
+      description: S3 Bucket Policy Statment Resource.
+      type: string
+    - contextPath: AWS.S3.Buckets.Policy.Effect
+      description: S3 Bucket Policy Statment Effect.
+      type: string
+    - contextPath: AWS.S3.Buckets.Policy.Json
+      description: AWS S3 Policy Json output.
+      type: string
+    - contextPath: AWS.S3.Buckets.Policy.BucketName
+      description: S3 Bucket Name.
+      type: string
+  - arguments:
+    - default: false
+      description: Name of S3 bucket.
+      isArray: false
+      name: bucket
+      required: true
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Deletes the policy from the bucket.
+    execution: false
+    name: aws-s3-delete-bucket-policy
+  - arguments:
+    - default: false
+      description: The name of S3 bucket.
+      isArray: false
+      name: bucket
+      required: false
+      secret: false
+    - default: false
+      description: The S3 object key to download.
+      isArray: false
+      name: key
+      required: false
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Download a file from S3 bucket to war room.
+    execution: false
+    name: aws-s3-download-file
+  - arguments:
+    - default: false
+      description: The name of S3 bucket.
+      isArray: false
+      name: bucket
+      required: true
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: List object in S3 bucket.
+    execution: false
+    name: aws-s3-list-bucket-objects
+    outputs:
+    - contextPath: AWS.S3.Buckets.Objects.Key
+      description: The name of S3 object.
+      type: Unknown
+    - contextPath: AWS.S3.Buckets.Objects.Size
+      description: Object size.
+      type: Unknown
+    - contextPath: AWS.S3.Buckets.Objects.LastModified
+      description: Last date object was modified.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Name of S3 bucket.
+      isArray: false
+      name: bucket
+      required: true
+      secret: false
+    - default: false
+      description: The bucket policy to apply in json format.
+      isArray: false
+      name: policy
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Set this parameter to true to confirm that you want to remove your
+        permissions to change this bucket policy in the future.
+      isArray: false
+      name: confirmRemoveSelfBucketAccess
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Replaces a policy on a bucket. If the bucket already has a policy,
+      the one in this request completely replaces it.
+    execution: false
+    name: aws-s3-put-bucket-policy
+  - arguments:
+    - default: false
+      description: Entry ID of the file to upload
+      isArray: false
+      name: entryID
+      required: true
+      secret: false
+    - default: false
+      description: The name of the bucket to upload to
+      isArray: false
+      name: bucket
+      required: true
+      secret: false
+    - default: false
+      description: The name of the key to upload to
+      isArray: false
+      name: key
+      required: true
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Upload file to S3 bucket
+    execution: false
+    name: aws-s3-upload-file
+  dockerimage: demisto/boto3
+  isfetch: false
+  runonce: false
+  script: ''
+  type: python
+image: data:image/png;base64,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
+tests:
+- 97393cfc-2fc4-4dfe-8b6e-af64067fc436

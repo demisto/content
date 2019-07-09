@@ -926,6 +926,5 @@ script:
     description: Get API Usage status for current license period
   dockerimage: demisto/python:1.3-alpine
   runonce: false
-releaseNotes: "Symantec Deepsight beta integration"
 tests:
 - Symantec Deepsight Test

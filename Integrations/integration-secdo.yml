@@ -140,4 +140,3 @@ script:
     description: Add IOCs to Secdo
 tests:
   - No test
-releaseNotes: "Integration is deprecated. Use Palo Alto Networks Cortex integration instead."

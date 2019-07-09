@@ -1,0 +1,43 @@
+args:
+- default: true
+  description: War room entryID of the file to read.
+  isArray: false
+  name: entryID
+  required: true
+  secret: false
+- default: false
+  description: Maximal file size to load, in bytes. Default is 1MB.
+  isArray: false
+  name: maxFileSize
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  description: The character encoding of the file
+  isArray: false
+  name: encoding
+  predefined:
+  - utf-8
+  - utf-16
+  - ascii
+  required: false
+  secret: false
+comment: Load the contents of a file into context.
+commonfields:
+  id: ReadFile
+  version: -1
+enabled: true
+name: ReadFile
+outputs:
+- contextPath: FileData
+  description: Data read from war room file
+  type: Unknown
+script: ''
+system: false
+tags:
+- Utility
+- ingestion
+timeout: '0'
+type: python
+runas: DBotWeakRole
+runonce: false

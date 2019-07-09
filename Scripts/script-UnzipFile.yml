@@ -136,4 +136,3 @@ runonce: false
 dockerimage: demisto/7zip
 tests:
   - ZipFile-Test
-releaseNotes: Fix typo

@@ -6,6 +6,8 @@ import re
 import json
 import base64
 from datetime import datetime, timedelta
+import httplib2
+import urlparse
 from distutils.util import strtobool
 import sys
 from HTMLParser import HTMLParser, HTMLParseError
@@ -20,6 +22,8 @@ ADMIN_EMAIL = None
 PRIVATE_KEY_CONTENT = None
 GAPPS_ID = None
 SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
+PROXY = demisto.params().get('proxy')
+DISABLE_SSL = demisto.params().get('insecure', False)
 
 
 ''' HELPER FUNCTIONS '''
@@ -79,6 +83,23 @@ def html_to_text(html):
     return parser.get_text()
 
 
+def get_http_client_with_proxy():
+    proxies = handle_proxy()
+    if not proxies or not proxies['https']:
+        raise Exception('https proxy value is empty. Check Demisto server configuration')
+    https_proxy = proxies['https']
+    if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
+        https_proxy = 'https://' + https_proxy
+    parsed_proxy = urlparse.urlparse(https_proxy)
+    proxy_info = httplib2.ProxyInfo(
+        proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
+        proxy_host=parsed_proxy.hostname,
+        proxy_port=parsed_proxy.port,
+        proxy_user=parsed_proxy.username,
+        proxy_pass=parsed_proxy.password)
+    return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=DISABLE_SSL)
+
+
 def get_credentials(additional_scopes=None, delegated_user=None):
     """Gets valid user credentials from storage.
 
@@ -98,6 +119,14 @@ def get_credentials(additional_scopes=None, delegated_user=None):
                                                                             scopes=scopes)
 
     return cred.create_delegated(delegated_user)
+
+
+def get_service(serviceName, version, additional_scopes=None, delegated_user=None):
+    credentials = get_credentials(additional_scopes=additional_scopes, delegated_user=delegated_user)
+    if PROXY or DISABLE_SSL:
+        http_client = credentials.authorize(get_http_client_with_proxy())
+        return discovery.build(serviceName, version, http=http_client)
+    return discovery.build(serviceName, version, credentials=credentials)
 
 
 def parse_mail_parts(parts):
@@ -407,8 +436,7 @@ def list_users(domain, customer=None, event=None, query=None, sort_order=None, v
     if projection == 'custom':
         command_args['customFieldMask'] = custom_field_mask
 
-    credentials = get_credentials()
-    service = discovery.build('admin', 'directory_v1', credentials=credentials)
+    service = get_service('admin', 'directory_v1')
     result = service.users().list(**command_args).execute()
 
     return result['users']
@@ -434,8 +462,7 @@ def get_user(user_key, view_type, projection, customer_field_mask=None):
     if projection == 'custom':
         command_args['customFieldMask'] = customer_field_mask
 
-    credentials = get_credentials()
-    service = discovery.build('admin', 'directory_v1', credentials=credentials)
+    service = get_service('admin', 'directory_v1')
     result = service.users().get(**command_args).execute()
 
     return result
@@ -466,9 +493,10 @@ def create_user(primary_email, first_name, family_name, password):
         'password': password
     }
 
-    credentials = get_credentials(
+    service = get_service(
+        'admin',
+        'directory_v1',
         ['https://www.googleapis.com/auth/admin.directory.user'])
-    service = discovery.build('admin', 'directory_v1', credentials=credentials)
     result = service.users().insert(body=command_args).execute()
 
     return result
@@ -486,9 +514,10 @@ def delete_user(user_key):
         'userKey': user_key,
     }
 
-    credentials = get_credentials(
+    service = get_service(
+        'admin',
+        'directory_v1',
         ['https://www.googleapis.com/auth/admin.directory.user'])
-    service = discovery.build('admin', 'directory_v1', credentials=credentials)
     service.users().delete(**command_args).execute()
 
     return 'User %s have been deleted.' % (command_args['userKey'], )
@@ -512,12 +541,13 @@ def get_user_role(user_key, customer):
         'maxResults': 100,
     }
 
-    credentials = get_credentials(['https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly',
-                                   'https://www.googleapis.com/auth/admin.directory.rolemanagement'])
-    service = discovery.build('admin', 'directory_v1', credentials=credentials)
+    service = get_service(
+        'admin',
+        'directory_v1',
+        ['https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly',
+         'https://www.googleapis.com/auth/admin.directory.rolemanagement'])
     result = service.roleAssignments().list(**command_args).execute()
 
-    service = discovery.build('admin', 'directory_v1', credentials=credentials)
     user_data = service.users().get(userKey=user_key).execute()
 
     return [role for role in result['items'] if role['assignedTo'] == user_data['id']]
@@ -542,9 +572,10 @@ def revoke_user_roles(user_id, role_assignment_id):
     if GAPPS_ID is None:
         raise ValueError('Must provide Immutable GoogleApps Id')
 
-    credentials = get_credentials(
+    service = get_service(
+        'admin',
+        'directory_v1',
         ['https://www.googleapis.com/auth/admin.directory.rolemanagement'])
-    service = discovery.build('admin', 'directory_v1', credentials=credentials)
     return service.roleAssignments().delete(**command_args).execute()
 
 
@@ -563,9 +594,10 @@ def get_user_tokens(user_id):
         'userKey': user_id,
     }
 
-    credentials = get_credentials(
+    service = get_service(
+        'admin',
+        'directory_v1',
         ['https://www.googleapis.com/auth/admin.directory.user.security'])
-    service = discovery.build('admin', 'directory_v1', credentials=credentials)
     result = service.tokens().list(**command_args).execute()
 
     return result.get('items', [])
@@ -577,8 +609,7 @@ def search_all_mailboxes():
         'domain': ADMIN_EMAIL.split('@')[1],  # type: ignore
     }
 
-    credentials = get_credentials()
-    service = discovery.build('admin', 'directory_v1', credentials=credentials)
+    service = get_service('admin', 'directory_v1')
     result = service.users().list(**command_args).execute()
 
     entries = [search_command(user['primaryEmail'])
@@ -645,10 +676,11 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         'pageToken': page_token,
         'includeSpamTrash': include_spam_trash,
     }
-
-    credentials = get_credentials(
-        ['https://www.googleapis.com/auth/gmail.readonly', ], command_args['userId'])
-    service = discovery.build('gmail', 'v1', credentials=credentials)
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.readonly'],
+        command_args['userId'])
     result = service.users().messages().list(**command_args).execute()
 
     return [get_mail(user_id, mail['id'], 'full') for mail in result.get('messages', [])], q
@@ -671,9 +703,11 @@ def get_mail(user_id, _id, _format):
         'format': _format,
     }
 
-    credentials = get_credentials(
-        ['https://www.googleapis.com/auth/gmail.readonly', ], delegated_user=command_args['userId'])
-    service = discovery.build('gmail', 'v1', credentials=credentials)
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.readonly'],
+        delegated_user=command_args['userId'])
     result = service.users().messages().get(**command_args).execute()
 
     return result
@@ -685,10 +719,8 @@ def get_attachments_command():
     _id = args.get('message-id')
 
     attachments = get_attachments(user_id, _id)
-    if attachments:
-        return [fileResult(name, data) for name, data in attachments]
-    else:
-        return 'No Attachments Found'
+
+    return [fileResult(name, data) for name, data in attachments]
 
 
 def get_attachments(user_id, _id):
@@ -697,9 +729,11 @@ def get_attachments(user_id, _id):
         'id': _id,
         'format': 'full',
     }
-    credentials = get_credentials(
-        ['https://www.googleapis.com/auth/gmail.readonly', ], delegated_user=mail_args['userId'])
-    service = discovery.build('gmail', 'v1', credentials=credentials)
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.readonly'],
+        delegated_user=mail_args['userId'])
     result = service.users().messages().get(**mail_args).execute()
     result = get_email_context(result, user_id)[0]
 
@@ -739,9 +773,11 @@ def move_mail(user_id, _id, add_labels, remove_labels):
         }
 
     }
-    credentials = get_credentials(
-        ['https://www.googleapis.com/auth/gmail.modify', ], delegated_user=user_id)
-    service = discovery.build('gmail', 'v1', credentials=credentials)
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.modify'],
+        delegated_user=user_id)
     result = service.users().messages().modify(**command_args).execute()
 
     return result
@@ -770,9 +806,11 @@ def move_mail_to_mailbox(src_mailbox, message_id, dst_mailbox):
             'raw': mail['raw'],
         }
     }
-    credentials = get_credentials(
-        ['https://www.googleapis.com/auth/gmail.modify', ], delegated_user=dst_mailbox)
-    service = discovery.build('gmail', 'v1', credentials=credentials)
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.modify'],
+        delegated_user=dst_mailbox)
     result = service.users().messages().import_(**command_args).execute()
 
     # delete the original mail
@@ -797,10 +835,12 @@ def delete_mail(user_id, _id, permanent):
         'id': _id,
     }
 
-    credentials = get_credentials(['https://mail.google.com',
-                                   'https://www.googleapis.com/auth/gmail.modify', ],
-                                  delegated_user=command_args['userId'])
-    service = discovery.build('gmail', 'v1', credentials=credentials)
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://mail.google.com',
+         'https://www.googleapis.com/auth/gmail.modify'],
+        delegated_user=command_args['userId'])
     if permanent:
         service.users().messages().delete(**command_args).execute()
         return 'Email has been successfully deleted.'
@@ -828,9 +868,11 @@ def get_thread(user_id, _id, _format):
         'format': _format
     }
 
-    credentials = get_credentials(
-        ['https://www.googleapis.com/auth/gmail.readonly', ], delegated_user=user_id)
-    service = discovery.build('gmail', 'v1', credentials=credentials)
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.readonly'],
+        delegated_user=user_id)
     result = service.users().threads().get(**command_args).execute()
 
     return result['messages']
@@ -913,9 +955,11 @@ def add_filter(user_id, _from=None, to=None, subject=None, query=None, has_attac
     if forward is not None:
         command_args['body']['action']['forward'] = forward
 
-    credentials = get_credentials(
-        ['https://www.googleapis.com/auth/gmail.settings.basic', ], delegated_user=user_id)
-    service = discovery.build('gmail', 'v1', credentials=credentials)
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.settings.basic'],
+        delegated_user=user_id)
     result = service.users().settings().filters().create(**command_args).execute()
 
     return result
@@ -941,10 +985,11 @@ def list_filters(user_id, address=None, limit=100):
     command_args = {
         'userId': user_id,
     }
-
-    credentials = get_credentials(
-        ['https://www.googleapis.com/auth/gmail.settings.basic', ], delegated_user=user_id)
-    service = discovery.build('gmail', 'v1', credentials=credentials)
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.settings.basic'],
+        delegated_user=user_id)
     result = service.users().settings().filters().list(**command_args).execute()
     filters = result.get('filter', [])
     if address is not None:
@@ -973,9 +1018,11 @@ def remove_filter(user_id, _id):
         'id': _id
     }
 
-    credentials = get_credentials(
-        ['https://www.googleapis.com/auth/gmail.settings.basic', ], delegated_user=user_id)
-    service = discovery.build('gmail', 'v1', credentials=credentials)
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.settings.basic'],
+        delegated_user=user_id)
     result = service.users().settings().filters().delete(**command_args).execute()
 
     return result
@@ -997,9 +1044,11 @@ def fetch_incidents():
             last_fetch, '%Y-%m-%dT%H:%M:%SZ')
     current_fetch = last_fetch
 
-    credentials = get_credentials(
-        ['https://www.googleapis.com/auth/gmail.readonly', ], user_key)
-    service = discovery.build('gmail', 'v1', credentials=credentials)
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.readonly'],
+        user_key)
 
     query += last_fetch.strftime(' after:%Y/%m/%d')
     LOG('GMAIL: fetch parameters:\nuser: %s\nquery=%s\nfetch time: %s' %
