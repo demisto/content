@@ -76,6 +76,7 @@ ENTITIESDICT = {
     'Object': 'Object',
     'object_id': 'ObjectID',
     'object_relation': 'ObjectRelation',
+    'template_version': 'TemplateVersion',
     'template_uuid': 'TemplateUUID',
     'meta-category': 'MetaCategory'
 }
@@ -113,6 +114,22 @@ DISTRIBUTION_NUMBERS = {
     'All_communities': 3
 }
 ''' HELPER FUNCTIONS '''
+
+
+def build_list_from_dict(args: dict) -> List[dict]:
+    """
+
+    Args:
+        args: dictionary describes MISP object
+
+    Returns:
+        list: list containing dicts that GenericObjectGenerator can take.
+
+    Examples:
+        >>> {'ip': '8.8.8.8', 'domain': 'google.com'}
+        [{'ip': '8.8.8.8'}, {'domain': 'google.com'}]
+    """
+    return [{k: v} for k, v in args.items()]
 
 
 def build_generic_object(template_name: str, args: List[dict]) -> GenericObjectGenerator:
@@ -728,7 +745,7 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
                 'Timestamp': convert_timestamp(md_event.get('Timestamp')),
                 'Analysis': ANALYSIS_WORDS[md_event.get('Analysis')],
                 'Threat Level ID': THREAT_LEVELS_WORDS[md_event.get('ThreatLevelID')],
-                'Event Creator Email': md_event.get('EventCreateorEmail'),
+                'Event Creator Email': md_event.get('EventCreatorEmail'),
                 'Attributes': json.dumps(md_event.get('Attribute'), indent=4),
                 'Related Events': md_event.get('RelatedEvent')
             }
@@ -749,6 +766,7 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
         return response_for_context, response
     else:
         demisto.results(f"No events found in MISP for {args}")
+        return {}, {}
 
 
 def delete_event():
@@ -876,11 +894,11 @@ LOG(f'command is {demisto.command()}')
 
 
 def add_object(event_id: str, obj: MISPObject):
-    """
+    """Sending object to MISP and returning outputs
 
     Args:
         obj: object to add to MISP
-        event_id (str): ID of event
+        event_id: ID of event
     """
     response = MISP.add_object(event_id, misp_object=obj)
     if 'errors' in response:
@@ -971,18 +989,11 @@ def add_url_object():
     add_object(event_id, g_object)
 
 
-def build_list_from_dict(args: dict):
-    return [{k: v} for k, v in args.items()]
-
-
 def add_generic_object_command():
     event_id = demisto.getArg('event_id')
     template = demisto.getArg('template')
     attributes = demisto.getArg('attributes')  # type: str
     attributes = attributes.replace("'", '"')
-    # return_error(MISP.get_object_templates_list())
-    # if template not in MISP.get_object_templates_list():
-    #    return_error(f'Template `{template}` does not exist in MISP')
     try:
         args = json.loads(attributes)
         if not isinstance(args, list):
@@ -1005,7 +1016,7 @@ def add_ip_object():
         'ip_src',
         'ip_dst'
     ]
-    attr = [{arg: demisto.getArg(arg)} for arg in args if demisto.getArg(arg)]
+    attr = [{arg.replace('_', '-'): demisto.getArg(arg)} for arg in args if demisto.getArg(arg)]
     if attr:
         non_req_args = [
             'first_seen',

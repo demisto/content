@@ -218,6 +218,81 @@ script:
     - contextPath: MISP.Event.Tag.Name
       description: All tag names in the event
       type: string
+    - contextPath: MISP.Event.Object.MetaCategory
+      description: Object Meta Category
+      type: String
+    - contextPath: MISP.Event.Object.Distribution
+      description: Distribution of object
+      type: Number
+    - contextPath: MISP.Event.Object.Name
+      description: Name of the object
+      type: String
+    - contextPath: MISP.Event.Object.TemplateVersion
+      description: Template version of object
+      type: Number
+    - contextPath: MISP.Event.Object.EventID
+      description: ID of event which object first crated
+      type: Number
+    - contextPath: MISP.Event.Object.TemplateUUID
+      description: UUID of template
+      type: String
+    - contextPath: MISP.Event.Object.Timestamp
+      description: Timestamp of object creation
+      type: String
+    - contextPath: MISP.Event.Object.Deleted
+      description: Is object deleted
+      type: Boolean
+    - contextPath: MISP.Event.Object.ID
+      description: ID of object
+      type: Number
+    - contextPath: MISP.Event.Object.UUID
+      description: UUID of object
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.Value
+      description: Value of attribute
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.EventID
+      description: ID of first event which object from
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.Timestamp
+      description: Timestamp of object creation
+      type: Date
+    - contextPath: MISP.Event.Object.Attribute.Deleted
+      description: Is object deleted?
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.ObjectID
+      description: ID of object
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.DisableCorrelation
+      description: If correlation is disabled
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.ID
+      description: ID of attribute
+      type: Unknown
+    - contextPath: MISP.Event.Object.Attribute.ObjectRelation
+      description: Relation of object
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.Type
+      description: Type of object
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.UUID
+      description: UUID of attribute
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.ToIDs
+      description: Is ToIDs flag on
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.Category
+      description: Category of attribute
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.SharingGroupID
+      description: ID of sharing group
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.Comment
+      description: Comment of the attribute
+      type: String
+    - contextPath: MISP.Event.Object.Description
+      description: Description of the object
+      type: String
   - arguments:
     - default: false
       description: Hash of the file to query. Supports MD5, SHA-1, and SHA-256. You
@@ -1268,6 +1343,193 @@ script:
     description: adds an email object to given event id
     execution: false
     name: misp-add-email-object
+    outputs:
+    - contextPath: MISP.Event.ID
+      description: MISP event ID
+      type: number
+    - contextPath: MISP.Event.Distribution
+      description: MISP event distribution
+      type: number
+    - contextPath: MISP.Event.ThreatLevelID
+      description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined)
+      type: number
+    - contextPath: MISP.Event.PublishTimestamp
+      description: Timestamp of the publish time (if published)
+      type: number
+    - contextPath: MISP.Event.EventCreatorEmail
+      description: Email address of the event creator
+      type: string
+    - contextPath: MISP.Event.Date
+      description: Event creation date
+      type: date
+    - contextPath: MISP.Event.Locked
+      description: Is the event locked
+      type: boolean
+    - contextPath: MISP.Event.OwnerOrganisation.ID
+      description: Owner organization ID
+      type: number
+    - contextPath: MISP.Event.OwnerOrganisation.Name
+      description: Owner organization name
+      type: string
+    - contextPath: MISP.Event.OwnerOrganisation.UUID
+      description: Owner organization UUID
+      type: string
+    - contextPath: MISP.Event.RelatedEvent.ID
+      description: Event IDs of related events (can be a list)
+      type: number
+    - contextPath: MISP.Event.ProposalEmailLock
+      description: If email lock proposed
+      type: boolean
+    - contextPath: MISP.Event.Timestamp
+      description: Timestamp of the event
+      type: number
+    - contextPath: MISP.Event.Galaxy.Description
+      description: Event's galaxy description
+      type: string
+    - contextPath: MISP.Event.Galaxy.Name
+      description: Galaxy name
+      type: string
+    - contextPath: MISP.Event.Galaxy.Type
+      description: Galaxy type
+      type: number
+    - contextPath: MISP.Event.Published
+      description: Is the event published
+      type: boolean
+    - contextPath: MISP.Event.DisableCorrelation
+      description: Is correlation disabled
+      type: boolean
+    - contextPath: MISP.Event.UUID
+      description: Event UUID
+      type: string
+    - contextPath: MISP.Event.ShadowAttribute
+      description: Event shadow attributes
+      type: Unknown
+    - contextPath: MISP.Event.Attribute.Distribution
+      description: Attribute distribution
+      type: number
+    - contextPath: MISP.Event.Attribute.Value
+      description: Attribute value
+      type: string
+    - contextPath: MISP.Event.Attribute.EventID
+      description: Attribute event ID
+      type: number
+    - contextPath: MISP.Event.Attribute.Timestamp
+      description: Attribute timestamp
+      type: number
+    - contextPath: MISP.Event.Attribute.Deleted
+      description: Is the attribute deleted
+      type: boolean
+    - contextPath: MISP.Event.Attribute.DisableCorrelation
+      description: Is attribute correlation disabled
+      type: boolean
+    - contextPath: MISP.Event.Attribute.Type
+      description: Attribute type
+      type: string
+    - contextPath: MISP.Event.Attribute.ID
+      description: Attribute ID
+      type: number
+    - contextPath: MISP.Event.Attribute.UUID
+      description: Attribute UUID
+      type: string
+    - contextPath: MISP.Event.Attribute.ShadowAttribute
+      description: Attribute shadow attribute
+      type: Unknown
+    - contextPath: MISP.Event.Attribute.ToIDs
+      description: Is Intrusion Detection System flag set
+      type: boolean
+    - contextPath: MISP.Event.Attribute.Category
+      description: Attribute category
+      type: string
+    - contextPath: MISP.Event.Attribute.SharingGroupID
+      description: Attribute sharing group ID
+      type: number
+    - contextPath: MISP.Event.Attribute.Comment
+      description: Attribute comment
+      type: string
+    - contextPath: MISP.Event.Analysis
+      description: Event analysis (0 Initial, 1 Ongoing, 2 Completed)
+      type: number
+    - contextPath: MISP.Event.SharingGroupID
+      description: Event sharing group ID
+      type: number
+    - contextPath: MISP.Event.Tag.Name
+      description: All tag names in the event
+      type: string
+    - contextPath: MISP.Event.Object.MetaCategory
+      description: Object Meta Category
+      type: String
+    - contextPath: MISP.Event.Object.Distribution
+      description: Distribution of object
+      type: Number
+    - contextPath: MISP.Event.Object.Name
+      description: Name of the object
+      type: String
+    - contextPath: MISP.Event.Object.TemplateVersion
+      description: Template version of object
+      type: Number
+    - contextPath: MISP.Event.Object.EventID
+      description: ID of event which object first crated
+      type: Number
+    - contextPath: MISP.Event.Object.TemplateUUID
+      description: UUID of template
+      type: String
+    - contextPath: MISP.Event.Object.Timestamp
+      description: Timestamp of object creation
+      type: String
+    - contextPath: MISP.Event.Object.Deleted
+      description: Is object deleted
+      type: Boolean
+    - contextPath: MISP.Event.Object.ID
+      description: ID of object
+      type: Number
+    - contextPath: MISP.Event.Object.UUID
+      description: UUID of object
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.Value
+      description: Value of attribute
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.EventID
+      description: ID of first event which object from
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.Timestamp
+      description: Timestamp of object creation
+      type: Date
+    - contextPath: MISP.Event.Object.Attribute.Deleted
+      description: Is object deleted?
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.ObjectID
+      description: ID of object
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.DisableCorrelation
+      description: If correlation is disabled
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.ID
+      description: ID of attribute
+      type: Unknown
+    - contextPath: MISP.Event.Object.Attribute.ObjectRelation
+      description: Relation of object
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.Type
+      description: Type of object
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.UUID
+      description: UUID of attribute
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.ToIDs
+      description: Is ToIDs flag on
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.Category
+      description: Category of attribute
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.SharingGroupID
+      description: ID of sharing group
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.Comment
+      description: Comment of the attribute
+      type: String
+    - contextPath: MISP.Event.Object.Description
+      description: Description of the object
+      type: String
   - arguments:
     - default: false
       description: ID of MISP event
@@ -1315,6 +1577,193 @@ script:
     description: Adds a domain object
     execution: false
     name: misp-add-domain-object
+    outputs:
+    - contextPath: MISP.Event.ID
+      description: MISP event ID
+      type: number
+    - contextPath: MISP.Event.Distribution
+      description: MISP event distribution
+      type: number
+    - contextPath: MISP.Event.ThreatLevelID
+      description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined)
+      type: number
+    - contextPath: MISP.Event.PublishTimestamp
+      description: Timestamp of the publish time (if published)
+      type: number
+    - contextPath: MISP.Event.EventCreatorEmail
+      description: Email address of the event creator
+      type: string
+    - contextPath: MISP.Event.Date
+      description: Event creation date
+      type: date
+    - contextPath: MISP.Event.Locked
+      description: Is the event locked
+      type: boolean
+    - contextPath: MISP.Event.OwnerOrganisation.ID
+      description: Owner organization ID
+      type: number
+    - contextPath: MISP.Event.OwnerOrganisation.Name
+      description: Owner organization name
+      type: string
+    - contextPath: MISP.Event.OwnerOrganisation.UUID
+      description: Owner organization UUID
+      type: string
+    - contextPath: MISP.Event.RelatedEvent.ID
+      description: Event IDs of related events (can be a list)
+      type: number
+    - contextPath: MISP.Event.ProposalEmailLock
+      description: If email lock proposed
+      type: boolean
+    - contextPath: MISP.Event.Timestamp
+      description: Timestamp of the event
+      type: number
+    - contextPath: MISP.Event.Galaxy.Description
+      description: Event's galaxy description
+      type: string
+    - contextPath: MISP.Event.Galaxy.Name
+      description: Galaxy name
+      type: string
+    - contextPath: MISP.Event.Galaxy.Type
+      description: Galaxy type
+      type: number
+    - contextPath: MISP.Event.Published
+      description: Is the event published
+      type: boolean
+    - contextPath: MISP.Event.DisableCorrelation
+      description: Is correlation disabled
+      type: boolean
+    - contextPath: MISP.Event.UUID
+      description: Event UUID
+      type: string
+    - contextPath: MISP.Event.ShadowAttribute
+      description: Event shadow attributes
+      type: Unknown
+    - contextPath: MISP.Event.Attribute.Distribution
+      description: Attribute distribution
+      type: number
+    - contextPath: MISP.Event.Attribute.Value
+      description: Attribute value
+      type: string
+    - contextPath: MISP.Event.Attribute.EventID
+      description: Attribute event ID
+      type: number
+    - contextPath: MISP.Event.Attribute.Timestamp
+      description: Attribute timestamp
+      type: number
+    - contextPath: MISP.Event.Attribute.Deleted
+      description: Is the attribute deleted
+      type: boolean
+    - contextPath: MISP.Event.Attribute.DisableCorrelation
+      description: Is attribute correlation disabled
+      type: boolean
+    - contextPath: MISP.Event.Attribute.Type
+      description: Attribute type
+      type: string
+    - contextPath: MISP.Event.Attribute.ID
+      description: Attribute ID
+      type: number
+    - contextPath: MISP.Event.Attribute.UUID
+      description: Attribute UUID
+      type: string
+    - contextPath: MISP.Event.Attribute.ShadowAttribute
+      description: Attribute shadow attribute
+      type: Unknown
+    - contextPath: MISP.Event.Attribute.ToIDs
+      description: Is Intrusion Detection System flag set
+      type: boolean
+    - contextPath: MISP.Event.Attribute.Category
+      description: Attribute category
+      type: string
+    - contextPath: MISP.Event.Attribute.SharingGroupID
+      description: Attribute sharing group ID
+      type: number
+    - contextPath: MISP.Event.Attribute.Comment
+      description: Attribute comment
+      type: string
+    - contextPath: MISP.Event.Analysis
+      description: Event analysis (0 Initial, 1 Ongoing, 2 Completed)
+      type: number
+    - contextPath: MISP.Event.SharingGroupID
+      description: Event sharing group ID
+      type: number
+    - contextPath: MISP.Event.Tag.Name
+      description: All tag names in the event
+      type: string
+    - contextPath: MISP.Event.Object.MetaCategory
+      description: Object Meta Category
+      type: String
+    - contextPath: MISP.Event.Object.Distribution
+      description: Distribution of object
+      type: Number
+    - contextPath: MISP.Event.Object.Name
+      description: Name of the object
+      type: String
+    - contextPath: MISP.Event.Object.TemplateVersion
+      description: Template version of object
+      type: Number
+    - contextPath: MISP.Event.Object.EventID
+      description: ID of event which object first crated
+      type: Number
+    - contextPath: MISP.Event.Object.TemplateUUID
+      description: UUID of template
+      type: String
+    - contextPath: MISP.Event.Object.Timestamp
+      description: Timestamp of object creation
+      type: String
+    - contextPath: MISP.Event.Object.Deleted
+      description: Is object deleted
+      type: Boolean
+    - contextPath: MISP.Event.Object.ID
+      description: ID of object
+      type: Number
+    - contextPath: MISP.Event.Object.UUID
+      description: UUID of object
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.Value
+      description: Value of attribute
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.EventID
+      description: ID of first event which object from
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.Timestamp
+      description: Timestamp of object creation
+      type: Date
+    - contextPath: MISP.Event.Object.Attribute.Deleted
+      description: Is object deleted?
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.ObjectID
+      description: ID of object
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.DisableCorrelation
+      description: If correlation is disabled
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.ID
+      description: ID of attribute
+      type: Unknown
+    - contextPath: MISP.Event.Object.Attribute.ObjectRelation
+      description: Relation of object
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.Type
+      description: Type of object
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.UUID
+      description: UUID of attribute
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.ToIDs
+      description: Is ToIDs flag on
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.Category
+      description: Category of attribute
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.SharingGroupID
+      description: ID of sharing group
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.Comment
+      description: Comment of the attribute
+      type: String
+    - contextPath: MISP.Event.Object.Description
+      description: Description of the object
+      type: String
   - arguments:
     - default: false
       description: Full URL
@@ -1350,6 +1799,193 @@ script:
     description: Add URL object to MISP event
     execution: false
     name: misp-add-url-object
+    outputs:
+    - contextPath: MISP.Event.ID
+      description: MISP event ID
+      type: number
+    - contextPath: MISP.Event.Distribution
+      description: MISP event distribution
+      type: number
+    - contextPath: MISP.Event.ThreatLevelID
+      description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined)
+      type: number
+    - contextPath: MISP.Event.PublishTimestamp
+      description: Timestamp of the publish time (if published)
+      type: number
+    - contextPath: MISP.Event.EventCreatorEmail
+      description: Email address of the event creator
+      type: string
+    - contextPath: MISP.Event.Date
+      description: Event creation date
+      type: date
+    - contextPath: MISP.Event.Locked
+      description: Is the event locked
+      type: boolean
+    - contextPath: MISP.Event.OwnerOrganisation.ID
+      description: Owner organization ID
+      type: number
+    - contextPath: MISP.Event.OwnerOrganisation.Name
+      description: Owner organization name
+      type: string
+    - contextPath: MISP.Event.OwnerOrganisation.UUID
+      description: Owner organization UUID
+      type: string
+    - contextPath: MISP.Event.RelatedEvent.ID
+      description: Event IDs of related events (can be a list)
+      type: number
+    - contextPath: MISP.Event.ProposalEmailLock
+      description: If email lock proposed
+      type: boolean
+    - contextPath: MISP.Event.Timestamp
+      description: Timestamp of the event
+      type: number
+    - contextPath: MISP.Event.Galaxy.Description
+      description: Event's galaxy description
+      type: string
+    - contextPath: MISP.Event.Galaxy.Name
+      description: Galaxy name
+      type: string
+    - contextPath: MISP.Event.Galaxy.Type
+      description: Galaxy type
+      type: number
+    - contextPath: MISP.Event.Published
+      description: Is the event published
+      type: boolean
+    - contextPath: MISP.Event.DisableCorrelation
+      description: Is correlation disabled
+      type: boolean
+    - contextPath: MISP.Event.UUID
+      description: Event UUID
+      type: string
+    - contextPath: MISP.Event.ShadowAttribute
+      description: Event shadow attributes
+      type: Unknown
+    - contextPath: MISP.Event.Attribute.Distribution
+      description: Attribute distribution
+      type: number
+    - contextPath: MISP.Event.Attribute.Value
+      description: Attribute value
+      type: string
+    - contextPath: MISP.Event.Attribute.EventID
+      description: Attribute event ID
+      type: number
+    - contextPath: MISP.Event.Attribute.Timestamp
+      description: Attribute timestamp
+      type: number
+    - contextPath: MISP.Event.Attribute.Deleted
+      description: Is the attribute deleted
+      type: boolean
+    - contextPath: MISP.Event.Attribute.DisableCorrelation
+      description: Is attribute correlation disabled
+      type: boolean
+    - contextPath: MISP.Event.Attribute.Type
+      description: Attribute type
+      type: string
+    - contextPath: MISP.Event.Attribute.ID
+      description: Attribute ID
+      type: number
+    - contextPath: MISP.Event.Attribute.UUID
+      description: Attribute UUID
+      type: string
+    - contextPath: MISP.Event.Attribute.ShadowAttribute
+      description: Attribute shadow attribute
+      type: Unknown
+    - contextPath: MISP.Event.Attribute.ToIDs
+      description: Is Intrusion Detection System flag set
+      type: boolean
+    - contextPath: MISP.Event.Attribute.Category
+      description: Attribute category
+      type: string
+    - contextPath: MISP.Event.Attribute.SharingGroupID
+      description: Attribute sharing group ID
+      type: number
+    - contextPath: MISP.Event.Attribute.Comment
+      description: Attribute comment
+      type: string
+    - contextPath: MISP.Event.Analysis
+      description: Event analysis (0 Initial, 1 Ongoing, 2 Completed)
+      type: number
+    - contextPath: MISP.Event.SharingGroupID
+      description: Event sharing group ID
+      type: number
+    - contextPath: MISP.Event.Tag.Name
+      description: All tag names in the event
+      type: string
+    - contextPath: MISP.Event.Object.MetaCategory
+      description: Object Meta Category
+      type: String
+    - contextPath: MISP.Event.Object.Distribution
+      description: Distribution of object
+      type: Number
+    - contextPath: MISP.Event.Object.Name
+      description: Name of the object
+      type: String
+    - contextPath: MISP.Event.Object.TemplateVersion
+      description: Template version of object
+      type: Number
+    - contextPath: MISP.Event.Object.EventID
+      description: ID of event which object first crated
+      type: Number
+    - contextPath: MISP.Event.Object.TemplateUUID
+      description: UUID of template
+      type: String
+    - contextPath: MISP.Event.Object.Timestamp
+      description: Timestamp of object creation
+      type: String
+    - contextPath: MISP.Event.Object.Deleted
+      description: Is object deleted
+      type: Boolean
+    - contextPath: MISP.Event.Object.ID
+      description: ID of object
+      type: Number
+    - contextPath: MISP.Event.Object.UUID
+      description: UUID of object
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.Value
+      description: Value of attribute
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.EventID
+      description: ID of first event which object from
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.Timestamp
+      description: Timestamp of object creation
+      type: Date
+    - contextPath: MISP.Event.Object.Attribute.Deleted
+      description: Is object deleted?
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.ObjectID
+      description: ID of object
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.DisableCorrelation
+      description: If correlation is disabled
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.ID
+      description: ID of attribute
+      type: Unknown
+    - contextPath: MISP.Event.Object.Attribute.ObjectRelation
+      description: Relation of object
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.Type
+      description: Type of object
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.UUID
+      description: UUID of attribute
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.ToIDs
+      description: Is ToIDs flag on
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.Category
+      description: Category of attribute
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.SharingGroupID
+      description: ID of sharing group
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.Comment
+      description: Comment of the attribute
+      type: String
+    - contextPath: MISP.Event.Object.Description
+      description: Description of the object
+      type: String
   - arguments:
     - default: false
       description: ID of event to add object to
@@ -1364,7 +2000,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'attributes '
+      description: attributes
       isArray: false
       name: attributes
       required: true
@@ -1373,6 +2009,193 @@ script:
     description: Adds any other object to misp
     execution: false
     name: misp-add-object
+    outputs:
+    - contextPath: MISP.Event.ID
+      description: MISP event ID
+      type: number
+    - contextPath: MISP.Event.Distribution
+      description: MISP event distribution
+      type: number
+    - contextPath: MISP.Event.ThreatLevelID
+      description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined)
+      type: number
+    - contextPath: MISP.Event.PublishTimestamp
+      description: Timestamp of the publish time (if published)
+      type: number
+    - contextPath: MISP.Event.EventCreatorEmail
+      description: Email address of the event creator
+      type: string
+    - contextPath: MISP.Event.Date
+      description: Event creation date
+      type: date
+    - contextPath: MISP.Event.Locked
+      description: Is the event locked
+      type: boolean
+    - contextPath: MISP.Event.OwnerOrganisation.ID
+      description: Owner organization ID
+      type: number
+    - contextPath: MISP.Event.OwnerOrganisation.Name
+      description: Owner organization name
+      type: string
+    - contextPath: MISP.Event.OwnerOrganisation.UUID
+      description: Owner organization UUID
+      type: string
+    - contextPath: MISP.Event.RelatedEvent.ID
+      description: Event IDs of related events (can be a list)
+      type: number
+    - contextPath: MISP.Event.ProposalEmailLock
+      description: If email lock proposed
+      type: boolean
+    - contextPath: MISP.Event.Timestamp
+      description: Timestamp of the event
+      type: number
+    - contextPath: MISP.Event.Galaxy.Description
+      description: Event's galaxy description
+      type: string
+    - contextPath: MISP.Event.Galaxy.Name
+      description: Galaxy name
+      type: string
+    - contextPath: MISP.Event.Galaxy.Type
+      description: Galaxy type
+      type: number
+    - contextPath: MISP.Event.Published
+      description: Is the event published
+      type: boolean
+    - contextPath: MISP.Event.DisableCorrelation
+      description: Is correlation disabled
+      type: boolean
+    - contextPath: MISP.Event.UUID
+      description: Event UUID
+      type: string
+    - contextPath: MISP.Event.ShadowAttribute
+      description: Event shadow attributes
+      type: Unknown
+    - contextPath: MISP.Event.Attribute.Distribution
+      description: Attribute distribution
+      type: number
+    - contextPath: MISP.Event.Attribute.Value
+      description: Attribute value
+      type: string
+    - contextPath: MISP.Event.Attribute.EventID
+      description: Attribute event ID
+      type: number
+    - contextPath: MISP.Event.Attribute.Timestamp
+      description: Attribute timestamp
+      type: number
+    - contextPath: MISP.Event.Attribute.Deleted
+      description: Is the attribute deleted
+      type: boolean
+    - contextPath: MISP.Event.Attribute.DisableCorrelation
+      description: Is attribute correlation disabled
+      type: boolean
+    - contextPath: MISP.Event.Attribute.Type
+      description: Attribute type
+      type: string
+    - contextPath: MISP.Event.Attribute.ID
+      description: Attribute ID
+      type: number
+    - contextPath: MISP.Event.Attribute.UUID
+      description: Attribute UUID
+      type: string
+    - contextPath: MISP.Event.Attribute.ShadowAttribute
+      description: Attribute shadow attribute
+      type: Unknown
+    - contextPath: MISP.Event.Attribute.ToIDs
+      description: Is Intrusion Detection System flag set
+      type: boolean
+    - contextPath: MISP.Event.Attribute.Category
+      description: Attribute category
+      type: string
+    - contextPath: MISP.Event.Attribute.SharingGroupID
+      description: Attribute sharing group ID
+      type: number
+    - contextPath: MISP.Event.Attribute.Comment
+      description: Attribute comment
+      type: string
+    - contextPath: MISP.Event.Analysis
+      description: Event analysis (0 Initial, 1 Ongoing, 2 Completed)
+      type: number
+    - contextPath: MISP.Event.SharingGroupID
+      description: Event sharing group ID
+      type: number
+    - contextPath: MISP.Event.Tag.Name
+      description: All tag names in the event
+      type: string
+    - contextPath: MISP.Event.Object.MetaCategory
+      description: Object Meta Category
+      type: String
+    - contextPath: MISP.Event.Object.Distribution
+      description: Distribution of object
+      type: Number
+    - contextPath: MISP.Event.Object.Name
+      description: Name of the object
+      type: String
+    - contextPath: MISP.Event.Object.TemplateVersion
+      description: Template version of object
+      type: Number
+    - contextPath: MISP.Event.Object.EventID
+      description: ID of event which object first crated
+      type: Number
+    - contextPath: MISP.Event.Object.TemplateUUID
+      description: UUID of template
+      type: String
+    - contextPath: MISP.Event.Object.Timestamp
+      description: Timestamp of object creation
+      type: String
+    - contextPath: MISP.Event.Object.Deleted
+      description: Is object deleted
+      type: Boolean
+    - contextPath: MISP.Event.Object.ID
+      description: ID of object
+      type: Number
+    - contextPath: MISP.Event.Object.UUID
+      description: UUID of object
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.Value
+      description: Value of attribute
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.EventID
+      description: ID of first event which object from
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.Timestamp
+      description: Timestamp of object creation
+      type: Date
+    - contextPath: MISP.Event.Object.Attribute.Deleted
+      description: Is object deleted?
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.ObjectID
+      description: ID of object
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.DisableCorrelation
+      description: If correlation is disabled
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.ID
+      description: ID of attribute
+      type: Unknown
+    - contextPath: MISP.Event.Object.Attribute.ObjectRelation
+      description: Relation of object
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.Type
+      description: Type of object
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.UUID
+      description: UUID of attribute
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.ToIDs
+      description: Is ToIDs flag on
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.Category
+      description: Category of attribute
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.SharingGroupID
+      description: ID of sharing group
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.Comment
+      description: Comment of the attribute
+      type: String
+    - contextPath: MISP.Event.Object.Description
+      description: Description of the object
+      type: String
   - arguments:
     - default: false
       description: ID of event
@@ -1443,6 +2266,193 @@ script:
     description: Adds an IP Object to MISP event
     execution: false
     name: misp-add-ip-object
+    outputs:
+    - contextPath: MISP.Event.ID
+      description: MISP event ID
+      type: number
+    - contextPath: MISP.Event.Distribution
+      description: MISP event distribution
+      type: number
+    - contextPath: MISP.Event.ThreatLevelID
+      description: Threat level of the MISP event (1 High, 2 Medium, 3 Low, 4 Undefined)
+      type: number
+    - contextPath: MISP.Event.PublishTimestamp
+      description: Timestamp of the publish time (if published)
+      type: number
+    - contextPath: MISP.Event.EventCreatorEmail
+      description: Email address of the event creator
+      type: string
+    - contextPath: MISP.Event.Date
+      description: Event creation date
+      type: date
+    - contextPath: MISP.Event.Locked
+      description: Is the event locked
+      type: boolean
+    - contextPath: MISP.Event.OwnerOrganisation.ID
+      description: Owner organization ID
+      type: number
+    - contextPath: MISP.Event.OwnerOrganisation.Name
+      description: Owner organization name
+      type: string
+    - contextPath: MISP.Event.OwnerOrganisation.UUID
+      description: Owner organization UUID
+      type: string
+    - contextPath: MISP.Event.RelatedEvent.ID
+      description: Event IDs of related events (can be a list)
+      type: number
+    - contextPath: MISP.Event.ProposalEmailLock
+      description: If email lock proposed
+      type: boolean
+    - contextPath: MISP.Event.Timestamp
+      description: Timestamp of the event
+      type: number
+    - contextPath: MISP.Event.Galaxy.Description
+      description: Event's galaxy description
+      type: string
+    - contextPath: MISP.Event.Galaxy.Name
+      description: Galaxy name
+      type: string
+    - contextPath: MISP.Event.Galaxy.Type
+      description: Galaxy type
+      type: number
+    - contextPath: MISP.Event.Published
+      description: Is the event published
+      type: boolean
+    - contextPath: MISP.Event.DisableCorrelation
+      description: Is correlation disabled
+      type: boolean
+    - contextPath: MISP.Event.UUID
+      description: Event UUID
+      type: string
+    - contextPath: MISP.Event.ShadowAttribute
+      description: Event shadow attributes
+      type: Unknown
+    - contextPath: MISP.Event.Attribute.Distribution
+      description: Attribute distribution
+      type: number
+    - contextPath: MISP.Event.Attribute.Value
+      description: Attribute value
+      type: string
+    - contextPath: MISP.Event.Attribute.EventID
+      description: Attribute event ID
+      type: number
+    - contextPath: MISP.Event.Attribute.Timestamp
+      description: Attribute timestamp
+      type: number
+    - contextPath: MISP.Event.Attribute.Deleted
+      description: Is the attribute deleted
+      type: boolean
+    - contextPath: MISP.Event.Attribute.DisableCorrelation
+      description: Is attribute correlation disabled
+      type: boolean
+    - contextPath: MISP.Event.Attribute.Type
+      description: Attribute type
+      type: string
+    - contextPath: MISP.Event.Attribute.ID
+      description: Attribute ID
+      type: number
+    - contextPath: MISP.Event.Attribute.UUID
+      description: Attribute UUID
+      type: string
+    - contextPath: MISP.Event.Attribute.ShadowAttribute
+      description: Attribute shadow attribute
+      type: Unknown
+    - contextPath: MISP.Event.Attribute.ToIDs
+      description: Is Intrusion Detection System flag set
+      type: boolean
+    - contextPath: MISP.Event.Attribute.Category
+      description: Attribute category
+      type: string
+    - contextPath: MISP.Event.Attribute.SharingGroupID
+      description: Attribute sharing group ID
+      type: number
+    - contextPath: MISP.Event.Attribute.Comment
+      description: Attribute comment
+      type: string
+    - contextPath: MISP.Event.Analysis
+      description: Event analysis (0 Initial, 1 Ongoing, 2 Completed)
+      type: number
+    - contextPath: MISP.Event.SharingGroupID
+      description: Event sharing group ID
+      type: number
+    - contextPath: MISP.Event.Tag.Name
+      description: All tag names in the event
+      type: string
+    - contextPath: MISP.Event.Object.MetaCategory
+      description: Object Meta Category
+      type: String
+    - contextPath: MISP.Event.Object.Distribution
+      description: Distribution of object
+      type: Number
+    - contextPath: MISP.Event.Object.Name
+      description: Name of the object
+      type: String
+    - contextPath: MISP.Event.Object.TemplateVersion
+      description: Template version of object
+      type: Number
+    - contextPath: MISP.Event.Object.EventID
+      description: ID of event which object first crated
+      type: Number
+    - contextPath: MISP.Event.Object.TemplateUUID
+      description: UUID of template
+      type: String
+    - contextPath: MISP.Event.Object.Timestamp
+      description: Timestamp of object creation
+      type: String
+    - contextPath: MISP.Event.Object.Deleted
+      description: Is object deleted
+      type: Boolean
+    - contextPath: MISP.Event.Object.ID
+      description: ID of object
+      type: Number
+    - contextPath: MISP.Event.Object.UUID
+      description: UUID of object
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.Value
+      description: Value of attribute
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.EventID
+      description: ID of first event which object from
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.Timestamp
+      description: Timestamp of object creation
+      type: Date
+    - contextPath: MISP.Event.Object.Attribute.Deleted
+      description: Is object deleted?
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.ObjectID
+      description: ID of object
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.DisableCorrelation
+      description: If correlation is disabled
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.ID
+      description: ID of attribute
+      type: Unknown
+    - contextPath: MISP.Event.Object.Attribute.ObjectRelation
+      description: Relation of object
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.Type
+      description: Type of object
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.UUID
+      description: UUID of attribute
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.ToIDs
+      description: Is ToIDs flag on
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.Category
+      description: Category of attribute
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.SharingGroupID
+      description: ID of sharing group
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.Comment
+      description: Comment of the attribute
+      type: String
+    - contextPath: MISP.Event.Object.Description
+      description: Description of the object
+      type: String
   dockerimage: demisto/pymisp:1.0.0.52
   isfetch: false
   runonce: false

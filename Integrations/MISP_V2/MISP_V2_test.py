@@ -27,3 +27,9 @@ def test_convert_timestamp(mocker):
     from MISP_V2 import convert_timestamp
     assert convert_timestamp(1546713469) == "2019-01-05 18:37:49"
 
+
+def test_build_list_from_dict(mocker):
+    mock_misp(mocker)
+    from MISP_V2 import build_list_from_dict
+    lst = build_list_from_dict({'ip': '8.8.8.8', 'domain': 'google.com'})
+    assert lst == [{'ip': '8.8.8.8'}, {'domain': 'google.com'}]
