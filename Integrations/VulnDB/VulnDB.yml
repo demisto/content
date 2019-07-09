@@ -215,7 +215,7 @@ script:
       description: Date YYYY-MM-dd starting date (earliest)
       isArray: false
       name: start_date
-      required: true
+      required: false
       secret: false
     - default: false
       description: Date YYYY-MM-dd finishing date (latest)
@@ -226,7 +226,7 @@ script:
     - default: false
       description: How many hours ago
       isArray: false
-      name: hours ago
+      name: hours_ago
       required: false
       secret: false
     deprecated: false
