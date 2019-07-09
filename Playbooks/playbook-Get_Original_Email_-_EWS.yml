@@ -516,7 +516,6 @@ outputs:
 - contextPath: File
   description: Original attachments
   type: unknown
-releaseNotes: "-"
 tests:
   - Phishing test - attachment
   - Phishing test - Inline

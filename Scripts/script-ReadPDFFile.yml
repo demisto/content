@@ -183,4 +183,3 @@ runas: DBotWeakRole
 tests:
 - Extract Indicators From File - test
 deprecated: true
-releaseNotes: "Deprecated ReadPDFFile. Please use ReadPDFFileV2 in its place."
