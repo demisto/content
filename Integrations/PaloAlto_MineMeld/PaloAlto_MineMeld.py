@@ -72,7 +72,7 @@ class APIClient(object):
         )
 
         if method is not None:
-            api_request.get_method = lambda: method  # type: method
+            api_request.get_method = lambda: method  # type: ignore
 
         try:
             result = urllib2.urlopen(
