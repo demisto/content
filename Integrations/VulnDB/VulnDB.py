@@ -47,11 +47,12 @@ def get_oath_toekn():
                          }).json()['access_token']
 
 
-def http_request(url):
+def http_request(url, size=None):
+    params = {'size': size} if size else None
     return requests.get(url,
                         verify=USE_SSL,
-                        headers={'Authorization': f'Bearer {get_oath_toekn()}'}
-                        ).json()
+                        headers={'Authorization': f'Bearer {get_oath_toekn()}'},
+                        params=params).json()
 
 
 def vulndb_vulnerability_to_entry(vuln):
@@ -270,9 +271,11 @@ def vulndb_get_vuln_by_id_command():
 def vulndb_get_vuln_by_vendor_and_product_name_command():
     vendor_name = demisto.args()['vendor_name']
     product_name = demisto.args()['product_name']
+    max_size = demisto.args().get('max_size')
 
     res = http_request(
-        f'{API_URL}/vulnerabilities/find_by_vendor_and_product_name?vendor_name={vendor_name}&product_name={product_name}')
+        f'{API_URL}/vulnerabilities/find_by_vendor_and_product_name?vendor_name={vendor_name}&product_name={product_name}',
+        max_size)
 
     vulndb_vulnerability_results_to_demisto_results(res)
 
@@ -280,33 +283,41 @@ def vulndb_get_vuln_by_vendor_and_product_name_command():
 def vulndb_get_vuln_by_vendor_and_product_id_command():
     vendor_id = demisto.args()['vendor_id']
     product_id = demisto.args()['product_id']
+    max_size = demisto.args().get('max_size')
 
     res = http_request(
-        f'{API_URL}/vulnerabilities/find_by_vendor_and_product_id?vendor_id={vendor_id}&product_id={product_id}')
+        f'{API_URL}/vulnerabilities/find_by_vendor_and_product_id?vendor_id={vendor_id}&product_id={product_id}',
+        max_size)
 
     vulndb_vulnerability_results_to_demisto_results(res)
 
 
 def vulndb_get_vuln_by_vendor_id_command():
     vendor_id = demisto.args()['vendor_id']
+    max_size = demisto.args().get('max_size')
 
-    res = http_request(f'{API_URL}/vulnerabilities/find_by_vendor_id?vendor_id={vendor_id}')
+    res = http_request(f'{API_URL}/vulnerabilities/find_by_vendor_id?vendor_id={vendor_id}',
+                       max_size)
 
     vulndb_vulnerability_results_to_demisto_results(res)
 
 
 def vulndb_get_vuln_by_product_id_command():
     product_id = demisto.args()['product_id']
+    max_size = demisto.args().get('max_size')
 
-    res = http_request(f'{API_URL}/vulnerabilities/find_by_product_id?product_id={product_id}')
+    res = http_request(f'{API_URL}/vulnerabilities/find_by_product_id?product_id={product_id}',
+                       max_size)
 
     vulndb_vulnerability_results_to_demisto_results(res)
 
 
 def vulndb_get_vuln_by_cve_id_command():
     cve_id = demisto.args()['cve_id']
+    max_size = demisto.args().get('max_size')
 
-    res = http_request(f'{API_URL}/vulnerabilities/{cve_id}/find_by_cve_id')
+    res = http_request(f'{API_URL}/vulnerabilities/{cve_id}/find_by_cve_id',
+                       max_size)
 
     vulndb_vulnerability_results_to_demisto_results(res)
 
@@ -315,15 +326,18 @@ def vulndb_get_updates_by_dates_or_hours_command():
     start_date = demisto.args().get('start_date')
     end_date = demisto.args().get('end_date')
     hours_ago = demisto.args().get('hours_ago')
+    max_size = demisto.args().get('max_size')
 
     if start_date:
         url = f'{API_URL}/vulnerabilities/find_by_date?start_date={start_date}'
         if end_date:
             url += f'&end_date={end_date}'
 
-        res = http_request(url)
+        res = http_request(url,
+                           max_size)
     elif hours_ago:
-        res = http_request(f'{API_URL}/vulnerabilities/find_by_time?hours_ago={hours_ago}')
+        res = http_request(f'{API_URL}/vulnerabilities/find_by_time?hours_ago={hours_ago}',
+                           max_size)
     else:
         return_error('Must provide either start date or hours ago.')
 
@@ -333,15 +347,19 @@ def vulndb_get_updates_by_dates_or_hours_command():
 def vulndb_get_vendor_command():
     vendor_id = demisto.args().get('vendor_id')
     vendor_name = demisto.args().get('vendor_name')
+    max_size = demisto.args().get('max_size')
 
     if vendor_id is not None and vendor_name is not None:
         return_error('Provide either vendor id or vendor name or neither, not both.')
     elif vendor_id:
-        res = http_request(f'{API_URL}/vendors/{vendor_id}')
+        res = http_request(f'{API_URL}/vendors/{vendor_id}',
+                           max_size)
     elif vendor_name:
-        res = http_request(f'{API_URL}/vendors/by_name?vendor_name={vendor_name}')
+        res = http_request(f'{API_URL}/vendors/by_name?vendor_name={vendor_name}',
+                           max_size)
     else:
-        res = http_request(f'{API_URL}/vendors')
+        res = http_request(f'{API_URL}/vendors',
+                           max_size)
 
     vulndb_vendor_results_to_demisto_results(res)
 
@@ -349,15 +367,19 @@ def vulndb_get_vendor_command():
 def vulndb_get_product_command():
     vendor_id = demisto.args().get('vendor_id')
     vendor_name = demisto.args().get('vendor_name')
+    max_size = demisto.args().get('max_size')
 
     if vendor_id is not None and vendor_name is not None:
         return_error('Provide either vendor id or vendor name or neither, not both.')
     elif vendor_id:
-        res = http_request(f'{API_URL}/products/by_vendor_id?vendor_id={vendor_id}')
+        res = http_request(f'{API_URL}/products/by_vendor_id?vendor_id={vendor_id}',
+                           max_size)
     elif vendor_name:
-        res = http_request(f'{API_URL}/products/by_vendor_name?vendor_name={vendor_name}')
+        res = http_request(f'{API_URL}/products/by_vendor_name?vendor_name={vendor_name}',
+                           max_size)
     else:
-        res = http_request(f'{API_URL}/products')
+        res = http_request(f'{API_URL}/products',
+                           max_size)
 
     vulndb_product_results_to_demisto_results(res)
 
@@ -365,13 +387,16 @@ def vulndb_get_product_command():
 def vulndb_get_version_command():
     product_id = demisto.args().get('product_id')
     product_name = demisto.args().get('product_name')
+    max_size = demisto.args().get('max_size')
 
     if product_id is not None and product_name is not None:
         return_error('Provide either product id or vendor name, not both.')
     elif product_id:
-        res = http_request(f'{API_URL}/versions/by_product_id?product_id={product_id}')
+        res = http_request(f'{API_URL}/versions/by_product_id?product_id={product_id}',
+                           max_size)
     elif product_name:
-        res = http_request(f'{API_URL}/versions/by_product_name?product_name={product_name}')
+        res = http_request(f'{API_URL}/versions/by_product_name?product_name={product_name}',
+                           max_size)
 
     vulndb_product_results_to_demisto_results(res)
 
