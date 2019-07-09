@@ -724,7 +724,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
         if type(value) in [str, unicode, int, float, bool, Body, HTMLBody, None]:
             try:
                 if isinstance(value, basestring):
-                    value.encode('utf-8')  # noqa
+                    value.encode('utf-8')  # type: ignore
                 raw_dict[field] = value
             except Exception:
                 pass
@@ -1035,7 +1035,7 @@ def delete_attachments_for_message(item_id, target_mailbox=None, attachment_ids=
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     attachments = get_attachments_for_item(item_id, account, attachment_ids)
     deleted_file_attachments = []
-    deleted_item_attachments = []  # type : ignore
+    deleted_item_attachments = []  # type: ignore
     for attachment in attachments:
         attachment_deleted_action = {
             ATTACHMENT_ID: attachment.attachment_id.id,
@@ -1198,7 +1198,7 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
     else:
         folders = account.inbox.parent.walk()
 
-    items = []  # type : ignore
+    items = []  # type: ignore
     for folder in folders:
         if Message not in folder.supported_item_models:
             continue
@@ -1647,7 +1647,7 @@ except Exception, e:
 
     time.sleep(2)
     start_logging()
-    debug_log = log_stream.getvalue()  # noqa
+    debug_log = log_stream.getvalue()  # type: ignore
     error_message_simple = ""
     error_message = ""
 
