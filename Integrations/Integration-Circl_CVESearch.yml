@@ -13,6 +13,16 @@ script:
     ''' IMPORTS '''
     import requests
 
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    # remove proxy if not set to true in params
+    if not demisto.params().get('proxy', False):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
     ''' HELPER FUNCTIONS '''
     def list_to_md(o, section):
         md = f'#### {section.capitalize()}\n'
@@ -133,8 +143,8 @@ script:
         })
 
     ''' EXECUTION '''
+    
     LOG(f'command is {demisto.command()}')
-
     try:
         if demisto.command() == 'test-module':
             res = requests.get('http://cve.circl.lu/api/last/1')
@@ -144,7 +154,7 @@ script:
         if demisto.command() == 'Circl-cve-search':
             get_cve()
     except Exception as e:
-        return_error(e.message)
+        return_error(f'Unable to perform command : {demisto.command}, Reason: {e}')
   type: python
   commands:
   - name: Circl-cve-search
