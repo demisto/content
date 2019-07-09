@@ -47,6 +47,13 @@ def get_oath_toekn():
                          }).json()['access_token']
 
 
+def http_request(url):
+    return requests.get(url,
+                        verify=USE_SSL,
+                        headers={'Authorization': f'Bearer {get_oath_toekn()}'}
+                        ).json()
+
+
 def vulndb_vulnerability_to_entry(vuln):
     vulnerability_details = {
         'ID': vuln.get('vulndb_id', 0),
@@ -95,15 +102,52 @@ def vulndb_vulnerability_to_entry(vuln):
                               for classification in vuln['classifications']]
 
     return {
-            'Vulnerability': vulnerability_details,
-            'CVE-ExtReference': {
-                'Value': cve_ext_reference_values
-            },
-            'CvssMetrics': cvss_metrics_details,
-            'Vendor': vendor_details,
-            'Products': product_details,
-            'Classification': classification_details
-        }
+        'Vulnerability': vulnerability_details,
+        'CVE-ExtReference': {
+            'Value': cve_ext_reference_values
+        },
+        'CvssMetrics': cvss_metrics_details,
+        'Vendor': vendor_details,
+        'Products': product_details,
+        'Classification': classification_details
+    }
+
+
+def vulndb_results_to_demisto_results(res):
+    if 'error' in res:
+        return_error(res['error'])
+    else:
+        if 'vulnerability' in res:
+            results = [res['vulnerability']]
+        elif 'results' in res:
+            results = res['results']
+        else:
+            demisto.results({
+                'Type': entryTypes['error'],
+                'Contents': res,
+                'ContentsFormat': formats['json']
+            })
+
+        for result in results:
+            ec = {
+                'VulnDB': vulndb_vulnerability_to_entry(result)
+            }
+
+            human_readable = tableToMarkdown(f'Result for vulnerability ID: {ec["VulnDB"]["Vulnerability"]["ID"]}', {
+                'Title': ec['VulnDB']['Vulnerability']['Title'],
+                'Description': ec['VulnDB']['Vulnerability']['Description'],
+                'Publish Date': ec['VulnDB']['Vulnerability']['PublishedDate'],
+                'Solution Date': ec['VulnDB']['Vulnerability']['SolutionDate']
+            })
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': res,
+                'ContentsFormat': formats['json'],
+                'HumanReadable': human_readable,
+                'HumanReadableFormat': formats['markdown'],
+                'EntryContext': ec
+            })
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -124,100 +168,42 @@ def vulndb_get_vuln_by_id_command():
                        headers={'Authorization': f'Bearer {get_oath_toekn()}'}
                        ).json()
 
-    if 'error' in res:
-        return_error(res['error'])
-    else:
-        vulnerability_data = res['vulnerability']
-
-        ec = {
-            'VulnDB': vulndb_vulnerability_to_entry(vulnerability_data)
-        }
-
-        human_readable = tableToMarkdown(f'Result for vulnerability ID: {vulndb_id}', {
-            'Title': ec['VulnDB']['Vulnerability']['Title'],
-            'Description': ec['VulnDB']['Vulnerability']['Description'],
-            'Publish Date': ec['VulnDB']['Vulnerability']['PublishedDate'],
-            'Solution Date': ec['VulnDB']['Vulnerability']['SolutionDate']
-        })
-
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': res,
-            'ContentsFormat': formats['json'],
-            'HumanReadable': human_readable,
-            'HumanReadableFormat': formats['markdown'],
-            'EntryContext': ec
-        })
+    vulndb_results_to_demisto_results(res)
 
 
 def vulndb_get_vuln_by_vendor_and_product_name_command():
     vendor_name = demisto.args()['vendor_name']
     product_name = demisto.args()['product_name']
 
-    res = requests.get(f'{API_URL}/vulnerabilities/find_by_vendor_and_product_name?vendor_name={vendor_name}&product_name={product_name}',
-                       verify=USE_SSL,
-                       headers={'Authorization': f'Bearer {get_oath_toekn()}'}
-                       ).json()
+    res = http_request(f'{API_URL}/vulnerabilities/find_by_vendor_and_product_name?vendor_name={vendor_name}&product_name={product_name}')
 
-    if 'error' in res:
-        return_error(res['error'])
-    else:
-        results = res['results']
-        for result in results:
-            ec = {
-                'VulnDB': vulndb_vulnerability_to_entry(result)
-            }
-
-            human_readable = tableToMarkdown(f'Result for vulnerability ID: {ec["VulnDB"]["Vulnerability"]["ID"]}', {
-                'Title': ec['VulnDB']['Vulnerability']['Title'],
-                'Description': ec['VulnDB']['Vulnerability']['Description'],
-                'Publish Date': ec['VulnDB']['Vulnerability']['PublishedDate'],
-                'Solution Date': ec['VulnDB']['Vulnerability']['SolutionDate']
-            })
-
-            demisto.results({
-                'Type': entryTypes['note'],
-                'Contents': res,
-                'ContentsFormat': formats['json'],
-                'HumanReadable': human_readable,
-                'HumanReadableFormat': formats['markdown'],
-                'EntryContext': ec
-            })
+    vulndb_results_to_demisto_results(res)
 
 
 def vulndb_get_vuln_by_vendor_and_product_id_command():
     vendor_id = demisto.args()['vendor_id']
     product_id = demisto.args()['product_id']
 
-    res = requests.get(f'{API_URL}/vulnerabilities/find_by_vendor_and_product_id?vendor_id={vendor_id}&product_id={product_id}',
-                       verify=USE_SSL,
-                       headers={'Authorization': f'Bearer {get_oath_toekn()}'}
-                       ).json()
+    res = http_request(f'{API_URL}/vulnerabilities/find_by_vendor_and_product_id?vendor_id={vendor_id}&product_id={product_id}')
 
-    if 'error' in res:
-        return_error(res['error'])
-    else:
-        results = res['results']
-        for result in results:
-            ec = {
-                'VulnDB': vulndb_vulnerability_to_entry(result)
-            }
+    vulndb_results_to_demisto_results(res)
 
-            human_readable = tableToMarkdown(f'Result for vulnerability ID: {ec["VulnDB"]["Vulnerability"]["ID"]}', {
-                'Title': ec['VulnDB']['Vulnerability']['Title'],
-                'Description': ec['VulnDB']['Vulnerability']['Description'],
-                'Publish Date': ec['VulnDB']['Vulnerability']['PublishedDate'],
-                'Solution Date': ec['VulnDB']['Vulnerability']['SolutionDate']
-            })
 
-            demisto.results({
-                'Type': entryTypes['note'],
-                'Contents': res,
-                'ContentsFormat': formats['json'],
-                'HumanReadable': human_readable,
-                'HumanReadableFormat': formats['markdown'],
-                'EntryContext': ec
-            })
+def vulndb_get_vuln_by_vendor_id_command():
+    vendor_id = demisto.args()['vendor_id']
+
+    res = http_request(f'{API_URL}/vulnerabilities/find_by_vendor_id?vendor_id={vendor_id}')
+
+    vulndb_results_to_demisto_results(res)
+
+
+def vulndb_get_vuln_by_product_id_command():
+    product_id = demisto.args()['product_id']
+
+    res = http_request(f'{API_URL}/vulnerabilities/find_by_product_id?product_id={product_id}')
+
+    vulndb_results_to_demisto_results(res)
+
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
@@ -233,3 +219,7 @@ elif demisto.command() == 'vulndb-get-vuln-by-vendor-and-product-name':
     vulndb_get_vuln_by_vendor_and_product_name_command()
 elif demisto.command() == 'vulndb-get-vuln-by-vendor-and-product-id':
     vulndb_get_vuln_by_vendor_and_product_id_command()
+elif demisto.command() == 'vulndb-get-vuln-by-vendor-id':
+    vulndb_get_vuln_by_vendor_id_command()
+elif demisto.command() == 'vulndb-get-vuln-by-product-id':
+    vulndb_get_vuln_by_product_id_command()
