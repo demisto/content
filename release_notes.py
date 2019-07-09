@@ -600,6 +600,7 @@ def filter_packagify_changes(modified_files, added_files, removed_files, tag):
             github_path = os.path.join(CONTENT_GITHUB_LINK, tag, file_path).replace('\\', '/')
             file_content = requests.get(github_path).content
             details = yaml.safe_load(file_content)
+            print('file_path:{fp}\ndetails: {d}'.format(fp=file_path, d=details))
             uniq_identifier = '_'.join([details['name'],
                                        details.get('fromversion', '0.0.0'),
                                        details.get('toversion', '99.99.99')])
