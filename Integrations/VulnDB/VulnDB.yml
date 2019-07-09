@@ -525,7 +525,7 @@ script:
       description: Classification description (only human readable)
       type: string
   - arguments:
-    - default: true
+    - default: false
       description: Vendor id
       isArray: false
       name: vendor_id
@@ -621,7 +621,7 @@ script:
       description: Classification description (only human readable)
       type: string
   - arguments:
-    - default: true
+    - default: false
       description: Product id
       isArray: false
       name: product_id
