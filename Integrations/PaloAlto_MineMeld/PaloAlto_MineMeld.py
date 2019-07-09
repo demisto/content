@@ -657,7 +657,7 @@ def retrieve_miner_indicators():
 
     else:
         result_list = get_indicators_from_miner(miner_name)
-        miners_context = {'name': miner_name}  # type: dict
+        miners_context = {'name': miner_name}  # type: ignore
 
     demisto.results({
         'Type': entryTypes['note'],
