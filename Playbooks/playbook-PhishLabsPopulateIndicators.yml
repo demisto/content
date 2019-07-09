@@ -222,6 +222,5 @@ inputs:
   required: false
   description: Filter the indicators by indicator type.
 outputs: []
-releaseNotes: "-"
 tests:
   - PhishLabsTestPopulateIndicators
