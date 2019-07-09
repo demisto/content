@@ -315,20 +315,16 @@ def fix_2010():
                     break
 
         def repr1(self):
-            return self.__class__.__name__ + \
-                   repr((self.root, self.name, self.total_count, self.child_folder_count, self.folder_class, self.id,
-                         self.changekey))
+            return self.__class__.__name__ + repr((self.root, self.name, self.total_count, self.child_folder_count,
+                                                   self.folder_class, self.id, self.changekey))
 
         def repr2(self):
-            return self.__class__.__name__ + \
-                   repr((self.root, self.name, self.total_count, self.child_folder_count, self.folder_class,
-                         self.changekey))
+            return self.__class__.__name__ + repr(
+                (self.root, self.name, self.total_count, self.child_folder_count, self.folder_class, self.changekey))
 
         def repr3(self):
-            return self.__class__.__name__ + \
-                   repr((
-                       self.account, '[self]', self.name, self.total_count, self.child_folder_count, self.folder_class,
-                       self.changekey))
+            return self.__class__.__name__ + repr((self.account, '[self]', self.name, self.total_count,
+                                                   self.child_folder_count, self.folder_class, self.changekey))
 
         exchangelib.Folder.__repr__ = repr1
         exchangelib.folders.Inbox.__repr__ = exchangelib.folders.JunkEmail.__repr__ = repr2
@@ -730,7 +726,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
                 if isinstance(value, basestring):
                     value.encode('utf-8')
                 raw_dict[field] = value
-            except:
+            except Exception:
                 pass
 
     if getattr(item, 'attachments', None):
@@ -840,7 +836,7 @@ def parse_incident_from_item(item):
 
     # handle attachments
     if item.attachments:
-        incident['attachment'] = [];
+        incident['attachment'] = []
         for attachment in item.attachments:
             file_result = None
             label_attachment_type = None
@@ -1310,7 +1306,7 @@ def create_folder(new_folder_name, folder_path, target_mailbox=None):
     try:
         if get_folder_by_path(account, full_path):
             return "Folder %s already exists" % full_path
-    except:
+    except Exception:
         pass
     parent_folder = get_folder_by_path(account, folder_path)
     f = Folder(parent=parent_folder, name=new_folder_name)
@@ -1424,7 +1420,7 @@ def folder_to_context_entry(f):
 
 
 def check_cs_prereqs():
-    if not 'outlook.office365.com' in EWS_SERVER:
+    if 'outlook.office365.com' not in EWS_SERVER:
         raise Exception("This command is only supported for Office 365")
     if exchangelib.__version__ != "1.12.0":
         raise Exception("Please update your docker image to use this command")
@@ -1656,9 +1652,10 @@ except Exception, e:
     error_message = ""
 
     # Office365 regular maintenance case
-    if (isinstance(e, ErrorMailboxStoreUnavailable) or isinstance(e,
-                                                                  ErrorMailboxMoveInProgress)) and 'outlook.office365.com' in EWS_SERVER:
-        log_message = "Office365 is undergoing load balancing operations. As a result, the service is temporarily unavailable."
+    if (isinstance(e, ErrorMailboxStoreUnavailable) or isinstance(e, ErrorMailboxMoveInProgress)) \
+            and 'outlook.office365.com' in EWS_SERVER:
+        log_message = "Office365 is undergoing load balancing operations. " \
+                      "As a result, the service is temporarily unavailable."
         if demisto.command() == 'fetch-incidents':
             demisto.info(log_message)
             demisto.incidents([])
@@ -1673,20 +1670,23 @@ except Exception, e:
         e.message = str(e.message)
 
     if isinstance(e, ConnectionError):
-        error_message_simple = "Could not connect to the server.\nVerify that the Hostname or IP address is correct.\n\nAdditional information: {}".format(
-            e.message)
+        error_message_simple = "Could not connect to the server.\n" \
+                               "Verify that the Hostname or IP address is correct.\n\n" \
+                               "Additional information: {}".format(e.message)
     elif exchangelib.__version__ == "1.12.0":
         from exchangelib.errors import MalformedResponseError
 
         if IS_TEST_MODULE and isinstance(e, MalformedResponseError):
-            error_message_simple = "Got invalid response from the server.\nVerify that the Hostname or IP address is is correct."
+            error_message_simple = "Got invalid response from the server.\n" \
+                                   "Verify that the Hostname or IP address is is correct."
 
     # Legacy error handling
     if "Status code: 401" in debug_log:
         error_message_simple = "Got unauthorized from the server. " \
                                "Check credentials are correct and authentication method are supported. "
 
-        error_message_simple += "You can try using 'domain\\username' as username for authentication. " if AUTH_METHOD_STR.lower() == 'ntlm' else ''
+        error_message_simple += "You can try using 'domain\\username' as username for authentication. " \
+            if AUTH_METHOD_STR.lower() == 'ntlm' else ''
     if "Status code: 503" in debug_log:
         error_message_simple = "Got timeout from the server. " \
                                "Probably the server is not reachable with the current settings. " \
