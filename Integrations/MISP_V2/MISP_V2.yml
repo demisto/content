@@ -2258,6 +2258,7 @@ script:
       required: false
       secret: false
     - default: false
+      description: description of object
       isArray: false
       name: text
       required: false
