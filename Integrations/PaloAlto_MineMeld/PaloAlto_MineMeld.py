@@ -149,7 +149,7 @@ def add_indicator_to_miner(MineMeldClient, miner, indicators, type_, comment='')
     updated_miner_list = {
         e['indicator']: json.dumps(e, sort_keys=True) for e in miner_list
     }
-    request_params = {}  # type: ignore
+    request_params = {}  # type: dict
 
     if not isinstance(indicators, list):
         indicators = indicators.split(',')
@@ -270,7 +270,7 @@ def get_indicator_type(indicator):
 def domain():
     domain = demisto.args()['domain']
     # output vars
-    result_indicator = []  # type: ignore
+    result_indicator = []  # type: list
     miner_name = ''
     dbotscore = 0
     indicator_context_data = {}  # type: ignore
