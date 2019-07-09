@@ -125,7 +125,9 @@ def vulndb_vulnerability_results_to_demisto_results(res):
             demisto.results({
                 'Type': entryTypes['error'],
                 'Contents': res,
-                'ContentsFormat': formats['json']
+                'ContentsFormat': formats['json'],
+                'HumanReadable': 'No "vulnerability" or "results" keys in the returned JSON',
+                'HumanReadableFormat': formats['text']
             })
 
         for result in results:
@@ -173,7 +175,9 @@ def vulndb_vendor_results_to_demisto_results(res):
             demisto.results({
                 'Type': entryTypes['error'],
                 'Contents': res,
-                'ContentsFormat': formats['json']
+                'ContentsFormat': formats['json'],
+                'HumanReadable': 'No "vendor" or "results" keys in the returned JSON',
+                'HumanReadableFormat': formats['text']
             })
 
         for result in results:
@@ -186,6 +190,50 @@ def vulndb_vendor_results_to_demisto_results(res):
                 'Name': ec['VulnDB']['Results']['Name'],
                 'Short Name': ec['VulnDB']['Results']['ShortName'],
                 'Vendor URL': ec['VulnDB']['Results']['VendorUrl']
+            })
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': res,
+                'ContentsFormat': formats['json'],
+                'HumanReadable': human_readable,
+                'HumanReadableFormat': formats['markdown'],
+                'EntryContext': ec
+            })
+
+
+def vulndb_product_to_entry(product):
+    return {
+        'Results': {
+            'Id': product.get('id', ''),
+            'Name': product.get('name', '')
+        }
+    }
+
+
+def vulndb_product_results_to_demisto_results(res):
+    if 'error' in res:
+        return_error(res['error'])
+    else:
+        if 'results' in res:
+            results = res['results']
+        else:
+            demisto.results({
+                'Type': entryTypes['error'],
+                'Contents': res,
+                'ContentsFormat': formats['json'],
+                'HumanReadable': 'No "results" key in the returned JSON',
+                'HumanReadableFormat': formats['text']
+            })
+
+        for result in results:
+            ec = {
+                'VulnDB': vulndb_product_to_entry(result)
+            }
+
+            human_readable = tableToMarkdown(f'Result for product ID: {ec["VulnDB"]["Results"]["Id"]}', {
+                'ID': ec['VulnDB']['Results']['Id'],
+                'Name': ec['VulnDB']['Results']['Name']
             })
 
             demisto.results({
@@ -277,6 +325,22 @@ def vulndb_get_vendor_command():
     vulndb_vendor_results_to_demisto_results(res)
 
 
+def vulndb_get_product_command():
+    vendor_id = demisto.args().get('vendor_id')
+    vendor_name = demisto.args().get('vendor_name')
+
+    if vendor_id is not None and vendor_name is not None:
+        return_error('Provide either vendor id or vendor name or neither, not both.')
+    elif vendor_id:
+        res = http_request(f'{API_URL}/products/by_vendor_id?vendor_id={vendor_id}')
+    elif vendor_name:
+        res = http_request(f'{API_URL}/products/by_vendor_name?vendor_name={vendor_name}')
+    else:
+        res = http_request(f'{API_URL}/products')
+
+    vulndb_product_results_to_demisto_results(res)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
@@ -299,4 +363,6 @@ elif demisto.command() == 'vulndb-get-vuln-by-cve-id':
     vulndb_get_vuln_by_cve_id_command()
 elif demisto.command() == 'vulndb-get-vendor':
     vulndb_get_vendor_command()
+elif demisto.command() == 'vulndb-get-product':
+    vulndb_get_product_command()
 
