@@ -32,7 +32,7 @@ CLIENT_SECRET = demisto.params()['client_secret']
 ''' HELPER FUNCTIONS '''
 
 
-def get_oath_toekn():
+def get_oath_token():
     # Workaround ParseResult immutability
     parse_result = list(urllib.parse.urlparse(API_URL))
     parse_result[2] = '/oauth/token'
@@ -51,7 +51,7 @@ def http_request(url, size=None):
     params = {'size': size} if size else None
     return requests.get(url,
                         verify=USE_SSL,
-                        headers={'Authorization': f'Bearer {get_oath_toekn()}'},
+                        headers={'Authorization': f'Bearer {get_oath_token()}'},
                         params=params).json()
 
 
@@ -130,6 +130,7 @@ def vulndb_vulnerability_results_to_demisto_results(res):
                 'HumanReadable': 'No "vulnerability" or "results" keys in the returned JSON',
                 'HumanReadableFormat': formats['text']
             })
+            return
 
         for result in results:
             ec = {
@@ -180,6 +181,7 @@ def vulndb_vendor_results_to_demisto_results(res):
                 'HumanReadable': 'No "vendor" or "results" keys in the returned JSON',
                 'HumanReadableFormat': formats['text']
             })
+            return
 
         for result in results:
             ec = {
@@ -226,6 +228,7 @@ def vulndb_product_results_to_demisto_results(res):
                 'HumanReadable': 'No "results" key in the returned JSON',
                 'HumanReadableFormat': formats['text']
             })
+            return
 
         for result in results:
             ec = {
@@ -254,7 +257,7 @@ def test_module():
     """
     Performs basic get request to get item samples
     """
-    get_oath_toekn()
+    get_oath_token()
 
 
 def vulndb_get_vuln_by_id_command():
@@ -262,7 +265,7 @@ def vulndb_get_vuln_by_id_command():
 
     res = requests.get(f'{API_URL}/vulnerabilities/{vulndb_id}',
                        verify=USE_SSL,
-                       headers={'Authorization': f'Bearer {get_oath_toekn()}'}
+                       headers={'Authorization': f'Bearer {get_oath_token()}'}
                        ).json()
 
     vulndb_vulnerability_results_to_demisto_results(res)
@@ -335,7 +338,7 @@ def vulndb_get_updates_by_dates_or_hours_command():
 
         res = http_request(url,
                            max_size)
-    elif hours_ago:
+    elif hours_ago is not None:
         res = http_request(f'{API_URL}/vulnerabilities/find_by_time?hours_ago={hours_ago}',
                            max_size)
     else:
