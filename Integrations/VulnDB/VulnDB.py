@@ -205,6 +205,14 @@ def vulndb_get_vuln_by_product_id_command():
     vulndb_results_to_demisto_results(res)
 
 
+def vulndb_get_vuln_by_cve_id_command():
+    cve_id = demisto.args()['cve_id']
+
+    res = http_request(f'{API_URL}/vulnerabilities/{cve_id}/find_by_cve_id')
+
+    vulndb_results_to_demisto_results(res)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
@@ -223,3 +231,5 @@ elif demisto.command() == 'vulndb-get-vuln-by-vendor-id':
     vulndb_get_vuln_by_vendor_id_command()
 elif demisto.command() == 'vulndb-get-vuln-by-product-id':
     vulndb_get_vuln_by_product_id_command()
+elif demisto.command() == 'vulndb-get-vuln-by-cve-id':
+    vulndb_get_vuln_by_cve_id_command()
