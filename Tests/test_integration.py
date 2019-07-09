@@ -4,7 +4,7 @@ from pprint import pformat
 import uuid
 import urllib
 
-from Tests.test_utils import print_error
+from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS
 from Tests.scripts.constants import PB_Status
 
 # ----- Constants ----- #
@@ -228,16 +228,16 @@ def __delete_integrations_instances(client, module_instances):
     return succeed
 
 
-def __print_investigation_error(client, playbook_id, investigation_id):
+def __print_investigation_error(client, playbook_id, investigation_id, color=LOG_COLORS.RED):
     res = client.req('POST', '/investigation/' + urllib.quote(investigation_id), {})
     if res.status_code == 200:
         entries = res.json()['entries']
-        print_error('Playbook ' + playbook_id + ' has failed:')
+        print_color('Playbook ' + playbook_id + ' has failed:', color)
         for entry in entries:
             if entry['type'] == ENTRY_TYPE_ERROR:
                 if entry['parentContent']:
-                    print_error('\t- Command: ' + entry['parentContent'].encode('utf-8'))
-                print_error('\t- Body: ' + entry['contents'].encode('utf-8'))
+                    print_color('\t- Command: ' + entry['parentContent'].encode('utf-8'), color)
+                print_color('\t- Body: ' + entry['contents'].encode('utf-8'), color)
 
 
 # Configure integrations to work with mock
@@ -292,6 +292,7 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
     if investigation_id is None or len(investigation_id) == 0:
         print_error('Failed to get investigation id of incident:' + incident)
         return False, -1
+    print('Investigation ID: {}'.format(investigation_id))
 
     timeout_amount = options['timeout'] if 'timeout' in options else DEFAULT_TIMEOUT
     timeout = time.time() + timeout_amount
@@ -308,8 +309,12 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
         if playbook_state == PB_Status.COMPLETED or playbook_state == PB_Status.NOT_SUPPORTED_VERSION:
             break
         if playbook_state == PB_Status.FAILED:
-            print_error(playbook_id + ' failed with error/s')
-            __print_investigation_error(client, playbook_id, investigation_id)
+            if is_mock_run:
+                print_warning(playbook_id + ' failed with error/s')
+                __print_investigation_error(client, playbook_id, investigation_id, LOG_COLORS.YELLOW)
+            else:
+                print_error(playbook_id + ' failed with error/s')
+                __print_investigation_error(client, playbook_id, investigation_id)
             break
         if time.time() > timeout:
             print_error(playbook_id + ' failed on timeout')
