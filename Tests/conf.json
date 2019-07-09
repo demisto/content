@@ -1657,6 +1657,10 @@
         {
             "integrations": "MailListener - POP3",
             "playbookID": "MailListener-POP3 - Test"
+        },
+        {
+            "integrations": "VulnDB",
+            "playbookID": "Test-VulnDB"
         }
     ],
     "skipped_tests": {

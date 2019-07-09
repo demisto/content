@@ -890,4 +890,4 @@ script:
   script: '-'
   type: python
 tests:
-- No tests
+- "Test-VulnDB"

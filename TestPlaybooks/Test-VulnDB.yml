@@ -1,5 +1,5 @@
-id: 4e49cd66-eafb-4713-8ba2-7a50d94fea63
-version: 24
+id: Test-VulnDB
+version: -1
 name: Test-VulnDB
 starttaskid: "0"
 tasks:
