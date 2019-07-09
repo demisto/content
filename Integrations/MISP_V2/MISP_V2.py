@@ -148,7 +148,7 @@ def build_generic_object(template_name: str, args: List[dict]) -> GenericObjectG
              {'threat_score': {value=95, to_ids=False}},
              {'permalink': 'https://panacea.threatgrid.com/mask/samples/2e445ef5389d8b'},
              {'heuristic_raw_score': 7.8385159793597}, {'heuristic_score': 96},
-             {'original_filename': 'juice.exe'}, {'id':  '2e445ef5389d8b'}]
+             {'original_filename': 'juice.exe'}, {'id':  '2e445ef5389d8b'}] # guardrails-disable-line
     """
     misp_object = GenericObjectGenerator(template_name)
     misp_object.generate_attributes(args)
