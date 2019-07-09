@@ -495,22 +495,6 @@ tasks:
                     right:
                       value:
                         simple: Microsoft Word
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: File.Info
-                      iscontext: true
-                    right:
-                      value:
-                        simple: doc
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: File.Info
-                      iscontext: true
-                    right:
-                      value:
-                        simple: docx
                 - - operator: isNotEqualString
                     left:
                       value:

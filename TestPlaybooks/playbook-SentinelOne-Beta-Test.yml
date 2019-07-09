@@ -1,0 +1,342 @@
+id: SentinelOne Beta Test
+version: -1
+name: SentinelOne Beta Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 83597dae-ec05-4b08-8365-4d4b885734c2
+    type: start
+    task:
+      id: 83597dae-ec05-4b08-8365-4d4b885734c2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 58f526fc-d7ab-41e0-8538-b0725f62227a
+    type: regular
+    task:
+      id: 58f526fc-d7ab-41e0-8538-b0725f62227a
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "4"
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: cbf1b7f3-0ce9-4568-892f-20045c3cd998
+    type: regular
+    task:
+      id: cbf1b7f3-0ce9-4568-892f-20045c3cd998
+      version: -1
+      name: Get Threats
+      description: Get threats using a variety of filters.
+      script: '|||sentinelone-get-threats'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      classifications: {}
+      content_hash: {}
+      created_after: {}
+      created_before: {}
+      created_from: {}
+      created_until: {}
+      display_name: {}
+      limit: {}
+      mitigation_status: {}
+      query: {}
+      rank: {}
+      resolved: {}
+      threat_ids: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: a7cb4db9-f563-4d39-836d-76e80da14c6e
+    type: regular
+    task:
+      id: a7cb4db9-f563-4d39-836d-76e80da14c6e
+      version: -1
+      name: Get Activities
+      description: Get a list of activities.
+      script: '|||sentinelone-get-activities'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      activities_ids: {}
+      activity_types: {}
+      agent_ids: {}
+      created_after: {}
+      created_before: {}
+      created_between: {}
+      created_from: {}
+      created_until: {}
+      group_ids: {}
+      include_hidden: {}
+      limit: {}
+      threats_ids: {}
+      user_emails: {}
+      user_ids: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 420559d3-dca0-4ceb-8e5b-376870705a29
+    type: regular
+    task:
+      id: 420559d3-dca0-4ceb-8e5b-376870705a29
+      version: -1
+      name: Get All agents
+      description: List all agents matching the input filter.
+      script: '|||sentinelone-list-agents'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      computer_name: {}
+      created_at: {}
+      min_active_threats: {}
+      os_type: {}
+      scan_status: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 27b9a968-4184-4a98-855d-b13e479679ce
+    type: regular
+    task:
+      id: 27b9a968-4184-4a98-855d-b13e479679ce
+      version: -1
+      name: Get Agent
+      description: Get details of an agent by its ID.
+      script: '|||sentinelone-get-agent'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      agent_id:
+        simple: "657613730168123595"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: a2ad6c62-8a66-4a78-85d9-d65fd0d89fd8
+    type: regular
+    task:
+      id: a2ad6c62-8a66-4a78-85d9-d65fd0d89fd8
+      version: -1
+      name: Get Agent Processess
+      description: Retrieve running processes for a specific agent.
+      script: '|||sentinelone-agent-processes'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      agents_ids:
+        simple: "657613730168123595"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: d1082305-e9f6-4306-8015-01835a2896f6
+    type: regular
+    task:
+      id: d1082305-e9f6-4306-8015-01835a2896f6
+      version: -1
+      name: Get all groups
+      description: Gets the group data.
+      script: '|||sentinelone-get-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      group_id: {}
+      group_ids: {}
+      group_type: {}
+      is_default: {}
+      limit: {}
+      name: {}
+      query: {}
+      rank: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 73dbc8cf-91f3-4260-801f-90059dc3291e
+    type: regular
+    task:
+      id: 73dbc8cf-91f3-4260-801f-90059dc3291e
+      version: -1
+      name: Get threat summary
+      description: Get dashboard threat summary.
+      script: '|||sentinelone-threat-summary'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      group_ids:
+        simple: ${SentinelOne.Group.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 255b5108-7e45-415b-822a-a4967ddc450a
+    type: regular
+    task:
+      id: 255b5108-7e45-415b-822a-a4967ddc450a
+      version: -1
+      name: Mark as threat
+      description: Mark suspicious threats as threats
+      script: '|||sentinelone-mark-as-threat'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      target_scope:
+        simple: site
+      threat_ids:
+        simple: "513526418089756174"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 785,
+        "width": 1740,
+        "x": -10,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

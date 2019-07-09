@@ -14,7 +14,7 @@ def add_description(playbook):
     """
     for task_id, task in playbook.get("tasks", {}).items():
         if task.get("type") in ["start", "end", "title"]:
-            playbook["tasks"][task_id]["description"] = ""
+            playbook["tasks"][task_id]["task"]["description"] = ""
 
     return playbook
 
