@@ -271,7 +271,8 @@ def vulndb_get_vuln_by_vendor_and_product_name_command():
     vendor_name = demisto.args()['vendor_name']
     product_name = demisto.args()['product_name']
 
-    res = http_request(f'{API_URL}/vulnerabilities/find_by_vendor_and_product_name?vendor_name={vendor_name}&product_name={product_name}')
+    res = http_request(
+        f'{API_URL}/vulnerabilities/find_by_vendor_and_product_name?vendor_name={vendor_name}&product_name={product_name}')
 
     vulndb_vulnerability_results_to_demisto_results(res)
 
@@ -280,7 +281,8 @@ def vulndb_get_vuln_by_vendor_and_product_id_command():
     vendor_id = demisto.args()['vendor_id']
     product_id = demisto.args()['product_id']
 
-    res = http_request(f'{API_URL}/vulnerabilities/find_by_vendor_and_product_id?vendor_id={vendor_id}&product_id={product_id}')
+    res = http_request(
+        f'{API_URL}/vulnerabilities/find_by_vendor_and_product_id?vendor_id={vendor_id}&product_id={product_id}')
 
     vulndb_vulnerability_results_to_demisto_results(res)
 
@@ -305,6 +307,25 @@ def vulndb_get_vuln_by_cve_id_command():
     cve_id = demisto.args()['cve_id']
 
     res = http_request(f'{API_URL}/vulnerabilities/{cve_id}/find_by_cve_id')
+
+    vulndb_vulnerability_results_to_demisto_results(res)
+
+
+def vulndb_get_updates_by_dates_or_hours_command():
+    start_date = demisto.args().get('start_date')
+    end_date = demisto.args().get('end_date')
+    hours_ago = demisto.args().get('hours_ago')
+
+    if start_date:
+        url = f'{API_URL}/vulnerabilities/find_by_date?start_date={start_date}'
+        if end_date:
+            url += f'&end_date={end_date}'
+
+        res = http_request(url)
+    elif hours_ago:
+        res = http_request(f'{API_URL}/vulnerabilities/find_by_time?hours_ago={hours_ago}')
+    else:
+        return_error('Must provide either start date or hours ago.')
 
     vulndb_vulnerability_results_to_demisto_results(res)
 
@@ -354,6 +375,7 @@ def vulndb_get_version_command():
 
     vulndb_product_results_to_demisto_results(res)
 
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
@@ -380,4 +402,5 @@ elif demisto.command() == 'vulndb-get-product':
     vulndb_get_product_command()
 elif demisto.command() == 'vulndb-get-version':
     vulndb_get_version_command()
-
+elif demisto.command() == 'vulndb-get-updates-by-dates-or-hours':
+    vulndb_get_updates_by_dates_or_hours_command()
