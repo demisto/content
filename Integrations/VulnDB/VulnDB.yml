@@ -3,7 +3,7 @@ commonfields:
   id: VulnDB
   version: -1
 configuration:
-- defaultvalue: https://vulndb.cyberriskanalytics.com/
+- defaultvalue: https://vulndb.cyberriskanalytics.com/ # disable-secrets-detection
   display: Hostname, IP address, or server URL
   name: api_url
   required: true
@@ -29,7 +29,7 @@ description: Lists all of the security vulnerabilities for various products (OS,
 detaileddescription: |-
   The Authentication is done via Oauth2
   Provided details are client_id and client_secret which together provide the authentication key. The key is generated for every command execution.
-  For more details check this API docs https://vulndb.cyberriskanalytics.com/documentation/overview
+  For more details check this API docs.
 display: VulnDB
 name: VulnDB
 script:
