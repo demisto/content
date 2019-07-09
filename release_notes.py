@@ -583,7 +583,7 @@ def create_content_descriptor(version, asset_id, res, github_token):
 
     draft = get_release_notes_draft(github_token)
     if draft:
-        content_descriptor['releaseNotes'] = draft
+        content_descriptor['releaseNotes'] = draft.replace("xxxxx", asset_id)
 
     with open('content-descriptor.json', 'w') as outfile:
         json.dump(content_descriptor, outfile)
