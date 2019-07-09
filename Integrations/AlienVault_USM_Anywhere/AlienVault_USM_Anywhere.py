@@ -151,12 +151,12 @@ def parse_alarms(alarms_data):
             'RuleStrategy': alarm.get('rule_strategy'),
 
             'Source': {
-                'IPAddress': alarm['alarm_source_names'],
-                'Organization': alarm['alarm_source_organisations'],
-                'Country': alarm['alarm_source_countries'],
+                'IPAddress': alarm.get('alarm_source_names') or alarm.get('source_name'),
+                'Organization': alarm.get('alarm_source_organisations') or alarm.get('source_organisation'),
+                'Country': alarm.get('alarm_source_countries') or alarm.get('source_country'),
             },
             'Destination': {
-                'IPAddress': alarm['alarm_destination_names'],
+                'IPAddress': alarm.get('alarm_destination_names') or alarm.get('destination_name'),
             },
             'Event': events
         })

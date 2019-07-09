@@ -334,6 +334,10 @@
             "playbookID": "minemeld_test"
         },
         {
+            "integrations": "SentinelOne V2",
+            "playbookID": "SentinelOne Beta Test"
+        },
+        {
             "integrations": "InfoArmor VigilanteATI",
             "playbookID": "InfoArmorVigilanteATITest"
         },
@@ -1263,7 +1267,7 @@
         },
         {
             "playbookID": "Phishing v2 Test - Attachment",
-            "timeout": 600,
+            "timeout": 1200,
             "nightly": true,            
             "integrations": [
                 "EWS Mail Sender",
@@ -1275,7 +1279,7 @@
         },
         {
             "playbookID": "Phishing v2 Test - Inline",
-            "timeout": 500,
+            "timeout": 1200,
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
@@ -1644,6 +1648,11 @@
             "playbookID": "VMRay-Test"
         },
         {
+            "integrations": "PerceptionPoint",
+            "playbookID": "PerceptionPoint Test",
+            "fromversion": "4.1.0"
+        },
+        {
             "integrations": "AutoFocus V2",
             "playbookID": "AutoFocus V2 test"
         },
@@ -1672,7 +1681,6 @@
         "Cybereason Test": "Integration instance being disabled in the middle of test playbook (issue 17394)",
         "LogRhythmRest": "Unstable environment Adi is checking",
         "InfoArmorVigilanteATITest": "Test fails on verify context (issue 17358)",
-        "whois_test": "Test fails only when running in a build process but not manually (issue 17289)",
         "process_email_-_generic_-_test": "Fails due to missing data (issue 17283)",
         "Forescout-Test": "Should be skipped (issue 17016)",
         "Jask_Test": "Test failed due to missing data (issue 17245)",
@@ -1708,7 +1716,8 @@
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "old test, needs to check if relevant",
         "okta_test_playbook": "test failed (Issue 17041)",
         "Detonate File - FireEye AX - Test": "No instance",
-        "Cofense Triage Test": "Creds only works on demo4"
+        "Cofense Triage Test": "Creds only works on demo4",
+        "Intezer Testing": "Old test for old version of inteze"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1741,12 +1750,15 @@
         "XFE": "License expired",
         "RedLock": "Credentials and API problems (issue 15493)",
         "Salesforce": "User and password expired (issue 15901)",
+        "Zscaler": "License expired (issue 17784)",
         "RedCanary": "License expired",
         "LogRhythm": "Need to fix SOAP api",
         "ANYRUN": "No instance",
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "No instance",
         "Minerva Labs Anti-Evasion Platform": "No instance",
+        "GitHub": "no instance configured, also need to fix test",
+        "Phish.AI": "Unauthorized. will be re-branded soon as Cofense",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -1759,7 +1771,6 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
-        "Palo Alto Networks Cortex": "Changing the auth flow, will unskip when ready",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
@@ -1772,6 +1783,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "Whois": "Mocks does not support sockets",
         "Panorama": "Exception: Proxy process took to long to go up. https://circleci.com/gh/demisto/content/24826",
         "Image OCR": "Does not perform network traffic",
         "Server Message Block (SMB)": "Does not perform http communication",
@@ -1789,7 +1801,6 @@
         "AWS - S3": "Integration requires SSL",
         "Luminate": "Integration has no proxy checkbox",
         "Pwned": "Integration has no proxy checkbox",
-        "Gmail": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
         "Google BigQuery": "Integration has no proxy checkbox",
         "Cisco Umbrella Investigate": "Pending merge of branch proxy-unsecure-checks",
