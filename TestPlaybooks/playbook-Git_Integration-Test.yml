@@ -96,7 +96,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Git-Integration
+              simple: demisto_content_testing
       - - operator: isEqualString
           left:
             value:
@@ -193,7 +193,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Git-Integration
+              simple: demisto_content_testing
       - - operator: containsGeneral
           left:
             value:
@@ -216,22 +216,15 @@ tasks:
   "15":
     id: "15"
     taskid: 88aae2b8-28ad-4eac-890e-8a8c2a0beac6
-    type: regular
+    type: title
     task:
       id: 88aae2b8-28ad-4eac-890e-8a8c2a0beac6
       version: -1
-      name: closeInvestigation
+      name: Done
       description: Close the current incident
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
+      type: title
+      iscommand: false
       brand: Builtin
-    scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      id:
-        simple: ${incident.id}
     separatecontext: false
     view: |-
       {
@@ -251,11 +244,11 @@ tasks:
       id: 6032a275-7b29-4a60-8c19-13cb4d9ca5bb
       version: -1
       name: GitHub-create-issue
-      description: Creates an issue in GitHub
-      script: GitHub|||GitHub-create-issue
+      description: Creates an issue in GitHub.
+      script: '|||GitHub-create-issue'
       type: regular
       iscommand: true
-      brand: GitHub
+      brand: ""
     nexttasks:
       '#none#':
       - "25"
@@ -415,10 +408,10 @@ tasks:
       name: GitHub-get-download-count
       description: Returns the total amount of downloads over all the releases of
         the repository
-      script: GitHub|||GitHub-get-download-count
+      script: '|||GitHub-get-download-count'
       type: regular
       iscommand: true
-      brand: GitHub
+      brand: ""
     nexttasks:
       '#none#':
       - "22"
@@ -466,7 +459,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "5"
+              simple: "0"
     view: |-
       {
         "position": {
@@ -613,7 +606,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2095,
+        "height": 2065,
         "width": 1590,
         "x": 120,
         "y": -40
