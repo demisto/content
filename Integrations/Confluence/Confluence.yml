@@ -81,7 +81,7 @@ script:
   - name: confluence-list-spaces
     arguments:
     - name: limit
-      default: 25
+      defaultValue: 25
       description: Limit for the amount of spaces to return.
     - name: type
       auto: PREDEFINED
