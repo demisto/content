@@ -407,7 +407,6 @@ def endpoint_scan_result_command():
     return_outputs(md, context)
 
 
-
 def event_update_command():
     args = demisto.args()
     event_id = args.get('event_id')

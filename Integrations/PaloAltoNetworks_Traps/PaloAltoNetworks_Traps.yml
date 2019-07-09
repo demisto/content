@@ -55,6 +55,37 @@ script:
     - contextPath: Traps.Endpoint.Domain
       description: Endpoint domain
       type: date
+    - contextPath: Traps.Endpoint.Platform
+      description: The OS of the endpoint
+      type: String
+    - contextPath: Traps.Endpoint.Status
+      description: Endpoint status
+      type: String
+    - contextPath: Traps.Endpoint.IP
+      description: Endpoint IP
+      type: String
+    - contextPath: Traps.Endpoint.ComputerSid
+      type: String
+    - contextPath: Traps.Endpoint.IsCompromised
+      type: String
+    - contextPath: Traps.Endpoint.OsVersion
+      description: Endpoint OS versoin
+      type: String
+    - contextPath: Traps.Endpoint.OsProductType
+      description: Endpoint OS type
+      type: String
+    - contextPath: Traps.Endpoint.OsProductName
+      description: Endpoint OS name
+      type: String
+    - contextPath: Traps.Endpoint.Is64
+      description: Is the endpoint 64b or 32b
+      type: StringIsCompromised
+    - contextPath: Traps.Endpoint.LastSeen
+      description: Last active ping
+      type: String
+    - contextPath: Traps.Endpoint.LastUser
+      description: Last active user on the machine
+      type: String
   - arguments:
     - default: false
       description: Endpoint ID
@@ -89,6 +120,16 @@ script:
     description: Perform scan operation on specified endpoint.
     execution: false
     name: traps-endpoint-scan
+    outputs:
+    - contextPath: Traps.Scan.EndpointID
+      description: Endpoint ID
+      type: String
+    - contextPath: Traps.Scan.OperationID
+      description: Operation ID. Use this to retreive scan results.
+      type: String
+    - contextPath: Traps.Scan.Type
+      description: Operation type
+      type: String
   - arguments:
     - default: false
       description: Event ID
@@ -150,6 +191,13 @@ script:
     description: Blacklist specified hash.
     execution: false
     name: traps-hash-blacklist
+    outputs:
+    - contextPath: Traps.File.BlacklistStatus
+      description: blacklisted / none
+      type: String
+    - contextPath: Traps.File.MD5
+      description: File MD5
+      type: String
   - arguments:
     - default: false
       description: Hash ID (MD5)
@@ -161,6 +209,13 @@ script:
     description: Remove a given hash from blacklist
     execution: false
     name: traps-hash-blacklist-remove
+    outputs:
+    - contextPath: Traps.File.BlacklistStatus
+      description: blacklisted / none
+      type: String
+    - contextPath: Traps.File.MD5
+      description: File MD5
+      type: String
   - arguments:
     - default: false
       description: List of hash IDs (MD5)
@@ -172,6 +227,13 @@ script:
     description: Get blacklist status of guven hashes.
     execution: false
     name: traps-hashes-blacklist-status
+    outputs:
+    - contextPath: Traps.File.BlacklistStatus
+      description: blacklisted / none
+      type: String
+    - contextPath: Traps.File.MD5
+      description: File MD5
+      type: String
   - arguments:
     - default: false
       description: Event ID
@@ -183,6 +245,16 @@ script:
     description: Create quarantine entry for given event.
     execution: false
     name: traps-event-quarantine
+    outputs:
+    - contextPath: Traps.Quarantine.EventID
+      description: Event ID
+      type: String
+    - contextPath: Traps.Quarantine.OperationID
+      description: Operation ID
+      type: String
+    - contextPath: Traps.Quarantine.Type
+      description: Operation type
+      type: String
   - arguments:
     - default: false
       description: Endpoint ID
@@ -194,6 +266,16 @@ script:
     description: Isolate an endpoint.
     execution: false
     name: traps-endpoint-isolate
+    outputs:
+    - contextPath: Traps.Isolate.EndpointID
+      description: Endpoint ID
+      type: String
+    - contextPath: Traps.Isolate.OperationID
+      description: Operation ID
+      type: String
+    - contextPath: Traps.Isolate.Type
+      description: Operation type
+      type: String
   - arguments:
     - default: false
       description: Operation ID
@@ -205,6 +287,9 @@ script:
     description: Get result of event quarantine operation
     execution: false
     name: traps-event-quarantine-result
+    outputs:
+    - contextPath: Traps.QuarantineResult.FileHash
+      type: Unknown
   - arguments:
     - default: false
       description: Operation ID
