@@ -113,7 +113,7 @@ def vulndb_vulnerability_to_entry(vuln):
     }
 
 
-def vulndb_results_to_demisto_results(res):
+def vulndb_vulnerability_results_to_demisto_results(res):
     if 'error' in res:
         return_error(res['error'])
     else:
@@ -150,6 +150,54 @@ def vulndb_results_to_demisto_results(res):
             })
 
 
+def vulndb_vendor_to_entry(vendor):
+    return {
+        'Results': {
+            'Id': vendor.get('id', ''),
+            'Name': vendor.get('name', ''),
+            'ShortName': vendor.get('short_name', ''),
+            'VendorUrl': vendor.get('vendor_url', '')
+        }
+    }
+
+
+def vulndb_vendor_results_to_demisto_results(res):
+    if 'error' in res:
+        return_error(res['error'])
+    else:
+        if 'vendor' in res:
+            results = [res['vendor']]
+        elif 'results' in res:
+            results = res['results']
+        else:
+            demisto.results({
+                'Type': entryTypes['error'],
+                'Contents': res,
+                'ContentsFormat': formats['json']
+            })
+
+        for result in results:
+            ec = {
+                'VulnDB': vulndb_vendor_to_entry(result)
+            }
+
+            human_readable = tableToMarkdown(f'Result for vendor ID: {ec["VulnDB"]["Results"]["Id"]}', {
+                'ID': ec['VulnDB']['Results']['Id'],
+                'Name': ec['VulnDB']['Results']['Name'],
+                'Short Name': ec['VulnDB']['Results']['ShortName'],
+                'Vendor URL': ec['VulnDB']['Results']['VendorUrl']
+            })
+
+            demisto.results({
+                'Type': entryTypes['note'],
+                'Contents': res,
+                'ContentsFormat': formats['json'],
+                'HumanReadable': human_readable,
+                'HumanReadableFormat': formats['markdown'],
+                'EntryContext': ec
+            })
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -168,7 +216,7 @@ def vulndb_get_vuln_by_id_command():
                        headers={'Authorization': f'Bearer {get_oath_toekn()}'}
                        ).json()
 
-    vulndb_results_to_demisto_results(res)
+    vulndb_vulnerability_results_to_demisto_results(res)
 
 
 def vulndb_get_vuln_by_vendor_and_product_name_command():
@@ -177,7 +225,7 @@ def vulndb_get_vuln_by_vendor_and_product_name_command():
 
     res = http_request(f'{API_URL}/vulnerabilities/find_by_vendor_and_product_name?vendor_name={vendor_name}&product_name={product_name}')
 
-    vulndb_results_to_demisto_results(res)
+    vulndb_vulnerability_results_to_demisto_results(res)
 
 
 def vulndb_get_vuln_by_vendor_and_product_id_command():
@@ -186,7 +234,7 @@ def vulndb_get_vuln_by_vendor_and_product_id_command():
 
     res = http_request(f'{API_URL}/vulnerabilities/find_by_vendor_and_product_id?vendor_id={vendor_id}&product_id={product_id}')
 
-    vulndb_results_to_demisto_results(res)
+    vulndb_vulnerability_results_to_demisto_results(res)
 
 
 def vulndb_get_vuln_by_vendor_id_command():
@@ -194,7 +242,7 @@ def vulndb_get_vuln_by_vendor_id_command():
 
     res = http_request(f'{API_URL}/vulnerabilities/find_by_vendor_id?vendor_id={vendor_id}')
 
-    vulndb_results_to_demisto_results(res)
+    vulndb_vulnerability_results_to_demisto_results(res)
 
 
 def vulndb_get_vuln_by_product_id_command():
@@ -202,7 +250,7 @@ def vulndb_get_vuln_by_product_id_command():
 
     res = http_request(f'{API_URL}/vulnerabilities/find_by_product_id?product_id={product_id}')
 
-    vulndb_results_to_demisto_results(res)
+    vulndb_vulnerability_results_to_demisto_results(res)
 
 
 def vulndb_get_vuln_by_cve_id_command():
@@ -210,7 +258,23 @@ def vulndb_get_vuln_by_cve_id_command():
 
     res = http_request(f'{API_URL}/vulnerabilities/{cve_id}/find_by_cve_id')
 
-    vulndb_results_to_demisto_results(res)
+    vulndb_vulnerability_results_to_demisto_results(res)
+
+
+def vulndb_get_vendor_command():
+    vendor_id = demisto.args().get('vendor_id')
+    vendor_name = demisto.args().get('vendor_name')
+
+    if vendor_id is not None and vendor_name is not None:
+        return_error('Provide either vendor id or vendor name or neither, not both.')
+    elif vendor_id:
+        res = http_request(f'{API_URL}/vendors/{vendor_id}')
+    elif vendor_name:
+        res = http_request(f'{API_URL}/vendors/by_name?vendor_name={vendor_name}')
+    else:
+        res = http_request(f'{API_URL}/vendors')
+
+    vulndb_vendor_results_to_demisto_results(res)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -233,3 +297,6 @@ elif demisto.command() == 'vulndb-get-vuln-by-product-id':
     vulndb_get_vuln_by_product_id_command()
 elif demisto.command() == 'vulndb-get-vuln-by-cve-id':
     vulndb_get_vuln_by_cve_id_command()
+elif demisto.command() == 'vulndb-get-vendor':
+    vulndb_get_vendor_command()
+
