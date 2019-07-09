@@ -140,7 +140,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Git-Integration
+              simple: demisto_content_testing
       - - operator: isEqualString
           left:
             value:
@@ -221,7 +221,7 @@ tasks:
       id: 88aae2b8-28ad-4eac-890e-8a8c2a0beac6
       version: -1
       name: Done
-      description: Close the current incident
+      description: Done
       type: title
       iscommand: false
       brand: Builtin
@@ -279,17 +279,17 @@ tasks:
       version: -1
       name: GitHub-search-issues
       description: Searches issues matching a given query
-      script: GitHub|||GitHub-search-issues
+      script: '|||GitHub-search-issues'
       type: regular
       iscommand: true
-      brand: GitHub
+      brand: ""
     nexttasks:
       '#none#':
       - "7"
     scriptarguments:
       limit: {}
       query:
-        simple: '"user:roysagi label:newbug"'
+        simple: '"user:yaakovi label:newbug"'
     separatecontext: false
     view: |-
       {
@@ -310,10 +310,10 @@ tasks:
       version: -1
       name: GitHub-update-issue
       description: Updates the parameters of a given issue
-      script: GitHub|||GitHub-update-issue
+      script: '|||GitHub-update-issue'
       type: regular
       iscommand: true
-      brand: GitHub
+      brand: ""
     nexttasks:
       '#none#':
       - "23"
@@ -346,10 +346,10 @@ tasks:
       version: -1
       name: GitHub-list-all-issues
       description: Lists all issues that the user can see
-      script: GitHub|||GitHub-list-all-issues
+      script: '|||GitHub-list-all-issues'
       type: regular
       iscommand: true
-      brand: GitHub
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
@@ -377,10 +377,10 @@ tasks:
       version: -1
       name: GitHub-close-issue
       description: closes an existing issue
-      script: GitHub|||GitHub-close-issue
+      script: '|||GitHub-close-issue'
       type: regular
       iscommand: true
-      brand: GitHub
+      brand: ""
     nexttasks:
       '#none#':
       - "24"
@@ -451,7 +451,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "17519182"
+              simple: "18458347"
       - - operator: isEqualNumber
           left:
             value:
