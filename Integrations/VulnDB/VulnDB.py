@@ -341,6 +341,19 @@ def vulndb_get_product_command():
     vulndb_product_results_to_demisto_results(res)
 
 
+def vulndb_get_version_command():
+    product_id = demisto.args().get('product_id')
+    product_name = demisto.args().get('product_name')
+
+    if product_id is not None and product_name is not None:
+        return_error('Provide either product id or vendor name, not both.')
+    elif product_id:
+        res = http_request(f'{API_URL}/versions/by_product_id?product_id={product_id}')
+    elif product_name:
+        res = http_request(f'{API_URL}/versions/by_product_name?product_name={product_name}')
+
+    vulndb_product_results_to_demisto_results(res)
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
@@ -365,4 +378,6 @@ elif demisto.command() == 'vulndb-get-vendor':
     vulndb_get_vendor_command()
 elif demisto.command() == 'vulndb-get-product':
     vulndb_get_product_command()
+elif demisto.command() == 'vulndb-get-version':
+    vulndb_get_version_command()
 
