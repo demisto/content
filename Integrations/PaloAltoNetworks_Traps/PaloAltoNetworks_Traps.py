@@ -72,7 +72,7 @@ OUTPUTS = {
         'BlacklistStatus': 'status'
     },
     'event_quarantine_result': {
-        'FileHash': 'fileHash',
+        'MD5': 'fileHash',
         'FilePath': 'filePath'
     },
     'endpoint_scan_result': {
