@@ -11,7 +11,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: username
+- display: Username
   name: credentials
   defaultvalue: ""
   type: 9
@@ -23,7 +23,7 @@ configuration:
   required: false
 - display: Trust any certificate (not secure)
   name: unsecure
-  defaultvalue: "true"
+  defaultvalue: "false"
   type: 8
   required: false
 script:
@@ -79,7 +79,22 @@ script:
       description: Content Body
     description: Create Confluence content for a given Space
   - name: confluence-list-spaces
-    arguments: []
+    arguments:
+    - name: limit
+      default: 25
+      description: Limit for the amount of spaces to return.
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - global
+      - personal
+      description: Filter the list of spaces returned by type (global, personal)
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - current
+      - archived
+      description: filter the list of spaces returned by status (current, archived)
     outputs:
     - contextPath: Confluence.Space.ID
       description: Space ID
@@ -168,6 +183,7 @@ script:
         form of SearchContext
     - name: expand
       description: A comma separated list of properties to expand on the content
+      defaultValue: version
     - name: start
       description: The start point of the collection to return
     - name: limit
@@ -181,6 +197,10 @@ script:
       description: Content Title
     - contextPath: Confluence.Content.Type
       description: Content Type
+    - contextPath: Confluence.Content.Version
+      description: Content version
     description: 'Fetch a list of content using the Confluence Query Language (CQL).
       See: https://developer.atlassian.com/server/confluence/advanced-searching-using-cql/'
   runonce: false
+tests:
+  - No test - the test requires personal credentials to the confluence account

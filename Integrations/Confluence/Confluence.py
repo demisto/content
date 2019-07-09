@@ -8,12 +8,6 @@ import json
 
 requests.packages.urllib3.disable_warnings()
 
-if not demisto.params()['proxy']:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-
 """
 GLOBAL VARIABLES
 """
@@ -21,7 +15,8 @@ GLOBAL VARIABLES
 SERVER = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
 BASE_URL = SERVER + '/rest/api'
 VERIFY_CERTIFICATE = not demisto.params().get('unsecure', False)
-#Support Credentials
+
+# Support Credentials
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 HEADERS = {
@@ -33,13 +28,14 @@ HEADERS = {
 Helper Functions
 """
 
-def http_request(method, full_url, data=None, params=None):
+
+def http_request(method, full_url, data=None, params=None, is_test=False):
     try:
         res = requests.request(
             method,
             full_url,
             verify=VERIFY_CERTIFICATE,
-            auth=(USERNAME,PASSWORD),
+            auth=(USERNAME, PASSWORD),
             data=data,
             headers=HEADERS,
             params=params
@@ -49,9 +45,15 @@ def http_request(method, full_url, data=None, params=None):
 
     # Handle error responses gracefully
     if res.status_code < 200 or res.status_code >= 400:
-        return_error('Failed to execute command.\nURL: {}, Status Code: {}, Response: {}'.format(full_url,
+        if is_test:
+            return res
+
+        return_error('Failed to execute command.\nURL: {}, Status Code: {}\nResponse: {}'.format(full_url,
                                                                                                  res.status_code,
                                                                                                  res.text))
+
+    if is_test:
+        return res
     try:
         return res.json()
 
@@ -62,9 +64,11 @@ def http_request(method, full_url, data=None, params=None):
 """
 Confluence Commands
 """
+
+
 def update_content(page_id, content_title, space_key, content_body, content_type, content_version):
     content_data = {}
-    #Populate the content_data dictionary
+    # Populate the content_data dictionary
     content_data['type'] = content_type
     if space_key is not None:
         content_data['space'] = {"key": space_key}
@@ -74,7 +78,7 @@ def update_content(page_id, content_title, space_key, content_body, content_type
     content_data['body'] = {
         "storage": {
             "value": content_body,
-            "representation":"storage"
+            "representation": "storage"
         }
     }
     content_data['version'] = {
@@ -83,9 +87,10 @@ def update_content(page_id, content_title, space_key, content_body, content_type
 
     full_url = BASE_URL + '/content/' + page_id
 
-    res = http_request('PUT',full_url, json.dumps(content_data))
+    res = http_request('PUT', full_url, json.dumps(content_data))
 
     return res
+
 
 def update_content_command():
     """
@@ -101,10 +106,10 @@ def update_content_command():
 
     raw_content = update_content(page_id, content_title, space_key, content_body, content_type, content_version)
     content = {
-        "ID": raw_content['results']['id'],
-        "Title": raw_content['results']['title'],
-        "Type": raw_content['results']['type'],
-        "Body": raw_content['body']['view']['value']
+        "ID": page_id,
+        "Title": content_title,
+        "Type": content_type,
+        "Body": content_body
     }
 
     # create markdown table string from context
@@ -122,28 +127,28 @@ def update_content_command():
         }
     })
 
-def create_content(content_type, content_title, space_key, content_body):
 
-    #Populate the content_data dictionary
+def create_content(content_type, content_title, space_key, content_body):
     content_data = {
         "type": content_type,
         "space": {
             "key": space_key
-            },
+        },
         "title": content_title,
         "body": {
             "storage": {
                 "value": content_body,
                 "representation": "storage"
-                }
             }
         }
+    }
 
     full_url = BASE_URL + '/content'
 
     res = http_request('POST', full_url, json.dumps(content_data))
 
     return res
+
 
 def create_content_command():
     """
@@ -158,9 +163,9 @@ def create_content_command():
 
     content = {
         "ID": raw_content['id'],
-        "Title": raw_content['title'],
-        "Type": raw_content['type'],
-        "Body": raw_content['body']['view']['value']
+        "Title": content_title,
+        "Type": content_type,
+        "Body": content_body
     }
 
     # create markdown table string from context
@@ -178,17 +183,16 @@ def create_content_command():
         }
     })
 
-def create_space(space_description, space_key, space_name):
 
-    #Populate the space_data dictionary
+def create_space(space_description, space_key, space_name):
     space_data = {
         "type": "global",
         "description": {
             "plain": {
                 "value": space_description,
                 "representation": "plain"
-                }
-            },
+            }
+        },
         "name": space_name,
         "key": space_key
     }
@@ -198,6 +202,7 @@ def create_space(space_description, space_key, space_name):
     res = http_request('POST', full_url, json.dumps(space_data))
 
     return res
+
 
 def create_space_command():
     """
@@ -230,13 +235,13 @@ def create_space_command():
         }
     })
 
-def get_content(key, title):
 
-    #Populate the params dictionary
+def get_content(key, title):
     params = {
         "title": title,
-        "spaceKey": key
-        }
+        "spaceKey": key,
+        "expand": "body.view,version"
+    }
 
     full_url = BASE_URL + '/content'
 
@@ -244,14 +249,15 @@ def get_content(key, title):
 
     return res
 
+
 def get_content_command():
     """
     Confluence Get Content method
     """
     space_key = demisto.args().get('key')
     content_title = demisto.args().get('title')
-
     raw_content = get_content(space_key, content_title)
+
     content_list = []
     for obj in raw_content['results']:
         content = {
@@ -263,12 +269,13 @@ def get_content_command():
             content["Version"] = obj['version']['number']
         if obj.get('body') is not None:
             content["Body"] = obj['body']['view']['value']
+
         content_list.append(content)
 
     # create markdown table string from context
     # the outputs must be array in order the tableToMarkdown to work
     # headers must be array of strings (which column should appear in the table)
-    md = tableToMarkdown('Content', content_list, ['ID', 'Title', 'Type', 'Version'])
+    md = tableToMarkdown('Content', content_list, ['ID', 'Title', 'Type', 'Version', 'Body'])
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -280,17 +287,20 @@ def get_content_command():
         }
     })
 
-def search_content(cql,cql_context,expand,start,limit):
-    params = {}
-    #Populate the params dictionary
+
+def search_content(cql, cql_context, expand, start, limit):
+    params = {
+        'limit': limit,
+        'cql': cql
+    }
     if cql_context is not None:
         params['cqlcontext'] = cql_context
+
     if expand is not None:
         params['expand'] = expand
+
     if start is not None:
         params['start'] = start
-    params['limit'] = limit
-    params['cql'] = cql
 
     full_url = BASE_URL + '/content/search'
 
@@ -311,16 +321,18 @@ def search_content_command():
     start = demisto.args().get('start')
     limit = demisto.args().get('limit')
 
-    raw_search = search_content(cql,cql_context,expand,start,limit)
+    raw_search = search_content(cql, cql_context, expand, start, limit)
 
     searches = []
     for result in raw_search['results']:
         search = {}
+
         search['ID'] = result['id']
         search['Title'] = result['title']
         search['Type'] = result['type']
         if result.get('version') is not None:
             search['Version'] = result['version']['number']
+
         searches.append(search)
 
     # create markdown table string from context
@@ -338,23 +350,42 @@ def search_content_command():
         }
     })
 
-def list_spaces():
+
+def list_spaces(limit, status, space_type):
     full_url = BASE_URL + '/space'
-    res = http_request('GET', full_url)
+
+    params = {
+        'limit': limit
+    }
+
+    if status:
+        params['status'] = status
+
+    if space_type:
+        params['type'] = space_type
+
+    res = http_request('GET', full_url, params=params)
 
     return res
+
 
 def list_spaces_command():
     """
     Confluence list Spaces method
     """
-    space_list = list_spaces()
+    limit = demisto.args().get('limit', 25)
+    status = demisto.args().get('status')
+    space_type = demisto.args().get('type')
+    space_list = list_spaces(limit, status, space_type)
+
     spaces = []
     for raw_space in space_list['results']:
         space = {}
+
         space['ID'] = raw_space['id']
         space['Key'] = raw_space['key']
         space['Name'] = raw_space['name']
+
         spaces.append(space)
 
     # create markdown table string from context
@@ -372,15 +403,17 @@ def list_spaces_command():
         }
     })
 
+
 def delete_content(content_id):
 
     full_url = BASE_URL + '/content/' + content_id
-    res = http_request('DELETE', full_url)
+    http_request('DELETE', full_url, is_test=True)
     result = {
         "Results": "Successfully Deleted Content ID " + content_id,
         "ID": content_id
-        }
+    }
     return result
+
 
 def delete_content_command():
     """
@@ -403,46 +436,55 @@ def delete_content_command():
         'HumanReadable': md,
         'EntryContext': {
             'Confluence.Content(val.ID == obj.ID)': deleted_content
-            }
-        })
+        }
+    })
+
 
 def test():
     full_url = BASE_URL + '/user/current'
-    res = http_request('GET', full_url)
+    res = http_request('GET', full_url, is_test=True)
 
     if not res:
-        return_error('Test failed. Check URL and Username/Password.\nURL: {}, Status Code: {}, Response: {}'.format(
+        return_error('Test failed. \nCheck URL and Username/Password.\nURL: {}, Status Code: {}, Response: {}'.format(
             full_url, res.status_code, res.text))
 
     demisto.results('ok')
+
 
 """
 CODE EXECUTION STARTS HERE
 
 demisto.command() returns the name of the command which executed now
 """
-LOG('command is %s' % (demisto.command(), ))
+LOG('Confluence integration is executing the command %s' % (demisto.command(), ))
 try:
+    handle_proxy()
     if demisto.command() == 'test-module':
         """
         demisto.command() will return 'test-module' when the Test button in integration page clicked
         """
         test()
+
     elif demisto.command() == 'confluence-create-space':
         create_space_command()
+
     elif demisto.command() == 'confluence-create-content':
         create_content_command()
+
     elif demisto.command() == 'confluence-get-content':
         get_content_command()
+
     elif demisto.command() == 'confluence-list-spaces':
         list_spaces_command()
+
     elif demisto.command() == 'confluence-delete-content':
         delete_content_command()
+
     elif demisto.command() == 'confluence-update-content':
         update_content_command()
+
     elif demisto.command() == 'confluence-search-content':
         search_content_command()
-except Exception, e:
-    LOG(e.message)
-    LOG.print_log()
-    raise
+
+except Exception as e:
+    return_error(str(e))
