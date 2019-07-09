@@ -71,6 +71,11 @@ configuration:
   defaultvalue: "600"
   type: 0
   required: false
+- display: Time Zone
+  name: timeZone
+  defaultvalue: UTC
+  type: 0
+  required: false
 script:
   script: |
     var server = params.url.replace(/[\/]+$/, '') + '/' + params.apiVersion + '/';
@@ -89,7 +94,6 @@ script:
             params.insecure,
             params.useproxy
         );
-
         if (result.StatusCode < 200 || result.StatusCode > 299) {
             var errObj;
             try {
@@ -114,7 +118,7 @@ script:
         return {body: result.Body, obj: obj, statusCode: result.StatusCode, cookies: result.Cookies};
     };
 
-    var search = function(query, from, to, limit, offset, timezone, maxTimeToWaitForResults, sleep) {
+    var search = function(query, from, to, limit, offset, timezone, maxTimeToWaitForResults, byReceiptTime, sleep) {
         var p = {query: query};
         if (from) {
             p.from = from;
@@ -124,6 +128,9 @@ script:
         }
         if (timezone) {
             p.timeZone = timezone;
+        }
+        if (byReceiptTime) {
+            p.byReceiptTime = byReceiptTime;
         }
         // Create the job
         var res = doReq('POST', 'search/jobs', p, null);
@@ -173,7 +180,7 @@ script:
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
-            doReq('GET', 'collectors', {limit: '1'}, null);
+            doReq('GET', 'collectors', {limit: '3'}, null);
             return 'ok';
         case 'fetch-incidents':
             if (!params.fetchQuery) {
@@ -185,7 +192,7 @@ script:
                 // First time, retrieve events from the last 10 min
                 lastRun = {time: now - 10 * 60 * 1000};
             }
-            var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, 'UTC', a2i(params.maxTimeout, 180),
+            var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, params.timeZone, a2i(params.maxTimeout, 180), false,
                 a2i(params.sleepBetweenChecks, defaultSleep));
             var incidents = [];
             if (s.messages) {
@@ -217,7 +224,7 @@ script:
             }
             var headers = 'headers' in args ? argToList(args.headers) : undefined;
             var s = search(query, args.from, args.to, a2i(args.limit, defaultLimit), a2i(args.offset, 0), args.timezone,
-                a2i(args.maxTimeToWaitForResults, defaultSearchTimeout) * 60, a2i(params.sleepBetweenChecks, defaultSleep));
+                a2i(args.maxTimeToWaitForResults, defaultSearchTimeout) * 60, args.byReceiptTime, a2i(params.sleepBetweenChecks, defaultSleep));
             var md = '';
             var ec = {};
             if (s.messages && s.messages.length > 0) {
@@ -270,6 +277,14 @@ script:
     - name: headers
       description: Table's headers to be shown by order given as comma-separated values,
         e.g. _blockid,_collector,_format
+    - name: byReceiptTime
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Define as "true" to run the search using receipt time. By default,
+        searches do not run by receipt time.
+      defaultValue: "false"
     outputs:
     - contextPath: Search.Messages
       description: The array of raw message objects
@@ -277,5 +292,6 @@ script:
       description: The array of aggregate records
     description: Search SumoLogic for matching records to the given query
   isfetch: true
+  runonce: false
 tests:
-  - No test
+  - No tests
