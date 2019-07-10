@@ -1116,7 +1116,7 @@ def move_item(item_id, target_folder_path, target_mailbox=None, is_public=None):
     is_public = is_default_folder(target_folder_path, is_public)
     target_folder = get_folder_by_path(account, target_folder_path, is_public)
     item = get_item_from_mailbox(account, item_id)
-    if isinstance(item, ErrorInvalidIdMalformed):
+    if isinstance(item, ErrorInvalidIdMalformed):  # pylint: disable=E1101
         raise Exception("Item not found")
     item.move(target_folder)
     move_result = {
@@ -1244,7 +1244,7 @@ def recover_soft_delete_item(message_ids, target_folder_path="Inbox", target_mai
     recovered_messages = []
     if type(message_ids) != list:
         message_ids = message_ids.split(",")
-    items_to_recover = account.recoverable_items_deletions.filter(
+    items_to_recover = account.recoverable_items_deletions.filter(  # pylint: disable=E1101
         message_id__in=message_ids).all()  # pylint: disable=E1101
     if len(items_to_recover) != len(message_ids):
         raise Exception("Some message ids are missing in recoverable items directory")
@@ -1292,7 +1292,7 @@ def get_contacts(limit, target_mailbox=None):
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     contacts = []
     count = 0
-    for contact in account.contacts.all():
+    for contact in account.contacts.all():  # pylint: disable=E1101
         if count >= limit:
             break
         contacts.append(parse_contact(contact))
@@ -1343,7 +1343,7 @@ def find_folders(target_mailbox=None, is_public=None):
     for f in root.walk():  # pylint: disable=E1101
         folder = folder_to_context_entry(f)
         folders.append(folder)
-    folders_tree = root.tree()
+    folders_tree = root.tree()  # pylint: disable=E1101
 
     return {
         'Type': entryTypes['note'],
