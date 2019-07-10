@@ -37,8 +37,9 @@ class WordParser:
             self.file_type = file.get("Type")
 
     def convert_doc_to_docx(self):
+        # Requires office-utils docker image
         subprocess.check_output(
-            ['soffice', '--headless', '--convert-to', 'docx', self.file_path])  # Requires office-utils docker image
+            ['export HOME=/tmp && soffice', '--headless', '--convert-to', 'docx', self.file_path])
         output_file_name = self.file_name[0:self.file_name.rfind('.')] + '.docx'
         self.file_path = self.file_path + ".docx"
         with open(self.file_path, 'rb') as f:
