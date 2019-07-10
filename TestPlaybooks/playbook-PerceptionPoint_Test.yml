@@ -1,0 +1,360 @@
+id: PerceptionPoint Test
+version: 27
+name: PerceptionPoint Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3000b795-d4b5-49ce-8191-be05333d4991
+    type: start
+    task:
+      id: 3000b795-d4b5-49ce-8191-be05333d4991
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: c7da933a-ea1a-413f-89cc-e16fd3c4f12a
+    type: regular
+    task:
+      id: c7da933a-ea1a-413f-89cc-e16fd3c4f12a
+      version: -1
+      name: Fetch Incidents
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      add_to_context:
+        simple: "true"
+      brand_name:
+        simple: PerceptionPoint
+      error_msg_in_incident: {}
+      expect_data: {}
+      instance_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: b283e190-9aba-4409-8004-fdcd59dff95d
+    type: condition
+    task:
+      id: b283e190-9aba-4409-8004-fdcd59dff95d
+      version: -1
+      name: Check if incident exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FetchedIncidents
+            iscontext: true
+    - label: None
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: FetchedIncidents
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 9d4b53b8-fcc7-4a5e-8d71-aae19f1c0e01
+    type: regular
+    task:
+      id: 9d4b53b8-fcc7-4a5e-8d71-aae19f1c0e01
+      version: -1
+      name: Incidents were not fetched
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: The incidents were not fetched
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 91fade4a-75bf-4ff1-81ff-61871bba6ead
+    type: regular
+    task:
+      id: 91fade4a-75bf-4ff1-81ff-61871bba6ead
+      version: -1
+      name: Release the email
+      script: '|||pp-release-email'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      scan_id:
+        simple: "80052041"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: f4aa3ec3-9ccb-4ee6-8b1d-c6da48c423c6
+    type: regular
+    task:
+      id: f4aa3ec3-9ccb-4ee6-8b1d-c6da48c423c6
+      version: -1
+      name: Fetched incidents
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      value:
+        simple: Fetched incidents successfully
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 4e5aadc4-4072-43c8-8b6f-4a8d484f6883
+    type: regular
+    task:
+      id: 4e5aadc4-4072-43c8-8b6f-4a8d484f6883
+      version: -1
+      name: Get relese-email result
+      description: commands.local.cmd.get.entry
+      script: Builtin|||getEntry
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      extend-context:
+        simple: ReleseEmailResult=
+      id:
+        simple: ${lastCompletedTaskEntries}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: a8cfbfdf-fbc5-4bff-83e9-1cc845af9843
+    type: condition
+    task:
+      id: a8cfbfdf-fbc5-4bff-83e9-1cc845af9843
+      version: -1
+      name: Success?
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: PP.Released
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: 92191202-1c83-4e82-813a-c92fec63ca70
+    type: regular
+    task:
+      id: 92191202-1c83-4e82-813a-c92fec63ca70
+      version: -1
+      name: Send mail
+      description: |-
+        Send an email with the specified parameters.
+        Attachments are provided as a comma-separated list of entry IDs.
+        Example usage: !SendEmail subject="File from war room" body="Please see the attached file. --DBot" to=jane@acme.com cc=john@acme.com attachIDs=89@3,46@3
+      scriptName: SendEmail
+      type: regular
+      iscommand: false
+      brand: Mail Sender (New)
+    scriptarguments:
+      attachIDs: {}
+      bcc: {}
+      body:
+        simple: playbook failed
+      cc: {}
+      htmlBody: {}
+      noteEntryID: {}
+      replyTo: {}
+      subject:
+        simple: fail playbook
+      to:
+        simple: yotam.tayeb@perception-point.io  #disable-secrets-detection
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 1435
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: a06c3013-1ec5-45aa-818c-072e659e84a1
+    type: regular
+    task:
+      id: a06c3013-1ec5-45aa-818c-072e659e84a1
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: a5c29f41-feae-46a0-8e0f-fa7aeeaf7ca1
+    type: title
+    task:
+      id: a5c29f41-feae-46a0-8e0f-fa7aeeaf7ca1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 245,
+          "y": 1435
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1480,
+        "width": 1045,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
