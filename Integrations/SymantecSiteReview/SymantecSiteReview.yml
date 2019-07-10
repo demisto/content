@@ -19,7 +19,7 @@ configuration:
   required: false
   type: 8
 description: Symantec Site Review (Bluecoat)
-display: Symantec Site Review
+display: Symantec Site Review (deprecated)
 name: Symantec Site Review
 script:
   commands:
@@ -30,7 +30,7 @@ script:
       name: url
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Submits a URL to Symantec WebPulse Site for analysis.
     execution: false
     name: symantec-site-lookup
@@ -62,7 +62,7 @@ script:
     - contextPath: DBotScore.Indicator
       description: Indicator for which CheckPhish tested.
       type: String
-  - deprecated: false
+  - deprecated: true
     description: Returns threat risk-level descriptions.
     execution: false
     name: symantec-site-list-risklevels
@@ -74,3 +74,4 @@ script:
   runonce: false
   script: '-'
   type: python
+deprecated: true
