@@ -902,3 +902,5 @@ script:
     description: Get Zendesk Help Center article
   isfetch: true
 fromversion: 3.5.0
+tests:
+  - No test - tested manually
