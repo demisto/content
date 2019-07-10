@@ -65,8 +65,6 @@ mapping:
     - type: str
   runonce:
     type: bool
-  releaseNotes:
-    type: str
   tests:
     type: seq
     sequence:
