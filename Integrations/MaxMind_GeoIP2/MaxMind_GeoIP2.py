@@ -75,9 +75,9 @@ def create_map_entry(lat, lng):
 
 
 def format_results(res_json):
-    hr = defaultdict()
-    maxmind_ec = defaultdict(lambda: defaultdict(int))
-    ip_ec = defaultdict(lambda: defaultdict(int))
+    hr = defaultdict()  # type: dict
+    maxmind_ec = defaultdict(lambda: defaultdict(int))  # type: dict
+    ip_ec = defaultdict(lambda: defaultdict(int))  # type: dict
     if 'continent' in res_json:
         continent = res_json['continent']
         hr['Continent'] = continent['names']['en']
