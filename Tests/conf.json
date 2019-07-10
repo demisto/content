@@ -334,6 +334,10 @@
             "playbookID": "minemeld_test"
         },
         {
+            "integrations": "SentinelOne V2",
+            "playbookID": "SentinelOne Beta Test"
+        },
+        {
             "integrations": "InfoArmor VigilanteATI",
             "playbookID": "InfoArmorVigilanteATITest"
         },
@@ -1677,7 +1681,6 @@
         "Cybereason Test": "Integration instance being disabled in the middle of test playbook (issue 17394)",
         "LogRhythmRest": "Unstable environment Adi is checking",
         "InfoArmorVigilanteATITest": "Test fails on verify context (issue 17358)",
-        "whois_test": "Test fails only when running in a build process but not manually (issue 17289)",
         "process_email_-_generic_-_test": "Fails due to missing data (issue 17283)",
         "Forescout-Test": "Should be skipped (issue 17016)",
         "Jask_Test": "Test failed due to missing data (issue 17245)",
@@ -1754,6 +1757,7 @@
         "Cisco Spark": "No instance",
         "Minerva Labs Anti-Evasion Platform": "No instance",
         "GitHub": "no instance configured, also need to fix test",
+        "Phish.AI": "Unauthorized. will be re-branded soon as Cofense",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -1766,7 +1770,6 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
-        "Palo Alto Networks Cortex": "Changing the auth flow, will unskip when ready",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
@@ -1779,6 +1782,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "Whois": "Mocks does not support sockets",
         "Panorama": "Exception: Proxy process took to long to go up. https://circleci.com/gh/demisto/content/24826",
         "Image OCR": "Does not perform network traffic",
         "Server Message Block (SMB)": "Does not perform http communication",
