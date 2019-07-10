@@ -25,7 +25,7 @@ configuration:
   type: 8
   required: false
 - display: Trust any certificate (unsecure)
-  name: insecure
+  name: insecure_new
   defaultvalue: ""
   type: 8
   required: false
@@ -57,7 +57,8 @@ script:
     APIKEY = demisto.params().get('apikey')
     ACCOUNT_ID = demisto.params().get('account')
     MODE = demisto.params().get('mode')
-    INSECURE = demisto.params().get('insecure')
+    INSECURE = demisto.params().get('insecure', None) if demisto.params().get('insecure', None) else \
+        not demisto.params().get('insecure_new')  # Backward compatibility issue, the old logic of insecure was reversed
     PROXY = demisto.params().get('proxy')
     API_VERSION = 'geoip/v2.1'
 
