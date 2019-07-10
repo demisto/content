@@ -1244,7 +1244,8 @@ def recover_soft_delete_item(message_ids, target_folder_path="Inbox", target_mai
     recovered_messages = []
     if type(message_ids) != list:
         message_ids = message_ids.split(",")
-    items_to_recover = account.recoverable_items_deletions.filter(message_id__in=message_ids).all()
+    items_to_recover = account.recoverable_items_deletions.filter(
+        message_id__in=message_ids).all()  # pylint: disable=E1101
     if len(items_to_recover) != len(message_ids):
         raise Exception("Some message ids are missing in recoverable items directory")
     for item in items_to_recover:
@@ -1339,7 +1340,7 @@ def find_folders(target_mailbox=None, is_public=None):
         if is_public:
             root = account.public_folders_root
     folders = []
-    for f in root.walk():
+    for f in root.walk():  # pylint: disable=E1101
         folder = folder_to_context_entry(f)
         folders.append(folder)
     folders_tree = root.tree()
@@ -1555,7 +1556,7 @@ def test_module():
         global IS_TEST_MODULE
         IS_TEST_MODULE = True
         account = get_account(ACCOUNT_EMAIL)
-        if not account.root.effective_rights.read:
+        if not account.root.effective_rights.read:  # pylint: disable=E1101
             raise Exception("Success to authenticate, but user has no permissions to read from the mailbox. "
                             "Need to delegate the user permissions to the mailbox - "
                             "please read integration documentation and follow the instructions")
