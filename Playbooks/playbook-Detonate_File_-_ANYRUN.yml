@@ -16,7 +16,7 @@ tasks:
       id: d8a91f9c-40f6-48f2-8dd2-1c7e59b6abdb
       version: -1
       name: ""
-      description: Detonates a file using HybridAnalysis
+      description: Detonates a file using ANYRUN
       iscommand: false
       brand: ""
     nexttasks:
@@ -136,7 +136,7 @@ tasks:
       id: 93fac7de-168e-4b60-8172-1d0d8cc46702
       version: -1
       name: Done
-      description: Detonates a file using HybridAnalysis
+      description: Detonates a file using ANYRUN
       type: title
       iscommand: false
       brand: ""
