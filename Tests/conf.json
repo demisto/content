@@ -28,7 +28,13 @@
         },
         {
             "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test"
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_dev"
+        },
+        {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_prod"
         },
         {
             "integrations": "Symantec Management Center",
@@ -328,6 +334,10 @@
             "playbookID": "minemeld_test"
         },
         {
+            "integrations": "SentinelOne V2",
+            "playbookID": "SentinelOne Beta Test"
+        },
+        {
             "integrations": "InfoArmor VigilanteATI",
             "playbookID": "InfoArmorVigilanteATITest"
         },
@@ -362,6 +372,10 @@
             "integrations": "Threat Grid",
             "playbookID": "ThreatGridTest",
             "timeout": 600
+        },
+        {
+            "integrations": "Symantec Site Review",
+            "playbookID": "Symantec Site Review Test"
         },
         {
             "integrations": [
@@ -462,6 +476,10 @@
             "playbookID": "Wildfire Test"
         },
         {
+            "integrations": "WildFire-v2",
+            "playbookID": "Detonate URL - WildFire-v2 - Test"
+        },
+        {
             "integrations": "GRR",
             "playbookID": "grr_test",
             "nightly": true
@@ -537,6 +555,9 @@
             "timeout": 700
         },
         {
+            "playbookID": "stripChars - Test"
+        },
+        {
             "integrations": "McAfee Advanced Threat Defense",
             "playbookID": "Test Playbook McAfee ATD Upload File"
         },
@@ -578,11 +599,17 @@
             "timeout": 240
         },
         {
+            "playbookID": "GetIndicatorDBotScore Test"
+        },
+        {
             "integrations": "EWS Mail Sender",
             "playbookID": "EWS Mail Sender Test"
         },
         {
-            "integrations": "EWS Mail Sender",
+            "integrations": [
+                "EWS Mail Sender",
+                "Rasterize"
+            ],
             "playbookID": "EWS Mail Sender Test 2"
         },
         {
@@ -614,6 +641,18 @@
         {
             "integrations": "McAfee ESM-v10",
             "instance_names": "v10.2.0",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
+        },
+        {
+            "integrations": "McAfee ESM-v10",
+            "instance_names": "v10.3.0",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
+        },
+        {
+            "integrations": "McAfee ESM-v10",
+            "instance_names": "v11.1.3",
             "playbookID": "McAfeeESMTest",
             "timeout": 500
         },
@@ -818,7 +857,7 @@
         {
             "integrations": "urlscan.io",
             "playbookID": "urlscan_malicious_Test",
-            "timeout": 300
+            "timeout": 500
         },
         {
             "integrations": "EWS v2",
@@ -881,7 +920,13 @@
         },
         {
             "integrations": "Windows Defender Advanced Threat Protection",
-            "playbookID": "Test - Windows Defender Advanced Threat Protection"
+            "playbookID": "Test - Windows Defender Advanced Threat Protection",
+            "instance_names": "windows_defender_atp_dev"
+        },
+        {
+            "integrations": "Windows Defender Advanced Threat Protection",
+            "playbookID": "Test - Windows Defender Advanced Threat Protection",
+            "instance_names": "windows_defender_atp_prod"
         },
         {
             "integrations": "Tanium",
@@ -896,11 +941,23 @@
         },
         {
             "integrations": "Microsoft Graph",
-            "playbookID": "Microsoft Graph Test"
+            "playbookID": "Microsoft Graph Test",
+            "instance_names": "ms_graph_security_dev"
+        },
+        {
+            "integrations": "Microsoft Graph",
+            "playbookID": "Microsoft Graph Test",
+            "instance_names": "ms_graph_security_prod"
         },
         {
             "integrations": "Microsoft Graph User",
-            "playbookID": "Microsoft Graph - Test"
+            "playbookID": "Microsoft Graph - Test",
+            "instance_names": "ms_graph_user_dev"
+        },
+        {
+            "integrations": "Microsoft Graph User",
+            "playbookID": "Microsoft Graph - Test",
+            "instance_names": "ms_graph_user_prod"
         },
         {
             "integrations": "RedLock",
@@ -1192,7 +1249,8 @@
                 "EWS Mail Sender",
                 "Pwned",
                 "Demisto REST API",
-                "Palo Alto Minemeld"
+                "Palo Alto Minemeld",
+                "Rasterize"
             ]
         },
         {
@@ -1203,29 +1261,32 @@
                 "EWS Mail Sender",
                 "Pwned",
                 "Demisto REST API",
-                "Palo Alto Minemeld"
+                "Palo Alto Minemeld",
+                "Rasterize"
             ]
         },
         {
             "playbookID": "Phishing v2 Test - Attachment",
-            "timeout": 600,
-            "nightly": true,
+            "timeout": 1200,
+            "nightly": true,            
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
                 "Demisto REST API",
-                "Palo Alto Minemeld"
+                "Palo Alto Minemeld",
+                "Rasterize"
             ]
         },
         {
             "playbookID": "Phishing v2 Test - Inline",
-            "timeout": 500,
+            "timeout": 1200,
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
                 "Demisto REST API",
-                "Palo Alto Minemeld"
+                "Palo Alto Minemeld",
+                "Rasterize"
             ]
         },
         {
@@ -1323,6 +1384,12 @@
             "integrations": "Symantec Advanced Threat Protection",
             "playbookID": "Symantec ATP Test"
 
+        },
+        {
+            "playbookID": "HTTPListRedirects - Test SSL"
+        },
+        {
+            "playbookID": "HTTPListRedirects Basic Test"
         },
         {
             "playbookID": "CheckDockerImageAvailableTest"
@@ -1581,6 +1648,11 @@
             "playbookID": "VMRay-Test"
         },
         {
+            "integrations": "PerceptionPoint",
+            "playbookID": "PerceptionPoint Test",
+            "fromversion": "4.1.0"
+        },
+        {
             "integrations": "AutoFocus V2",
             "playbookID": "AutoFocus V2 test"
         },
@@ -1609,7 +1681,6 @@
         "Cybereason Test": "Integration instance being disabled in the middle of test playbook (issue 17394)",
         "LogRhythmRest": "Unstable environment Adi is checking",
         "InfoArmorVigilanteATITest": "Test fails on verify context (issue 17358)",
-        "whois_test": "Test fails only when running in a build process but not manually (issue 17289)",
         "process_email_-_generic_-_test": "Fails due to missing data (issue 17283)",
         "Forescout-Test": "Should be skipped (issue 17016)",
         "Jask_Test": "Test failed due to missing data (issue 17245)",
@@ -1645,7 +1716,8 @@
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "old test, needs to check if relevant",
         "okta_test_playbook": "test failed (Issue 17041)",
         "Detonate File - FireEye AX - Test": "No instance",
-        "Cofense Triage Test": "Creds only works on demo4"
+        "Cofense Triage Test": "Creds only works on demo4",
+        "Intezer Testing": "Old test for old version of inteze"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1678,12 +1750,15 @@
         "XFE": "License expired",
         "RedLock": "Credentials and API problems (issue 15493)",
         "Salesforce": "User and password expired (issue 15901)",
+        "Zscaler": "License expired (issue 17784)",
         "RedCanary": "License expired",
         "LogRhythm": "Need to fix SOAP api",
         "ANYRUN": "No instance",
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "No instance",
         "Minerva Labs Anti-Evasion Platform": "No instance",
+        "GitHub": "no instance configured, also need to fix test",
+        "Phish.AI": "Unauthorized. will be re-branded soon as Cofense",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -1696,7 +1771,6 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
-        "Palo Alto Networks Cortex": "Changing the auth flow, will unskip when ready",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
@@ -1709,6 +1783,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "Whois": "Mocks does not support sockets",
         "Panorama": "Exception: Proxy process took to long to go up. https://circleci.com/gh/demisto/content/24826",
         "Image OCR": "Does not perform network traffic",
         "Server Message Block (SMB)": "Does not perform http communication",
@@ -1726,7 +1801,6 @@
         "AWS - S3": "Integration requires SSL",
         "Luminate": "Integration has no proxy checkbox",
         "Pwned": "Integration has no proxy checkbox",
-        "Gmail": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
         "Google BigQuery": "Integration has no proxy checkbox",
         "Cisco Umbrella Investigate": "Pending merge of branch proxy-unsecure-checks",
