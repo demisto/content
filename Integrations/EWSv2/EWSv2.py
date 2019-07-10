@@ -11,6 +11,7 @@ from cStringIO import StringIO
 import logging
 import warnings
 import subprocess
+import email
 from requests.exceptions import ConnectionError
 
 import exchangelib
@@ -873,8 +874,10 @@ def parse_incident_from_item(item):
 
                 # save the attachment
                 if attachment.item.mime_content:
-                    file_result = fileResult(get_attachment_name(attachment.name) + ".eml",
-                                             attachment.item.mime_content)
+                    attached_email = email.message_from_string(attachment.item.mime_content)
+                    if attachment.item.headers:
+                        map(lambda h: attached_email.add_header(h.name, h.value), attachment.item.headers)
+                    file_result = fileResult(get_attachment_name(attachment.name) + ".eml", attached_email.as_string())
 
                 if file_result:
                     # check for error
