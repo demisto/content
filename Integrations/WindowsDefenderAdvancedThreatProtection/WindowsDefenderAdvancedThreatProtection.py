@@ -666,6 +666,10 @@ def get_advanced_hunting_command():
     query = demisto.args().get('query')
     response = get_advanced_hunting(query)
     results = response.get('Results')
+    if isinstance(results, list) and len(results) == 1:
+        report_id = results[0].get('ReportId')
+        if report_id:
+            results[0]['ReportId'] = str(report_id)
     ec = {
         'MicrosoftATP.Hunt.Result': results
     }
