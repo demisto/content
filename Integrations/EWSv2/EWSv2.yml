@@ -1044,7 +1044,6 @@ script:
   runonce: false
   script: '-'
   type: python
-image: ''
 tests:
 - pyEWS_Test
 - EWS search-mailbox test
