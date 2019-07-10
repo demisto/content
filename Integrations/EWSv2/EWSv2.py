@@ -29,7 +29,7 @@ from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
 
 # Define utf8 as default encoding
 reload(sys)
-sys.setdefaultencoding('utf8')
+sys.setdefaultencoding('utf8')  # pylint: disable=E1101
 
 # Ignore warnings print to stdout
 warnings.filterwarnings("ignore")
@@ -40,7 +40,7 @@ TNS = None
 if exchangelib.__version__ == "1.12.0":
     MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS
 else:
-    MNS, TNS = exchangelib.transport.MNS, exchangelib.transport.TNS
+    MNS, TNS = exchangelib.transport.MNS, exchangelib.transport.TNS  # pylint: disable=E1101
 
 # consts
 VERSIONS = {
@@ -255,7 +255,7 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):
                 primary_smtp_address=account_email, autodiscover=False, config=Configuration(**config_args),
                 access_type=access_type,
             )
-            account.root.effective_rights.read
+            account.root.effective_rights.read  # pylint: disable=E1101
             return account
         except Exception, original_exc:
             pass
@@ -269,7 +269,7 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):
 
     autodiscover_result = create_context_dict(account)
     if autodiscover_result == context_dict:
-        raise original_exc
+        raise original_exc  # pylint: disable=E0702
 
     if account_email == ACCOUNT_EMAIL:
         demisto.setIntegrationContext(create_context_dict(account))
@@ -1224,10 +1224,10 @@ def get_out_of_office_state(target_mailbox=None):
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     oof = account.oof_settings
     oof_dict = {
-        'state': oof.state,
+        'state': oof.state,  # pylint: disable=E1101
         'externalAudience': getattr(oof, 'external_audience', None),
-        'start': oof.start.ewsformat() if oof.start else None,
-        'end': oof.end.ewsformat() if oof.end else None,
+        'start': oof.start.ewsformat() if oof.start else None,  # pylint: disable=E1101
+        'end': oof.end.ewsformat() if oof.end else None,  # pylint: disable=E1101
         'internalReply': getattr(oof, 'internal_replay', None),
         'externalReply': getattr(oof, 'external_replay', None),
         MAILBOX: account.primary_smtp_address
