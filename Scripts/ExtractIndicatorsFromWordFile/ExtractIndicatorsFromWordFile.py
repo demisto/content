@@ -2,16 +2,15 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import subprocess
+from docx import Document
 from docx.opc.constants import RELATIONSHIP_TYPE as RT
 from docx.opc.exceptions import PackageNotFoundError
-
-from CommonServerPython import *
 
 
 class WordParser:
 
     def __init__(self):
-        self.res = []
+        self.res = []   # type: List[Dict[str, str]]
         self.errEntry = {
             "Type": entryTypes["error"],
             "ContentsFormat": formats["text"],
@@ -38,12 +37,11 @@ class WordParser:
             self.file_type = file.get("Type")
 
     def convert_doc_to_docx(self):
-        conversion_res = subprocess.check_output(
+        subprocess.check_output(
             ['soffice', '--headless', '--convert-to', 'docx', self.file_path])  # Requires office-utils docker image
         output_file_name = self.file_name[0:self.file_name.rfind('.')] + '.docx'
         self.file_path = self.file_path + ".docx"
         with open(self.file_path, 'rb') as f:
-            contents = f.read()
             f_data = f.read()
             self.res = fileResult(output_file_name, f_data)
 
@@ -76,12 +74,12 @@ class WordParser:
 
     def get_core_properties(self, document):
         all_properties_txt = document.core_properties.author + " " + \
-                             document.core_properties.category + " " + \
-                             document.core_properties.comments + " " + \
-                             document.core_properties.identifier + " " + \
-                             document.core_properties.keywords + " " + \
-                             document.core_properties.subject + " " + \
-                             document.core_properties.title + " "
+            document.core_properties.category + " " + \
+            document.core_properties.comments + " " + \
+            document.core_properties.identifier + " " + \
+            document.core_properties.keywords + " " + \
+            document.core_properties.subject + " " + \
+            document.core_properties.title + " "
         return " ".join(all_properties_txt.split())
 
     def get_hyperlinks(self, document):
@@ -122,6 +120,6 @@ demisto.results(parser.all_data.encode('utf-8'))
 
 # Returning error:
 if parser.res:  # If there was an error:
-    if "Error occurred while parsing input" in parser.res["Contents"] or \
-            "Input file is not a valid" in parser.res["Contents"]:
-            demisto.results(parser.res)  # Return error too
+    contents = parser.res["Contents"]  # type: ignore
+    if "Error occurred while parsing input" in contents or "Input file is not a valid" in contents:
+        demisto.results(parser.res)  # Return error too
