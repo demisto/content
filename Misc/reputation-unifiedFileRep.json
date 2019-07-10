@@ -11,6 +11,7 @@
   ],
   "fromVersion": "5.0",
   "fileHashesPriority": [
+    "ssdeep",
     "md5",
     "sha1",
     "sha256"
@@ -26,6 +27,10 @@
     },
     "sha256": {
       "simple": "File.SHA256",
+      "complex": null
+    },
+    "ssdeep": {
+      "simple": "File.SSDeep",
       "complex": null
     }
   }

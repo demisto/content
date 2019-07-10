@@ -5,8 +5,8 @@ This script is used to validate the files in Content repository. Specifically fo
 3) Valid yml/json schema
 4) Having ReleaseNotes if applicable.
 
-It can be run to check only commited changes (if the first argument is 'true') or all the files in the repo.
-Note - if it is run for all the files in the repo it won't check releaseNotes, use `setContentDescriptor.sh`
+It can be run to check only committed changes (if the first argument is 'true') or all the files in the repo.
+Note - if it is run for all the files in the repo it won't check releaseNotes, use `release_notes.py`
 for that task.
 """
 import os
@@ -93,12 +93,10 @@ class FilesValidator(object):
             if file_status.lower().startswith('r'):
                 file_status = 'r'
                 file_path = file_data[2]
-            if checked_type(file_path, CODE_FILES_REGEX) and file_status.lower() != 'd':
-                dir_path = os.path.dirname(file_path)
-                try:
-                    file_path = list(filter(lambda x: not x.endswith('unified.yml'), glob.glob(dir_path + "/*.yml")))[0]
-                except IndexError:
-                    continue
+
+            if checked_type(file_path, CODE_FILES_REGEX) and file_status.lower() != 'd' and not file_path.endswith('_test.py'):
+                # naming convention - code file and yml file in packages must have same name.
+                file_path = os.path.splitext(file_path)[0] + '.yml'
             elif file_path.endswith('.js') or file_path.endswith('.py'):
                 continue
 
@@ -153,12 +151,12 @@ class FilesValidator(object):
             modified_files = modified_files - set(non_committed_deleted_files)
             added_files = added_files - set(non_committed_modified_files) - set(non_committed_deleted_files)
 
-            new_added_files = set([])
-            for added_file in added_files:
-                if added_file in non_committed_added_files:
-                    new_added_files.add(added_file)
+            # new_added_files = set([])
+            # for added_file in added_files:
+            #     if added_file in non_committed_added_files:
+            #         new_added_files.add(added_file)
 
-            added_files = new_added_files
+            # added_files = new_added_files
 
         return modified_files, added_files, old_format_files
 
@@ -377,8 +375,21 @@ def main():
         sys.exit(1)
     if options.test_filter:
         try:
-            subprocess.check_call(["./Tests/scripts/configure_tests.py", "-s", "true"])
-        except Exception:
+            print_color("Updating idset. Be patient if this is the first time...", LOG_COLORS.YELLOW)
+            subprocess.check_output(["./Tests/scripts/update_id_set.py"])
+            print_color("Checking that we have tests for all content...", LOG_COLORS.YELLOW)
+            try:
+                tests_out = subprocess.check_output(["./Tests/scripts/configure_tests.py", "-s", "true"],
+                                                    stderr=subprocess.STDOUT)
+                print(tests_out)
+            except Exception:
+                print_color("Recreating idset to be sure that configure tests failure is accurate."
+                            " Be patient this can take 15-20 seconds ...", LOG_COLORS.YELLOW)
+                subprocess.check_output(["./Tests/scripts/update_id_set.py", "-r"])
+                print_color("Checking that we have tests for all content again...", LOG_COLORS.YELLOW)
+                subprocess.check_call(["./Tests/scripts/configure_tests.py", "-s", "true"])
+        except Exception as ex:
+            print_color("Failed validating tests: {}".format(ex), LOG_COLORS.RED)
             sys.exit(1)
     print_color("Finished validating files structure", LOG_COLORS.GREEN)
     sys.exit(0)
