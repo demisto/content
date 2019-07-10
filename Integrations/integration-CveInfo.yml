@@ -17,7 +17,8 @@ script:
             {
                 Method: 'GET',
                 Headers: {
-                    Accept: ['application/json']
+                    Accept: ['application/json'],
+                    'User-Agent': ['Demisto CVE Integration']
                 }
             }
         );
@@ -147,5 +148,6 @@ script:
     - contextPath: CVE.Description
       description: The CVE description
     description: Get latest updated CVEs
+releaseNotes: "Fixed bug where UserAgent was not present in request"
 tests:
   - No test
