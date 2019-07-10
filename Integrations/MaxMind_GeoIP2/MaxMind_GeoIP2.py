@@ -4,16 +4,16 @@ from CommonServerUserPython import *
 import requests
 from collections import defaultdict
 from requests.auth import HTTPBasicAuth
+
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
 
 '''GLOBAL VARS'''
 BASE_URL = demisto.params().get('url')
 APIKEY = demisto.params().get('apikey')
 ACCOUNT_ID = demisto.params().get('account')
 MODE = demisto.params().get('mode')
-INSECURE = demisto.params().get('insecure', None) if demisto.params().get('insecure', None) else \
+USE_SSL = demisto.params().get('insecure', None) if demisto.params().get('insecure', None) else \
     not demisto.params().get('insecure_new')  # Backward compatibility issue, the old logic of insecure was reversed
 PROXY = demisto.params().get('proxy')
 API_VERSION = 'geoip/v2.1'
@@ -49,18 +49,20 @@ HEADERS = {
     'Accept': 'application/json'
 }
 
-
 '''HELPER FUNCTIONS'''
+
+
 def http_request(query):
     r = requests.request(
         'GET',
-        BASE_URL + API_VERSION + '/' + MODE +'/'+ query,
+        BASE_URL + API_VERSION + '/' + MODE + '/' + query,
         headers=HEADERS,
-        verify=INSECURE,
+        verify=USE_SSL,
         auth=HTTPBasicAuth(ACCOUNT_ID, APIKEY)
     )
-    if r.status_code is not 200:
-        return_error('Error in API call to MaxMind, got status code - {} and a reason: {}'.format(r.status_code, r.reason))
+    if r.status_code != 200:
+        return_error(
+            'Error in API call to MaxMind, got status code - {} and a reason: {}'.format(r.status_code, r.reason))
     return r
 
 
@@ -91,8 +93,8 @@ def format_results(res_json):
         ip_ec['Geo']['Country'] = country['names']['en']
     if 'location' in res_json:
         location = res_json['location']
-        ip_ec['Geo']['Location'] = str(location['latitude'])+', '+str(location['longitude'])
-        maxmind_ec['Geo']['Location'] = str(location['latitude'])+', '+str(location['longitude'])
+        ip_ec['Geo']['Location'] = str(location['latitude']) + ', ' + str(location['longitude'])
+        maxmind_ec['Geo']['Location'] = str(location['latitude']) + ', ' + str(location['longitude'])
         create_map_entry(location['latitude'], location['longitude'])
         if 'time_zone' in location:
             hr['TimeZone'] = location['time_zone']
@@ -143,8 +145,9 @@ def format_results(res_json):
     return hr, ip_ec, maxmind_ec
 
 
-
 ''' FUNCTIONS '''
+
+
 def get_geo_ip(query):
     raw = http_request(query)
     res_json = raw.json()
@@ -156,8 +159,8 @@ def geo_ip_command():
     res_json = get_geo_ip(ip_query)
     hr, ip_ec, maxmind_ec = format_results(res_json)
     ec = ({
-      'IP(val.Address && val.Address == obj.Address)': ip_ec,
-      'MaxMind(val.Address && val.Address == obj.Address)': maxmind_ec
+        'IP(val.Address && val.Address == obj.Address)': ip_ec,
+        'MaxMind(val.Address && val.Address == obj.Address)': maxmind_ec
     })
     demisto.results({
         'Type': entryTypes['note'],
@@ -169,7 +172,7 @@ def geo_ip_command():
 
 
 ''' EXECUTION CODE '''
-LOG('command is %s' % (demisto.command(), ))
+LOG('command is %s' % (demisto.command(),))
 try:
     if demisto.command() == 'ip':
         geo_ip_command()
