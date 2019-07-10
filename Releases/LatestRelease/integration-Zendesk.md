@@ -1,1 +1,2 @@
-fix zendesk-ticket-details command - attachments dont shows up in the context
+- fix zendesk-ticket-details command - attachments dont shows up in the context
+- add test playbook
