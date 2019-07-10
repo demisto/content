@@ -808,10 +808,6 @@ def fetch_incidents():
         alert_severity = alert['severity']
         if alert_creation_time > last_alert_fetched_time and alert_status in FETCH_STATUS and \
                 alert_severity in FETCH_SEVERITY:
-            # alert_id = alert['id']
-            # alert['RelatedFiles'] = get_alert_related_files(alert_id)
-            # alert['RelatedDomains'] = get_alert_related_domains(alert_id)
-            # alert['RelatedIPs'] = get_alert_related_ips(alert_id)
             incident = alert_to_incident(alert)
             incidents.append(incident)
             if alert_creation_time > latest_creation_time:
