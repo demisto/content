@@ -1,0 +1,1 @@
+Fixed bug where certificate verification logic was reversed.
