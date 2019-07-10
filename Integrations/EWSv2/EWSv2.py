@@ -1116,7 +1116,7 @@ def move_item(item_id, target_folder_path, target_mailbox=None, is_public=None):
     is_public = is_default_folder(target_folder_path, is_public)
     target_folder = get_folder_by_path(account, target_folder_path, is_public)
     item = get_item_from_mailbox(account, item_id)
-    if isinstance(item, ErrorInvalidIdMalformed):  # pylint: disable=E1101
+    if isinstance(item, ErrorInvalidIdMalformed):
         raise Exception("Item not found")
     item.move(target_folder)
     move_result = {
@@ -1196,7 +1196,7 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
         is_public = is_default_folder(folder_path, is_public)
         folders = [get_folder_by_path(account, folder_path, is_public)]
     else:
-        folders = account.inbox.parent.walk()
+        folders = account.inbox.parent.walk()  # pylint: disable=E1101
 
     items = []  # type: ignore
     for folder in folders:
