@@ -150,7 +150,8 @@ def http_request(method, url_suffix, json=None, params=None):
         headers={
             'Authorization': 'Bearer ' + token,
             'Content-Type': 'application/json'
-        }
+        },
+        verify=USE_SSL
     )
     if r.status_code not in {200, 201}:
         error = r.json().get('error')
