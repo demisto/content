@@ -1811,6 +1811,7 @@
         "Check Point": "Checking",
         "WhatsMyBrowser": "Checking",
         "jira": "Checking",
+        "okta": "Test Module failing, suspect it requires SSL",
         "CIRCL": "Checking",
         "Awake Security": "Checking",
         "Cylance Protect v2": "Checking",
