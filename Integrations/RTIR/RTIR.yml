@@ -44,6 +44,10 @@ configuration:
   name: fetch_queue
   required: false
   type: 0
+- display: Referer request header
+  name: referer
+  required: false
+  type: 0
 description: Request Tracker for Incident Response is a ticketing system which provides
   pre-configured queues and workflows designed for incident response teams.
 display: RTIR
