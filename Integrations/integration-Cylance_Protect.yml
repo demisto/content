@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: Cylance Protect
 deprecated: true
-display: Cylance Protect
+display: Cylance Protect (Deprecated)
 category: Endpoint
 system: true
 fromversion: 2.0.1

@@ -2,7 +2,7 @@ commonfields:
   id: Mimecast
   version: -1
 name: Mimecast
-display: Mimecast Deprecated
+display: Mimecast (Deprecated)
 deprecated: true
 category: Email Gateway
 system: true

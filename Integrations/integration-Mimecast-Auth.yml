@@ -2,7 +2,7 @@ commonfields:
   id: Mimecast Authentication
   version: -1
 name: Mimecast Authentication
-display: Mimecast Authentication Deprecated
+display: Mimecast Authentication (Deprecated)
 deprecated: true
 category: Network Security
 system: true
