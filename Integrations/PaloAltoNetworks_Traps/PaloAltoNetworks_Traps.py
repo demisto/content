@@ -28,7 +28,7 @@ FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 # Service base URL
 BASE_URL = SERVER + '/xapi/v1/'
 # Headers to be sent in requests
-TENANT_ID = '11'
+TENANT_ID = '14'
 APPLICATION_ID = 'Demisto'
 HEADERS = {
     'Content-Type': 'application/json',
@@ -145,7 +145,7 @@ def parse_http_response(resp, operation_err_message, test=False):
 
 def health_check():
     path = f'{SERVER}/xapi/health-check'
-    server_status = http_request('GET', path, plain_url=True)
+    server_status = http_request('GET', path, plain_url=True).decode('utf-8')
     if server_status == '"Ok"':
         return
     else:
@@ -201,7 +201,7 @@ def endpoint_scan(endpoint_id):
 
 def endpoint_scan_result(operation_id):
     status, additional_data = sam_operation(operation_id, f'Could not get scan results')
-    scan_data = parse_data_from_response(additional_data.get('scanData'))
+    scan_data = parse_data_from_response(additional_data.get('scanData')) if additional_data else {}
     scan_data['Status'] = status
     scan_data['OperationID'] = operation_id
     return scan_data
@@ -213,7 +213,7 @@ def update_event_status(event_ids, status):
         "guids": event_ids,
         "status": status
     }
-    resp = http_request('PATCH', path, data=data, operation_err=f'Update events status failed for: {event_ids}')
+    resp = http_request('PATCH', path, data=data, operation_err=f'Update events {event_ids} status failed')
     return resp
 
 
@@ -315,7 +315,7 @@ def sam_operation(operation_id, operation_err):
     if result.get('summaryData').get('incompatible'):
         return_error(f'{operation_err} incompatible operation')
     if result.get('summaryData').get('samExists'):
-        return_error(f'{operation_err} incompatible operation')
+        return 'ignored', None
     for status_obj in result.get('statuses'):
         if status_obj.get('count') > 0:
             return status_obj.get('status'), result.get('additionalData')
@@ -329,7 +329,7 @@ def endpoint_isolate_status(operation_id):
 
 def event_quarantine_result(operation_id):
     status, additional_data = sam_operation(operation_id, f'Could not get event quarantine status')
-    quarantine_data = parse_data_from_response(additional_data.get('quarantineData'))
+    quarantine_data = parse_data_from_response(additional_data.get('quarantineData')) if additional_data else {}
     quarantine_data['Status'] = status
     quarantine_data['OperationID'] = operation_id
     return quarantine_data
