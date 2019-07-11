@@ -14,6 +14,7 @@ ITEM_WITH_SCANID = {
     'scanId': '1'
 }
 
+
 class ResponseMock:
     def __init__(self):
         self.status_code = 200
