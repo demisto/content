@@ -43,5 +43,5 @@ def test_sort_with_and_without_ms(mocker):
 
     dt_arr = [ITEM_WITH_MS, ITEM_WITHOUT_MS]
     sorted_dt_arr = sorted(dt_arr, key=get_datetime_from_asset_history_item)
-    assert(sorted_dt_arr[0].tm_hour == 2)
-    assert(sorted_dt_arr[1].tm_hour == 1)
+    assert(sorted_dt_arr[0] == ITEM_WITHOUT_MS)
+    assert(sorted_dt_arr[1] == ITEM_WITH_MS)
