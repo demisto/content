@@ -26,10 +26,6 @@ configuration:
   type: 8
 description: Lists all of the security vulnerabilities for various products (OS,Applications)
   etc)
-detaileddescription: |-
-  The Authentication is done via Oauth2
-  Provided details are client_id and client_secret which together provide the authentication key. The key is generated for every command execution.
-  For more details check this API docs.
 display: VulnDB
 name: VulnDB
 script:
