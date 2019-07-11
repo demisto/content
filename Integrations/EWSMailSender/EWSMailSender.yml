@@ -73,11 +73,14 @@ script:
     - name: attachIDs
       description: 'A comma-separated list of IDs of war room entries that contain
         files. Used to attach files to the outgoing email. Example: attachIDs=15@8,19@8.'
+      isArray: true
     - name: attachNames
       description: A comma-separated list of names to the attachments to be send.
         Should be the same number of elements as attachIDs.
+      isArray: true
     - name: attachCIDs
       description: 'A comma-separated list of CIDs to embed attachments inside the email itself'
+      isArray: true
     description: Send email via EWS
   dockerimage: demisto/py-ews
 tests:

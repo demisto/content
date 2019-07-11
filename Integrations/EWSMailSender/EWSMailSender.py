@@ -116,9 +116,9 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
     attachments_names = []  # type: list
 
     if attachIDs:
-        file_entries_for_attachments = attachIDs.split(",")
+        file_entries_for_attachments = attachIDs if isinstance(attachIDs, list) else attachIDs.split(",")
         if attachNames:
-            attachments_names = attachNames.split(",")
+            attachments_names = attachNames if isinstance(attachNames, list) else attachNames.split(",")
         else:
             for att_id in file_entries_for_attachments:
                 att_name = demisto.getFilePath(att_id)['name']
@@ -131,7 +131,7 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
     attachments = collect_manual_attachments(manualAttachObj)
 
     if attachCIDs:
-        file_entries_for_attachments_inline = attachCIDs.split(",")
+        file_entries_for_attachments_inline = attachCIDs if isinstance(attachCIDs, list) else attachCIDs.split(",")
         for att_id_inline in file_entries_for_attachments_inline:
             try:
                 file_info = demisto.getFilePath(att_id_inline)
