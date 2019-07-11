@@ -2,10 +2,10 @@ import demistomock as demisto
 import requests
 
 ITEM_WITH_MS = {
-    'hour': '2019-05-03T03:02:54.123Z'
+    'date': '2019-05-03T03:02:54.123Z'
 }
 ITEM_WITHOUT_MS = {
-    'hour': '2019-05-03T03:01:54Z'
+    'date': '2019-05-03T03:01:54Z'
 }
 
 
