@@ -3,7 +3,7 @@ commonfields:
   id: VulnDB
   version: -1
 configuration:
-- defaultvalue: https://vulndb.cyberriskanalytics.com/ # disable-secrets-detection
+- defaultvalue: https://vulndb.cyberriskanalytics.com/
   display: Hostname, IP address, or server URL
   name: api_url
   required: true
