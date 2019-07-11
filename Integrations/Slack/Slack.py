@@ -17,8 +17,7 @@ if not demisto.params().get('proxy', False):
         del os.environ['HTTPS_PROXY']
     elif 'https_proxy' in os.environ:
         del os.environ['https_proxy']
-    else:
-        PROXY = None
+    PROXY = None
 else:
     PROXY = os.environ.get('https_proxy') or os.environ.get('HTTPS_PROXY')
 
@@ -32,10 +31,9 @@ LINK_FOOTER = demisto.params().get('footer')
 GENERAL_FOOTER = demisto.params().get('general_footer')
 CLIENT = slack.WebClient(token=TOKEN, proxy=PROXY)
 CHANNEL_CLIENT = slack.WebClient(token=CHANNEL_TOKEN, proxy=PROXY)
-SEVERITY_THRESHOLD = demisto.args().get('min_severity', 1)
-ALLOW_INCIDENTS = bool(strtobool(demisto.args().get('allowIncidents', 'false')))
+SEVERITY_THRESHOLD = int(demisto.params().get('min_severity', '1'))
+ALLOW_INCIDENTS = demisto.params().get('allowIncidents', False)
 INCIDENT_TYPE = demisto.params().get('incidentType')
-RTM_CLIENT = slack.RTMClient(token=TOKEN, run_async=False)
 
 
 ''' HELPER FUNCTIONS '''
@@ -408,6 +406,8 @@ async def translate_create(demisto_user, message):
     name_pattern = r'(?<=name:).*'
     type_pattern = r'(?<=type:).*'
     json_match = re.search(json_pattern, message)
+    created_incident = None
+    data = ''
     if json_match:
         if re.search(name_pattern, message) or re.search(type_pattern, message):
             data = 'No other properties other than json should be specified.'
@@ -416,7 +416,10 @@ async def translate_create(demisto_user, message):
             incidents = json.loads(incidents_json)
             if not isinstance(incidents, list):
                 incidents = [incidents]
-            data = await create_incidents(demisto_user, incidents)
+            created_incident = await create_incidents(demisto_user, incidents)
+
+            if not created_incident:
+                data = 'Failed creating incidents.'
     else:
         name_match = re.search(name_pattern, message)
         if not name_match:
@@ -436,16 +439,16 @@ async def translate_create(demisto_user, message):
                 incident['type'] = incident_type
 
             created_incident = await create_incidents(demisto_user, [incident])
+            if not created_incident:
+                data = 'Failed creating incidents.'
 
-            if created_incident:
-                if isinstance(created_incident, list):
-                    created_incident = created_incident[0]
-                server_links = demisto.demistoUrls()
-                server_link = server_links.get('server')
-                data = ('Successfully created incident {}.\n View it on: {}#/WarRoom/{}'
-                        .format(created_incident['name'], server_link, created_incident['id']))
-            else:
-                data = 'Failed to create incidents'
+    if created_incident:
+        if isinstance(created_incident, list):
+            created_incident = created_incident[0]
+        server_links = demisto.demistoUrls()
+        server_link = server_links.get('server')
+        data = ('Successfully created incident {}.\n View it on: {}#/WarRoom/{}'
+                .format(created_incident['name'], server_link, created_incident['id']))
 
     return data
 
@@ -517,27 +520,41 @@ async def listen(**payload):
             mirrors.append(mirror)
             integration_context['mirrors'] = json.dumps(mirrors)
 
-            if text:
-                user: dict = {}
-                users: list = []
-                if integration_context.get('users'):
-                    users = json.loads(integration_context['users'])
-                    user_filter = list(filter(lambda u: u['id'] == user_id, users))
-                    if user_filter:
-                        user = user_filter[0]
-                if not user:
-                    user = (await client.users_info(user=user_id)).get('user', {})
-                    users.append(user)
-                    integration_context['users'] = json.dumps(users)
-                demisto.addEntry(id=mirror['investigation_id'],
-                                 entry=await clean_message(text, client), username=user.get('name', ''),
-                                 email=user.get('profile', {}).get('email', ''),
-                                 footer='\n**From Slack**')
+            await handle_text(client, integration_context, mirror['investigation_id'], text, user_id)
+
             demisto.setIntegrationContext(integration_context)
         # Reset module health
         demisto.updateModuleHealth("")
     except Exception as e:
         demisto.updateModuleHealth("Error occurred while listening to Slack: {}".format(str(e)))
+
+
+async def handle_text(client, integration_context, investigation_id, text, user_id):
+    """
+    Handles text received in the Slack workspace (not DM)
+    :param client: The Slack client
+    :param integration_context: The integration context
+    :param investigation_id: The mirrored investigation ID
+    :param text: The received text
+    :param user_id: The ID of the sender
+    """
+    if text:
+        user: dict = {}
+        users: list = []
+        if integration_context.get('users'):
+            users = json.loads(integration_context['users'])
+            user_filter = list(filter(lambda u: u['id'] == user_id, users))
+            if user_filter:
+                user = user_filter[0]
+        if not user:
+            user = (await client.users_info(user=user_id)).get('user', {})
+            users.append(user)
+            integration_context['users'] = json.dumps(users)
+
+        demisto.addEntry(id=investigation_id,
+                         entry=await clean_message(text, client), username=user.get('name', ''),
+                         email=user.get('profile', {}).get('email', ''),
+                         footer='\n**From Slack**')
 
 
 ''' SEND '''
@@ -562,6 +579,7 @@ def get_conversation_by_name(conversation_name):
         return []
 
     return conversation[0]
+
 
 def slack_send():
     """
@@ -588,7 +606,6 @@ def slack_send():
 def slack_send_file():
     """
     Sends a file to slack
-    :return:
     """
     to = demisto.args().get('to')
     channel = demisto.args().get('channel')
@@ -628,7 +645,9 @@ def send_message(destinations, entry, ignore_add_url, integration_context, messa
     """
     if not message:
         message = '\n'
-    if not bool(strtobool(ignore_add_url)) and LINK_FOOTER:
+    if ignore_add_url and isinstance(ignore_add_url, str):
+        ignore_add_url = bool(strtobool(ignore_add_url))
+    if not ignore_add_url and LINK_FOOTER:
         investigation = demisto.investigation()
         server_links = demisto.demistoUrls()
         if investigation:
@@ -642,14 +661,8 @@ def send_message(destinations, entry, ignore_add_url, integration_context, messa
                 link = server_links.get('server', '')
                 if link:
                     message += '\n{} {}'.format(GENERAL_FOOTER, link + '#/home')
-    response = None
-
     try:
-        for destination in destinations:
-            if thread_id:
-                response = CLIENT.chat_postMessage(channel=destination, text=message, thread_ts=thread_id)
-            else:
-                response = CLIENT.chat_postMessage(channel=destination, text=message)
+        response = send_message_to_destinations(destinations, message, thread_id)
     except SlackApiError as e:
         if str(e).find('not_in_channel') == -1:
             raise
@@ -657,11 +670,24 @@ def send_message(destinations, entry, ignore_add_url, integration_context, messa
         if not bot_id:
             bot_id = get_bot_id()
         invite_user_to_conversation(destinations, bot_id)
-        for destination in destinations:
-            if thread_id:
-                response = CLIENT.chat_postMessage(channel=destination, text=message, thread_ts=thread_id)
-            else:
-                response = CLIENT.chat_postMessage(channel=destination, text=message)
+        response = send_message_to_destinations(destinations, message, thread_id)
+    return response
+
+
+def send_message_to_destinations(destinations, message, thread_id):
+    """
+    Sends a message to provided destinations Slack.
+    :param destinations: Destinations to send to.
+    :param message: The message to send.
+    :param thread_id: Slack thread ID to send to.
+    :return: The Slack send response.
+    """
+    response = None
+    for destination in destinations:
+        if thread_id:
+            response = CLIENT.chat_postMessage(channel=destination, text=message, thread_ts=thread_id)
+        else:
+            response = CLIENT.chat_postMessage(channel=destination, text=message)
     return response
 
 
@@ -671,20 +697,11 @@ def send_file(destinations, file, integration_context, thread_id):
     :param destinations: Destinations to send the file to.
     :param file: The file to send.
     :param integration_context: The current integration context.
-    :param thread_id: The Slack thread to send to.
+    :param thread_id: A Slack thread to send to.
     :return: The Slack send response.
     """
-    response = None
     try:
-        for destination in destinations:
-            if thread_id:
-                response = CLIENT.files_upload(channels=destination,
-                                               file=file['data'], filename=file['name'],
-                                               initial_comment=file['comment'], thread_ts=thread_id)
-            else:
-                response = CLIENT.files_upload(channels=destination,
-                                               file=file['data'], filename=file['name'],
-                                               initial_comment=file['comment'])
+        response = send_file_to_destinations(destinations, file, thread_id)
     except SlackApiError as e:
         if str(e).find('not_in_channel') == -1:
             raise
@@ -693,15 +710,28 @@ def send_file(destinations, file, integration_context, thread_id):
             bot_id = get_bot_id()
             integration_context['bot_id'] = bot_id
         invite_user_to_conversation(destinations, bot_id)
-        for destination in destinations:
-            if thread_id:
-                response = CLIENT.files_upload(channels=destination,
-                                               file=file['data'], filename=file['name'],
-                                               initial_comment=file['comment'], thread_ts=thread_id)
-            else:
-                response = CLIENT.files_upload(channels=destination,
-                                               file=file['data'], filename=file['name'],
-                                               initial_comment=file['comment'])
+        response = send_file_to_destinations(destinations, file, thread_id)
+    return response
+
+
+def send_file_to_destinations(destinations, file, thread_id):
+    """
+    Sends a file to provided destinations in Slack.
+    :param destinations: The destinations to send to.
+    :param file: The file to send.
+    :param thread_id: A thread ID to send to.
+    :return: The Slack send response.
+    """
+    response = None
+    for destination in destinations:
+        if thread_id:
+            response = CLIENT.files_upload(channels=destination,
+                                           file=file['data'], filename=file['name'],
+                                           initial_comment=file['comment'], thread_ts=thread_id)
+        else:
+            response = CLIENT.files_upload(channels=destination,
+                                           file=file['data'], filename=file['name'],
+                                           initial_comment=file['comment'])
     return response
 
 
@@ -717,7 +747,7 @@ def slack_send_request(to, channel, group, entry=None, severity=MAX_SEVERITY, ig
     :param ignore_add_url: Do not add a Demisto URL to the message.
     :param thread_id: The Slack thread ID to send to.
     :param message: A message to send.
-    :param file: A file to send,
+    :param file: A file to send.
     :return: The Slack send response.
     """
     if not (to or group or channel):
@@ -725,13 +755,10 @@ def slack_send_request(to, channel, group, entry=None, severity=MAX_SEVERITY, ig
 
     integration_context = demisto.getIntegrationContext()
     conversations: list = []
-    users: list = []
 
     if integration_context:
         if 'conversations' in integration_context:
             conversations = json.loads(integration_context['conversations'])
-        if 'users' in integration_context:
-            users = json.loads(integration_context['users'])
     destinations = []
 
     if channel == 'incidentNotificationChannel':
@@ -743,17 +770,10 @@ def slack_send_request(to, channel, group, entry=None, severity=MAX_SEVERITY, ig
     if to:
         if isinstance(to, list):
             to = to[0]
-        user_filter = list(filter(lambda u: u.get('name') == to or u.get('profile', {}).get('email') == to, users))
-        if not user_filter:
-            user = get_user_by_name(to, integration_context)
-            if not user:
-                demisto.error('Could not find the Slack user')
-            else:
-                users.append(user)
-                integration_context['users'] = json.dumps(users)
+        user = get_user_by_name(to, integration_context)
+        if not user:
+            demisto.error('Could not find the Slack user')
         else:
-            user = user_filter[0]
-        if user:
             im = CLIENT.im_open(user=user.get('id'))
             destinations.append(im.get('channel', {}).get('id'))
     if channel or group:
