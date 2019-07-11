@@ -14,6 +14,8 @@ DISPLAYABLE_LINES = [
     "comment"
 ]
 
+SCRIPT_ARGS = 'scriptarguments'
+
 
 def check_yaml(spellchecker, yml_info, unknown_words):
     for key, value in yml_info.items():
@@ -24,7 +26,8 @@ def check_yaml(spellchecker, yml_info, unknown_words):
 
         else:
             if isinstance(value, dict):
-                check_yaml(spellchecker, value, unknown_words)
+                if key != SCRIPT_ARGS:
+                    check_yaml(spellchecker, value, unknown_words)
             elif isinstance(value, list):
                 for sub_list in value:
                     if isinstance(sub_list, dict):

@@ -1264,7 +1264,7 @@
         {
             "playbookID": "Phishing v2 Test - Attachment",
             "timeout": 1200,
-            "nightly": true,            
+            "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
@@ -1678,6 +1678,7 @@
         "LogRhythmRest": "Unstable environment Adi is checking",
         "InfoArmorVigilanteATITest": "Test fails on verify context (issue 17358)",
         "process_email_-_generic_-_test": "Fails due to missing data (issue 17283)",
+        "calculate_severity_-_critical_assets_-_test": "Fails on verify context (issue 17924)",
         "Forescout-Test": "Should be skipped (issue 17016)",
         "Jask_Test": "Test failed due to missing data (issue 17245)",
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
