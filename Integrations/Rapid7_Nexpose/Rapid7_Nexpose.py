@@ -168,20 +168,17 @@ def dq(obj, path):
             return dq(obj[path[0]], path[1:])
     elif isinstance(obj, list):
         # in case current obj has multiple objects, search them all.
-        l = [dq(o, path) for o in obj]
-        return [k for k in l if k is not None]
+        line = [dq(o, path) for o in obj]
+        return [k for k in line if k is not None]
 
     # in case of error in the path
     return None
 
 
 def translate_single_object(obj, map_fields, filter_func=None):
-    if filter_func is None:
-        filter_func = lambda mf: True
-
     d = {}
     for f in map_fields:
-        if filter_func(f):
+        if filter_func is None or filter_func(f):
             d[f['to']] = dq(obj, f['from'].split('.'))
 
     return d
@@ -202,7 +199,7 @@ def translate_object(content, map_fields, filter_func=None):
 
 
 def get_list_response(path, method='get', limit=None, body={}, params={}):
-    final_result = []
+    final_result = []  # type: ignore
     page_diff = 0
     page_number = 0
 
@@ -341,7 +338,7 @@ def get_asset_command():
     vulnerabilities = get_vulnerabilities(asset['id'])
     asset['vulnerabilities'] = vulnerabilities
     vulnerabilities_output = []
-    cves_output = []
+    cves_output = []  # type: ignore
     for i, v in enumerate(asset['vulnerabilities']):
         detailed_vuln = get_vulnerability(v['id'])
         # Add to raw output
@@ -465,7 +462,7 @@ def get_asset_vulnerability_command():
         "Status"
     ]
 
-    results_output = []
+    results_output = []  # type: ignore
     if 'results' in v and len(v['results']) > 0:
         results_output = translate_object(v['results'], [
             {'from': 'port', 'to': 'Port'},
@@ -510,7 +507,7 @@ def get_asset_vulnerability_command():
     solutions_md = tableToMarkdown('Solutions', solutions_output, solutions_headers,
                                    removeNull=True) if solutions_output is not None else ''
     md = vulnerabilities_md + results_md + solutions_md
-    cves = []
+    cves = []  # type: ignore
     if (vuln_outputs['CVES'] is not None and len(vuln_outputs['CVES']) > 0):
         cves = map(lambda cve: {
             'ID': cve
@@ -528,7 +525,7 @@ def get_asset_vulnerability_command():
     }
 
     if len(cves) > 0:
-        context['CVE(val.ID==obj.ID)'] = cves
+        context['CVE(val.ID==obj.ID)'] = cves  # type: ignore
 
     entry = {
         'Type': entryTypes['note'],
@@ -574,7 +571,6 @@ def search_by_filter(text_filters):
 
 
 def search_assets_command():
-    text_filters = None
     queries = demisto.args().get('query')
     ip_addresses = demisto.args().get('ipAddressIs')
     host_names = demisto.args().get('hostNameIs')
@@ -674,7 +670,7 @@ def get_search_filters(text_filters):
             curr_val = None
             try:
                 curr_val = float(v)
-            except:
+            except Exception:
                 curr_val = v
             value[i] = curr_val
 
@@ -1166,7 +1162,7 @@ def start_assets_scan_command():
     if site is None or 'id' not in site:
         return 'Could not find site'
 
-    hosts = []
+    hosts = []  # type: ignore
     if ips:
         hosts += ips
     if host_names:
