@@ -3,7 +3,7 @@ commonfields:
   id: URLhaus
   version: -1
 configuration:
-- defaultvalue: https://urlhaus-api.abuse.ch/v1/ # disable-secrets-detection
+- defaultvalue: https://urlhaus-api.abuse.ch/v1/
   display: Server URL (e.g. https://192.168.0.1)
   name: url
   required: false
