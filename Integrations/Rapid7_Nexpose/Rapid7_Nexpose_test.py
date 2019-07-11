@@ -9,7 +9,7 @@ ITEM_WITHOUT_MS = {
 }
 
 
-class RequestMock:
+class ResponseMock:
     def __init__(self):
         self.status_code = 200
 
@@ -23,9 +23,10 @@ def init_integration(mocker):
             'identifier': 'a',
             'password': 'a'
         },
-        'server': 'nexpose.com'
+        'server': 'nexpose.com',
+        'proxy': True
     })
-    mocker.patch.object(requests, 'post', return_value=RequestMock())
+    mocker.patch.object(requests, 'post', return_value=ResponseMock())
 
 
 def test_get_datetime_from_asset_history_item(mocker):
