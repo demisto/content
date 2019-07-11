@@ -113,9 +113,8 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
     subject = subject[:252] + '...' if len(subject) > 255 else subject
 
     file_entries_for_attachments = []  # type: list
-    file_entries_for_attachments_inline = []
     attachments_names = []  # type: list
-    attachments_names_inline = []
+
     if attachIDs:
         file_entries_for_attachments = attachIDs.split(",")
         if attachNames:
