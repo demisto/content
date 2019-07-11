@@ -8,7 +8,6 @@ from oauth2client import service_account
 from google.oauth2 import service_account as google_service_account
 import googleapiclient.http
 import dateparser
-import datetime
 import io
 import os
 
@@ -123,20 +122,17 @@ def list_holds(service, matter_id):
      Return a list of existing holds
     '''
     done_paginating = False
-    holds = []
-    response = service.matters().holds().list(
-        matterId=matter_id).execute()
+    response = service.matters().holds().list(matterId=matter_id).execute()
     # append first page:
-    holds = response['holds']
+    the_holds = response['holds']
     # Keep paginating and appending:
     while not done_paginating:
         if 'nextPageToken' in response:
-            response = service.matters().holds.list(
-                pageSize=10, pageToken=response['nextPageToken']).execute()
-            holds.extend(list_response2['holds'])
+            response = service.matters().holds.list(pageSize=10, pageToken=response['nextPageToken']).execute()
+            the_holds.extend(response['holds'])
         else:
             done_paginating = True
-    return holds
+    return the_holds
 
 
 def timeframe_to_utc_zulu_range(timeframe_str):
@@ -145,14 +141,15 @@ def timeframe_to_utc_zulu_range(timeframe_str):
     '''
     try:
         parsed_str = dateparser.parse(timeframe_str)
-        end_time = datetime.datetime.utcnow().isoformat() + 'Z'  # Current time
+        end_time = datetime.utcnow().isoformat() + 'Z'  # Current time
         start_time = parsed_str.isoformat() + 'Z'
         return (start_time, end_time)
     except Exception, ex:
-        if 'Quota exceeded for quota metric' in str(ex):
-            ex = 'Quota for Google Vault API exceeded'
+        err_msg = str(ex)
+        if 'Quota exceeded for quota metric' in err_msg:
+            err_msg = 'Quota for Google Vault API exceeded'
 
-        return_error('Unable to parse date correctly: {}'.format(ex))
+        return_error('Unable to parse date correctly: {}'.format(err_msg))
 
 
 def create_hold_query(hold_name, corpus, accounts, terms, time_frame="", start_time="", end_time=""):
@@ -165,13 +162,13 @@ def create_hold_query(hold_name, corpus, accounts, terms, time_frame="", start_t
         start_time, end_time = timeframe_to_utc_zulu_range(time_frame)  # Making it UTC Zulu format
     elif start_time:
         if not end_time:
-            end_time = datetime.datetime.utcnow().isoformat() + 'Z'  # End time will be now, if no end time was given
+            end_time = datetime.utcnow().isoformat() + 'Z'  # End time will be now, if no end time was given
     if isinstance(accounts, unicode):
         accounts = accounts.split(',')
 
     # --- Building Request ---
     request = {}
-    mail_query = {}
+    mail_query = {}  # type: Dict[Any, Any]
     accounts_for_query = []
     if not terms:
         if start_time and end_time:
@@ -218,8 +215,8 @@ def create_mail_export_query(export_name, emails, time_frame, start_time, end_ti
         start_time, end_time = timeframe_to_utc_zulu_range(time_frame)  # Making it UTC Zulu format
     elif start_time:
         if not end_time:
-            end_time = datetime.datetime.utcnow().isoformat() + 'Z'  # End time will be now, if no end time was given
-    if isinstance(emails, basestring):
+            end_time = datetime.utcnow().isoformat() + 'Z'  # End time will be now, if no end time was given
+    if isinstance(emails, (str, unicode)):
         if ',' in emails:
             emails = emails.split(',')
         else:
@@ -243,7 +240,7 @@ def create_mail_export_query(export_name, emails, time_frame, start_time, end_ti
     request = {}
     query = {}
     emails_for_query = []
-    account_info = {'emails': []}
+    account_info = {'emails': []}  # type: Dict[Any, Any]
     org_unit_info = {'orgUnitId': org_unit_id}
     corpus = 'MAIL'
     export_format = 'PST'  # Default
@@ -289,13 +286,13 @@ def create_drive_export_query(export_name, emails, team_drives, time_frame, star
         start_time, end_time = timeframe_to_utc_zulu_range(time_frame)  # Making it UTC Zulu format
     elif start_time:
         if not end_time:
-            end_time = datetime.datetime.utcnow().isoformat() + 'Z'  # End time will be now, if no end time was given
-    if isinstance(emails, basestring):  # If emails were specified, making it a list:
+            end_time = datetime.utcnow().isoformat() + 'Z'  # End time will be now, if no end time was given
+    if isinstance(emails, (str, unicode)):  # If emails were specified, making it a list:
         if ',' in emails:
             emails = emails.split(',')
         else:
             emails = [emails]
-    if isinstance(team_drives, basestring):  # If team_drives were specified, making it a list:
+    if isinstance(team_drives, (str, unicode)):  # If team_drives were specified, making it a list:
         if ',' in team_drives:
             team_drives = team_drives.split(',')
         else:
@@ -320,8 +317,8 @@ def create_drive_export_query(export_name, emails, team_drives, time_frame, star
     query = {}
     emails_for_query = []
     teamdrives_for_query = []
-    account_info = {'emails': []}
-    teamdrive_info = {'teamDriveIds': []}
+    account_info = {'emails': []}  # type: Dict[Any, Any]
+    teamdrive_info = {'teamDriveIds': []}  # type: Dict[Any, Any]
     org_unit_info = {'orgUnitId': org_unit_id}
     corpus = 'DRIVE'
 
@@ -366,8 +363,8 @@ def create_groups_export_query(export_name, emails, time_frame, start_time, end_
         start_time, end_time = timeframe_to_utc_zulu_range(time_frame)  # Making it UTC Zulu format
     elif start_time:
         if not end_time:
-            end_time = datetime.datetime.utcnow().isoformat() + 'Z'  # End time will be now, if no end time was given
-    if isinstance(emails, basestring):
+            end_time = datetime.utcnow().isoformat() + 'Z'  # End time will be now, if no end time was given
+    if isinstance(emails, (str, unicode)):
         if ',' in emails:
             emails = emails.split(',')
         else:
@@ -383,7 +380,7 @@ def create_groups_export_query(export_name, emails, time_frame, start_time, end_
     request = {}
     query = {}
     emails_for_query = []
-    account_info = {'emails': []}
+    account_info = {'emails': []}  # type: Dict[Any, Any]
     corpus = 'GROUPS'
     export_format = 'PST'  # Default
     if export_mbox.upper() == 'TRUE':
@@ -426,7 +423,7 @@ def remove_held_accounts(service, matter_id, hold_id):
 
 def download_storage_object(object_ID, bucket_name):
     service = connect_to_storage()
-    req = service.objects().get_media(bucket=bucket_name, object=object_ID)
+    req = service.objects().get_media(bucket=bucket_name, object=object_ID)  # pylint: disable=no-member
     out_file = io.BytesIO()
     downloader = googleapiclient.http.MediaIoBaseDownload(out_file, req)
     done = False
@@ -566,9 +563,10 @@ def list_matters_command():
                 }
             })
     except Exception, ex:
-        if 'Quota exceeded for quota metric' in str(ex):
-            ex = 'Quota for Google Vault API exceeded'
-        return_error('Unable to list amatters. Error: {}'.format(ex))
+        err_msg = str(ex)
+        if 'Quota exceeded for quota metric' in err_msg:
+            err_msg = 'Quota for Google Vault API exceeded'
+        return_error('Unable to list matters. Error: {}'.format(err_msg))
 
 
 def create_matter_command():
@@ -580,7 +578,7 @@ def create_matter_command():
             'name': matter_name,
             'description': matter_description,
         }
-        matter = service.matters().create(body=matter_content).execute()
+        matter = service.matters().create(body=matter_content).execute()  # pylint: disable=no-member
         markdown = ""
         if matter_description:
             markdown = 'Matter: {} was created successfully with description: {}.\nID: {}.'.format(matter_name,
@@ -618,9 +616,10 @@ def create_matter_command():
             }
         })
     except Exception, ex:
-        if 'Quota exceeded for quota metric' in str(ex):
-            ex = 'Quota for Google Vault API exceeded'
-        return_error('Unable to create matter. Error: {}'.format(ex))
+        err_msg = str(ex)
+        if 'Quota exceeded for quota metric' in err_msg:
+            err_msg = 'Quota for Google Vault API exceeded'
+        return_error('Unable to create matter. Error: {}'.format(err_msg))
 
 
 def update_matter_state_command():
@@ -726,9 +725,10 @@ def update_matter_state_command():
         else:
             demisto.results('No matter was found with that ID.')  # Todo: never gets here. Gotta catch the exception
     except Exception, ex:
-        if 'Quota exceeded for quota metric' in str(ex):
-            ex = 'Quota for Google Vault API exceeded'
-        return_error('Unable to update matter. Error: {}'.format(ex))
+        err_msg = str(ex)
+        if 'Quota exceeded for quota metric' in err_msg:
+            err_msg = 'Quota for Google Vault API exceeded'
+        return_error('Unable to update matter. Error: {}'.format(err_msg))
 
 
 def add_account_to_hold_command():  # Todo: Not sure if context is good (It works, but maybe not according to conventions)
@@ -759,9 +759,10 @@ def add_account_to_hold_command():  # Todo: Not sure if context is good (It work
             }
         })
     except Exception, ex:
-        if 'Quota exceeded for quota metric' in str(ex):
-            ex = 'Quota for Google Vault API exceeded'
-        return_error('Unable to add account to hold. Error: {}'.format(ex))
+        err_msg = str(ex)
+        if 'Quota exceeded for quota metric' in err_msg:
+            err_msg = 'Quota for Google Vault API exceeded'
+        return_error('Unable to add account to hold. Error: {}'.format(err_msg))
 
 
 def search_matter_command():
@@ -818,9 +819,10 @@ def search_matter_command():
                 }
             })
     except Exception, ex:
-        if 'Quota exceeded for quota metric' in str(ex):
-            ex = 'Quota for Google Vault API exceeded'
-        return_error('Unable to search matter. Error: {}'.format(ex))
+        err_msg = str(ex)
+        if 'Quota exceeded for quota metric' in err_msg:
+            err_msg = 'Quota for Google Vault API exceeded'
+        return_error('Unable to search matter. Error: {}'.format(err_msg))
 
 
 def remove_account_from_hold_command():
@@ -851,9 +853,10 @@ def remove_account_from_hold_command():
             }
         })
     except Exception, ex:
-        if 'Quota exceeded for quota metric' in str(ex):
-            ex = 'Quota for Google Vault API exceeded'
-        return_error('Unable to remove account from hold. Error: {}'.format(ex))
+        err_msg = str(ex)
+        if 'Quota exceeded for quota metric' in err_msg:
+            err_msg = 'Quota for Google Vault API exceeded'
+        return_error('Unable to remove account from hold. Error: {}'.format(err_msg))
 
 
 def delete_hold_command():
@@ -870,9 +873,10 @@ def delete_hold_command():
         })
 
     except Exception, ex:
-        if 'Quota exceeded for quota metric' in str(ex):
-            ex = 'Quota for Google Vault API exceeded'
-        return_error('Unable to delete hold. Error: {}'.format(ex))
+        err_msg = str(ex)
+        if 'Quota exceeded for quota metric' in err_msg:
+            err_msg = 'Quota for Google Vault API exceeded'
+        return_error('Unable to delete hold. Error: {}'.format(err_msg))
 
 
 def list_holds_command():
@@ -910,9 +914,10 @@ def list_holds_command():
                 }
             })
     except Exception, ex:
-        if 'Quota exceeded for quota metric' in str(ex):
-            ex = 'Quota for Google Vault API exceeded'
-        return_error('Unable to list holds. Error: {}'.format(ex))
+        err_msg = str(ex)
+        if 'Quota exceeded for quota metric' in err_msg:
+            err_msg = 'Quota for Google Vault API exceeded'
+        return_error('Unable to list holds. Error: {}'.format(err_msg))
 
 
 def create_hold_command():
@@ -928,13 +933,13 @@ def create_hold_command():
 
     validate_input_values([corpus], ['Mail', 'Drive', 'Groups'])
     query = create_hold_query(hold_name, corpus, accounts, time_frame, start_time, end_time, terms)
-    response = ""
     try:
         response = create_hold_mail_accounts(service, matter_id, query)
     except Exception, ex:
-        if 'Quota exceeded for quota metric' in str(ex):
-            ex = 'Quota for Google Vault API exceeded'
-        return_error('Unable to create hold. Error: {}'.format(ex))
+        err_msg = str(ex)
+        if 'Quota exceeded for quota metric' in err_msg:
+            err_msg = 'Quota for Google Vault API exceeded'
+        return_error('Unable to create hold. Error: {}'.format(err_msg))
 
     hold_id = response['holdId']
     output = []
@@ -988,13 +993,13 @@ def create_mail_export_command():
 
     query = create_mail_export_query(export_name, emails, time_frame, start_time, end_time, terms, org_unit, export_pst,
                                      export_mbox, search_method, include_drafts, data_scope)
-    response = ""
     try:
         response = create_export(service, matter_id, query)
     except Exception, ex:
-        if 'Quota exceeded for quota metric' in str(ex):
-            ex = 'Quota for Google Vault API exceeded'
-        return_error('Unable to create export. Error: {}'.format(ex))
+        err_msg = str(ex)
+        if 'Quota exceeded for quota metric' in err_msg:
+            err_msg = 'Quota for Google Vault API exceeded'
+        return_error('Unable to create export. Error: {}'.format(err_msg))
 
     create_time = response.get('createTime')
     export_id = response.get('id')
@@ -1051,13 +1056,13 @@ def create_drive_export_command():
 
     query = create_drive_export_query(export_name, emails, team_drives, time_frame, start_time, end_time, terms,
                                       org_unit, search_method, include_teamdrives, data_scope)
-    response = ""
     try:
         response = create_export(service, matter_id, query)
     except Exception, ex:
-        if 'Quota exceeded for quota metric' in str(ex):
-            ex = 'Quota for Google Vault API exceeded'
-        return_error('Unable to create export. Error: {}'.format(ex))
+        err_msg = str(ex)
+        if 'Quota exceeded for quota metric' in err_msg:
+            err_msg = 'Quota for Google Vault API exceeded'
+        return_error('Unable to create export. Error: {}'.format(err_msg))
 
     create_time = response.get('createTime')
     export_id = response.get('id')
@@ -1110,13 +1115,13 @@ def create_groups_export_command():
 
     query = create_groups_export_query(export_name, emails, time_frame, start_time, end_time, terms, search_method,
                                        export_pst, export_mbox, data_scope)
-    response = ""
     try:
         response = create_export(service, matter_id, query)
     except Exception, ex:
-        if 'Quota exceeded for quota metric' in str(ex):
-            ex = 'Quota for Google Vault API exceeded'
-        return_error('Unable to create export. Error: {}'.format(ex))
+        err_msg = str(ex)
+        if 'Quota exceeded for quota metric' in err_msg:
+            err_msg = 'Quota for Google Vault API exceeded'
+        return_error('Unable to create export. Error: {}'.format(err_msg))
     create_time = response.get('createTime')
     export_id = response.get('id')
 
@@ -1233,9 +1238,10 @@ def get_export_command(export_id, matter_id):
         return export_status
 
     except Exception, ex:
-        if 'Quota exceeded for quota metric' in str(ex):
-            ex = 'Quota for Google Vault API exceeded'
-        return_error('Unable to get export. Error: {}'.format(ex))
+        err_msg = str(ex)
+        if 'Quota exceeded for quota metric' in err_msg:
+            err_msg = 'Quota for Google Vault API exceeded'
+        return_error('Unable to get export. Error: {}'.format(err_msg))
 
 
 def download_export_command():
@@ -1245,9 +1251,10 @@ def download_export_command():
         out_file = download_storage_object(download_ID, bucket_name)
         demisto.results(fileResult(demisto.uniqueFile() + '.zip', out_file.getvalue()))
     except Exception, ex:
-        if 'Quota exceeded for quota metric' in str(ex):
-            ex = 'Quota for Google Vault API exceeded'
-        return_error('Unable to download export. Error: {}'.format(ex))
+        err_msg = str(ex)
+        if 'Quota exceeded for quota metric' in err_msg:
+            err_msg = 'Quota for Google Vault API exceeded'
+        return_error('Unable to download export. Error: {}'.format(err_msg))
 
 
 def download_and_sanitize_export_results(object_ID, bucket_name, max_results):
@@ -1311,9 +1318,10 @@ def get_drive_results_command():
         })
 
     except Exception, ex:
-        if 'Quota exceeded for quota metric' in str(ex):
-            ex = 'Quota for Google Vault API exceeded'
-        return_error('Unable to display export result. Error: {}'.format(ex))
+        err_msg = str(ex)
+        if 'Quota exceeded for quota metric' in err_msg:
+            err_msg = 'Quota for Google Vault API exceeded'
+        return_error('Unable to display export result. Error: {}'.format(err_msg))
 
 
 def get_mail_and_groups_results_command(inquiryType):
@@ -1355,9 +1363,10 @@ def get_mail_and_groups_results_command(inquiryType):
         })
 
     except Exception, ex:
-        if 'Quota exceeded for quota metric' in str(ex):
-            ex = 'Quota for Google Vault API exceeded'
-        return_error('Unable to display export result. Error: {}'.format(ex))
+        err_msg = str(ex)
+        if 'Quota exceeded for quota metric' in err_msg:
+            err_msg = 'Quota for Google Vault API exceeded'
+        return_error('Unable to display export result. Error: {}'.format(err_msg))
 
 
 # @@@@@@@@ DEMISTO COMMANDS @@@@@@@@
