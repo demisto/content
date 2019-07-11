@@ -166,7 +166,8 @@ class Content(object):
                         return None
 
                     if ans is None:
-                        print_error("Error:\n[%s] is missing releaseNotes/description entry" % (path,))
+                        print_error("Error:\n[{}] is missing releaseNotes entry, Please add it under {}".format(
+                            path, get_release_notes_file_path(path)))
                         self.is_missing_release_notes = True
                     elif ans:
                         new_count += 1
@@ -599,10 +600,11 @@ def filter_packagify_changes(modified_files, added_files, removed_files, tag):
             github_path = os.path.join(CONTENT_GITHUB_LINK, tag, file_path).replace('\\', '/')
             file_content = requests.get(github_path).content
             details = yaml.safe_load(file_content)
-            uniq_identifier = '_'.join([details['name'],
-                                       details.get('fromversion', '0.0.0'),
-                                       details.get('toversion', '99.99.99')])
-            packagify_diff[uniq_identifier] = file_path
+            if 404 not in details:
+                uniq_identifier = '_'.join([details['name'],
+                                           details.get('fromversion', '0.0.0'),
+                                           details.get('toversion', '99.99.99')])
+                packagify_diff[uniq_identifier] = file_path
 
     updated_added_files = set()
     for file_path in added_files:
