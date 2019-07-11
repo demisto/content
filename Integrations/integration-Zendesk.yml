@@ -903,4 +903,4 @@ script:
   isfetch: true
 fromversion: 3.5.0
 tests:
-  - No test - tested manually
+  - No test - tested manually Zendesk_test playbook
