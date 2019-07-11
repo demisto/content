@@ -1,6 +1,6 @@
-id: Test-VulnDB
+id: "Test-VulnDB"
 version: -1
-name: Test-VulnDB
+name: "Test-VulnDB"
 starttaskid: "0"
 tasks:
   "0":
