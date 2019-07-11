@@ -18,9 +18,10 @@ DISPLAYABLE_LINES = [
 def check_yaml(spellchecker, yml_info, unknown_words):
     for key, value in yml_info.items():
         if key in DISPLAYABLE_LINES:
-            for word in value.split():
-                if word.isalpha() and spellchecker.unknown([word]):
-                    unknown_words.add(word)
+            if getattr(value, "split", None):
+                for word in value.split():
+                    if word.isalpha() and spellchecker.unknown([word]):
+                        unknown_words.add(word)
 
         else:
             if isinstance(value, dict):
