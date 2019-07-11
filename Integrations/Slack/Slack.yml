@@ -48,7 +48,7 @@ configuration:
   name: footer
   required: false
   type: 0
-- display: Should anyone be allowed to create incidents by DM
+- display: Allow external users to create incidents via DM
   name: allowIncidents
   required: false
   type: 8
