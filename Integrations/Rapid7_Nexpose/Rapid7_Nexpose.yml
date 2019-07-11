@@ -1007,7 +1007,6 @@ script:
   runonce: false
   script: '-'
   type: python
-image: ''
 fromversion: 3.6.0
 tests:
   - nexpose_test
