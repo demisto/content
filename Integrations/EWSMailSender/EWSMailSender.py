@@ -129,15 +129,20 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
         if len(file_entries_for_attachments) != len(attachments_names):
             raise Exception("attachIDs and attachNames lists should be the same length")
 
+    attachments = collect_manual_attachments(manualAttachObj)
+
     if attachCIDs:
         file_entries_for_attachments_inline = attachCIDs.split(",")
         for att_id_inline in file_entries_for_attachments_inline:
-            att_name_inline = demisto.getFilePath(att_id_inline)['name']
-            if isinstance(att_name_inline, list):
-                att_name_inline = att_name_inline[0]
-            attachments_names_inline.append(att_name_inline)
+            try:
+                file_info = demisto.getFilePath(att_id_inline)
+            except Exception as ex:
+                raise Exception("entry %s does not contain a file" % att_id_inline)
+            att_name_inline = file_info["name"]
+            with open(file_info["path"], 'rb') as f:
+                attachments.append(FileAttachment(content=f.read(), name=att_name_inline, is_inline=True,
+                                                  content_id=att_name_inline))
 
-    attachments = collect_manual_attachments(manualAttachObj)
     for i in range(0, len(file_entries_for_attachments)):
         entry_id = file_entries_for_attachments[i]
         attachment_name = attachments_names[i]
@@ -148,18 +153,6 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
         file_path = res["path"]
         with open(file_path, 'rb') as f:
             attachments.append(FileAttachment(content=f.read(), name=attachment_name))
-
-    for i in range(0, len(file_entries_for_attachments_inline)):
-        entry_id = file_entries_for_attachments_inline[i]
-        attachment_name_inline = attachments_names_inline[i]
-        try:
-            res = demisto.getFilePath(entry_id)
-        except Exception as ex:
-            raise Exception("entry %s does not contain a file" % entry_id)
-        file_path = res["path"]
-        with open(file_path, 'rb') as f:
-            attachments.append(FileAttachment(content=f.read(), name=attachment_name_inline, is_inline=True,
-                                              content_id=attachment_name_inline))
 
     send_email_to_mailbox(account, to, subject, body, bcc, cc, replyTo, htmlBody, attachments)
     result_object = {
