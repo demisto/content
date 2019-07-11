@@ -43,10 +43,8 @@ class StructureValidator(object):
         REPORT_REGEX,
         SCRIPT_PY_REGEX,
         SCRIPT_JS_REGEX,
-        SCRIPT_PS_REGEX,
         INTEGRATION_JS_REGEX,
         INTEGRATION_PY_REGEX,
-        INTEGRATION_PS_REGEX,
         REPUTATION_REGEX
     ]
     REGEXES_TO_SCHEMA_DICT = {
@@ -230,7 +228,7 @@ class StructureValidator(object):
             rn_path = get_release_notes_file_path(self.file_path)
             # check rn file exists and contain text
             if not os.path.isfile(rn_path) or os.stat(rn_path).st_size == 0:
-                print_error('File {} is missing releaseNotes, please add.'.format(self.file_path))
+                print_error('File {} is missing releaseNotes, Please add it under {}'.format(self.file_path, rn_path))
                 self._is_valid = False
 
     def is_id_not_modified(self, change_string=None):
