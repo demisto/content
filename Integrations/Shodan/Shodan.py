@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 
 import json
@@ -27,23 +28,22 @@ if not demisto.params().get('proxy'):
     os.environ.pop('http_proxy', None)
     os.environ.pop('https_proxy', None)
 
-
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, params=None, data=None):
-    # A wrapper for requests lib to send our requests and handle requests and responses better
-    res = requests.request(
-        method,
-        BASE_URL + url_suffix,
-        verify=USE_SSL,
-        params=params,
-        data=data,
-        headers=HEADERS
-    )
-    # Handle error responses gracefully
-    if res.status_code not in {200}:
-        return_error('Error in API call to Example Integration [%d] - %s' % (res.status_code, res.reason))
+def http_request(uri, params=None):
+    if params is None:
+        params = {}
+
+    params.update({
+        'key': API_KEY
+    })
+    url = f'{API_URL}{uri}'
+    res = requests.get(url,
+                       params=params)
+
+    if res.status_code != 200:
+        raise Exception(f'Error in API call {url} [{res.status_code}] - {res.reason}')
 
     return res.json()
 
@@ -55,98 +55,81 @@ def test_module():
     """
     Performs basic get request to get item samples
     """
-    samples = http_request('GET', 'items/samples')
+    http_request('/shodan/ports', {'query': 'test'})
 
 
-def get_items_command():
-    """
-    Gets details about a items using IDs or some other filters
-    """
-    # Init main vars
-    headers = []
-    contents = []
-    context = {}
-    context_entries = []
-    title = ''
-    # Get arguments from user
-    item_ids = argToList(demisto.args().get('item_ids', []))
-    is_active = bool(strtobool(demisto.args().get('is_active', 'false')))
-    limit = int(demisto.args().get('limit', 10))
-    # Make request and get raw response
-    items = get_items_request(item_ids, is_active)
-    # Parse response into context & content entries
-    if items:
-        if limit:
-            items = items[:limit]
-        title = 'Example - Getting Items Details'
+def search_command():
+    query = demisto.args()['query']
+    facets = demisto.args().get('facets')
+    page = int(demisto.args().get('page', 1))
 
-        for item in items:
-            contents.append({
-                'ID': item.get('id'),
-                'Description': item.get('description'),
-                'Name': item.get('name'),
-                'Created Date': item.get('createdDate')
-            })
-            context_entries.append({
-                'ID': item.get('id'),
-                'Description': item.get('description'),
-                'Name': item.get('name'),
-                'CreatedDate': item.get('createdDate')
-            })
+    params = {'query': query}
+    if facets:
+        params['facets'] = facets
+    if page:
+        params['page'] = page
 
-        context['Example.Item(val.ID && val.ID === obj.ID)'] = context_entries
+    http_request('/shodan/host/search', params)
+
+
+def ip_command():
+    ip = demisto.args()['ip']
+
+    res = http_request(f'/shodan/host/{ip}')
+
+    hostnames = res.get('hostnames')
+    hostname = hostnames[0] if hostnames else ''  # It's a list, only if it exists and not empty we take the first value
+
+    location = f'{round(res.get("latitude", 0.0), 3)},{round(res.get("longitude", 0.0), 3)}'
+
+    ip_details = {
+        'ASN': res.get('asn', ''),
+        'Address': ip,
+        'Hostname': hostname,
+        'Geo': {
+            'Country': res.get('country_name', ''),
+            'Location': location
+        }
+    }
+
+    shodan_ip_details = {
+        'Tag': res.get('tags', []),
+        'Latitude': res.get('latitude', 0.0),
+        'Longitude': res.get('longitude', 0.0),
+        'Org': res.get('org', ''),
+        'ASN': res.get('asn', ''),
+        'ISP': res.get('isp', ''),
+        'LastUpdate': res.get('last_update', ''),
+        'CountryName': res.get('country_name', ''),
+        'Address': ip,
+        'OS': res.get('os', ''),
+        'Port': res.get('ports', [])
+    }
+
+    ec = {
+        outputPaths['ip']: ip_details,
+        'Shodan': {
+            'IP': shodan_ip_details
+        }
+    }
+
+    human_readable = tableToMarkdown(f'Shodan details for IP {ip}', {
+        'Country': ec[outputPaths['ip']]['Geo']['Country'],
+        'Location': ec[outputPaths['ip']]['Geo']['Location'],
+        'ASN': ec[outputPaths['ip']]['ASN'],
+        'ISP': ec['Shodan']['IP']['ISP'],
+        'Ports': ', '.join([str(x) for x in ec['Shodan']['IP']['Port']]),
+        'Hostname': ec[outputPaths['ip']]['Hostname']
+    })
 
     demisto.results({
         'Type': entryTypes['note'],
+        'Contents': res,
         'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
-        'EntryContext': context
+        'HumanReadable': human_readable,
+        'HumanReadableFormat': formats['markdown'],
+        'EntryContext': ec
     })
-
-
-def get_items_request(item_ids, is_active):
-    # The service endpoint to request from
-    endpoint_url = 'items'
-    # Dictionary of params for the request
-    params = {
-        'ids': item_ids,
-        'isActive': is_active
-    }
-    # Send a request using our http_request wrapper
-    response = http_request('GET', endpoint_url, params)
-    # Check if response contains errors
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    # Check if response contains any data to parse
-    if 'data' in response:
-        return response.get('data')
-    # If neither was found, return back empty results
-    return {}
-
-
-def fetch_incidents():
-    last_run = demisto.getLastRun()
-    # Get the last fetch time, if exists
-    last_fetch = last_run.get('time')
-
-    # Handle first time fetch, fetch incidents retroactively
-    if last_fetch is None:
-        last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
-
-    incidents = []
-    items = get_items_request()
-    for item in items:
-        incident = item_to_incident(item)
-        incident_date = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%S.%fZ')
-        # Update last run and add incident if the incident is newer than last fetch
-        if incident_date > last_fetch:
-            last_fetch = incident_date
-            incidents.append(incident)
-
-    demisto.setLastRun({'time' : last_fetch})
-    demisto.incidents(incidents)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -158,4 +141,4 @@ if demisto.command() == 'test-module':
 elif demisto.command() == 'search':
     search_command()
 elif demisto.command() == 'ip':
-    get_items_command()
+    ip_command()
