@@ -46,7 +46,7 @@ tasks:
       - "3"
     scriptarguments:
       url:
-        simple: http://demisto.com,paypal-secure.online,https://github.com,http://www.w3.org,http://www.yahoo.com,www.fontedevidaeterna.org.br,1-pharm.com
+        simple: http://demisto.com,paypal-secure.online,https://github.com,http://www.w3.org,http://www.yahoo.com,www.fontedevidaeterna.org.br,www.pharmacymall.net
     separatecontext: false
     view: |-
       {
@@ -262,7 +262,7 @@ tasks:
             args:
               equalTo:
                 value:
-                  simple: http://1-pharm.com/
+                  simple: http://www.pharmacymall.net/
               field:
                 value:
                   simple: url
