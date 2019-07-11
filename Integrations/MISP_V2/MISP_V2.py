@@ -1012,11 +1012,13 @@ def add_ip_object():
         'src_port',
         'domain',
         'hostname',
-        'ip',
         'ip_src',
         'ip_dst'
     ]
     attr = [{arg.replace('_', '-'): demisto.getArg(arg)} for arg in args if demisto.getArg(arg)]
+    ips = argToList(demisto.getArg('ip'))
+    for ip in ips:
+        attr.append({'ip': ip})
     if attr:
         non_req_args = [
             'first_seen',
