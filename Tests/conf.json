@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "SlackV2",
+            "playbookID": "Slack Test Playbook"
+        },
+        {
             "integrations": "Cloaken",
             "playbookID": "Cloaken-Test"
         },
