@@ -114,9 +114,6 @@ script:
     description: Clear the mirrored investigations
     execution: false
     name: slack-clear-mirrors
-  - deprecated: false
-    execution: false
-    name: add_entry
   - arguments:
     - default: true
       description: The text content of the message
