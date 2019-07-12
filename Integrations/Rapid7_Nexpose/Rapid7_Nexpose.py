@@ -225,7 +225,7 @@ def get_list_response(path, method='get', limit=None, body={}, params={}):
 def get_last_scan(asset):
     if asset['history'] is None:
         return "-"
-    sorted_dates = sorted(asset['history'], key=lambda h: time.strptime(h['date'], "%Y-%m-%dT%H:%M:%S.%fZ"),
+    sorted_dates = sorted(asset['history'], key=get_datetime_from_asset_history_item,
                           reverse=True)
 
     if sorted_dates[0] is not None:
@@ -238,6 +238,13 @@ def get_last_scan(asset):
             'date': '-',
             'id': '-'
         }
+
+
+def get_datetime_from_asset_history_item(item):
+    try:
+        return time.strptime(item['date'], "%Y-%m-%dT%H:%M:%S.%fZ")
+    except ValueError:
+        return time.strptime(item['date'], "%Y-%m-%dT%H:%M:%SZ")
 
 
 def get_asset_command():
@@ -1300,47 +1307,53 @@ def set_scan_status(scan_id, scan_status):
     return send_request(path, 'post')
 
 
-try:
-    if demisto.command() == 'test-module':
-        get_assets(limit=1)
-        demisto.results('ok')
-    if demisto.command() == 'nexpose-get-assets':
-        demisto.results(get_assets_command())
-    if demisto.command() == 'nexpose-get-asset':
-        demisto.results(get_asset_command())
-    if demisto.command() == 'nexpose-get-asset-vulnerability':
-        demisto.results(get_asset_vulnerability_command())
-    if demisto.command() == 'nexpose-search-assets':
-        demisto.results(search_assets_command())
-    if demisto.command() == 'nexpose-get-scan':
-        demisto.results(get_scan_command())
-    if demisto.command() == 'nexpose-get-sites':
-        demisto.results(get_sites_command())
-    if demisto.command() == 'nexpose-get-report-templates':
-        demisto.results(get_report_templates_command())
-    if demisto.command() == 'nexpose-create-assets-report':
-        demisto.results(create_assets_report_command())
-    if demisto.command() == 'nexpose-create-sites-report':
-        demisto.results(create_sites_report_command())
-    if demisto.command() == 'nexpose-create-scan-report':
-        demisto.results(create_scan_report_command())
-    if demisto.command() == 'nexpose-start-site-scan':
-        demisto.results(start_site_scan_command())
-    if demisto.command() == 'nexpose-start-assets-scan':
-        demisto.results(start_assets_scan_command())
-    if demisto.command() == 'nexpose-create-site':
-        demisto.results(create_site_command())
-    if demisto.command() == 'nexpose-delete-site':
-        demisto.results(delete_site_command())
-    if demisto.command() == 'nexpose-stop-scan':
-        demisto.results(stop_scan_command())
-    if demisto.command() == 'nexpose-pause-scan':
-        demisto.results(pause_scan_command())
-    if demisto.command() == 'nexpose-resume-scan':
-        demisto.results(resume_scan_command())
-    if demisto.command() == 'nexpose-get-scans':
-        demisto.results(get_scans_command())
-except Exception as e:
-    LOG(e)
-    LOG.print_log(False)
-    return_error(e.message)
+def main():
+    try:
+        if demisto.command() == 'test-module':
+            get_assets(limit=1)
+            demisto.results('ok')
+        if demisto.command() == 'nexpose-get-assets':
+            demisto.results(get_assets_command())
+        if demisto.command() == 'nexpose-get-asset':
+            demisto.results(get_asset_command())
+        if demisto.command() == 'nexpose-get-asset-vulnerability':
+            demisto.results(get_asset_vulnerability_command())
+        if demisto.command() == 'nexpose-search-assets':
+            demisto.results(search_assets_command())
+        if demisto.command() == 'nexpose-get-scan':
+            demisto.results(get_scan_command())
+        if demisto.command() == 'nexpose-get-sites':
+            demisto.results(get_sites_command())
+        if demisto.command() == 'nexpose-get-report-templates':
+            demisto.results(get_report_templates_command())
+        if demisto.command() == 'nexpose-create-assets-report':
+            demisto.results(create_assets_report_command())
+        if demisto.command() == 'nexpose-create-sites-report':
+            demisto.results(create_sites_report_command())
+        if demisto.command() == 'nexpose-create-scan-report':
+            demisto.results(create_scan_report_command())
+        if demisto.command() == 'nexpose-start-site-scan':
+            demisto.results(start_site_scan_command())
+        if demisto.command() == 'nexpose-start-assets-scan':
+            demisto.results(start_assets_scan_command())
+        if demisto.command() == 'nexpose-create-site':
+            demisto.results(create_site_command())
+        if demisto.command() == 'nexpose-delete-site':
+            demisto.results(delete_site_command())
+        if demisto.command() == 'nexpose-stop-scan':
+            demisto.results(stop_scan_command())
+        if demisto.command() == 'nexpose-pause-scan':
+            demisto.results(pause_scan_command())
+        if demisto.command() == 'nexpose-resume-scan':
+            demisto.results(resume_scan_command())
+        if demisto.command() == 'nexpose-get-scans':
+            demisto.results(get_scans_command())
+    except Exception as e:
+        LOG(e)
+        LOG.print_log(False)
+        return_error(e.message)
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
