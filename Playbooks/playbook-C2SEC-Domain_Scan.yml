@@ -37,8 +37,8 @@ tasks:
     task:
       id: c787c282-0901-4da4-81a5-7d0361be8707
       version: -1
-      name: Scan Request
-      description: Scan Request
+      name: Re-scan a domain
+      description: Initiates a re-scan of a domain that was already scanned.
       script: '|||irisk-rescan-domain'
       type: regular
       iscommand: true
@@ -118,7 +118,7 @@ tasks:
     task:
       id: 2312cdca-7415-418f-8702-6c03401bf3db
       version: -1
-      name: Get Domain Issues
+      name: Get domain issues
       description: Get the issues located under the provided domain.
       script: '|||irisk-get-domain-issues'
       type: regular
@@ -151,8 +151,8 @@ tasks:
     task:
       id: b571543e-e4af-488c-8b0d-af3806f7ccc4
       version: -1
-      name: Leaked Credentials Reported?
-      description: Leaked Credentials Reported?
+      name: Leaked credentials reported?
+      description: Checks if leaked credentials were reported.
       type: condition
       iscommand: false
       brand: ""
@@ -192,8 +192,8 @@ tasks:
     task:
       id: 4c4aaef8-4481-4daf-840d-a5e72041c222
       version: -1
-      name: Get Leaked Credentials Report
-      description: Get Leaked Credentials Report
+      name: Get leaked credentials report
+      description: Retrieves a report for leaked credentials.
       script: '|||irisk-get-scan-results'
       type: regular
       iscommand: true
@@ -224,8 +224,8 @@ tasks:
     task:
       id: 0eda1184-3b5b-4e9a-8510-56cdd0bd4c38
       version: -1
-      name: Application Vulnerabilities Reported?
-      description: Application Vulnerabilities Reported?
+      name: Application vulnerabilities reported?
+      description: Checks if application vulnerabilities were reported.
       type: condition
       iscommand: false
       brand: ""
@@ -263,8 +263,8 @@ tasks:
     task:
       id: b530da9b-d948-4749-876d-455a61a35a6e
       version: -1
-      name: Get Application Vulnerabilities Report
-      description: Get Application Vulnerabilities Report
+      name: Get application vulnerabilities report
+      description: Retrieves a report for application vulnerabilities.
       script: '|||irisk-get-scan-results'
       type: regular
       iscommand: true
@@ -295,8 +295,8 @@ tasks:
     task:
       id: 637adabc-b7f4-4227-88b8-fdba3ab17bd3
       version: -1
-      name: Get Network Services Exposed Report
-      description: Get Network Services Exposed Report
+      name: Get network services exposed report
+      description: Retrieves a report for exposed network services.
       script: '|||irisk-get-scan-results'
       type: regular
       iscommand: true
@@ -328,7 +328,7 @@ tasks:
       id: 60398f3f-7ea9-4f3b-8b2f-51ceba4f8560
       version: -1
       name: Done
-      description: playbook end
+      description: Playbook finishes.
       type: title
       iscommand: false
       brand: ""
@@ -351,7 +351,7 @@ tasks:
       id: 8538fb1e-092a-4708-8dac-91aab140bf80
       version: -1
       name: Is C2sec enabled?
-      description: checking if the integration is enabled
+      description: Checks is there is an active instance of the C2sec integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -405,8 +405,8 @@ tasks:
     task:
       id: 0bb2491c-c83a-43b3-8266-57462038006e
       version: -1
-      name: Query Scan Result
-      description: Pulling latest Scan Results from C2sec
+      name: Query scan result
+      description: Retrieves the latest scan results from C2sec.
       script: '|||irisk-get-scan-status'
       type: regular
       iscommand: true
@@ -452,7 +452,7 @@ inputs:
   value:
     simple: "1"
   required: false
-  description: Polling frequency - how often the polling command should run (minutes)
+  description: How often the polling command should run (in minutes).
 - key: timeout
   value:
     simple: "600"
