@@ -150,6 +150,7 @@ tags:
 - enhancement
 - hostname
 comment: |-
+  Deprecated - please use Active Directory Query v2 ad-get-computer command instead.
   Use Active Directory to retrieve detailed information about a computer account. The computer can be specified by name, email or as an Active Directory Distinguished Name (DN).
   If no filters are provided, the result will show all computers.
 system: true
