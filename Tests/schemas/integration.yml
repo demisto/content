@@ -80,8 +80,6 @@ mapping:
     type: any
   defaultEnabled:
     type: bool
-  releaseNotes:
-    type: str
   tests:
     type: seq
     sequence:

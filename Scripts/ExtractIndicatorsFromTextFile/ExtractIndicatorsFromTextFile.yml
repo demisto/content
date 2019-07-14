@@ -1,0 +1,58 @@
+args:
+- default: false
+  description: War Room entryID of the file to read.
+  isArray: false
+  name: entryID
+  required: true
+  secret: false
+- default: false
+  description: Maximal file size to load, in bytes. Default is 1000000 (1MB).
+  isArray: false
+  name: maxFileSize
+  required: false
+  secret: false
+comment: |-
+  Extract indicators from a text-based file.
+  Indicators that can be extracted:
+  * IP
+  * Domain
+  * URL
+  * File Hash
+  * Email Address
+commonfields:
+  id: ExtractIndicatorsFromTextFile
+  version: -1
+enabled: true
+name: ExtractIndicatorsFromTextFile
+outputs:
+- contextPath: Domain.Name
+  description: Extracted domains
+  type: string
+- contextPath: Account.Email.Address
+  description: Extracted emails
+  type: string
+- contextPath: File.MD5
+  description: Extracted MD5
+  type: string
+- contextPath: File.SHA1
+  description: Extracted SHA1
+  type: string
+- contextPath: File.SHA256
+  description: Extracted SHA256
+  type: string
+- contextPath: IP.Address
+  description: Extracted IPs
+  type: string
+- contextPath: URL.Data
+  description: Extracted URLs
+  type: string
+script: '-'
+system: false
+timeout: '0'
+type: python
+runas: DBotWeakRole
+runonce: false
+tests:
+- Extract Indicators From File - test
+fromversion: 4.1.0
+tags: []
