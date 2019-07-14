@@ -53,6 +53,7 @@ CONTENT_GITHUB_LINK = r'https://raw.githubusercontent.com/demisto/content'
 
 
 def add_dot(text):
+    text = text.strip()
     if text.endswith('.'):
         return text
     return text + '.'
@@ -107,7 +108,7 @@ class Content(object):
             # empty releaseNotes is not supported
             return None
 
-        return rn
+        return rn.strip()
 
     @abc.abstractmethod
     def added_release_notes(self, file_path, data):
