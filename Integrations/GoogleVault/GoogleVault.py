@@ -44,21 +44,34 @@ def get_credentials(additional_scopes=None, delegated_user=ADMIN_EMAIL):
     scopes = SCOPES
     if additional_scopes is not None:
         scopes += additional_scopes
-    cred = service_account.ServiceAccountCredentials.from_json_keyfile_dict(json.loads(PRIVATE_KEY_CONTENT),
-                                                                            scopes=scopes)
-    return cred.create_delegated(delegated_user)
+    try:
+        cred = service_account.ServiceAccountCredentials.from_json_keyfile_dict(json.loads(PRIVATE_KEY_CONTENT),
+                                                                                scopes=scopes)
+        delegated_creds = cred.create_delegated(delegated_user)
+    except Exception as e:
+        LOG('An error occurred in the \'get_credentials\' function.')
+        err_msg = 'An error occurred while trying to construct an OAuth2 ' \
+                  'ServiceAccountCredentials object - {}'.format(str(e))
+        return_error(err_msg)
+    return delegated_creds
 
 
 def connect():
     creds = get_credentials()
-    service = build('vault', 'v1', http=creds.authorize(Http()))
+    try:
+        service = build('vault', 'v1', http=creds.authorize(Http(disable_ssl_certificate_validation=(not USE_SSL))))
+    except Exception as e:
+        LOG('There was an error creating the Vault service in the \'connect\' function.')
+        err_msg = 'There was an error creating the Vault service - {}'.format(str(e))
+        return_error(err_msg)
     return service
 
 
-def is_matter_exist(matter_name):  # Not needed at the moment
+def is_matter_exist(service, matter_name):  # Not needed at the moment
     """
     Searches for existence of a matter by its name
     Note - this is case-sensitive
+    :param service: Vault service object
     :param matter_name: name of the matter to be searched
     :return: True if exists, False otherwise.
     """
