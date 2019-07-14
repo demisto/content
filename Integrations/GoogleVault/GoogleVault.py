@@ -45,7 +45,10 @@ def get_credentials(additional_scopes=None, delegated_user=ADMIN_EMAIL):
     if additional_scopes is not None:
         scopes += additional_scopes
     try:
-        cred = service_account.ServiceAccountCredentials.from_json_keyfile_dict(json.loads(PRIVATE_KEY_CONTENT),
+        json_keyfile = json.loads(PRIVATE_KEY_CONTENT)
+        if not isinstance(json_keyfile, dict):
+            json_keyfile = json.loads(json_keyfile)
+        cred = service_account.ServiceAccountCredentials.from_json_keyfile_dict(json_keyfile,
                                                                                 scopes=scopes)
         delegated_creds = cred.create_delegated(delegated_user)
     except Exception as e:
