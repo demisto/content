@@ -6,7 +6,7 @@ display: C2sec irisk
 category: Data Enrichment & Threat Intelligence
 description: Understand Your Cyber Exposure as Easy as a Google Search
 configuration:
-- display: API URL (e.g https://api.c2sec.com/api)
+- display: API URL (e.g. https://api.c2sec.com/api)
   name: endpointURL
   defaultvalue: ""
   type: 0
@@ -16,7 +16,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Default Domain Name
+- display: Default domain name
   name: domainName
   defaultvalue: ""
   type: 0
@@ -37,27 +37,26 @@ script:
   - name: irisk-add-domain
     arguments:
     - name: domain
-      description: Domain to be added into the portfolio (if empty default domain will be used)
+      description: Domain to add to the portfolio. If empty, default domain will be used.
     - name: newscan
       required: true
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Flag to indicate whether we would always start a new scan for the
-        domain
+      description: Flag to indicate whether a new scan is always initiated for the specified domain.
       defaultValue: "true"
     outputs:
     - contextPath: C2Sec.Domain.result
-      description: result status of adding the new company.
+      description: Result status of adding the new company.
     - contextPath: C2Sec.Domain.Name
       description: The name of the searched domain.
-    description: Add a domain into portfolio
+    description: Adds a domain to portfolio.
   - name: irisk-get-scan-status
     arguments:
     - name: id
       required: true
-      description: Domain workitemid whose status to be checked
+      description: Domain workitemid for which to check the status.
     outputs:
     - contextPath: C2sec.Domain.Scan.domain
       description: The name of the scanned domain.
@@ -65,49 +64,46 @@ script:
     - contextPath: C2sec.Domain.Scan.workitemid
       description: The ID of the current scan.
       type: number
-    - contextPath: C2sec.Domain.Scan.domain
-      description: The scanned domain name.
-      type: string
     - contextPath: C2sec.Domain.Scan.completeTime
-      description: The time in which the scan was completed.
+      description: The time that the scan was completed.
       type: date
     - contextPath: C2sec.Domain.Scan.creationTime
-      description: The time in which the scan was initiated.
+      description: The time that the scan was initiated.
       type: date
     - contextPath: C2sec.Domain.Scan.status
-      description: The status of the current scan.(processing/completed)
+      description: The status of the current scan ("processing"/"completed").
       type: number
-    description: Query scan status
+    description: Queries the status of a scan.
   - name: irisk-rescan-domain
     arguments:
     - name: domain
-      description: Domain to be rescaned (if empty default domain will be used)
+      description: Domain to re-scan. If empty, the default domain will be used.
     outputs:
     - contextPath: C2sec.Domain.Scan.domain
       description: The name of the scanned domain.
       type: string
     - contextPath: C2sec.Domain.Scan.workitemid
-      description: Scan ID
+      description: Scan ID.
       type: number
     - contextPath: C2sec.Domain.Scan.result
       description: The scan result status.
       type: string
-    description: Initiate a rescan for domain inside portfolio
+    description: Initiates a re-scan for a domain within a portfolio.
   - name: irisk-get-domain-issues
     arguments:
     - name: domain
-      description: Domain to be queried (if empty default domain it will be used)
+      description: The domain to query. If empty, the default domain it will be used.
     - name: severity
-      description: Get issues with severity equal to the one provieded.
+      description: Filter query results by issue severity..
     outputs:
     - contextPath: C2sec.Domain.Name
-      description: The name of the domain we ran the check against.
+      description: The name of the domain against which it was checked.
       type: string
     - contextPath: C2sec.Domain.Issue.ID
-      description: The ID of the issue.
+      description: Issue ID.
       type: string
     - contextPath: C2sec.Domain.Issue.Asset
-      description: Asset associated with the issues. Example, ip addresses, website URLs, etc.
+      description: Asset associated with the issues. For example, IP addresses, website URLs, and so on.
       type: string
     - contextPath: C2sec.Domain.Issue.Component
       description: The component used in the issue.
@@ -124,12 +120,12 @@ script:
     - contextPath: C2sec.Domain.Issue.Severity
       description: The severity of the issue.
       type: string
-    description: Get the issues located under the provided domain.
+    description: Returns the issues located under the specified domain.
   - name: irisk-get-scan-results
     arguments:
     - name: domain
       required: true
-      description: Domain to be queried (if empty default domain will be used)
+      description: The domain to query. If empty, default domain will be used.
     - name: component
       required: true
       auto: PREDEFINED
@@ -137,25 +133,25 @@ script:
       - credential
       - network
       - application
-      description: Component to be queried
+      description: The component to query.
     outputs:
     - contextPath: C2sec.Domain.application.result
-      description: Query Status
+      description: Query status.
       type: string
     - contextPath: C2sec.Domain.application.Domain
       description: The domain name being queried.
       type: string
     - contextPath: C2sec.Domain.application.data.appdetail
-      description: Details about the app being checked.
+      description: Details about the application being checked.
       type: string
     - contextPath: C2sec.Domain.application.data.info
-      description: Info regarding the data being processed.
+      description: Information regarding the data being processed.
       type: string
     - contextPath: C2sec.Domain.application.data.website
       description: Website address being processed.
       type: string
     - contextPath: C2sec.Domain.credential.result
-      description: Query Status
+      description: Query status.
       type: string
     - contextPath: C2sec.Domain.credential.Domain
       description: The domain name being queried.
@@ -167,7 +163,7 @@ script:
       description: User password.
       type: string
     - contextPath: C2sec.Domain.network.result
-      description: Query Status
+      description: Query status.
       type: string
     - contextPath: C2sec.Domain.network.Domain
       description: The domain name being queried.
@@ -176,7 +172,7 @@ script:
       description: Firewall status.
       type: string
     - contextPath: C2sec.Domain.network.data.port
-      description: Port being used.
+      description: Port number.
       type: string
     - contextPath: C2sec.Domain.network.data.IP
       description: IP address.
@@ -191,7 +187,7 @@ script:
       description: Name of the protocol being used.
       type: string
     - contextPath: C2sec.Domain.network.data.state
-      description: State of the network application(open/closed).
+      description: State of the network application ("open" or "closed").
       type: string
     description: Query Data for specific component for companies in the portfolio
   runonce: false
