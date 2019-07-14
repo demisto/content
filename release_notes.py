@@ -593,6 +593,7 @@ def create_content_descriptor(version, asset_id, res, github_token):
 
 
 def filter_packagify_changes(modified_files, added_files, removed_files, tag):
+    added_files = added_files - modified_files
     # map IDs to removed files
     packagify_diff = {}  # type: dict
     for file_path in removed_files:
@@ -643,6 +644,7 @@ def main():
     args = arg_parser.parse_args()
 
     tag = get_last_release_version()
+    print('Last release version: {}'.format(tag))
 
     # get changed yaml/json files (filter only relevant changed files)
     fv = FilesValidator()
