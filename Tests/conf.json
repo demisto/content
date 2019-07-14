@@ -1753,7 +1753,6 @@
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "No instance",
         "Minerva Labs Anti-Evasion Platform": "No instance",
-        "GitHub": "no instance configured, also need to fix test",
         "Phish.AI": "Unauthorized. will be re-branded soon as Cofense",
 
       "_comment": "~~~ UNSTABLE ~~~",
