@@ -7,6 +7,7 @@ import json
 from oauth2client import service_account
 from google.oauth2 import service_account as google_service_account
 import googleapiclient.http
+from googleapiclient._auth import authorized_http
 import dateparser
 import io
 import os
@@ -469,7 +470,10 @@ def get_storage_credentials():
 
 def connect_to_storage():
     try:
-        service = build('storage', 'v1', credentials=get_storage_credentials())
+        creds = get_storage_credentials()
+        ptth = authorized_http(creds)
+        ptth.disable_ssl_certificate_validation = (not USE_SSL)
+        service = build('storage', 'v1', http=ptth)
     except Exception as e:
         LOG('There was an error creating the Storage service in the \'connect_to_storage\' function.')
         err_msg = 'There was an error creating the Storage service - {}'.format(str(e))
