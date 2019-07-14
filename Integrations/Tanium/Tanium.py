@@ -31,7 +31,7 @@ lib_dir = os.path.join(pytan_root_dir, 'lib')
 
 # add pytan_loc and lib_dir to the PYTHONPATH variable
 path_adds = [lib_dir, pytan_static_path]
-[sys.path.append(aa) for aa in path_adds if aa not in sys.path]
+[sys.path.append(aa) for aa in path_adds if aa not in sys.path]  # type: ignore
 
 try:
     import pytan
@@ -154,7 +154,7 @@ def get_all_saved_questions(handler):
 
 
 def get_object(handler, objtype, name=None, id=None):
-    LOG("getting Tanium %s - %s" % (objtype, name if name != None else id))
+    LOG("getting Tanium %s - %s" % (objtype, name if name is not None else id))
     kwargs = {}
     kwargs["objtype"] = objtype
     kwargs["id"] = id
@@ -265,7 +265,8 @@ def handle_cgs(handler, obj, kwargs):
     """Example PreAddAction callback that modifies the target_group of an Action if computer group names are supplied.
     callbacks = {}
     callbacks["PreAddAction"] = handle_cgs
-    deploy_action(package="blah", cg_names=["ip has 192.168", "has tanium app"], action_filters=["Computer Name, that contains:a"], callbacks=callbacks)
+    deploy_action(package="blah", cg_names=["ip has 192.168", "has tanium app"], action_filters=["Computer Name, that
+     contains:a"], callbacks=callbacks)
     """
     cgs = kwargs.get("cg_names", [])
     LOG("handling cgs %s" % cgs)
@@ -303,8 +304,8 @@ def deploy_action(handler):
         kwargs[key] = value
     callbacks = {}
     callbacks['PreAddAction'] = handle_cgs
-    kwargs['callbacks'] = callbacks
-    kwargs['action_options'] = ['or']
+    kwargs['callbacks'] = callbacks  # type: ignore
+    kwargs['action_options'] = ['or']  # type: ignore
     if demisto.get(demisto.args(), 'action_options'):
         kwargs['action_options'] = demisto.args()['action_options'].split(',')
     if demisto.get(demisto.args(), 'action_filters'):
@@ -348,7 +349,10 @@ def deploy_action(handler):
         LOG("deploying Tanium package %s" % pack)
         response.append(handler.deploy_action(**kwargs))
 
-    ec = {'Tanium.SavedActions(val.Id && val.Id == obj.Id)': [], 'Tanium.Actions(val.id && val.id == obj.id)': []}
+    ec = {  # type: ignore
+        'Tanium.SavedActions(val.Id && val.Id == obj.Id)': [],
+        'Tanium.Actions(val.id && val.id == obj.id)': []
+    }
     contents = []
     tbl = []
 
@@ -375,8 +379,7 @@ def deploy_action(handler):
         'Type': entryTypes['note'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Tanium Deployed Actions',
-                                         tbl) if tbl else '### ' + header + '\nNo results were found',
+        'HumanReadable': tableToMarkdown('Tanium Deployed Actions', tbl) if tbl else 'No results were found',
         'EntryContext': ec
     }
 
@@ -401,7 +404,7 @@ def askQuestion(handler, kwargs):
     response = handler.ask(**kwargs)
 
     if isinstance(response, str):
-        return reponse
+        return response
 
     query_text = response['question_object'].query_text
     if response.get('question_results'):
@@ -495,9 +498,9 @@ def ask_manual_question(handler, args):
 
     kwargs = {}
     kwargs["qtype"] = u'manual'
-    kwargs["sensors_help"] = True if args.get('sensors_help') == 'True' else False
-    kwargs["filters_help"] = True if args.get('filters_help') == 'True' else False
-    kwargs["options_help"] = True if args.get('options_help') == 'True' else False
+    kwargs["sensors_help"] = True if args.get('sensors_help') == 'True' else False  # type: ignore
+    kwargs["filters_help"] = True if args.get('filters_help') == 'True' else False  # type: ignore
+    kwargs["options_help"] = True if args.get('options_help') == 'True' else False  # type: ignore
 
     if kwargs["filters_help"] or kwargs["sensors_help"] or kwargs["options_help"]:
         try:
@@ -512,8 +515,8 @@ def ask_manual_question(handler, args):
     kwargs["question_filters"] = args.get('question_filters', '').split(';') if args.get('question_filters',
                                                                                          '') != '' else None
     kwargs["sensors"] = args.get('sensors', '').split(';') if args.get('sensors', '') != '' else None
-    kwargs["polling_secs"] = int(args.get('polling_secs', '5'))
-    kwargs["complete_pct"] = int(args.get('complete_pct', '99'))
+    kwargs["polling_secs"] = int(args.get('polling_secs', '5'))  # type: ignore
+    kwargs["complete_pct"] = int(args.get('complete_pct', '99'))  # type: ignore
 
     LOG("asking Tanium question")
     return askQuestion(handler, kwargs)
@@ -588,8 +591,8 @@ try:
     if demisto.command() == 'tn-deploy-package':
         final_result = deploy_action(handler)
     if demisto.command() == 'tn-ask-system':
-        final_result = ask_parsed_question(handler, 'Get Computer Name from all machines with Computer Name matching \"' +
-                                           demisto.args()['hostname'] + '\"', '1')
+        final_result = ask_parsed_question(handler, 'Get Computer Name from all machines with Computer Name matching \"'
+                                           + demisto.args()['hostname'] + '\"', '1')
     if demisto.command() == 'tn-ask-question':
         final_result = ask_parsed_question(handler, d_args['question'], d_args.get('index', '1'))
     if demisto.command() == 'tn-create-package':
