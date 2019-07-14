@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import requests
 from requests.auth import HTTPBasicAuth
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 # Handle proxy
 proxies = {}
@@ -20,7 +19,6 @@ else:
             if k in os.environ:
                 return os.environ[k]
         return None
-
 
     proxies = {
         'http': get_env_var('http_proxy'),
@@ -329,9 +327,8 @@ def reauthenticate_endpoint_command():
     mac_address_psn = get_psn_for_mac(mac_address)
     if not mac_address_psn:
         return "Couldn't find psn address for mac: " + mac_address
-    psn_address = \
-    json.loads(xml2json(mac_address_psn)).get('restAuthStatusOutputList', {}).get('authStatusList', {}).get(
-        'authStatusElements', {})[0].get('acs_server')
+    psn_address = json.loads(xml2json(mac_address_psn)).get('restAuthStatusOutputList', {}).get(
+        'authStatusList', {}).get('authStatusElements', {})[0].get('acs_server')
     if not psn_address:
         return "Couldn't find psn address for mac: " + mac_address + " response from psn endpoint was: " + json.dumps(
             mac_address_psn)
