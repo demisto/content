@@ -33,8 +33,8 @@ tasks:
     task:
       id: 2085bafc-f0de-4ec6-84c8-71139aaa51d6
       version: -1
-      name: Add Company
-      script: '|||irisk-add-company'
+      name: Search Domain
+      script: '|||irisk-add-domain'
       type: regular
       iscommand: true
       brand: ""
@@ -63,8 +63,8 @@ tasks:
     task:
       id: e892d3d9-e6ad-4a4e-8b4b-d9a00d95087d
       version: -1
-      name: Query Component
-      script: '|||irisk-query-component'
+      name: Get Scan results
+      script: '|||irisk-get-scan-results'
       type: regular
       iscommand: true
       brand: ""
@@ -90,8 +90,8 @@ tasks:
     task:
       id: a32fbdcc-d8b1-4bb9-80c7-000bef532332
       version: -1
-      name: Query Issues
-      script: '|||irisk-query-issues'
+      name: Get Domain Issues
+      script: '|||irisk-get-domain-issues'
       type: regular
       iscommand: true
       brand: ""
@@ -118,8 +118,8 @@ tasks:
     task:
       id: 3141efc1-8672-41fa-8163-ee730eaffaea
       version: -1
-      name: Query WorkItem
-      script: '|||irisk-query-workitem'
+      name: Get WorkItem status
+      script: '|||irisk-get-scan-status'
       type: regular
       iscommand: true
       brand: ""
@@ -128,7 +128,7 @@ tasks:
       - "2"
     scriptarguments:
       id:
-        simple: ${C2sec.Scan.workitemid}
+        simple: ${C2sec.Domain.Scan.workitemid}
     separatecontext: false
     view: |-
       {
@@ -146,8 +146,8 @@ tasks:
     task:
       id: bd8f6e3d-9151-4622-8648-546366a1fa0b
       version: -1
-      name: Rescan Company
-      script: '|||irisk-rescan-company'
+      name: Rescan Domaun
+      script: '|||irisk-rescan-domain'
       type: regular
       iscommand: true
       brand: ""

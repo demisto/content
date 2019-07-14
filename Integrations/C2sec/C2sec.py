@@ -24,7 +24,7 @@ else:
 USE_SSL = not demisto.params().get('unsecure', False)
 
 
-def addcompany(domain, newscan):
+def add_domain(domain, newscan):
     if newscan == 'true':
         newscan = 1
     else:
@@ -35,24 +35,29 @@ def addcompany(domain, newscan):
         'domain': domain,
         'newscan': newscan
     }
-    call = requests.get(ENDPOINTURL + 'iriskaddcompany', headers=HEADERS, verify=USE_SSL, params=params)
+    call = requests.get(ENDPOINTURL + '/iriskaddcompany', headers=HEADERS, verify=USE_SSL, params=params)
 
     if call.status_code == requests.codes.ok:
-        md = tableToMarkdown('Add Company Result', call.json())
+        result_dictionary = {
+            'result': call.json()['result'],
+            'Name': domain
+        }
+
+        md = tableToMarkdown('Add domain Result', result_dictionary)
         return {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': call.json(),
             'HumanReadable': md,
             'EntryContext': {
-                "C2sec.Company": call.json()
+                "C2sec.Domain(val.Name && val.Name == obj.Name)": result_dictionary
             }
         }
     else:
-        return 'Error adding a new company - status code: [%d] - reason: %s' % (call.status_code, call.text)
+        return 'Error searching domain - status code: [%d] - reason: %s' % (call.status_code, call.text)
 
 
-def queryWorkitem(workitemid):
+def get_scan_status(workitemid):
     params = {
         'apikey': API_KEY,
         'workitemid': workitemid
@@ -61,29 +66,32 @@ def queryWorkitem(workitemid):
     if call.status_code == requests.codes.ok:
         resp = call.json()
         resp['apistatus']['workitemid'] = workitemid
-        md = tableToMarkdown('Query WorkItem Result', resp['apistatus'])
+        md = tableToMarkdown('Get scan Result', resp['apistatus'], removeNull=True)
         return {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': resp,
             'HumanReadable': md,
             'EntryContext': {
-                "C2sec.Scan(val.workitemid && val.workitemid == obj.workitemid)": resp['apistatus']
+                "C2sec.Domain.Scan(val.workitemid && val.workitemid == obj.workitemid)": resp['apistatus']
             }
         }
     else:
-        return 'Error querying a workitem [%d] - reason: %s' % (call.status_code, call.text)
+        return 'Error getting scan results [%d] - reason: %s' % (call.status_code, call.text)
 
 
-def queryIssues(domain):
+def get_domain_issues(domain, severity=None):
     params = {
         'apikey': API_KEY,
         'domain': domain
     }
-    call = requests.get(ENDPOINTURL + 'iRiskQueryIssues', headers=HEADERS, verify=USE_SSL, params=params)
+    call = requests.get(ENDPOINTURL + '/iRiskQueryIssues', headers=HEADERS, verify=USE_SSL, params=params)
     if call.status_code == requests.codes.ok:
         contexts = []
         for issue in call.json()['issueList']:
+            if severity and severity != issue['severity']:
+                continue
+
             context = {
                 'ID': issue['id'],
                 'Issue': issue['issue'],
@@ -96,7 +104,7 @@ def queryIssues(domain):
             }
             contexts.append(context)
 
-        md = tableToMarkdown('Query Issues Result', contexts,
+        md = tableToMarkdown('Get domain Issues Result', contexts,
                              ['ID', 'Issue', 'Severity', 'Component', 'ComponentDisplay', 'Details', 'Asset', 'Rec'])
         return {
             'Type': entryTypes['note'],
@@ -104,50 +112,53 @@ def queryIssues(domain):
             'Contents': call.json(),
             'HumanReadable': md,
             'EntryContext': {
-                "C2sec.Issue(val.ID && val.ID == obj.ID)": contexts
+                "C2sec.Domain(val.Name && val.Name == obj.Name)": {
+                    'Name': domain,
+                    'Issue': contexts
+                }
             }
         }
     else:
-        return 'Error querying for issues [%d] - reason: %s' % (call.status_code, call.text)
+        return 'Error getting issues [%d] - reason: %s' % (call.status_code, call.text)
 
 
-def rescan(domain):
+def rescan_domain(domain):
     params = {
         'apikey': API_KEY,
         'domain': domain
     }
-    call = requests.get(ENDPOINTURL + 'iRiskRescanCompany', headers=HEADERS, verify=USE_SSL, params=params)
+    call = requests.get(ENDPOINTURL + '/iRiskRescanCompany', headers=HEADERS, verify=USE_SSL, params=params)
     if call.status_code == requests.codes.ok:
-        md = tableToMarkdown('Rescan Results', call.json())
+        md = tableToMarkdown('Rescan domain Results', call.json())
+        context = call.json()
+        context['domain'] = domain
+
         return {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': call.json(),
             'HumanReadable': md,
             'EntryContext': {
-                "C2sec.Scan(val.workitemid && val.workitemid == obj.workitemid)": call.json()
+                "C2sec.Domain.Scan(val.workitemid && val.workitemid == obj.workitemid)": context
             }
         }
     else:
-        return 'Error rescanning the company  [%d] - reason: %s' % (call.status_code, call.text)
+        return 'Error rescanning the domain [%d] - reason: %s' % (call.status_code, call.text)
 
 
-def queryComponent(domain, component):
+def get_scan_results(domain, component):
     params = {
         'apikey': API_KEY,
         'domain': domain,
         'component': component
     }
-    call = requests.get(ENDPOINTURL + 'iRiskQueryComponentData', headers=HEADERS, verify=USE_SSL, params=params)
+    call = requests.get(ENDPOINTURL + '/iRiskQueryComponentData', headers=HEADERS, verify=USE_SSL, params=params)
 
     if call.status_code == requests.codes.ok:
         resp = call.json()
-        if 'data' in resp:
-            for index, _ in enumerate(resp['data']):
-                resp['data'][index]['Component'] = component
 
         resp['Domain'] = domain
-        md = tableToMarkdown('Query Component Result', resp, ['result', 'Domain', 'component'],
+        md = tableToMarkdown('Get Scan Result', resp, ['result', 'Domain', 'component'],
                              metadata="The results can be found in the context")
 
         return {
@@ -156,38 +167,39 @@ def queryComponent(domain, component):
             'Contents': call.json(),
             'HumanReadable': md,
             'EntryContext': {
-                "C2sec.Query(val.domain && val.domain == obj.domain && val.component == obj.component)": resp
+                "C2sec.Domain.{}(val.Domain && val.Domain == obj.Domain)".format(component): resp
             }
         }
     else:
-        return_error('Error querying for component [{}] - reason: {}'.format(call.status_code, call.text))
+        return_error('Error getting the scan results [{}] - reason: {}'.format(call.status_code, call.text))
 
 
 LOG('Command being called is {}'.format(demisto.command()))
 try:
+    handle_proxy()
     # The command demisto.command() holds the command sent from the user.
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
-        test = addcompany(demisto.params()['domainName'], newscan='false')
-        if isinstance(test, dict):
+        test = add_domain(demisto.params()['domainName'], newscan='false')
+        if isinstance(test, dict) and "HTTPSConnectionPool" not in test:
             demisto.results("ok")
         else:
             demisto.results(test)
-    elif demisto.command() == 'irisk-add-company':
-        result = addcompany(demisto.args().get('domain', DOMAIN), demisto.args()['newscan'])
+    elif demisto.command() == 'irisk-add-domain':
+        result = add_domain(demisto.args().get('domain', DOMAIN), demisto.args()['newscan'])
         demisto.results(result)
-    elif demisto.command() == 'irisk-query-workitem':
-        result = queryWorkitem(demisto.args()['id'])
+    elif demisto.command() == 'irisk-get-scan-status':
+        result = get_scan_status(demisto.args()['id'])
         demisto.results(result)
-    elif demisto.command() == 'irisk-rescan-company':
-        result = rescan(demisto.args().get('domain', DOMAIN))
+    elif demisto.command() == 'irisk-rescan-domain':
+        result = rescan_domain(demisto.args().get('domain', DOMAIN))
         demisto.results(result)
-    elif demisto.command() == 'irisk-query-issues':
-        result = queryIssues(demisto.args().get('domain', DOMAIN))
+    elif demisto.command() == 'irisk-get-domain-issues':
+        result = get_domain_issues(demisto.args().get('domain', DOMAIN), demisto.args().get('severity'))
         demisto.results(result)
-    elif demisto.command() == 'irisk-query-component':
+    elif demisto.command() == 'irisk-get-scan-results':
         domain = demisto.args().get('domain', DOMAIN)
-        result = queryComponent(domain, demisto.args()['component'])
+        result = get_scan_results(domain, demisto.args()['component'])
         demisto.results(result)
 
 # Log exceptions
