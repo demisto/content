@@ -90,7 +90,7 @@ tasks:
       maxTimeToWaitForResults: {}
       offset: {}
       query:
-        simple: _sourceCategory=macos/system
+        simple: _collector=Test_collector_linux
       timezone: {}
       to:
         simple: 2019-07-04T16:00:00
