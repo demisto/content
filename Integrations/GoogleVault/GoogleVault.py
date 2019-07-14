@@ -450,14 +450,27 @@ def download_storage_object(object_ID, bucket_name):
 
 
 def get_storage_credentials():
-    privateKeyJson = json.loads(PRIVATE_KEY_CONTENT)
-    crads = google_service_account.Credentials.from_service_account_info(privateKeyJson, scopes=SCOPES,
-                                                                         subject=ADMIN_EMAIL)
+    try:
+        privateKeyJson = json.loads(PRIVATE_KEY_CONTENT)
+        if not isinstance(privateKeyJson, dict):
+            privateKeyJson = json.loads(privateKeyJson)
+        crads = google_service_account.Credentials.from_service_account_info(privateKeyJson, scopes=SCOPES,
+                                                                             subject=ADMIN_EMAIL)
+    except Exception as e:
+        LOG('An error occurred in the \'get_storage_credentials\' function.')
+        err_msg = 'An error occurred while trying to construct an OAuth2 ' \
+                  'Storage Credentials object - {}'.format(str(e))
+        return_error(err_msg)
     return crads
 
 
 def connect_to_storage():
-    service = build('storage', 'v1', credentials=get_storage_credentials())
+    try:
+        service = build('storage', 'v1', credentials=get_storage_credentials())
+    except Exception as e:
+        LOG('There was an error creating the Storage service in the \'connect_to_storage\' function.')
+        err_msg = 'There was an error creating the Storage service - {}'.format(str(e))
+        return_error(err_msg)
     return service
 
 
