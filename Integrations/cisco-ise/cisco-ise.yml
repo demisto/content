@@ -1,0 +1,213 @@
+category: Network Security
+commonfields:
+  id: Cisco pxGrid ISE
+  version: -1
+configuration:
+- display: Cisco ISE server URL. For example, https://123.123.123.65
+  name: serverURL
+  required: true
+  type: 0
+- display: Server port. For example, 9060
+  name: serverPort
+  required: true
+  type: 0
+- display: Cisco ISE username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'true'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+description: Next-generation secure network access.
+display: Cisco pxGrid ISE
+name: Cisco pxGrid ISE
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: MAC address of the endpoint (format 11:22:33:44:55:66)
+      isArray: false
+      name: macAddress
+      required: true
+      secret: false
+    deprecated: false
+    description: Get endpoint's ID by its MAC
+    execution: false
+    name: cisco-ise-get-endpoint-id
+    outputs:
+    - contextPath: Endpoint.ID
+      description: Endpoint ID
+      type: string
+    - contextPath: Endpoint.MACAddress
+      description: Endpoint MAC address
+      type: string
+  - arguments:
+    - default: false
+      description: The id of the endpoint
+      isArray: false
+      name: endpointID
+      required: false
+      secret: false
+    - default: false
+      description: MAC address of the endpoint (format 11:22:33:44:55:66)
+      isArray: false
+      name: macAddress
+      required: false
+      secret: false
+    deprecated: false
+    description: Get details about certain endpoint
+    execution: false
+    name: cisco-ise-get-endpoint-details
+    outputs:
+    - contextPath: CiscoISE.Endpoint.ID
+      description: Endpoint ID
+      type: string
+    - contextPath: CiscoISE.Endpoint.Description
+      description: Endpoint description
+      type: string
+    - contextPath: CiscoISE.Endpoint.MACAddress
+      description: Endpoint MAC address
+      type: string
+    - contextPath: CiscoISE.Endpoint.Group
+      description: Endpoint group name
+      type: string
+    - contextPath: Endpoint.ID
+      description: Endpoint ID
+      type: string
+    - contextPath: Endpoint.MACAddress
+      description: Endpoint MAC address
+      type: string
+    - contextPath: CiscoISE.Endpoint.CustomAttributes
+      description: Endpoint custom attributes
+      type: string
+    - contextPath: CiscoISE.Endpoint.StaticGroupAssignment
+      description: Ture if endpoint has static group assignment
+      type: boolean
+    - contextPath: CiscoISE.Endpoint.StaticProfileAssignment
+      description: Ture if endpoint has static profile assignment
+      type: boolean
+    - contextPath: CiscoISE.Endpoint.User
+      description: Endpoint profile user
+      type: string
+  - arguments:
+    - default: false
+      description: MAC address of the endpoint (format 11:22:33:44:55:66)
+      isArray: false
+      name: macAddress
+      required: true
+      secret: false
+    deprecated: false
+    description: Change of Authorization (CoA), reauthenticating an endpoint
+    execution: false
+    name: cisco-ise-reauthenticate-endpoint
+    outputs:
+    - contextPath: CiscoISE.Endpoint.MACAddress
+      description: Mac address of the endpoint
+      type: string
+    - contextPath: CiscoISE.Endpoint.reauthenticateResult
+      description: Reauthentication result
+      type: boolean
+  - deprecated: false
+    description: Get data about the existing endpoints
+    execution: false
+    name: cisco-ise-get-endpoints
+    outputs:
+    - contextPath: Endpoint.ID
+      description: Endpoint ID
+      type: string
+    - contextPath: Endpoint.MACAddress
+      description: Endpoint MAC address
+      type: string
+    - contextPath: CiscoISE.Endpoint.ID
+      description: Endpoint ID
+      type: string
+    - contextPath: CiscoISE.Endpoint.MACAddress
+      description: Endpoint MAC address
+      type: string
+  - arguments:
+    - default: false
+      description: Endpoint ID
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: MAC address of the endpoint (format 11:22:33:44:55:66)
+      isArray: false
+      name: macAddress
+      required: false
+      secret: false
+    - default: false
+      description: The name of the attribute. Can be a comma separated list. For example,
+        attributeName=firstAttribute,secondAttribute
+      isArray: false
+      name: attributeName
+      required: true
+      secret: false
+    - default: false
+      description: The value of the attribute. Can be a comma separated list. For
+        example, attributeValue=firstValue,secondValue
+      isArray: false
+      name: attributeValue
+      required: true
+      secret: false
+    deprecated: false
+    description: Update an endpoint custom attribute
+    execution: false
+    name: cisco-ise-update-endpoint-custom-attribute
+  - arguments:
+    - default: false
+      description: The group ID to assign to this endpoint, e.g. 1
+      isArray: false
+      name: groupId
+      required: false
+      secret: false
+    - default: false
+      description: MAC address of the endpoint (format 11:22:33:44:55:66)
+      isArray: false
+      name: macAddress
+      required: false
+      secret: false
+    - default: false
+      description: Endpoint ID to update. E.g. 046f1250-bc6e-11e4-9baf-000c2916b229
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: Name of the new group for the endpoint
+      isArray: false
+      name: groupName
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates the group of an endpoint
+    execution: false
+    name: cisco-ise-update-endpoint-group
+  - deprecated: false
+    description: Retrieve a collection of endpoint identity groups.
+    execution: false
+    name: cisco-ise-get-groups
+    outputs:
+    - contextPath: CiscoISE.Group.Description
+      description: The description of the endpoint identity groups
+      type: String
+    - contextPath: CiscoISE.Group.ID
+      description: The ID of the endpoint identity groups
+      type: String
+    - contextPath: CiscoISE.Group.Name
+      description: The name of the endpoint identity groups
+      type: String
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+tests:
+- cisco-ise-test-playbook
