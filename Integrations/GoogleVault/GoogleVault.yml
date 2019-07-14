@@ -12,7 +12,7 @@ configuration:
   required: true
   type: 4
 - defaultvalue: 'true'
-  display: Trust any certificate (Unsecure)
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -856,6 +856,5 @@ script:
   runonce: false
   script: '-'
   type: python
-image: ''
 tests:
 - Google-Vault-Generic-Test
