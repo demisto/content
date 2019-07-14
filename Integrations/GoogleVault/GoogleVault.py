@@ -19,6 +19,9 @@ DEMISTO_MATTER = 'test_search_phishing'
 
 ADMIN_EMAIL = demisto.params()['gsuite_credentials']['identifier'].encode('utf-8')
 PRIVATE_KEY_CONTENT = demisto.params()['auth_json'].encode('utf-8')
+USE_SSL = not demisto.params().get('insecure', False)
+
+handle_proxy()
 
 
 # @@@@@@@@ HELPER FUNCS @@@@@@@@
