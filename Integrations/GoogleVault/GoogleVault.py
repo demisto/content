@@ -29,7 +29,7 @@ def validate_input_values(arguments_values_to_verify, available_values):
     for value in arguments_values_to_verify:
         if value not in available_values:
             return_error(
-                'Argument: \'{}\' is not one of the posible values: {}'.format(value, ', '.join(available_values)))
+                'Argument: \'{}\' is not one of the possible values: {}'.format(value, ', '.join(available_values)))
 
 
 def get_credentials(additional_scopes=None, delegated_user=ADMIN_EMAIL):
@@ -134,9 +134,9 @@ def remove_hold(service, matter_id, hold_id):
 
 
 def list_holds(service, matter_id):
-    '''
+    """
      Return a list of existing holds
-    '''
+    """
     done_paginating = False
     response = service.matters().holds().list(matterId=matter_id).execute()
     # append first page:
@@ -152,26 +152,27 @@ def list_holds(service, matter_id):
 
 
 def timeframe_to_utc_zulu_range(timeframe_str):
-    '''
+    """
     Converts a time-frame to UTC Zulu format that can be used for startTime and endTime in various Google Vault requests.
-    '''
+    """
     try:
         parsed_str = dateparser.parse(timeframe_str)
         end_time = datetime.utcnow().isoformat() + 'Z'  # Current time
         start_time = parsed_str.isoformat() + 'Z'
         return (start_time, end_time)
-    except Exception, ex:
+    except Exception as ex:
         err_msg = str(ex)
         if 'Quota exceeded for quota metric' in err_msg:
             err_msg = 'Quota for Google Vault API exceeded'
-
-        return_error('Unable to parse date correctly: {}'.format(err_msg))
+            return_error('Unable to parse date correctly: {}'.format(err_msg))
+        else:
+            raise ex
 
 
 def create_hold_query(hold_name, corpus, accounts, terms, time_frame="", start_time="", end_time=""):
-    '''
+    """
     Creates the query that will be used to request the creation of a new hold. Returns the ready-to-be-sent request.
-    '''
+    """
     # --- Sanitizing Input ---
     corpus = corpus.upper()
     if time_frame:
@@ -205,25 +206,25 @@ def create_hold_query(hold_name, corpus, accounts, terms, time_frame="", start_t
 
 
 def create_hold_mail_accounts(service, matter_id, request_body):
-    '''
+    """
     Creates a hold in Google Vault
-    '''
+    """
     return service.matters().holds().create(matterId=matter_id, body=request_body).execute()
 
 
 def create_export(service, matter, request_body):
-    '''
+    """
     Creates an export in the given matter, with the given request_body (which is the actual JSON for the request).
-    '''
+    """
     return service.matters().exports().create(matterId=matter, body=request_body).execute()
 
 
 def create_mail_export_query(export_name, emails, time_frame, start_time, end_time, terms, org_unit="",
                              export_pst='True', export_mbox='False', search_method='All Accounts',
                              include_drafts='True', data_scope='All Data'):
-    '''
+    """
     Creates the query that will be used in the request to create a mail export
-    '''
+    """
     org_unit_id = org_unit
     # --- Sanitizing Input ---
     exclude_drafts = 'false'
@@ -292,9 +293,9 @@ def create_mail_export_query(export_name, emails, time_frame, start_time, end_ti
 def create_drive_export_query(export_name, emails, team_drives, time_frame, start_time, end_time, terms, org_unit="",
                               search_method='Specific Accounts(requires emails argument)', include_teamdrives='True',
                               data_scope='All Data'):
-    '''
+    """
     Creates the query that will be used in the request to create a groups export
-    '''
+    """
     org_unit_id = org_unit
     # --- Sanitizing Input ---
     include_teamdrives = 'true'
@@ -371,9 +372,9 @@ def create_drive_export_query(export_name, emails, team_drives, time_frame, star
 
 def create_groups_export_query(export_name, emails, time_frame, start_time, end_time, terms, search_method,
                                export_pst='True', export_mbox='False', data_scope='All Data'):
-    '''
+    """
     Creates the query that will be used in the request to create a groups export
-    '''
+    """
     # --- Sanitizing Input ---
     if time_frame:
         start_time, end_time = timeframe_to_utc_zulu_range(time_frame)  # Making it UTC Zulu format
@@ -536,9 +537,9 @@ def populate_matter_with_export(current_matter, current_export):
 
 
 def list_matters_command():
-    '''
+    """
     Lists all matters in the project, with their corresponding state.
-    '''
+    """
     try:
         service = connect()
         state = demisto.args().get('state', 'STATE_UNSPECIFIED')
@@ -578,11 +579,13 @@ def list_matters_command():
                     'GoogleVault.Matter(val.MatterID === obj.MatterID)': context_output
                 }
             })
-    except Exception, ex:
+    except Exception as ex:
         err_msg = str(ex)
         if 'Quota exceeded for quota metric' in err_msg:
             err_msg = 'Quota for Google Vault API exceeded'
-        return_error('Unable to list matters. Error: {}'.format(err_msg))
+            return_error('Unable to list matters. Error: {}'.format(err_msg))
+        else:
+            raise ex
 
 
 def create_matter_command():
@@ -631,11 +634,13 @@ def create_matter_command():
                 'GoogleVault.Matter(val.MatterID === obj.MatterID)': output_context
             }
         })
-    except Exception, ex:
+    except Exception as ex:
         err_msg = str(ex)
         if 'Quota exceeded for quota metric' in err_msg:
             err_msg = 'Quota for Google Vault API exceeded'
-        return_error('Unable to create matter. Error: {}'.format(err_msg))
+            return_error('Unable to create matter. Error: {}'.format(err_msg))
+        else:
+            raise ex
 
 
 def update_matter_state_command():
@@ -665,12 +670,14 @@ def update_matter_state_command():
                     try:
                         close_response = close_matter(service, matter_id)
                         result_of_update = 'Matter was successfully closed.'
-                    except Exception, ex:
+                    except Exception as ex:
                         if 'Matters have users on hold' in str(ex):
                             demisto.log('{}'.format(ex))
                             return_error('The matter has holds that prevent it from being closed.')
-                        if 'Quota exceeded for quota metric' in str(ex):
+                        elif 'Quota exceeded for quota metric' in str(ex):
                             return_error('Quota for Google Vault API exceeded')
+                        else:
+                            raise ex
 
             # Dealing with DELETE:
             elif wanted_state == 'DELETE':
@@ -680,23 +687,27 @@ def update_matter_state_command():
                         close_response = close_matter(service, matter_id)  # noqa: F841
                         _ = delete_matter(service, matter_id)
                         result_of_update = 'Matter was {} and is now DELETED.'.format(current_state)
-                    except Exception, ex:
+                    except Exception as ex:
                         if 'Matters have users on hold' in str(ex):
                             demisto.log('{}'.format(ex))
                             return_error('The matter has holds that prevent it from being deleted.')
-                        if 'Quota exceeded for quota metric' in str(ex):
+                        elif 'Quota exceeded for quota metric' in str(ex):
                             return_error('Quota for Google Vault API exceeded')
+                        else:
+                            raise ex
 
                 elif current_state == 'CLOSED':
                     try:
                         _ = delete_matter(service, matter_id)
                         result_of_update = 'Matter was {} and is not DELETED.'.format(current_state)
-                    except Exception, ex:
+                    except Exception as ex:
                         if 'Matters have users on hold' in str(ex):
                             demisto.log('{}'.format(ex))
                             return_error('The matter has holds that prevent it from being deleted.')
-                        if 'Quota exceeded for quota metric' in str(ex):
+                        elif 'Quota exceeded for quota metric' in str(ex):
                             return_error('Quota for Google Vault API exceeded')
+                        else:
+                            raise ex
 
                 elif current_state == 'DELETED':
                     demisto.results('Matter is already deleted.')
@@ -740,11 +751,13 @@ def update_matter_state_command():
                 })
         else:
             demisto.results('No matter was found with that ID.')  # Todo: never gets here. Gotta catch the exception
-    except Exception, ex:
+    except Exception as ex:
         err_msg = str(ex)
         if 'Quota exceeded for quota metric' in err_msg:
             err_msg = 'Quota for Google Vault API exceeded'
-        return_error('Unable to update matter. Error: {}'.format(err_msg))
+            return_error('Unable to update matter. Error: {}'.format(err_msg))
+        else:
+            raise ex
 
 
 def add_account_to_hold_command():  # Todo: Not sure if context is good (It works, but maybe not according to conventions)
@@ -774,11 +787,13 @@ def add_account_to_hold_command():  # Todo: Not sure if context is good (It work
                 'GoogleVault.Hold(val.ID === obj.ID)': context_output
             }
         })
-    except Exception, ex:
+    except Exception as ex:
         err_msg = str(ex)
         if 'Quota exceeded for quota metric' in err_msg:
             err_msg = 'Quota for Google Vault API exceeded'
-        return_error('Unable to add account to hold. Error: {}'.format(err_msg))
+            return_error('Unable to add account to hold. Error: {}'.format(err_msg))
+        else:
+            raise ex
 
 
 def search_matter_command():
@@ -834,11 +849,13 @@ def search_matter_command():
                     'GoogleVault.Matter(val.MatterID === obj.MatterID)': output
                 }
             })
-    except Exception, ex:
+    except Exception as ex:
         err_msg = str(ex)
         if 'Quota exceeded for quota metric' in err_msg:
             err_msg = 'Quota for Google Vault API exceeded'
-        return_error('Unable to search matter. Error: {}'.format(err_msg))
+            return_error('Unable to search matter. Error: {}'.format(err_msg))
+        else:
+            raise ex
 
 
 def remove_account_from_hold_command():
@@ -868,11 +885,13 @@ def remove_account_from_hold_command():
                 'GoogleVault.Hold(val.ID === obj.ID)': context_output
             }
         })
-    except Exception, ex:
+    except Exception as ex:
         err_msg = str(ex)
         if 'Quota exceeded for quota metric' in err_msg:
             err_msg = 'Quota for Google Vault API exceeded'
-        return_error('Unable to remove account from hold. Error: {}'.format(err_msg))
+            return_error('Unable to remove account from hold. Error: {}'.format(err_msg))
+        else:
+            raise ex
 
 
 def delete_hold_command():
@@ -888,11 +907,13 @@ def delete_hold_command():
             'Contents': msg_to_usr,
         })
 
-    except Exception, ex:
+    except Exception as ex:
         err_msg = str(ex)
         if 'Quota exceeded for quota metric' in err_msg:
             err_msg = 'Quota for Google Vault API exceeded'
-        return_error('Unable to delete hold. Error: {}'.format(err_msg))
+            return_error('Unable to delete hold. Error: {}'.format(err_msg))
+        else:
+            raise ex
 
 
 def list_holds_command():
@@ -929,11 +950,13 @@ def list_holds_command():
                     'GoogleVault.Hold(val.ID === obj.ID)': context_output
                 }
             })
-    except Exception, ex:
+    except Exception as ex:
         err_msg = str(ex)
         if 'Quota exceeded for quota metric' in err_msg:
             err_msg = 'Quota for Google Vault API exceeded'
-        return_error('Unable to list holds. Error: {}'.format(err_msg))
+            return_error('Unable to list holds. Error: {}'.format(err_msg))
+        else:
+            raise ex
 
 
 def create_hold_command():
@@ -951,11 +974,13 @@ def create_hold_command():
     query = create_hold_query(hold_name, corpus, accounts, time_frame, start_time, end_time, terms)
     try:
         response = create_hold_mail_accounts(service, matter_id, query)
-    except Exception, ex:
+    except Exception as ex:
         err_msg = str(ex)
         if 'Quota exceeded for quota metric' in err_msg:
             err_msg = 'Quota for Google Vault API exceeded'
-        return_error('Unable to create hold. Error: {}'.format(err_msg))
+            return_error('Unable to create hold. Error: {}'.format(err_msg))
+        else:
+            raise ex
 
     hold_id = response['holdId']
     output = []
@@ -984,9 +1009,9 @@ def create_hold_command():
 
 
 def create_mail_export_command():
-    '''
+    """
     Creates a mail export in Google Vault
-    '''
+    """
     service = connect()
     matter_id = demisto.getArg('matterID')
     export_name = demisto.getArg('exportName')
@@ -1011,11 +1036,13 @@ def create_mail_export_command():
                                      export_mbox, search_method, include_drafts, data_scope)
     try:
         response = create_export(service, matter_id, query)
-    except Exception, ex:
+    except Exception as ex:
         err_msg = str(ex)
         if 'Quota exceeded for quota metric' in err_msg:
             err_msg = 'Quota for Google Vault API exceeded'
-        return_error('Unable to create export. Error: {}'.format(err_msg))
+            return_error('Unable to create export. Error: {}'.format(err_msg))
+        else:
+            raise ex
 
     create_time = response.get('createTime')
     export_id = response.get('id')
@@ -1074,11 +1101,13 @@ def create_drive_export_command():
                                       org_unit, search_method, include_teamdrives, data_scope)
     try:
         response = create_export(service, matter_id, query)
-    except Exception, ex:
+    except Exception as ex:
         err_msg = str(ex)
         if 'Quota exceeded for quota metric' in err_msg:
             err_msg = 'Quota for Google Vault API exceeded'
-        return_error('Unable to create export. Error: {}'.format(err_msg))
+            return_error('Unable to create export. Error: {}'.format(err_msg))
+        else:
+            raise ex
 
     create_time = response.get('createTime')
     export_id = response.get('id')
@@ -1133,11 +1162,14 @@ def create_groups_export_command():
                                        export_pst, export_mbox, data_scope)
     try:
         response = create_export(service, matter_id, query)
-    except Exception, ex:
+    except Exception as ex:
         err_msg = str(ex)
         if 'Quota exceeded for quota metric' in err_msg:
             err_msg = 'Quota for Google Vault API exceeded'
-        return_error('Unable to create export. Error: {}'.format(err_msg))
+            return_error('Unable to create export. Error: {}'.format(err_msg))
+        else:
+            raise ex
+
     create_time = response.get('createTime')
     export_id = response.get('id')
 
@@ -1253,11 +1285,13 @@ def get_export_command(export_id, matter_id):
 
         return export_status
 
-    except Exception, ex:
+    except Exception as ex:
         err_msg = str(ex)
         if 'Quota exceeded for quota metric' in err_msg:
             err_msg = 'Quota for Google Vault API exceeded'
-        return_error('Unable to get export. Error: {}'.format(err_msg))
+            return_error('Unable to get export. Error: {}'.format(err_msg))
+        else:
+            raise ex
 
 
 def download_export_command():
@@ -1266,11 +1300,13 @@ def download_export_command():
         download_ID = demisto.getArg('downloadID')
         out_file = download_storage_object(download_ID, bucket_name)
         demisto.results(fileResult(demisto.uniqueFile() + '.zip', out_file.getvalue()))
-    except Exception, ex:
+    except Exception as ex:
         err_msg = str(ex)
         if 'Quota exceeded for quota metric' in err_msg:
             err_msg = 'Quota for Google Vault API exceeded'
-        return_error('Unable to download export. Error: {}'.format(err_msg))
+            return_error('Unable to download export. Error: {}'.format(err_msg))
+        else:
+            raise ex
 
 
 def download_and_sanitize_export_results(object_ID, bucket_name, max_results):
@@ -1333,11 +1369,13 @@ def get_drive_results_command():
             }
         })
 
-    except Exception, ex:
+    except Exception as ex:
         err_msg = str(ex)
         if 'Quota exceeded for quota metric' in err_msg:
             err_msg = 'Quota for Google Vault API exceeded'
-        return_error('Unable to display export result. Error: {}'.format(err_msg))
+            return_error('Unable to display export result. Error: {}'.format(err_msg))
+        else:
+            raise ex
 
 
 def get_mail_and_groups_results_command(inquiryType):
@@ -1378,57 +1416,78 @@ def get_mail_and_groups_results_command(inquiryType):
             }
         })
 
-    except Exception, ex:
+    except Exception as ex:
         err_msg = str(ex)
         if 'Quota exceeded for quota metric' in err_msg:
             err_msg = 'Quota for Google Vault API exceeded'
-        return_error('Unable to display export result. Error: {}'.format(err_msg))
+            return_error('Unable to display export result. Error: {}'.format(err_msg))
+        else:
+            raise ex
 
 
-# @@@@@@@@ DEMISTO COMMANDS @@@@@@@@
-
-if demisto.command() == 'test-module':
-    # This is the call made when pressing the integration test button.
+def test_module():
+    """
+    This is the call made when pressing the integration test button.
+    """
     try:
         service = connect()
         get_matters_by_state(service, 'STATE_UNSPECIFIED')
         demisto.results('ok')
         sys.exit(0)
-    except Exception, ex:
+    except Exception as ex:
         if 'Quota exceeded for quota metric' in str(ex):
             return_error('Quota for Google Vault API exceeded')
-        return_error(ex.message)
-elif demisto.command() == 'gvault-list-matters':
-    list_matters_command()
-elif demisto.command() == 'gvault-create-matter':
-    create_matter_command()
-elif demisto.command() == 'gvault-matter-update-state':
-    update_matter_state_command()
-elif demisto.command() == 'gvault-add-heldAccount':
-    add_account_to_hold_command()
-elif demisto.command() == 'gvault-get-matter':
-    search_matter_command()
-elif demisto.command() == 'gvault-remove-heldAccount':
-    remove_account_from_hold_command()
-elif demisto.command() == 'gvault-delete-hold':
-    delete_hold_command()
-elif demisto.command() == 'gvault-list-holds':
-    list_holds_command()
-elif demisto.command() == 'gvault-create-hold':
-    create_hold_command()
-elif demisto.command() == 'gvault-create-export-mail':
-    create_mail_export_command()
-elif demisto.command() == 'gvault-create-export-drive':
-    create_drive_export_command()
-elif demisto.command() == 'gvault-create-export-groups':
-    create_groups_export_command()
-elif demisto.command() == 'gvault-export-status':
-    get_multiple_exports_command()
-elif demisto.command() == 'gvault-download-results':
-    download_export_command()
-elif demisto.command() == 'gvault-get-drive-results':
-    get_drive_results_command()
-elif demisto.command() == 'gvault-get-mail-results':
-    get_mail_and_groups_results_command('MAIL')
-elif demisto.command() == 'gvault-get-groups-results':
-    get_mail_and_groups_results_command('GROUPS')
+        else:
+            return_error(str(ex))
+
+
+def main():
+    """Main Execution Block"""
+
+    try:
+        # @@@@@@@@ DEMISTO COMMANDS @@@@@@@@
+
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+        elif demisto.command() == 'gvault-list-matters':
+            list_matters_command()
+        elif demisto.command() == 'gvault-create-matter':
+            create_matter_command()
+        elif demisto.command() == 'gvault-matter-update-state':
+            update_matter_state_command()
+        elif demisto.command() == 'gvault-add-heldAccount':
+            add_account_to_hold_command()
+        elif demisto.command() == 'gvault-get-matter':
+            search_matter_command()
+        elif demisto.command() == 'gvault-remove-heldAccount':
+            remove_account_from_hold_command()
+        elif demisto.command() == 'gvault-delete-hold':
+            delete_hold_command()
+        elif demisto.command() == 'gvault-list-holds':
+            list_holds_command()
+        elif demisto.command() == 'gvault-create-hold':
+            create_hold_command()
+        elif demisto.command() == 'gvault-create-export-mail':
+            create_mail_export_command()
+        elif demisto.command() == 'gvault-create-export-drive':
+            create_drive_export_command()
+        elif demisto.command() == 'gvault-create-export-groups':
+            create_groups_export_command()
+        elif demisto.command() == 'gvault-export-status':
+            get_multiple_exports_command()
+        elif demisto.command() == 'gvault-download-results':
+            download_export_command()
+        elif demisto.command() == 'gvault-get-drive-results':
+            get_drive_results_command()
+        elif demisto.command() == 'gvault-get-mail-results':
+            get_mail_and_groups_results_command('MAIL')
+        elif demisto.command() == 'gvault-get-groups-results':
+            get_mail_and_groups_results_command('GROUPS')
+    except Exception as e:
+        return_error(str(e))
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == '__builtin__' or __name__ == 'builtins':
+    main()
