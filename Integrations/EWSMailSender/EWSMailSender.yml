@@ -80,7 +80,7 @@ script:
     - name: attachCIDs
       description: 'A CSV list of CIDs to embed attachments within the email itself.'
       isArray: true
-    description: Send email via EWS
+    description: Sends an email using EWS.
   dockerimage: demisto/py-ews
 tests:
   - "EWS Mail Sender Test"
