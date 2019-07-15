@@ -379,10 +379,6 @@
             "timeout": 600
         },
         {
-            "integrations": "Symantec Site Review",
-            "playbookID": "Symantec Site Review Test"
-        },
-        {
             "integrations": [
                 "Palo Alto Minemeld",
                 "Panorama"
@@ -1273,7 +1269,7 @@
         {
             "playbookID": "Phishing v2 Test - Attachment",
             "timeout": 1200,
-            "nightly": true,            
+            "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
@@ -1687,6 +1683,7 @@
         "LogRhythmRest": "Unstable environment Adi is checking",
         "InfoArmorVigilanteATITest": "Test fails on verify context (issue 17358)",
         "process_email_-_generic_-_test": "Fails due to missing data (issue 17283)",
+        "calculate_severity_-_critical_assets_-_test": "Fails on verify context (issue 17924)",
         "Forescout-Test": "Should be skipped (issue 17016)",
         "Jask_Test": "Test failed due to missing data (issue 17245)",
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
@@ -1719,7 +1716,6 @@
         "get_file_sample_from_path_-_d2_-_test": "old test, needs to check if relevant",
         "ssdeepreputationtest": "old test, needs to check if relevant",
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "old test, needs to check if relevant",
-        "okta_test_playbook": "test failed (Issue 17041)",
         "Detonate File - FireEye AX - Test": "No instance",
         "Cofense Triage Test": "Creds only works on demo4",
         "Intezer Testing": "Old test for old version of inteze"
@@ -1762,7 +1758,6 @@
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "No instance",
         "Minerva Labs Anti-Evasion Platform": "No instance",
-        "GitHub": "no instance configured, also need to fix test",
         "Phish.AI": "Unauthorized. will be re-branded soon as Cofense",
 
       "_comment": "~~~ UNSTABLE ~~~",
@@ -1821,6 +1816,7 @@
         "Check Point": "Checking",
         "WhatsMyBrowser": "Checking",
         "jira": "Checking",
+        "okta": "Test Module failing, suspect it requires SSL",
         "CIRCL": "Checking",
         "Awake Security": "Checking",
         "Cylance Protect v2": "Checking",
