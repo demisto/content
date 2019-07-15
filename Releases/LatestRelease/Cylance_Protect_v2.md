@@ -1,2 +1,2 @@
 - Improved handling of error messages.
-- Improveed logging functionality.
+- Improved logging functionality.
