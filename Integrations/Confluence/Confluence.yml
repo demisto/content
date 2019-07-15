@@ -6,7 +6,7 @@ display: Atlassian Confluence Server
 category: Utilities
 description: Atlassian Confluence Server API
 configuration:
-- display: Server URL (Example http://1.2.3.4:8090)
+- display: Server URL (e.g. http://1.2.3.4:8090)
   name: url
   defaultvalue: ""
   type: 0
@@ -34,95 +34,95 @@ script:
     arguments:
     - name: name
       required: true
-      description: Space Name E.g. Test Space
+      description: 'Space name, for example: "Test Space".'
     - name: description
       required: true
-      description: Space Description
+      description: A description for the space.
     - name: key
       required: true
-      description: Space Key E.g. TSTSPC  This key will be used as input when creating/updating
-        child components from a Space
+      description: Space key, which will be used as input when creating or updating
+        child components from a space.
     outputs:
     - contextPath: Confluence.Space.ID
-      description: Space ID
+      description: Space ID.
     - contextPath: Confluence.Space.Key
-      description: Space Key
+      description: Space key.
     - contextPath: Confluence.Space.Name
-      description: Space Name
-    description: Create a new Confluence Space
+      description: Space name.
+    description: Creates a new Confluence space.
   - name: confluence-create-content
     arguments:
     - name: title
       required: true
-      description: Confluence Page Title
+      description: Confluence page title.
     - name: type
       required: true
       auto: PREDEFINED
       predefined:
       - page
       - blogpost
-      description: Confluence Content Type  E.g. page
+      description: Confluence content type. Can be "page" or "blogpost".
       defaultValue: page
     - name: space
       required: true
-      description: Space Key to add Content to a specific Space
+      description: Space key to add content to a specific space.
     - name: body
-      description: Confluence Page body to add
+      description: Confluence page body to add.
     outputs:
     - contextPath: Confluence.Content.ID
-      description: Page Content ID
+      description: Page content ID.
     - contextPath: Confluence.Content.Title
-      description: Content Title
+      description: Content title.
     - contextPath: Confluence.Content.Type
-      description: Content Type
+      description: Content type.
     - contextPath: Confluence.Content.Body
-      description: Content Body
-    description: Create Confluence content for a given Space
+      description: Content body.
+    description: Creates Confluence content for a given space.
   - name: confluence-list-spaces
     arguments:
     - name: limit
       defaultValue: 25
-      description: Limit for the amount of spaces to return.
+      description: Maximum number of spaces to return.
     - name: type
       auto: PREDEFINED
       predefined:
       - global
       - personal
-      description: Filter the list of spaces returned by type (global, personal)
+      description: Filter the returned list of spaces by type. Can be "global" or "personal".
     - name: status
       auto: PREDEFINED
       predefined:
       - current
       - archived
-      description: filter the list of spaces returned by status (current, archived)
+      description: Filter the returned list of spaces by status. Can be "current" or "archived".
     outputs:
     - contextPath: Confluence.Space.ID
-      description: Space ID
+      description: Space ID.
     - contextPath: Confluence.Space.Key
-      description: Space Key
+      description: Space key.
     - contextPath: Confluence.Space.Name
-      description: Space Name
-    description: List all Confluence Spaces
+      description: Space name.
+    description: Returns a list of all Confluence spaces.
   - name: confluence-get-content
     arguments:
     - name: key
       required: true
-      description: Confluence Space Key
+      description: Space key.
     - name: title
       required: true
-      description: Confluence Content Title
+      description: Content title.
     outputs:
     - contextPath: Confluence.Content.ID
-      description: Content ID
+      description: Content ID.
     - contextPath: Confluence.Content.Title
-      description: Content Title
+      description: Content title.
     - contextPath: Confluence.Content.Type
-      description: Content Type
+      description: Content type.
     - contextPath: Confluence.Content.Version
-      description: Content Version
+      description: Content version.
     - contextPath: Confluence.Content.Body
-      description: Content Body
-    description: Get Confluence Content by Space Key and Title
+      description: Content body.
+    description: Returns Confluence content by space key and title.
   - name: confluence-delete-content
     arguments:
     - name: id
@@ -130,77 +130,75 @@ script:
       description: Content ID
     outputs:
     - contextPath: Confluence.Content.Result
-      description: Content Delete Result
+      description: Content delete result.
     - contextPath: Confluence.Content.ID
-      description: Content ID Deleted
-    description: Delete Confluence Content
+      description: Content ID deleted.
+    description: Deletes Confluence content.
     execution: true
   - name: confluence-update-content
     arguments:
     - name: pageid
       required: true
-      description: Page ID used to find and update page
+      description: Page ID used to find and update the page.
     - name: currentversion
       required: true
-      description: This is a required value ... Must select/pass the value from a
-        content search ... The integration will increment by 1
+      description: The version number, extracted from a content search. The integration will increment by 1.
     - name: title
       required: true
-      description: Page Title to update
+      description: Title of the page to update.
     - name: type
       required: true
       auto: PREDEFINED
       predefined:
       - page
       - blogpost
-      description: Content Type
+      description: Content type. Can be "page" or "blogpost".
       defaultValue: page
     - name: space
       required: true
-      description: Space key to update
+      description: Space key to update.
     - name: body
-      description: Confluence Page body to update. Note, this data will completely
-        replace the current content body.
+      description: Content body to replace (overwrite) existing content of a Confluence page.
     outputs:
     - contextPath: Confluence.Content.ID
-      description: Content ID
+      description: Content ID.
     - contextPath: Confluence.Content.Title
-      description: Content Title
+      description: Content title.
     - contextPath: Confluence.Content.Type
-      description: Content Type
+      description: Content type.
     - contextPath: Confluence.Content.Body
-      description: Content Body
-    description: Update Confluence Content
+      description: Content body.
+    description: Update (overwrite) the existing content of a Confluence page with new content.
     execution: true
   - name: confluence-search-content
     arguments:
     - name: cql
       required: true
-      description: a cql query string to use to locate content ... E.g. space = DEV
-        order by created
+      description: 'A CQL query string to use to locate content, for example: "space = DEV
+        order by created".'
     - name: cqlcontext
-      description: The context to execute a cql search in, this is the json serialized
-        form of SearchContext
+      description: The context in which to execute a CQL search. The context is the JSON serialized
+        form of SearchContext.
     - name: expand
-      description: A comma separated list of properties to expand on the content
+      description: A CSV list of properties to expand on the content.
       defaultValue: version
     - name: start
-      description: The start point of the collection to return
+      description: The start point of the collection to return.
     - name: limit
-      description: The limit of the number of items to return, this may be restricted
-        by fixed system limits
+      description: Maximum number of items to return. This can be restricted
+        by fixed system limits. Default is 25.
       defaultValue: "25"
     outputs:
     - contextPath: Confluence.Content.ID
-      description: Content ID
+      description: Content ID.
     - contextPath: Confluence.Content.Title
-      description: Content Title
+      description: Content title.
     - contextPath: Confluence.Content.Type
-      description: Content Type
+      description: Content type.
     - contextPath: Confluence.Content.Version
-      description: Content version
-    description: 'Fetch a list of content using the Confluence Query Language (CQL).
-      See: https://developer.atlassian.com/server/confluence/advanced-searching-using-cql/'
+      description: Content version.
+    description: 'Fetches a list of content using the Confluence Query Language (CQL).
+      For more information about CQL syntax, see https://developer.atlassian.com/server/confluence/advanced-searching-using-cql/'
   runonce: false
 tests:
   - No test - the test requires personal credentials to the confluence account
