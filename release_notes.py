@@ -625,6 +625,12 @@ def filter_packagify_changes(modified_files, added_files, removed_files, tag):
 
         updated_added_files.add(file_path)
 
+    for file_path in modified_files:
+        if isinstance(file_path, tuple):
+            updated_added_files -= {file_path[1]}
+        else:
+            updated_added_files -= {file_path}
+
     return modified_files, updated_added_files, removed_files
 
 
@@ -645,6 +651,7 @@ def main():
     args = arg_parser.parse_args()
 
     tag = get_last_release_version()
+    print('Last release version: {}'.format(tag))
 
     # get changed yaml/json files (filter only relevant changed files)
     fv = FilesValidator()
