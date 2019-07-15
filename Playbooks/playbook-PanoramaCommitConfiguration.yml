@@ -2,7 +2,7 @@ id: PanoramaCommitConfiguration
 version: -1
 name: PanoramaCommitConfiguration
 fromversion: 4.0.0
-description: "Commit Palo Alto Firewall and Panorama Configuration.\nIf specified
+description: "Commit PAN-OS Panorama or Firewall Configuration.\nIf specified
   as Panorama, will also push the Policies to the specified Device Group in the instance "
 starttaskid: "0"
 tasks:
@@ -37,9 +37,8 @@ tasks:
     task:
       id: 3cdca23e-0cc3-4d3f-8f27-aef7c980e40d
       version: -1
-      name: Is Palo Alto Firewall and Panorama enabled?
-      description: Verify that there is a valid instance of Palo Alto Firewall and
-        Panorama enabled.
+      name: Is Palo Alto Networks PAN-OS enabled?
+      description: Verify that there is a valid instance of Palo Alto Networks PAN-OS enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -481,7 +480,7 @@ inputs:
   value:
     simple: Firewall
   required: false
-  description: States if the instance we have configures is a Palo Alto Firewall or
+  description: States if the instance we have configures is a Palo Alto Networks Firewall or
     Panorama
 outputs: []
 tests:

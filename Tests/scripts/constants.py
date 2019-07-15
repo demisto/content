@@ -23,13 +23,11 @@ CONF_REGEX = "Tests/conf.json"
 SCRIPT_TYPE_REGEX = ".*script-.*.yml"
 SCRIPT_PY_REGEX = r"{}.*\.py$".format(SCRIPTS_DIR)
 SCRIPT_JS_REGEX = r"{}.*\.js$".format(SCRIPTS_DIR)
-SCRIPT_PS_REGEX = r"{}.*\.ps1$".format(SCRIPTS_DIR)
 SCRIPT_YML_REGEX = r"{}.*\.yml$".format(SCRIPTS_DIR)
 TEST_SCRIPT_REGEX = r"{}.*script-.*\.yml$".format(TEST_PLAYBOOKS_DIR)
 SCRIPT_REGEX = r"{}.*script-.*\.yml$".format(SCRIPTS_DIR)
 INTEGRATION_PY_REGEX = r"{}.*\.py$".format(INTEGRATIONS_DIR)
 INTEGRATION_JS_REGEX = r"{}.*\.js$".format(INTEGRATIONS_DIR)
-INTEGRATION_PS_REGEX = r"{}.*\.ps1$".format(INTEGRATIONS_DIR)
 INTEGRATION_YML_REGEX = r"{}.*\.yml$".format(INTEGRATIONS_DIR)
 INTEGRATION_REGEX = r"{}.*integration-.*\.yml$".format(INTEGRATIONS_DIR)
 PLAYBOOK_REGEX = r"(?!Test){}.*playbook-.*\.yml$".format(PLAYBOOKS_DIR)
@@ -77,24 +75,29 @@ DIR_LIST = [
     BETA_INTEGRATIONS_DIR
 ]
 
+SPELLCHECK_FILE_TYPES = [
+    INTEGRATION_REGEX,
+    INTEGRATION_YML_REGEX,
+    PLAYBOOK_REGEX,
+    SCRIPT_REGEX,
+    SCRIPT_YML_REGEX
+]
+
 KNOWN_FILE_STATUSES = ['a', 'm', 'd', 'r'] + ['r{:03}'.format(i) for i in range(101)]
 
-CODE_FILES_REGEX = [INTEGRATION_JS_REGEX, INTEGRATION_PY_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX,
-                    INTEGRATION_PS_REGEX, SCRIPT_PS_REGEX]
+CODE_FILES_REGEX = [INTEGRATION_JS_REGEX, INTEGRATION_PY_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX]
 
-SCRIPTS_REGEX_LIST = [SCRIPT_YML_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX, SCRIPT_PS_REGEX]
+SCRIPTS_REGEX_LIST = [SCRIPT_YML_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX]
 
 TYPE_TO_EXTENSION = {
     'python': '.py',
-    'javascript': '.js',
-    'powershell': '.ps1'
+    'javascript': '.js'
 }
 
 FILE_TYPES_FOR_TESTING = [
     '.py',
     '.js',
-    '.yml',
-    '.ps1'
+    '.yml'
 ]
 
 # Run all test signal
