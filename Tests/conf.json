@@ -313,6 +313,11 @@
             "integrations": "Luminate"
         },
         {
+            "playbookID": "SumoLogic-Test",
+            "integrations": "SumoLogic",
+            "fromversion": "4.1.0"
+        },
+        {
             "playbookID": "ParseEmailFiles-test"
         },
         {
@@ -372,10 +377,6 @@
             "integrations": "Threat Grid",
             "playbookID": "ThreatGridTest",
             "timeout": 600
-        },
-        {
-            "integrations": "Symantec Site Review",
-            "playbookID": "Symantec Site Review Test"
         },
         {
             "integrations": [
@@ -1242,6 +1243,11 @@
 
         },
         {
+            "playbookID": "C2sec-Test",
+            "integrations": "C2sec irisk",
+            "fromversion": "5.0.0"
+        },
+        {
             "playbookID": "Phishing test - attachment",
             "timeout": 600,
             "nightly": true,
@@ -1268,7 +1274,7 @@
         {
             "playbookID": "Phishing v2 Test - Attachment",
             "timeout": 1200,
-            "nightly": true,            
+            "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
@@ -1682,6 +1688,7 @@
         "LogRhythmRest": "Unstable environment Adi is checking",
         "InfoArmorVigilanteATITest": "Test fails on verify context (issue 17358)",
         "process_email_-_generic_-_test": "Fails due to missing data (issue 17283)",
+        "calculate_severity_-_critical_assets_-_test": "Fails on verify context (issue 17924)",
         "Forescout-Test": "Should be skipped (issue 17016)",
         "Jask_Test": "Test failed due to missing data (issue 17245)",
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
@@ -1756,7 +1763,6 @@
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "No instance",
         "Minerva Labs Anti-Evasion Platform": "No instance",
-        "GitHub": "no instance configured, also need to fix test",
         "Phish.AI": "Unauthorized. will be re-branded soon as Cofense",
 
       "_comment": "~~~ UNSTABLE ~~~",
