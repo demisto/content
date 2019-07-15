@@ -50,6 +50,7 @@ def validate_not_a_package_test_script(file_path):
 def get_modified_files(files_string):
     """Get a string of the modified files"""
     is_conf_json = False
+    is_reputations_json = False
 
     sample_tests = []
     all_tests = []
@@ -82,9 +83,12 @@ def get_modified_files(files_string):
                 modified_files_list.append(file_path)
 
             # tests
-            elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE) \
-                    or re.match(MISC_REPUTATIONS_REGEX, file_path, re.IGNORECASE):
-                modified_files_list.append(file_path)
+            elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+                modified_tests_list.append(file_path)
+
+            # reputations.json
+            elif re.match(MISC_REPUTATIONS_REGEX, file_path, re.IGNORECASE):
+                is_reputations_json = True
 
             # conf.json
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
@@ -101,7 +105,7 @@ def get_modified_files(files_string):
             elif SECRETS_WHITE_LIST not in file_path:
                 sample_tests.append(file_path)
 
-    return modified_files_list, modified_tests_list, all_tests, is_conf_json, sample_tests
+    return modified_files_list, modified_tests_list, all_tests, is_conf_json, sample_tests, is_reputations_json
 
 
 def get_name(file_path):
@@ -504,15 +508,15 @@ def get_test_from_conf(branch_name):
 
 def get_test_list(files_string, branch_name):
     """Create a test list that should run"""
-    modified_files, modified_tests_list, all_tests, is_conf_json, sample_tests = get_modified_files(files_string)
+    modified_files, modified_tests_list, all_tests, is_conf_json, sample_tests, is_reputations_json = \
+        get_modified_files(files_string)
 
     tests = set([])
     if modified_files:
         tests = find_tests_for_modified_files(modified_files)
 
-    print_warning('{}'.format(','.join(modified_files)))
     # Adding a unique test for a json file.
-    if 'Misc/reputations.json' in modified_files:
+    if is_reputations_json:
         tests.add('reputations.json Test')
 
     for file_path in modified_tests_list:
