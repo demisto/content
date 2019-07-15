@@ -88,7 +88,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "7"
     scriptarguments:
       append: {}
       key:
@@ -131,10 +131,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 8502d2c7-d80e-4102-8e5f-f84c8d9e49ba
+    taskid: d279268a-58f3-4bde-8fb8-4b6712498e29
     type: condition
     task:
-      id: 8502d2c7-d80e-4102-8e5f-f84c8d9e49ba
+      id: d279268a-58f3-4bde-8fb8-4b6712498e29
       version: -1
       name: Did enrichment work?
       description: Checks whether the enrichment outputs that we expected are in the
@@ -165,7 +165,6 @@ tasks:
                     right:
                       value:
                         simple: CN=moshe,DC=demisto,DC=ninja
-                accessor: Hostname
             iscontext: true
       - - operator: containsGeneral
           left:
@@ -220,12 +219,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 50a74c1c-629f-4a7c-8742-ab5de871e1c5
+  "7":
+    id: "7"
+    taskid: 82b2e537-3a2e-45b9-8b97-9879f23d00f5
     type: playbook
     task:
-      id: 50a74c1c-629f-4a7c-8742-ab5de871e1c5
+      id: 82b2e537-3a2e-45b9-8b97-9879f23d00f5
       version: -1
       name: Endpoint Enrichment - Generic v2.1
       description: ""
@@ -236,18 +235,7 @@ tasks:
     nexttasks:
       '#none#':
       - "5"
-    scriptarguments:
-      Hostname:
-        complex:
-          root: Endpoint
-          accessor: Hostname
-          transformers:
-          - operator: uniq
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
     view: |-
       {
         "position": {
