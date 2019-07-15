@@ -546,6 +546,53 @@ def list_number_of_active_sessions():
     return response
 
 
+def get_policies_request():
+
+    headers = {
+        'Accept': 'application/json',
+        'Connection': 'keep_alive'
+    }
+
+    api_endpoint = '/ers/config/ancpolicy'
+
+    response = http_request('GET', api_endpoint, {}, {}, headers).text
+
+    return json.loads(response)
+
+
+def get_policies():
+
+    """
+    Return all ANC policies
+    """
+    data = []
+    policy_context = []
+    context = {}
+    policies_data = get_policies_request().get('SearchResult', {})
+
+    if policies_data.get('total', 0) < 1:
+        return 'No policies were found.'
+
+    policies = policies_data.get('resources', [])
+
+    for policy in policies:
+        data.append({
+            'ID': policy.get('id'),
+            'Name': policy.get('name'),
+            'Description': policy.get('description')
+        })
+
+        policy_context.append({
+            'ID': policy.get('id'),
+            'Name': policy.get('name'),
+            'Description': policy.get('description')
+        })
+
+        context['CiscoISE.Policy(val.ID && val.ID === obj.ID)'] = policy_context
+
+    return_outputs(tableToMarkdown('CiscoISE Policies', data, removeNull=True), context, policies)
+
+
 ''' EXECUTION CODE '''
 try:
     if demisto.command() == 'test-module':
@@ -570,6 +617,8 @@ try:
         demisto.results(update_endpoint_group_command())
     elif demisto.command() == 'cisco-ise-get-groups':
         demisto.results(get_groups())
+    elif demisto.command() == 'cisco-ise-get-policies':
+        get_policies()
 
 except Exception as e:
     LOG(e.message)
