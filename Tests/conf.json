@@ -1243,6 +1243,11 @@
 
         },
         {
+            "playbookID": "C2sec-Test",
+            "integrations": "C2sec irisk",
+            "fromversion": "5.0.0"
+        },
+        {
             "playbookID": "Phishing test - attachment",
             "timeout": 600,
             "nightly": true,
