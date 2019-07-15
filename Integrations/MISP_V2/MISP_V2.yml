@@ -1310,12 +1310,22 @@ script:
       description: url of the feed
       isArray: false
       name: feed_url
-      required: true
+      required: false
       secret: false
     - default: false
       description: Limit of files to add.
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Predefined feeds from official misp-project '
+      isArray: false
+      name: feed
+      predefined:
+      - CIRCL
+      - Botvrij
       required: false
       secret: false
     deprecated: false

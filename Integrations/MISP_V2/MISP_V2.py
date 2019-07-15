@@ -897,45 +897,53 @@ def add_feed():
         fix return_outputs
         add proxy
     """
+    predefined_feeds = {
+        'circl': 'https://www.circl.lu/doc/misp/feed-osint/',
+        'botvrij': 'http://www.botvrij.eu/data/feed-osint/'
+    }
     proxies = handle_proxy()
     headers = {'Accept': 'application/json'}
-    url = demisto.getArg('feed_url')  # type: str
-    url = url[:-1] if url.endswith('/') else url
-    limit = demisto.getArg('limit')  # type: str
-    limit_int = int(limit) if limit.isdigit() else 0
+    url = demisto.getArg('feed_url') \
+        if demisto.getArg('feed_url') else predefined_feeds[demisto.getArg('feed').lower()]  # type: str
+    if url:
+        url = url[:-1] if url.endswith('/') else url
+        limit = demisto.getArg('limit')  # type: str
+        limit_int = int(limit) if limit.isdigit() else 0
 
-    osint_url = f'{url}/manifest.json'
-    req = requests.get(osint_url, verify=USE_SSL, headers=headers, proxies=proxies)
-    try:
-        uri_list = req.json()
-        events_ids = list()
-        uri_list = [uri_list] if isinstance(uri_list, dict) else uri_list
-        for uri in uri_list:
-            req = requests.get(
-                f'{url}/{uri}.json', verify=USE_SSL, headers=headers, proxies=proxies)
-            try:
+        osint_url = f'{url}/manifest.json'
+        req = requests.get(osint_url, verify=USE_SSL, headers=headers, proxies=proxies)
+        try:
+            uri_dict = req.json()
+            return_outputs('Pulling feed has been started', {'MISP.Feed.IsFinished': False})
+            events_ids = list()
+            i = 0
+            for uri in uri_dict:
+                return_outputs(f'feed {i}', None)
+                return_error(f'{url}/{uri}.json')
+                req = requests.get(f'{url}/{uri}.json', verify=USE_SSL, headers=headers, proxies=proxies)
                 req = req.json()
-            except ValueError:
-                return_error(f'Invalid feed entered. feed:\n{req}')  # TODO
-            event = MISP.add_event(req)
-            if 'id' in event:
-                events_ids.append(event['id'])
-            if not (len(events_ids) % 5):
-                # Making script to sleep so MISP wouldn't get overflowed
-                time.sleep(1)  # TODO REPLACE WITH POLLING PLAYBOOK
-            # If limit exists
-            if limit_int == len(events_ids):
-                break
+                event = MISP.add_event(req)
+                if 'id' in event:
+                    events_ids.append({'ID': event['id']})
+                # If limit exists
+                if limit_int == len(events_ids):
+                    break
+            return_error('out')
+            entry_context = {
+                MISP_PATH: events_ids,
+                'MISP.Feed.IsFinished': True
+            }  # TODO fix output
 
-        entry_context = [{MISP_PATH: {'ID': number}} for number in events_ids]  # TODO renamses
-        human_readable = tableToMarkdown(
-            f'Total of {len(events_ids)} events were added to MISP',
-            events_ids,
-            headers='Event IDs'
-        )
-        return_outputs(human_readable, outputs=entry_context)
-    except ValueError:
-        return_error(f'No JSON could be decoded from URL [{url}]')  # ~TODO
+            human_readable = tableToMarkdown(
+                f'Total of {len(events_ids)} events were added to MISP',
+                [event['ID'] for event in events_ids],
+                headers='Event IDs'
+            )
+            return_outputs(human_readable, outputs=entry_context)
+        except ValueError:
+            return_error(f'No MISP feed has been found in [{url}]')  # TODO
+    else:
+        return_error('')
 
 
 command = demisto.command()
@@ -1063,7 +1071,8 @@ def add_generic_object_command():
         obj = build_generic_object(template, args)
         add_object(event_id, obj)
     except ValueError as e:
-        return_error(f'`attribute` parameter could not be decoded, may not a valid JSON\nattribute: {attributes}', str(e))
+        return_error(f'`attribute` parameter could not be decoded, may not a valid JSON\nattribute: {attributes}',
+                     str(e))
 
 
 def add_ip_object():
