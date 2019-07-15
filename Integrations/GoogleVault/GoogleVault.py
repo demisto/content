@@ -22,8 +22,6 @@ ADMIN_EMAIL = demisto.params()['gsuite_credentials']['identifier'].encode('utf-8
 PRIVATE_KEY_CONTENT = demisto.params()['auth_json'].encode('utf-8')
 USE_SSL = not demisto.params().get('insecure', False)
 
-handle_proxy()
-
 
 # @@@@@@@@ HELPER FUNCS @@@@@@@@
 def validate_input_values(arguments_values_to_verify, available_values):
@@ -1465,6 +1463,8 @@ def main():
     """Main Execution Block"""
 
     try:
+        handle_proxy()
+
         # @@@@@@@@ DEMISTO COMMANDS @@@@@@@@
 
         if demisto.command() == 'test-module':
