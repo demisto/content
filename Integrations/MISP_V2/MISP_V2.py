@@ -1,6 +1,6 @@
 import logging
 import warnings
-from typing import Union, List, Any, Tuple
+from typing import Union, List, Any, Tuple, Dict
 from urllib.parse import urlparse
 
 import requests
@@ -114,6 +114,50 @@ DISTRIBUTION_NUMBERS = {
     'All_communities': 3
 }
 ''' HELPER FUNCTIONS '''
+
+
+def extract_error(error: list) -> List[Dict[str, any]]:
+    """Extracting errors
+
+    Args:
+        error: list of responses from error section
+
+    Returns:
+        List[Dict[str, any]]: filtered response
+
+    Examples:
+        extract_error([
+            (403,
+                {
+                    'name': 'Could not add object',
+                    'message': 'Could not add object',
+                    'url': '/objects/add/156/',
+                    'errors': 'Could not save object as at least one attribute has failed validation (ip). \
+                    {"value":["IP address has an invalid format."]}'
+                }
+            )
+        ])
+
+        Response:
+        [{
+            'code': 403,
+            'message': 'Could not add object',
+            'errors': 'Could not save object as at least one attribute has failed validation (ip). \
+            {"value":["IP address has an invalid format."]}'
+        }]
+
+    """
+    return [{
+        'code': err[0],
+        'message': err[1].get('message'),
+        'errors': err[1].get('errors')
+    } for err in error]
+
+
+def filter_context_object(response: List[dict]) -> List[dict]:
+    new_response = list()
+
+    return new_response
 
 
 def build_list_from_dict(args: dict) -> List[dict]:
@@ -477,7 +521,7 @@ def upload_sample():
         'Contents': res,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable':
-            f"## MISP upload sample \n* message: {res.get('message')}\n* event id: {event_id}\n* file name: {filename}",
+            f"MISP upload sample \n* message: {res.get('message')}\n* event id: {event_id}\n* file name: {filename}",
         'EntryContext': ec,
     })
 
@@ -847,7 +891,13 @@ def add_feed():
     """Gets an OSINT feed from url and publishing them to MISP
     urls with feeds for example: `https://www.misp-project.org/feeds/`
     feed format must be MISP.
+
+    TODO:
+        add predefined feeds
+        fix return_outputs
+        add proxy
     """
+    proxies = handle_proxy()
     headers = {'Accept': 'application/json'}
     url = demisto.getArg('feed_url')  # type: str
     url = url[:-1] if url.endswith('/') else url
@@ -855,35 +905,37 @@ def add_feed():
     limit_int = int(limit) if limit.isdigit() else 0
 
     osint_url = f'{url}/manifest.json'
-    req = requests.get(osint_url, verify=USE_SSL, headers=headers)
+    req = requests.get(osint_url, verify=USE_SSL, headers=headers, proxies=proxies)
     try:
         uri_list = req.json()
-        events_numbers = list()
+        events_ids = list()
+        uri_list = [uri_list] if isinstance(uri_list, dict) else uri_list
         for uri in uri_list:
-            req = requests.get(f'{url}/{uri}.json', verify=USE_SSL, headers=headers)
+            req = requests.get(
+                f'{url}/{uri}.json', verify=USE_SSL, headers=headers, proxies=proxies)
             try:
                 req = req.json()
             except ValueError:
-                return_error(f'No JSON could be decoded from OSINT file')
+                return_error(f'Invalid feed entered. feed:\n{req}')  # TODO
             event = MISP.add_event(req)
             if 'id' in event:
-                events_numbers.append(event['id'])
-            if not (len(events_numbers) % 5):
+                events_ids.append(event['id'])
+            if not (len(events_ids) % 5):
                 # Making script to sleep so MISP wouldn't get overflowed
-                time.sleep(1)
+                time.sleep(1)  # TODO REPLACE WITH POLLING PLAYBOOK
             # If limit exists
-            if limit_int == len(events_numbers):
+            if limit_int == len(events_ids):
                 break
 
-        ec = {MISP_PATH: {'ID': events_numbers}}
-        md = tableToMarkdown(
-            f'Total of {len(events_numbers)} events was added to MISP.',
-            events_numbers,
+        entry_context = [{MISP_PATH: {'ID': number}} for number in events_ids]  # TODO renamses
+        human_readable = tableToMarkdown(
+            f'Total of {len(events_ids)} events were added to MISP',
+            events_ids,
             headers='Event IDs'
         )
-        return_outputs(md, outputs=ec)
+        return_outputs(human_readable, outputs=entry_context)
     except ValueError:
-        return_error(f'No JSON could be decoded from URL [{url}]')
+        return_error(f'No JSON could be decoded from URL [{url}]')  # ~TODO
 
 
 command = demisto.command()
@@ -902,15 +954,26 @@ def add_object(event_id: str, obj: MISPObject):
     """
     response = MISP.add_object(event_id, misp_object=obj)
     if 'errors' in response:
-        return_error(f'Error in {command}: {json.dumps(response["errors"], indent=4)}')
+        errors = extract_error(response["errors"])
+        error_string = str()
+        for err in errors:
+            error_string += f'' \
+                f'\n\tError code: {err["code"]} ' \
+                f'\n\tMessage: {err["message"]}' \
+                f'\n\tErrors: {err["errors"]}\n'
+        return_error(f'Error in `{command}` command: {error_string}')
     for ref in obj.ObjectReference:
         MISP.add_object_reference(ref)
+    # TODO filter only important
+
     entry_context, raw_response = search(
         post_to_warroom=False)  # Run search on event ID (in demisto.args) and add object to context
+    entry_context = filter_context_object()
+    return_error(entry_context)
     return_outputs(
-        f"### Object has been added to MISP event ID {event_id}",
-        {MISP_PATH: entry_context},
-        raw_response
+        f"Object has been added to MISP event ID {event_id}",
+        {MISP_PATH: None},
+        None
     )  # type: ignore
 
 
@@ -918,11 +981,8 @@ def add_email_object():
     entry_id = demisto.getArg('entry_id')
     event_id = demisto.getArg('event_id')
     email_path = demisto.getFilePath(entry_id).get('path')
-    if email_path:
-        obj = EMailObject(email_path)
-        add_object(event_id, obj)
-    else:
-        return_error(f'No file path has found for entry ID: {entry_id}')
+    obj = EMailObject(email_path)
+    add_object(event_id, obj)
 
 
 def add_domain_object():
@@ -990,6 +1050,8 @@ def add_url_object():
 
 
 def add_generic_object_command():
+    # TODO change text to comment
+    # TODO add get_event from search
     event_id = demisto.getArg('event_id')
     template = demisto.getArg('template')
     attributes = demisto.getArg('attributes')  # type: str
@@ -1001,7 +1063,7 @@ def add_generic_object_command():
         obj = build_generic_object(template, args)
         add_object(event_id, obj)
     except ValueError as e:
-        return_error(f'`attribute` parameter could not be decoded\nattribute: {attributes}', str(e))
+        return_error(f'`attribute` parameter could not be decoded, may not a valid JSON\nattribute: {attributes}', str(e))
 
 
 def add_ip_object():
