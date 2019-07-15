@@ -82,9 +82,9 @@ def get_modified_files(files_string):
                 modified_files_list.append(file_path)
 
             # tests
-            elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE)\
+            elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE) \
                     or re.match(MISC_REPUTATIONS_REGEX, file_path, re.IGNORECASE):
-                modified_tests_list.append(file_path)
+                modified_files_list.append(file_path)
 
             # conf.json
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
