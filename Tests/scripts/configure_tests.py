@@ -82,7 +82,8 @@ def get_modified_files(files_string):
                 modified_files_list.append(file_path)
 
             # tests
-            elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+            elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE)\
+                    or re.match(MISC_REPUTATIONS_REGEX, file_path, re.IGNORECASE):
                 modified_tests_list.append(file_path)
 
             # conf.json
@@ -508,6 +509,10 @@ def get_test_list(files_string, branch_name):
     tests = set([])
     if modified_files:
         tests = find_tests_for_modified_files(modified_files)
+
+    # Adding a unique test for a json file.
+    if 'Misc/reputations.json' in modified_files:
+        tests.add('reputations.json Test')
 
     for file_path in modified_tests_list:
         test = collect_ids(file_path)

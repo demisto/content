@@ -534,6 +534,9 @@
             "playbookID": "TestParseCSV"
         },
         {
+            "playbookID": "reputations.json Test"
+        },
+        {
             "integrations": "Shodan",
             "playbookID": "ShodanTest"
         },
