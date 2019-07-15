@@ -45,10 +45,13 @@ script:
     outputs:
     - contextPath: Confluence.Space.ID
       description: Space ID.
+      type: String
     - contextPath: Confluence.Space.Key
       description: Space key.
+      type: String
     - contextPath: Confluence.Space.Name
       description: Space name.
+      type: String
     description: Creates a new Confluence space.
   - name: confluence-create-content
     arguments:
@@ -71,12 +74,16 @@ script:
     outputs:
     - contextPath: Confluence.Content.ID
       description: Page content ID.
+      type: String
     - contextPath: Confluence.Content.Title
       description: Content title.
+      type: String
     - contextPath: Confluence.Content.Type
       description: Content type.
+      type: String
     - contextPath: Confluence.Content.Body
       description: Content body.
+      type: String
     description: Creates Confluence content for a given space.
   - name: confluence-list-spaces
     arguments:
@@ -98,10 +105,13 @@ script:
     outputs:
     - contextPath: Confluence.Space.ID
       description: Space ID.
+      type: String
     - contextPath: Confluence.Space.Key
       description: Space key.
+      type: String
     - contextPath: Confluence.Space.Name
       description: Space name.
+      type: String
     description: Returns a list of all Confluence spaces.
   - name: confluence-get-content
     arguments:
@@ -114,14 +124,19 @@ script:
     outputs:
     - contextPath: Confluence.Content.ID
       description: Content ID.
+      type: String
     - contextPath: Confluence.Content.Title
       description: Content title.
+      type: String
     - contextPath: Confluence.Content.Type
       description: Content type.
+      type: String
     - contextPath: Confluence.Content.Version
       description: Content version.
+      type: String
     - contextPath: Confluence.Content.Body
       description: Content body.
+      type: String
     description: Returns Confluence content by space key and title.
   - name: confluence-delete-content
     arguments:
@@ -131,8 +146,10 @@ script:
     outputs:
     - contextPath: Confluence.Content.Result
       description: Content delete result.
+      type: String
     - contextPath: Confluence.Content.ID
       description: Content ID deleted.
+      type: String
     description: Deletes Confluence content.
     execution: true
   - name: confluence-update-content
@@ -162,12 +179,16 @@ script:
     outputs:
     - contextPath: Confluence.Content.ID
       description: Content ID.
+      type: String
     - contextPath: Confluence.Content.Title
       description: Content title.
+      type: String
     - contextPath: Confluence.Content.Type
       description: Content type.
+      type: String
     - contextPath: Confluence.Content.Body
       description: Content body.
+      type: String
     description: Update (overwrite) the existing content of a Confluence page with new content.
     execution: true
   - name: confluence-search-content
@@ -191,12 +212,16 @@ script:
     outputs:
     - contextPath: Confluence.Content.ID
       description: Content ID.
+      type: String
     - contextPath: Confluence.Content.Title
       description: Content title.
+      type: String
     - contextPath: Confluence.Content.Type
       description: Content type.
+      type: String
     - contextPath: Confluence.Content.Version
       description: Content version.
+      type: String
     description: 'Fetches a list of content using the Confluence Query Language (CQL).
       For more information about CQL syntax, see https://developer.atlassian.com/server/confluence/advanced-searching-using-cql/'
   runonce: false

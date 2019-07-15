@@ -223,7 +223,7 @@ def create_space_command():
     # create markdown table string from context
     # the outputs must be array in order the tableToMarkdown to work
     # headers must be array of strings (which column should appear in the table)
-    md = tableToMarkdown('Space', space, ['ID', 'Key', 'Name'])
+    md = tableToMarkdown('Space created successfully', space, ['ID', 'Key', 'Name'])
 
     demisto.results({
         'Type': entryTypes['note'],
