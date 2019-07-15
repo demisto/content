@@ -512,6 +512,7 @@ def get_test_list(files_string, branch_name):
 
     # Adding a unique test for a json file.
     if 'Misc/reputations.json' in modified_files:
+        print_warning('{}'.format(','.join(modified_files)))
         tests.add('reputations.json Test')
 
     for file_path in modified_tests_list:
