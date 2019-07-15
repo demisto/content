@@ -205,6 +205,20 @@ script:
     - contextPath: CiscoISE.Group.Name
       description: The name of the endpoint identity groups
       type: String
+  - deprecated: false
+    description: Return all ANC policies
+    execution: false
+    name: cisco-ise-get-policies
+    outputs:
+    - contextPath: CiscoISE.Policy.Description
+      description: The description of the ANC policy
+      type: String
+    - contextPath: CiscoISE.Policy.ID
+      description: The ID of the ANC policy
+      type: String
+    - contextPath: CiscoISE.Policy.Name
+      description: The name of the ANC policy
+      type: String
   isfetch: false
   runonce: false
   script: '-'
