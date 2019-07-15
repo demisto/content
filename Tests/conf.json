@@ -1239,8 +1239,8 @@
         },
         {
             "playbookID": "C2sec-Test",
-            "integrations": "C2sec"
-
+            "integrations": "C2sec",
+            "fromversion": "5.0.0"
         },
         {
             "playbookID": "Phishing test - attachment",
