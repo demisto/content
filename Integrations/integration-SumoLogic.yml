@@ -34,7 +34,7 @@ configuration:
   required: true
 - display: Use system proxy settings
   name: useproxy
-  defaultvalue: "true"
+  defaultvalue: "false"
   type: 8
   required: false
 - display: Trust any certificate (unsecure)
