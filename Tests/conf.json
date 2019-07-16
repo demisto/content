@@ -3,6 +3,16 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_dev"
+        },
+        {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_prod"
+        },
+        {
             "integrations": "Cloaken",
             "playbookID": "Cloaken-Test"
         },
@@ -25,16 +35,6 @@
         {
             "integrations": "CheckPhish",
             "playbookID": "CheckPhish-Test"
-        },
-        {
-            "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
-            "instance_names": "ms_graph_mail_dev"
-        },
-        {
-            "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
-            "instance_names": "ms_graph_mail_prod"
         },
         {
             "integrations": "Symantec Management Center",
@@ -1693,7 +1693,6 @@
         "process_email_-_generic_-_test": "Fails due to missing data (issue 17283)",
         "calculate_severity_-_critical_assets_-_test": "Fails on verify context (issue 17924)",
         "Forescout-Test": "Should be skipped (issue 17016)",
-        "Jask_Test": "Test failed due to missing data (issue 17245)",
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
         "EWS test": "Old test",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
