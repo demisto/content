@@ -11,7 +11,8 @@ log_stream = StringIO()
 logging.basicConfig(stream=log_stream, level=logging.DEBUG)
 
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter  # noqa: E402
-from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016  # noqa: E402
+from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, \
+    EXCHANGE_2016  # noqa: E402
 from exchangelib import HTMLBody, Message, FileAttachment, Account, IMPERSONATION, Credentials, Configuration, NTLM, \
     BASIC, DIGEST, Version, DELEGATE, close_connections  # noqa: E402
 
@@ -103,7 +104,7 @@ def collect_manual_attachments(manualAttachObj):
 
 
 def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=None,
-               attachIDs="", attachNames="", from_mailbox=None, manualAttachObj=None):
+               attachIDs="", attachCIDs="", attachNames="", from_mailbox=None, manualAttachObj=None):
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
     bcc = bcc.split(",") if bcc else None
     cc = cc.split(",") if cc else None
@@ -113,10 +114,11 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
 
     file_entries_for_attachments = []  # type: list
     attachments_names = []  # type: list
+
     if attachIDs:
-        file_entries_for_attachments = attachIDs.split(",")
+        file_entries_for_attachments = attachIDs if isinstance(attachIDs, list) else attachIDs.split(",")
         if attachNames:
-            attachments_names = attachNames.split(",")
+            attachments_names = attachNames if isinstance(attachNames, list) else attachNames.split(",")
         else:
             for att_id in file_entries_for_attachments:
                 att_name = demisto.getFilePath(att_id)['name']
@@ -127,6 +129,19 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
             raise Exception("attachIDs and attachNames lists should be the same length")
 
     attachments = collect_manual_attachments(manualAttachObj)
+
+    if attachCIDs:
+        file_entries_for_attachments_inline = attachCIDs if isinstance(attachCIDs, list) else attachCIDs.split(",")
+        for att_id_inline in file_entries_for_attachments_inline:
+            try:
+                file_info = demisto.getFilePath(att_id_inline)
+            except Exception as ex:
+                raise Exception("entry %s does not contain a file" % att_id_inline)
+            att_name_inline = file_info["name"]
+            with open(file_info["path"], 'rb') as f:
+                attachments.append(FileAttachment(content=f.read(), name=att_name_inline, is_inline=True,
+                                                  content_id=att_name_inline))
+
     for i in range(0, len(file_entries_for_attachments)):
         entry_id = file_entries_for_attachments[i]
         attachment_name = attachments_names[i]
@@ -243,7 +258,8 @@ def main():
         if stacktrace:
             debug_log += "\nFull stacktrace:\n" + stacktrace
 
-        demisto.error("EWS Mail Sender failed {}. Error: {}. Debug: {}".format(demisto.command(), error_message, debug_log))
+        demisto.error(
+            "EWS Mail Sender failed {}. Error: {}. Debug: {}".format(demisto.command(), error_message, debug_log))
         if IS_TEST_MODULE:
             demisto.results(error_message)
         else:
