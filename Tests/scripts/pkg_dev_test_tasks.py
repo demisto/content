@@ -23,6 +23,7 @@ CONTAINER_SETUP_SCRIPT_NAME = 'pkg_dev_container_setup.sh'
 CONTAINER_SETUP_SCRIPT = '{}/{}'.format(SCRIPT_DIR, CONTAINER_SETUP_SCRIPT_NAME)
 RUN_MYPY_SCRIPT = '{}/run_mypy.sh'.format(SCRIPT_DIR)
 LOG_VERBOSE = False
+DOCKER_LOGIN_COMPLETED = False
 
 
 def get_docker_images(script_obj):
@@ -91,6 +92,24 @@ def get_lint_files(project_dir):
     return os.path.basename(code_file)
 
 
+def docker_login():
+    global DOCKER_LOGIN_COMPLETED
+    if DOCKER_LOGIN_COMPLETED:
+        return True
+    docker_user = os.getenv('DOCKERHUB_USER', None)
+    if not docker_user:
+        print_v('DOCKERHUB_USER not set. Not trying to login to dockerhub')
+        return False
+    docker_pass = os.getenv('DOCKERHUB_PASSWORD', None)
+    cmd = ['docker', 'login', '-u', docker_user]
+    if docker_pass:  # pass is optional for local testing scenario. allowing password to be passed via stdin
+        cmd.extend(['-p', docker_pass])
+    subprocess.check_call(cmd)
+    print_v("Completed docker login")
+    DOCKER_LOGIN_COMPLETED = True
+    return True
+
+
 def docker_image_create(docker_base_image, requirements):
     """
     Create the docker image with dev dependencies. Will check if already existing.
@@ -134,6 +153,15 @@ def docker_image_create(docker_base_image, requirements):
             print_v("Failed getting lock. Will wait {}".format(str(ex)))
             time.sleep(5)
     try:
+        # try doing a pull
+        try:
+            print("{}: Trying to pull image: {}".format(datetime.now(), target_image))
+            pull_res = subprocess.check_output(['docker', 'pull', target_image],
+                                               stderr=subprocess.STDOUT, universal_newlines=True)
+            print("Pull succeeded with output: {}".format(pull_res))
+            return target_image
+        except subprocess.CalledProcessError as cpe:
+            print_v("Failed docker pull (will create image) with status: {}. Output: {}".format(cpe.returncode, cpe.output))
         print("{}: Creating docker image: {} (this may take a minute or two...)".format(datetime.now(), target_image))
         container_id = subprocess.check_output(
             ['docker', 'create', '-i', docker_base_image, 'sh', '/' + CONTAINER_SETUP_SCRIPT_NAME],
@@ -147,6 +175,10 @@ def docker_image_create(docker_base_image, requirements):
                                         universal_newlines=True))
         print_v(subprocess.check_output(['docker', 'rm', container_id], stderr=subprocess.STDOUT,
                                         universal_newlines=True))
+        if docker_login():
+            print("{}: Pushing image: {} to docker hub".format(datetime.now(), target_image))
+            print_v(subprocess.check_output(['docker', 'push', target_image], stderr=subprocess.STDOUT,
+                                            universal_newlines=True))
     except subprocess.CalledProcessError as err:
         print("Failed executing command with  error: {} Output: \n{}".format(err, err.output))
         raise err
