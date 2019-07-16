@@ -710,10 +710,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 6a72c235-c481-47bf-8569-5d7b7a8787e7
+    taskid: 739827a3-20da-46f7-851d-cb5ec68d893c
     type: regular
     task:
-      id: 6a72c235-c481-47bf-8569-5d7b7a8787e7
+      id: 739827a3-20da-46f7-851d-cb5ec68d893c
       version: -1
       name: Set vaild domains
       description: Sets a value into the context with the given context key
@@ -729,7 +729,7 @@ tasks:
       key:
         simple: valid_domains
       value:
-        simple: '"help.canary.tools"'
+        simple: '"www.demisto.com", "www.google.com"'
     separatecontext: false
     view: |-
       {
@@ -743,10 +743,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 4ec0912a-6686-46e4-8c35-7d31fd666e81
+    taskid: 59811897-3cc3-4a7b-8bc8-d029b8a9411f
     type: regular
     task:
-      id: 4ec0912a-6686-46e4-8c35-7d31fd666e81
+      id: 59811897-3cc3-4a7b-8bc8-d029b8a9411f
       version: -1
       name: Print valid domains
       description: Prints text to war room (Markdown supported)
@@ -758,6 +758,8 @@ tasks:
       '#none#':
       - "22"
     scriptarguments:
+      execution-timeout:
+        simple: "30"
       value:
         simple: ${valid_domains}
     reputationcalc: 2
@@ -774,10 +776,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: 8c257c05-c380-4a1e-89d4-7dbec82acab1
+    taskid: 0ee9650a-fd36-4d12-898c-9a6b31f5a4b9
     type: condition
     task:
-      id: 8c257c05-c380-4a1e-89d4-7dbec82acab1
+      id: 0ee9650a-fd36-4d12-898c-9a6b31f5a4b9
       version: -1
       name: check auto extract domains
       type: condition
@@ -797,7 +799,15 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: help.canary.tools
+              simple: www.demisto.com
+      - - operator: containsString
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: www.google.com
     view: |-
       {
         "position": {
