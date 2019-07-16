@@ -115,8 +115,8 @@ jobs:
           command: |
             if ./Tests/scripts/is_ami.sh ;
               then
-                [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-                python ./Tests/scripts/create_instances.py -n $IS_NIGHTLY -b $CIRCLE_BRANCH
+                [ -n "${NIGHTLY}" ] && TESTS_TYPE=Content-Master || TESTS_TYPE=Content-Env
+                ./Tests/scripts/awsinstancetool/execute_aws_tool.sh
 
               else
                 ./Tests/lastest_server_build_scripts/create_instance.sh instance.json
