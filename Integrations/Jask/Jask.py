@@ -5,6 +5,9 @@ import json
 from datetime import datetime
 import requests
 
+# Disable insecure warnings
+requests.packages.urllib3.disable_warnings()
+
 if not demisto.getParam('proxy'):
     del os.environ['HTTP_PROXY']
     del os.environ['HTTPS_PROXY']
