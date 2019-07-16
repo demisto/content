@@ -7,6 +7,7 @@ import json
 def main():
     instance_ips = []
     instance_ids = []
+    images_data = []
     # with open('./Tests/instance_ids.txt', 'r') as instance_file:
     #     ami_instances = instance_file.readlines()
     #     ami_instances = [line.strip('\n').split(":") for line in ami_instances if line.strip('\n').split(":") != ['']]
@@ -19,6 +20,8 @@ def main():
         id_to_ip.update({env["InstanceID"]: env["InstanceDNS"]})
         instance_ips.append(env["Role"] + ":" + env["InstanceDNS"])
         instance_ids.append(env["Role"] + ":" + env["InstanceID"])
+        with open('./Tests/images_data.txt', 'a') as instance_file:
+            instance_file.write(env["Role"] + " Image info is: " + env["AmiId"] + " " + env["AmiName"] + " " + env["AmiCreation"] + "\n")
 
     with open('./Tests/instance_ids.txt', 'w') as instance_file:
         instance_file.write('\n'.join(instance_ids))
