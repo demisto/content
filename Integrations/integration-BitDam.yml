@@ -125,7 +125,6 @@ script:
             return DBOTSCORE_UNKNOWN
         else:
             return DBOTSCORE_UNKNOWN
-        return None
 
 
     '''API_IMPL'''
