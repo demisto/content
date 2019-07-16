@@ -115,7 +115,13 @@ jobs:
           command: |
             if ./Tests/scripts/is_ami.sh ;
               then
-                [ -n "${NIGHTLY}" ] && TESTS_TYPE=Content-Master || TESTS_TYPE=Content-Env
+                if [ -n "${NIGHTLY}" ] ;
+                  then
+                    export TESTS_TYPE=Content-Master
+
+                  else
+                    export TESTS_TYPE=Content-Env
+                fi
                 ./Tests/scripts/awsinstancetool/execute_aws_tool.sh
 
               else
