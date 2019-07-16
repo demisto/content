@@ -1,0 +1,350 @@
+id: reputations.json Test
+version: -1
+name: reputations.json Test
+description: Test . our Reputions,json regexes in misc folder
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8d9fffe1-e5ae-48ae-825a-b597be445512
+    type: start
+    task:
+      id: 8d9fffe1-e5ae-48ae-825a-b597be445512
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: d9142de6-9580-46f8-87b5-925d65877963
+    type: regular
+    task:
+      id: d9142de6-9580-46f8-87b5-925d65877963
+      version: -1
+      name: print valid fqdn
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      value:
+        simple: ${valid_fqdn}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: d341aafd-2b80-464f-8300-aba9de31f509
+    type: regular
+    task:
+      id: d341aafd-2b80-464f-8300-aba9de31f509
+      version: -1
+      name: Set valid fqdn
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append: {}
+      key:
+        simple: valid_fqdn
+      value:
+        simple: '"compute.amazonaw.com", "ec2-35160210-253.co.il", "www.google.co.il",
+          "1.2.3.4.com", "info.rapid7.com", "www.microsoft.co", "en.wikipedia.org"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: d3d43da2-697d-42af-8bb1-50faae41fedb
+    type: condition
+    task:
+      id: d3d43da2-697d-42af-8bb1-50faae41fedb
+      version: -1
+      name: check auto extract fqdn
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: ${FQDN.Name}
+            iscontext: true
+          right:
+            value:
+              simple: compute.amazonaw.com
+      - - operator: containsString
+          left:
+            value:
+              simple: ${FQDN.Name}
+            iscontext: true
+          right:
+            value:
+              simple: ec2-35160210-253.co.il
+      - - operator: containsString
+          left:
+            value:
+              simple: ${FQDN.Name}
+            iscontext: true
+          right:
+            value:
+              simple: 3.4.com
+      - - operator: containsString
+          left:
+            value:
+              simple: ${FQDN.Name}
+            iscontext: true
+          right:
+            value:
+              simple: www.microsoft.co
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${FQDN.Name}
+            iscontext: true
+          right:
+            value:
+              simple: en.wikipedia.org
+      - - operator: containsString
+          left:
+            value:
+              simple: ${FQDN.Name}
+            iscontext: true
+          right:
+            value:
+              simple: info.rapid7.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: d53a9a55-d724-4e7c-8ea8-3f293b5a7894
+    type: regular
+    task:
+      id: d53a9a55-d724-4e7c-8ea8-3f293b5a7894
+      version: -1
+      name: Set non valid fqdn
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append: {}
+      key:
+        simple: non_valid_fqdn
+      value:
+        simple: '"demo.com", "apple", "apple.banana", "123.321.1", "10.0.10.1", "this.is@email.format",
+          "not@fqdn"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 7457cc6c-c759-43d6-8f49-f671de541450
+    type: regular
+    task:
+      id: 7457cc6c-c759-43d6-8f49-f671de541450
+      version: -1
+      name: print non valid fqdn
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      value:
+        simple: ${non_valid_fqdn}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 07070833-7725-4877-87b3-64fcc462fae9
+    type: condition
+    task:
+      id: 07070833-7725-4877-87b3-64fcc462fae9
+      version: -1
+      name: check non extraction of non valid fqdn
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsString
+          left:
+            value:
+              simple: ${FQDN.Name}
+            iscontext: true
+          right:
+            value:
+              simple: demo.com
+      - - operator: notContainsString
+          left:
+            value:
+              simple: ${FQDN.Name}
+            iscontext: true
+          right:
+            value:
+              simple: apple
+      - - operator: notContainsString
+          left:
+            value:
+              simple: ${FQDN.Name}
+            iscontext: true
+          right:
+            value:
+              simple: apple.banana
+      - - operator: notContainsString
+          left:
+            value:
+              simple: ${FQDN.Name}
+            iscontext: true
+          right:
+            value:
+              simple: 123.321.1
+      - - operator: notContainsString
+          left:
+            value:
+              simple: ${FQDN.Name}
+            iscontext: true
+          right:
+            value:
+              simple: not@fqdn
+      - - operator: notContainsString
+          left:
+            value:
+              simple: ${FQDN.Name}
+            iscontext: true
+          right:
+            value:
+              simple: this.is@email.format
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: af2febfb-50bd-4cd5-8bc2-503252c321e4
+    type: title
+    task:
+      id: af2febfb-50bd-4cd5-8bc2-503252c321e4
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1335,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
