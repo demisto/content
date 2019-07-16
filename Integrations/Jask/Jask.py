@@ -8,12 +8,6 @@ import requests
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-if not demisto.getParam('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-
 URL = demisto.getParam('URL')
 if URL[-1] != '/':
     URL += '/'
@@ -494,7 +488,10 @@ def fetch_incidents():
     for a in resp_json['objects']:
         current_fetch = a.get('timestamp')
         if current_fetch:
-            current_fetch = datetime.strptime(current_fetch, "%Y-%m-%dT%H:%M:%S")
+            try:
+                current_fetch = datetime.strptime(current_fetch, "%Y-%m-%dT%H:%M:%S")
+            except ValueError:
+                current_fetch = datetime.strptime(current_fetch, "%Y-%m-%dT%H:%M:%S.%f")
             current_fetch = convert_date_to_unix(current_fetch)
             if current_fetch > last_run:
                 incidents.append({
@@ -511,28 +508,40 @@ def fetch_incidents():
     demisto.setLastRun({'time': next_fetch})
 
 
-if demisto.command() == 'test-module':
-    req('GET', 'asset/whitelisted', QUERY)
-    demisto.results('ok')
-elif demisto.command() == 'jask-get-insight-details':
-    get_insight_details()
-elif demisto.command() == 'jask-get-insight-comments':
-    get_insight_comments()
-elif demisto.command() == 'jask-get-signal-details':
-    get_signal_details()
-elif demisto.command() == 'jask-get-entity-details':
-    get_entity_details()
-elif demisto.command() == 'jask-get-related-entities':
-    get_related_entities()
-elif demisto.command() == 'jask-get-whitelisted-entities':
-    get_whitelisted_entities()
-elif demisto.command() == 'jask-search-insights':
-    search_insights()
-elif demisto.command() == 'jask-search-entities':
-    search_entities()
-elif demisto.command() == 'jask-search-signals':
-    search_signals()
-elif demisto.command() == 'fetch-incidents':
-    fetch_incidents()
-else:
-    return_error('Unrecognized command: ' + demisto.command())
+def main():
+    try:
+        handle_proxy()
+        if demisto.command() == 'test-module':
+            req('GET', 'asset/whitelisted', QUERY)
+            demisto.results('ok')
+        elif demisto.command() == 'jask-get-insight-details':
+            get_insight_details()
+        elif demisto.command() == 'jask-get-insight-comments':
+            get_insight_comments()
+        elif demisto.command() == 'jask-get-signal-details':
+            get_signal_details()
+        elif demisto.command() == 'jask-get-entity-details':
+            get_entity_details()
+        elif demisto.command() == 'jask-get-related-entities':
+            get_related_entities()
+        elif demisto.command() == 'jask-get-whitelisted-entities':
+            get_whitelisted_entities()
+        elif demisto.command() == 'jask-search-insights':
+            search_insights()
+        elif demisto.command() == 'jask-search-entities':
+            search_entities()
+        elif demisto.command() == 'jask-search-signals':
+            search_signals()
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+        else:
+            return_error('Unrecognized command: ' + demisto.command())
+    except Exception as e:
+        LOG(e)
+        LOG.print_log(False)
+        return_error(e.message)
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
