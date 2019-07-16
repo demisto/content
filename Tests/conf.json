@@ -313,6 +313,11 @@
             "integrations": "Luminate"
         },
         {
+            "playbookID": "SumoLogic-Test",
+            "integrations": "SumoLogic",
+            "fromversion": "4.1.0"
+        },
+        {
             "playbookID": "ParseEmailFiles-test"
         },
         {
@@ -1236,6 +1241,11 @@
             "playbookID": "Test_Sagemaker",
             "integrations": "AWS Sagemaker"
 
+        },
+        {
+            "playbookID": "C2sec-Test",
+            "integrations": "C2sec irisk",
+            "fromversion": "5.0.0"
         },
         {
             "playbookID": "Phishing test - attachment",
