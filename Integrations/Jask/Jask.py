@@ -35,12 +35,13 @@ def to_readable(o, fields, translated):
     Convert object properties to nice title readable
     """
     res = {}
-    for f in fields:
-        if o.get(f):
-            if translated.get(f):
-                res[translated.get(f)] = o.get(f)
-            else:
-                res[f.title().replace('_', '')] = o.get(f)
+    if o:
+        for f in fields:
+            if o.get(f):
+                if translated.get(f):
+                    res[translated.get(f)] = o.get(f)
+                else:
+                    res[f.title().replace('_', '')] = o.get(f)
     return res
 
 
