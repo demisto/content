@@ -18,18 +18,6 @@ QUERY = {'username': demisto.getParam('Username'), 'api_key': demisto.getParam('
 FETCH_LIMIT = int(demisto.params().get('fetchLimit', 100))
 
 
-def return_error(data):
-    """
-    Return error as result and exit
-    """
-    demisto.results({
-        'Type': entryTypes['error'],
-        'ContentsFormat': formats['text'],
-        'Contents': data
-    })
-    sys.exit(0)
-
-
 def req(method, path, query):
     """
     Send the request to JASK and return the JSON response
