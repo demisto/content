@@ -302,7 +302,7 @@ tasks:
         simple: "yes"
       unsecure: {}
       url:
-        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/docwithindicators
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/docwithindicators.doc
       username: {}
     reputationcalc: 1
     separatecontext: false
@@ -345,7 +345,7 @@ tasks:
         simple: "yes"
       unsecure: {}
       url:
-        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/docxwithindicators
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/docxwithindicators.docx
       username: {}
     reputationcalc: 1
     separatecontext: false
