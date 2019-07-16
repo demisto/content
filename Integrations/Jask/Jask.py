@@ -175,7 +175,7 @@ def get_insight_details():
     final_ec = {'Jask.Insight(val.Id === obj.Id)': ec}
     signal_metadata_md = tableToMarkdown('Signal Metadata:', [
         {'Pattern Count': patterns, 'Anomaly Count': anomalies, 'Threat Intel Count': threat_intel}],
-                                         ['Pattern Count', 'Anomaly Count', 'Threat Intel Count'])
+        ['Pattern Count', 'Anomaly Count', 'Threat Intel Count'])
     combined_md = details_md + '\n\n' + entity_markdown + '\n\n' + rel_assets_md +\
         '\n\n' + signals_md + '\n\n' + signal_metadata_md
     link = URL.replace('/api/', '/insight/') + alert_id
@@ -273,12 +273,16 @@ def get_related_entities():
     """
     entity_id = demisto.getArg('entity-id')
     resp_json = req('GET', 'asset/%s/related_assets' % entity_id, QUERY)
-    entities = [to_readable(e, [
-        'id', 'name', 'email', 'source', 'username', 'hostname', 'active', 'admin', 'asset_type',
-        'created_ts', 'firstSeen', 'given_name', 'is_whitelisted', 'lastSeen', 'last_name', 'risk_score', 'groups'], {
-                                'asset_type': 'EntityType', 'created_ts': 'CreatedTimestamp', 'firstSeen': 'FirstSeen',
-                                'lastSeen': 'LastSeen'
-                            }) for e in resp_json['objects']]
+    entities = [
+        to_readable(e,
+                    ['id', 'name', 'email', 'source', 'username', 'hostname', 'active', 'admin', 'asset_type',
+                     'created_ts', 'firstSeen', 'given_name', 'is_whitelisted', 'lastSeen', 'last_name', 'risk_score',
+                     'groups'],
+                    {
+                        'asset_type': 'EntityType', 'created_ts': 'CreatedTimestamp', 'firstSeen': 'FirstSeen',
+                        'lastSeen': 'LastSeen'
+                    }) for e in resp_json['objects']
+    ]
 
     ec = {'Jask.RelatedEntityList(val.Id === obj.Id)': entities}
     md = tableToMarkdown('Related Entities:', entities, ['Id', 'Name', 'EntityType', 'FirstSeen', 'LastSeen', 'Source',
@@ -364,8 +368,7 @@ def _add_time_to_q(q):
     time_to = demisto.getArg('time-to')
     if last_seen:
         if time_from or time_to:
-            return_error('You cannot specify absolute times [time-to, time-from] ' +
-                         'with relative time [last-seen]')
+            return_error('You cannot specify absolute times [time-to, time-from] with relative time [last-seen]')
         else:
             if translate_last_seen(last_seen) != '':
                 q += ' AND ' + translate_last_seen(last_seen)
@@ -373,8 +376,7 @@ def _add_time_to_q(q):
         q += ' AND timestamp:[%d TO %d]' % (
             convert_string_date_to_unix(time_from), convert_string_date_to_unix(time_to))
     elif time_from or time_to:
-        return_error('You must specify both absolute times [time-to, time-from] ' +
-                     'or relative time [last-seen]')
+        return_error('You must specify both absolute times [time-to, time-from] or relative time [last-seen]')
     return q
 
 
