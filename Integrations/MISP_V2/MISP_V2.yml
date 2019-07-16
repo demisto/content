@@ -1306,26 +1306,89 @@ script:
     execution: false
     name: misp-add-sighting
   - arguments:
-    - default: false
-      description: url of the feed
+    - auto: PREDEFINED
+      default: false
+      description: Predefined feeds
       isArray: false
-      name: feed_url
+      name: feed_name
+      predefined:
+      - CIRCL
+      - Botvrij.eu
+      - zeustracker.abuse.ch
+      - rules.emergingthreats.net
+      - malwaredomainlist
+      - TOR Node List from dan.me.uk
+      - cybercrime-tracker.net
+      - Phishtank
+      - http://dns-bh.sagadc.org
+      - http://labs.snort.org
+      - longtail.it.marist.edu
+      - pan-unit42
+      - booterblacklist.com
+      - home.nuug.no
+      - Ransomware Tracker abuse.ch
+      - abuse.ch
+      - hosts-file.net
+      - openphish.com
+      - iplists.firehol.org
+      - osint.bambenekconsulting.com
+      - cinsscore.com
+      - .alienvault.com
+      - blocklist.de
+      - dataplane.org
+      - VXvault
+      - http://cybercrime-tracker.net hashlist
+      - http://cybercrime-tracker.net gatelist
+      - hpHosts
+      - greensnow.co
+      - cert.at
+      - CoinBlockerLists
+      - Abuse.ch
+      - www.cybercure.ai
+      - ipspamlist
+      - security.gives
+      - MalSilo
+      - malshare.com
+      - benkow.cc
       required: false
       secret: false
     - default: false
-      description: Limit of files to add.
+      description: Name of the feed
       isArray: false
-      name: limit
+      name: name
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Predefined feeds from official misp-project '
+      description: Feed source format
       isArray: false
-      name: feed
+      name: format
       predefined:
-      - CIRCL
-      - Botvrij
+      - misp
+      - csv
+      - freetext
+      required: false
+      secret: false
+    - default: false
+      description: URL, or entry ID
+      isArray: false
+      name: source
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: URL, or entry ID
+      isArray: false
+      name: input
+      predefined:
+      - entry_id
+      - url
+      required: false
+      secret: false
+    - default: false
+      defaultValue: provider_name
+      isArray: false
+      name: provider
       required: false
       secret: false
     deprecated: false
