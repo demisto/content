@@ -23,6 +23,10 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
 - defaultvalue: 'true'
   display: Use system proxy settings
   name: proxy

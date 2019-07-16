@@ -16,13 +16,14 @@ if URL[-1] != '/':
     URL += '/'
 QUERY = {'username': demisto.getParam('Username'), 'api_key': demisto.getParam('APIKey')}
 FETCH_LIMIT = int(demisto.params().get('fetchLimit', 100))
+USE_SSL = not demisto.params().get('insecure', False)
 
 
 def req(method, path, query):
     """
     Send the request to JASK and return the JSON response
     """
-    r = requests.request(method, URL + path, params=query)
+    r = requests.request(method, URL + path, params=query, verify=USE_SSL)
     if r.status_code != requests.codes.ok:
         return_error('Error in API call to Jask service - %s' % r.text)
     if not r.text:
