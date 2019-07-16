@@ -79,7 +79,7 @@ configuration:
   required: false
 description: Use the Proofpoint Targeted Attack Protection (TAP) integration to protect against and
   provide additional visibility into phishing and other malicious email attacks.
-display: ProofpointTAP_v2
+display: Proofpoint TAP v2
 name: ProofpointTAP_v2
 script:
   commands:
