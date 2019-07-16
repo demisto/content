@@ -2,7 +2,7 @@
 from time import sleep
 from threading import Thread
 from Tests.test_utils import run_command, run_threads_list
-
+import json
 
 def main():
     instance_ips = []
@@ -12,7 +12,7 @@ def main():
     #     ami_instances = [line.strip('\n').split(":") for line in ami_instances if line.strip('\n').split(":") != ['']]
 
     id_to_ip = {}
-    with open('./env_results.json' ,'r') as json_file:
+    with open('./env_results.json', 'r') as json_file:
         env_results = json.load(json_file)
 
     for env in env_results:
