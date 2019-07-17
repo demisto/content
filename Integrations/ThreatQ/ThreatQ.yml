@@ -40,7 +40,7 @@ script:
     deprecated: false
     description: Search ThreatQ repository by keywords
     execution: false
-    name: tq_search_by_name
+    name: tq-search-by-name
     outputs:
     - contextPath: ThreatQ.description
       description: Description
@@ -147,9 +147,9 @@ script:
       type: Unknown
   - arguments:
     - default: false
+      description: pre-commit
       isArray: false
       name: domain
-      description: pre-commit
       required: true
       secret: false
     deprecated: false
@@ -169,6 +169,174 @@ script:
     - contextPath: DBotScore.Malicious
       description: DBotScore Malicious status
       type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Indicator type
+      isArray: false
+      name: type
+      predefined:
+      - IP Address
+      - URL
+      - Domain
+      - Email Address
+      - File
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicator status
+      isArray: false
+      name: status
+      predefined:
+      - Active
+      - Expired
+      - Indirect
+      - Review
+      - Whitelisted
+      required: true
+      secret: false
+    - default: false
+      description: Indicator value
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: Source(s) name(s)
+      isArray: true
+      name: sources_lst
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: TLP
+      isArray: true
+      name: tlp_lst
+      predefined:
+      - RED
+      - AMBER
+      - GREEN
+      - WHITE
+      required: false
+      secret: false
+    deprecated: false
+    description: Create an indicator
+    execution: false
+    name: create-ioc
+  - arguments:
+    - default: false
+      description: The attribute name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Create an attribute
+    execution: false
+    name: create-attr
+  - arguments:
+    - default: false
+      description: Object value
+      isArray: false
+      name: obj_keyword
+      required: true
+      secret: false
+    - default: false
+      description: Attribute value
+      isArray: false
+      name: attr_keyword
+      required: true
+      secret: false
+    deprecated: false
+    description: Add an attribute to an object
+    execution: false
+    name: add-attr
+  - arguments:
+    - default: false
+      description: First object
+      isArray: false
+      name: obj1_keyword
+      required: true
+      secret: false
+    - default: false
+      description: Second object
+      isArray: false
+      name: obj2_keyword
+      required: true
+      secret: false
+    deprecated: false
+    description: Link between two objects
+    execution: false
+    name: link-objects
+  - arguments:
+    - default: false
+      description: Adversary name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Source(s) name(s)
+      isArray: true
+      name: source_lst
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: TLP
+      isArray: true
+      name: tlp_lst
+      predefined:
+      - RED
+      - AMBER
+      - GREEN
+      - WHITE
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new Adversary
+    execution: false
+    name: create-adversary
+  - arguments:
+    - default: false
+      description: Event title
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Event type
+      isArray: false
+      name: type
+      predefined:
+      - Spearphish
+      - Watering Hole
+      - SQL Injection Attack
+      - DoS Attack
+      - Malware
+      - Watchlist
+      - Command and Control
+      - Anonymization
+      - Exfiltration
+      - Host Characteristics
+      - Compromised PKI Certificate
+      - Login Compromise
+      - Incident
+      required: true
+      secret: false
+    - default: false
+      defaultValue: 01.01.2000
+      description: Date of Occurence
+      isArray: false
+      name: date
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a new Event
+    execution: false
+    name: create-event
   isfetch: false
   runonce: false
   script: '-'

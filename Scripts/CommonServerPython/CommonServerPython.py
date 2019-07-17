@@ -1655,3 +1655,29 @@ def remove_nulls_from_dictionary(dict):
     for key in list_of_keys:
         if dict[key] in ('', None, [], {}, ()):
             del dict[key]
+
+
+def parse_date(text):
+    """
+        Returns a date string in ISO 6801 format.
+
+        :type text: ``str``
+        :param text: A string represents a date in one of the formats presented in fmts list.
+
+        :return: A date in ISO 6801 format.
+        :rtype: ``str``
+    """
+    fmts = [
+        '%Y-%m-%d', '%d.%m.%Y', '%d/%m/%Y',
+        '%d %b %Y', '%d %B %Y', '%d %m %Y',
+        '%B %d %Y', '%b %d %Y',
+        '%Y-%m-%d %H:%M:%S', '%d.%m.%Y %H:%M:%S', '%d/%m/%Y %H:%M:%S',
+        '%d %b %Y %H:%M:%S', '%d %B %Y %H:%M:%S', '%d %m %Y %H:%M:%S',
+        '%B %d %Y %H:%M:%S', '%b %d %Y %H:%M:%S'
+    ]
+    for fmt in fmts:
+        try:
+            return datetime.strptime(text, fmt)
+        except ValueError:
+            pass
+    raise ValueError('Date format is not valid.')
