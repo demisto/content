@@ -182,4 +182,4 @@ script:
     description: Show PhishTank database status
   runonce: false
 tests:
-  - No test
+  - PhishTank Testing
