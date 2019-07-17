@@ -636,7 +636,7 @@ script:
   - name: zendesk-list-tickets
     arguments:
     - name: query
-      description: 'Query to search for tickets. For more information about the search syntax, see https://developer.zendesk.com/rest_api/docs/core/search'.
+      description: 'Query to search for tickets. For more information about the search syntax, see https://developer.zendesk.com/rest_api/docs/core/search. '
     outputs:
     - contextPath: Ticket.id
       description: Ticked ID.
@@ -708,8 +708,6 @@ script:
       default: true
       description: Ticket ID. If not provided, the command will use the current incident
         details (for tickets that were created by the Zendesk integration).
-    - name: assignee_email
-      description: The email address of the agent to assign to the ticket.
     - name: status
       auto: PREDEFINED
       predefined:
