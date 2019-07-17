@@ -219,6 +219,83 @@ script:
     - contextPath: CiscoISE.Policy.Name
       description: The name of the ANC policy
       type: String
+  - arguments:
+    - default: false
+      description: The ID of the ANC policy to return
+      isArray: false
+      name: policy_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the specific ANC policy
+    execution: false
+    name: cisco-ise-get-policy-by-identifier
+    outputs:
+    - contextPath: CiscoISE.Policy.Action
+      description: The action of the policy (can be  QUARANTINE, PORTBOUNCE, SHUTDOWN)
+      type: String
+    - contextPath: CiscoISE.Policy.ID
+      description: The ID of the ANC policy
+      type: String
+    - contextPath: CiscoISE.Policy.Link
+      description: The link for the ANC policy (GUI)
+      type: String
+    - contextPath: CiscoISE.Policy.Name
+      description: The name of the ANC policy
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The actions of the policy
+      isArray: true
+      name: policy_actions
+      predefined:
+      - QUARANTINE
+      - PORTBOUNCE
+      - SHUTDOWN
+      required: true
+      secret: false
+    deprecated: false
+    description: Create ANC policy
+    execution: false
+    name: cisco-ise-create-policy
+    outputs:
+    - contextPath: CiscoISE.Policy.Actions
+      description: The actions of the ANC policy
+      type: String
+    - contextPath: CiscoISE.Policy.Name
+      description: The name of the new ANC Policy
+      type: String
+  - arguments:
+    - default: false
+      description: 'The mac address to which to apply the policy '
+      isArray: false
+      name: mac_address
+      required: true
+      secret: false
+    deprecated: false
+    description: Apply ANC policy to an endpoint
+    execution: false
+    name: cisco-ise-apply-policy
+    outputs:
+    - contextPath: CiscoISE.Endpoint.MacAddress
+      description: The mac address of the endpoint
+      type: String
+    - contextPath: CiscoISE.Endpoint.PolicyName
+      description: The policy name that was applied to the endpoint
+      type: String
+  - arguments:
+    - default: false
+      description: The mac address of the endpoint to remove the policy from
+      isArray: false
+      name: mac_address
+      required: true
+      secret: false
+    deprecated: false
+    description: Clear ANC policy from a specific endpoint
+    execution: false
+    name: cisco-ise-clear-policy
+  dockerimage: demisto/python3:3.7.3.286
   isfetch: false
   runonce: false
   script: '-'
