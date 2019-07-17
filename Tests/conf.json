@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Palo Alto Networks Cortex XDR Investigation and Response",
+            "playbookID": "Test XDR Playbook"
+        },
+        {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test",
             "instance_names": "ms_graph_mail_dev"
