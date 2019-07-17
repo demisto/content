@@ -1,7 +1,7 @@
 import sys
 import os
 import subprocess
-from Tests.awsinstancetool import aws_fuctions
+from Tests.scripts.awsinstancetool import aws_functions
 # from threading import Thread
 
 from Tests.test_utils import run_command, run_threads_list
@@ -18,8 +18,8 @@ def main():
             subprocess.check_output("ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@${} \"sudo chmod -R 755 /var/log/demisto\"".format(env["SSHuser"],env["InstanceDNS"]), shell=True)
             subprocess.check_output("scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{}:/var/log/demisto/server.log {} || echo \"WARN: Failed downloading server.log\"".format(env["SSHuser"],env["InstanceDNS"],circle_aritfact +
             "/server_{}.log".format(env["Role"].replace(' ', ''))) ,shell=True)
-            rminstance = aws_fuctions.destroy_instance(env["Region"],env["InstanceID"])
-            if aws_fuctions.isError(rminstance):
+            rminstance = aws_functions.destroy_instance(env["Region"],env["InstanceID"])
+            if aws_functions.isError(rminstance):
                 print (ValueError(rminstance))
 
 
