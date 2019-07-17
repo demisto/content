@@ -10,6 +10,8 @@ mapping:
       version:
         type: int
         required: yes
+      sortvalues:
+        type: seq
   name:
     type: str
     required: yes
