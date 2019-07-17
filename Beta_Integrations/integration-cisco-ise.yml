@@ -634,6 +634,5 @@ script:
       description: Name of the new group for the endpoint
     description: Updates the group of an endpoint
   runonce: false
-releaseNotes: "-"
 tests:
   - cisco-ise-test-playbook
