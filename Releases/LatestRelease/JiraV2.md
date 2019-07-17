@@ -1,0 +1,1 @@
+- Fix bug in fetch incidets - skip the ticket if incident with the same ticket id already created
