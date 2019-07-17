@@ -12,7 +12,7 @@ def main():
         env_results = json.load(json_file)
 
     for env in env_results:
-        if os.path.isfile("./Tests/is_build_failed_{}.txt".format(env["Role"].replace(' ', ''))):
+        if not os.path.isfile("./Tests/is_build_failed_{}.txt".format(env["Role"].replace(' ', ''))):
             subprocess.check_output("ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@${} \"sudo chmod -R 755 /var/log/demisto\"".format(env["SSHuser"],env["InstanceDNS"]), shell=True)
             subprocess.check_output("scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{}:/var/log/demisto/server.log {} || echo \"WARN: Failed downloading server.log\"".format(env["SSHuser"],env["InstanceDNS"], circle_aritfact + "/server_{}.log".format(env["Role"].replace(' ', ''))), shell=True)
             rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
