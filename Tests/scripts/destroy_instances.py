@@ -13,13 +13,16 @@ def main():
 
     for env in env_results:
         if not os.path.isfile("./Tests/is_build_failed_{}.txt".format(env["Role"].replace(' ', ''))):
-            subprocess.check_output("ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@${} \"sudo chmod -R 755 /var/log/demisto\"".format(env["SSHuser"],env["InstanceDNS"]), shell=True)
-            subprocess.check_output("scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{}:/var/log/demisto/server.log {} || echo \"WARN: Failed downloading server.log\"".format(env["SSHuser"],env["InstanceDNS"], circle_aritfact + "/server_{}.log".format(env["Role"].replace(' ', ''))), shell=True)
+            ssh_string = "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} \"sudo chmod -R 755 /var/log/demisto\""
+            scp_string = "scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{}:/var/log/demisto/server.log {} || echo \"WARN: Failed downloading server.log\""
+            subprocess.check_output(ssh_string.format(env["SSHuser"], env["InstanceDNS"]), shell=True)
+            subprocess.check_output(scp_string.format(env["SSHuser"], env["InstanceDNS"], circle_aritfact + "/server_{}.log".format(env["Role"].replace(' ', ''))), shell=True)
             rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
             if aws_functions.isError(rminstance):
-                print (ValueError(rminstance))
+                print(ValueError(rminstance))
         else:
-            print (ValueError("Tests failed on {} ,keeping intance alive".format(env["Role"])))
+            print(ValueError("Tests failed on {} ,keeping intance alive".format(env["Role"])))
+
 
 if __name__ == "__main__":
     main()

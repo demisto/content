@@ -21,12 +21,11 @@ def main():
         instance_ips.append(env["Role"] + ":" + env["InstanceDNS"])
         instance_ids.append(env["Role"] + ":" + env["InstanceID"])
         with open('./Tests/images_data.txt', 'a') as instance_file:
-            instance_file.write(env["Role"] + " Image info is: " + env["AmiId"] + " " + env["AmiName"] + " " +
-            env["AmiCreation"] + "\n")
+            linestring = "{} Image info is: {} {} {} \n"
+            instance_file.write(linestring.format(env["Role"], env["AmiId"], env["AmiName"], env["AmiCreation"])
 
     with open('./Tests/instance_ids.txt', 'w') as instance_file:
         instance_file.write('\n'.join(instance_ids))
-        
     # for ami_instance_name, ami_instance_id in ami_instances:
     #     print "Validating ami instance: {}".format(ami_instance_name)
     #     run_command("./Tests/scripts/get_instance_ip.sh {}".format(ami_instance_id))
