@@ -1811,7 +1811,6 @@
         "Pwned": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
         "Google BigQuery": "Integration has no proxy checkbox",
-        "Cisco Umbrella Investigate": "Pending merge of branch proxy-unsecure-checks",
         "InfoArmor VigilanteATI": "Pending merge of branch proxy-unsecure-checks",
         "GoogleSafeBrowsing": "Pending merge of branch proxy-unsecure-checks",
         "Cisco Meraki": "Pending merge of branch proxy-unsecure-checks",
