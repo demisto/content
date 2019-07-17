@@ -12,7 +12,7 @@ BASE_URL = demisto.getParam('url')
 USERNAME = demisto.getParam('credentials')['identifier']
 PASSWORD = demisto.getParam('credentials')['password']
 AUTH = (USERNAME, PASSWORD)
-USE_SSL = demisto.params().get('insecure', False)
+USE_SSL = not demisto.params().get('insecure', False)
 IS_USING_PROXY = True if demisto.params().get('proxy') else False
 LAST_TIME_KEY = 'time_last'
 
