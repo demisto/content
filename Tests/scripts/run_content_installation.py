@@ -18,8 +18,8 @@ def main():
         instance_ips.append(env["Role"] + ":" + env["InstanceDNS"])
         instance_ids.append(env["Role"] + ":" + env["InstanceID"])
         with open('./Tests/images_data.txt', 'a') as instance_file:
-            instance_file.write(env["Role"] + " Image info is: " + env["AmiId"] + " " + env["AmiName"] + " " +
-            env["AmiCreation"] + "\n")
+            instance_file.write('{} Image info is: {} {} {}\n'.format(env["Role"], env["AmiId"], env["AmiName"],
+                                                                      env["AmiCreation"]))
 
     with open('./Tests/instance_ids.txt', 'w') as instance_file:
         instance_file.write('\n'.join(instance_ids))
@@ -32,7 +32,7 @@ def main():
                    args=("./Tests/scripts/copy_content_data.sh {}".format(instance_ip), ),
                    kwargs={'is_silenced': False})
         threads_list.append(t)
-        
+
     run_threads_list(threads_list)
     with open('./Tests/instance_ips.txt', 'w') as instance_file:
         instance_file.write('\n'.join(instance_ips))
