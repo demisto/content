@@ -1,1 +1,1 @@
-* Packaged to follow new conventions
+* Reversed logic of the "Trust any certificate" setting.
