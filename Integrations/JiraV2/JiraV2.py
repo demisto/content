@@ -584,9 +584,10 @@ def fetch_incidents(query, id_offset=0, fetch_by_created=None, **_):
     if fetch_by_created:
         query = f'{query} AND created>-1m'
     res = run_query(query, '', max_results)
+    curr_id = id_offset
     for ticket in res.get('issues'):
         ticket_id = int(ticket.get("id"))
-        if ticket_id == id_offset:
+        if ticket_id == curr_id:
             continue
 
         id_offset = max(int(id_offset), ticket_id)
