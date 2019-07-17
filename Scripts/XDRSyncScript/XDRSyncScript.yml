@@ -290,4 +290,4 @@ tags:
 - xdr
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.7.3.221
+dockerimage: demisto/python3:3.7.4.977
