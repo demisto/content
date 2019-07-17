@@ -46,6 +46,11 @@ ISE.disable_warnings = True
 ISE.timeout = 5
 ISE.proxies = proxies
 
+DEFAULT_HEADERS = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'Connection': 'keep_alive'
+}
 ''' HELPER FUNCTIONS '''
 
 
@@ -62,39 +67,46 @@ def is_mac(mac):
         return False
 
 
-def http_request(method, url_suffix, params_dict, data=None, headers={}):
-    url = SERVER_URL + url_suffix
-    LOG('running %s request with url=%s' % (method, url))
-    try:
-        if method == 'GET':
-            ISE.headers.update(headers)
-            result = ISE.get(url, auth=HTTPBasicAuth(USERNAME, PASSWORD), verify=USE_SSL)
-            if result.status_code == 200:
-                return result
-            elif result.status_code == 404:
-                pass
-            else:
-                raise Exception("Got status code: " + str(result.status_code) + " For the request to the " + url_suffix
-                                + " endpoint. " + result.text.encode('utf8'))
-        elif method == 'PUT':
-            ISE.headers.update({'Accept': 'application/json', 'Content-Type': 'application/json'})
-            result = ISE.put(url, auth=HTTPBasicAuth(USERNAME, PASSWORD), verify=USE_SSL, data=json.dumps(data))
-            return result
+def http_request(method, url_suffix, params=None, data=None, headers=DEFAULT_HEADERS):
 
-    except Exception as e:
-        LOG(e)
-        raise Exception(str(e))
+    url = SERVER_URL + url_suffix
+    LOG(f'running {method} request with url={url}')
+
+    response = requests.request(
+        method,
+        url,
+        auth=(USERNAME, PASSWORD),
+        headers=headers,
+        verify=USE_SSL,
+        params=params,
+        data=data
+    )
+    print(response.content)
+    # handle request failure
+    if response.status_code not in {200, 201, 202, 204}:
+
+        err_msg = f'Error in API call to Cisco ISE Integration [{response.status_code}] - {response.reason}'
+
+        return_error(err_msg)
+
+    if response.status_code == 201:
+        return True
+    if response.status_code == 204:
+        return True
+    try:
+        response = response.json()
+    except Exception:
+        return_error(response.content)
+    return response
 
 
 def translate_group_id(group_id):
     """
     Translates group ID to group name
     """
-    headers = {
-        'Accept': 'application/json',
-    }
+
     api_endpoint = "/ers/config/identitygroup/1"
-    identity_group = http_request('GET', api_endpoint, {}, {}, headers).json()['IdentityGroup']
+    identity_group = http_request('GET', api_endpoint, {}, {})['IdentityGroup']
     return identity_group['name']
 
 
@@ -103,12 +115,8 @@ def translate_group_id(group_id):
 
 def get_groups_request():
 
-    headers = {
-        'Accept': 'application/json',
-        'Connection': 'keep_alive'
-    }
     api_endpoint = '/ers/config/endpointgroup'
-    return json.loads(http_request('GET', api_endpoint, {}, {}, headers).text)
+    return http_request('GET', api_endpoint, {}, {})
 
 
 def get_groups():
@@ -154,24 +162,14 @@ def get_groups():
     }
 
 
-def get_endpoint_id(mac_address=None, group_name=None):
+def get_endpoint_id(mac_address=None):
     """
     Returns endpoint id by specific mac address
     """
-    headers = None
+
     if mac_address is not None:
-        headers = {
-            'Accept': 'application/json',
-            'Connection': 'keep_alive'
-        }
-        api_endpoint = "/ers/config/endpoint?filter=mac.EQ.{}".format(mac_address)
-    if group_name is not None:
-        api_endpoint = "/ers/config/endpointgroup?filter=name.EQ.{}".format(group_name)
-        headers = {
-            "Content-Type": "application/vnd.com.cisco.ise.identity.endpoint.1.0+xml; charset=utf-8",
-            'Accept': 'application/json'
-        }
-    return json.loads(http_request('GET', api_endpoint, {}, '', headers).text)
+        api_endpoint = f'/ers/config/endpoint?filter=mac.EQ.{mac_address}'
+    return http_request('GET', api_endpoint, {}, '')
 
 
 def get_endpoint_id_command():
@@ -211,10 +209,10 @@ def get_endpoint_details(endpoint_id):
         'Accept': 'application/json',
         'Connection': 'keep_alive'
     }
-    api_endpoint = '/ers/config/endpoint/{}'.format(endpoint_id)
+    api_endpoint = f'/ers/config/endpoint/{endpoint_id}'
     response = http_request('GET', api_endpoint, {}, {}, headers)
     if response:
-        return json.loads(response.text)
+        return response
     else:
         return_error('Endpoint was not found.')
 
@@ -354,12 +352,9 @@ def get_endpoints():
     """
     Gets data about existing endpoints
     """
-    headers = {
-        'Accept': 'application/json',
-        'Connection': 'keep_alive'
-    }
+
     api_endpoint = "/ers/config/endpoint"
-    return json.loads(http_request('GET', api_endpoint, {}, {}, headers).text)
+    return http_request('GET', api_endpoint, {}, {})
 
 
 def get_endpoints_command():
@@ -413,7 +408,7 @@ def update_endpoint_by_id(endpoint_id, endpoint_details):
     headers = {
         "Content-Type": "application/vnd.com.cisco.ise.identity.endpoint.1.0+xml; charset=utf-8"
     }
-    api_endpoint = "/ers/config/endpoint/{}".format(endpoint_id)
+    api_endpoint = f'/ers/config/endpoint/{endpoint_id}'
     return http_request('PUT', api_endpoint, {}, endpoint_details, headers)
 
 
@@ -548,16 +543,11 @@ def list_number_of_active_sessions():
 
 def get_policies_request():
 
-    headers = {
-        'Accept': 'application/json',
-        'Connection': 'keep_alive'
-    }
-
     api_endpoint = '/ers/config/ancpolicy'
 
-    response = http_request('GET', api_endpoint, {}, {}, headers).text
+    response = http_request('GET', api_endpoint, {}, {})
 
-    return json.loads(response)
+    return response
 
 
 def get_policies():
@@ -593,6 +583,187 @@ def get_policies():
     return_outputs(tableToMarkdown('CiscoISE Policies', data, removeNull=True), context, policies)
 
 
+def get_policy_by_name(policy_name):
+
+    api_endpoint = f'/ers/config/ancpolicy/name/{policy_name}'
+
+    response = http_request('GET', api_endpoint, {}, {})
+    return response
+
+
+def get_policy_by_id(policy_id):
+
+    api_endpoint = f'/ers/config/ancpolicy/{policy_id}'
+
+    response = http_request('GET', api_endpoint, {}, {})
+    return response
+
+
+def get_policy_by_identifier():
+    """
+    Returns: the specific ANC policy
+    """
+
+    context = {}
+    data = []
+    policy_context = []
+    policy_name = demisto.args().get('policy_name')
+    policy_id = demisto.args().get('policy_id')
+
+    if not policy_id and not policy_name:
+        return_error('Please enter either policy name or policy id')
+
+    if policy_name:
+        policy_data = get_policy_by_name(policy_name).get('ErsAncPolicy', {})
+
+    if policy_id:
+        policy_data = get_policy_by_id(policy_id).get('ErsAncPolicy', {})
+
+    if policy_data:
+        data.append({
+            'ID': policy_data.get('id'),
+            'Name': policy_data.get('name'),
+            'Action': policy_data.get('actions'),
+            'Link': policy_data.get('link').get('href')
+        })
+
+        policy_context.append({
+            'ID': policy_data.get('id'),
+            'Name': policy_data.get('name'),
+            'Action': policy_data.get('actions'),
+            'Link': policy_data.get('link').get('href')
+        })
+
+    context['CiscoISE.Policy(val.ID && val.ID === obj.ID)'] = policy_context
+
+    return_outputs(tableToMarkdown('CiscoISE Policy', data, removeNull=True), context, policy_data)
+
+
+def create_policy_request(data):
+
+    api_endpoint = '/ers/config/ancpolicy'
+
+    response = http_request('POST', api_endpoint, {}, data=json.dumps(data))
+    return response
+
+
+def create_policy():
+
+    """
+    Create ANC Policy
+    """
+    context = {}
+    policy_context = []
+    policy_name = demisto.args().get('policy_name')
+    policy_actions = demisto.args().get('policy_actions', [])
+
+    data = {
+        'ErsAncPolicy': {
+            'name': policy_name,
+            'actions': [policy_actions]
+
+        }
+    }
+    policy = create_policy_request(data)
+    if policy:
+
+        policy_context.append({
+            'Name': policy_name,
+            'Actions': [policy_actions]
+        })
+
+        context['CiscoISE.Policy(val.ID && val.ID === obj.ID)'] = policy_context
+
+    return_outputs(f'The policy "{policy_name}" has been created successfully', context, policy)
+
+
+def apply_policy_request(data):
+
+    api_endpoint = '/ers/config/ancendpoint/apply'
+
+    response = http_request('PUT', api_endpoint, {}, data=json.dumps(data))
+    return response
+
+
+def apply_policy_to_endpoint():
+    """
+    Apply ANC policy to an endpoint
+    """
+
+    endpoint_context = []
+    context = {}
+    policy_name = demisto.args().get('policy_name')
+    mac_address = demisto.args().get('mac_address')
+    if not is_mac(mac_address):
+        return "Please enter a valid mac address"
+
+    data = {
+        'OperationAdditionalData': {
+            'additionalData': [{
+                'name': 'macAddress',
+                'value': mac_address
+            },
+                {
+                'name': 'policyName',
+                'value': policy_name
+                }
+            ]
+        }
+    }
+    apply_policy = apply_policy_request(data)
+
+    if apply_policy:
+
+        endpoint_context.append({
+            'MacAddress': mac_address,
+            'PolicyName': policy_name
+        })
+
+        context['CiscoISE.Endpoint(val.ID && val.ID === obj.ID)'] = endpoint_context
+
+    return_outputs(f'The policy "{policy_name}" has been applied successfully', context, apply_policy)
+
+
+def clear_policy_request(data):
+
+    api_endpoint = '/ers/config/ancendpoint/apply'
+
+    response = http_request('PUT', api_endpoint, {}, data=json.dumps(data))
+    return response
+
+
+def clear_policy():
+    """
+    Clear ANC policy from an endpoint
+    """
+
+    endpoint_context = []
+    context = {}
+    mac_address = demisto.args().get('mac_address')
+    if not is_mac(mac_address):
+        return "Please enter a valid mac address"
+
+    data = {
+        'OperationAdditionalData': {
+            'additionalData': [{
+                'name': 'macAddress',
+                'value': mac_address
+            }]
+        }
+    }
+
+    clear_ancpolicy = apply_policy_request(data)
+
+    if clear_ancpolicy:
+        endpoint_context.append({
+            'MacAddress': mac_address
+        })
+
+        context['CiscoISE.Endpoint(val.ID && val.ID === obj.ID)'] = endpoint_context
+
+    return_outputs(f'The endpoint has been cleared from all policies', context, clear_ancpolicy)
+
+
 ''' EXECUTION CODE '''
 try:
     if demisto.command() == 'test-module':
@@ -619,8 +790,17 @@ try:
         demisto.results(get_groups())
     elif demisto.command() == 'cisco-ise-get-policies':
         get_policies()
+    elif demisto.command() == 'cisco-ise-get-policy-by-identifier':
+        get_policy_by_identifier()
+    elif demisto.command() == 'cisco-ise-create-policy':
+        create_policy()
+    elif demisto.command() == 'cisco-ise-apply-policy':
+        apply_policy_to_endpoint()
+    elif demisto.command() == 'cisco-ise-clear-policy':
+        clear_policy()
+
 
 except Exception as e:
-    LOG(e.message)
+    LOG(e)
     LOG.print_log()
     raise Exception(str(e))
