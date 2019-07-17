@@ -409,50 +409,50 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The LogRhythm person id.
+      description: The LogRhythm person ID.
       isArray: false
       name: person-id
       required: false
       secret: false
     - default: false
       defaultValue: '30'
-      description: Number of persons to return.
+      description: Number of persons to return. Default is 30.
       isArray: false
       name: count
       required: false
       secret: false
     deprecated: false
-    description: Retrieves a list of persons
+    description: Retrieves a list of persons.
     execution: false
     name: lr-get-persons
     outputs:
     - contextPath: Logrhythm.Person.DateUpdated
-      description: Date updated
+      description: Date that the person was updated.
       type: String
     - contextPath: Logrhythm.Person.FirstName
-      description: First name
+      description: First name.
       type: String
     - contextPath: Logrhythm.Person.LastName
-      description: Last name
+      description: Last name.
       type: String
     - contextPath: Logrhythm.Person.HostStatus
-      description: Host status
+      description: Host status.
       type: string
     - contextPath: Logrhythm.Person.ID
-      description: Person ID
+      description: Person ID.
       type: String
     - contextPath: Logrhythm.Person.IsAPIPerson
-      description: Is API person
+      description: Whether the API is a person.
       type: Boolean
     - contextPath: Logrhythm.Person.UserID
-      description: User ID
+      description: User ID.
       type: String
     - contextPath: Logrhythm.Person.UserLogin
-      description: User login
+      description: User login.
       type: String
   - arguments:
     - default: false
-      description: The LogRhythm network id.
+      description: The LogRhythm network ID.
       isArray: false
       name: network-id
       required: false
@@ -465,49 +465,49 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves a list of networks
+    description: Retrieves a list of networks.
     execution: false
     name: lr-get-networks
     outputs:
     - contextPath: Logrhythm.Network.BIP
-      description: Began ip address
+      description: Began IP address.
       type: String
     - contextPath: Logrhythm.Network.ThreatLevel
-      description: Threat level
+      description: Threat level.
       type: String
     - contextPath: Logrhythm.Network.Name
-      description: Network name
+      description: Network name.
       type: String
     - contextPath: Logrhythm.Network.EIP
-      description: End ip address
+      description: End IP address.
       type: String
     - contextPath: Logrhythm.Network.DateUpdated
-      description: Date updated
+      description: Date updated.
       type: String
     - contextPath: Logrhythm.Network.EntityName
-      description: Entity name
+      description: Entity name.
       type: String
     - contextPath: Logrhythm.Network.HostZone
-      description: Host zone
+      description: Host zone.
       type: String
     - contextPath: Logrhythm.Network.RiskLevel
-      description: Risk level
+      description: Risk level.
       type: String
     - contextPath: Logrhythm.Network.Location
-      description: Network location
+      description: Network location.
       type: String
     - contextPath: Logrhythm.Network.HostStatus
-      description: Host status
+      description: Host status.
       type: String
     - contextPath: Logrhythm.Network.ID
-      description: Network ID
+      description: Network ID.
       type: String
     - contextPath: Logrhythm.Network.EntityId
-      description: Entity ID
+      description: Entity ID.
       type: String
   - arguments:
     - default: false
-      description: The Log Rhythm host ID.
+      description: The LogRhythm host ID.
       isArray: false
       name: host-id
       required: false
