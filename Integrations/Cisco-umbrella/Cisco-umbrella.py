@@ -148,7 +148,7 @@ def format_string_to_context_key_format(string):
         return_error('The key is not a string: {}'.format(string))
 
 
-def date_to_timestamp(date):
+def date_to_timestamp_func(date):
     # this helper function tries to parse a date time string according to a specific format
     # if it fails, it will just output the original value
     try:
@@ -1022,8 +1022,8 @@ def get_domain_query_volume_command():
 
 def get_domain_query_volume(domain, start_date_string, stop_date_string, match):
     # user input conversion
-    start_ts = date_to_timestamp(start_date_string)
-    stop_ts = date_to_timestamp(stop_date_string)
+    start_ts = date_to_timestamp_func(start_date_string)
+    stop_ts = date_to_timestamp_func(stop_date_string)
 
     # Build & Send request
     params = {
@@ -1508,8 +1508,8 @@ def get_domain_using_regex_command():
     title_contents = []  # type: ignore
     # Get vars
     regex = demisto.args()['expression']
-    start = date_to_timestamp(demisto.args()['start'])
-    stop = date_to_timestamp(demisto.args().get('stop'))
+    start = date_to_timestamp_func(demisto.args()['start'])
+    stop = date_to_timestamp_func(demisto.args().get('stop'))
     is_include_category = bool(strtobool(demisto.args().get('includeCategory')))
     limit = demisto.args().get('limit')
     node_type = demisto.args().get('type')
