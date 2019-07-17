@@ -18,6 +18,8 @@ def main():
             rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
             if aws_functions.isError(rminstance):
                 print (ValueError(rminstance))
+        else:
+            print (ValueError("Tests failed on {} ,keeping intance alive".format(env["Role"])))
 
 if __name__ == "__main__":
     main()
