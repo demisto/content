@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import requests
 import json
-import os
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
