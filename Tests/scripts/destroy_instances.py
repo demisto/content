@@ -1,7 +1,7 @@
 import sys
 import os
 import subprocess
-from Tests.scripts.awsinstancetool import aws_functions
+import Tests.scripts.awsinstancetool.aws_functions
 # from threading import Thread
 
 from Tests.test_utils import run_command, run_threads_list
