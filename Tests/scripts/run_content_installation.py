@@ -4,10 +4,10 @@ from threading import Thread
 from Tests.test_utils import run_command, run_threads_list
 import json
 
+
 def main():
     instance_ips = []
     instance_ids = []
-    images_data = []
     # with open('./Tests/instance_ids.txt', 'r') as instance_file:
     #     ami_instances = instance_file.readlines()
     #     ami_instances = [line.strip('\n').split(":") for line in ami_instances if line.strip('\n').split(":") != ['']]
@@ -21,10 +21,12 @@ def main():
         instance_ips.append(env["Role"] + ":" + env["InstanceDNS"])
         instance_ids.append(env["Role"] + ":" + env["InstanceID"])
         with open('./Tests/images_data.txt', 'a') as instance_file:
-            instance_file.write(env["Role"] + " Image info is: " + env["AmiId"] + " " + env["AmiName"] + " " + env["AmiCreation"] + "\n")
+            instance_file.write(env["Role"] + " Image info is: " + env["AmiId"] + " " + env["AmiName"] + " " +
+            env["AmiCreation"] + "\n")
 
     with open('./Tests/instance_ids.txt', 'w') as instance_file:
         instance_file.write('\n'.join(instance_ids))
+        
     # for ami_instance_name, ami_instance_id in ami_instances:
     #     print "Validating ami instance: {}".format(ami_instance_name)
     #     run_command("./Tests/scripts/get_instance_ip.sh {}".format(ami_instance_id))
