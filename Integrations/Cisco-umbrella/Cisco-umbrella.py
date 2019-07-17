@@ -22,18 +22,13 @@ requests.packages.urllib3.disable_warnings()
 
 API_TOKEN = demisto.params()['APIToken']
 BASE_URL = demisto.params()['baseURL']
-USE_SSL = True if demisto.params().get('insecure') else False
+USE_SSL = demisto.params().get('insecure') if demisto.params().get('insecure') else \
+    not demisto.params().get('insecure_new')  # Backward compatibility issue, the old logic of insecure was reversed
 DEFAULT_HEADERS = {
     'Authorization': 'Bearer {}'.format(API_TOKEN),
     'Accept': 'application/json'
 }
 MALICIOUS_THRESHOLD = int(demisto.params().get('dboscore_threshold', -100))
-# remove proxy if not set to true in params
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 ''' MAPS '''
 
@@ -1756,6 +1751,7 @@ def get_url_timeline(url):
 
 LOG('command is %s' % (demisto.command(),))
 try:
+    handle_proxy()
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
         http_request('/domains/categorization/google.com?showLabels')
