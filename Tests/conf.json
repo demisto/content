@@ -3,6 +3,16 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_dev"
+        },
+        {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_prod"
+        },
+        {
             "integrations": "Cloaken",
             "playbookID": "Cloaken-Test"
         },
@@ -25,16 +35,6 @@
         {
             "integrations": "CheckPhish",
             "playbookID": "CheckPhish-Test"
-        },
-        {
-            "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
-            "instance_names": "ms_graph_mail_dev"
-        },
-        {
-            "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
-            "instance_names": "ms_graph_mail_prod"
         },
         {
             "integrations": "Symantec Management Center",
@@ -313,6 +313,11 @@
             "integrations": "Luminate"
         },
         {
+            "playbookID": "SumoLogic-Test",
+            "integrations": "SumoLogic",
+            "fromversion": "4.1.0"
+        },
+        {
             "playbookID": "ParseEmailFiles-test"
         },
         {
@@ -332,6 +337,10 @@
         {
             "integrations": "Palo Alto Minemeld",
             "playbookID": "minemeld_test"
+        },
+        {
+            "integrations": "SentinelOne V2",
+            "playbookID": "SentinelOne Beta Test"
         },
         {
             "integrations": "InfoArmor VigilanteATI",
@@ -368,10 +377,6 @@
             "integrations": "Threat Grid",
             "playbookID": "ThreatGridTest",
             "timeout": 600
-        },
-        {
-            "integrations": "Symantec Site Review",
-            "playbookID": "Symantec Site Review Test"
         },
         {
             "integrations": [
@@ -527,6 +532,9 @@
         },
         {
             "playbookID": "TestParseCSV"
+        },
+        {
+            "playbookID": "reputations.json Test"
         },
         {
             "integrations": "Shodan",
@@ -1238,6 +1246,11 @@
 
         },
         {
+            "playbookID": "C2sec-Test",
+            "integrations": "C2sec irisk",
+            "fromversion": "5.0.0"
+        },
+        {
             "playbookID": "Phishing test - attachment",
             "timeout": 600,
             "nightly": true,
@@ -1264,7 +1277,7 @@
         {
             "playbookID": "Phishing v2 Test - Attachment",
             "timeout": 1200,
-            "nightly": true,            
+            "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
@@ -1644,6 +1657,11 @@
             "playbookID": "VMRay-Test"
         },
         {
+            "integrations": "PerceptionPoint",
+            "playbookID": "PerceptionPoint Test",
+            "fromversion": "4.1.0"
+        },
+        {
             "integrations": "AutoFocus V2",
             "playbookID": "AutoFocus V2 test"
         },
@@ -1672,10 +1690,9 @@
         "Cybereason Test": "Integration instance being disabled in the middle of test playbook (issue 17394)",
         "LogRhythmRest": "Unstable environment Adi is checking",
         "InfoArmorVigilanteATITest": "Test fails on verify context (issue 17358)",
-        "whois_test": "Test fails only when running in a build process but not manually (issue 17289)",
         "process_email_-_generic_-_test": "Fails due to missing data (issue 17283)",
+        "calculate_severity_-_critical_assets_-_test": "Fails on verify context (issue 17924)",
         "Forescout-Test": "Should be skipped (issue 17016)",
-        "Jask_Test": "Test failed due to missing data (issue 17245)",
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
         "EWS test": "Old test",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
@@ -1685,6 +1702,7 @@
         "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
+        "Endpoint Enrichment - Generic v2 - Test": "Uses the deprecated script ADGetComputer which is bugged and won't be fixed and deprecated carbon black integration",
         "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)",
         "Test-Detonate URL - ThreatGrid": "Outdated test",
         "ip_enrichment_generic_test": "Need to check if test is valid, and the playbook is going to be deprecated now.",
@@ -1706,7 +1724,6 @@
         "get_file_sample_from_path_-_d2_-_test": "old test, needs to check if relevant",
         "ssdeepreputationtest": "old test, needs to check if relevant",
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "old test, needs to check if relevant",
-        "okta_test_playbook": "test failed (Issue 17041)",
         "Detonate File - FireEye AX - Test": "No instance",
         "Cofense Triage Test": "Creds only works on demo4",
         "Intezer Testing": "Old test for old version of inteze"
@@ -1749,7 +1766,7 @@
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "No instance",
         "Minerva Labs Anti-Evasion Platform": "No instance",
-        "GitHub": "no instance configured, also need to fix test",
+        "Phish.AI": "Unauthorized. will be re-branded soon as Cofense",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -1762,7 +1779,6 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
-        "Palo Alto Networks Cortex": "Changing the auth flow, will unskip when ready",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
@@ -1775,6 +1791,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "Whois": "Mocks does not support sockets",
         "Panorama": "Exception: Proxy process took to long to go up. https://circleci.com/gh/demisto/content/24826",
         "Image OCR": "Does not perform network traffic",
         "Server Message Block (SMB)": "Does not perform http communication",
@@ -1794,7 +1811,6 @@
         "Pwned": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
         "Google BigQuery": "Integration has no proxy checkbox",
-        "Cisco Umbrella Investigate": "Pending merge of branch proxy-unsecure-checks",
         "InfoArmor VigilanteATI": "Pending merge of branch proxy-unsecure-checks",
         "GoogleSafeBrowsing": "Pending merge of branch proxy-unsecure-checks",
         "Cisco Meraki": "Pending merge of branch proxy-unsecure-checks",
@@ -1807,7 +1823,7 @@
         "Check Point": "Checking",
         "WhatsMyBrowser": "Checking",
         "jira": "Checking",
-        "CIRCL": "Checking",
+        "okta": "Test Module failing, suspect it requires SSL",
         "Awake Security": "Checking",
         "Cylance Protect v2": "Checking",
         "ArcSight ESM v2": "Checking",

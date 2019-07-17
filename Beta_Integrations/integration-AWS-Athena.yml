@@ -391,6 +391,5 @@ script:
   dockerimage: demisto/boto3py3
   runonce: false
   subtype: python2
-releaseNotes: "Beta integration"
 tests:
 - No test
