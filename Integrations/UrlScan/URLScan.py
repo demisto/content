@@ -25,12 +25,7 @@ APIKEY = demisto.params().get('apikey')
 THRESHOLD = int(demisto.params().get('url_threshold', '1'))
 INSECURE = demisto.params().get('insecure', None) if demisto.params().get('insecure', None) else \
     not demisto.params().get('insecure_new')  # Backward compatibility issue, the old logic of insecure was reversed
-PROXY = demisto.params().get('proxy')
-if not demisto.params().get('proxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+demisto.info('~~~~~~~~~~~~~~~~~ {} ~~~~~~~~~~~~~~~~~~~~~~~'.format(INSECURE))
 
 
 '''HELPER FUNCTIONS'''
@@ -543,6 +538,7 @@ def format_http_transaction_list():
 
 """COMMAND FUNCTIONS"""
 try:
+    handle_proxy()
     if demisto.command() == 'test-module':
         search_type = 'ip'
         query = '8.8.8.8'
