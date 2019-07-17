@@ -1,10 +1,8 @@
 import sys
 import os
+import json
 import subprocess
-import Tests.scripts.awsinstancetool.aws_functions
-# from threading import Thread
-
-from Tests.test_utils import run_command, run_threads_list
+import Tests.scripts.awsinstancetool.aws_functions as aws_functions
 
 
 def main():
@@ -16,12 +14,10 @@ def main():
     for env in env_results:
         if os.path.isfile("./Tests/is_build_failed_{}.txt".format(env["Role"].replace(' ', ''))):
             subprocess.check_output("ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@${} \"sudo chmod -R 755 /var/log/demisto\"".format(env["SSHuser"],env["InstanceDNS"]), shell=True)
-            subprocess.check_output("scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{}:/var/log/demisto/server.log {} || echo \"WARN: Failed downloading server.log\"".format(env["SSHuser"],env["InstanceDNS"],circle_aritfact +
-            "/server_{}.log".format(env["Role"].replace(' ', ''))) ,shell=True)
-            rminstance = aws_functions.destroy_instance(env["Region"],env["InstanceID"])
+            subprocess.check_output("scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{}:/var/log/demisto/server.log {} || echo \"WARN: Failed downloading server.log\"".format(env["SSHuser"],env["InstanceDNS"], circle_aritfact + "/server_{}.log".format(env["Role"].replace(' ', ''))), shell=True)
+            rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
             if aws_functions.isError(rminstance):
                 print (ValueError(rminstance))
-
 
     # with open('./Tests/instance_ips.txt', 'r') as instance_file:
     #     instance_ips = instance_file.readlines()
