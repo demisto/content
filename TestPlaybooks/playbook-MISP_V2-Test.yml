@@ -753,7 +753,7 @@ tasks:
       '#none#':
       - "26"
     scriptarguments:
-      feed_url:
+      feed:
         simple: https://www.circl.lu/doc/misp/feed-osint/
       limit:
         simple: "1"
