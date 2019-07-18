@@ -38,6 +38,7 @@ script:
     }
 
     var getList = function() {
+        logInfo('~~~~~~~~~~~~~~~~~~~~~~~~~~~~' + params.insecure);
         var res = http(listSource, {Method: 'GET'}, params.insecure, params.proxy);
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';

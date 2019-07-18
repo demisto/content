@@ -252,6 +252,8 @@ def configure_proxy_unsecure(integration_params):
     if integration_params_copy:
         for param in ('proxy', 'useProxy', 'insecure', 'unsecure'):
             integration_params[param] = True
+    print(integration_params.get('insecure'))
+    print(integration_params.get('unsecure'))
 
     return integration_params_copy
 
