@@ -173,15 +173,14 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      end-date:
-        simple: 2019-05-20
+      end-date: {}
       keyword:
         simple: WIN-JSBOL5ERCQA.demisto.lab
       page-size:
         simple: "100"
-      start-date:
-        simple: 2019-05-15
-      time-frame: {}
+      start-date: {}
+      time-frame:
+        simple: LastWeek
       time_frame: {}
     separatecontext: false
     view: |-
