@@ -931,7 +931,6 @@ def add_events_from_feed():
             human_readable = f'{human_readable}\n' \
                 f'{not_added_counter} events were not added. Might already been added earlier.'
 
-        return_error(human_readable)
         return_outputs(human_readable, outputs=entry_context)
     except ValueError:
         return_error(f'URL [{url}] is not a valid MISP feed')
