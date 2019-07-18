@@ -86,15 +86,6 @@ auth_key = "%s%s%s" % (API_KEY, nonce, timestamp)
 auth_key = auth_key.encode("utf-8")
 api_key_hash = hashlib.sha256(auth_key).hexdigest()
 
-# Headers to be sent in requests
-# HEADERS_2 = {
-#     'Authorization': auth,
-#     'x-xdr-auth-id': API_KEY_ID,
-#     'x-xdr-nonce': nonce,
-#     'x-xdr-timestamp': timestamp,
-#     'Content-Type': 'application/json',
-#     'Accept': 'application/json'
-# }
 
 HEADERS = {
     "x-xdr-timestamp": timestamp,
@@ -141,7 +132,7 @@ def test_module():
     """
     Performs basic get request to get item samples
     """
-    last_one_day, _ = parse_date_range("1 day", TIME_FORMAT)
+    last_one_day, _ = parse_date_range(FETCH_TIME, TIME_FORMAT)
     get_incidents(lte_creation_time=last_one_day, limit=1)
 
 
@@ -155,16 +146,16 @@ def get_incidents_command():
     gte_modification_time = demisto.args().get('gte_modification_time')
     since_modification_time = demisto.args().get('since_modification_time')
 
-    if since_modification_time and lte_modification_time:
+    if since_modification_time and gte_modification_time:
         raise ValueError('Can\'t set both since_modification_time and lte_modification_time')
     elif since_modification_time:
-        gte_modification_time = parse_date_range(lte_modification_time, TIME_FORMAT)
+        gte_modification_time, _ = parse_date_range(since_modification_time, TIME_FORMAT)
 
     lte_creation_time = demisto.args().get('lte_creation_time')
     gte_creation_time = demisto.args().get('gte_creation_time')
     since_creation_time = demisto.args().get('since_creation_time')
 
-    if since_creation_time and lte_creation_time:
+    if since_creation_time and gte_creation_time:
         raise ValueError('Can\'t set both since_creation_time and lte_creation_time')
     elif since_creation_time:
         gte_creation_time, _ = parse_date_range(since_creation_time, TIME_FORMAT)
@@ -186,8 +177,6 @@ def get_incidents_command():
         page_number=page,
         limit=limit
     )
-
-    # print(raw_incidents)
 
     return_outputs(
         readable_output=tableToMarkdown('Incidents', raw_incidents),
