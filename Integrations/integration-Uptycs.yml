@@ -101,7 +101,7 @@ script:
     '''HELPER FUNCTIONS'''
 
 
-    def generate_headers(data, key, secret):
+    def generate_headers(key, secret):
         header = {}
         utcnow = datetime.utcnow()
         date = utcnow.strftime("%a, %d %b %Y %H:%M:%S GMT")
