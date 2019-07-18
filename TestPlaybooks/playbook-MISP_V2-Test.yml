@@ -127,7 +127,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3870
+          "y": 3520
         }
       }
     note: false
@@ -738,23 +738,26 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: 499a451d-1953-4e9f-8b21-2eb88499d27f
+    taskid: 511f75a8-3450-40d7-8320-d078ea30362d
     type: regular
     task:
-      id: 499a451d-1953-4e9f-8b21-2eb88499d27f
+      id: 511f75a8-3450-40d7-8320-d078ea30362d
       version: -1
-      name: Add events from feed
-      description: Adds an OSINT feed.
+      name: Add feed
+      description: |-
+        Adds events from OSINT feed.
+
+        WILL NOT CREATE NEW EVENTS BECAUSE FEED ALREADY ADDED BEFORE
       script: '|||misp-add-events-from-feed'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "26"
+      - "5"
     scriptarguments:
       feed:
-        simple: https://www.circl.lu/doc/misp/feed-osint/
+        simple: CIRCL
       limit:
         simple: "1"
     continueonerror: true
@@ -764,73 +767,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 3345
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "25":
-    id: "25"
-    taskid: 960777df-fabf-46cf-8c6d-a2ae2d429fe3
-    type: regular
-    task:
-      id: 960777df-fabf-46cf-8c6d-a2ae2d429fe3
-      version: -1
-      name: Delete event
-      description: Deletes an event according to event ID.
-      script: '|||misp-delete-event'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      event_id:
-        complex:
-          root: MISP
-          accessor: Event.ID
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 3695
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "26":
-    id: "26"
-    taskid: b99d557b-8820-4ebd-8868-55bccaf6faa5
-    type: condition
-    task:
-      id: b99d557b-8820-4ebd-8868-55bccaf6faa5
-      version: -1
-      name: Check if event created
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "25"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: MISP
-                accessor: Event.ID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 3520
         }
       }
     note: false
@@ -1119,7 +1055,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3885,
+        "height": 3535,
         "width": 810,
         "x": 50,
         "y": 50
