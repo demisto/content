@@ -8,18 +8,26 @@ wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: t
 if [ "$?" != "0" ]; then
     echo "No such branch in content-test-conf: $CIRCLE_BRANCH , falling back to master"
     wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip "https://github.com/demisto/content-test-conf/archive/master.zip" --no-check-certificate
+    unzip ./test_configuration.zip
+    cp -r ./content-test-conf-master/awsinstancetool ./Tests/scripts/awsinstancetool
+    rm -rf ./content-test-conf-master
+    rm -rf ./test_configuration.zip
+  else
+    unzip ./test_configuration.zip
+    cp -r ./content-test-conf-$CIRCLE_BRANCH/awsinstancetool ./Tests/scripts/awsinstancetool
+    rm -rf ./content-test-conf-$CIRCLE_BRANCH
+    rm -rf ./test_configuration.zip
 fi
 
 set -e
 
-unzip ./test_configuration.zip
 # cp -r ./content-test-conf-master/awsinstancetool ./Tests/scripts/awsinstancetool
 # rm -rf ./content-test-conf-master
 
-cp -r ./content-test-conf-awsinstancetool/awsinstancetool ./Tests/scripts/awsinstancetool
-rm -rf ./content-test-conf-awsinstancetool
-
-rm -rf ./test_configuration.zip
+# unzip ./test_configuration.zip
+# cp -r ./content-test-conf-awsinstancetool/awsinstancetool ./Tests/scripts/awsinstancetool
+# rm -rf ./content-test-conf-awsinstancetool
+# rm -rf ./test_configuration.zip
 
 # download configuration file from github repo
 echo "Getting conf from branch $CIRCLE_BRANCH (fallback to master)"
