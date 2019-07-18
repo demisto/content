@@ -125,11 +125,10 @@ jobs:
                   else
                     export IFRA_ENV_TYPE=Content-Env
                 fi
-                ./Tests/scripts/awsinstancetool/aws_instance_tool.py $IFRA_ENV_TYPE
+                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py $IFRA_ENV_TYPE
 
               else
-                export ENV_TYPE=CustomBuild
-                ./Tests/scripts/awsinstancetool/aws_instance_tool.py $IFRA_ENV_TYPE
+                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py CustomBuild
             fi
       - run:
           name: Setup Instance
