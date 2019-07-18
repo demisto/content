@@ -6,6 +6,22 @@ import logging
 import warnings
 import traceback
 
+import getpass
+getpass_getuser = getpass.getuser
+
+
+# work arround for bug in exchangelib: https://github.com/ecederstrand/exchangelib/issues/448
+def getuser_no_fail():
+    try:
+        user = getpass_getuser()
+    except KeyError:
+        # getuser() fails on some systems. Provide a sane default.
+        user = 'exchangelib'
+    return user
+
+
+getpass.getuser = getuser_no_fail
+
 warnings.filterwarnings("ignore")
 log_stream = StringIO()
 logging.basicConfig(stream=log_stream, level=logging.DEBUG)
