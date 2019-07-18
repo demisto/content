@@ -4,34 +4,19 @@ set -e
 #download awsinstancetool
 
 # wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip 'https://github.com/demisto/content-test-conf/archive/master.zip' --no-check-certificate
-# wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip 'https://github.com/demisto/content-test-conf/archive/awsinstancetool.zip' --no-check-certificate
-curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-      --location "https://github.com/demisto/content-test-conf/archive/$CIRCLE_BRANCH.zip" -o "$SECRET_CONF_PATH"
-
-NOT_FOUND_MESSAGE=$(cat $SECRET_CONF_PATH | jq '.message')
-
-if [ "$NOT_FOUND_MESSAGE" != 'null' ]
-  then
-    curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-          --location "https://github.com/demisto/content-test-conf/archive/master.zip" -o "$SECRET_CONF_PATH"
-    unzip ./master.zip
-    cp -r ./content-test-conf-master/awsinstancetool ./Tests/scripts/awsinstancetool
-    rm -rf ./content-test-conf-master
-    rm -rf ./master.zip
-  else
-    unzip ./$CIRCLE_BRANCH.zip
-    cp -r ./content-test-conf-$CIRCLE_BRANCH/awsinstancetool ./Tests/scripts/awsinstancetool
-    rm -rf ./content-test-conf-$CIRCLE_BRANCH
-    rm -rf ./$CIRCLE_BRANCH.zip
+wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip "https://github.com/demisto/content-test-conf/archive/$CIRCLE_BRANCH.zip" --no-check-certificate
+if [ "$?" != "0" ]; then
+    echo "No such branch in content-test-conf: $CIRCLE_BRANCH , falling back to master" 1>&2
+    wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip "https://github.com/demisto/content-test-conf/archive/$master.zip" --no-check-certificate
 fi
-
+unzip ./test_configuration.zip
 # cp -r ./content-test-conf-master/awsinstancetool ./Tests/scripts/awsinstancetool
 # rm -rf ./content-test-conf-master
 
-# cp -r ./content-test-conf-awsinstancetool/awsinstancetool ./Tests/scripts/awsinstancetool
-# rm -rf ./content-test-conf-awsinstancetool
-#
-# rm -rf ./test_configuration.zip
+cp -r ./content-test-conf-awsinstancetool/awsinstancetool ./Tests/scripts/awsinstancetool
+rm -rf ./content-test-conf-awsinstancetool
+
+rm -rf ./test_configuration.zip
 
 # download configuration file from github repo
 echo "Getting conf from branch $CIRCLE_BRANCH (fallback to master)"
