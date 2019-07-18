@@ -901,7 +901,7 @@ def add_events_from_feed():
     url = demisto.getArg('feed')  # type: str
     url = url[:-1] if url.endswith('/') else url
     if PREDEFINED_FEEDS.get(url):
-        url = PREDEFINED_FEEDS[url].get('url')
+        url = PREDEFINED_FEEDS[url].get('url')  # type: ignore
     limit = demisto.getArg('limit')  # type: str
     limit_int = int(limit) if limit.isdigit() else 0
 

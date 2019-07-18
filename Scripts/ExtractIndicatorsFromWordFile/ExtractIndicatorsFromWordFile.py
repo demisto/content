@@ -37,8 +37,11 @@ class WordParser:
             self.file_type = file.get("Type")
 
     def convert_doc_to_docx(self):
-        subprocess.check_output(
-            ['soffice', '--headless', '--convert-to', 'docx', self.file_path])  # Requires office-utils docker image
+        output = subprocess.check_output(
+            ['soffice', '--headless', '-env:UserInstallation=file:///tmp/.config/extractindicators', '--convert-to',
+             'docx', self.file_path], stderr=subprocess.STDOUT)
+        demisto.debug("soffice output: [{}]".format(output))
+        # Requires office-utils docker image
         output_file_name = self.file_name[0:self.file_name.rfind('.')] + '.docx'
         self.file_path = self.file_path + ".docx"
         with open(self.file_path, 'rb') as f:
@@ -101,25 +104,36 @@ class WordParser:
             return_error("Input file is not a doc file.")
 
 
-# Parsing:
-parser = WordParser()
-parser.parse_word()
+def main():
+    # Parsing:
+    parser = WordParser()
+    try:
+        parser.parse_word()
+    except subprocess.CalledProcessError as perr:
+        return_error("ProcessError: exit code: {}. Output: {}".format(perr.returncode, perr.output))
+    except Exception as e:
+        return_error(str(e))
 
-# Returning Indicators:
-indicators_hr = demisto.executeCommand("extractIndicators", {
-    'text': parser.all_data})[0][u'Contents']
-demisto.results({
-    'Type': entryTypes['note'],
-    'ContentsFormat': formats['text'],
-    'Contents': indicators_hr,
-    'HumanReadable': indicators_hr
-})
+    # Returning Indicators:
+    indicators_hr = demisto.executeCommand("extractIndicators", {
+        'text': parser.all_data})[0][u'Contents']
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': indicators_hr,
+        'HumanReadable': indicators_hr
+    })
 
-# Returning all parsed data:
-demisto.results(parser.all_data.encode('utf-8'))
+    # Returning all parsed data:
+    demisto.results(parser.all_data.encode('utf-8'))
 
-# Returning error:
-if parser.res:  # If there was an error:
-    contents = parser.res["Contents"]  # type: ignore
-    if "Error occurred while parsing input" in contents or "Input file is not a valid" in contents:
-        demisto.results(parser.res)  # Return error too
+    # Returning error:
+    if parser.res:  # If there was an error:
+        contents = parser.res["Contents"]  # type: ignore
+        if "Error occurred while parsing input" in contents or "Input file is not a valid" in contents:
+            demisto.results(parser.res)  # Return error too
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
