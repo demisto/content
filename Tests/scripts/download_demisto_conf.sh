@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
-set -e
+set +e
 
 #download awsinstancetool
 
 # wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip 'https://github.com/demisto/content-test-conf/archive/master.zip' --no-check-certificate
-wget -q --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip "https://github.com/demisto/content-test-conf/archive/$CIRCLE_BRANCH.zip" --no-check-certificate
+wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip "https://github.com/demisto/content-test-conf/archive/$CIRCLE_BRANCH.zip" --no-check-certificate
 if [ "$?" != "0" ]; then
-    echo "No such branch in content-test-conf: $CIRCLE_BRANCH , falling back to master" 1>&2
-    wget -q --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip "https://github.com/demisto/content-test-conf/archive/master.zip" --no-check-certificate
+    echo "No such branch in content-test-conf: $CIRCLE_BRANCH , falling back to master"
+    wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip "https://github.com/demisto/content-test-conf/archive/master.zip" --no-check-certificate
 fi
+
+set -e
+
 unzip ./test_configuration.zip
 # cp -r ./content-test-conf-master/awsinstancetool ./Tests/scripts/awsinstancetool
 # rm -rf ./content-test-conf-master
