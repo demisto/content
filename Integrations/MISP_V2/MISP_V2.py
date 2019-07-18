@@ -164,12 +164,6 @@ def extract_error(error: list) -> List[Dict[str, any]]:
     } for err in error]
 
 
-def filter_context_object(response: List[dict]) -> List[dict]:
-    new_response = list()
-
-    return new_response
-
-
 def build_list_from_dict(args: dict) -> List[dict]:
     """
 
@@ -913,7 +907,7 @@ def add_events_from_feed():
     osint_url = f'{url}/manifest.json'
     try:
         uri_list = requests.get(osint_url, verify=USE_SSL, headers=headers).json()
-        events_numbers = list() # type: List[Dict[str: int]]
+        events_numbers = list()  # type: List[Dict[str: int]]
         for num, uri in enumerate(uri_list, 1):
             req = requests.get(f'{url}/{uri}.json', verify=USE_SSL, headers=headers).json()
             event = MISP.add_event(req)
@@ -931,7 +925,7 @@ def add_events_from_feed():
         )
         return_outputs(md, outputs=ec)
     except ValueError:
-        return_error(f'No JSON could be decoded from URL [{url}]')
+        return_error(f'URL [{url}] is not a valid MISP feed')
 
 
 def add_object(event_id: str, obj: MISPObject):
@@ -952,17 +946,21 @@ def add_object(event_id: str, obj: MISPObject):
                 f'\n\tErrors: {err["errors"]}\n'
         return_error(f'Error in `{command}` command: {error_string}')
     for ref in obj.ObjectReference:
-        MISP.add_object_reference(ref)
-    # TODO filter only important
+        response = MISP.add_object_reference(ref)
+    formatted_response = replace_keys(response)
+    entry_context = {
+        MISP_PATH:
+            {
+                'ID': event_id
+            }
+    }
+    entry_context[MISP_PATH].update(formatted_response)
+    human_readable = f'Object has been added to MISP event ID {event_id}'
 
-    entry_context, raw_response = search(
-        post_to_warroom=False)  # Run search on event ID (in demisto.args) and add object to context
-    entry_context = filter_context_object()
-    return_error(entry_context)
     return_outputs(
-        f"Object has been added to MISP event ID {event_id}",
-        {MISP_PATH: None},
-        None
+        human_readable,
+        entry_context,
+        response
     )  # type: ignore
 
 
@@ -1039,7 +1037,6 @@ def add_url_object():
 
 
 def add_generic_object_command():
-    # TODO add get_event from search
     event_id = demisto.getArg('event_id')
     template = demisto.getArg('template')
     attributes = demisto.getArg('attributes')  # type: str
@@ -1077,7 +1074,7 @@ def add_ip_object():
         ]
         attr.extend({arg.replace('_', '-'): demisto.getArg(arg)} for arg in non_req_args if demisto.getArg(arg))
         if demisto.getArg('comment'):
-            attr.append({'text':  demisto.getArg('comment')})
+            attr.append({'text': demisto.getArg('comment')})
         obj = build_generic_object(template, attr)
         add_object(event_id, obj)
     else:
