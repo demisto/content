@@ -44,152 +44,7 @@ PREDEFINED_FEEDS = {
     'Botvrij.eu': {'name': 'The Botvrij.eu Data',
                    'url': 'http://www.botvrij.eu/data/feed-osint',
                    'format': 'misp',
-                   'input': 'network'},
-    'zeustracker.abuse.ch': {'name': 'ZeuS compromised URL blocklist',
-                             'url': 'https://zeustracker.abuse.ch/blocklist.php?download=compromised',
-                             'format': 'csv',
-                             'input': 'network'},
-    'rules.emergingthreats.net': {'name': 'blockrules of rules.emergingthreats.net',
-                                  'url': 'http://rules.emergingthreats.net/blockrules/compromised-ips.txt',
-                                  'format': 'csv',
-                                  'input': 'network'},
-    'malwaredomainlist': {'name': 'malwaredomainlist',
-                          'url': 'https://panwdbl.appspot.com/lists/mdl.txt',
-                          'format': 'csv',
-                          'input': 'network'},
-    'TOR Node List from dan.me.uk': {'name': 'Tor ALL nodes',
-                                     'url': 'https://www.dan.me.uk/torlist/',
-                                     'format': 'csv',
-                                     'input': 'network'},
-    'cybercrime-tracker.net': {'name': 'cybercrime-tracker.net - all',
-                               'url': 'http://cybercrime-tracker.net/all.php',
-                               'format': 'freetext',
-                               'input': 'network'},
-    'Phishtank': {'name': 'Phishtank online valid phishing',
-                  'url': 'http://data.phishtank.com/data/online-valid.csv',
-                  'format': 'csv',
-                  'input': 'network'},
-    'http://dns-bh.sagadc.org': {'name': 'listdynamic dns providers',
-                                 'url': 'http://dns-bh.sagadc.org/dynamic_dns.txt',
-                                 'format': 'csv',
-                                 'input': 'network'},
-    'http://labs.snort.org': {'name': 'ip-filter.blf - labs.snort.org',
-                              'url': 'http://labs.snort.org/feeds/ip-filter.blf',
-                              'format': 'freetext',
-                              'input': 'network'},
-    'longtail.it.marist.edu': {'name': 'longtail.it.marist.edu 7 days',
-                               'url': 'http://longtail.it.marist.edu/honey/last-7-days-ip-addresses.txt',
-                               'format': 'freetext',
-                               'input': 'network'},
-    'pan-unit42': {'name': 'diamondfox_panels',
-                   'url': 'https://raw.githubusercontent.com/pan-unit42/iocs/master/diamondfox/diamondfox_panels.txt',
-                   'format': 'freetext',
-                   'input': 'network'},
-    'booterblacklist.com': {'name': 'booterblacklist.com Latest',
-                            'url': 'http://booterblacklist.com/data/booterlist_latest.txt',
-                            'format': 'freetext',
-                            'input': 'network'},
-    'home.nuug.no': {'name': 'pop3gropers',
-                     'url': 'https://home.nuug.no/~peter/pop3gropers.txt',
-                     'format': 'csv',
-                     'input': 'network'},
-    'Ransomware Tracker abuse.ch': {'name': 'Ransomware Tracker CSV Feed',
-                                    'url': 'https://ransomwaretracker.abuse.ch/feeds/csv/',
-                                    'format': 'csv',
-                                    'input': 'network'},
-    'abuse.ch': {'name': 'abuse.ch Dyre SSL IPBL',
-                 'url': 'https://sslbl.abuse.ch/blacklist/dyre_sslipblacklist.csv',
-                 'format': 'csv',
-                 'input': 'network'},
-    'hosts-file.net': {'name': 'hosts-file.net - hphost - malwarebytes - EMD classification ONLY',
-                       'url': 'https://hosts-file.net/emd.txt',
-                       'format': 'csv',
-                       'input': 'network'},
-    'openphish.com': {'name': 'OpenPhish url list',
-                      'url': 'https://openphish.com/feed.txt',
-                      'format': 'freetext',
-                      'input': 'network'},
-    'iplists.firehol.org': {'name': 'firehol_level1',
-                            'url': 'https://raw.githubusercontent.com/ktsaou/blocklist-ipsets/master/firehol_level1.netset',
-                            'format': 'freetext',
-                            'input': 'network'},
-    'osint.bambenekconsulting.com': {'name': 'All current domains belonging to known malicious DGAs',
-                                     'url': 'http://osint.bambenekconsulting.com/feeds/dga-feed-high.csv',
-                                     'format': 'csv',
-                                     'input': 'network'},
-    'cinsscore.com': {'name': 'ci-badguys.txt',
-                      'url': 'http://cinsscore.com/list/ci-badguys.txt',
-                      'format': 'freetext',
-                      'input': 'network'},
-    '.alienvault.com': {'name': 'alienvault reputation generic',
-                        'url': 'http://reputation.alienvault.com/reputation.generic',
-                        'format': 'csv',
-                        'input': 'network'},
-    'blocklist.de': {'name': 'blocklist.de/lists/all.txt',
-                     'url': 'https://lists.blocklist.de/lists/all.txt',
-                     'format': 'freetext',
-                     'input': 'network'},
-    'dataplane.org': {'name': 'sipinvitation',
-                      'url': 'https://dataplane.org/sipinvitation.txt',
-                      'format': 'csv',
-                      'input': 'network'},
-    'VXvault': {'name': 'VXvault - URL List',
-                'url': 'http://vxvault.net/URL_List.php',
-                'format': 'freetext',
-                'input': 'network'},
-    'http://cybercrime-tracker.net hashlist': {'name': 'http://cybercrime-tracker.net',
-                                               'url': 'http://cybercrime-tracker.net/ccamlist.php',
-                                               'format': 'freetext',
-                                               'input': 'network'},
-    'http://cybercrime-tracker.net gatelist': {'name': 'http://cybercrime-tracker.net',
-                                               'url': 'http://cybercrime-tracker.net/ccamgate.php',
-                                               'format': 'freetext',
-                                               'input': 'network'},
-    'hpHosts': {'name': 'hpHosts - GRM only',
-                'url': 'https://hosts-file.net/grm.txt',
-                'format': 'csv',
-                'input': 'network'},
-    'greensnow.co': {'name': 'blocklist.greensnow.co',
-                     'url': 'https://blocklist.greensnow.co/greensnow.txt',
-                     'format': 'csv',
-                     'input': 'network'},
-    'cert.at': {'name': 'conficker all domains generated',
-                'url': 'http://www.cert.at/static/downloads/data/conficker/all_domains.txt',
-                'format': 'csv',
-                'input': 'network'},
-    'CoinBlockerLists': {
-        'name': 'This list contains all IPs - A additional list for administrators to prevent mining in networks',
-        'url': 'https://gitlab.com/ZeroDot1/CoinBlockerLists/raw/master/MiningServerIPList.txt?inline=false',
-        'format': 'freetext',
-        'input': 'network'},
-    'Abuse.ch': {'name': 'URLHaus Malware URLs',
-                 'url': 'https://urlhaus.abuse.ch/downloads/csv/',
-                 'format': 'csv',
-                 'input': 'network'},
-    'www.cybercure.ai': {'name': 'CyberCure - Hash Feed',
-                         'url': 'http://api.cybercure.ai/feed/get_hash?type=csv',
-                         'format': 'csv',
-                         'input': 'network'},
-    'ipspamlist': {'name': 'ipspamlist',
-                   'url': 'http://www.ipspamlist.com/public_feeds.csv',
-                   'format': 'csv',
-                   'input': 'network'},
-    'security.gives': {'name': 'mirai.security.gives',
-                       'url': 'https://mirai.security.gives/data/ip_list.txt',
-                       'format': 'freetext',
-                       'input': 'network'},
-    'MalSilo': {'name': 'malsilo.ipv4',
-                'url': 'https://malsilo.gitlab.io/feeds/dumps/ip_list.txt',
-                'format': 'csv',
-                'input': 'network'},
-    'malshare.com': {'name': 'malshare.com - current all',
-                     'url': 'https://malshare.com/daily/malshare.current.all.txt',
-                     'format': 'freetext',
-                     'input': 'network'},
-    'benkow.cc': {'name': 'Benkow.cc RAT',
-                  'url': 'http://benkow.cc/export_rat.php',
-                  'format': 'csv',
-                  'input': 'network'}
+                   'input': 'network'}
 }
 ENTITIESDICT = {
     'deleted': 'Deleted',
@@ -1042,51 +897,41 @@ def test():
         return_error('MISP has not connected.')
 
 
-def add_feed():
+def add_events_from_feed():
     """Gets an OSINT feed from url and publishing them to MISP
     urls with feeds for example: `https://www.misp-project.org/feeds/`
     feed format must be MISP.
-
-    TODO:
-        fix return_outputs
     """
-    feed_name = demisto.getArg('feed_name')
-    if feed_name:
-        properties = PREDEFINED_FEEDS[feed_name]
-        source_format = properties['format']
-        provider = feed_name
-        url = properties['url']
-        feed_name = properties['name']
-        input_source = properties['input']
-    else:
-        feed_name = demisto.getArg('name')
-        source_format = demisto.getArg('format'),
-        url = demisto.getArg('source')
-        input_source = 'network' if demisto.getArg('input') == 'url' else 'local'
-        provider = demisto.getArg('provider')
-        if input_source == 'local':
-            file_path = demisto.getFilePath(url)
-            url = file_path.get('path')
-            if not file_path:
-                return_error(f'Could not find file in entry ID {url}')
-    response = MISP.add_feed(
-        source_format=source_format,
-        url=url,
-        name=feed_name,
-        input_source=input_source,
-        provider=provider
-    )
-    return_error(f"source_format={source_format},"
-                 f" url={url},name={feed_name},"
-                 f"input_source={input_source},"
-                 f"provider={provider}")
-    entry_context = replace_keys(response)
-    return_outputs(response, {})
-    human_readable = tableToMarkdown(
-        f'Feed {feed_name} has been added to MISP',
-        entry_context.get('Feed')
-    )
-    return_outputs(human_readable, entry_context, response)
+    headers = {'Accept': 'application/json'}
+    url = demisto.getArg('feed_url')  # type: str
+    url = url[:-1] if url.endswith('/') else url
+    if PREDEFINED_FEEDS.get(url):
+        url = PREDEFINED_FEEDS[url].get(url)
+    limit = demisto.getArg('limit')  # type: str
+    limit_int = int(limit) if limit.isdigit() else 0
+
+    osint_url = f'{url}/manifest.json'
+    try:
+        uri_list = requests.get(osint_url, verify=USE_SSL, headers=headers).json()
+        events_numbers = list() # type: List[Dict[str: int]]
+        for num, uri in enumerate(uri_list, 1):
+            req = requests.get(f'{url}/{uri}.json', verify=USE_SSL, headers=headers).json()
+            event = MISP.add_event(req)
+            if 'id' in event:
+                events_numbers.append({'ID': event['id']})
+            # If limit exists
+            if limit_int == num:
+                break
+
+        ec = {MISP_PATH: events_numbers}
+        md = tableToMarkdown(
+            f'Total of {len(events_numbers)} events was added to MISP.',
+            events_numbers,
+            headers='Event IDs'
+        )
+        return_outputs(md, outputs=ec)
+    except ValueError:
+        return_error(f'No JSON could be decoded from URL [{url}]')
 
 
 def add_object(event_id: str, obj: MISPObject):
@@ -1194,7 +1039,6 @@ def add_url_object():
 
 
 def add_generic_object_command():
-    # TODO change text to comment
     # TODO add get_event from search
     event_id = demisto.getArg('event_id')
     template = demisto.getArg('template')
@@ -1230,9 +1074,10 @@ def add_ip_object():
         non_req_args = [
             'first_seen',
             'last_seen',
-            'text'
         ]
         attr.extend({arg.replace('_', '-'): demisto.getArg(arg)} for arg in non_req_args if demisto.getArg(arg))
+        if demisto.getArg('comment'):
+            attr.append({'text':  demisto.getArg('comment')})
         obj = build_generic_object(template, attr)
         add_object(event_id, obj)
     else:
@@ -1267,8 +1112,8 @@ def main():
             add_sighting()
         elif command == 'misp-add-tag':
             add_tag()
-        elif command == 'misp-add-feed':
-            add_feed()
+        elif command == 'misp-add-events-from-feed':
+            add_events_from_feed()
         elif command == 'file':
             check_file()
         elif command == 'url':

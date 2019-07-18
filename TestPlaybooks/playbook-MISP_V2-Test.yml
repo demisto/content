@@ -743,9 +743,9 @@ tasks:
     task:
       id: 499a451d-1953-4e9f-8b21-2eb88499d27f
       version: -1
-      name: Add feed
+      name: Add events from feed
       description: Adds an OSINT feed.
-      script: '|||misp-add-feed'
+      script: '|||misp-add-events-from-feed'
       type: regular
       iscommand: true
       brand: ""
