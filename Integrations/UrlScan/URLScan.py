@@ -23,9 +23,7 @@ requests.packages.urllib3.disable_warnings()
 BASE_URL = 'https://urlscan.io/api/v1/'
 APIKEY = demisto.params().get('apikey')
 THRESHOLD = int(demisto.params().get('url_threshold', '1'))
-INSECURE = demisto.params().get('insecure', None) if demisto.params().get('insecure', None) else \
-    not demisto.params().get('insecure_new')  # Backward compatibility issue, the old logic of insecure was reversed
-demisto.info('~~~~~~~~~~~~~~~~~ {} ~~~~~~~~~~~~~~~~~~~~~~~'.format(INSECURE))
+USE_SSL = not demisto.params().get('insecure', False)
 
 
 '''HELPER FUNCTIONS'''
@@ -45,7 +43,7 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
         BASE_URL + url_suffix,
         data=json,
         headers=headers,
-        verify=INSECURE
+        verify=USE_SSL
     )
     if r.status_code != 200:
         if r.status_code == 429:
@@ -93,7 +91,7 @@ def polling(uuid):
     uri = BASE_URL + 'result/{}'.format(uuid)
 
     ready = poll(
-        lambda: requests.get(uri, verify=INSECURE).status_code == 200,
+        lambda: requests.get(uri, verify=USE_SSL).status_code == 200,
         step=5,
         ignore_exceptions=(requests.exceptions.ConnectionError),
         timeout=int(TIMEOUT)
@@ -103,7 +101,7 @@ def polling(uuid):
 
 def poll_uri():
     uri = demisto.args().get('uri')
-    demisto.results(requests.get(uri, verify=INSECURE).status_code)
+    demisto.results(requests.get(uri, verify=USE_SSL).status_code)
 
 
 def step_constant(step):
@@ -306,7 +304,7 @@ def format_results(uuid):
     if 'screenshotURL' in scan_tasks:
         human_readable['Screenshot'] = scan_tasks['screenshotURL']
         screen_path = scan_tasks['screenshotURL']
-        response_img = requests.request("GET", screen_path, verify=INSECURE)
+        response_img = requests.request("GET", screen_path, verify=USE_SSL)
         stored_img = fileResult('screenshot.png', response_img.content)
 
     demisto.results({
