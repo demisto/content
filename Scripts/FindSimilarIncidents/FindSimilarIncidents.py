@@ -274,12 +274,12 @@ incident_similar_labels = get_map_from_nested_dict(labels_map, SIMILAR_LABELS_MA
                                                    raise_error=RAISE_ERROR_MISSING_VALUES)
 incident_similar_context = get_map_from_nested_dict(demisto.context() or {}, SIMILAR_CONTEXT_MAP.keys(),
                                                     raise_error=RAISE_ERROR_MISSING_VALUES, flat_dict=False)
-log_message = 'Incident fields with exact math: %s' % exact_match_incident_fields
+log_message = 'Incident fields with exact matches: %s' % exact_match_incident_fields
 if len(exact_match_incident_fields) > 1:
     log_message += ', applied with %s condition' % INCIDENT_FIELDS_APPLIED_CONDITION
 demisto.log(log_message)
 if len(similar_incident_fields) > 0:
-    demisto.log('Simiar incident fields (not exact math): %s' % similar_incident_fields)
+    demisto.log('Similar incident fields (not exact match): %s' % similar_incident_fields)
 if len(incident_similar_labels) > 0:
     demisto.log('Similar labels: %s' % incident_similar_labels)
 if len(incident_similar_context) > 0:
