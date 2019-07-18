@@ -3,7 +3,6 @@ set +e
 
 #download awsinstancetool
 
-# wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip 'https://github.com/demisto/content-test-conf/archive/master.zip' --no-check-certificate
 wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip "https://github.com/demisto/content-test-conf/archive/$CIRCLE_BRANCH.zip" --no-check-certificate
 if [ "$?" != "0" ]; then
     echo "No such branch in content-test-conf: $CIRCLE_BRANCH , falling back to master"
@@ -21,13 +20,6 @@ fi
 
 set -e
 
-# cp -r ./content-test-conf-master/awsinstancetool ./Tests/scripts/awsinstancetool
-# rm -rf ./content-test-conf-master
-
-# unzip ./test_configuration.zip
-# cp -r ./content-test-conf-awsinstancetool/awsinstancetool ./Tests/scripts/awsinstancetool
-# rm -rf ./content-test-conf-awsinstancetool
-# rm -rf ./test_configuration.zip
 
 # download configuration file from github repo
 echo "Getting conf from branch $CIRCLE_BRANCH (fallback to master)"
