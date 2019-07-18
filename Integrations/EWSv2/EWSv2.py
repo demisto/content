@@ -107,6 +107,8 @@ EWS_SERVER = ''
 USERNAME = ''
 ACCOUNT_EMAIL = ''
 PASSWORD = ''
+config = None
+credentials = None
 
 PUBLIC_FOLDERS_ERROR = 'Please update your docker image to use public folders'
 if IS_PUBLIC_FOLDER and exchangelib.__version__ != "1.12.0":
@@ -1577,7 +1579,7 @@ def get_protocol():
     if AUTO_DISCOVERY:
         protocol = get_account_autodiscover(ACCOUNT_EMAIL).protocol
     else:
-        protocol = config.protocol
+        protocol = config.protocol  # type: ignore
     return protocol
 
 
@@ -1587,6 +1589,7 @@ def encode_and_submit_results(obj):
 
 def main():
     global EWS_SERVER, USERNAME, ACCOUNT_EMAIL, PASSWORD
+    global config, credentials
     EWS_SERVER = demisto.params()['ewsServer']
     USERNAME = demisto.params()['credentials']['identifier']
     ACCOUNT_EMAIL = demisto.params()['defaultTargetMailbox']
