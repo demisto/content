@@ -113,20 +113,23 @@ jobs:
           name: Create Instance
           when: always
           command: |
+            pip install --upgrade awscli
+            pip install ansible ansible-runner rsa paramiko boto3 requests
+
             if ./Tests/scripts/is_ami.sh ;
               then
                 if [ -n "${NIGHTLY}" ] ;
                   then
-                    export TESTS_TYPE=Content-Master
+                    export IFRA_ENV_TYPE=Content-Master
 
                   else
-                    export TESTS_TYPE=Content-Env
+                    export IFRA_ENV_TYPE=Content-Env
                 fi
-                ./Tests/scripts/awsinstancetool/execute_aws_tool.sh
+                ./Tests/scripts/awsinstancetool/aws_instance_tool.py $IFRA_ENV_TYPE
 
               else
-                export TESTS_TYPE=CustomBuild
-                ./Tests/scripts/awsinstancetool/execute_aws_tool.sh
+                export ENV_TYPE=CustomBuild
+                ./Tests/scripts/awsinstancetool/aws_instance_tool.py $IFRA_ENV_TYPE
             fi
       - run:
           name: Setup Instance
