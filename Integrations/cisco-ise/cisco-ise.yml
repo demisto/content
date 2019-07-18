@@ -21,7 +21,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'false'
-  display: Trust any certificate (unsecure)
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -221,15 +221,15 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the ANC policy to return
+      description: The name of the ANC policy to return
       isArray: false
-      name: policy_id
+      name: policy_name
       required: false
       secret: false
     deprecated: false
-    description: Get the specific ANC policy
+    description: Get the specific Adaptive Network Control policy
     execution: false
-    name: cisco-ise-get-policy-by-identifier
+    name: cisco-ise-get-policy
     outputs:
     - contextPath: CiscoISE.Policy.Action
       description: The action of the policy (can be  QUARANTINE, PORTBOUNCE, SHUTDOWN)
@@ -247,7 +247,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: The actions of the policy
-      isArray: true
+      isArray: false
       name: policy_actions
       predefined:
       - QUARANTINE
@@ -295,6 +295,23 @@ script:
     description: Clear ANC policy from a specific endpoint
     execution: false
     name: cisco-ise-clear-policy
+  - deprecated: false
+    description: Get all blacklist endpoints
+    execution: false
+    name: cisco-ise-get-blacklist-endpoints
+    outputs:
+    - contextPath: CiscoISE.Endpoint.ID
+      description: The endpoint ID
+      type: String
+    - contextPath: CiscoISE.Endpoint.Name
+      description: The name of the endpoint
+      type: String
+    - contextPath: CiscoISE.Endpoint.Description
+      description: The endpoint description
+      type: String
+    - contextPath: CiscoISE.Endpoint.Link
+      description: 'The link for the endpoint '
+      type: String
   dockerimage: demisto/python3:3.7.3.286
   isfetch: false
   runonce: false
