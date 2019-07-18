@@ -19,21 +19,18 @@ from exchangelib import HTMLBody, Message, FileAttachment, Account, IMPERSONATIO
 IS_TEST_MODULE = False
 
 # load arguments
-USE_PROXY = demisto.params()['proxy']
-NON_SECURE = demisto.params()['insecure']
-AUTH_METHOD_STR = demisto.params()['authType'].lower()
-VERSION_STR = demisto.params()['defaultServerVersion']
-EWS_SERVER = demisto.params()['ewsServer']
-USERNAME = demisto.params()['credentials']['identifier']
-ACCOUNT_EMAIL = demisto.params().get('mailbox', None)
-if not ACCOUNT_EMAIL:
-    if "@" in USERNAME:
-        ACCOUNT_EMAIL = USERNAME
-if ACCOUNT_EMAIL is None:
-    raise Exception("Provide a valid email address in the mailbox field")
-PASSWORD = demisto.params()['credentials']['password']
+USE_PROXY = demisto.params().get('proxy', False)
+NON_SECURE = demisto.params().get('insecure', True)
+AUTH_METHOD_STR = demisto.params().get('authType', 'Basic').lower()
+EWS_SERVER = demisto.params().get('ewsServer', 'https://outlook.office365.com/EWS/Exchange.asmx/')
+VERSION_STR = demisto.params().get('defaultServerVersion', '2013')
 FOLDER_NAME = demisto.params().get('folder', 'Inbox')
-ACCESS_TYPE = IMPERSONATION if demisto.params()['impersonation'] else DELEGATE
+ACCESS_TYPE = IMPERSONATION if demisto.params().get('impersonation', False) else DELEGATE
+
+# initialized in main()
+USERNAME = ""
+PASSWORD = ""
+ACCOUNT_EMAIL = ""
 
 VERSIONS = {
     '2007': EXCHANGE_2007,
@@ -220,6 +217,15 @@ config = None  # type: ignore
 
 
 def main():
+    global USERNAME, PASSWORD, ACCOUNT_EMAIL
+    USERNAME = demisto.params()['credentials']['identifier']
+    PASSWORD = demisto.params()['credentials']['password']
+    ACCOUNT_EMAIL = demisto.params().get('mailbox', None)
+    if not ACCOUNT_EMAIL:
+        if "@" in USERNAME:
+            ACCOUNT_EMAIL = USERNAME
+    if ACCOUNT_EMAIL is None:
+        raise Exception("Provide a valid email address in the mailbox field")
     global config
     config = prepare()
     args = prepare_args(demisto.args())
