@@ -29,8 +29,9 @@ warnings.warn = warn
 MISP_KEY = demisto.params().get('api_key')
 MISP_URL = demisto.params().get('url')
 USE_SSL = not demisto.params().get('insecure')
+proxies = handle_proxy()  # type: ignore
 MISP_PATH = 'MISP.Event(obj.ID === val.ID)'
-MISP = ExpandedPyMISP(MISP_URL, MISP_KEY, ssl=USE_SSL)  # type: ExpandedPyMISP
+MISP = ExpandedPyMISP(MISP_URL, MISP_KEY, ssl=USE_SSL, proxies=proxies)  # type: ExpandedPyMISP
 
 """
 dict format :
@@ -126,7 +127,7 @@ DISTRIBUTION_NUMBERS = {
 ''' HELPER FUNCTIONS '''
 
 
-def extract_error(error: list) -> List[Dict[str, any]]:
+def extract_error(error: list) -> List[dict]:
     """Extracting errors
 
     Args:
@@ -897,15 +898,15 @@ def add_events_from_feed():
     feed format must be MISP.
     """
     headers = {'Accept': 'application/json'}
-    proxies = handle_proxy()
     url = demisto.getArg('feed')  # type: str
     url = url[:-1] if url.endswith('/') else url
     if PREDEFINED_FEEDS.get(url):
-        url = PREDEFINED_FEEDS[url].get(url)
+        url = PREDEFINED_FEEDS[url].get('url')
     limit = demisto.getArg('limit')  # type: str
     limit_int = int(limit) if limit.isdigit() else 0
 
     osint_url = f'{url}/manifest.json'
+    not_added_counter = 0
     try:
         uri_list = requests.get(osint_url, verify=USE_SSL, headers=headers, proxies=proxies).json()
         events_numbers = list()  # type: List[Dict[str, int]]
@@ -914,17 +915,24 @@ def add_events_from_feed():
             event = MISP.add_event(req)
             if 'id' in event:
                 events_numbers.append({'ID': event['id']})
+            else:
+                not_added_counter += 1
             # If limit exists
             if limit_int == num:
                 break
 
-        ec = {MISP_PATH: events_numbers}
-        md = tableToMarkdown(
+        entry_context = {MISP_PATH: events_numbers}
+        human_readable = tableToMarkdown(
             f'Total of {len(events_numbers)} events was added to MISP.',
             events_numbers,
             headers='Event IDs'
         )
-        return_outputs(md, outputs=ec)
+        if not_added_counter:
+            human_readable = f'{human_readable}\n' \
+                f'{not_added_counter} events were not added. Might already been added earlier.'
+
+        return_error(human_readable)
+        return_outputs(human_readable, outputs=entry_context)
     except ValueError:
         return_error(f'URL [{url}] is not a valid MISP feed')
 
@@ -955,7 +963,7 @@ def add_object(event_id: str, obj: MISPObject):
                 'ID': event_id
             }
     }
-    entry_context[MISP_PATH].update(formatted_response)
+    entry_context[MISP_PATH].update(formatted_response)  # type: ignore
     human_readable = f'Object has been added to MISP event ID {event_id}'
 
     return_outputs(
@@ -1088,7 +1096,7 @@ command = demisto.command()
 
 def main():
     LOG(f'command is {command}')
-    handle_proxy()
+
     demisto.info(f'command is {command}')
     try:
         if command == 'test-module':
