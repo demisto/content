@@ -25,19 +25,38 @@ if [[ -z "${SKIP_GIT_COMPARE_FILTER}" ]]; then
     fi
 fi
 
+NON_CI_MSG=$(cat <<-END
+    But not running in CI. Note that CI Build will run all tests. 
+    If you want to run the same logic as is done in CI. Run this script with CI=true env. Such as:
+    CI true $*
+END
+)
+
 if [[ -n "${DIFF_COMPARE}" ]] && [[ $(git diff --name-status $DIFF_COMPARE Scripts/CommonServerPython ) ]]; then
-    echo "CommonServerPython modified. Going to ignore git changes and run all tests"
-    DIFF_COMPARE=""
+    if [[ -z "CI" ]]; then
+        echo "CommonServerPython modified. Going to ignore git changes and run all tests"
+        DIFF_COMPARE=""
+    else
+        echo "CommonServerPython modified. $NON_CI_MSG"
+    fi
 fi
 
 if [[ -n "${DIFF_COMPARE}" ]] && [[ $(git diff --name-status $DIFF_COMPARE Tests/scripts/dev_envs ) ]]; then
-    echo "Files in Tests/scripts/dev_envs modified. Going to ignore git changes and run all tests"
-    DIFF_COMPARE=""
+    if [[ -z "CI" ]]; then
+        echo "Files in Tests/scripts/dev_envs modified. Going to ignore git changes and run all tests"
+        DIFF_COMPARE=""
+    else
+        echo "Files in Tests/scripts/dev_envs modified. $NON_CI_MSG"
+    fi
 fi
 
 if [[ -n "${DIFF_COMPARE}" ]] && [[ $(git diff --name-status $DIFF_COMPARE Tests/scripts/pkg_dev_test_tasks.py ) ]]; then
-    echo "Tests/scripts/pkg_dev_test_tasks.py modified. Going to ignore git changes and run all tests"
-    DIFF_COMPARE=""
+    if [[ -z "CI" ]]; then
+        echo "Tests/scripts/pkg_dev_test_tasks.py modified. Going to ignore git changes and run all tests"
+        DIFF_COMPARE=""
+    else
+        echo "Tests/scripts/pkg_dev_test_tasks.py modified. $NON_CI_MSG"
+    fi
 fi
 
 CURRENT_DIR=`pwd`
