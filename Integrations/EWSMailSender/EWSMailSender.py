@@ -136,6 +136,7 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
             try:
                 file_info = demisto.getFilePath(att_id_inline)
             except Exception as ex:
+                demisto.info("EWS error from getFilePath: {}".format(ex))
                 raise Exception("entry %s does not contain a file" % att_id_inline)
             att_name_inline = file_info["name"]
             with open(file_info["path"], 'rb') as f:
