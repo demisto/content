@@ -1821,7 +1821,6 @@
         "Cylance Protect v2": "Checking",
         "ArcSight ESM v2": "Checking",
         "Phish.AI": "Checking",
-        "MaxMind GeoIP2": "Checking",
         "Intezer": "Nightly - Checking",
         "ProtectWise": "Nightly - Checking",
         "google-vault": "Nightly - Checking",
