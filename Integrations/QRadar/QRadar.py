@@ -468,13 +468,14 @@ def fetch_incidents():
     if len(raw_offenses) >= OFFENSES_PER_CALL:
         last_offense_pos = find_last_page_pos(fetch_query)
         raw_offenses = get_offenses(_range='{0}-{1}'.format(last_offense_pos - OFFENSES_PER_CALL + 1, last_offense_pos))
+    raw_offenses = unicode_to_str_recur(raw_offenses)
     incidents = []
     enrich_offense_res_with_source_and_destination_address(raw_offenses)
     for offense in raw_offenses:
         offense_id = max(offense_id, offense['id'])
         incidents.append(create_incident_from_offense(offense))
     demisto.setLastRun({'id': offense_id})
-    return unicode_to_str_recur(incidents)
+    return incidents
 
 
 # Finds the last page position for QRadar query that receives a range parameter
@@ -1006,10 +1007,11 @@ def get_domains_by_id_command():
 # Command selector
 try:
     LOG('Command being called is {command}'.format(command=demisto.command()))
+    if demisto.command() == 'fetch-incidents':
+        demisto.incidents(fetch_incidents())
+
     if demisto.command() == 'test-module':
         demisto.results(test_module())
-    elif demisto.command() == 'fetch-incidents':
-        demisto.incidents(fetch_incidents())
     elif demisto.command() in ['qradar-offenses', 'qr-offenses']:
         demisto.results(get_offenses_command())
     elif demisto.command() == 'qradar-offense-by-id':
