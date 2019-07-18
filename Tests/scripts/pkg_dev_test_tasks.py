@@ -113,10 +113,12 @@ def docker_login():
         print_v('DOCKERHUB_USER not set. Not trying to login to dockerhub')
         return False
     docker_pass = os.getenv('DOCKERHUB_PASSWORD', None)
+    # pass is optional for local testing scenario. allowing password to be passed via stdin
     cmd = ['docker', 'login', '-u', docker_user]
-    if docker_pass:  # pass is optional for local testing scenario. allowing password to be passed via stdin
-        cmd.extend(['-p', docker_pass])
-    subprocess.check_call(cmd)
+    res = subprocess.run(cmd, input=docker_pass, capture_output=True)
+    if res.returncode != 0:
+        print("Failed docker login: {}".format(res.stderr))
+        return False
     print_v("Completed docker login")
     DOCKER_LOGIN_COMPLETED = True
     return True

@@ -32,7 +32,7 @@ END
 )
 
 if [[ -n "${DIFF_COMPARE}" ]] && [[ $(git diff --name-status $DIFF_COMPARE Scripts/CommonServerPython ) ]]; then
-    if [[ -z "CI" ]]; then
+    if [[ -n "$CI" ]]; then
         echo "CommonServerPython modified. Going to ignore git changes and run all tests"
         DIFF_COMPARE=""
     else
@@ -42,7 +42,7 @@ if [[ -n "${DIFF_COMPARE}" ]] && [[ $(git diff --name-status $DIFF_COMPARE Scrip
 fi
 
 if [[ -n "${DIFF_COMPARE}" ]] && [[ $(git diff --name-status $DIFF_COMPARE Tests/scripts/dev_envs ) ]]; then
-    if [[ -z "CI" ]]; then
+    if [[ -n "$CI" ]]; then
         echo "Files in Tests/scripts/dev_envs modified. Going to ignore git changes and run all tests"
         DIFF_COMPARE=""
     else
@@ -52,7 +52,7 @@ if [[ -n "${DIFF_COMPARE}" ]] && [[ $(git diff --name-status $DIFF_COMPARE Tests
 fi
 
 if [[ -n "${DIFF_COMPARE}" ]] && [[ $(git diff --name-status $DIFF_COMPARE Tests/scripts/pkg_dev_test_tasks.py ) ]]; then
-    if [[ -z "CI" ]]; then
+    if [[ -n "$CI" ]]; then
         echo "Tests/scripts/pkg_dev_test_tasks.py modified. Going to ignore git changes and run all tests"
         DIFF_COMPARE=""
     else
