@@ -897,6 +897,7 @@ def add_events_from_feed():
     feed format must be MISP.
     """
     headers = {'Accept': 'application/json'}
+    proxies = handle_proxy()
     url = demisto.getArg('feed')  # type: str
     url = url[:-1] if url.endswith('/') else url
     if PREDEFINED_FEEDS.get(url):
@@ -906,10 +907,10 @@ def add_events_from_feed():
 
     osint_url = f'{url}/manifest.json'
     try:
-        uri_list = requests.get(osint_url, verify=USE_SSL, headers=headers).json()
-        events_numbers = list()  # type: List[Dict[str: int]]
+        uri_list = requests.get(osint_url, verify=USE_SSL, headers=headers, proxies=proxies).json()
+        events_numbers = list()  # type: List[Dict[str, int]]
         for num, uri in enumerate(uri_list, 1):
-            req = requests.get(f'{url}/{uri}.json', verify=USE_SSL, headers=headers).json()
+            req = requests.get(f'{url}/{uri}.json', verify=USE_SSL, headers=headers, proxies=proxies).json()
             event = MISP.add_event(req)
             if 'id' in event:
                 events_numbers.append({'ID': event['id']})
