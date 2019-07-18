@@ -112,7 +112,7 @@ def get_data(dir_name, package_path, extension):
     data_path = glob.glob(package_path + extension)
     data = None
     found_data_path = None
-    if dir_name == 'Integrations' or dir_name == 'Beta_Integrations' and data_path:
+    if dir_name in ('Integrations', 'Beta_Integrations') and data_path:
         found_data_path = data_path[0]
         with open(found_data_path, 'rb') as data_file:
             data = data_file.read()
