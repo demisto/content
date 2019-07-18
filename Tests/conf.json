@@ -17,6 +17,10 @@
             "playbookID": "Cloaken-Test"
         },
         {
+            "integrations": "Uptycs",
+            "playbookID": "TestUptycs"
+        },
+        {
             "integrations": "ThreatX",
             "playbookID": "ThreatX-test"
         },
