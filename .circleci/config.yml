@@ -125,7 +125,8 @@ jobs:
                 ./Tests/scripts/awsinstancetool/execute_aws_tool.sh
 
               else
-                ./Tests/lastest_server_build_scripts/create_instance.sh instance.json
+                export TESTS_TYPE=CustomBuild
+                ./Tests/scripts/awsinstancetool/execute_aws_tool.sh
             fi
       - run:
           name: Setup Instance
