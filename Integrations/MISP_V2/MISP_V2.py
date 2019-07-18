@@ -897,7 +897,7 @@ def add_events_from_feed():
     feed format must be MISP.
     """
     headers = {'Accept': 'application/json'}
-    url = demisto.getArg('feed_url')  # type: str
+    url = demisto.getArg('feed')  # type: str
     url = url[:-1] if url.endswith('/') else url
     if PREDEFINED_FEEDS.get(url):
         url = PREDEFINED_FEEDS[url].get(url)
