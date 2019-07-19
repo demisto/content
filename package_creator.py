@@ -107,7 +107,7 @@ def insert_description_to_yml(dir_name, package_path, yml_data, yml_text):
         temp_yml_text += desc_data.encode("utf-8")
         temp_yml_text += u"\n"
         temp_yml_text += yml_text
-        
+
         yml_text = temp_yml_text
 
     return yml_text, found_desc_path
