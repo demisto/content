@@ -185,7 +185,7 @@ def apply_datetime_cuts(query, name, start, finish):
                                                            finish))
     if start is not None and finish is not None:
         query = ("%s %s BETWEEN CAST('%s' AS TIMESTAMP) AND \
-                 CAST('%s' AS TIMESTAMP)"
+CAST('%s' AS TIMESTAMP)"
                  % (query, name, start, finish))
 
     return query
@@ -222,7 +222,7 @@ def uptycs_parse_date_range(timeago, start_time, end_time):
     else:
         temp_time_ago, now = parse_date_range(timeago,
                                               date_format="%Y-%m-%d \
-                                                           %H:%M:%S.000")
+%H:%M:%S.000")
 
     end = (end_time if end_time is not None else now)
     begin = (start_time if start_time is not None else temp_time_ago)
@@ -376,7 +376,7 @@ def uptycs_get_alerts():
     http_method = 'post'
     api_call = "/query"
     query = 'SELECT a.*, u.host_name FROM upt_alerts a JOIN upt_assets u ON \
-        a.upt_asset_id=u.id'
+a.upt_asset_id=u.id'
     limit = demisto.args().get('limit')
 
     alert_id = demisto.args().get('alert_id')
@@ -455,9 +455,9 @@ def uptycs_get_alerts_command():
                             'indicatorSummary').get('threatSourceName')
             else:
                 context[index]['threat_indicator_id'] = 'No threat indicator \
-                    for this alert'
+for this alert'
                 context[index]['threat_source_name'] = 'No threat source for \
-                    this alert'
+this alert'
 
     human_readable = tableToMarkdown('Uptycs Alerts: ',
                                      context,
@@ -485,7 +485,7 @@ def uptycs_get_events():
     http_method = 'post'
     api_call = "/query"
     query = 'SELECT a.*, u.host_name FROM upt_events a JOIN upt_assets u ON \
-        a.upt_asset_id=u.id'
+a.upt_asset_id=u.id'
     limit = demisto.args().get('limit')
 
     equal_cuts = {
@@ -632,6 +632,13 @@ def uptycs_get_process_open_files():
         uptday = int("%s%s%s" %
                      (str(day_list[0]), str(day_list[1]), str(day_list[2])))
 
+    else:
+        temp_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        day = temp_time.replace(" ", "-")
+        day_list = day.split("-")
+        uptday = int("%s%s%s" %
+                     (str(day_list[0]), str(day_list[1]), str(day_list[2])))
+
     query = "%s WHERE upt_day = %s" % (query, uptday)
 
     equal_cuts = {
@@ -707,6 +714,12 @@ def uptycs_get_process_open_sockets():
 
     if time is not None:
         day = time.replace(" ", "-")
+        day_list = day.split("-")
+        uptday = int("%s%s%s" %
+                     (str(day_list[0]), str(day_list[1]), str(day_list[2])))
+    else:
+        temp_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        day = temp_time.replace(" ", "-")
         day_list = day.split("-")
         uptday = int("%s%s%s" %
                      (str(day_list[0]), str(day_list[1]), str(day_list[2])))
@@ -794,6 +807,12 @@ def uptycs_get_socket_events():
         day_list = day.split("-")
         uptday = int("%s%s%s" %
                      (str(day_list[0]), str(day_list[1]), str(day_list[2])))
+    else:
+        temp_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        day = temp_time.replace(" ", "-")
+        day_list = day.split("-")
+        uptday = int("%s%s%s" %
+                     (str(day_list[0]), str(day_list[1]), str(day_list[2])))
 
     query = "%s WHERE upt_day = %s" % (query, uptday)
 
@@ -877,10 +896,16 @@ def uptycs_get_socket_event_information():
         day_list = day.split("-")
         uptday = int("%s%s%s" %
                      (str(day_list[0]), str(day_list[1]), str(day_list[2])))
+    else:
+        temp_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        day = temp_time.replace(" ", "-")
+        day_list = day.split("-")
+        uptday = int("%s%s%s" %
+                     (str(day_list[0]), str(day_list[1]), str(day_list[2])))
 
     query = ("SELECT * FROM socket_events WHERE upt_day = %s AND \
-             upt_time <= CAST('%s' AS TIMESTAMP) AND remote_address='%s' \
-             ORDER BY upt_time DESC LIMIT 1" %
+upt_time <= CAST('%s' AS TIMESTAMP) AND remote_address='%s' \
+ORDER BY upt_time DESC LIMIT 1" %
              (uptday, time, demisto.args().get('ip')))
 
     equal_cuts = {
@@ -941,6 +966,12 @@ def uptycs_get_processes():
 
     if time is not None:
         day = time.replace(" ", "-")
+        day_list = day.split("-")
+        uptday = int("%s%s%s" %
+                     (str(day_list[0]), str(day_list[1]), str(day_list[2])))
+    else:
+        temp_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        day = temp_time.replace(" ", "-")
         day_list = day.split("-")
         uptday = int("%s%s%s" %
                      (str(day_list[0]), str(day_list[1]), str(day_list[2])))
@@ -1025,6 +1056,12 @@ def uptycs_get_process_events():
         day_list = day.split("-")
         uptday = int("%s%s%s" %
                      (str(day_list[0]), str(day_list[1]), str(day_list[2])))
+    else:
+        temp_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        day = temp_time.replace(" ", "-")
+        day_list = day.split("-")
+        uptday = int("%s%s%s" %
+                     (str(day_list[0]), str(day_list[1]), str(day_list[2])))
 
     query = "%s WHERE upt_day = %s" % (query, uptday)
 
@@ -1101,19 +1138,25 @@ def uptycs_get_process_information():
         day_list = day.split("-")
         uptday = int("%s%s%s" %
                      (str(day_list[0]), str(day_list[1]), str(day_list[2])))
+    else:
+        temp_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        day = temp_time.replace(" ", "-")
+        day_list = day.split("-")
+        uptday = int("%s%s%s" %
+                     (str(day_list[0]), str(day_list[1]), str(day_list[2])))
 
-    query = ("WITH add_times AS (SELECT * FROM processes WHERE upt_added=True),\
-             remove_times AS (SELECT upt_time, upt_hash FROM processes WHERE \
-             upt_added=False), temp_proc AS (SELECT aa.upt_asset_id, aa.pid, \
-             aa.name, aa.path, aa.cmdline, aa.cwd, aa.parent, aa.pgroup, \
-             aa.upt_hostname, aa.upt_day, aa.upt_time as upt_add_time, \
-             rr.upt_time as temp_remove_time FROM add_times aa LEFT JOIN \
-             remove_times rr ON aa.upt_hash=rr.upt_hash), new_proc AS \
-             (SELECT upt_asset_id, pid, name, path, cmdline, cwd, parent, \
-             pgroup, upt_hostname, upt_day, upt_add_time, \
-             coalesce(temp_remove_time, current_timestamp) AS upt_remove_time \
-             FROM temp_proc) SELECT * FROM new_proc WHERE pid=%s AND \
-             CAST('%s' AS TIMESTAMP) BETWEEN upt_add_time AND upt_remove_time"
+    query = ("WITH add_times AS (SELECT * FROM processes WHERE upt_added=True), \
+remove_times AS (SELECT upt_time, upt_hash FROM processes WHERE \
+upt_added=False), temp_proc AS (SELECT aa.upt_asset_id, aa.pid, \
+aa.name, aa.path, aa.cmdline, aa.cwd, aa.parent, aa.pgroup, \
+aa.upt_hostname, aa.upt_day, aa.upt_time as upt_add_time, \
+rr.upt_time as temp_remove_time FROM add_times aa LEFT JOIN \
+remove_times rr ON aa.upt_hash=rr.upt_hash), new_proc AS \
+(SELECT upt_asset_id, pid, name, path, cmdline, cwd, parent, \
+pgroup, upt_hostname, upt_day, upt_add_time, \
+coalesce(temp_remove_time, current_timestamp) AS upt_remove_time \
+FROM temp_proc) SELECT * FROM new_proc WHERE pid=%s AND \
+CAST('%s' AS TIMESTAMP) BETWEEN upt_add_time AND upt_remove_time"
              % (demisto.args().get('pid'), time))
 
     equal_cuts = {
@@ -1167,9 +1210,15 @@ def uptycs_get_process_event_information():
         day_list = day.split("-")
         uptday = int("%s%s%s" %
                      (str(day_list[0]), str(day_list[1]), str(day_list[2])))
+    else:
+        temp_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        day = temp_time.replace(" ", "-")
+        day_list = day.split("-")
+        uptday = int("%s%s%s" %
+                     (str(day_list[0]), str(day_list[1]), str(day_list[2])))
 
     query = ("SELECT * FROM process_events WHERE upt_day = %s AND pid=%s AND \
-             upt_time<=CAST('%s' AS TIMESTAMP)" %
+upt_time<=CAST('%s' AS TIMESTAMP)" %
              (uptday, demisto.args().get('pid'), time))
 
     equal_cuts = {
@@ -1227,23 +1276,29 @@ def uptycs_get_parent_information():
         day_list = day.split("-")
         uptday = int("%s%s%s" %
                      (str(day_list[0]), str(day_list[1]), str(day_list[2])))
+    else:
+        temp_child_add_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        day = temp_child_add_time.replace(" ", "-")
+        day_list = day.split("-")
+        uptday = int("%s%s%s" %
+                     (str(day_list[0]), str(day_list[1]), str(day_list[2])))
 
     query = ("WITH add_times AS (SELECT * FROM processes WHERE upt_added=True), \
-             remove_times AS (SELECT upt_time, upt_hash FROM processes WHERE \
-             upt_added=False), temp_proc AS (SELECT aa.upt_asset_id, aa.pid, \
-             aa.name, aa.path, aa.cmdline, aa.cwd, aa.parent, aa.pgroup, \
-             aa.upt_hostname, aa.upt_day, aa.upt_time as upt_add_time, \
-             rr.upt_time as temp_remove_time FROM add_times aa LEFT JOIN \
-             remove_times rr ON aa.upt_hash=rr.upt_hash), new_proc AS \
-             (SELECT upt_asset_id, pid, name, path, cmdline, cwd, parent, \
-             pgroup, upt_hostname, upt_day, upt_add_time, \
-             coalesce(temp_remove_time, current_timestamp) AS upt_remove_time \
-             FROM temp_proc) SELECT * FROM new_proc WHERE pid=%s AND \
-             CAST('%s' AS TIMESTAMP) BETWEEN upt_add_time AND upt_remove_time"
-             % (demisto.args().get('parent'), child_add_time))
+remove_times AS (SELECT upt_time, upt_hash FROM processes WHERE \
+upt_added=False), temp_proc AS (SELECT aa.upt_asset_id, aa.pid, \
+aa.name, aa.path, aa.cmdline, aa.cwd, aa.parent, aa.pgroup, \
+aa.upt_hostname, aa.upt_day, aa.upt_time as upt_add_time, \
+rr.upt_time as temp_remove_time FROM add_times aa LEFT JOIN \
+remove_times rr ON aa.upt_hash=rr.upt_hash), new_proc AS \
+(SELECT upt_asset_id, pid, name, path, cmdline, cwd, parent, \
+pgroup, upt_hostname, upt_day, upt_add_time, \
+coalesce(temp_remove_time, current_timestamp) AS upt_remove_time \
+FROM temp_proc) SELECT * FROM new_proc WHERE pid=%s AND \
+CAST('%s' AS TIMESTAMP) BETWEEN upt_add_time AND upt_remove_time AND \
+upt_day <= %s"
+             % (demisto.args().get('parent'), child_add_time, uptday))
 
     equal_cuts = {
-        "upt_day": uptday,
         "upt_asset_id": demisto.args().get('asset_id'),
         "upt_hostname": demisto.args().get('host_name_is')
     }
@@ -1293,9 +1348,15 @@ def uptycs_get_parent_event_information():
         day_list = day.split("-")
         uptday = int("%s%s%s" %
                      (str(day_list[0]), str(day_list[1]), str(day_list[2])))
+    else:
+        temp_child_add_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        day = temp_child_add_time.replace(" ", "-")
+        day_list = day.split("-")
+        uptday = int("%s%s%s" %
+                     (str(day_list[0]), str(day_list[1]), str(day_list[2])))
 
     query = ("SELECT * FROM process_events WHERE upt_day = %s AND pid=%s AND \
-             upt_time<=CAST('%s' AS TIMESTAMP)" %
+upt_time<=CAST('%s' AS TIMESTAMP)" %
              (uptday, demisto.args().get('parent'), child_add_time))
 
     equal_cuts = {
@@ -1357,11 +1418,17 @@ def uptycs_get_process_child_processes():
         day_list = day.split("-")
         uptday = int("%s%s%s" %
                      (str(day_list[0]), str(day_list[1]), str(day_list[2])))
+    else:
+        temp_parent_start = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        day = temp_parent_start.replace(" ", "-")
+        day_list = day.split("-")
+        uptday = int("%s%s%s" %
+                     (str(day_list[0]), str(day_list[1]), str(day_list[2])))
 
     if parent_end is None:
         query = ("SELECT upt_time FROM process_events WHERE pid = %s AND \
-                 upt_asset_id = '%s' AND upt_time > CAST('%s' AS TIMESTAMP) \
-                 ORDER BY upt_time ASC limit 1" %
+upt_asset_id = '%s' AND upt_time > CAST('%s' AS TIMESTAMP) \
+ORDER BY upt_time ASC limit 1" %
                  (parent, asset_id, parent_start))
         query_type = 'global'
 
@@ -1376,19 +1443,19 @@ def uptycs_get_process_child_processes():
             parent_end = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
     query = ("WITH add_times AS (SELECT * FROM processes WHERE upt_added=True), \
-             remove_times AS (SELECT upt_time, upt_hash FROM processes WHERE \
-             upt_added=False), temp_proc AS (SELECT aa.upt_asset_id, aa.pid, \
-             aa.name, aa.path, aa.cmdline, aa.cwd, aa.parent, aa.pgroup, \
-             aa.upt_hostname, aa.upt_day, aa.upt_time as upt_add_time, \
-             rr.upt_time as temp_remove_time FROM add_times aa LEFT JOIN \
-             remove_times rr on aa.upt_hash=rr.upt_hash), new_proc AS \
-             (SELECT upt_asset_id, pid, name, path, cmdline, cwd, parent, \
-             pgroup, upt_hostname, upt_day, upt_add_time, \
-             coalesce(temp_remove_time, current_timestamp) AS upt_remove_time \
-             FROM temp_proc) SELECT * FROM new_proc WHERE upt_day>=%s AND \
-             parent = %s AND upt_asset_id = '%s' AND upt_add_time BETWEEN \
-             CAST('%s' AS TIMESTAMP) AND CAST('%s' AS TIMESTAMP) ORDER BY \
-             upt_add_time DESC"
+remove_times AS (SELECT upt_time, upt_hash FROM processes WHERE \
+upt_added=False), temp_proc AS (SELECT aa.upt_asset_id, aa.pid, \
+aa.name, aa.path, aa.cmdline, aa.cwd, aa.parent, aa.pgroup, \
+aa.upt_hostname, aa.upt_day, aa.upt_time as upt_add_time, \
+rr.upt_time as temp_remove_time FROM add_times aa LEFT JOIN \
+remove_times rr on aa.upt_hash=rr.upt_hash), new_proc AS \
+(SELECT upt_asset_id, pid, name, path, cmdline, cwd, parent, \
+pgroup, upt_hostname, upt_day, upt_add_time, \
+coalesce(temp_remove_time, current_timestamp) AS upt_remove_time \
+FROM temp_proc) SELECT * FROM new_proc WHERE upt_day>=%s AND \
+parent = %s AND upt_asset_id = '%s' AND upt_add_time BETWEEN \
+CAST('%s' AS TIMESTAMP) AND CAST('%s' AS TIMESTAMP) ORDER BY \
+upt_add_time DESC"
              % (uptday, parent, asset_id, parent_start, parent_end))
 
     if limit != -1 and limit is not None:
@@ -2186,9 +2253,9 @@ def uptycs_fetch_incidents():
 
 
 def main():
-    ###############################################################################
+    ###########################################################################
     # main function
-    ###############################################################################
+    ###########################################################################
 
     try:
         if demisto.command() == 'uptycs-run-query':
