@@ -103,7 +103,7 @@ def insert_description_to_yml(dir_name, package_path, yml_data, yml_text):
             # for multiline detailed-description, if it's not wrapped in quotation marks
             # add | to the beginning of the description, and shift everything to the right
             desc_data = '|\n  ' + desc_data.replace('\n', '\n  ')
-        yml_text = u"detaileddescription: " + desc_data.encode("utf-8") + '\n' + yml_text.encode("utf-8")
+        yml_text = u"detaileddescription: " + desc_data.encode("utf-8") + u'\n' + yml_text.encode("utf-8")
 
     return yml_text, found_desc_path
 
