@@ -80,11 +80,13 @@ script:
       name: since_creation_time
       required: false
       secret: false
+      description: Date range since creation time - (e.g. 1 month, 2 days, 1 hour)
     - default: false
       isArray: false
       name: since_modification_time
       required: false
       secret: false
+      description: Date range since modification time - (e.g. 1 month, 2 days, 1 hour)
     - auto: PREDEFINED
       default: false
       isArray: false
@@ -94,6 +96,7 @@ script:
       - desc
       required: false
       secret: false
+      description: sort incidents by modification time (asc - ascending, desc - descending)
     - auto: PREDEFINED
       default: false
       isArray: false
@@ -103,6 +106,7 @@ script:
       - desc
       required: false
       secret: false
+      description: sort incidents by creation time (asc - ascending, desc - descending)
     - default: false
       defaultValue: '0'
       description: Page number - for pagination. The default is 0 - the first page.
@@ -349,6 +353,7 @@ script:
       type: String
   - arguments:
     - default: false
+      description: XDR incident id (you can take it from the output of xdr-get-incidents or xdr-get-incident-extra-details)
       isArray: false
       name: incident_id
       required: true
@@ -381,6 +386,7 @@ script:
       required: false
       secret: false
     - default: false
+      description: Resolve comment, should be set when the incident is resolved
       isArray: false
       name: resolve_comment
       required: false
