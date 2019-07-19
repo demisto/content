@@ -3,6 +3,7 @@ version: -1
 name: Uptycs - Outbound Connection to Threat IOC Incident
 description: Get information about processes which open connections to known Bad IP's
 starttaskid: "0"
+fromversion: ""
 tasks:
   "0":
     id: "0"
@@ -12,6 +13,7 @@ tasks:
       id: ccc08aa3-60b9-4fc3-8dcc-a7a55918137d
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -218,6 +220,7 @@ tasks:
       id: 336fccc7-ebc6-4ec5-8c47-8376faf4c9e4
       version: -1
       name: Rows in parent_events?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -322,6 +325,7 @@ tasks:
       id: ac1b91b2-31c3-4618-8bc2-a15474bde8ab
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""

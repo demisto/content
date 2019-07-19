@@ -3,6 +3,7 @@ version: -1
 name: Uptycs - Bad IP Incident
 description: Get information about processes which open connections to known Bad IP's
 starttaskid: "0"
+fromversion: ""
 tasks:
   "0":
     id: "0"
@@ -12,6 +13,7 @@ tasks:
       id: ccc08aa3-60b9-4fc3-8dcc-a7a55918137d
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -283,6 +285,7 @@ tasks:
       id: e63fdf7e-85f3-4252-83cf-3768574d9b2d
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -350,3 +353,5 @@ outputs:
 - contextPath: Uptycs.Children.upt_remove_time
   description: time that the process was removed
   type: date
+tests:
+  - No test
