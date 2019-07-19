@@ -53,6 +53,7 @@ CONTENT_GITHUB_LINK = r'https://raw.githubusercontent.com/demisto/content'
 
 
 def add_dot(text):
+    text = text.strip()
     if text.endswith('.'):
         return text
     return text + '.'
@@ -107,7 +108,7 @@ class Content(object):
             # empty releaseNotes is not supported
             return None
 
-        return rn
+        return rn.strip()
 
     @abc.abstractmethod
     def added_release_notes(self, file_path, data):
@@ -537,11 +538,12 @@ def create_file_release_notes(change_type, full_file_name, deleted_data):
         file_type_mapping.add(change_type, contentLibPath + full_file_name)
 
 
-def get_release_notes_draft(github_token):
+def get_release_notes_draft(github_token, asset_id):
     """
     if possible, download current release draft from content repository in github.
 
     :param github_token: github token with push permission (in order to get the draft).
+    :param asset_id: content build's asset id.
     :return: draft text (or empty string on error).
     """
     # Disable insecure warnings
@@ -557,7 +559,7 @@ def get_release_notes_draft(github_token):
     drafts = [release for release in res.json() if release.get('draft', False)]
     if drafts:
         if len(drafts) == 1:
-            return drafts[0]['body']
+            return drafts[0]['body'].replace("xxxxx", asset_id)
         else:
             print_warning('Too many drafts to choose from ({}), skipping update.'.format(len(drafts)))
 
@@ -581,7 +583,7 @@ def create_content_descriptor(version, asset_id, res, github_token):
         "id": ""
     }
 
-    draft = get_release_notes_draft(github_token)
+    draft = get_release_notes_draft(github_token, asset_id)
     if draft:
         content_descriptor['releaseNotes'] = draft
 
@@ -623,6 +625,12 @@ def filter_packagify_changes(modified_files, added_files, removed_files, tag):
 
         updated_added_files.add(file_path)
 
+    for file_path in modified_files:
+        if isinstance(file_path, tuple):
+            updated_added_files -= {file_path[1]}
+        else:
+            updated_added_files -= {file_path}
+
     return modified_files, updated_added_files, removed_files
 
 
@@ -643,6 +651,7 @@ def main():
     args = arg_parser.parse_args()
 
     tag = get_last_release_version()
+    print('Last release version: {}'.format(tag))
 
     # get changed yaml/json files (filter only relevant changed files)
     fv = FilesValidator()
