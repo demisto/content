@@ -18,11 +18,6 @@ signal(SIGPIPE, SIG_DFL)
 requests.packages.urllib3.disable_warnings()
 
 ###############################################################################
-# supress traceback call. Use it only for troubleshoot/debug
-###############################################################################
-sys.tracebacklimit = 0
-
-###############################################################################
 # packages to handle IOerror
 ###############################################################################
 
@@ -2205,7 +2200,7 @@ def uptycs_fetch_incidents():
 
     query_results = restcall(http_method, api_call)
 
-    incidents = []
+    incidents = []  # type: List[dict]
     if len(query_results.get('items')) == 0:
         return incidents
     if query_results.get('items') is not None:
