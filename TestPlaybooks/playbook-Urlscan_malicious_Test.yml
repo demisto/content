@@ -5,13 +5,12 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9ea3ae9a-a213-4b9e-87fd-71f51ba77883
+    taskid: a2ef7618-b65c-4e63-8cd8-3720a577185b
     type: start
     task:
-      id: 9ea3ae9a-a213-4b9e-87fd-71f51ba77883
+      id: a2ef7618-b65c-4e63-8cd8-3720a577185b
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -27,12 +26,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: 9bc7b4cf-277c-47a4-81e6-a6a7183f08a5
+    taskid: a1b86b8e-e314-4092-8484-f1bb9d2fd286
     type: regular
     task:
-      id: 9bc7b4cf-277c-47a4-81e6-a6a7183f08a5
+      id: a1b86b8e-e314-4092-8484-f1bb9d2fd286
       version: -1
       name: Check Malicious url
       description: Check if file MD5 is malicious
@@ -44,6 +44,7 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
+      limit: {}
       searchParameter:
         simple: malware.wicar.org
       url:
@@ -58,12 +59,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 12719fdb-d543-4e84-8fb0-7741ba17d63f
+    taskid: 4a74e777-b01a-46b2-8f07-82057437601e
     type: regular
     task:
-      id: 12719fdb-d543-4e84-8fb0-7741ba17d63f
+      id: 4a74e777-b01a-46b2-8f07-82057437601e
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -88,12 +90,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: 6f74c347-29c4-4d43-84b8-5fc392e4cb0c
+    taskid: 8671564a-6333-4ae5-8eb4-b940b4786db3
     type: condition
     task:
-      id: 6f74c347-29c4-4d43-84b8-5fc392e4cb0c
+      id: 8671564a-6333-4ae5-8eb4-b940b4786db3
       version: -1
       name: Get result
       description: Filter context keys by applying one of the various available manipulations
@@ -105,7 +108,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "8"
+      - "18"
     scriptarguments:
       additional: {}
       data: {}
@@ -133,12 +136,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: e1b4e220-e38f-4532-8c00-7d7fa3e240f6
+    taskid: 63a038ae-9f4c-42e2-8a1d-403c341b4d6a
     type: title
     task:
-      id: e1b4e220-e38f-4532-8c00-7d7fa3e240f6
+      id: 63a038ae-9f4c-42e2-8a1d-403c341b4d6a
       version: -1
       name: Malicious
       type: title
@@ -152,17 +156,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 1245
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
-    taskid: 345e49f9-ed15-4c45-87a2-da0cf749e196
+    taskid: 366682a0-7423-4b33-8c14-cad1201ca350
     type: regular
     task:
-      id: 345e49f9-ed15-4c45-87a2-da0cf749e196
+      id: 366682a0-7423-4b33-8c14-cad1201ca350
       version: -1
       name: Check non-malicious url
       description: Check if file MD5 is malicious
@@ -184,17 +189,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1040
+          "y": 1565
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
-    taskid: d3ec8081-1680-4d9c-885a-b388117e26ec
+    taskid: c5a54c65-9379-4793-821c-4ea9fb0c66c7
     type: condition
     task:
-      id: d3ec8081-1680-4d9c-885a-b388117e26ec
+      id: c5a54c65-9379-4793-821c-4ea9fb0c66c7
       version: -1
       name: Get result
       description: Filter context keys by applying one of the various available manipulations
@@ -229,17 +235,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1215
+          "y": 1740
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
-    taskid: 07f20b44-ec5e-4b8e-872e-fef08a19a4fa
+    taskid: 08bd9da1-e549-4697-8c7b-2c8c1fc6eaf0
     type: title
     task:
-      id: 07f20b44-ec5e-4b8e-872e-fef08a19a4fa
+      id: 08bd9da1-e549-4697-8c7b-2c8c1fc6eaf0
       version: -1
       name: Not Malicious
       type: title
@@ -253,17 +260,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1390
+          "y": 1915
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
-    taskid: 73caa715-ba15-47ba-85ac-fa232f56b6a3
+    taskid: 6fc54d24-17c2-4a52-81cf-00e5c0b6e6cc
     type: regular
     task:
-      id: 73caa715-ba15-47ba-85ac-fa232f56b6a3
+      id: 6fc54d24-17c2-4a52-81cf-00e5c0b6e6cc
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -286,21 +294,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 865
+          "y": 1390
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: 9a6b0bbd-eb69-4e6b-80c5-0ba617619f90
+    taskid: f942aeb7-b2f9-44cf-8345-53a52ab75574
     type: regular
     task:
-      id: 9a6b0bbd-eb69-4e6b-80c5-0ba617619f90
+      id: f942aeb7-b2f9-44cf-8345-53a52ab75574
       version: -1
       name: Multiple url submission(rate limit test)
       description: Submit a url to scan
-      script: urlscan.io|||url
+      script: '|||url'
       type: regular
       iscommand: true
       brand: urlscan.io
@@ -324,21 +333,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1535
+          "y": 2060
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
-    taskid: 94ed5525-a0ac-45f4-8f7b-335672cd9cf0
+    taskid: 9bd29e3b-88eb-4070-82df-b39d6689be55
     type: regular
     task:
-      id: 94ed5525-a0ac-45f4-8f7b-335672cd9cf0
+      id: 9bd29e3b-88eb-4070-82df-b39d6689be55
       version: -1
       name: url
       description: Submit a url to scan
-      script: urlscan.io|||url
+      script: '|||url'
       type: regular
       iscommand: true
       brand: urlscan.io
@@ -362,24 +372,28 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1710
+          "y": 2235
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
-    taskid: 1e6c0239-8211-4c5b-8dc7-1fbab2c4dfbb
+    taskid: a47faa56-b8a6-4d33-85cb-98d3c4944c57
     type: regular
     task:
-      id: 1e6c0239-8211-4c5b-8dc7-1fbab2c4dfbb
+      id: a47faa56-b8a6-4d33-85cb-98d3c4944c57
       version: -1
       name: url
       description: Submit a url to scan
-      script: urlscan.io|||url
+      script: '|||url'
       type: regular
       iscommand: true
       brand: urlscan.io
+    nexttasks:
+      '#none#':
+      - "20"
     scriptarguments:
       limit: {}
       long: {}
@@ -397,17 +411,246 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1885
+          "y": 2410
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 78df1b7e-e11a-45ed-89e8-326637dcf10a
+    type: regular
+    task:
+      id: 78df1b7e-e11a-45ed-89e8-326637dcf10a
+      version: -1
+      name: Check another Malicious url
+      description: Submit a url to scan
+      script: '|||url'
+      type: regular
+      iscommand: true
+      brand: urlscan.io
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      limit: {}
+      long: {}
+      public: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      timeout: {}
+      url:
+        simple: http://malware.wicar.org/data/eicar.com
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: c950503c-16cc-4ecb-861a-b93b5187ba75
+    type: regular
+    task:
+      id: c950503c-16cc-4ecb-861a-b93b5187ba75
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 4cbb9b89-cd1b-42c1-8141-3d70327a580c
+    type: condition
+    task:
+      id: 4cbb9b89-cd1b-42c1-8141-3d70327a580c
+      version: -1
+      name: Check DBot score is 3
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: c0762923-bd8e-4fa1-8d4b-33008a21ebb6
+    type: title
+    task:
+      id: c0762923-bd8e-4fa1-8d4b-33008a21ebb6
+      version: -1
+      name: Http transaction test
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: b2d9f333-7c8c-4d42-80b3-c32d0d162287
+    type: regular
+    task:
+      id: b2d9f333-7c8c-4d42-80b3-c32d0d162287
+      version: -1
+      name: get http transactions
+      description: This script enables gives you the functionallity of getting the
+        http transactions made for a given URL using the UrlScan integration
+      scriptName: UrlscanGetHttpTransactions
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      timeout: {}
+      url:
+        simple: http://demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: af5ae32f-3605-49fd-8fff-664889782e6f
+    type: condition
+    task:
+      id: af5ae32f-3605-49fd-8fff-664889782e6f
+      version: -1
+      name: validate http transaction
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: URLScan
+                accessor: httpTransaction
+            iscontext: true
+          right:
+            value:
+              simple: demisto.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 6f25b2d3-c31a-4c33-89c9-f6c38aea2613
+    type: title
+    task:
+      id: 6f25b2d3-c31a-4c33-89c9-f6c38aea2613
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1930,
+        "height": 3095,
         "width": 380,
         "x": 50,
         "y": 50

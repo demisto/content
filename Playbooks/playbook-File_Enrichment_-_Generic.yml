@@ -24,7 +24,6 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
       - "24"
       - "31"
     reputationcalc: 0
@@ -32,10 +31,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 735,
+          "x": 480,
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
   "7":
     id: "7"
     taskid: d2deb7de-75cc-4f33-8ba3-6f83370096f8
@@ -53,186 +54,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 407.5,
+          "x": 275,
           "y": 1010
         }
       }
-  "19":
-    id: "19"
-    taskid: d92660c2-aae0-4955-8860-55b5a873ea84
-    type: title
-    task:
-      id: d92660c2-aae0-4955-8860-55b5a873ea84
-      version: -1
-      name: File history
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-  "20":
-    id: "20"
-    taskid: f9878c4a-43fa-4994-8919-012c91ef9e71
-    type: condition
-    task:
-      id: f9878c4a-43fa-4994-8919-012c91ef9e71
-      version: -1
-      name: Is there a SHA-256 hash?
-      description: |
-        Check if there is a SHA-256 hash in context.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "22"
-    scriptarguments:
-      value:
-        simple: ${File.SHA256}
-    reputationcalc: 0
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: inputs.SHA256
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 340
-        }
-      }
-  "21":
-    id: "21"
-    taskid: f41858a8-061a-46f6-8571-5169b0dc2142
-    type: regular
-    task:
-      id: f41858a8-061a-46f6-8571-5169b0dc2142
-      version: -1
-      name: Search for file history in Palo Alto AppFramework
-      description: Search for file history in the Palo Alto AppFramework integration.
-      script: Palo Alto AppFramework|||pan-appframework-search-by-file-hash
-      type: regular
-      iscommand: true
-      brand: Palo Alto AppFramework
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      SHA256:
-        complex:
-          root: inputs.SHA256
-      endTime: {}
-      logsAmount: {}
-      rangeValue: {}
-      startTime: {}
-      timeRange: {}
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 835
-        }
-      }
-  "22":
-    id: "22"
-    taskid: 75a5af54-6369-48e2-804d-6720507be2c5
-    type: title
-    task:
-      id: 75a5af54-6369-48e2-804d-6720507be2c5
-      version: -1
-      name: Search file history in Palo Alto AppFramework
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "23"
-    reputationcalc: 0
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 515
-        }
-      }
-  "23":
-    id: "23"
-    taskid: 4849f994-cf74-4e29-80be-d8c8b5c01659
-    type: condition
-    task:
-      id: 4849f994-cf74-4e29-80be-d8c8b5c01659
-      version: -1
-      name: Is Palo Alto AppFramework enabled?
-      description: Checks if there is an active instance of Palo Alto AppFramework.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "21"
-    reputationcalc: 0
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: general.isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: string.isEqual
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Palo Alto AppFramework
-                    ignorecase: true
-                - - operator: string.isEqual
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 660
-        }
-      }
+    note: false
+    timertriggers: []
   "24":
     id: "24"
     taskid: 9b849bc8-3a9b-46c5-802e-2fc25b7b1761
@@ -254,10 +81,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 735,
+          "x": 265,
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
   "25":
     id: "25"
     taskid: 803cab60-a177-4bca-8890-267658a8e037
@@ -292,10 +121,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
+          "x": 50,
           "y": 340
         }
       }
+    note: false
+    timertriggers: []
   "26":
     id: "26"
     taskid: 977beaa5-2d82-4d11-815d-16c6b502b5af
@@ -316,10 +147,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 632.5,
+          "x": 162.5,
           "y": 515
         }
       }
+    note: false
+    timertriggers: []
   "27":
     id: "27"
     taskid: a385675b-4d5d-40c4-8ea3-f9658e14ef91
@@ -371,10 +204,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 632.5,
+          "x": 162.5,
           "y": 660
         }
       }
+    note: false
+    timertriggers: []
   "28":
     id: "28"
     taskid: 5d1b9cb9-80ad-485a-80ba-e52f2bc9d2f0
@@ -401,10 +236,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 632.5,
+          "x": 275,
           "y": 835
         }
       }
+    note: false
+    timertriggers: []
   "29":
     id: "29"
     taskid: 0357cc1e-4fed-4d34-8672-c44dde656382
@@ -440,10 +277,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 988,
-          "y": 340
+          "x": 705,
+          "y": 835
         }
       }
+    note: false
+    timertriggers: []
   "30":
     id: "30"
     taskid: 52857fb4-234a-41b3-863e-acedeb1b02b3
@@ -479,10 +318,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1430,
-          "y": 340
+          "x": 1135,
+          "y": 835
         }
       }
+    note: false
+    timertriggers: []
   "31":
     id: "31"
     taskid: e14e2725-8611-4089-8947-4db090c13347
@@ -503,17 +344,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1430,
-          "y": 195
+          "x": 1135,
+          "y": 675
         }
       }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1025,
-        "width": 1760,
+        "width": 1465,
         "x": 50,
         "y": 50
       }
@@ -581,3 +424,5 @@ outputs:
   description: Scan detection for this hash (True,False)
 - contextPath: File.VirusTotal.Scans.Result
   description: Scan result for this hash - signature, etc.
+tests:
+  - no test (new v2 playbook has an updated test)

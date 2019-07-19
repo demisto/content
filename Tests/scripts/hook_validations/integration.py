@@ -1,8 +1,11 @@
 import os
 import yaml
-from requests import get
+import requests
 
-from Tests.test_utils import print_error, get_json
+from Tests.test_utils import print_error, get_yaml
+
+# disable insecure warnings
+requests.packages.urllib3.disable_warnings()
 
 
 class IntegrationValidator(object):
@@ -22,17 +25,18 @@ class IntegrationValidator(object):
 
         self.file_path = file_path
         if check_git:
-            self.current_integration = get_json(file_path)
+            self.current_integration = get_yaml(file_path)
             # The replace in the end is for Windows support
             if old_file_path:
                 git_hub_path = os.path.join(self.CONTENT_GIT_HUB_LINK, old_file_path).replace("\\", "/")
-                file_content = get(git_hub_path).content
-                self.old_integration = yaml.load(file_content)
+                file_content = requests.get(git_hub_path, verify=False).content
+                self.old_integration = yaml.safe_load(file_content)
             else:
                 try:
                     file_path_from_master = os.path.join(self.CONTENT_GIT_HUB_LINK, file_path).replace("\\", "/")
-                    self.old_integration = yaml.load(get(file_path_from_master).content)
-                except Exception:
+                    self.old_integration = yaml.safe_load(requests.get(file_path_from_master, verify=False).content)
+                except Exception as e:
+                    print(str(e))
                     print_error("Could not find the old integration please make sure that you did not break "
                                 "backward compatibility")
                     self.old_integration = None
@@ -46,8 +50,52 @@ class IntegrationValidator(object):
         self.is_docker_image_changed()
         self.is_added_required_fields()
         self.is_changed_command_name_or_arg()
+        self.is_there_duplicate_args()
+        self.is_there_duplicate_params()
 
         return self._is_valid
+
+    def is_there_duplicate_args(self):
+        """Check if a command has the same arg more than once
+
+        Returns:
+            bool. True if there are duplicates, False otherwise.
+        """
+        commands = self.current_integration.get('script', {}).get('commands', [])
+        for command in commands:
+            arg_list = []
+            for arg in command.get('arguments', []):
+                if arg in arg_list:
+                    self._is_valid = False
+                    print_error("The argument '{}' of the command '{}' is duplicated in the integration '{}', "
+                                "please remove one of its appearances "
+                                "as we do not allow duplicates".format(arg, command['name'],
+                                                                       self.current_integration.get('name')))
+                else:
+                    arg_list.append(arg)
+
+        return not self._is_valid
+
+    def is_there_duplicate_params(self):
+        """Check if the integration has the same param more than once
+
+        Returns:
+            bool. True if there are duplicates, False otherwise.
+        """
+        configurations = self.current_integration.get('configuration', [])
+        param_list = []
+        for configuration_param in configurations:
+            param_name = configuration_param['name']
+            if param_name in param_list:
+                self._is_valid = False
+                print_error("The parameter '{}' of the "
+                            "integration '{}' is duplicated, please remove one of its appearances as we do not "
+                            "allow duplicated parameters".format(param_name,
+                                                                 self.current_integration.get('name')))
+            else:
+                param_list.append(param_name)
+
+        return not self._is_valid
 
     def _get_command_to_args(self, integration_json):
         """Get a dictionary command name to it's arguments.
@@ -62,7 +110,7 @@ class IntegrationValidator(object):
         commands = integration_json.get('script', {}).get('commands', [])
         for command in commands:
             command_to_args[command['name']] = {}
-            for arg in command['arguments']:
+            for arg in command.get('arguments', []):
                 command_to_args[command['name']][arg['name']] = arg.get('required', False)
 
         return command_to_args
@@ -130,6 +178,9 @@ class IntegrationValidator(object):
         commands = integration_json.get('script', {}).get('commands', [])
         for command in commands:
             context_list = []
+            if not command.get('outputs', []):
+                continue
+
             for output in command.get('outputs', []):
                 context_list.append(output['contextPath'])
 

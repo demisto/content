@@ -1,7 +1,7 @@
 id: get_original_email_-_ews
 version: -1
 name: Get Original Email - EWS
-fromversion: 4.0
+fromversion: 4.0.0
 description: |-
   Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
 
@@ -305,7 +305,7 @@ tasks:
           accessor: itemId
       target-mailbox:
         complex:
-          root: inputs.mailbox
+          root: inputs.Mailbox
     reputationcalc: 2
     separatecontext: false
     view: |-

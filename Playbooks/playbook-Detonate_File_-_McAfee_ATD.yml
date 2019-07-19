@@ -47,6 +47,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
     taskid: 586df0a0-fceb-41e3-8e9d-124757b4a4bb
@@ -100,6 +101,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
     taskid: b0cb6625-0e6c-44ae-835c-684b21d0a6c1
@@ -149,6 +151,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: e589b774-3cee-4dff-8e14-788ef3590dfa
@@ -171,6 +174,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
     taskid: fddc93e3-f6fc-481c-8696-1bdaaf591562
@@ -226,6 +230,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
     taskid: ac109c6f-fb89-498f-8ba7-877e50ee9019
@@ -261,6 +266,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
     taskid: 26e0e6b7-9804-434a-85d6-bb1a8aaff27d
@@ -292,6 +298,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
     taskid: d8e19b0c-3dfa-41f8-86fa-2d12ff711340
@@ -358,6 +365,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
     taskid: 3814f559-a639-4e80-8d6e-c74b9e96e495
@@ -391,6 +399,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
     taskid: 9b8022fc-dfd0-4806-8ead-65f53804065f
@@ -426,6 +435,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
     taskid: 7bd95c47-0c05-49e3-80ba-43d2f0e4e2b9
@@ -460,6 +470,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
     taskid: 6e299488-408a-4b9d-82d0-cb053caf322e
@@ -532,6 +543,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -646,6 +658,18 @@ outputs:
 - contextPath: InfoFile.Type
   description: The type of the report file
   type: string
+- contextPath: File
+  description: File object
+  type: unknown
+- contextPath: File.Malicious
+  description: File Malicious object
+  type: unknown
+- contextPath: DBotScore
+  description: DBotScore object
+  type: unknown
+- contextPath: InfoFile
+  description: Report file object
+  type: unknown
 tests:
 - Test Playbook McAfee ATD
 - Detonate File - Generic Test

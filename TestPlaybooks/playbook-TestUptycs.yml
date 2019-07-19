@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 id: f4c155a7-4066-4caf-8c14-d477a475bd43
 version: 30
 name: TestUptycs_kyle
+=======
+id: TestUptycs
+version: -1
+name: TestUptycs
+>>>>>>> 8c8af76f635d4b8f1b168ffac0147669249b138b
 starttaskid: "0"
 tasks:
   "0":

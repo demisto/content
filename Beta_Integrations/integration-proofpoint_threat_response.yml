@@ -1,0 +1,353 @@
+commonfields:
+  id: Proofpoint Threat Response
+  version: -1
+name: Proofpoint Threat Response
+display: Proofpoint Threat Response
+category: Email Gateway
+image: data:image/png;base64,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
+description: 'Proofpoint builds lists for enforcement actions '
+detaileddescription: |-
+  In order to create API Key
+  Settings -> API Key -> Add api key
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: ID of IPs blacklist
+  name: blacklist_ip
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: ID of Domains blacklist
+  name: blacklist_domain
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: ID of URLs blacklist
+  name: blacklist_url
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: ID of hashes blacklist
+  name: blacklist_hash
+  defaultvalue: ""
+  type: 0
+  required: false
+script:
+  script: |
+    ''' IMPORTS '''
+    import requests
+    import json
+    requests.packages.urllib3.disable_warnings()
+
+    if not demisto.getParam('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' GLOBAL VARS '''
+    BASE_URL = demisto.params().get('url')
+    if BASE_URL[-1] != '/':
+        BASE_URL += '/'
+    API_KEY = demisto.params().get('apikey')
+    VERIFY_CERTIFICATE = False
+
+    ''' COMMAND FUNCTIONS '''
+    def get_list(list_id):
+        fullurl = BASE_URL + 'api/lists/{}/members.json'.format(list_id)
+        res = requests.get(
+            fullurl,
+            headers = {
+                'Content-Type': 'application/json',
+                'Authorization': API_KEY
+            },
+            verify=VERIFY_CERTIFICATE
+            )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Get list failed. URL: {}, StatusCode: {}, Response: {}'.format(fullurl, res.status_code, res.text))
+
+        return res.json()
+
+    def get_list_command():
+        ''' Retrieves all indicators of a the given list ID in Threat Response '''
+        list_id = demisto.args().get('list-id')
+        list_items = get_list(list_id)
+
+        demisto.results({ 'list' : list_items })
+
+
+    def add_to_list(list_id, indicator, comment, expiration):
+        fullurl = BASE_URL + 'api/lists/{}/members.json'.format(list_id)
+
+        indicator = {
+            'member': indicator
+        }
+        if comment:
+            indicator['description'] = comment
+
+        if expiration:
+            indicator['expiration'] = expiration
+
+        res = requests.post(
+            fullurl,
+            headers = {
+                'Authorization': API_KEY
+            },
+            verify=VERIFY_CERTIFICATE,
+            json=indicator
+        )
+
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Add to list failed. URL: {}, Request Body: {}, StatusCode: {}, Response: {}'.format(fullurl, json.dumps(indicator), res.status_code, res.content))
+
+        return res.json()
+
+    def add_to_list_command():
+        ''' Adds given indicators to the given list ID in Threat Response '''
+        list_id = demisto.args().get('list-id')
+        indicators = argToList(demisto.args().get('indicator'))
+        comment = demisto.args().get('comment')
+        expiration = demisto.args().get('expiration')
+
+        message = ''
+        for indicator in indicators:
+            add_to_list(list_id, indicator, comment, expiration)
+            message += '{} added successfully to {}\n'.format(indicator, list_id)
+
+        demisto.results(message)
+
+
+    def block_ip_command():
+        ''' Adds given IPs to the relevant blacklist in Threat Response '''
+        list_id = demisto.params().get('blacklist_ip')
+        ips = argToList(demisto.args().get('ip'))
+        expiration = demisto.args().get('expiration')
+
+        message = ''
+        for ip in ips:
+            add_to_list(list_id, ip, None, expiration)
+            message += '{} added successfully to block_ip list\n'.format(ip)
+
+        demisto.results(message)
+
+
+    def block_domain_command():
+        ''' Adds given domains to the relevant blacklist in Threat Response '''
+        list_id = demisto.params().get('blacklist_domain')
+        domains = argToList(demisto.args().get('domain'))
+        expiration = demisto.args().get('expiration')
+
+        message = ''
+        for domain in domains:
+            add_to_list(list_id, domain, None, expiration)
+            message += '{} added successfully to block_domain list\n'.format(domain)
+
+        demisto.results(message)
+
+
+    def block_url_command():
+        ''' Adds given URLs to the relevant blacklist in Threat Response '''
+        list_id = demisto.params().get('blacklist_url')
+        urls = argToList(demisto.args().get('url'))
+        expiration = demisto.args().get('expiration')
+
+        message = ''
+        for url in urls:
+            add_to_list(list_id, url, None, expiration)
+            message += '{} added successfully to block_url list\n'.format(url)
+
+        demisto.results(message)
+
+
+    def block_hash_command():
+        ''' Adds given hashes to the relevant blacklist in Threat Response '''
+        list_id = demisto.params().get('blacklist_hash')
+        hashes = argToList(demisto.args().get('hash'))
+        expiration = demisto.args().get('expiration')
+
+        message = ''
+        for h in hashes:
+            add_to_list(list_id, h, None, expiration)
+            message += '{} added successfully to block_hash list\n'.format(h)
+
+        demisto.results(message)
+
+
+    def search_indicators(list_id, indicator_filter):
+        list_indicators = get_list(list_id)
+        found_items = []
+        for item in list_indicators:
+            item_indicator = demisto.get(item, 'host.host')
+            if indicator_filter in item_indicator:
+                found_items.append(item)
+
+        return found_items
+
+    def search_indicator_command():
+        ''' Retrieves indicators of a list, using a filter '''
+        list_id = demisto.args().get('list-id')
+        indicator_filter = demisto.args().get('filter')
+        found = search_indicators(list_id, indicator_filter)
+
+        demisto.results({ 'indicators': found })
+
+
+    def delete_indicator(list_id, indicator_filter):
+        indicator = search_indicators(list_id, indicator_filter)
+        if len(indicator) == 0:
+            return_error('{} not exists in {}'.format(indicator_filter, list_id))
+
+        indicator_id = indicator.get('id')
+        fullurl = BASE_URL + 'api/lists/{}/members/{}.json'.format(list_id, indicator_id)
+        res = requests.delete(
+            fullurl,
+            headers = {
+                'Authorization': API_KEY
+            },
+            verify=VERIFY_CERTIFICATE
+            )
+        if res.status_code < 200 or res.status_code >= 300:
+            return_error('Delete indicator failed. URL: {}, StatusCode: {}, Response: {}'.format(fullurl, res.status_code, res.text))
+
+    def delete_indicator_command():
+        ''' Deletes an indicator from a list '''
+        list_id = demisto.args().get('list-id')
+        indicator = demisto.args().get('indicator')
+        delete_indicator(list_id, indicator)
+
+        demisto.results('{} deleted successfully from list {}'.format(list_id, indicator))
+
+
+    def test():
+        get_list(demisto.params().get('blacklist_ip'))
+
+
+    ''' EXECUTION CODE '''
+    LOG('command is %s' % (demisto.command(), ))
+    if demisto.command() == 'test-module':
+        test()
+        demisto.results('ok')
+
+    elif demisto.command() == 'proofpoint-tr-get-list':
+        get_list_command()
+
+    elif demisto.command() == 'proofpoint-tr-add-to-list':
+        add_to_list_command()
+
+    elif demisto.command() == 'proofpoint-tr-block-ip':
+        block_ip_command()
+
+    elif demisto.command() == 'proofpoint-tr-block-domain':
+        block_domain_command()
+
+    elif demisto.command() == 'proofpoint-tr-block-url':
+        block_url_command()
+
+    elif demisto.command() == 'proofpoint-tr-block-hash':
+        block_hash_command()
+
+    elif demisto.command() == 'proofpoint-tr-delete-indicator':
+        delete_indicator_command()
+
+    elif demisto.command() == 'proofpoint-tr-search-indicator':
+        search_indicator_command()
+  type: python
+  commands:
+  - name: proofpoint-tr-get-list
+    arguments:
+    - name: list-id
+      required: true
+      description: ID of the list
+    description: Get list items
+  - name: proofpoint-tr-add-to-list
+    arguments:
+    - name: list-id
+      required: true
+    - name: indicator
+      required: true
+      description: 'Could be ip,url,domain,hash. For example: "192.168.1.1,192.168.1.2"'
+      isArray: true
+    - name: comment
+      description: Comment regarding the member
+    - name: expiration
+      description: Expiration of the  member
+    description: Add member to list
+    execution: true
+  - name: proofpoint-tr-block-ip
+    arguments:
+    - name: ip
+      required: true
+      description: List of IPs
+      isArray: true
+    - name: expiration
+      description: Expiration of the IP
+    description: 'Block IP '
+    execution: true
+  - name: proofpoint-tr-block-domain
+    arguments:
+    - name: domain
+      required: true
+      description: List of domains
+      isArray: true
+    - name: expiration
+      description: Expiration of the Domain
+    description: Block Domain
+  - name: proofpoint-tr-search-indicator
+    arguments:
+    - name: list-id
+      required: true
+      description: ID of the list
+    - name: filter
+      required: true
+      description: Filter for the search. For example, "1.1" will return [1.1.1.1,
+        22.22.1.1,1.1.22.22]
+    description: 'Return a list of indicators '
+  - name: proofpoint-tr-delete-indicator
+    arguments:
+    - name: list-id
+      required: true
+      description: ID of the list
+    - name: indicator
+      required: true
+      description: 'Could be ip,url,domain,hash. For example: "demisto.com"'
+    description: Delete an indicator from a list
+  - name: proofpoint-tr-block-url
+    arguments:
+    - name: url
+      required: true
+      description: List of URLs
+      isArray: true
+    - name: expiration
+      description: Expiration of the URLs
+    description: Block URL
+  - name: proofpoint-tr-block-hash
+    arguments:
+    - name: hash
+      required: true
+      description: List of hashes
+      isArray: true
+    - name: expiration
+      description: Expiration of the hash
+    description: Block hash
+  runonce: false
+tests:
+  - No test - beta_integration

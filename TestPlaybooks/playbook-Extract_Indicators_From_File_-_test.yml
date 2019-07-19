@@ -1,19 +1,24 @@
 id: Extract Indicators From File - test
 version: -1
 name: Extract Indicators From File - test
-description: "A test playbook for extracting indicators from EML files.\nIndicators:
-  \n- Email addresses"
+fromversion: 4.1.0
+description: |-
+  A test playbook for extracting indicators from a file.
+  Supported file types:
+  PDF
+  TXT
+  HTM, HTML
+  DOC, DOCX
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: db62a776-8c18-427e-882f-f7ed688bdcf0
+    taskid: c3944b7e-7566-4c99-839f-699c9a722a6a
     type: start
     task:
-      id: db62a776-8c18-427e-882f-f7ed688bdcf0
+      id: c3944b7e-7566-4c99-839f-699c9a722a6a
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -29,12 +34,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 457c42b9-0560-4bcb-82d2-9a811b2e5c7c
+    taskid: 36f7baaa-55f2-4e5f-8ba1-0f433559171d
     type: regular
     task:
-      id: 457c42b9-0560-4bcb-82d2-9a811b2e5c7c
+      id: 36f7baaa-55f2-4e5f-8ba1-0f433559171d
       version: -1
       name: Download TXT file
       description: Downloads a TXT file using HTTP GET.
@@ -44,7 +50,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "17"
     scriptarguments:
       body: {}
       filename: {}
@@ -65,18 +71,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
+          "x": 50,
           "y": 570
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: 620415d6-33b2-4055-8d76-ce93d7b8aedb
+    taskid: 13e44ab8-4d46-4f0e-8c76-8b47e5752849
     type: condition
     task:
-      id: 620415d6-33b2-4055-8d76-ce93d7b8aedb
+      id: 13e44ab8-4d46-4f0e-8c76-8b47e5752849
       version: -1
       name: Were the correct indicators extracted?
       description: Checks whether specific indicators were extracted from each one
@@ -133,24 +140,34 @@ tasks:
           right:
             value:
               simple: http://www.docxtesturl.com
+      - - operator: notContainsGeneral
+          left:
+            value:
+              complex:
+                root: URL
+                accessor: Data
+            iscontext: true
+          right:
+            value:
+              simple: http://tpb.crushus.com/www.paperstreetcash.com
     view: |-
       {
         "position": {
-          "x": 300,
-          "y": 1060
+          "x": 280,
+          "y": 980
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 44c63007-771f-4c5b-8ef2-62e9857feb24
+    taskid: 688e4e33-2c3d-45e8-836d-3af4738b69ac
     type: title
     task:
-      id: 44c63007-771f-4c5b-8ef2-62e9857feb24
+      id: 688e4e33-2c3d-45e8-836d-3af4738b69ac
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -158,18 +175,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 70,
-          "y": 1480
+          "x": 50,
+          "y": 1400
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: b637222e-8d0a-4b36-8157-211518859d3a
+    taskid: 4882e820-141f-4639-8be6-afae7119c1e6
     type: regular
     task:
-      id: b637222e-8d0a-4b36-8157-211518859d3a
+      id: 4882e820-141f-4639-8be6-afae7119c1e6
       version: -1
       name: Make test fail
       description: Causes the test playbook to fail if the correct email addresses
@@ -189,18 +207,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 620,
-          "y": 1300
+          "x": 600,
+          "y": 1220
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: fba4e84a-c285-49ba-8579-90f4c735b7b8
+    taskid: 117b8e64-cfb5-4e54-84ef-311ff4211ced
     type: title
     task:
-      id: fba4e84a-c285-49ba-8579-90f4c735b7b8
+      id: 117b8e64-cfb5-4e54-84ef-311ff4211ced
       version: -1
       name: Download Files
       type: title
@@ -212,6 +231,8 @@ tasks:
       - "9"
       - "1"
       - "11"
+      - "15"
+      - "18"
     separatecontext: false
     view: |-
       {
@@ -222,12 +243,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: 8726ac21-b307-4695-8404-5d1be7d090cf
+    taskid: 3d10e8aa-49da-4c7f-8b09-a70b2841725d
     type: regular
     task:
-      id: 8726ac21-b307-4695-8404-5d1be7d090cf
+      id: 3d10e8aa-49da-4c7f-8b09-a70b2841725d
       version: -1
       name: Download DOC file
       description: Downloads a DOC file using HTTP GET.
@@ -237,7 +259,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "17"
     scriptarguments:
       body: {}
       filename: {}
@@ -258,18 +280,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 780,
+          "x": 1010,
           "y": 570
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
-    taskid: 2d6acf31-9480-4bce-8536-199a117b9a9a
+    taskid: a0799b6b-82f8-4822-8788-a4012f9dcb23
     type: regular
     task:
-      id: 2d6acf31-9480-4bce-8536-199a117b9a9a
+      id: a0799b6b-82f8-4822-8788-a4012f9dcb23
       version: -1
       name: Download DOCX file
       description: Downloads a DOCX file using HTTP GET.
@@ -279,7 +302,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "17"
     scriptarguments:
       body: {}
       filename: {}
@@ -300,18 +323,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 300,
+          "x": 530,
           "y": 570
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
-    taskid: c2d3c796-dca9-4ab0-8f47-2b195d85aac2
+    taskid: f5ff0135-3142-4263-88bc-0728643415f8
     type: regular
     task:
-      id: c2d3c796-dca9-4ab0-8f47-2b195d85aac2
+      id: f5ff0135-3142-4263-88bc-0728643415f8
       version: -1
       name: Download PDF file
       description: Downloads a PDF file using HTTP GET.
@@ -321,7 +345,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "17"
     scriptarguments:
       body: {}
       filename: {}
@@ -342,18 +366,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -660,
+          "x": -430,
           "y": 570
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
-    taskid: 80b24b26-62f5-410c-8db8-621b66828f94
+    taskid: 39f9c705-f16d-4962-8695-49eef175d348
     type: regular
     task:
-      id: 80b24b26-62f5-410c-8db8-621b66828f94
+      id: 39f9c705-f16d-4962-8695-49eef175d348
       version: -1
       name: Delete Context
       description: Delete the context of the incident to start with clear context.
@@ -382,38 +407,13 @@ tasks:
       }
     note: false
     timertriggers: []
-  "13":
-    id: "13"
-    taskid: be1c63ab-e412-432a-8379-3c343ea501f8
-    type: playbook
-    task:
-      id: be1c63ab-e412-432a-8379-3c343ea501f8
-      version: -1
-      name: Extract Indicators From File - Generic
-      playbookName: Extract Indicators From File - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-      - "14"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 869
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: 86e50667-958b-4156-8a5a-f2055b42080c
+    taskid: f8685f29-036c-4351-84c7-c906fdf94f8f
     type: condition
     task:
-      id: 86e50667-958b-4156-8a5a-f2055b42080c
+      id: f8685f29-036c-4351-84c7-c906fdf94f8f
       version: -1
       name: Did the PDF file return outputs?
       description: |-
@@ -461,28 +461,7 @@ tasks:
             value:
               complex:
                 root: File
-                accessor: xap
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: File
                 accessor: Author
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: File
-                accessor: dc
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: File
-                accessor: xapmm
             iscontext: true
       - - operator: isExists
           left:
@@ -508,12 +487,126 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -160,
-          "y": 1060
+          "x": -180,
+          "y": 980
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: c3778ba5-2aa1-4dc9-8bef-618e0ae48b6e
+    type: regular
+    task:
+      id: c3778ba5-2aa1-4dc9-8bef-618e0ae48b6e
+      version: -1
+      name: Download EML file
+      description: Downloads an EML file using HTTP GET.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/Inline_malicious_url.eml
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -910,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 80eb9c0f-d48f-4bfa-818e-7685e04555fb
+    type: playbook
+    task:
+      id: 80eb9c0f-d48f-4bfa-818e-7685e04555fb
+      version: -1
+      name: Extract Indicators From File - Generic
+      playbookName: Extract Indicators From File - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+      - "3"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: bd12199f-16fd-4c4b-806a-cf99c425f408
+    type: regular
+    task:
+      id: bd12199f-16fd-4c4b-806a-cf99c425f408
+      version: -1
+      name: Download XLSX file
+      description: Downloads an XLSX file using HTTP GET.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/TestExcelFile.xlsx
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -522,9 +615,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1495,
-        "width": 1820,
-        "x": -660,
+        "height": 1415,
+        "width": 2770,
+        "x": -910,
         "y": 50
       }
     }

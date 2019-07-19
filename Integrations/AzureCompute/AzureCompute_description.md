@@ -1,0 +1,2 @@
+To grant access to Microsoft Azure Compute, an admin needs to approve Demisto using an admin consent flow. To start the admin consent flow, click [here](https://demistobot.demisto.com/azurecompute-sub).
+  After entering your Microsoft Azure Subscription ID, which you can find in the Azure Web Portal, and authorizing the Demisto app, you will get a tenant ID and authentication token. Enter both of these when you configure the integration instance.
