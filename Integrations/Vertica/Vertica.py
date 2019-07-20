@@ -1,9 +1,27 @@
 import demistomock as demisto
 from CommonServerPython import *
+from datetime import datetime
+
+# fix for: https://github.com/vertica/vertica-python/issues/296
+# (we need this for running in non-root where getpass will fail as uid doesn't map to a user name)
+import getpass
+getpass_getuser = getpass.getuser
+
+
+def getuser_no_fail():
+    try:
+        user = getpass_getuser()
+    except KeyError:
+        # getuser() fails on some systems. Provide a sane default.
+        user = 'vertica'
+    return user
+
+
+getpass.getuser = getuser_no_fail
+
 ''' IMPORTS '''
 
-import vertica_python
-from datetime import datetime
+import vertica_python  # noqa: E402
 
 ''' HELPER FUNCTIONS '''
 
