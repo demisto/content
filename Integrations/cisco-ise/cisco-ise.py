@@ -5,25 +5,6 @@ from CommonServerUserPython import *
 import requests
 from requests.auth import HTTPBasicAuth
 
-# Handle proxy
-proxies = {}
-if not demisto.params().get('proxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-else:
-    def get_env_var(key):
-        for k in (key.lower(), key.upper()):
-            if k in os.environ:
-                return os.environ[k]
-        return None
-
-    proxies = {
-        'http': get_env_var('http_proxy'),
-        'https': get_env_var('https_proxy')
-    }
-
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -37,13 +18,6 @@ USERNAME = demisto.params().get('credentials').get('identifier')
 PASSWORD = demisto.params().get('credentials').get('password')
 
 USE_SSL = not demisto.params().get('insecure', False)
-
-ISE = requests.session()
-ISE.auth = (USERNAME, PASSWORD)
-ISE.verify = USE_SSL
-ISE.disable_warnings = True
-ISE.timeout = 5
-ISE.proxies = proxies
 
 DEFAULT_HEADERS = {
     'Content-Type': 'application/json',
@@ -67,19 +41,23 @@ def is_mac(mac):
 
 
 def http_request(method, url_suffix, params=None, data=None, headers=DEFAULT_HEADERS):
+    try:
+        url = SERVER_URL + url_suffix
+        LOG(f'running {method} request with url={url}')
 
-    url = SERVER_URL + url_suffix
-    LOG(f'running {method} request with url={url}')
+        response = requests.request(
+            method,
+            url,
+            auth=(USERNAME, PASSWORD),
+            headers=headers,
+            verify=USE_SSL,
+            params=params,
+            data=data
+        )
+    except requests.exceptions.ConnectionError:
+        err_msg = 'Connection Error - Check that the Server URL parameter is correct.'
+        return_error(err_msg)
 
-    response = requests.request(
-        method,
-        url,
-        auth=(USERNAME, PASSWORD),
-        headers=headers,
-        verify=USE_SSL,
-        params=params,
-        data=data
-    )
     # handle request failure
     if response.status_code not in {200, 201, 202, 204}:
 
@@ -87,14 +65,13 @@ def http_request(method, url_suffix, params=None, data=None, headers=DEFAULT_HEA
 
         return_error(err_msg)
 
-    if response.status_code == 201:
-        return
-    if response.status_code == 204:
+    if response.status_code in (201, 204):
         return
     try:
         response = response.json()
-    except Exception:
+    except ValueError:
         return_error(response.content)
+
     return response
 
 
@@ -129,7 +106,7 @@ def get_groups():
 
     groups = groups_data.get('resources', [])
     context = []
-    hr = []
+    humanreadable = []
 
     for group in groups:
         context_dict = {
@@ -139,21 +116,14 @@ def get_groups():
         }
         hr_dict = dict(context_dict)
         context.append(context_dict)
-        hr.append(hr_dict)
+        humanreadable.append(hr_dict)
 
-    ec = {
+    entry_context = {
         'CiscoISE.Group(val.ID === obj.ID)': context
     }
 
-    return {
-        'Type': entryTypes['note'],
-        'Contents': groups,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Cisco pxGrid ISE Groups', hr, ['ID', 'Name', 'Description'],
-                                         removeNull=True),
-        'EntryContext': ec
-    }
+    return_outputs(tableToMarkdown('Cisco pxGrid ISE Groups', humanreadable, ['ID', 'Name', 'Description'], removeNull=True),
+                   entry_context, groups_data)
 
 
 def get_endpoint_id(mac_address=None):
@@ -178,21 +148,14 @@ def get_endpoint_id_command():
     endpoint_data = get_endpoint_id(mac_address)
     endpoint_id = endpoint_data.get('SearchResult', {}).get('resources', [])[0].get('id', None)
 
-    ec = {
+    entry_context = {
         'Endpoint(val.ID === obj.ID)': {
             'ID': endpoint_id,
             'MACAddress': mac_address
         }
     }
 
-    return {
-        'Type': entryTypes['note'],
-        'Contents': endpoint_id,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': "The endpoint ID is: " + endpoint_id,
-        'EntryContext': ec
-    }
+    return_outputs(f'The endpoint ID is: {endpoint_id}', entry_context, endpoint_id)
 
 
 def get_endpoint_details(endpoint_id):
@@ -271,16 +234,9 @@ def get_endpoint_details_command():
         }
 
         title = 'Endpoint details - ' + (endpoint_id or endpoint_mac_address)
-        return {
-            'Type': entryTypes['note'],
-            'Contents': endpoint_details,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown(title, hr, removeNull=True),
-            'EntryContext': ec
-        }
+        return_outputs(tableToMarkdown(title, hr, removeNull=True), ec, endpoint_details)
     else:
-        return 'No results found'
+        demisto.results('No results found')
 
 
 def reauthenticate_endpoint(mac_address, psn_address):
@@ -288,7 +244,7 @@ def reauthenticate_endpoint(mac_address, psn_address):
     Reauthenticates an endpoint
     """
     api_endpoint = "/admin/API/mnt/CoA/Reauth/{}/{}/1".format(psn_address, mac_address)
-    response = http_request('GET', api_endpoint, {}, {}, {})
+    response = http_request('GET', api_endpoint)
     return response
 
 
@@ -297,7 +253,7 @@ def get_psn_for_mac(mac_address):
     Retrieves psn for an endpoint
     """
     api_endpoint = "/admin/API/mnt/AuthStatus/MACAddress/{}/86400/0/0".format(mac_address)
-    response = http_request('GET', api_endpoint, {}, {}, {})
+    response = http_request('GET', api_endpoint)
     if response:
         return response
     else:
@@ -323,19 +279,15 @@ def reauthenticate_endpoint_command():
     activation_result = reauthenticate_endpoint(mac_address, psn_address).text
     json_activation_result = json.loads(xml2json(activation_result)).get('remoteCoA').get('results')
     activation_result_boolean = 'true' in json_activation_result
-    return {
-        'Type': entryTypes['note'],
-        'Contents': activation_result,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': 'Activation result was : ' + activation_result_boolean,
-        'EntryContext': {
-            "CiscoISE.Endpoint(val.MACAddress==obj.MACAddress)": {
-                'MACAddress': json_activation_result,
-                'reauthenticateResult': activation_result_boolean
-            }
+
+    entry_context = {
+        "CiscoISE.Endpoint(val.MACAddress==obj.MACAddress)": {
+            'MACAddress': json_activation_result,
+            'reauthenticateResult': activation_result_boolean
         }
     }
+
+    return_outputs('Activation result was : ' + activation_result_boolean, entry_context, activation_result)
 
 
 def get_endpoints():
@@ -371,20 +323,16 @@ def get_endpoints_command():
         context.append(context_dict)
         hr.append(hr_dict)
 
-    ec = {
+    entry_context = {
         'Endpoint(val.ID == obj.ID)': context,
         'CiscoISE.Endpoint(val.ID == obj.ID)': context
     }
 
-    return {
-        'Type': entryTypes['note'],
-        'Contents': endpoints,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Cisco pxGrid ISE Endpoints', hr, ['ID', 'MACAddress'],
-                                         removeNull=True),
-        'EntryContext': ec
-    }
+    return_outputs(tableToMarkdown(
+        'Cisco ISE Endpoints', hr, ['ID', 'MACAddress'], removeNull=True),
+        entry_context,
+        endpoints
+    )
 
 
 def update_endpoint_by_id(endpoint_id, endpoint_details):
@@ -436,9 +384,10 @@ def update_endpoint_custom_attribute_command():
         update_result = update_endpoint_by_id(endpoint_id, endpoint_details)
 
         if update_result.get('status_code') != 200:
-            return "Update failed for endpoint " + endpoint_id + ". Please check if the custom fields are defined in " \
-                                                                 "the system. Got the following response: " + \
-                   json.dumps(update_result).get('ERSResponse', {}).get('messages', [])
+            demisto.results("Update failed for endpoint " + endpoint_id + ". Please check if the custom "
+                                                                          "fields are defined in the system. "
+                                                                          "Got the following response: " +
+                            json.dumps(update_result).get('ERSResponse', {}).get('messages', []))
 
         update_json = json.loads(update_result)
 
@@ -450,8 +399,7 @@ def update_endpoint_custom_attribute_command():
         else:
             updated_fields_string = ", but the fields that you've tried to update already had that specific value " \
                                     "or do not exist"
-
-        return 'Successfully updated endpoint %s' % endpoint_id + updated_fields_string
+        demisto.results('Successfully updated endpoint %s' % endpoint_id + updated_fields_string)
 
     except Exception as e:
         raise Exception("Exception: Failed to update endpoint {}: ".format(endpoint_id) + str(e))
@@ -540,7 +488,6 @@ def get_policies():
     Return all ANC policies
     """
     data = []
-    policy_context = []
 
     policies_data = get_policies_request().get('SearchResult', {})
 
@@ -555,13 +502,8 @@ def get_policies():
             'Name': policy.get('name')
         })
 
-        policy_context.append({
-            'ID': policy.get('id'),
-            'Name': policy.get('name'),
-        })
-
     context = {
-        'CiscoISE.Policy(val.ID && val.ID === obj.ID)': policy_context
+        'CiscoISE.Policy(val.ID && val.ID === obj.ID)': data
     }
 
     return_outputs(
@@ -584,9 +526,7 @@ def get_policy():
     Returns: the specific ANC policy
     """
 
-    context = {}
     data = []
-    policy_context = []
     policy_name = demisto.args().get('policy_name')
 
     if not policy_name:
@@ -601,12 +541,9 @@ def get_policy():
             'Action': policy_data.get('actions')
         })
 
-        policy_context.append({
-            'Name': policy_data.get('name'),
-            'Action': policy_data.get('actions'),
-        })
-
-    context['CiscoISE.Policy(val.ID && val.ID === obj.ID)'] = policy_context
+    context = {
+        'CiscoISE.Policy(val.ID && val.ID === obj.ID)': data
+    }
 
     return_outputs(tableToMarkdown('CiscoISE Policy', data, removeNull=True), context, policy_data)
 
@@ -623,8 +560,6 @@ def create_policy():
     """
     Create ANC Policy
     """
-    context = {}
-    policy_context = []
     policy_name = demisto.args().get('policy_name')
     policy_actions = demisto.args().get('policy_actions', '')
 
@@ -636,31 +571,30 @@ def create_policy():
         }
     }
     create_policy_request(data)
-    policy_context.append({
+    policy_context = {
         'Name': policy_name,
-        'Actions': [policy_actions]
-    })
+        'Action': [policy_actions]
+    }
 
-    context['CiscoISE.Policy(val.ID && val.ID === obj.ID)'] = policy_context
+    context = {
+        'CiscoISE.Policy(val.Name && val.Name === obj.Name)': policy_context
+    }
 
-    return_outputs(f'The policy "{policy_name}" has been created successfully', context, policy)
+    return_outputs(f'The policy "{policy_name}" has been created successfully', context)
 
 
-def apply_policy_request(data):
+def assign_policy_request(data):
 
     api_endpoint = '/ers/config/ancendpoint/apply'
 
-    response = http_request('PUT', api_endpoint, {}, data=json.dumps(data))
-    return response
+    http_request('PUT', api_endpoint, {}, data=json.dumps(data))
 
 
-def apply_policy_to_endpoint():
+def assign_policy_to_endpoint():
     """
     Apply ANC policy to an endpoint
     """
 
-    endpoint_context = []
-    context = {}
     policy_name = demisto.args().get('policy_name')
     mac_address = demisto.args().get('mac_address')
     if not is_mac(mac_address):
@@ -679,58 +613,18 @@ def apply_policy_to_endpoint():
             ]
         }
     }
-    apply_policy = apply_policy_request(data)
+    assign_policy_request(data)
 
-    if apply_policy:
-
-        endpoint_context.append({
-            'MacAddress': mac_address,
-            'PolicyName': policy_name
-        })
-
-        context['CiscoISE.Endpoint(val.ID && val.ID === obj.ID)'] = endpoint_context
-
-    return_outputs(f'The policy "{policy_name}" has been applied successfully', context, apply_policy)
-
-
-def clear_policy_request(data):
-
-    api_endpoint = '/ers/config/ancendpoint/apply'
-
-    response = http_request('PUT', api_endpoint, {}, data=json.dumps(data))
-    return response
-
-
-def clear_policy():
-    """
-    Clear ANC policy from an endpoint
-    """
-
-    endpoint_context = []
-    context = {}
-    mac_address = demisto.args().get('mac_address')
-    if not is_mac(mac_address):
-        return "Please enter a valid mac address"
-
-    data = {
-        'OperationAdditionalData': {
-            'additionalData': [{
-                'name': 'macAddress',
-                'value': mac_address
-            }]
-        }
+    endpoint_context = {
+        'MACAddress': mac_address,
+        'PolicyName': policy_name
     }
 
-    clear_ancpolicy = apply_policy_request(data)
+    context = {
+        'CiscoISE.Endpoint(val.ID && val.ID === obj.ID)': endpoint_context
+    }
 
-    if clear_ancpolicy:
-        endpoint_context.append({
-            'MacAddress': mac_address
-        })
-
-        context['CiscoISE.Endpoint(val.ID && val.ID === obj.ID)'] = endpoint_context
-
-    return_outputs(f'The endpoint has been cleared from all policies', context, clear_ancpolicy)
+    return_outputs(f'The policy "{policy_name}" has been applied successfully', context)
 
 
 def get_blacklist_group_id():
@@ -777,7 +671,7 @@ def get_blacklist_endpoints():
             'ID': endpoint.get('id'),
             'Name': endpoint.get('name'),
             'Description': endpoint.get('description'),
-
+            'GroupName': 'Blacklist'
         })
 
         context['CiscoISE.Endpoint(val.ID && val.ID === obj.ID)'] = endpoint_context
@@ -801,29 +695,27 @@ def main():
             else:
                 demisto.results('test failed')
         elif demisto.command() == 'cisco-ise-get-endpoint-id':
-            demisto.results(get_endpoint_id_command())
+            get_endpoint_id_command()
         elif demisto.command() == 'cisco-ise-get-endpoint-details':
-            demisto.results(get_endpoint_details_command())
+            get_endpoint_details_command()
         elif demisto.command() == 'cisco-ise-reauthenticate-endpoint':
-            demisto.results(reauthenticate_endpoint_command())
+            reauthenticate_endpoint_command()
         elif demisto.command() == 'cisco-ise-get-endpoints':
-            demisto.results(get_endpoints_command())
+            get_endpoints_command()
         elif demisto.command() == 'cisco-ise-update-endpoint-custom-attribute':
-            demisto.results(update_endpoint_custom_attribute_command())
+            update_endpoint_custom_attribute_command()
         elif demisto.command() == 'cisco-ise-update-endpoint-group':
             demisto.results(update_endpoint_group_command())
         elif demisto.command() == 'cisco-ise-get-groups':
-            demisto.results(get_groups())
+            get_groups()
         elif demisto.command() == 'cisco-ise-get-policies':
             get_policies()
         elif demisto.command() == 'cisco-ise-get-policy':
             get_policy()
         elif demisto.command() == 'cisco-ise-create-policy':
             create_policy()
-        elif demisto.command() == 'cisco-ise-apply-policy':
-            apply_policy_to_endpoint()
-        elif demisto.command() == 'cisco-ise-clear-policy':
-            clear_policy()
+        elif demisto.command() == 'cisco-ise-assign-policy':
+            assign_policy_to_endpoint()
         elif demisto.command() == 'cisco-ise-get-blacklist-endpoints':
             get_blacklist_endpoints()
 

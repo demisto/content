@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Cisco pxGrid ISE
+  id: Cisco ISE
   version: -1
 configuration:
 - display: Cisco ISE server URL. For example, https://123.123.123.65
@@ -26,8 +26,8 @@ configuration:
   required: false
   type: 8
 description: Next-generation secure network access.
-display: Cisco pxGrid ISE
-name: Cisco pxGrid ISE
+display: Cisco ISE
+name: Cisco ISE
 script:
   commands:
   - arguments:
@@ -206,7 +206,7 @@ script:
       description: The name of the endpoint identity groups
       type: String
   - deprecated: false
-    description: Return all ANC policies
+    description: Return all Adaptive Network Control policies
     execution: false
     name: cisco-ise-get-policies
     outputs:
@@ -255,12 +255,18 @@ script:
       - SHUTDOWN
       required: true
       secret: false
+    - default: false
+      description: The name of the new adaptive network control policy
+      isArray: false
+      name: policy_name
+      required: true
+      secret: false
     deprecated: false
     description: Create ANC policy
     execution: false
     name: cisco-ise-create-policy
     outputs:
-    - contextPath: CiscoISE.Policy.Actions
+    - contextPath: CiscoISE.Policy.Action
       description: The actions of the ANC policy
       type: String
     - contextPath: CiscoISE.Policy.Name
@@ -274,27 +280,16 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Apply ANC policy to an endpoint
+    description: Assign Adapative Network Control policy to an endpoint
     execution: false
-    name: cisco-ise-apply-policy
+    name: cisco-ise-assign-policy
     outputs:
-    - contextPath: CiscoISE.Endpoint.MacAddress
+    - contextPath: CiscoISE.Endpoint.MACAddress
       description: The mac address of the endpoint
       type: String
     - contextPath: CiscoISE.Endpoint.PolicyName
       description: The policy name that was applied to the endpoint
       type: String
-  - arguments:
-    - default: false
-      description: The mac address of the endpoint to remove the policy from
-      isArray: false
-      name: mac_address
-      required: true
-      secret: false
-    deprecated: false
-    description: Clear ANC policy from a specific endpoint
-    execution: false
-    name: cisco-ise-clear-policy
   - deprecated: false
     description: Get all blacklist endpoints
     execution: false
