@@ -3,7 +3,7 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "Palo Alto Networks Cortex XDR Investigation and Response",
+            "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook"
         },
         {
