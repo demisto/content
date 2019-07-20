@@ -1687,6 +1687,7 @@
         }
     ],
     "skipped_tests": {
+        "reputations.json Test": "Reverting the fqdn indicator due to glichtman request, will handled next release(end july 19)",
         "Cybereason Test": "Integration instance being disabled in the middle of test playbook (issue 17394)",
         "LogRhythmRest": "Unstable environment Adi is checking",
         "InfoArmorVigilanteATITest": "Test fails on verify context (issue 17358)",
