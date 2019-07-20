@@ -3,17 +3,16 @@ version: -1
 name: Uptycs - Outbound Connection to Threat IOC Incident
 description: Get information about processes which open connections to known Bad IP's
 starttaskid: "0"
-fromversion: ""
+fromversion: 4.0.0
 tasks:
   "0":
     id: "0"
-    taskid: ccc08aa3-60b9-4fc3-8dcc-a7a55918137d
+    taskid: 7a3940a6-02d6-4bb0-8ab5-c5e2169663b4
     type: start
     task:
-      id: ccc08aa3-60b9-4fc3-8dcc-a7a55918137d
+      id: 7a3940a6-02d6-4bb0-8ab5-c5e2169663b4
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -23,17 +22,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 377.5,
           "y": 50
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 676b7848-7c2e-45e4-83fd-aed49fd243b3
+    taskid: f8e6990b-d4c1-439c-87e5-9bf13cea9929
     type: regular
     task:
-      id: 676b7848-7c2e-45e4-83fd-aed49fd243b3
+      id: f8e6990b-d4c1-439c-87e5-9bf13cea9929
       version: -1
       name: Get Bad IP alert
       description: Retrieve more information about the alert.
@@ -66,17 +67,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 377.5,
           "y": 195
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: 5e633601-891b-4128-864f-ae29047b367f
+    taskid: 49f742db-f1e4-41d4-8da0-0f7aa7d9a41b
     type: regular
     task:
-      id: 5e633601-891b-4128-864f-ae29047b367f
+      id: 49f742db-f1e4-41d4-8da0-0f7aa7d9a41b
       version: -1
       name: Get process Info
       description: Get information about the process which opened the connection.
@@ -100,16 +103,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 545
+          "y": 720
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: ade31a6b-642a-4a95-8fc4-0cd25390eefd
+    taskid: bd742f8e-48d0-4e4e-89d2-62aaa81bc6be
     type: regular
     task:
-      id: ade31a6b-642a-4a95-8fc4-0cd25390eefd
+      id: bd742f8e-48d0-4e4e-89d2-62aaa81bc6be
       version: -1
       name: Get child processes
       description: Get information about the child processes which were spawned from
@@ -136,16 +141,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1420
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: b5ec9d1b-6ad1-47e1-85dd-9f25b4355535
+    taskid: 9bf82569-cf67-4ea4-832f-b9e7feb3e12b
     type: regular
     task:
-      id: b5ec9d1b-6ad1-47e1-85dd-9f25b4355535
+      id: 9bf82569-cf67-4ea4-832f-b9e7feb3e12b
       version: -1
       name: Get information about the connection that was opened
       description: Get information about the connection which was opened.
@@ -155,7 +162,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "11"
     scriptarguments:
       asset_id:
         simple: ${Uptycs.Alerts.upt_asset_id}
@@ -173,17 +180,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 377.5,
           "y": 370
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: 77b13754-0fdf-463d-864b-5d79ef7532a2
+    taskid: eb3582ce-edce-4a2c-8d03-f6feb37d02cf
     type: regular
     task:
-      id: 77b13754-0fdf-463d-864b-5d79ef7532a2
+      id: eb3582ce-edce-4a2c-8d03-f6feb37d02cf
       version: -1
       name: Get parent event info
       description: Get information about the parent process of the process which opened
@@ -208,19 +217,20 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 720
+          "y": 895
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: 336fccc7-ebc6-4ec5-8c47-8376faf4c9e4
+    taskid: 8d5d1cac-44b1-474c-8a42-703cd0423b9e
     type: condition
     task:
-      id: 336fccc7-ebc6-4ec5-8c47-8376faf4c9e4
+      id: 8d5d1cac-44b1-474c-8a42-703cd0423b9e
       version: -1
       name: Rows in parent_events?
-      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -242,16 +252,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: 32f806a1-a7c2-49be-8c1e-855936575633
+    taskid: 7bc91cbf-3fbc-41ca-876d-2f3c8718b606
     type: regular
     task:
-      id: 32f806a1-a7c2-49be-8c1e-855936575633
+      id: 7bc91cbf-3fbc-41ca-876d-2f3c8718b606
       version: -1
       name: Get parent info
       description: Get information about the parent process of the process which opened
@@ -276,16 +288,18 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
-    taskid: 64556689-82d5-47d2-81ce-13015465af66
+    taskid: aae7f985-ddda-4859-822a-998ace908d81
     type: regular
     task:
-      id: 64556689-82d5-47d2-81ce-13015465af66
+      id: aae7f985-ddda-4859-822a-998ace908d81
       version: -1
       name: Get child processes
       description: Get information about the child processes which were spawned from
@@ -313,19 +327,20 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
-    taskid: ac1b91b2-31c3-4618-8bc2-a15474bde8ab
+    taskid: 16256540-1f53-4275-80d8-25fdbf376f2b
     type: title
     task:
-      id: ac1b91b2-31c3-4618-8bc2-a15474bde8ab
+      id: 16256540-1f53-4275-80d8-25fdbf376f2b
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -333,17 +348,54 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1415
+          "x": 480,
+          "y": 1595
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: d5505ebf-e527-4348-85f7-60ca0c9af16b
+    type: condition
+    task:
+      id: d5505ebf-e527-4348-85f7-60ca0c9af16b
+      version: -1
+      name: Any open connections?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.SocketEvents
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1430,
+        "height": 1610,
         "width": 810,
         "x": 50,
         "y": 50
