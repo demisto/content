@@ -1980,7 +1980,7 @@ def uptycs_post_threat_source():
     files = {'file': open(filepath.get('path'), 'rb')}
 
     response = requests.post(url, headers=header, data=post_data,
-                             files=files, verify=False)
+                             files=files, verify=VERIFY_CERT)
 
     return response
 
