@@ -1,4 +1,4 @@
-category: Analytics & SIEM
+category: Endpoint
 fromversion: 4.1.0
 commonfields:
   id: Cortex XDR - IR
