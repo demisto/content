@@ -359,8 +359,19 @@ script:
       name: incident_id
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: incident severity
+      isArray: false
+      name: manual_severity
+      predefined:
+      - HIGH
+      - MEDIUM
+      - LOW
+      required: false
+      secret: false
     - default: false
-      description: 'The updated mail of the incident assignee '
+      description: severity of the incident.
       isArray: false
       name: assigned_user_mail
       required: false
