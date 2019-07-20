@@ -1,0 +1,1 @@
+* Reversed logic of the "Trust any certificate" setting.
