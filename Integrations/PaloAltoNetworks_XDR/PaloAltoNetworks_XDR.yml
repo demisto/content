@@ -1,6 +1,7 @@
 category: Analytics & SIEM
+fromversion: 4.1.0
 commonfields:
-  id: Palo Alto Networks Cortex XDR Investigation and Response
+  id: Cortex XDR - IR
   version: -1
 configuration:
 - display: Fetch incidents
@@ -39,8 +40,8 @@ configuration:
   required: false
   type: 0
 description: Integration Template
-display: Palo Alto Networks Cortex XDR Investigation and Response
-name: Palo Alto Networks Cortex XDR Investigation and Response
+display: Palo Alto Networks Cortex XDR - Investigation and Response
+name: Cortex XDR - IR
 script:
   commands:
   - arguments:
