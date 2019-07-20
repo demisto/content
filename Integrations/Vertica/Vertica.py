@@ -34,9 +34,9 @@ def connect_db():
     }
     try:
         connection = vertica_python.connect(**DB_PARAMS)
-    except vertica_python.errors.ConnectionError:
-        return_error('Could not connect to DB, re-check DB params.')
-    return connection
+        return connection
+    except vertica_python.errors.ConnectionError as err:
+        return_error('Could not connect to DB, re-check DB params. Error: {}'.format(err))
 
 
 ''' COMMANDS + QUERY FUNCTIONS '''
