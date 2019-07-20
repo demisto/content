@@ -77,6 +77,7 @@ def migrate(yml_path, output_path, demisto_mock, commonserver=None, yml_type=Non
     print("Starting migration of: {} to dir: {}".format(yml_path, output_path))
     arg_path = output_path
     output_path = os.path.abspath(output_path)
+    os.makedirs(output_path, exist_ok=True)
     base_name = os.path.basename(output_path)
     yml_type = get_yml_type(yml_path, yml_type)
     code_file = "{}/{}.py".format(output_path, base_name)
@@ -109,6 +110,7 @@ def migrate(yml_path, output_path, demisto_mock, commonserver=None, yml_type=Non
     docker = get_docker_images(script_obj)[0]
     py_ver = get_python_version(docker)
     pip_env_dir = get_pipenv_dir(py_ver)
+    print("Copying pipenv files from: {}".format(pip_env_dir))
     shutil.copy("{}/Pipfile".format(pip_env_dir), output_path)
     shutil.copy("{}/Pipfile.lock".format(pip_env_dir), output_path)
     try:
