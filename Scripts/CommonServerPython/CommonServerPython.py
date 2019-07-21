@@ -1552,7 +1552,7 @@ def string_to_context_key(string):
         raise Exception('The key is not a string: {}'.format(string))
 
 
-def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0):
+def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0, utc=True):
     """
       Parses date_range string to a tuple date strings (start, end). Input must be in format 'number date_range_unit')
       Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
@@ -1584,8 +1584,13 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
     if not isinstance(timezone, (int, float)):
         return_error('Invalid timezone "{}" - must be a number (of type int or float).'.format(timezone))
 
-    end_time = datetime.now() + timedelta(hours=timezone)
-    start_time = datetime.now() + timedelta(hours=timezone)
+    if utc:
+        end_time = datetime.now() + timedelta(hours=timezone)
+        start_time = datetime.now() + timedelta(hours=timezone)
+    else:
+        end_time = datetime.utcnow() + timedelta(hours=timezone)
+        start_time = datetime.utcnow() + timedelta(hours=timezone)
+
     unit = range_split[1]
     if 'minute' in unit:
         start_time = end_time - timedelta(minutes=number)
