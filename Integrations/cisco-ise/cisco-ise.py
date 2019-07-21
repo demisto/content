@@ -144,7 +144,7 @@ def get_endpoint_id(mac_address=None):
 
     if mac_address is not None:
         api_endpoint = f'/ers/config/endpoint?filter=mac.EQ.{mac_address}'
-    return http_request('GET', api_endpoint, {}, '')
+    return http_request('GET', api_endpoint, '')
 
 
 def get_endpoint_id_command():
@@ -352,7 +352,7 @@ def update_endpoint_by_id(endpoint_id, endpoint_details):
     Updates endpoint status
     """
     api_endpoint = f'/ers/config/endpoint/{endpoint_id}'
-    response = http_request('PUT', api_endpoint, {}, data=json.dumps(endpoint_details))
+    response = http_request('PUT', api_endpoint, data=json.dumps(endpoint_details))
     return response
 
 
@@ -555,7 +555,7 @@ def create_policy_request(data):
 
     api_endpoint = '/ers/config/ancpolicy'
 
-    http_request('POST', api_endpoint, {}, data=json.dumps(data))
+    http_request('POST', api_endpoint, data=json.dumps(data))
 
 
 def create_policy():
@@ -589,7 +589,7 @@ def assign_policy_request(data):
 
     api_endpoint = '/ers/config/ancendpoint/apply'
 
-    http_request('PUT', api_endpoint, {}, data=json.dumps(data))
+    http_request('PUT', api_endpoint, data=json.dumps(data))
 
 
 def assign_policy_to_endpoint():
