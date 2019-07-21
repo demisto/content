@@ -31,19 +31,26 @@ if not demisto.params().get('proxy'):
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(uri, params=None):
+def http_request(method, uri, params=None, data=None):
     if params is None:
         params = {}
 
     params.update({
         'key': API_KEY
     })
+
     url = f'{API_URL}{uri}'
-    res = requests.get(url,
-                       params=params)
+    res = requests.request(method,
+                           url,
+                           params=params,
+                           data=data)
 
     if res.status_code != 200:
-        raise Exception(f'Error in API call {url} [{res.status_code}] - {res.reason}')
+        error_msg = f'Error in API call {url} [{res.status_code}] - {res.reason}'
+        if 'application/json' in res.headers['content-type'] and 'error' in res.json():
+            error_msg += f': {res.json()["error"]}'
+
+        raise Exception(error_msg)
 
     return res.json()
 
@@ -69,13 +76,13 @@ def search_command():
     if page:
         params['page'] = page
 
-    http_request('/shodan/host/search', params)
+    http_request('GET', '/shodan/host/search', params)
 
 
 def ip_command():
     ip = demisto.args()['ip']
 
-    res = http_request(f'/shodan/host/{ip}')
+    res = http_request('GET', f'/shodan/host/{ip}')
 
     hostnames = res.get('hostnames')
     hostname = hostnames[0] if hostnames else ''  # It's a list, only if it exists and not empty we take the first value
@@ -135,7 +142,7 @@ def ip_command():
 def shodan_search_count_command():
     query = demisto.args()['query']
 
-    res = http_request('/shodan/host/count', {'query': query})
+    res = http_request('GET', '/shodan/host/count', {'query': query})
 
     ec = {
         'Shodan': {
@@ -155,6 +162,48 @@ def shodan_search_count_command():
     })
 
 
+def shodan_scan_ip_command():
+    ips = demisto.args()['ips']
+
+    res = http_request('POST', '/shodan/scan', data={'ips': ips})
+
+    if 'id' not in res:
+        demisto.results({
+            'Type': entryTypes['error'],
+            'Contents': res,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': f'## Unknown answer format, no "id" field in response',
+            'HumanReadableFormat': formats['markdown'],
+        })
+
+    id = res['id']
+
+    res = http_request("GET", f'/shodan/scan/{id}')
+
+    ec = {
+        'Shodan': {
+            'Scan': {
+                'ID': res.get('id', ''),
+                'Status': res.get('status', '')
+            }
+        }
+    }
+
+    human_readable = tableToMarkdown(f'IP scanning results for {ips}', {
+        'ID': ec['Shodan']['Scan']['ID'],
+        'Status': ec['Shodan']['Scan']['Status']
+    })
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': res,
+        'ContentsFormat': formats['json'],
+        'HumanReadable': human_readable,
+        'HumanReadableFormat': formats['markdown'],
+        'EntryContext': ec
+    })
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 if demisto.command() == 'test-module':
@@ -167,3 +216,5 @@ elif demisto.command() == 'ip':
     ip_command()
 elif demisto.command() == 'shodan-search-count':
     shodan_search_count_command()
+elif demisto.command() == 'shodan-scan-ip':
+    shodan_scan_ip_command()
