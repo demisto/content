@@ -39,7 +39,7 @@ def is_mac(mac):
         return False
 
 
-def http_request(method, url_suffix, params=None, data=None, headers=DEFAULT_HEADERS):
+def http_request(method, url_suffix, params={}, data=None, headers=DEFAULT_HEADERS):
     try:
         url = SERVER_URL + url_suffix
         LOG(f'running {method} request with url={url}')
@@ -426,7 +426,7 @@ def update_endpoint_group_command():
         return_error('Please enter either group id or group name')
 
     if endpoint_group_name and not endpoint_group_id:
-        endpoint_group_data = get_endpoint_id(None, endpoint_group_name).get('SearchResult', {})
+        endpoint_group_data = get_endpoint_id(endpoint_group_name).get('SearchResult', {})
         if endpoint_group_data.get('total', 0) < 1:
             demisto.results('No endpoints were found. Please make sure you entered the correct group name')
 
