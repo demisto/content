@@ -6,7 +6,6 @@ import requests
 import json
 import os
 import time
-import sys
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
