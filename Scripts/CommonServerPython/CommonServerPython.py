@@ -1283,8 +1283,10 @@ def get_hash_type(hash_file):
 def is_mac(mac):
     """
     Test for valid mac address
-    :param mac: MAC address in the form of AA:BB:CC:00:11:22
-    :return: True/False
+
+    :param mac: MAC address in the form of AA:BB:CC:00:11:22 ``str``
+
+    :return: True/False ``bool``
     """
 
     if re.search(r'([0-9A-F]{2}[:]){5}([0-9A-F]){2}', mac.upper()) is not None:
