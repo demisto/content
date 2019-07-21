@@ -298,7 +298,7 @@ def reauthenticate_endpoint_command():
         }
     }
 
-    return_outputs('Activation result was : ' + activation_result_boolean, entry_context, activation_result)
+    return_outputs('Activation result was : ' + str(activation_result_boolean), entry_context, activation_result)
 
 
 def get_endpoints():
