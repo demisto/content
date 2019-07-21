@@ -1,0 +1,32 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+pytest = "*"
+pytest-mock = "*"
+
+[packages]
+certifi = "==2017.11.5"
+chardet = "==3.0.4"
+editdistance = "==0.4"
+idna = "==2.6"
+memoize = "==1.0.0"
+numpy = "==1.14.0"
+pandas = "==0.22.0"
+py2-ipaddress = "==3.4.1"
+python-dateutil = "==2.6.1"
+pytz = "==2017.3"
+requests = "==2.18.4"
+requests-file = "==1.4.3"
+scikit-learn = "==0.19.1"
+scipy = "==1.0.0"
+six = "==1.11.0"
+tldextract = "==2.2.0"
+urllib3 = "==1.22"
+virtualenv = "==15.1.0"
+
+[requires]
+python_version = "2.7"
