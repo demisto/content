@@ -31,7 +31,7 @@ if not demisto.params().get('proxy'):
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, uri, params=None, data=None):
+def http_request(method, uri, params=None, data=None, headers=None):
     if params is None:
         params = {}
 
@@ -43,7 +43,8 @@ def http_request(method, uri, params=None, data=None):
     res = requests.request(method,
                            url,
                            params=params,
-                           data=data)
+                           data=data,
+                           headers=headers)
 
     if res.status_code != 200:
         error_msg = f'Error in API call {url} [{res.status_code}] - {res.reason}'
@@ -56,6 +57,7 @@ def http_request(method, uri, params=None, data=None):
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
+
 
 def get_scan_status(scan_id):
     res = http_request("GET", f'/shodan/scan/{scan_id}')
@@ -82,6 +84,7 @@ def get_scan_status(scan_id):
         'HumanReadableFormat': formats['markdown'],
         'EntryContext': ec
     })
+
 
 def test_module():
     """
@@ -247,6 +250,48 @@ def shodan_scan_status_command():
     get_scan_status(scan_id)
 
 
+def shodan_create_network_alert_command():
+    alert_name = demisto.args()['alertName']
+    ip = demisto.args()['ip']
+    try:
+        expires = int(demisto.args().get('expires', 0))
+    except ValueError:
+        return_error(f'Expires must be a number, not {expires}')
+
+    res = http_request('POST', '/shodan/alert', data=json.dumps({
+        'name': alert_name,
+        'filters': {
+            'ip': ip
+        },
+        'expires': expires
+    }), headers={'content-type': 'application/json'})
+
+    ec = {
+        'Shodan': {
+            'Alert': {
+                'ID': res.get('id', ''),
+                'Expires': res.get('expires', 0)
+            }
+        }
+    }
+
+    human_readable = tableToMarkdown(f'Alert ID {ec["Shodan"]["Alert"]["ID"]}', {
+        'Name': alert_name,
+        'IP': ip,
+        'Expires': ec['Shodan']['Alert']['Expires']
+    })
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': res,
+        'ContentsFormat': formats['json'],
+        'HumanReadable': human_readable,
+        'HumanReadableFormat': formats['markdown'],
+        'EntryContext': ec
+    })
+
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 if demisto.command() == 'test-module':
@@ -265,3 +310,5 @@ elif demisto.command() == 'shodan-scan-internet':
     shodan_scan_internet_command()
 elif demisto.command() == 'shodan-scan-status':
     shodan_scan_status_command()
+elif demisto.command() == 'shodan-create-network-alert':
+    shodan_create_network_alert_command()

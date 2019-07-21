@@ -200,7 +200,7 @@ script:
     execution: false
     name: shodan-create-network-alert
     outputs:
-    - contextPath: Shodan.Alert.Id
+    - contextPath: Shodan.Alert.ID
       type: String
     - contextPath: Shodan.Alert.Expires
       type: String
