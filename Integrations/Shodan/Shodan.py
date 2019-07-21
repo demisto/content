@@ -57,6 +57,31 @@ def http_request(method, uri, params=None, data=None):
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
+def get_scan_status(scan_id):
+    res = http_request("GET", f'/shodan/scan/{scan_id}')
+
+    ec = {
+        'Shodan': {
+            'Scan': {
+                'ID': res.get('id', ''),
+                'Status': res.get('status', '')
+            }
+        }
+    }
+
+    human_readable = tableToMarkdown(f'Scanning results for scan {scan_id}', {
+        'ID': ec['Shodan']['Scan']['ID'],
+        'Status': ec['Shodan']['Scan']['Status']
+    })
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': res,
+        'ContentsFormat': formats['json'],
+        'HumanReadable': human_readable,
+        'HumanReadableFormat': formats['markdown'],
+        'EntryContext': ec
+    })
 
 def test_module():
     """
@@ -176,32 +201,7 @@ def shodan_scan_ip_command():
             'HumanReadableFormat': formats['markdown'],
         })
 
-    id = res['id']
-
-    res = http_request("GET", f'/shodan/scan/{id}')
-
-    ec = {
-        'Shodan': {
-            'Scan': {
-                'ID': res.get('id', ''),
-                'Status': res.get('status', '')
-            }
-        }
-    }
-
-    human_readable = tableToMarkdown(f'IP scanning results for {ips}', {
-        'ID': ec['Shodan']['Scan']['ID'],
-        'Status': ec['Shodan']['Scan']['Status']
-    })
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'HumanReadable': human_readable,
-        'HumanReadableFormat': formats['markdown'],
-        'EntryContext': ec
-    })
+    get_scan_status(res['id'])
 
 
 def shodan_scan_internet_command():
@@ -241,6 +241,12 @@ def shodan_scan_internet_command():
     })
 
 
+def shodan_scan_status_command():
+    scan_id = demisto.args()['scanID']
+
+    get_scan_status(scan_id)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 if demisto.command() == 'test-module':
@@ -257,3 +263,5 @@ elif demisto.command() == 'shodan-scan-ip':
     shodan_scan_ip_command()
 elif demisto.command() == 'shodan-scan-internet':
     shodan_scan_internet_command()
+elif demisto.command() == 'shodan-scan-status':
+    shodan_scan_status_command()

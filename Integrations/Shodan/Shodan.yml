@@ -166,7 +166,7 @@ script:
     - default: false
       description: The unique scan ID that was returned by /shodan/scan.
       isArray: false
-      name: scanId
+      name: scanID
       required: true
       secret: false
     deprecated: false
