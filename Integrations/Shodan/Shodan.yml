@@ -88,26 +88,37 @@ script:
       description: Hostname
       type: Unknown
     - contextPath: Shodan.IP.Tag
+      description: TODO
       type: String
     - contextPath: Shodan.IP.Latitude
+      description: TODO
       type: Number
     - contextPath: Shodan.IP.Org
+      description: TODO
       type: String
     - contextPath: Shodan.IP.ASN
+      description: TODO
       type: String
     - contextPath: Shodan.IP.ISP
+      description: TODO
       type: String
     - contextPath: Shodan.IP.Longitude
+      description: TODO
       type: Number
     - contextPath: Shodan.IP.LastUpdate
+      description: TODO
       type: Date
     - contextPath: Shodan.IP.CountryName
+      description: TODO
       type: String
     - contextPath: Shodan.IP.OS
+      description: TODO
       type: String
     - contextPath: Shodan.IP.Port
+      description: TODO
       type: Unknown
     - contextPath: Shodan.IP.Address
+      description: TODO
       type: String
   - arguments:
     - default: false
@@ -119,10 +130,12 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: TODO
     execution: false
     name: shodan-search-count
     outputs:
     - contextPath: Shodan.Search.ResultCount
+      description: TODO
       type: Number
   - arguments:
     - default: false
@@ -133,12 +146,15 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: TODO
     execution: false
     name: shodan-scan-ip
     outputs:
     - contextPath: Shodan.Scan.ID
+      description: TODO
       type: String
     - contextPath: Shodan.Scan.Status
+      description: TODO
       type: String
   - arguments:
     - default: false
@@ -161,6 +177,7 @@ script:
     name: shodan-scan-internet
     outputs:
     - contextPath: Shodan.Scan.ID
+      description: TODO
       type: String
   - arguments:
     - default: false
@@ -170,12 +187,15 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: TODO
     execution: false
     name: shodan-scan-status
     outputs:
     - contextPath: Shodan.Scan.Id
+      description: TODO
       type: String
     - contextPath: Shodan.Scan.Status
+      description: TODO
       type: String
   - arguments:
     - default: false
@@ -197,12 +217,15 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: TODO
     execution: false
     name: shodan-create-network-alert
     outputs:
     - contextPath: Shodan.Alert.ID
+      description: TODO
       type: String
     - contextPath: Shodan.Alert.Expires
+      description: TODO
       type: String
   - arguments:
     - default: false
@@ -212,20 +235,26 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: TODO
     execution: false
     name: shodan-network-get-alert-by-id
     outputs:
     - contextPath: Shodan.Alert.ID
+      description: TODO
       type: String
     - contextPath: Shodan.Alert.Expires
+      description: TODO
       type: String
   - deprecated: false
+    description: TODO
     execution: false
     name: shodan-network-get-alerts
     outputs:
     - contextPath: Shodan.Alert.ID
+      description: TODO
       type: String
     - contextPath: Shodan.Alert.Expires
+      description: TODO
       type: String
   - arguments:
     - default: false
@@ -235,6 +264,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: TODO
     execution: false
     name: shodan-network-delete-alert
   - arguments:
@@ -251,6 +281,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: TODO
     execution: false
     name: shodan-network-alert-set-trigger
   - arguments:
@@ -267,6 +298,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: TODO
     execution: false
     name: shodan-network-alert-remove-trigger
   - arguments:
@@ -289,6 +321,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: TODO
     execution: false
     name: shodan-network-alert-whitelist-service
   - arguments:
@@ -311,6 +344,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: TODO
     execution: false
     name: shodan-network-alert-remove-service-from-whitelist
   dockerimage: demisto/python3:3.7.3.286
