@@ -317,4 +317,4 @@ script:
   script: '-'
   type: python
 tests:
-- cisco-ise-test-playbook
+  - cisco-ise-test-playbook
