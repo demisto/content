@@ -223,7 +223,7 @@ script:
     execution: false
     name: shodan-network-get-alerts
     outputs:
-    - contextPath: Shodan.Alert.Id
+    - contextPath: Shodan.Alert.ID
       type: String
     - contextPath: Shodan.Alert.Expires
       type: String

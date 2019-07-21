@@ -81,6 +81,7 @@ def alert_to_demisto_result(alert):
         'EntryContext': ec
     })
 
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -305,8 +306,11 @@ def shodan_network_get_alert_by_id_command():
 def shodan_network_get_alerts_command():
     res = http_request('GET', '/shodan/alert/info')
 
-    for alert in res:
-        alert_to_demisto_result(alert)
+    if len(res) == 0:
+        demisto.results('No alerts')
+    else:
+        for alert in res:
+            alert_to_demisto_result(alert)
 
 
 def shodan_network_delete_alert_command():
@@ -362,9 +366,12 @@ def shodan_network_alert_remove_service_from_whitelist_command():
     res = http_request('DELETE', f'/shodan/alert/{alert_id}/trigger/{trigger}/ignore/{service}')
 
     if 'success' not in res or res['success'] != True:
-        return_error(f'Failed removing service "{service}" for trigger {trigger} in alert {alert_id} from the whitelist')
+        return_error(
+            f'Failed removing service "{service}" for trigger {trigger} in alert {alert_id} from the whitelist')
 
     demisto.results(f'Removed service "{service}" for trigger {trigger} in alert {alert_id} from the whitelist')
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 if demisto.command() == 'test-module':
