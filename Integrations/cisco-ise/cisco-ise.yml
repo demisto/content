@@ -280,6 +280,7 @@ script:
       required: true
       secret: false
     - default: false
+      description: The name of the policy to assign
       isArray: false
       name: policy_name
       required: true
