@@ -1,4 +1,6 @@
-- Added 2 new commands:
+Added 5 new commands.
+  - lr-get-hosts
   - lr-get-alarm-data
   - lr-get-alarm-events
-- Added the lr-get-hosts, lr-get-alarm-data, lr-get-alarm-events, lr-get-networks, and lr-get-persons commands.
+  - lr-get-networks
+  - lr-get-persons
