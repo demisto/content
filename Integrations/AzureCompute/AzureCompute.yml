@@ -30,6 +30,8 @@ description: Create and Manage Azure Virtual Machines
 display: Azure Compute
 name: Azure Compute
 script:
+  script: ''
+  type: python
   commands:
   - arguments:
     - default: false
@@ -41,7 +43,6 @@ script:
       name: resource_group
       required: true
       secret: false
-    deprecated: false
     description: Lists the virtual machine instances in the given resource group.
     execution: false
     name: azure-vm-list-instances
@@ -85,7 +86,6 @@ script:
       name: virtual_machine_name
       required: true
       secret: false
-    deprecated: false
     description: Powers on a given virtual machine.
     execution: true
     name: azure-vm-start-instance
@@ -117,7 +117,6 @@ script:
       name: virtual_machine_name
       required: true
       secret: false
-    deprecated: false
     description: Powers off a given virtual machine.
     execution: true
     name: azure-vm-poweroff-instance
@@ -149,7 +148,6 @@ script:
       name: virtual_machine_name
       required: true
       secret: false
-    deprecated: false
     description: Gets the properties of a given virtual machine.
     execution: false
     name: azure-vm-get-instance-details
@@ -348,7 +346,6 @@ script:
       name: admin_password
       required: false
       secret: false
-    deprecated: false
     description: Creates a virtual machine instance with the specified OS image.
     execution: true
     name: azure-vm-create-instance
@@ -374,8 +371,7 @@ script:
     - contextPath: Azure.Compute.Location
       description: The region in which the virtual machine is hosted.
       type: string
-  - deprecated: false
-    description: Lists all resource groups that belong to your Azure subscription.
+  - description: Lists all resource groups that belong to your Azure subscription.
     execution: false
     name: azure-list-resource-groups
     outputs:
@@ -409,13 +405,10 @@ script:
       name: virtual_machine_name
       required: false
       secret: false
-    deprecated: false
     description: Deletes a specified virtual machine.
     execution: false
     name: azure-vm-delete-instance
   isfetch: false
   runonce: false
-  script: '-'
-  type: python
 tests:
 - No test
