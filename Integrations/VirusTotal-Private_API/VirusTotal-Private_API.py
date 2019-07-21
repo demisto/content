@@ -16,9 +16,6 @@ if not demisto.params().get('useProxy', False):
     del os.environ['http_proxy']
     del os.environ['https_proxy']
 
-# Define utf8 as default encoding
-reload(sys)
-sys.setdefaultencoding('utf8')
 
 ''' GLOBAL VARS '''
 SERVER_URL = 'https://www.virustotal.com/vtapi/v2/'
