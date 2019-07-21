@@ -291,6 +291,35 @@ def shodan_create_network_alert_command():
     })
 
 
+def shodan_network_get_alert_by_id_command():
+    alert_id = demisto.args()['alertID']
+
+    res = http_request('GET', f'/shodan/alert/{alert_id}/info')
+
+    ec = {
+        'Shodan': {
+            'Alert': {
+                'ID': res.get('id', ''),
+                'Expires': res.get('expires', 0)
+            }
+        }
+    }
+
+    human_readable = tableToMarkdown(f'Alert ID {ec["Shodan"]["Alert"]["ID"]}', {
+        'Name': res.get('name', ''),
+        'IP': res.get('filters', {'ip', ''})['ip'],
+        'Expires': ec['Shodan']['Alert']['Expires']
+    })
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': res,
+        'ContentsFormat': formats['json'],
+        'HumanReadable': human_readable,
+        'HumanReadableFormat': formats['markdown'],
+        'EntryContext': ec
+    })
+
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
@@ -312,3 +341,5 @@ elif demisto.command() == 'shodan-scan-status':
     shodan_scan_status_command()
 elif demisto.command() == 'shodan-create-network-alert':
     shodan_create_network_alert_command()
+elif demisto.command() == 'shodan-network-get-alert-by-id':
+    shodan_network_get_alert_by_id_command()

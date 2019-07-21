@@ -206,16 +206,16 @@ script:
       type: String
   - arguments:
     - default: false
-      description: AlertId
+      description: AlertID
       isArray: false
-      name: alertId
+      name: alertID
       required: true
       secret: false
     deprecated: false
     execution: false
     name: shodan-network-get-alert-by-id
     outputs:
-    - contextPath: Shodan.Alert.Id
+    - contextPath: Shodan.Alert.ID
       type: String
     - contextPath: Shodan.Alert.Expires
       type: String
