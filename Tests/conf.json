@@ -1150,7 +1150,7 @@
             "playbookID": "RegexGroups Test"
         },
         {
-            "integrations": "Cisco pxGrid ISE",
+            "integrations": "Cisco ISE",
             "playbookID": "cisco-ise-test-playbook"
         },
         {
