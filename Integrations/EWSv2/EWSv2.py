@@ -87,24 +87,28 @@ ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceive
                          'toRecipients', ]
 
 # Load integratoin params from demisto
-USE_PROXY = demisto.params()['proxy']
-NON_SECURE = demisto.params()['insecure']
+USE_PROXY = demisto.params().get('proxy', False)
+NON_SECURE = demisto.params().get('insecure', True)
 AUTH_METHOD_STR = demisto.params().get('authType', '')
 AUTH_METHOD_STR = AUTH_METHOD_STR.lower() if AUTH_METHOD_STR else ''
 VERSION_STR = demisto.params().get('defaultServerVersion', None)
-EWS_SERVER = demisto.params()['ewsServer']
-USERNAME = demisto.params()['credentials']['identifier']
 MANUAL_USERNAME = demisto.params().get('domainAndUserman', '')
-ACCOUNT_EMAIL = demisto.params()['defaultTargetMailbox']
-PASSWORD = demisto.params()['credentials']['password']
 FOLDER_NAME = demisto.params().get('folder', 'Inbox')
 IS_PUBLIC_FOLDER = demisto.params().get('isPublicFolder', False)
-ACCESS_TYPE = IMPERSONATION if demisto.params()['impersonation'] else DELEGATE
+ACCESS_TYPE = IMPERSONATION if demisto.params().get('impersonation', False) else DELEGATE
 FETCH_ALL_HISTORY = demisto.params().get('fetchAllHistory', False)
 IS_TEST_MODULE = False
 BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
 AUTO_DISCOVERY = False
 SERVER_BUILD = ""
+
+# initialized in main()
+EWS_SERVER = ''
+USERNAME = ''
+ACCOUNT_EMAIL = ''
+PASSWORD = ''
+config = None
+credentials = None
 
 PUBLIC_FOLDERS_ERROR = 'Please update your docker image to use public folders'
 if IS_PUBLIC_FOLDER and exchangelib.__version__ != "1.12.0":
@@ -1575,7 +1579,7 @@ def get_protocol():
     if AUTO_DISCOVERY:
         protocol = get_account_autodiscover(ACCOUNT_EMAIL).protocol
     else:
-        protocol = config.protocol
+        protocol = config.protocol  # type: ignore
     return protocol
 
 
@@ -1583,133 +1587,144 @@ def encode_and_submit_results(obj):
     demisto.results(str_to_unicode(obj))
 
 
-config, credentials = prepare()
-args = prepare_args(demisto.args())
-fix_2010()
-try:
-    protocol = get_protocol()
-    if demisto.command() == 'test-module':
-        test_module()
-    elif demisto.command() == 'fetch-incidents':
-        incidents = fetch_emails_as_incidents(ACCOUNT_EMAIL, FOLDER_NAME)
-        demisto.incidents(str_to_unicode(incidents))
-    elif demisto.command() == 'ews-get-attachment':
-        encode_and_submit_results(fetch_attachments_for_message(**args))
-    elif demisto.command() == 'ews-delete-attachment':
-        encode_and_submit_results(delete_attachments_for_message(**args))
-    elif demisto.command() == 'ews-get-searchable-mailboxes':
-        encode_and_submit_results(get_searchable_mailboxes(protocol))
-    elif demisto.command() == 'ews-search-mailboxes':
-        encode_and_submit_results(search_mailboxes(protocol, **args))
-    elif demisto.command() == 'ews-move-item-between-mailboxes':
-        encode_and_submit_results(move_item_between_mailboxes(**args))
-    elif demisto.command() == 'ews-move-item':
-        encode_and_submit_results(move_item(**args))
-    elif demisto.command() == 'ews-delete-items':
-        encode_and_submit_results(delete_items(**args))
-    elif demisto.command() == 'ews-search-mailbox':
-        encode_and_submit_results(search_items_in_mailbox(**args))
-    elif demisto.command() == 'ews-get-contacts':
-        encode_and_submit_results(get_contacts(**args))
-    elif demisto.command() == 'ews-get-out-of-office':
-        encode_and_submit_results(get_out_of_office_state(**args))
-    elif demisto.command() == 'ews-recover-messages':
-        encode_and_submit_results(recover_soft_delete_item(**args))
-    elif demisto.command() == 'ews-create-folder':
-        encode_and_submit_results(create_folder(**args))
-    elif demisto.command() == 'ews-mark-item-as-junk':
-        encode_and_submit_results(mark_item_as_junk(**args))
-    elif demisto.command() == 'ews-find-folders':
-        encode_and_submit_results(find_folders(**args))
-    elif demisto.command() == 'ews-get-items-from-folder':
-        encode_and_submit_results(get_items_from_folder(**args))
-    elif demisto.command() == 'ews-get-items':
-        encode_and_submit_results(get_items(**args))
-    elif demisto.command() == 'ews-get-folder':
-        encode_and_submit_results(get_folder(**args))
-    elif demisto.command() == 'ews-o365-start-compliance-search':
-        encode_and_submit_results(start_compliance_search(**args))
-    elif demisto.command() == 'ews-o365-get-compliance-search':
-        encode_and_submit_results(get_compliance_search(**args))
-    elif demisto.command() == 'ews-o365-purge-compliance-search-results':
-        encode_and_submit_results(purge_compliance_search(**args))
-    elif demisto.command() == 'ews-o365-get-compliance-search-purge-status':
-        encode_and_submit_results(check_purge_compliance_search(**args))
-    elif demisto.command() == 'ews-o365-remove-compliance-search':
-        encode_and_submit_results(remove_compliance_search(**args))
-    elif demisto.command() == 'ews-get-autodiscovery-config':
-        encode_and_submit_results(get_autodiscovery_config())
-    elif demisto.command() == 'ews-expand-group':
-        encode_and_submit_results(get_expanded_group(protocol, **args))
+def main():
+    global EWS_SERVER, USERNAME, ACCOUNT_EMAIL, PASSWORD
+    global config, credentials
+    EWS_SERVER = demisto.params()['ewsServer']
+    USERNAME = demisto.params()['credentials']['identifier']
+    ACCOUNT_EMAIL = demisto.params()['defaultTargetMailbox']
+    PASSWORD = demisto.params()['credentials']['password']
+    config, credentials = prepare()
+    args = prepare_args(demisto.args())
+    fix_2010()
+    try:
+        protocol = get_protocol()
+        if demisto.command() == 'test-module':
+            test_module()
+        elif demisto.command() == 'fetch-incidents':
+            incidents = fetch_emails_as_incidents(ACCOUNT_EMAIL, FOLDER_NAME)
+            demisto.incidents(str_to_unicode(incidents))
+        elif demisto.command() == 'ews-get-attachment':
+            encode_and_submit_results(fetch_attachments_for_message(**args))
+        elif demisto.command() == 'ews-delete-attachment':
+            encode_and_submit_results(delete_attachments_for_message(**args))
+        elif demisto.command() == 'ews-get-searchable-mailboxes':
+            encode_and_submit_results(get_searchable_mailboxes(protocol))
+        elif demisto.command() == 'ews-search-mailboxes':
+            encode_and_submit_results(search_mailboxes(protocol, **args))
+        elif demisto.command() == 'ews-move-item-between-mailboxes':
+            encode_and_submit_results(move_item_between_mailboxes(**args))
+        elif demisto.command() == 'ews-move-item':
+            encode_and_submit_results(move_item(**args))
+        elif demisto.command() == 'ews-delete-items':
+            encode_and_submit_results(delete_items(**args))
+        elif demisto.command() == 'ews-search-mailbox':
+            encode_and_submit_results(search_items_in_mailbox(**args))
+        elif demisto.command() == 'ews-get-contacts':
+            encode_and_submit_results(get_contacts(**args))
+        elif demisto.command() == 'ews-get-out-of-office':
+            encode_and_submit_results(get_out_of_office_state(**args))
+        elif demisto.command() == 'ews-recover-messages':
+            encode_and_submit_results(recover_soft_delete_item(**args))
+        elif demisto.command() == 'ews-create-folder':
+            encode_and_submit_results(create_folder(**args))
+        elif demisto.command() == 'ews-mark-item-as-junk':
+            encode_and_submit_results(mark_item_as_junk(**args))
+        elif demisto.command() == 'ews-find-folders':
+            encode_and_submit_results(find_folders(**args))
+        elif demisto.command() == 'ews-get-items-from-folder':
+            encode_and_submit_results(get_items_from_folder(**args))
+        elif demisto.command() == 'ews-get-items':
+            encode_and_submit_results(get_items(**args))
+        elif demisto.command() == 'ews-get-folder':
+            encode_and_submit_results(get_folder(**args))
+        elif demisto.command() == 'ews-o365-start-compliance-search':
+            encode_and_submit_results(start_compliance_search(**args))
+        elif demisto.command() == 'ews-o365-get-compliance-search':
+            encode_and_submit_results(get_compliance_search(**args))
+        elif demisto.command() == 'ews-o365-purge-compliance-search-results':
+            encode_and_submit_results(purge_compliance_search(**args))
+        elif demisto.command() == 'ews-o365-get-compliance-search-purge-status':
+            encode_and_submit_results(check_purge_compliance_search(**args))
+        elif demisto.command() == 'ews-o365-remove-compliance-search':
+            encode_and_submit_results(remove_compliance_search(**args))
+        elif demisto.command() == 'ews-get-autodiscovery-config':
+            encode_and_submit_results(get_autodiscovery_config())
+        elif demisto.command() == 'ews-expand-group':
+            encode_and_submit_results(get_expanded_group(protocol, **args))
 
+    except Exception, e:
+        import time
 
-except Exception, e:
-    import time
+        time.sleep(2)
+        start_logging()
+        debug_log = log_stream.getvalue()  # type: ignore
+        error_message_simple = ""
+        error_message = ""
 
-    time.sleep(2)
-    start_logging()
-    debug_log = log_stream.getvalue()  # type: ignore
-    error_message_simple = ""
-    error_message = ""
+        # Office365 regular maintenance case
+        if (isinstance(e, ErrorMailboxStoreUnavailable) or isinstance(e, ErrorMailboxMoveInProgress)) \
+                and 'outlook.office365.com' in EWS_SERVER:
+            log_message = "Office365 is undergoing load balancing operations. " \
+                          "As a result, the service is temporarily unavailable."
+            if demisto.command() == 'fetch-incidents':
+                demisto.info(log_message)
+                demisto.incidents([])
+                sys.exit(0)
+            if IS_TEST_MODULE:
+                demisto.results(log_message + " Please retry the instance configuration test.")
+                sys.exit(0)
+            error_message_simple = log_message + " Please retry your request."
 
-    # Office365 regular maintenance case
-    if (isinstance(e, ErrorMailboxStoreUnavailable) or isinstance(e, ErrorMailboxMoveInProgress)) \
-            and 'outlook.office365.com' in EWS_SERVER:
-        log_message = "Office365 is undergoing load balancing operations. " \
-                      "As a result, the service is temporarily unavailable."
+        # Other exception handling
+        if isinstance(e.message, Exception):
+            e.message = str(e.message)
+
+        if isinstance(e, ConnectionError):
+            error_message_simple = "Could not connect to the server.\n" \
+                "Verify that the Hostname or IP address is correct.\n\n" \
+                "Additional information: {}".format(e.message)
+        elif exchangelib.__version__ == "1.12.0":
+            from exchangelib.errors import MalformedResponseError
+
+            if IS_TEST_MODULE and isinstance(e, MalformedResponseError):
+                error_message_simple = "Got invalid response from the server.\n" \
+                    "Verify that the Hostname or IP address is is correct."
+
+        # Legacy error handling
+        if "Status code: 401" in debug_log:
+            error_message_simple = "Got unauthorized from the server. " \
+                "Check credentials are correct and authentication method are supported. "
+
+            error_message_simple += "You can try using 'domain\\username' as username for authentication. " \
+                if AUTH_METHOD_STR.lower() == 'ntlm' else ''
+        if "Status code: 503" in debug_log:
+            error_message_simple = "Got timeout from the server. " \
+                "Probably the server is not reachable with the current settings. " \
+                "Check proxy parameter. If you are using server URL - change to server IP address. "
+
+        if not error_message_simple:
+            error_message = error_message_simple = str(e.message)
+        else:
+            error_message = error_message_simple + "\n" + str(e.message)
+
+        stacktrace = traceback.format_exc()
+        if stacktrace:
+            error_message += "\nFull stacktrace:\n" + stacktrace
+
+        if debug_log:
+            error_message += "\nFull debug log:\n" + debug_log
+
         if demisto.command() == 'fetch-incidents':
-            demisto.info(log_message)
-            demisto.incidents([])
-            sys.exit(0)
+            raise
         if IS_TEST_MODULE:
-            demisto.results(log_message + " Please retry the instance configuration test.")
-            sys.exit(0)
-        error_message_simple = log_message + " Please retry your request."
+            demisto.results(error_message_simple)
+        else:
+            demisto.results(
+                {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple})
+        demisto.error("%s: %s" % (e.__class__.__name__, error_message))
 
-    # Other exception handling
-    if isinstance(e.message, Exception):
-        e.message = str(e.message)
 
-    if isinstance(e, ConnectionError):
-        error_message_simple = "Could not connect to the server.\n" \
-                               "Verify that the Hostname or IP address is correct.\n\n" \
-                               "Additional information: {}".format(e.message)
-    elif exchangelib.__version__ == "1.12.0":
-        from exchangelib.errors import MalformedResponseError
-
-        if IS_TEST_MODULE and isinstance(e, MalformedResponseError):
-            error_message_simple = "Got invalid response from the server.\n" \
-                                   "Verify that the Hostname or IP address is is correct."
-
-    # Legacy error handling
-    if "Status code: 401" in debug_log:
-        error_message_simple = "Got unauthorized from the server. " \
-                               "Check credentials are correct and authentication method are supported. "
-
-        error_message_simple += "You can try using 'domain\\username' as username for authentication. " \
-            if AUTH_METHOD_STR.lower() == 'ntlm' else ''
-    if "Status code: 503" in debug_log:
-        error_message_simple = "Got timeout from the server. " \
-                               "Probably the server is not reachable with the current settings. " \
-                               "Check proxy parameter. If you are using server URL - change to server IP address. "
-
-    if not error_message_simple:
-        error_message = error_message_simple = e.message
-    else:
-        error_message = error_message_simple + "\n" + e.message
-
-    stacktrace = traceback.format_exc()
-    if stacktrace:
-        error_message += "\nFull stacktrace:\n" + stacktrace
-
-    if debug_log:
-        error_message += "\nFull debug log:\n" + debug_log
-
-    if demisto.command() == 'fetch-incidents':
-        raise
-    if IS_TEST_MODULE:
-        demisto.results(error_message_simple)
-    else:
-        demisto.results(
-            {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple})
-    demisto.error("%s: %s" % (e.__class__.__name__, error_message))
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
