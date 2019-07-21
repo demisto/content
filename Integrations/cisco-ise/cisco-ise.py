@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 import requests
-from requests.auth import HTTPBasicAuth
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -54,14 +53,16 @@ def http_request(method, url_suffix, params=None, data=None, headers=DEFAULT_HEA
             params=params,
             data=data
         )
-    except requests.exceptions.ConnectionError:
-        err_msg = 'Connection Error - Check that the Server URL parameter is correct.'
+    except requests.exceptions.SSLError:
+        err_msg = 'Could not connect to Cisco ISE: Could not verify certificate.'
         return_error(err_msg)
-
+    except requests.exceptions.ConnectionError:
+        err_msg = 'Connection Error. Verify that the Server URL and port are correct, and that the port is open.'
+        return_error(err_msg)
     # handle request failure
     if response.status_code not in {200, 201, 202, 204}:
-
-        err_msg = f'Error in API call to Cisco ISE Integration [{response.status_code}] - {response.reason}'
+        message = parse_error_response(response)
+        err_msg = f'Error in API call to Cisco ISE Integration [{response.status_code}] - {response.reason}, {message}'
 
         return_error(err_msg)
 
@@ -73,6 +74,16 @@ def http_request(method, url_suffix, params=None, data=None, headers=DEFAULT_HEA
         return_error(response.content)
 
     return response
+
+
+def parse_error_response(response):
+    try:
+        res = response.json()
+        msg = res.get('ERSResponse').get('messages')
+        err = msg[0].get('title', '')
+    except Exception:
+        return response.text
+    return err
 
 
 def translate_group_id(group_id):
@@ -299,7 +310,7 @@ def get_endpoints():
     return http_request('GET', api_endpoint)
 
 
-def get_endpoints_command():
+def get_endpoints_command(return_bool: bool = False):
     """
     corresponds to 'ise-get-endpoints' command. Get data about the existing endpoints
     """
@@ -322,7 +333,8 @@ def get_endpoints_command():
         hr_dict = dict(context_dict)
         context.append(context_dict)
         hr.append(hr_dict)
-
+    if return_bool:
+        return True
     entry_context = {
         'Endpoint(val.ID == obj.ID)': context,
         'CiscoISE.Endpoint(val.ID == obj.ID)': context
@@ -354,10 +366,10 @@ def update_endpoint_custom_attribute_command():
     endpoint_mac_address = demisto.args().get('macAddress')
 
     if endpoint_mac_address and not is_mac(endpoint_mac_address):
-        return "Please enter a valid mac address"
+        return_error('Please enter a valid mac address')
 
     if not endpoint_id and not endpoint_mac_address:
-        return 'Please enter either endpoint id or endpoint mac address'
+        return_error('Please enter either endpoint id or endpoint mac address')
 
     if endpoint_mac_address and not endpoint_id:
         endpoint_id = get_endpoint_id(endpoint_mac_address).get('SearchResult', {}).get('resources', [])[0].get('id',
@@ -366,7 +378,7 @@ def update_endpoint_custom_attribute_command():
     endpoint_details = get_endpoint_details(endpoint_id)
 
     if "ERSEndPoint" not in endpoint_details:
-        return 'Failed to get endpoint %s' % endpoint_id
+        return_error('Failed to get endpoint %s' % endpoint_id)
 
     attribute_names = demisto.args().get('attributeName').split(',')
     attribute_values = demisto.args().get('attributeValue').split(',')
@@ -382,16 +394,14 @@ def update_endpoint_custom_attribute_command():
             endpoint_details['ERSEndPoint']['customAttributes'] = {'customAttributes': attributes_dic}
 
         update_result = update_endpoint_by_id(endpoint_id, endpoint_details)
-
-        if update_result.get('status_code') != 200:
+        if not update_result:
+            # result = update_result.get('ERSResponse', {}).get('messages', [])
             demisto.results("Update failed for endpoint " + endpoint_id + ". Please check if the custom "
                                                                           "fields are defined in the system. "
                                                                           "Got the following response: " +
-                            json.dumps(update_result).get('ERSResponse', {}).get('messages', []))
+                            update_result.get('ERSResponse', {}).get('messages', []))
 
-        update_json = json.loads(update_result)
-
-        updated_fields_dict_list = update_json.get('UpdatedFieldsList', {}).get('updatedField', [])
+        updated_fields_dict_list = update_result.get('UpdatedFieldsList', {}).get('updatedField', [])
 
         if len(updated_fields_dict_list) > 0:
             updated_fields_string = ' the new custom fields are: ' + json.dumps(
@@ -413,12 +423,12 @@ def update_endpoint_group_command():
     endpoint_group_name = demisto.args().get('groupName')
     endpoint_group_id = demisto.args().get('groupId')
     if not endpoint_group_name and not endpoint_group_id:
-        return 'Please enter either group id or group name'
+        return_error('Please enter either group id or group name')
 
     if endpoint_group_name and not endpoint_group_id:
         endpoint_group_data = get_endpoint_id(None, endpoint_group_name).get('SearchResult', {})
         if endpoint_group_data.get('total', 0) < 1:
-            return 'No endpoints were found. Please make sure you entered the correct group name'
+            demisto.results('No endpoints were found. Please make sure you entered the correct group name')
 
         endpoint_group_id = endpoint_group_data.get('resources')[0].get('id')
 
@@ -426,10 +436,10 @@ def update_endpoint_group_command():
     endpoint_mac_address = demisto.args().get('macAddress')
 
     if endpoint_mac_address and not is_mac(endpoint_mac_address):
-        return "Please enter a valid mac address"
+        return_error('Please enter a valid mac address')
 
     if not endpoint_id and not endpoint_mac_address:
-        return 'Please enter either endpoint id or endpoint mac address'
+        return_error('Please enter either endpoint id or endpoint mac address')
 
     if endpoint_mac_address and not endpoint_id:
         endpoint_id = get_endpoint_id(endpoint_mac_address).get('SearchResult', {}).get('resources', [])[0].get('id',
@@ -437,7 +447,7 @@ def update_endpoint_group_command():
     endpoint_details = get_endpoint_details(endpoint_id)
 
     if "ERSEndPoint" not in endpoint_details:
-        return 'Failed to get endpoint %s' % endpoint_id
+        return_error('Failed to get endpoint %s' % endpoint_id)
 
     try:
         endpoint_details['ERSEndPoint']['groupId'] = endpoint_group_id
@@ -448,18 +458,11 @@ def update_endpoint_group_command():
         else:
             "Update failed for endpoint " + endpoint_id + ", got the following response: " + \
              update_result.get('ERSResponse', {}).get('messages', [])
-        result = [{'Update status': msg}]
 
     except Exception as e:
         raise Exception("Exception: Failed to update endpoint {}: ".format(endpoint_id) + str(e))
 
-    return {
-        'Type': entryTypes['note'],
-        'Contents': result,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': msg,
-    }
+    demisto.results(msg)
 
 
 def list_number_of_active_sessions():
@@ -567,7 +570,6 @@ def create_policy():
         'ErsAncPolicy': {
             'name': policy_name,
             'actions': [policy_actions]
-
         }
     }
     create_policy_request(data)
@@ -624,7 +626,7 @@ def assign_policy_to_endpoint():
         'CiscoISE.Endpoint(val.ID && val.ID === obj.ID)': endpoint_context
     }
 
-    return_outputs(f'The policy "{policy_name}" has been applied successfully', context)
+    return_outputs(f'The policy "{policy_name}" has been assigned successfully', context)
 
 
 def get_blacklist_group_id():
@@ -651,8 +653,6 @@ def get_blacklist_endpoints_request():
 def get_blacklist_endpoints():
 
     data = []
-    endpoint_context = []
-    context = {}
     blacklist_endpoints = get_blacklist_endpoints_request().get('SearchResult', {})
 
     if blacklist_endpoints.get('total', 0) < 1:
@@ -664,17 +664,12 @@ def get_blacklist_endpoints():
         data.append({
             'ID': endpoint.get('id'),
             'Name': endpoint.get('name'),
-            'Description': endpoint.get('description')
-        })
-
-        endpoint_context.append({
-            'ID': endpoint.get('id'),
-            'Name': endpoint.get('name'),
-            'Description': endpoint.get('description'),
             'GroupName': 'Blacklist'
         })
 
-        context['CiscoISE.Endpoint(val.ID && val.ID === obj.ID)'] = endpoint_context
+    context = {
+        'CiscoISE.Endpoint(val.ID && val.ID === obj.ID)': data
+    }
 
     return_outputs(tableToMarkdown('CiscoISE Blacklist Endpoints', data, removeNull=True), context, endpoints)
 
@@ -688,9 +683,7 @@ def main():
     try:
         handle_proxy()
         if demisto.command() == 'test-module':
-            if get_endpoints_command():
-                demisto.results('ok')
-            elif list_number_of_active_sessions():
+            if get_endpoints_command(True):
                 demisto.results('ok')
             else:
                 demisto.results('test failed')
@@ -705,7 +698,7 @@ def main():
         elif demisto.command() == 'cisco-ise-update-endpoint-custom-attribute':
             update_endpoint_custom_attribute_command()
         elif demisto.command() == 'cisco-ise-update-endpoint-group':
-            demisto.results(update_endpoint_group_command())
+            update_endpoint_group_command()
         elif demisto.command() == 'cisco-ise-get-groups':
             get_groups()
         elif demisto.command() == 'cisco-ise-get-policies':

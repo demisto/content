@@ -279,6 +279,11 @@ script:
       name: mac_address
       required: true
       secret: false
+    - default: false
+      isArray: false
+      name: policy_name
+      required: true
+      secret: false
     deprecated: false
     description: Assign Adapative Network Control policy to an endpoint
     execution: false
