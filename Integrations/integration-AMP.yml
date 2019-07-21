@@ -9,7 +9,7 @@ description: Uses CISCO AMP Endpoint
 detaileddescription: Client ID and API Key (Password parameter in Demisto) can be
   generated with the instruction [here]( https://www.cisco.com/c/en/us/support/docs/security/amp-endpoints/201121-Overview-of-the-Cisco-AMP-for-Endpoints.html#anc1).
 configuration:
-- display: Server URL (e.g. https://192.168.0.1)
+- display: Server URL (e.g. https://api.amp.cisco.com)
   name: server
   defaultvalue: "https://api.amp.cisco.com"
   type: 0
