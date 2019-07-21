@@ -1,0 +1,1 @@
+Add new FQDN indicator type

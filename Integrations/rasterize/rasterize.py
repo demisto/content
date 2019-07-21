@@ -102,18 +102,24 @@ def rasterize_image():
         ERROR_MESSAGE = str(e) + "\nYou can choose to receive this errors as warnings in the instance settings"
 
     if RETURN_CODE == 0:
-        file = file_result_existing_file(friendly_name)
-        file['Type'] = entryTypes['image']
-        demisto.results(file)
-
-    else:
-        demisto.results(
-            {
+        try:
+            file = file_result_existing_file(friendly_name)
+            file['Type'] = entryTypes['image']
+            demisto.results(file)
+        except Exception as e:
+            demisto.debug(str(e))
+            demisto.results({
                 'ContentsFormat': 'text',
                 'Type': ENTRY_TYPE,
-                'Contents': 'PhantomJS returned - ' + ERROR_MESSAGE
-            }
-        )
+                'Contents': str(e)
+            })
+
+    else:
+        demisto.results({
+            'ContentsFormat': 'text',
+            'Type': ENTRY_TYPE,
+            'Contents': 'PhantomJS returned - ' + ERROR_MESSAGE
+        })
 
 
 def rasterize_email_command():
@@ -125,17 +131,24 @@ def rasterize_email_command():
         friendly_name = 'email.pdf'
     rasterize_email_request(html, friendly_name)
     if RETURN_CODE == 0:
-        file = file_result_existing_file(friendly_name)
-        file['Type'] = entryTypes['image']
-        demisto.results(file)
-    else:
-        demisto.results(
-            {
+        try:
+            file = file_result_existing_file(friendly_name)
+            file['Type'] = entryTypes['image']
+            demisto.results(file)
+        except Exception as e:
+            demisto.debug(str(e))
+            demisto.results({
                 'ContentsFormat': 'text',
                 'Type': ENTRY_TYPE,
-                'Contents': 'PhantomJS returned - ' + ERROR_MESSAGE
-            }
-        )
+                'Contents': str(e)
+            })
+
+    else:
+        demisto.results({
+            'ContentsFormat': 'text',
+            'Type': ENTRY_TYPE,
+            'Contents': 'PhantomJS returned - ' + ERROR_MESSAGE
+        })
 
 
 try:
