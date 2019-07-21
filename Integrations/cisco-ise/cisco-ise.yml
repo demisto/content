@@ -3,11 +3,11 @@ commonfields:
   id: Cisco ISE
   version: -1
 configuration:
-- display: Cisco ISE server URL. For example, https://123.123.123.65
+- display: Cisco ISE server URL (e.g., https://123.123.123.65)
   name: serverURL
   required: true
   type: 0
-- display: Server port. For example, 9060
+- display: Server port (e.g., 9060)
   name: serverPort
   required: true
   type: 0
@@ -32,134 +32,132 @@ script:
   commands:
   - arguments:
     - default: false
-      description: MAC address of the endpoint (format 11:22:33:44:55:66)
+      description: 'MAC address of the endpoint (format: 11:22:33:44:55:66).'
       isArray: false
       name: macAddress
       required: true
       secret: false
     deprecated: false
-    description: Get endpoint's ID by its MAC
+    description: Returns an endpoint ID, by its MAC address.
     execution: false
     name: cisco-ise-get-endpoint-id
     outputs:
     - contextPath: Endpoint.ID
-      description: Endpoint ID
+      description: Endpoint ID.
       type: string
     - contextPath: Endpoint.MACAddress
-      description: Endpoint MAC address
+      description: Endpoint MAC address.
       type: string
   - arguments:
     - default: false
-      description: The id of the endpoint
+      description: The ID of the endpoint for which to return details.
       isArray: false
       name: endpointID
       required: false
       secret: false
     - default: false
-      description: MAC address of the endpoint (format 11:22:33:44:55:66)
+      description: MAC address of the endpoint (format 11:22:33:44:55:66).
       isArray: false
       name: macAddress
       required: false
       secret: false
     deprecated: false
-    description: Get details about certain endpoint
+    description: Returns details for a specified endpoint.
     execution: false
     name: cisco-ise-get-endpoint-details
     outputs:
     - contextPath: CiscoISE.Endpoint.ID
-      description: Endpoint ID
+      description: Endpoint ID.
       type: string
     - contextPath: CiscoISE.Endpoint.Description
-      description: Endpoint description
+      description: Endpoint description.
       type: string
     - contextPath: CiscoISE.Endpoint.MACAddress
-      description: Endpoint MAC address
+      description: Endpoint MAC address.
       type: string
     - contextPath: CiscoISE.Endpoint.Group
       description: Endpoint group name
       type: string
     - contextPath: Endpoint.ID
-      description: Endpoint ID
+      description: Endpoint ID.
       type: string
     - contextPath: Endpoint.MACAddress
-      description: Endpoint MAC address
+      description: Endpoint MAC address.
       type: string
     - contextPath: CiscoISE.Endpoint.CustomAttributes
-      description: Endpoint custom attributes
+      description: Endpoint custom attributes.
       type: string
     - contextPath: CiscoISE.Endpoint.StaticGroupAssignment
-      description: Ture if endpoint has static group assignment
+      description: True if endpoint has static group assignment
       type: boolean
     - contextPath: CiscoISE.Endpoint.StaticProfileAssignment
-      description: Ture if endpoint has static profile assignment
+      description: Whether th endpoint has a static profile assignment.
       type: boolean
     - contextPath: CiscoISE.Endpoint.User
-      description: Endpoint profile user
+      description: Profile of the user associated with the endpoint.
       type: string
   - arguments:
     - default: false
-      description: MAC address of the endpoint (format 11:22:33:44:55:66)
+      description: MAC address of the endpoint (format 11:22:33:44:55:66).
       isArray: false
       name: macAddress
       required: true
       secret: false
     deprecated: false
-    description: Change of Authorization (CoA), reauthenticating an endpoint
+    description: Re-authenticates an endpoint (Change of Authorization - CoA).
     execution: false
     name: cisco-ise-reauthenticate-endpoint
     outputs:
     - contextPath: CiscoISE.Endpoint.MACAddress
-      description: Mac address of the endpoint
+      description: MAC address of the endpoint.
       type: string
     - contextPath: CiscoISE.Endpoint.reauthenticateResult
-      description: Reauthentication result
+      description: Re-authentication result.
       type: boolean
   - deprecated: false
-    description: Get data about the existing endpoints
+    description: Returns data for existing endpoints.
     execution: false
     name: cisco-ise-get-endpoints
     outputs:
     - contextPath: Endpoint.ID
-      description: Endpoint ID
+      description: Endpoint ID.
       type: string
     - contextPath: Endpoint.MACAddress
-      description: Endpoint MAC address
+      description: Endpoint MAC address.
       type: string
     - contextPath: CiscoISE.Endpoint.ID
-      description: Endpoint ID
+      description: Endpoint ID.
       type: string
     - contextPath: CiscoISE.Endpoint.MACAddress
-      description: Endpoint MAC address
+      description: Endpoint MAC address.
       type: string
   - arguments:
     - default: false
-      description: Endpoint ID
+      description: Endpoint ID.
       isArray: false
       name: id
       required: false
       secret: false
     - default: false
-      description: MAC address of the endpoint (format 11:22:33:44:55:66)
+      description: MAC address of the endpoint (format 11:22:33:44:55:66).
       isArray: false
       name: macAddress
       required: false
       secret: false
     - default: false
-      description: The name of the attribute. Can be a comma separated list. For example,
-        attributeName=firstAttribute,secondAttribute
+      description: A CSV list of attributes, for example, "attributeName=firstAttribute,secondAttribute".
       isArray: false
       name: attributeName
       required: true
       secret: false
     - default: false
-      description: The value of the attribute. Can be a comma separated list. For
-        example, attributeValue=firstValue,secondValue
+      description: A CSV list of attribute values, for example, "attributeValue=firstValue,secondValue".
       isArray: false
       name: attributeValue
       required: true
       secret: false
     deprecated: false
-    description: Update an endpoint custom attribute
+    description: Updates the custom attributes of an endpoint.
     execution: false
     name: cisco-ise-update-endpoint-custom-attribute
   - arguments:
@@ -170,83 +168,83 @@ script:
       required: false
       secret: false
     - default: false
-      description: MAC address of the endpoint (format 11:22:33:44:55:66)
+      description: MAC address of the endpoint (format 11:22:33:44:55:66).
       isArray: false
       name: macAddress
       required: false
       secret: false
     - default: false
-      description: Endpoint ID to update. E.g. 046f1250-bc6e-11e4-9baf-000c2916b229
+      description: Endpoint ID of the endpoint to update.
       isArray: false
       name: id
       required: false
       secret: false
     - default: false
-      description: Name of the new group for the endpoint
+      description: Name of the group to update for the endpoint.
       isArray: false
       name: groupName
       required: false
       secret: false
     deprecated: false
-    description: Updates the group of an endpoint
+    description: Updates the group of an endpoint.
     execution: false
     name: cisco-ise-update-endpoint-group
   - deprecated: false
-    description: Retrieve a collection of endpoint identity groups.
+    description: Retrieves a collection of endpoint identity groups.
     execution: false
     name: cisco-ise-get-groups
     outputs:
     - contextPath: CiscoISE.Group.Description
-      description: The description of the endpoint identity groups
+      description: The description of the endpoint identity groups.
       type: String
     - contextPath: CiscoISE.Group.ID
-      description: The ID of the endpoint identity groups
+      description: The ID of the endpoint identity groups.
       type: String
     - contextPath: CiscoISE.Group.Name
-      description: The name of the endpoint identity groups
+      description: The name of the endpoint identity groups.
       type: String
   - deprecated: false
-    description: Return all Adaptive Network Control policies
+    description: Return all Adaptive Network Control policies.
     execution: false
     name: cisco-ise-get-policies
     outputs:
     - contextPath: CiscoISE.Policy.Description
-      description: The description of the ANC policy
+      description: The description of the ANC policy.
       type: String
     - contextPath: CiscoISE.Policy.ID
-      description: The ID of the ANC policy
+      description: The ID of the ANC policy.
       type: String
     - contextPath: CiscoISE.Policy.Name
-      description: The name of the ANC policy
+      description: The name of the ANC policy.
       type: String
   - arguments:
     - default: false
-      description: The name of the ANC policy to return
+      description: The name of the ANC policy to return.
       isArray: false
       name: policy_name
       required: false
       secret: false
     deprecated: false
-    description: Get the specific Adaptive Network Control policy
+    description: Returns a single Adaptive Network Control policy.
     execution: false
     name: cisco-ise-get-policy
     outputs:
     - contextPath: CiscoISE.Policy.Action
-      description: The action of the policy (can be  QUARANTINE, PORTBOUNCE, SHUTDOWN)
+      description: The action of the policy. Can be "QUARANTINE", "PORTBOUNCE", or "SHUTDOWN".
       type: String
     - contextPath: CiscoISE.Policy.ID
-      description: The ID of the ANC policy
+      description: The ID of the ANC policy.
       type: String
     - contextPath: CiscoISE.Policy.Link
-      description: The link for the ANC policy (GUI)
+      description: The link for the ANC policy (GUI).
       type: String
     - contextPath: CiscoISE.Policy.Name
-      description: The name of the ANC policy
+      description: The name of the ANC policy.
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The actions of the policy
+      description: The actions of the policy. Can be "QUARANTINE", "PORTBOUNCE", or "SHUTDOWN".
       isArray: false
       name: policy_actions
       predefined:
@@ -256,59 +254,59 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the new adaptive network control policy
+      description: The name of the new adaptive network control policy.
       isArray: false
       name: policy_name
       required: true
       secret: false
     deprecated: false
-    description: Create ANC policy
+    description: Creates an ANC policy.
     execution: false
     name: cisco-ise-create-policy
     outputs:
     - contextPath: CiscoISE.Policy.Action
-      description: The actions of the ANC policy
+      description: The actions of the ANC policy.
       type: String
     - contextPath: CiscoISE.Policy.Name
-      description: The name of the new ANC Policy
+      description: The name of the new ANC policy.
       type: String
   - arguments:
     - default: false
-      description: 'The mac address to which to apply the policy '
+      description: 'The MAC address to which to apply the policy. '
       isArray: false
       name: mac_address
       required: true
       secret: false
     - default: false
-      description: The name of the policy to assign
+      description: The name of the policy to assign to the endpoint.
       isArray: false
       name: policy_name
       required: true
       secret: false
     deprecated: false
-    description: Assign Adapative Network Control policy to an endpoint
+    description: Assigns an Adapative Network Control policy to an endpoint.
     execution: false
     name: cisco-ise-assign-policy
     outputs:
     - contextPath: CiscoISE.Endpoint.MACAddress
-      description: The mac address of the endpoint
+      description: The MAC address of the endpoint.
       type: String
     - contextPath: CiscoISE.Endpoint.PolicyName
-      description: The policy name that was applied to the endpoint
+      description: The policy name that was applied to the endpoint.
       type: String
   - deprecated: false
-    description: Get all blacklist endpoints
+    description: Returns all blacklisted endpoints.
     execution: false
     name: cisco-ise-get-blacklist-endpoints
     outputs:
     - contextPath: CiscoISE.Endpoint.ID
-      description: The endpoint ID
+      description: The endpoint ID.
       type: String
     - contextPath: CiscoISE.Endpoint.Name
-      description: The name of the endpoint
+      description: The name of the endpoint.
       type: String
     - contextPath: CiscoISE.Endpoint.Description
-      description: The endpoint description
+      description: The endpoint description.
       type: String
     - contextPath: CiscoISE.Endpoint.Link
       description: 'The link for the endpoint '
