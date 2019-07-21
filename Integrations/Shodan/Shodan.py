@@ -56,6 +56,31 @@ def http_request(method, uri, params=None, data=None, headers=None):
     return res.json()
 
 
+def alert_to_demisto_result(alert):
+    ec = {
+        'Shodan': {
+            'Alert': {
+                'ID': alert.get('id', ''),
+                'Expires': alert.get('expires', 0)
+            }
+        }
+    }
+
+    human_readable = tableToMarkdown(f'Alert ID {ec["Shodan"]["Alert"]["ID"]}', {
+        'Name': alert.get('name', ''),
+        'IP': alert.get('filters', {'ip', ''})['ip'],
+        'Expires': ec['Shodan']['Alert']['Expires']
+    })
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': alert,
+        'ContentsFormat': formats['json'],
+        'HumanReadable': human_readable,
+        'HumanReadableFormat': formats['markdown'],
+        'EntryContext': ec
+    })
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -266,29 +291,7 @@ def shodan_create_network_alert_command():
         'expires': expires
     }), headers={'content-type': 'application/json'})
 
-    ec = {
-        'Shodan': {
-            'Alert': {
-                'ID': res.get('id', ''),
-                'Expires': res.get('expires', 0)
-            }
-        }
-    }
-
-    human_readable = tableToMarkdown(f'Alert ID {ec["Shodan"]["Alert"]["ID"]}', {
-        'Name': alert_name,
-        'IP': ip,
-        'Expires': ec['Shodan']['Alert']['Expires']
-    })
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'HumanReadable': human_readable,
-        'HumanReadableFormat': formats['markdown'],
-        'EntryContext': ec
-    })
+    alert_to_demisto_result(res)
 
 
 def shodan_network_get_alert_by_id_command():
@@ -296,30 +299,14 @@ def shodan_network_get_alert_by_id_command():
 
     res = http_request('GET', f'/shodan/alert/{alert_id}/info')
 
-    ec = {
-        'Shodan': {
-            'Alert': {
-                'ID': res.get('id', ''),
-                'Expires': res.get('expires', 0)
-            }
-        }
-    }
+    alert_to_demisto_result(res)
 
-    human_readable = tableToMarkdown(f'Alert ID {ec["Shodan"]["Alert"]["ID"]}', {
-        'Name': res.get('name', ''),
-        'IP': res.get('filters', {'ip', ''})['ip'],
-        'Expires': ec['Shodan']['Alert']['Expires']
-    })
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': res,
-        'ContentsFormat': formats['json'],
-        'HumanReadable': human_readable,
-        'HumanReadableFormat': formats['markdown'],
-        'EntryContext': ec
-    })
+def shodan_network_get_alerts_command():
+    res = http_request('GET', '/shodan/alert/info')
 
+    for alert in res:
+        alert_to_demisto_result(alert)
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
@@ -343,3 +330,5 @@ elif demisto.command() == 'shodan-create-network-alert':
     shodan_create_network_alert_command()
 elif demisto.command() == 'shodan-network-get-alert-by-id':
     shodan_network_get_alert_by_id_command()
+elif demisto.command() == 'shodan-network-get-alerts':
+    shodan_network_get_alerts_command()
