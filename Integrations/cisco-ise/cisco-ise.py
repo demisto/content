@@ -398,8 +398,8 @@ def update_endpoint_custom_attribute_command():
             # result = update_result.get('ERSResponse', {}).get('messages', [])
             demisto.results("Update failed for endpoint " + endpoint_id + ". Please check if the custom "
                                                                           "fields are defined in the system. "
-                                                                          "Got the following response: " +
-                            update_result.get('ERSResponse', {}).get('messages', []))
+                                                                          "Got the following response: "
+                            + update_result.get('ERSResponse', {}).get('messages', []))
 
         updated_fields_dict_list = update_result.get('UpdatedFieldsList', {}).get('updatedField', [])
 
@@ -456,8 +456,8 @@ def update_endpoint_group_command():
             # Create result
             msg = "Endpoint " + endpoint_id + " updated successfully"
         else:
-            "Update failed for endpoint " + endpoint_id + ", got the following response: " + \
-             update_result.get('ERSResponse', {}).get('messages', [])
+            "Update failed for endpoint " + endpoint_id + ", got the following response: " + update_result.get(
+                'ERSResponse', {}).get('messages', [])
 
     except Exception as e:
         raise Exception("Exception: Failed to update endpoint {}: ".format(endpoint_id) + str(e))
@@ -611,7 +611,7 @@ def assign_policy_to_endpoint():
                 {
                 'name': 'policyName',
                 'value': policy_name
-                }
+            }
             ]
         }
     }
