@@ -4139,7 +4139,6 @@ script:
       description: Ticket note type
       type: string
   isfetch: true
-  longRunning: false
   runonce: false
   script: '-'
   type: python
