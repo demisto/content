@@ -1,1 +1,1 @@
-Fixed bug where certificate verification logic was reversed.
+* The `Trust any certificate` parameter now works as expected.
