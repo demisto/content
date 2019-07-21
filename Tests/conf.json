@@ -3,6 +3,16 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_dev"
+        },
+        {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_prod"
+        },
+        {
             "integrations": "Cloaken",
             "playbookID": "Cloaken-Test"
         },
@@ -25,16 +35,6 @@
         {
             "integrations": "CheckPhish",
             "playbookID": "CheckPhish-Test"
-        },
-        {
-            "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
-            "instance_names": "ms_graph_mail_dev"
-        },
-        {
-            "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
-            "instance_names": "ms_graph_mail_prod"
         },
         {
             "integrations": "Symantec Management Center",
@@ -313,6 +313,11 @@
             "integrations": "Luminate"
         },
         {
+            "playbookID": "SumoLogic-Test",
+            "integrations": "SumoLogic",
+            "fromversion": "4.1.0"
+        },
+        {
             "playbookID": "ParseEmailFiles-test"
         },
         {
@@ -527,6 +532,9 @@
         },
         {
             "playbookID": "TestParseCSV"
+        },
+        {
+            "playbookID": "reputations.json Test"
         },
         {
             "integrations": "Shodan",
@@ -1238,6 +1246,11 @@
 
         },
         {
+            "playbookID": "C2sec-Test",
+            "integrations": "C2sec irisk",
+            "fromversion": "5.0.0"
+        },
+        {
             "playbookID": "Phishing test - attachment",
             "timeout": 600,
             "nightly": true,
@@ -1264,7 +1277,7 @@
         {
             "playbookID": "Phishing v2 Test - Attachment",
             "timeout": 1200,
-            "nightly": true,            
+            "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
                 "Pwned",
@@ -1678,12 +1691,13 @@
         }
     ],
     "skipped_tests": {
+        "reputations.json Test": "Reverting the fqdn indicator due to glichtman request, will handled next release(end july 19)",
         "Cybereason Test": "Integration instance being disabled in the middle of test playbook (issue 17394)",
         "LogRhythmRest": "Unstable environment Adi is checking",
         "InfoArmorVigilanteATITest": "Test fails on verify context (issue 17358)",
         "process_email_-_generic_-_test": "Fails due to missing data (issue 17283)",
+        "calculate_severity_-_critical_assets_-_test": "Fails on verify context (issue 17924)",
         "Forescout-Test": "Should be skipped (issue 17016)",
-        "Jask_Test": "Test failed due to missing data (issue 17245)",
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
         "EWS test": "Old test",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
@@ -1693,6 +1707,7 @@
         "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
+        "Endpoint Enrichment - Generic v2 - Test": "Uses the deprecated script ADGetComputer which is bugged and won't be fixed and deprecated carbon black integration",
         "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)",
         "Test-Detonate URL - ThreatGrid": "Outdated test",
         "ip_enrichment_generic_test": "Need to check if test is valid, and the playbook is going to be deprecated now.",
@@ -1756,7 +1771,6 @@
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "No instance",
         "Minerva Labs Anti-Evasion Platform": "No instance",
-        "GitHub": "no instance configured, also need to fix test",
         "Phish.AI": "Unauthorized. will be re-branded soon as Cofense",
 
       "_comment": "~~~ UNSTABLE ~~~",
@@ -1802,7 +1816,6 @@
         "Pwned": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
         "Google BigQuery": "Integration has no proxy checkbox",
-        "Cisco Umbrella Investigate": "Pending merge of branch proxy-unsecure-checks",
         "InfoArmor VigilanteATI": "Pending merge of branch proxy-unsecure-checks",
         "GoogleSafeBrowsing": "Pending merge of branch proxy-unsecure-checks",
         "Cisco Meraki": "Pending merge of branch proxy-unsecure-checks",
@@ -1816,7 +1829,6 @@
         "WhatsMyBrowser": "Checking",
         "jira": "Checking",
         "okta": "Test Module failing, suspect it requires SSL",
-        "CIRCL": "Checking",
         "Awake Security": "Checking",
         "Cylance Protect v2": "Checking",
         "ArcSight ESM v2": "Checking",
