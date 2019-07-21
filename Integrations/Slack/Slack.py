@@ -5,41 +5,55 @@ from distutils.util import strtobool
 import slack
 from slack.errors import SlackApiError
 
-from timeit import default_timer as timer
 import asyncio
 import concurrent
+import ssl
 
-TOKEN = demisto.params().get('bot_token')
-CHANNEL_TOKEN = demisto.params().get('channel_token')
 
-if not demisto.params().get('proxy', False):
-    if 'HTTPS_PROXY' in os.environ:
-        del os.environ['HTTPS_PROXY']
-    elif 'https_proxy' in os.environ:
-        del os.environ['https_proxy']
-    PROXY = None
-else:
-    PROXY = os.environ.get('https_proxy') or os.environ.get('HTTPS_PROXY')
+''' CONSTANTS '''
+
+
+SEVERITY_DICT = {
+    'Low': 1,
+    'Medium': 2,
+    'High': 3,
+    'Critical': 4
+}
+
 
 USER_TAG_EXPRESSION = '<@(.*?)>'
 CHANNEL_TAG_EXPRESSION = '<#(.*?)>'
 URL_EXPRESSION = r'<(https?://.+?)(?:\|.+)?>'
+GUID_REGEX = r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
+ENTITLEMENT_REGEX = r'{}@(({})|\d+)(\|\S+)?\b'.format(GUID_REGEX, GUID_REGEX)
+MESSAGE_FOOTER = '\n**From Slack**'
+MIRROR_TYPE = 'mirrorEntry'
+INCIDENT_OPENED = 'incidentOpened'
 PLAYGROUND_INVESTIGATION_TYPE = 9
 MAX_SEVERITY = 4
-DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel')
-LINK_FOOTER = demisto.params().get('footer')
-GENERAL_FOOTER = demisto.params().get('general_footer')
-CLIENT = slack.WebClient(token=TOKEN, proxy=PROXY)
-CHANNEL_CLIENT = slack.WebClient(token=CHANNEL_TOKEN, proxy=PROXY)
-SEVERITY_THRESHOLD = int(demisto.params().get('min_severity', '1'))
-ALLOW_INCIDENTS = demisto.params().get('allowIncidents', False)
-INCIDENT_TYPE = demisto.params().get('incidentType')
+
+
+''' GLOBALS '''
+
+
+TOKEN: str
+CHANNEL_TOKEN: str
+PROXY: str
+DEDICATED_CHANNEL: str
+LINK_FOOTER: str
+GENERAL_FOOTER: str
+CLIENT: slack.WebClient
+CHANNEL_CLIENT: slack.WebClient
+ALLOW_INCIDENTS: bool
+NOTIFY_INCIDENTS: bool
+INCIDENT_TYPE: str
+SEVERITY_THRESHOLD: int
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def get_bot_id():
+def get_bot_id() -> str:
     """
     Gets the app bot ID
     :return: The app bot ID
@@ -62,7 +76,7 @@ def test_module():
     demisto.results('ok')
 
 
-def get_user_by_name(user_to_search, integration_context):
+def get_user_by_name(user_to_search: str, integration_context: dict) -> dict:
     """
     Gets a slack user by a user name
     :param user_to_search: The user name or email
@@ -71,7 +85,7 @@ def get_user_by_name(user_to_search, integration_context):
     """
 
     user: dict = {}
-    users = []
+    users: list = []
     if integration_context.get('users'):
         users = json.loads(integration_context['users'])
         users_filter = list(filter(lambda u: u.get('name') == user_to_search
@@ -79,19 +93,27 @@ def get_user_by_name(user_to_search, integration_context):
         if users_filter:
             user = users_filter[0]
     if not user:
+        workspace_users = []
         response = CLIENT.users_list()
-        workspace_users = response['members'] if response and response.get('members', []) else []
-        if not workspace_users:
-            return return_error('Could not retrieve users')
-        users_filter = list(filter(lambda u: u.get('name') == user_to_search
-                                             or u.get('profile', {}).get('email') == user_to_search, workspace_users))
+        while True:
+            workspace_users += response['members'] if response and response.get('members', []) else []
+            cursor = response.get('response_metadata', {}).get('next_cursor')
+            users_filter = list(filter(lambda u: u.get('name') == user_to_search
+                                                 or u.get('profile', {}).get('email') == user_to_search,
+                                       workspace_users))
+            if users_filter:
+                break
+            if not cursor:
+                break
+            response = CLIENT.users_list(cursor=cursor)
+
         if users_filter:
             user = users_filter[0]
             users.append(user)
             integration_context['users'] = json.dumps(users)
             demisto.setIntegrationContext(integration_context)
         else:
-            return []
+            return {}
 
     return user
 
@@ -101,10 +123,10 @@ def get_user_by_name(user_to_search, integration_context):
 
 async def get_slack_name(slack_id: str, client) -> str:
     """
-    Get the slack name of a provided object by its ID
+    Get the slack name of a provided user or channel by its ID
     :param client: The slack client
-    :param slack_id: The slack object ID
-    :return: The slack object name
+    :param slack_id: The slack user or channel ID
+    :return: The slack user or channel name
     """
     if not slack_id:
         return ''
@@ -139,7 +161,7 @@ async def get_slack_name(slack_id: str, client) -> str:
     return slack_name
 
 
-async def clean_message(message: str, client):
+async def clean_message(message: str, client: slack.WebClient) -> str:
     """
     Prettifies a slack message - replaces tags and URLs with clean expressions
     :param message: The slack message
@@ -159,12 +181,7 @@ async def clean_message(message: str, client):
     return resolved_message
 
 
-def clear_mirrors():
-    demisto.setIntegrationContext({'mirrors': json.dumps([])})
-    demisto.results('Successfully cleared mirrors.')
-
-
-def invite_user_to_conversation(conversation_id, users_to_invite):
+def invite_users_to_conversation(conversation_id: str, users_to_invite: list):
     """
     Invites users to a provided conversation using a provided slack client with a channel token.
     :param conversation_id: The slack conversation ID to invite the users to.
@@ -247,12 +264,8 @@ def mirror_investigation():
             mirror['auto_close'] = bool(strtobool(auto_close))
         if mirror_direction:
             mirror['mirror_direction'] = mirror_direction
-        if mirror_to:
-            demisto.results({
-                'Type': entryTypes['error'],
-                'Contents': 'The Slack channel type cannot be changed in this manner.',
-                'ContentsFormat': formats['text']
-            })
+        if mirror_to and mirror['mirror_to'] != mirror_to:
+            return_error('Cannot change the Slack channel type from Demisto.')
         mirror['mirrored'] = False
         mirrors.append(mirror)
 
@@ -261,7 +274,7 @@ def mirror_investigation():
     else:
         bot_id = get_bot_id()
     users_to_invite += [bot_id]
-    invite_user_to_conversation(conversation_id, users_to_invite)
+    invite_users_to_conversation(conversation_id, users_to_invite)
 
     integration_context['bot_id'] = bot_id
     integration_context['mirrors'] = json.dumps(mirrors)
@@ -280,7 +293,9 @@ def long_running_loop():
         try:
             check_for_mirrors()
         except Exception as e:
-            demisto.updateModuleHealth('An error occurred: {}'.format(str(e)))
+            error = 'An error occurred: {}'.format(str(e))
+            demisto.error(error)
+            demisto.updateModuleHealth(error)
         finally:
             time.sleep(5)
 
@@ -300,9 +315,10 @@ def check_for_mirrors():
                     investigation_id = mirror['investigation_id']
                     mirror_type = mirror['mirror_type']
                     auto_close = mirror['auto_close']
+                    direction = mirror['mirror_direction']
                     if isinstance(auto_close, str):
                         auto_close = bool(strtobool(auto_close))
-                    demisto.mirrorInvestigation(investigation_id, mirror_type, auto_close)
+                    demisto.mirrorInvestigation(investigation_id, '{}:{}'.format(mirror_type, direction), auto_close)
                     mirror['mirrored'] = True
                     mirrors.append(mirror)
                 else:
@@ -321,8 +337,10 @@ async def slack_loop():
         try:
             rtm_client = slack.RTMClient(
                 token=TOKEN,
-                run_async=True, loop=loop,
-                auto_reconnect=False)
+                run_async=True,
+                loop=loop,
+                auto_reconnect=False
+            )
             client_future = rtm_client.start()
             while True:
                 await asyncio.sleep(10)
@@ -333,11 +351,22 @@ async def slack_loop():
                     demisto.info('Slack - websocket is closed or done')
                     break
         except Exception as e:
-            demisto.updateModuleHealth('Slack client raised an exception: {}'.format(e))
+            error = 'Slack client raised an exception: {}'.format(e)
+            await handle_listen_error(error)
         finally:
+            # If we got here, the websocket is closed or the client can't connect. Will try to connect every 5 seconds.
             if rtm_client and not rtm_client._stopped:
                 rtm_client.stop()
             await asyncio.sleep(5)
+
+
+async def handle_listen_error(error: str):
+    """
+    Logs an error and updates the module health accordingly.
+    :param error: The error string.
+    """
+    demisto.error(error)
+    demisto.updateModuleHealth(error)
 
 
 async def start_listening():
@@ -350,7 +379,7 @@ async def start_listening():
     await slack_loop()
 
 
-async def handle_dm(user_id, text, client):
+async def handle_dm(user_id: str, text: str, client: slack.WebClient):
     """
     Handles a direct message sent to the bot
     :param user_id: The user who sent the message
@@ -384,7 +413,7 @@ async def handle_dm(user_id, text, client):
             demisto_user = demisto.findUser(username=user.get('name'))
 
         if not demisto_user and not ALLOW_INCIDENTS:
-            data = 'Sorry, you are not allowed to create incidents.'
+            data = 'You are not allowed to create incidents.'
         else:
             data = await translate_create(demisto_user, message)
     else:
@@ -392,19 +421,19 @@ async def handle_dm(user_id, text, client):
 
     im = await client.im_open(user=user.get('id'))
     channel = im.get('channel', {}).get('id')
-    client.chat_postMessage(channel=channel, text=data)
+    await client.chat_postMessage(channel=channel, text=data)
 
 
-async def translate_create(demisto_user, message):
+async def translate_create(demisto_user: dict, message: str) -> str:
     """
     Processes an incident creation message
     :param demisto_user: The Demisto user associated with the message (if exists)
     :param message: The creation message
     :return: Creation result
     """
-    json_pattern = r'(?<=json:).*'
-    name_pattern = r'(?<=name:).*'
-    type_pattern = r'(?<=type:).*'
+    json_pattern = r'(?<=json=).*'
+    name_pattern = r'(?<=name=).*'
+    type_pattern = r'(?<=type=).*'
     json_match = re.search(json_pattern, message)
     created_incident = None
     data = ''
@@ -413,7 +442,7 @@ async def translate_create(demisto_user, message):
             data = 'No other properties other than json should be specified.'
         else:
             incidents_json = json_match.group()
-            incidents = json.loads(incidents_json)
+            incidents = json.loads(incidents_json.replace('“', '"').replace('”', '"'))
             if not isinstance(incidents, list):
                 incidents = [incidents]
             created_incident = await create_incidents(demisto_user, incidents)
@@ -423,14 +452,14 @@ async def translate_create(demisto_user, message):
     else:
         name_match = re.search(name_pattern, message)
         if not name_match:
-            data = 'Please specify a name in the following manner: name:<name>.'
+            data = 'Please specify arguments in the following manner: name=<name> type=[type] or json=<json>.'
         else:
-            incident_name = re.sub('type:.*', '', name_match.group()).strip()
+            incident_name = re.sub('type=.*', '', name_match.group()).strip()
             incident_type = ''
 
             type_match = re.search(type_pattern, message)
             if type_match:
-                incident_type = re.sub('name:.*', '', type_match.group()).strip()
+                incident_type = re.sub('name=.*', '', type_match.group()).strip()
 
             incident = {'name': incident_name}
 
@@ -453,17 +482,17 @@ async def translate_create(demisto_user, message):
     return data
 
 
-async def create_incidents(demisto_user, incidents_json):
+async def create_incidents(demisto_user: dict, incidents: list) -> dict:
     """
     Creates incidents according to a provided JSON object
     :param demisto_user: The demisto user associated with the request (if exists)
-    :param incidents_json: The incidents JSON
+    :param incidents: The incidents JSON
     :return: The creation result
     """
     if demisto_user:
-        data = demisto.createIncidents(incidents_json, userID=demisto_user['id'])
+        data = demisto.createIncidents(incidents, userID=demisto_user['id'])
     else:
-        data = demisto.createIncidents(incidents_json)
+        data = demisto.createIncidents(incidents)
 
     return data
 
@@ -480,15 +509,17 @@ async def listen(**payload):
 
     if data_type == 'error':
         error = payload.get('error', {})
-        demisto.updateModuleHealth('Slack API has thrown an error. Code: {}, Message: {}.'
-                                   .format(error.get('code'), error.get('msg')))
+        await handle_listen_error('Slack API has thrown an error. Code: {}, Message: {}.'
+                                  .format(error.get('code'), error.get('msg')))
         return
     try:
         subtype = data.get('subtype', '')
         text = data.get('text', '')
-        user_id = data.get('user')
-        channel = data.get('channel')
-        if subtype == 'bot_message':
+        user_id = data.get('user', '')
+        channel = data.get('channel', '')
+        message_bot_id = data.get('bot_id', '')
+
+        if subtype == 'bot_message' or message_bot_id:
             return
 
         if channel and channel[0] == 'D':
@@ -513,8 +544,13 @@ async def listen(**payload):
                 return
 
             if not mirror['mirrored']:
-                demisto.mirrorInvestigation(mirror['investigation_id'], mirror['mirror_type'],
-                                            bool(strtobool(mirror['auto_close'])))
+                # In case the incident is not mirrored yet
+                auto_close = mirror['auto_close']
+                if isinstance(auto_close, str):
+                    auto_close = bool(strtobool(auto_close))
+                demisto.mirrorInvestigation(mirror['investigation_id'],
+                                            '{}:{}'.format(mirror['mirror_type'], mirror['mirror_direction']),
+                                            auto_close)
                 mirror['mirrored'] = True
 
             mirrors.append(mirror)
@@ -526,10 +562,11 @@ async def listen(**payload):
         # Reset module health
         demisto.updateModuleHealth("")
     except Exception as e:
-        demisto.updateModuleHealth("Error occurred while listening to Slack: {}".format(str(e)))
+        await handle_listen_error('Error occurred while listening to Slack: {}'.format(str(e)))
 
 
-async def handle_text(client, integration_context, investigation_id, text, user_id):
+async def handle_text(client: slack.WebClient, integration_context: dict,
+                      investigation_id: str, text: str, user_id: str):
     """
     Handles text received in the Slack workspace (not DM)
     :param client: The Slack client
@@ -551,16 +588,38 @@ async def handle_text(client, integration_context, investigation_id, text, user_
             users.append(user)
             integration_context['users'] = json.dumps(users)
 
-        demisto.addEntry(id=investigation_id,
-                         entry=await clean_message(text, client), username=user.get('name', ''),
-                         email=user.get('profile', {}).get('email', ''),
-                         footer='\n**From Slack**')
+        is_entitlement = await check_entitlement(text, user)
+        if not is_entitlement:
+            demisto.addEntry(id=investigation_id,
+                             entry=await clean_message(text, client),
+                             username=user.get('name', ''),
+                             email=user.get('profile', {}).get('email', ''),
+                             footer=MESSAGE_FOOTER
+                             )
+
+
+async def check_entitlement(text: str, user: dict) -> bool:
+    entitlement_match = re.search(ENTITLEMENT_REGEX, text)
+    if entitlement_match:
+        entitlement = entitlement_match.group()
+        parts = entitlement.split('@')
+        guid = parts[0]
+        id_and_task = parts[1].split('|')
+        incident_id = id_and_task[0]
+        task_id = ''
+        if len(id_and_task) > 1:
+            task_id = id_and_task[1]
+        content = text.replace(entitlement, '', 1)
+        demisto.handleEntitlement(incident_id, guid, task_id, user.get('profile', {}).get('email'), content)
+        return True
+
+    return False
 
 
 ''' SEND '''
 
 
-def get_conversation_by_name(conversation_name):
+def get_conversation_by_name(conversation_name: str) -> dict:
     """
     Get a slack conversation by its name
     :param conversation_name: The conversation name
@@ -576,7 +635,7 @@ def get_conversation_by_name(conversation_name):
     conversation = list(filter(lambda c: c.get('name') == conversation_name, conversations))
 
     if not conversation:
-        return []
+        return {}
 
     return conversation[0]
 
@@ -585,20 +644,43 @@ def slack_send():
     """
     Sends a message to slack
     """
-    message = demisto.args().get('message')
+    message = demisto.args().get('message', '')
     to = demisto.args().get('to')
     channel = demisto.args().get('channel')
     group = demisto.args().get('group')
+    message_type = demisto.args().get('messageType', '')
     entry = demisto.args().get('entry')
-    ignore_add_url = demisto.args().get('IgnoreAddURL', 'false')
-    thread_id = demisto.args().get('threadID')
-    severity = demisto.args().get('severity')
+    ignore_add_url = demisto.args().get('IgnoreAddURL', False)
+    thread_id = demisto.args().get('threadID', '')
+    severity = demisto.args().get('severity')  # From server
 
-    response = slack_send_request(to, channel, group, entry, severity, ignore_add_url, thread_id, message=message)
+    if message_type == MIRROR_TYPE and message.find(MESSAGE_FOOTER) != -1:
+        # return so there will not be a loop of messages
+        return
+
+    if severity:
+        try:
+            severity = int(severity)
+        except Exception:
+            pass
+
+    if not channel and message_type == INCIDENT_OPENED and severity > SEVERITY_THRESHOLD:
+        channel = DEDICATED_CHANNEL
+
+    response = slack_send_request(to, channel, group, entry, ignore_add_url, thread_id, message=message)
 
     if response:
         thread = response.get('ts')
-        demisto.results('Message sent to Slack successfully.\nThread ID is: {}'.format(thread))
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': 'Message sent to Slack successfully.\nThread ID is: {}'.format(thread),
+            'ContentsFormat': formats['text'],
+            'EntryContext': {
+                'Slack.Thread(val.ID===obj.ID)': {
+                    'ID': thread
+                },
+            }
+        })
     else:
         demisto.results('Could not send the message to Slack.')
 
@@ -631,8 +713,8 @@ def slack_send_file():
         demisto.results('Could not send the file to Slack.')
 
 
-def send_message(destinations, entry, ignore_add_url, integration_context, message,
-                 thread_id):
+def send_message(destinations: list, entry: str, ignore_add_url: bool, integration_context: dict, message: str,
+                 thread_id: str):
     """
     Sends a message to Slack.
     :param destinations: The destinations to send to.
@@ -656,11 +738,11 @@ def send_message(destinations, entry, ignore_add_url, integration_context, messa
                 if link:
                     if entry:
                         link += '/' + entry
-                    message += '\n{} {}'.format(LINK_FOOTER, link)
+                    message += '\n{} {}'.format('View it on:', link)
             elif GENERAL_FOOTER:
                 link = server_links.get('server', '')
                 if link:
-                    message += '\n{} {}'.format(GENERAL_FOOTER, link + '#/home')
+                    message += '\n{} {}'.format('View it on:', link + '#/home')
     try:
         response = send_message_to_destinations(destinations, message, thread_id)
     except SlackApiError as e:
@@ -669,12 +751,13 @@ def send_message(destinations, entry, ignore_add_url, integration_context, messa
         bot_id = integration_context.get('bot_id')
         if not bot_id:
             bot_id = get_bot_id()
-        invite_user_to_conversation(destinations, bot_id)
+        for dest in destinations:
+            invite_users_to_conversation(dest, [bot_id])
         response = send_message_to_destinations(destinations, message, thread_id)
     return response
 
 
-def send_message_to_destinations(destinations, message, thread_id):
+def send_message_to_destinations(destinations: list, message: str, thread_id: str) -> dict:
     """
     Sends a message to provided destinations Slack.
     :param destinations: Destinations to send to.
@@ -682,7 +765,7 @@ def send_message_to_destinations(destinations, message, thread_id):
     :param thread_id: Slack thread ID to send to.
     :return: The Slack send response.
     """
-    response = None
+    response: dict = {}
     for destination in destinations:
         if thread_id:
             response = CLIENT.chat_postMessage(channel=destination, text=message, thread_ts=thread_id)
@@ -691,7 +774,7 @@ def send_message_to_destinations(destinations, message, thread_id):
     return response
 
 
-def send_file(destinations, file, integration_context, thread_id):
+def send_file(destinations: list, file: dict, integration_context: dict, thread_id: str) -> dict:
     """
     Sends a file to Slack.
     :param destinations: Destinations to send the file to.
@@ -709,12 +792,13 @@ def send_file(destinations, file, integration_context, thread_id):
         if not bot_id:
             bot_id = get_bot_id()
             integration_context['bot_id'] = bot_id
-        invite_user_to_conversation(destinations, bot_id)
+        for dest in destinations:
+            invite_users_to_conversation(dest, [bot_id])
         response = send_file_to_destinations(destinations, file, thread_id)
     return response
 
 
-def send_file_to_destinations(destinations, file, thread_id):
+def send_file_to_destinations(destinations: list, file: dict, thread_id: str) -> dict:
     """
     Sends a file to provided destinations in Slack.
     :param destinations: The destinations to send to.
@@ -722,7 +806,7 @@ def send_file_to_destinations(destinations, file, thread_id):
     :param thread_id: A thread ID to send to.
     :return: The Slack send response.
     """
-    response = None
+    response: dict = {}
     for destination in destinations:
         if thread_id:
             response = CLIENT.files_upload(channels=destination,
@@ -735,8 +819,8 @@ def send_file_to_destinations(destinations, file, thread_id):
     return response
 
 
-def slack_send_request(to, channel, group, entry=None, severity=MAX_SEVERITY, ignore_add_url=None, thread_id=None,
-                       message=None, file=None):
+def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignore_add_url: bool = False,
+                       thread_id: str = '', message: str = '', file: dict = None) -> dict:
     """
     Requests to send a message or a file to Slack.
     :param to: A Slack user to send to.
@@ -751,7 +835,7 @@ def slack_send_request(to, channel, group, entry=None, severity=MAX_SEVERITY, ig
     :return: The Slack send response.
     """
     if not (to or group or channel):
-        return_error('Either a user, group or channel must be provided')
+        return_error('Either a user, group or channel must be provided.')
 
     integration_context = demisto.getIntegrationContext()
     conversations: list = []
@@ -761,28 +845,22 @@ def slack_send_request(to, channel, group, entry=None, severity=MAX_SEVERITY, ig
             conversations = json.loads(integration_context['conversations'])
     destinations = []
 
-    if channel == 'incidentNotificationChannel':
-        if severity >= SEVERITY_THRESHOLD:
-            channel = DEDICATED_CHANNEL
-        else:
-            channel = ''
-
     if to:
         if isinstance(to, list):
             to = to[0]
         user = get_user_by_name(to, integration_context)
         if not user:
-            demisto.error('Could not find the Slack user')
+            demisto.error('Could not find the Slack user {}'.format(to))
         else:
             im = CLIENT.im_open(user=user.get('id'))
             destinations.append(im.get('channel', {}).get('id'))
-    if channel or group:
+    elif channel or group:
         destination_name = channel or group
         conversation_filter = list(filter(lambda c: c.get('name') == destination_name, conversations))
         if not conversation_filter:
             conversation = get_conversation_by_name(destination_name)
             if not conversation:
-                return_error('Could not find the Slack conversation')
+                return_error('Could not find the Slack conversation {}'.format(destination_name))
             conversations.append(conversation)
             integration_context['conversations'] = json.dumps(conversations)
         else:
@@ -807,25 +885,29 @@ def close_channel():
     """
     Archives a mirrored slack channel by its incident ID.
     """
+    demisto.info('Closing?')
     investigation = demisto.investigation()
     if investigation.get('type') == PLAYGROUND_INVESTIGATION_TYPE:
         return_error('Can not perform this action in playground.')
 
     integration_context = demisto.getIntegrationContext()
     if not integration_context or not integration_context.get('mirrors', []):
-        return_error('No mirrors found.')
+        return_error('No mirrors found for this incident.')
 
     mirrors = json.loads(integration_context['mirrors'])
     mirror = list(filter(lambda m: m['investigation_id'] == investigation.get('id'), mirrors))
     if not mirror:
         return_error('Could not find the mirrored Slack conversation.')
 
-    mirror = mirror[0]
+    mirror = mirrors.pop(mirrors.index(mirror[0]))
     conversation_id = mirror['channel_id']
 
     CHANNEL_CLIENT.conversations_archive(channel=conversation_id)
 
-    demisto.results('Channel successfully archived')
+    integration_context['mirrors'] = json.dumps(mirrors)
+    demisto.setIntegrationContext(integration_context)
+
+    demisto.results('Channel successfully archived.')
 
 
 def long_running_main():
@@ -835,17 +917,43 @@ def long_running_main():
     asyncio.run(start_listening())
 
 
+def init_globals():
+    """
+    Initializes global variables according to the integration parameters
+    """
+    global TOKEN, CHANNEL_TOKEN, PROXY, DEDICATED_CHANNEL, LINK_FOOTER, GENERAL_FOOTER, CLIENT, CHANNEL_CLIENT
+    global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE
+
+    TOKEN = demisto.params().get('bot_token')
+    CHANNEL_TOKEN = demisto.params().get('channel_token')
+    PROXY = handle_proxy().get('https')
+    DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel')
+    LINK_FOOTER = demisto.params().get('footer', True)
+    GENERAL_FOOTER = demisto.params().get('general_footer', True)
+    CLIENT = slack.WebClient(token=TOKEN, proxy=PROXY)
+    CHANNEL_CLIENT = slack.WebClient(token=CHANNEL_TOKEN, proxy=PROXY)
+    SEVERITY_THRESHOLD = SEVERITY_DICT.get(demisto.params().get('min_severity', 'Low'), 1)
+    ALLOW_INCIDENTS = demisto.params().get('allow_incidents', False)
+    NOTIFY_INCIDENTS = demisto.params().get('notify_incidents', True)
+    INCIDENT_TYPE = demisto.params().get('incidentType')
+
+
 def main():
     """
     Main
     """
+
+    init_globals()
+
     commands = {
         'test-module': test_module,
         'long-running-execution': long_running_main,
         'slack-mirror-investigation': mirror_investigation,
-        'slack-clear-mirrors': clear_mirrors,
+        'mirror-investigation': mirror_investigation,
         'slack-send': slack_send,
+        'send-notification': slack_send,
         'slack-send-file': slack_send_file,
+        'close-channel': close_channel,
         'slack-close-channel': close_channel
     }
 
@@ -853,9 +961,6 @@ def main():
         command_func = commands[demisto.command()]
         command_func()
     except Exception as e:
-        raise
-        LOG(str(e))
-        LOG.print_log(False)
         return_error(str(e))
 
 
