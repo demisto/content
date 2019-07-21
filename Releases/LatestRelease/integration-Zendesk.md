@@ -1,2 +1,2 @@
-- fix zendesk-ticket-details command - attachments dont shows up in the context
-- add test playbook
+- Attachments are now visible in context when you run the zendesk-ticket-details command.
+- Added a test playbook.
