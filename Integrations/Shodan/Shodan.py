@@ -340,6 +340,31 @@ def shodan_network_alert_remove_trigger_command():
 
     demisto.results(f'Deleted trigger "{trigger}" for alert {alert_id}')
 
+
+def shodan_network_alert_whitelist_service_command():
+    alert_id = demisto.args()['alertID']
+    trigger = demisto.args()['trigger']
+    service = demisto.args()['service']
+
+    res = http_request('PUT', f'/shodan/alert/{alert_id}/trigger/{trigger}/ignore/{service}')
+
+    if 'success' not in res or res['success'] != True:
+        return_error(f'Failed whitelisting service "{service}" for trigger {trigger} in alert {alert_id}')
+
+    demisto.results(f'Whitelisted service "{service}" for trigger {trigger} in alert {alert_id}')
+
+
+def shodan_network_alert_remove_service_from_whitelist_command():
+    alert_id = demisto.args()['alertID']
+    trigger = demisto.args()['trigger']
+    service = demisto.args()['service']
+
+    res = http_request('DELETE', f'/shodan/alert/{alert_id}/trigger/{trigger}/ignore/{service}')
+
+    if 'success' not in res or res['success'] != True:
+        return_error(f'Failed removing service "{service}" for trigger {trigger} in alert {alert_id} from the whitelist')
+
+    demisto.results(f'Removed service "{service}" for trigger {trigger} in alert {alert_id} from the whitelist')
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 if demisto.command() == 'test-module':
@@ -370,3 +395,7 @@ elif demisto.command() == 'shodan-network-alert-set-trigger':
     shodan_network_alert_set_trigger_command()
 elif demisto.command() == 'shodan-network-alert-remove-trigger':
     shodan_network_alert_remove_trigger_command()
+elif demisto.command() == 'shodan-network-alert-whitelist-service':
+    shodan_network_alert_whitelist_service_command()
+elif demisto.command() == 'shodan-network-alert-remove-service-from-whitelist':
+    shodan_network_alert_remove_service_from_whitelist_command()

@@ -271,9 +271,9 @@ script:
     name: shodan-network-alert-remove-trigger
   - arguments:
     - default: false
-      description: AlertId
+      description: AlertID
       isArray: false
-      name: alertId
+      name: alertID
       required: true
       secret: false
     - default: false
@@ -293,9 +293,9 @@ script:
     name: shodan-network-alert-whitelist-service
   - arguments:
     - default: false
-      description: AlertId
+      description: AlertID
       isArray: false
-      name: alertId
+      name: alertID
       required: true
       secret: false
     - default: false
