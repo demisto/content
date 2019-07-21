@@ -255,9 +255,9 @@ script:
     name: shodan-network-alert-set-trigger
   - arguments:
     - default: false
-      description: AlertId
+      description: AlertID
       isArray: false
-      name: alertId
+      name: alertID
       required: true
       secret: false
     - default: false

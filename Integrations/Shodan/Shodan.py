@@ -326,8 +326,19 @@ def shodan_network_alert_set_trigger_command():
     if 'success' not in res or res['success'] != True:
         return_error(f'Failed setting trigger {trigger} for alert {alert_id}')
 
-    demisto.results(f'Set trigger {trigger} for alert {alert_id}')
+    demisto.results(f'Set trigger "{trigger}" for alert {alert_id}')
 
+
+def shodan_network_alert_remove_trigger_command():
+    alert_id = demisto.args()['alertID']
+    trigger = demisto.args()['Trigger']
+
+    res = http_request('DELETE', f'/shodan/alert/{alert_id}/trigger/{trigger}')
+
+    if 'success' not in res or res['success'] != True:
+        return_error(f'Failed deleting trigger {trigger} for alert {alert_id}')
+
+    demisto.results(f'Deleted trigger "{trigger}" for alert {alert_id}')
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
@@ -357,3 +368,5 @@ elif demisto.command() == 'shodan-network-delete-alert':
     shodan_network_delete_alert_command()
 elif demisto.command() == 'shodan-network-alert-set-trigger':
     shodan_network_alert_set_trigger_command()
+elif demisto.command() == 'shodan-network-alert-remove-trigger':
+    shodan_network_alert_remove_trigger_command()
