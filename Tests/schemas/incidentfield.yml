@@ -78,3 +78,18 @@ mapping:
     type: bool
   unsearchable:
     type: bool
+  sortvalues:
+    type: seq
+    sequence:
+      - include: sortvalue_schema
+  validatedError:
+    type: any
+  commitMessage:
+    type: str
+  shouldCommit:
+    type: bool
+  shouldPublish:
+    type: bool
+  prevName:
+    type: bool
+schema;sortvalue_schema:
