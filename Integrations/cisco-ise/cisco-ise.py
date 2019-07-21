@@ -26,6 +26,19 @@ DEFAULT_HEADERS = {
 ''' HELPER FUNCTIONS '''
 
 
+def is_mac_address(mac):
+    """
+    Test for valid mac address
+    :param mac: MAC address in the form of AA:BB:CC:00:11:22
+    :return: True/False
+    """
+
+    if re.search(r'([0-9A-F]{2}[:]){5}([0-9A-F]){2}', mac.upper()) is not None:
+        return True
+    else:
+        return False
+
+
 def http_request(method, url_suffix, params={}, data=None, headers=DEFAULT_HEADERS):
     try:
         url = SERVER_URL + url_suffix
@@ -140,7 +153,7 @@ def get_endpoint_id_command():
     """
     mac_address = demisto.args().get('macAddress')
 
-    if not is_mac(mac_address):
+    if not is_mac_address(mac_address):
         return_error('Given MAC address is invalid')
 
     endpoint_data = get_endpoint_id(mac_address)
@@ -177,7 +190,7 @@ def get_endpoint_details_command():
     endpoint_id = demisto.args().get('endpointID')
     endpoint_mac_address = demisto.args().get('macAddress')
 
-    if endpoint_mac_address and not is_mac(endpoint_mac_address):
+    if endpoint_mac_address and not is_mac_address(endpoint_mac_address):
         return_error('Given MAC address is invalid')
 
     if not endpoint_id and not endpoint_mac_address:
@@ -263,7 +276,7 @@ def reauthenticate_endpoint_command():
     corresponds to 'cisco-ise-reauthenticate-endpoint' command. Reauthenticates an endpoint
     """
     mac_address = demisto.args().get('macAddress').upper()
-    if not is_mac(mac_address):
+    if not is_mac_address(mac_address):
         return "Please enter a valid mac address"
     mac_address = (':').join([x.upper() for x in mac_address.split(':')])
     mac_address_psn = get_psn_for_mac(mac_address)
@@ -352,7 +365,7 @@ def update_endpoint_custom_attribute_command():
     endpoint_id = demisto.args().get('id')
     endpoint_mac_address = demisto.args().get('macAddress')
 
-    if endpoint_mac_address and not is_mac(endpoint_mac_address):
+    if endpoint_mac_address and not is_mac_address(endpoint_mac_address):
         return_error('Please enter a valid mac address')
 
     if not endpoint_id and not endpoint_mac_address:
@@ -422,7 +435,7 @@ def update_endpoint_group_command():
     endpoint_id = demisto.args().get('id')
     endpoint_mac_address = demisto.args().get('macAddress')
 
-    if endpoint_mac_address and not is_mac(endpoint_mac_address):
+    if endpoint_mac_address and not is_mac_address(endpoint_mac_address):
         return_error('Please enter a valid mac address')
 
     if not endpoint_id and not endpoint_mac_address:
@@ -586,7 +599,7 @@ def assign_policy_to_endpoint():
 
     policy_name = demisto.args().get('policy_name')
     mac_address = demisto.args().get('mac_address')
-    if not is_mac(mac_address):
+    if not is_mac_address(mac_address):
         return_error('Please enter a valid mac address')
 
     data = {
