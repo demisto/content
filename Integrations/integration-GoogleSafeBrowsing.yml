@@ -35,6 +35,11 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: |
     var apiKey = params.apiKey;
@@ -65,8 +70,8 @@ script:
                 Method: "POST",
                 Body: JSON.stringify(body)
             },
-            false,
-            params.useproxy
+            params.insecure,
+            params.proxy
         );
 
         if (result.StatusCode < 200 && result.StatusCode > 299) {
