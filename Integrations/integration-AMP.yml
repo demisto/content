@@ -11,7 +11,7 @@ detaileddescription: Client ID and API Key (Password parameter in Demisto) can b
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
-  defaultvalue: ""
+  defaultvalue: "https://api.amp.cisco.com"
   type: 0
   required: true
 - display: Client ID
