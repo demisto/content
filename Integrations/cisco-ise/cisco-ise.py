@@ -26,19 +26,6 @@ DEFAULT_HEADERS = {
 ''' HELPER FUNCTIONS '''
 
 
-def is_mac(mac):
-    """
-    Test for valid mac address
-    :param mac: MAC address in the form of AA:BB:CC:00:11:22
-    :return: True/False
-    """
-
-    if re.search(r'([0-9A-F]{2}[:]){5}([0-9A-F]){2}', mac.upper()) is not None:
-        return True
-    else:
-        return False
-
-
 def http_request(method, url_suffix, params={}, data=None, headers=DEFAULT_HEADERS):
     try:
         url = SERVER_URL + url_suffix
@@ -133,7 +120,7 @@ def get_groups():
         'CiscoISE.Group(val.ID === obj.ID)': context
     }
 
-    return_outputs(tableToMarkdown('Cisco pxGrid ISE Groups', humanreadable, ['ID', 'Name', 'Description'], removeNull=True),
+    return_outputs(tableToMarkdown('Cisco ISE Groups', humanreadable, ['ID', 'Name', 'Description'], removeNull=True),
                    entry_context, groups_data)
 
 
