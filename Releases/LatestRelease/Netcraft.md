@@ -1,0 +1,1 @@
+Fixed bug in Report Attack command
