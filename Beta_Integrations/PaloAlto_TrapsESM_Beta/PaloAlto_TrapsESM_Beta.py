@@ -2,10 +2,8 @@
 
 import json
 import requests
-from distutils.util import strtobool
 from bs4 import BeautifulSoup
-import rsa
-from base64 import b64decode,b64encode
+from base64 import b64decode, b64encode
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import AES, PKCS1_v1_5
 
@@ -25,12 +23,13 @@ def logout_traps():
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
                       "Chrome/74.0.3729.131 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,"
+                  "application/signed-exchange;v=b3",
         "Accept-Language": "Accept-Language:en-US,en;q=0.9",
         "Accept-Encoding": "gzip, deflate"
     }
-    result = requests.request('GET', URL+'/EndpointSecurityManager/Account/Logout',
-                          headers=headers, verify=USE_SSL)
+    result = requests.request('GET', URL + '/EndpointSecurityManager/Account/Logout',
+                              headers=headers, verify=USE_SSL)
     c = result.content
 
     demisto.results(c)
@@ -40,16 +39,15 @@ def get_new_request_token(cookies):
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
                       "Chrome/74.0.3729.131 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,"
+                  "application/signed-exchange;v=b3",
         "Accept-Language": "Accept-Language:en-US,en;q=0.9",
         "Accept-Encoding": "gzip, deflate"
     }
-    result = requests.request('GET', URL+'/EndpointSecurityManager/HashManagement/Hashes',
-                          headers=headers, verify=USE_SSL, cookies=cookies)
+    result = requests.request('GET', URL + '/EndpointSecurityManager/HashManagement/Hashes',
+                              headers=headers, verify=USE_SSL, cookies=cookies)
     # Extracting Token
     c = result.content
-
-    # demisto.results(c)
     request_verification_token = None
 
     soup = BeautifulSoup(c, 'html.parser')
@@ -62,13 +60,13 @@ def get_ct_cookie():
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
                       "Chrome/74.0.3729.131 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,"
+                  "application/signed-exchange;v=b3",
         "Accept-Language": "Accept-Language:en-US,en;q=0.9",
         "Accept-Encoding": "gzip, deflate"
     }
-    # demisto.info('Headers are: '+str(headers)+' Attempting to connect')
-    result = requests.request('GET', URL+'/EndpointSecurityManager/Account/Login',
-                          headers=headers, verify=USE_SSL)
+    result = requests.request('GET', URL + '/EndpointSecurityManager/Account/Login',
+                              headers=headers, verify=USE_SSL)
     # Extracting Token
     c = result.content
     soup = BeautifulSoup(c, 'html.parser')
@@ -89,14 +87,15 @@ def get_rsa_csid_key(request_verification_token, ct_value):
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
                       "Chrome/74.0.3729.131 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,"
+                  "application/signed-exchange;v=b3",
         "Accept-Language": "Accept-Language:en-US,en;q=0.9",
         "Accept-Encoding": "gzip, deflate",
         "token": request_verification_token
     }
     cookies = {'ct': ct_value}
-    result = requests.request('POST', URL+'/EndpointSecurityManager/Account/PublicKey',
-                           headers=headers, cookies=cookies, verify=USE_SSL)
+    result = requests.request('POST', URL + '/EndpointSecurityManager/Account/PublicKey',
+                              headers=headers, cookies=cookies, verify=USE_SSL)
     # Extracting Cookie
     cookie_dough = result.cookies
     csid = None
@@ -124,7 +123,8 @@ def get_auth_cookie():
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
                       "Chrome/74.0.3729.131 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,"
+                  "application/signed-exchange;v=b3",
         "Accept-Language": "Accept-Language:en-US,en;q=0.9",
         "Accept-Encoding": "gzip, deflate",
         "token": request_verification_token
@@ -133,7 +133,7 @@ def get_auth_cookie():
         'ct': ct_value,
         'csid': csid
     }
-    salted_password = (salt+PASSWORD).encode()
+    salted_password = (salt + PASSWORD).encode()
 
     keyDER = b64decode(key)
     keyPub = RSA.importKey(keyDER)
@@ -147,8 +147,8 @@ def get_auth_cookie():
         "Username": USERNAME,
         "Password": b64pass
     }
-    result = requests.request('POST', URL+'/EndpointSecurityManager/Account/Login',
-                           headers=headers, cookies=cookies, data=payload, verify=USE_SSL)
+    result = requests.request('POST', URL + '/EndpointSecurityManager/Account/Login',
+                              headers=headers, cookies=cookies, data=payload, verify=USE_SSL)
     # Extracting Cookie
     cookie_dough = result.cookies
     csid = None
@@ -169,7 +169,7 @@ def traps_esm_hash_detail():
         "Accept": "application/json, text/javascript, */*; q=0.01",
         "Accept-Language": "Accept-Language:en-US,en;q=0.9",
         "Accept-Encoding": "gzip, deflate",
-        "Referer": URL+"/EndpointSecurityManager/HashManagement/Hashes",
+        "Referer": URL + "/EndpointSecurityManager/HashManagement/Hashes",
         "X-Requested-With": "XMLHttpRequest",
         "Origin": URL,
         "Content-Type": "application/json; charset=UTF-8",
@@ -187,8 +187,8 @@ def traps_esm_hash_detail():
         'auth': cookies['auth']
     }
 
-    result = requests.request('POST', URL+'/EndpointSecurityManager/HashManagement/HashesDetail',
-                           headers=headers, cookies=auth_cookie, data=payload, verify=USE_SSL)
+    result = requests.request('POST', URL + '/EndpointSecurityManager/HashManagement/HashesDetail',
+                              headers=headers, cookies=auth_cookie, data=payload, verify=USE_SSL)
 
     hash_results = json.loads(result.content)
 
@@ -203,12 +203,12 @@ def traps_esm_hash_detail():
     }
 
     demisto.results({
-                    'Type': entryTypes['note'],
-                    'ContentsFormat': formats['markdown'],
-                    'Contents': 'The verdict of hash {} is {}'.format(file_hash, hash_results['LocalAnalysis'][0]['Result']),
-                    'HumanReadable': tableToMarkdown('Hash Verdict for {}'.format(file_hash), hr_table),
-                    'EntryContext': ec
-                    })
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': 'The verdict of hash {} is {}'.format(file_hash, hash_results['LocalAnalysis'][0]['Result']),
+        'HumanReadable': tableToMarkdown('Hash Verdict for {}'.format(file_hash), hr_table),
+        'EntryContext': ec
+    })
 
 
 def traps_esm_override_hash_verdict():
@@ -232,8 +232,8 @@ def traps_esm_override_hash_verdict():
         'verdict': verdict
     }
 
-    result = requests.request('POST', URL+ '/EndpointSecurityManager/HashManagement/OverrideHashVerdict',
-                           headers=headers, cookies=cookies, data=payload, verify=USE_SSL)
+    result = requests.request('POST', URL + '/EndpointSecurityManager/HashManagement/OverrideHashVerdict',
+                              headers=headers, cookies=cookies, data=payload, verify=USE_SSL)
 
     demisto.results(result.content)
     # res = result.json()
