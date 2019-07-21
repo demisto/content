@@ -21,8 +21,7 @@ requests.packages.urllib3.disable_warnings()
 
 API_TOKEN = demisto.params()['APIToken']
 BASE_URL = demisto.params()['baseURL']
-USE_SSL = demisto.params().get('insecure') if demisto.params().get('insecure') else \
-    not demisto.params().get('insecure_new')  # Backward compatibility issue, the old logic of insecure was reversed
+USE_SSL = not demisto.params().get('insecure', False)
 DEFAULT_HEADERS = {
     'Authorization': 'Bearer {}'.format(API_TOKEN),
     'Accept': 'application/json'

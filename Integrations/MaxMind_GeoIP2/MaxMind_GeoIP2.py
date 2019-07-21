@@ -13,16 +13,9 @@ BASE_URL = demisto.params().get('url')
 APIKEY = demisto.params().get('apikey')
 ACCOUNT_ID = demisto.params().get('account')
 MODE = demisto.params().get('mode')
-USE_SSL = demisto.params().get('insecure', None) if demisto.params().get('insecure', None) else \
-    not demisto.params().get('insecure_new')  # Backward compatibility issue, the old logic of insecure was reversed
+USE_SSL = not demisto.params().get('insecure', False)
 PROXY = demisto.params().get('proxy')
 API_VERSION = 'geoip/v2.1'
-
-if not demisto.params().get('proxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 HR_HEADERS = [
     'IP',
@@ -174,6 +167,7 @@ def geo_ip_command():
 ''' EXECUTION CODE '''
 LOG('command is %s' % (demisto.command(),))
 try:
+    handle_proxy()
     if demisto.command() == 'ip':
         geo_ip_command()
     if demisto.command() == 'test-module':
@@ -181,5 +175,5 @@ try:
         demisto.results('ok')
 except Exception as e:
     LOG(e)
-    LOG.print_log(False)
-    return_error(e.message)
+    LOG.print_log()
+    return_error(str(e))
