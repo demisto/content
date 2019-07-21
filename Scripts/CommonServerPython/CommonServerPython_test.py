@@ -472,10 +472,10 @@ def test_logger():
 
 
 def test_is_mac_address():
-    from CommonServerPython import is_mac
+    from CommonServerPython import is_mac_address
 
     mac_address_false = 'AA:BB:CC:00:11'
     mac_address_true = 'AA:BB:CC:00:11:22'
 
-    assert(is_mac(mac_address_false) is False)
-    assert(is_mac(mac_address_true))
+    assert(is_mac_address(mac_address_false) is False)
+    assert(is_mac_address(mac_address_true))
