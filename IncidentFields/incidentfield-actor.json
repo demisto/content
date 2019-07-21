@@ -1,9 +1,8 @@
 {
-  "id": "incident_country",
-  "version": -1,
+  "id": "indicator_actor",
   "sortValues": null,
   "closeForm": false,
-  "cliName": "country",
+  "cliName": "actor",
   "neverSetAsRequired": false,
   "threshold": 72,
   "defaultRows": null,
@@ -13,11 +12,12 @@
   "isReadOnly": false,
   "commitMessage": "",
   "system": false,
-  "content": true,
+  "content": false,
   "unsearchable": false,
+  "version": -1,
   "unmapped": false,
   "hidden": false,
-  "type": "shortText",
+  "type": "multiSelect",
   "breachScript": "",
   "editForm": true,
   "description": "",
@@ -25,21 +25,24 @@
   "shouldCommit": false,
   "shouldPublish": false,
   "associatedTypes": [
-    "GDPR Data Breach"
+    "File"
   ],
   "caseInsensitive": true,
   "columns": null,
   "placeholder": "",
   "useAsKpi": false,
   "systemAssociatedTypes": null,
-  "prevName": "Country",
+  "prevName": "Actor",
   "locked": false,
-  "name": "Country",
+  "name": "Actor",
   "ownerOnly": false,
   "required": false,
-  "modified": "2019-07-01T10:44:12.228564091Z",
+  "modified": "2019-07-18T08:15:04.700501872Z",
   "fieldCalcScript": "",
-  "selectValues": null,
+  "selectValues": [
+    "",
+    ""
+  ],
   "validationRegex": "",
   "sla": 0
 }
