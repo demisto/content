@@ -501,7 +501,12 @@ def incidents(incidents=None):
     Returns:
         [type] -- [description]
     """
-    return exampleIncidents[0]['Contents']['data']
+    if incidents is None:
+        return exampleIncidents[0]['Contents']['data']
+    else:
+        return results(
+            {"Type": 1, "Contents": json.dumps(incidents), "ContentsFormat": "json"}
+        )
 
 
 def setContext(contextPath, value):
