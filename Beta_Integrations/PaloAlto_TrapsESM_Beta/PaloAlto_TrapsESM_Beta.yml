@@ -55,4 +55,4 @@ script:
   runonce: false
   script: ''
   type: python
-  dockerimage: devdemisto/btfl-soup:1.0.0.864
+  dockerimage: demisto/btfl-soup
