@@ -239,9 +239,9 @@ script:
     name: shodan-network-delete-alert
   - arguments:
     - default: false
-      description: AlertId
+      description: AlertID
       isArray: false
-      name: alertId
+      name: alertID
       required: true
       secret: false
     - default: false
