@@ -50,7 +50,7 @@ def http_request(method, uri, params=None, data=None):
         if 'application/json' in res.headers['content-type'] and 'error' in res.json():
             error_msg += f': {res.json()["error"]}'
 
-        raise Exception(error_msg)
+        return_error(error_msg)
 
     return res.json()
 
@@ -204,6 +204,43 @@ def shodan_scan_ip_command():
     })
 
 
+def shodan_scan_internet_command():
+    port = demisto.args()['port']
+
+    try:
+        port = int(port)
+    except ValueError:
+        return_error(f'Port must be number, not {port}')
+
+    protocol = demisto.args()['protocol']
+
+    res = http_request('POST', '/shodan/scan/internet', data={
+        'port': port,
+        'protocol': protocol
+    })
+
+    ec = {
+        'Shodan': {
+            'Scan': {
+                'ID': res.get('id', '')
+            }
+        }
+    }
+
+    human_readable = tableToMarkdown(f'Intenet scanning results for port {port} and protocol {protocol}', {
+        'ID': ec['Shodan']['Scan']['ID'],
+    })
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': res,
+        'ContentsFormat': formats['json'],
+        'HumanReadable': human_readable,
+        'HumanReadableFormat': formats['markdown'],
+        'EntryContext': ec
+    })
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 if demisto.command() == 'test-module':
@@ -218,3 +255,5 @@ elif demisto.command() == 'shodan-search-count':
     shodan_search_count_command()
 elif demisto.command() == 'shodan-scan-ip':
     shodan_scan_ip_command()
+elif demisto.command() == 'shodan-scan-internet':
+    shodan_scan_internet_command()

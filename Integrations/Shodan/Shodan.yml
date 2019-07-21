@@ -160,7 +160,7 @@ script:
     execution: false
     name: shodan-scan-internet
     outputs:
-    - contextPath: Shodan.Scan.Id
+    - contextPath: Shodan.Scan.ID
       type: String
   - arguments:
     - default: false
