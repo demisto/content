@@ -135,6 +135,7 @@ script:
     description: Fetches events for all clicks and messages relating to known threats
       within the specified time period. Details as per clicks/blocked.
   isfetch: true
+  dockerimage: demisto/python3:3.7.4.977
   runonce: false
   script: '-'
   type: python

@@ -1,6 +1,6 @@
 from ProofpointTAP_v2 import fetch_incidents, Client, ALL_EVENTS, ISSUES_EVENTS, get_events_command
 import json
-from mock import patch
+from unittest.mock import patch
 
 MOCK_URL = "http://123-fake-api.com"
 MOCK_DELIVERED_MESSAGE = {
