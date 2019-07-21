@@ -1,1 +1,1 @@
-- Fix bug in fetch incidets - skip the ticket if incident with the same ticket id already created
+- Fixed an issue when fetching incidents in which multiple incidents with the same ticket ID were fetched.
