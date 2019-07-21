@@ -247,7 +247,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5270
+          "y": 6145
         }
       }
     note: false
@@ -1020,10 +1020,10 @@ tasks:
     ignoreworker: false
   "39":
     id: "39"
-    taskid: e5abba90-ebdf-4c17-8193-ad88ebbce0e6
+    taskid: 789c5249-ef3e-40e2-875d-314e263ff9f5
     type: regular
     task:
-      id: e5abba90-ebdf-4c17-8193-ad88ebbce0e6
+      id: 789c5249-ef3e-40e2-875d-314e263ff9f5
       version: -1
       name: comments to context
       description: "Takes the comments of a given entry ID and stores them in the
@@ -1056,10 +1056,10 @@ tasks:
     ignoreworker: false
   "40":
     id: "40"
-    taskid: 03a2a2cc-6f6b-41f9-8d4f-4db7106552f9
+    taskid: 06ce4eea-3c3c-4902-803b-7605f9a38c20
     type: condition
     task:
-      id: 03a2a2cc-6f6b-41f9-8d4f-4db7106552f9
+      id: 06ce4eea-3c3c-4902-803b-7605f9a38c20
       version: -1
       name: info message of sample not found
       type: condition
@@ -1067,7 +1067,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "17"
+      - "42"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1123,14 +1123,187 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "42":
+    id: "42"
+    taskid: 32b19684-cc6f-43fa-8a8d-a693d9e566b3
+    type: regular
+    task:
+      id: 32b19684-cc6f-43fa-8a8d-a693d9e566b3
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "43":
+    id: "43"
+    taskid: 48978961-f56f-4b37-8302-389f0e4971e3
+    type: regular
+    task:
+      id: 48978961-f56f-4b37-8302-389f0e4971e3
+      version: -1
+      name: FileCreateAndUpload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      data:
+        simple: jojo
+      entryId: {}
+      filename:
+        simple: lolo.xml
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "44":
+    id: "44"
+    taskid: 91586d36-8928-46c8-8317-1203d07a7d69
+    type: regular
+    task:
+      id: 91586d36-8928-46c8-8317-1203d07a7d69
+      version: -1
+      name: wildfire-upload non supported file type
+      description: Uploads a file to WildFire for analysis.
+      script: '|||wildfire-upload'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      upload:
+        complex:
+          root: File
+          accessor: EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "45":
+    id: "45"
+    taskid: 26a05e42-a4f2-4e1f-8c22-fa6edb47e433
+    type: regular
+    task:
+      id: 26a05e42-a4f2-4e1f-8c22-fa6edb47e433
+      version: -1
+      name: Comments of warning message to context
+      description: "Takes the comments of a given entry ID and stores them in the
+        incident context, under a provided context key. \nFor accessing the last executed
+        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
+        the entryId input parameter."
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      contextKey:
+        simple: WarningMessage
+      entryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      listSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "46":
+    id: "46"
+    taskid: fd8b2ff0-578b-4dbc-8069-57fd42783766
+    type: condition
+    task:
+      id: fd8b2ff0-578b-4dbc-8069-57fd42783766
+      version: -1
+      name: Warning message of not supported file type
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: WarningMessage
+            iscontext: true
+          right:
+            value:
+              simple: Unsupported File Type Sample, file type is not supported
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
-      "31_32_yes": 0.9
+      "31_32_yes": 0.9,
+      "40_42_yes": 0.85
     },
     "paper": {
       "dimensions": {
-        "height": 5285,
+        "height": 6160,
         "width": 810,
         "x": 50,
         "y": 50

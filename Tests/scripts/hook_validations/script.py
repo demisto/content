@@ -92,6 +92,9 @@ class ScriptValidator(object):
         """Check if the docker image as been changed."""
         is_docker_added = re.search("\+([ ]+)?dockerimage: .*", self.change_string)
         is_docker_deleted = re.search("-([ ]+)?dockerimage: .*", self.change_string)
+        if is_docker_added and is_docker_deleted and is_docker_added.group(0)[1:] == is_docker_deleted.group(0)[1:]:
+            return False
+
         if is_docker_added or is_docker_deleted:
             print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
                         " this is not allowed.".format(self.file_path))
