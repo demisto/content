@@ -1749,6 +1749,7 @@
         "Google Cloud Compute": "Can't test yet",
         "Cymon": "The service was discontinued since April 30th, 2019.",
         "FireEye ETP": "No instance",
+        "ProofpointTAP_v2": "No instance",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
