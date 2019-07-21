@@ -132,6 +132,29 @@ def ip_command():
     })
 
 
+def shodan_search_count_command():
+    query = demisto.args()['query']
+
+    res = http_request('/shodan/host/count', {'query': query})
+
+    ec = {
+        'Shodan': {
+            'Search': {
+                'ResultCount': res.get('total', 0)
+            }
+        }
+    }
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': res,
+        'ContentsFormat': formats['json'],
+        'HumanReadable': f'## {ec["Shodan"]["Search"]["ResultCount"]} results for query "{query}"',
+        'HumanReadableFormat': formats['markdown'],
+        'EntryContext': ec
+    })
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 if demisto.command() == 'test-module':
@@ -142,3 +165,5 @@ elif demisto.command() == 'search':
     search_command()
 elif demisto.command() == 'ip':
     ip_command()
+elif demisto.command() == 'shodan-search-count':
+    shodan_search_count_command()
