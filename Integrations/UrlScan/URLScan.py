@@ -207,7 +207,7 @@ def format_results(uuid):
     human_readable['Effective URL'] = response['page']['url']
     cont['EffectiveURL'] = response['page']['url']
     if 'uuid' in scan_tasks:
-        ec['URLScan']['UUID']
+        ec['URLScan']['UUID'] = scan_tasks['uuid']
     if 'ips' in scan_lists:
         ip_asn_MD = []
         ip_ec_info = makehash()
@@ -234,7 +234,6 @@ def format_results(uuid):
     # add redirected URLs
     if 'requests' in scan_data:
         redirected_urls = []
-        demisto.log(str(scan_data['requests']))
         for o in scan_data['requests']:
             if 'redirectResponse' in o['request']:
                 if 'url' in o['request']['redirectResponse']:
@@ -312,7 +311,7 @@ def format_results(uuid):
     if 'screenshotURL' in scan_tasks:
         human_readable['Screenshot'] = scan_tasks['screenshotURL']
         screen_path = scan_tasks['screenshotURL']
-        response_img = requests.request("GET", screen_path)
+        response_img = requests.request("GET", screen_path, verify=INSECURE)
         stored_img = fileResult('screenshot.png', response_img.content)
 
     demisto.results({
