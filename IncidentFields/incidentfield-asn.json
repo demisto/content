@@ -25,8 +25,7 @@
   "shouldCommit": false,
   "shouldPublish": false,
   "associatedTypes": [
-    "IP",
-    "IP_tmp"
+    "IP"
   ],
   "caseInsensitive": true,
   "columns": null,
