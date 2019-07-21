@@ -229,9 +229,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: AlertId
+      description: AlertID
       isArray: false
-      name: alertId
+      name: alertID
       required: true
       secret: false
     deprecated: false

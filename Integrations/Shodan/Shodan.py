@@ -308,6 +308,14 @@ def shodan_network_get_alerts_command():
     for alert in res:
         alert_to_demisto_result(alert)
 
+
+def shodan_network_delete_alert_command():
+    alert_id = demisto.args()['alertID']
+
+    http_request('DELETE', f'/shodan/alert/{alert_id}')
+
+    demisto.results(f'Deleted alert {alert_id}')
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 if demisto.command() == 'test-module':
@@ -332,3 +340,5 @@ elif demisto.command() == 'shodan-network-get-alert-by-id':
     shodan_network_get_alert_by_id_command()
 elif demisto.command() == 'shodan-network-get-alerts':
     shodan_network_get_alerts_command()
+elif demisto.command() == 'shodan-network-delete-alert':
+    shodan_network_delete_alert_command()
