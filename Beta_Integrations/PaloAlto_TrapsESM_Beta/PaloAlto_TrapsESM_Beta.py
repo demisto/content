@@ -1,3 +1,6 @@
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import json
@@ -5,7 +8,7 @@ import requests
 from bs4 import BeautifulSoup
 from base64 import b64decode, b64encode
 from Crypto.PublicKey import RSA
-from Crypto.Cipher import AES, PKCS1_v1_5
+from Crypto.Cipher import PKCS1_v1_5
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -31,7 +34,6 @@ def logout_traps():
     result = requests.request('GET', URL + '/EndpointSecurityManager/Account/Logout',
                               headers=headers, verify=USE_SSL)
     c = result.content
-
     demisto.results(c)
 
 
