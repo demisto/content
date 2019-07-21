@@ -358,7 +358,7 @@ script:
             query += ' AND path:' + args['process-path'];
         }
         if (args.md5) {
-            query += ' AND process_md5:' + args.md5;
+            query += ' AND md5:' + args.md5;
         }
         let processes = getProcessesRequest(query, args.rows, args.start, args.sort, args.facets);
         let title = 'CB Response - Get Processes';

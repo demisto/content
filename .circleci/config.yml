@@ -7,12 +7,12 @@ experimental:
 jobs:
   build:
     docker:
-      - image: devdemisto/content-build-2and3:2.0.0.295  # disable-secrets-detection
+      - image: devdemisto/content-build-2and3:2.0.0.877  # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.6.0"
+      CONTENT_VERSION: "19.7.0"
       SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "447631bf0e68b024f6004b005bafb051587cc42b" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "acafc2290bf4e4fa59e0b143a64c154fcdb0b546" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
@@ -65,9 +65,13 @@ jobs:
               [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
               python ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
       - run:
+          name: Spell Checks
+          command: |
+            python ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
+      - run:
           name: Build Content Descriptor
           when: always
-          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM $GIT_SHA1 $CONTENT_VERSION $SERVER_VERSION
+          command: python release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION $GITHUB_TOKEN
       - run:
           name: Common Server Documentation
           when: always
