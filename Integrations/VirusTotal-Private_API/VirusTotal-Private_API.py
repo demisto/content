@@ -572,7 +572,7 @@ def get_url_report_command():
 
     responses_dict = get_url_reports_with_retries(urls, all_info, retries, scan_finish_time_in_seconds)
     md = ''
-    ec = {  # type: dict
+    ec = {  # type: ignore
         'DBotScore': [],
         outputPaths['url']: [],
     }
