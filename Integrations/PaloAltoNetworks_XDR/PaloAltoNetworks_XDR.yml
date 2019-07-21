@@ -413,7 +413,7 @@ script:
       Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in assignee email argument.
     execution: false
     name: xdr-update-incident
-  dockerimage: demisto/python3:3.7.3.221
+  dockerimage: demisto/python3:3.7.4.977
   isfetch: true
   runonce: false
   script: '-'

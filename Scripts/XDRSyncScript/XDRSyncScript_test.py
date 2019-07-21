@@ -103,7 +103,6 @@ def test_compare_incident_in_demisto_vs_xdr_context___incident_not_modified():
     is_modified, update_args = compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident_in_context,
                                                                           incident_id,
                                                                           fields_mapping)
-    print(update_args)
     assert not is_modified
 
 
