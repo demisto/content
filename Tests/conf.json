@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Cortex XDR - IR",
+            "playbookID": "Test XDR Playbook",
+            "fromversion": "4.1.0"
+        },
+        {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test",
             "instance_names": "ms_graph_mail_dev"
@@ -1145,7 +1150,7 @@
             "playbookID": "RegexGroups Test"
         },
         {
-            "integrations": "Cisco pxGrid ISE",
+            "integrations": "Cisco ISE",
             "playbookID": "cisco-ise-test-playbook"
         },
         {
@@ -1684,6 +1689,10 @@
         {
             "integrations": "MailListener - POP3",
             "playbookID": "MailListener-POP3 - Test"
+        },
+        {
+            "integrations": "VulnDB",
+            "playbookID": "Test-VulnDB"
         }
     ],
     "skipped_tests": {
@@ -1740,6 +1749,7 @@
         "Google Cloud Compute": "Can't test yet",
         "Cymon": "The service was discontinued since April 30th, 2019.",
         "FireEye ETP": "No instance",
+        "ProofpointTAP_v2": "No instance",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
@@ -1812,13 +1822,6 @@
         "Pwned": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
         "Google BigQuery": "Integration has no proxy checkbox",
-        "InfoArmor VigilanteATI": "Pending merge of branch proxy-unsecure-checks",
-        "GoogleSafeBrowsing": "Pending merge of branch proxy-unsecure-checks",
-        "Cisco Meraki": "Pending merge of branch proxy-unsecure-checks",
-        "FalconIntel": "Pending merge of branch proxy-unsecure-checks",
-        "urlscan.io": "Pending merge of branch proxy-unsecure-checks",
-        "PhishTank": "Pending merge of branch proxy-unsecure-checks",
-        "epo": "Pending merge of branch proxy-unsecure-checks",
         "Symantec Advanced Threat Protection": "Checking",
         "ReversingLabs A1000": "Checking",
         "Check Point": "Checking",
@@ -1829,7 +1832,6 @@
         "Cylance Protect v2": "Checking",
         "ArcSight ESM v2": "Checking",
         "Phish.AI": "Checking",
-        "MaxMind GeoIP2": "Checking",
         "Intezer": "Nightly - Checking",
         "ProtectWise": "Nightly - Checking",
         "google-vault": "Nightly - Checking",
