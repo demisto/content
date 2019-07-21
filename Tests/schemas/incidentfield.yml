@@ -78,7 +78,7 @@ mapping:
     type: bool
   unsearchable:
     type: bool
-  sortvalues:
+  sortValues:
     type: seq
     sequence:
       - include: sortvalue_schema
@@ -91,5 +91,6 @@ mapping:
   shouldPublish:
     type: bool
   prevName:
-    type: bool
+    type: str
+
 schema;sortvalue_schema:
