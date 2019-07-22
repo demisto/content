@@ -176,7 +176,6 @@ def fix_order(http_packets):
     new_order = []
 
     # For each packet find the next one that matches the tcp,ip tuple.
-    i = 0
     while len(http_packets) > 0:
         packet = http_packets[0]
         tcp_src = packet["TCP"].srcport
@@ -278,7 +277,7 @@ def create_flow_object(flow, keys_transform_map, trim_file_data_size, allowed_co
     :return: an http flow
     """
 
-    if flow == None:
+    if flow is None:
         return {
             "Not found": "No response found"
         }
