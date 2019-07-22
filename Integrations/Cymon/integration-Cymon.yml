@@ -13,6 +13,7 @@ configuration:
   type: 8
 description: Analyzes suspicious domains and IP addresses
 display: Cymon (Deprecated)
+deprecated: true
 name: Cymon
 script:
   commands:
