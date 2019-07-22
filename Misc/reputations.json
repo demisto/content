@@ -58,7 +58,7 @@
     {
       "id": "emailRep",
       "version": -1,
-      "regex": "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b",
+      "regex": "\\b[A-Za-z0-9._%=+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b",
       "details": "Email",
       "reputationCommand": "email",
       "contextValue": "Address",
