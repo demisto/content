@@ -410,4 +410,4 @@ script:
   script: '-'
   type: python
 tests:
-- ShodanTest
+- "Test-Shodan_v2"

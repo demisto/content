@@ -43,7 +43,8 @@ def http_request(method, uri, params=None, data=None, headers=None):
                            url,
                            params=params,
                            data=data,
-                           headers=headers)
+                           headers=headers,
+                           verify=USE_SSL)
 
     if res.status_code != 200:
         error_msg = f'Error in API call {url} [{res.status_code}] - {res.reason}'
