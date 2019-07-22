@@ -9,7 +9,7 @@ import csv
 def json_to_csv(data):
     si = io.BytesIO()
     cw = csv.writer(si)
-    keys = list(dictlist[0].iterkeys())
+    keys = list(data[0].keys())
     cw.writerow(keys)
     for d in data:
         val_lst = []
