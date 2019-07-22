@@ -19,7 +19,7 @@ def json_to_csv(data, delimiter):
     return si.getvalue().strip("\r\n")
 
 
-def main(entry_id, out_filename, delimiter='|'):
+def main(entry_id, out_filename, delimiter):
     if isinstance(entry_id, list):
         entry_id = entry_id[0]
 
@@ -51,4 +51,4 @@ def main(entry_id, out_filename, delimiter='|'):
 
 if __name__ in ('__builtin__', 'builtins'):
     args = demisto.args()
-    main(args['entryid'], args['filename'], args.get('delimiter'))
+    main(args['entryid'], args['filename'], args.get('delimiter', '|').encode("utf-8"))
