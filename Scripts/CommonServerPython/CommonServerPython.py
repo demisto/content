@@ -34,6 +34,7 @@ entryTypes = {
     'plagroundError': 8,
     'playgroundError': 8,
     'entryInfoFile': 9,
+    'warning': 11,
     'map': 15,
     'widget': 17
 }
@@ -74,7 +75,7 @@ dbotscores = {
 }
 
 
-###### Fix fetching credentials from vault instances ######
+# ===== Fix fetching credentials from vault instances =====
 # ====================================================================================
 try:
     for k, v in demisto.params().items():
@@ -552,11 +553,24 @@ class IntegrationLogger(object):
       :return: No data returned
       :rtype: ``None``
     """
+
     def __init__(self, ):
         self.messages = []  # type: list
 
     def __call__(self, message):
-        self.messages.append('%s' % (message, ))
+        try:
+            self.messages.append(str(message))
+
+        except UnicodeEncodeError as ex:
+            # could not decode the message
+            # if message is an Exception, try encode the exception's message
+            if isinstance(message, Exception) and message.args and isinstance(message.args[0], STRING_OBJ_TYPES):
+                self.messages.append(message.args[0].encode('utf-8', 'replace'))
+            elif isinstance(message, STRING_OBJ_TYPES):
+                # try encode the message itself
+                self.messages.append(message.encode('utf-8', 'replace'))
+            else:
+                self.messages.append("Failed encoding message with error: {}".format(ex))
 
     def print_log(self, verbose=False):
         if self.messages:
@@ -650,7 +664,10 @@ def flattenCell(data, is_pretty=True):
         string_list = []
         for d in data:
             try:
-                string_list.append(str(d))
+                if IS_PY3 and isinstance(d, bytes):
+                    string_list.append(d.decode('utf-8'))
+                else:
+                    string_list.append(str(d))
             except UnicodeEncodeError:
                 string_list.append(d.encode('utf-8'))
 
@@ -786,6 +803,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
     # in case of headers was not provided (backward compatibility)
     if not headers:
         headers = list(t[0].keys())
+        headers.sort()
 
     if removeNull:
         headers_aux = headers[:]
@@ -919,7 +937,7 @@ def fileResult(filename, data, file_type=None):
        :type filename: ``str``
        :param filename: The name of the file to be created (required)
 
-       :type data: ``str``
+       :type data: ``str`` or ``bytes``
        :param data: The file data (required)
 
        :type file_type: ``str``
@@ -931,6 +949,10 @@ def fileResult(filename, data, file_type=None):
     if file_type is None:
         file_type = entryTypes['file']
     temp = demisto.uniqueFile()
+    # pylint: disable=undefined-variable
+    if (IS_PY3 and isinstance(data, str)) or (not IS_PY3 and isinstance(data, unicode)):  # type: ignore
+        data = data.encode('utf-8')
+    # pylint: enable=undefined-variable
     with open(demisto.investigation()['id'] + '_' + temp, 'wb') as f:
         f.write(data)
     return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
@@ -1001,7 +1023,7 @@ def flattenTable(tableDict):
     return [flattenRow(row) for row in tableDict]
 
 
-MARKDOWN_CHARS = "\`*_{}[]()#+-!"
+MARKDOWN_CHARS = r"\`*_{}[]()#+-!"
 
 
 def stringEscapeMD(st, minimal_escaping=False, escape_multiline=False):
@@ -1313,7 +1335,7 @@ def return_outputs(readable_output, outputs, raw_response=None):
     demisto.results(return_entry)
 
 
-def return_error(message, error=''):
+def return_error(message, error='', outputs=None):
     """
         Returns error entry with given message and exits the script
 
@@ -1322,6 +1344,9 @@ def return_error(message, error=''):
 
         :type error: ``str``
         :param error: The raw error message to log (optional)
+
+        :type outputs: ``dict or None``
+        :param outputs: the outputs that will be returned to playbook/investigation context (optional)
 
         :return: Error entry object
         :rtype: ``dict``
@@ -1333,7 +1358,8 @@ def return_error(message, error=''):
     demisto.results({
         'Type': entryTypes['error'],
         'ContentsFormat': formats['text'],
-        'Contents': str(message)
+        'Contents': str(message),
+        "EntryContext": outputs
     })
     sys.exit(0)
 
@@ -1526,7 +1552,7 @@ def string_to_context_key(string):
         raise Exception('The key is not a string: {}'.format(string))
 
 
-def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0):
+def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0, utc=True):
     """
       Parses date_range string to a tuple date strings (start, end). Input must be in format 'number date_range_unit')
       Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
@@ -1558,8 +1584,13 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
     if not isinstance(timezone, (int, float)):
         return_error('Invalid timezone "{}" - must be a number (of type int or float).'.format(timezone))
 
-    end_time = datetime.now() + timedelta(hours=timezone)
-    start_time = datetime.now() + timedelta(hours=timezone)
+    if utc:
+        end_time = datetime.now() + timedelta(hours=timezone)
+        start_time = datetime.now() + timedelta(hours=timezone)
+    else:
+        end_time = datetime.utcnow() + timedelta(hours=timezone)
+        start_time = datetime.utcnow() + timedelta(hours=timezone)
+
     unit = range_split[1]
     if 'minute' in unit:
         start_time = end_time - timedelta(minutes=number)

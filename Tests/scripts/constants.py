@@ -45,6 +45,7 @@ INCIDENT_FIELD_REGEX = r"{}.*incidentfield-.*\.json$".format(INCIDENT_FIELDS_DIR
 MISC_REGEX = r"{}.*reputations.*\.json$".format(MISC_DIR)
 REPUTATION_REGEX = r"{}.*reputation-.*\.json$".format(MISC_DIR)
 REPORT_REGEX = r"{}.*report-.*\.json$".format(REPORTS_DIR)
+MISC_REPUTATIONS_REGEX = r"{}.reputations.json$".format(MISC_DIR)
 
 BETA_SCRIPT_REGEX = r"{}.*script-.*\.yml$".format(BETA_INTEGRATIONS_DIR)
 BETA_PLAYBOOK_REGEX = r"{}.*playbook-.*\.yml$".format(BETA_INTEGRATIONS_DIR)
@@ -73,6 +74,14 @@ DIR_LIST = [
     MISC_DIR,
     CONNECTIONS_DIR,
     BETA_INTEGRATIONS_DIR
+]
+
+SPELLCHECK_FILE_TYPES = [
+    INTEGRATION_REGEX,
+    INTEGRATION_YML_REGEX,
+    PLAYBOOK_REGEX,
+    SCRIPT_REGEX,
+    SCRIPT_YML_REGEX
 ]
 
 KNOWN_FILE_STATUSES = ['a', 'm', 'd', 'r'] + ['r{:03}'.format(i) for i in range(101)]

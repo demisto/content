@@ -1,1 +1,1 @@
-updated file reputations
+Add new FQDN indicator type
