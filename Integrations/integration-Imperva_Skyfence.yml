@@ -169,7 +169,7 @@ script:
       list can then be externally filtered or searched by the application to identify
       individual endpoints that might require action. For any such endpoint, the application
       can obtain fuller details (see Endpoint Details Request below) and if relevant
-      change its enrollment status (see Set Endpoint Status Request on page 11).
+      change its enrollment status.
   - name: imp-sf-set-endpoint-status
     arguments:
     - name: endpointId
@@ -183,7 +183,7 @@ script:
       an endpoint or revoke its enrollment. This is usually relevant for endpoints
       with pending status but can be done for endpoints with any current status. The
       endpoint needs to be specified by its ID, which can have been received from
-      an endpoints list request (see Endpoints List Request on page 10), from a new
-      endpoint notification (see New Endpoint Notifications on page 6), or from any
+      an endpoints list request, from a new
+      endpoint notification, or from any
       other implemented manual or automated input.'
     execution: true
