@@ -234,7 +234,7 @@ script:
     name: shodan-scan-internet
     outputs:
     - contextPath: Shodan.Scan.ID
-      description: ID of the internet scan
+      description: The id of the scan job
       type: String
   - arguments:
     - default: false
@@ -401,7 +401,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Start getting notifications again for the specified trigger.
+    description: Start getting notifications again for the specified trigger
     execution: false
     name: shodan-network-alert-remove-service-from-whitelist
   dockerimage: demisto/python3:3.7.3.286
