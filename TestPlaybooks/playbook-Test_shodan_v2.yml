@@ -1,14 +1,14 @@
 id: "Test-Shodan_v2"
-version: 26
+version: 7
 name: "Test-Shodan_v2"
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: dd0bcd04-18f2-4ba5-85d1-0b18c39c6a48
+    taskid: db741c2e-ae26-4d03-84f8-a81a9d66aeba
     type: start
     task:
-      id: dd0bcd04-18f2-4ba5-85d1-0b18c39c6a48
+      id: db741c2e-ae26-4d03-84f8-a81a9d66aeba
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 7881ed76-bfd7-4a6f-8380-f599a962cbea
+    taskid: 8c9a5be8-e968-47bf-8aff-71ba53e93b2f
     type: regular
     task:
-      id: 7881ed76-bfd7-4a6f-8380-f599a962cbea
+      id: 8c9a5be8-e968-47bf-8aff-71ba53e93b2f
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -63,10 +63,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 76dd15b6-e23f-45ee-8926-7e1fc41704d3
+    taskid: 3f86ee67-ced1-4e22-8b6c-6a7cd2f7093c
     type: regular
     task:
-      id: 76dd15b6-e23f-45ee-8926-7e1fc41704d3
+      id: 3f86ee67-ced1-4e22-8b6c-6a7cd2f7093c
       version: -1
       name: shodan-create-network-alert
       script: Shodan_v2|||shodan-create-network-alert
@@ -95,10 +95,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: bc49c203-38ca-44cd-8b9a-d8de30eddb5f
+    taskid: 1a42daa5-782a-468a-83aa-e79e772cb4ab
     type: regular
     task:
-      id: bc49c203-38ca-44cd-8b9a-d8de30eddb5f
+      id: 1a42daa5-782a-468a-83aa-e79e772cb4ab
       version: -1
       name: shodan-network-get-alerts
       script: Shodan_v2|||shodan-network-get-alerts
@@ -121,10 +121,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: c82cee67-5fa8-47e2-8f88-0d73eda414ae
+    taskid: a594c4b7-c673-4968-85b7-fd7eda13c4f2
     type: regular
     task:
-      id: c82cee67-5fa8-47e2-8f88-0d73eda414ae
+      id: a594c4b7-c673-4968-85b7-fd7eda13c4f2
       version: -1
       name: shodan-network-delete-alert
       script: Shodan_v2|||shodan-network-delete-alert
@@ -150,10 +150,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 0e083af8-d851-4b08-81c5-14344dd21421
+    taskid: a4a29a82-8640-42e5-8bf5-b83c24d2eda7
     type: title
     task:
-      id: 0e083af8-d851-4b08-81c5-14344dd21421
+      id: a4a29a82-8640-42e5-8bf5-b83c24d2eda7
       version: -1
       name: success
       type: title
@@ -164,7 +164,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 5970
+          "y": 4920
         }
       }
     note: false
@@ -172,10 +172,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: efd33604-0b6e-4626-88b8-d35d06c3cc21
+    taskid: 30b3c649-612f-4e90-8392-762c30f7cb98
     type: regular
     task:
-      id: efd33604-0b6e-4626-88b8-d35d06c3cc21
+      id: 30b3c649-612f-4e90-8392-762c30f7cb98
       version: -1
       name: shodan-network-alert-set-trigger
       script: Shodan_v2|||shodan-network-alert-set-trigger
@@ -203,10 +203,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: cbb5ae3a-834b-47c3-89ec-5a16b64cd2bb
+    taskid: 5603a464-1372-4318-8e62-696e0bc6df75
     type: regular
     task:
-      id: cbb5ae3a-834b-47c3-89ec-5a16b64cd2bb
+      id: 5603a464-1372-4318-8e62-696e0bc6df75
       version: -1
       name: shodan-network-alert-whitelist-service
       script: Shodan_v2|||shodan-network-alert-whitelist-service
@@ -238,10 +238,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 240153be-013f-4035-8da8-b8cbd59333e7
+    taskid: 2d0690f4-62c4-4e36-8dae-fc09666b89bf
     type: regular
     task:
-      id: 240153be-013f-4035-8da8-b8cbd59333e7
+      id: 2d0690f4-62c4-4e36-8dae-fc09666b89bf
       version: -1
       name: 'shodan-network-alert-remove-service-from-whitelist '
       script: Shodan_v2|||shodan-network-alert-remove-service-from-whitelist
@@ -273,10 +273,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 487c2165-836a-46db-8fa5-4a9f89e17d98
+    taskid: 1a9e2836-fff4-4847-8224-1a1bff9367d7
     type: regular
     task:
-      id: 487c2165-836a-46db-8fa5-4a9f89e17d98
+      id: 1a9e2836-fff4-4847-8224-1a1bff9367d7
       version: -1
       name: shodan-network-alert-remove-trigger
       script: Shodan_v2|||shodan-network-alert-remove-trigger
@@ -304,10 +304,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 6d66e32e-044e-4f9b-8213-3fe761f42761
+    taskid: 9575c7fd-41e9-45c6-8017-41ce5ea7e695
     type: regular
     task:
-      id: 6d66e32e-044e-4f9b-8213-3fe761f42761
+      id: 9575c7fd-41e9-45c6-8017-41ce5ea7e695
       version: -1
       name: shodan-network-get-alert-by-id
       script: Shodan_v2|||shodan-network-get-alert-by-id
@@ -316,7 +316,7 @@ tasks:
       brand: Shodan_v2
     nexttasks:
       '#none#':
-      - "35"
+      - "37"
     scriptarguments:
       alertID:
         simple: ${Shodan.Alert.ID}
@@ -331,117 +331,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "16":
-    id: "16"
-    taskid: cd34d970-6d6d-4b57-8fa0-5427e1ca225b
-    type: regular
-    task:
-      id: cd34d970-6d6d-4b57-8fa0-5427e1ca225b
-      version: -1
-      name: shodan-scan-ip
-      script: Shodan_v2|||shodan-scan-ip
-      type: regular
-      iscommand: true
-      brand: Shodan_v2
-    nexttasks:
-      '#none#':
-      - "36"
-    scriptarguments:
-      ips:
-        complex:
-          root: RandomString
-          transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 1.1.1.
-              suffix:
-                value:
-                  simple: RandomString
-                iscontext: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 4220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "17":
-    id: "17"
-    taskid: 1149a7d1-405c-4055-83d6-eadac877c47c
-    type: regular
-    task:
-      id: 1149a7d1-405c-4055-83d6-eadac877c47c
-      version: -1
-      name: shodan-scan-status
-      script: Shodan_v2|||shodan-scan-status
-      type: regular
-      iscommand: true
-      brand: Shodan_v2
-    nexttasks:
-      '#none#':
-      - "37"
-    scriptarguments:
-      scanID:
-        simple: ${Shodan.Scan.ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 4570
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "18":
-    id: "18"
-    taskid: eaeddcab-3fed-48bd-8be6-4be097432078
-    type: condition
-    task:
-      id: eaeddcab-3fed-48bd-8be6-4be097432078
-      version: -1
-      name: verify context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "19"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: inList
-          left:
-            value:
-              simple: Shodan.Scan.Status
-            iscontext: true
-          right:
-            value:
-              simple: SUBMITTING,QUEUE,PROCESSING,DONE
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 4920
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "19":
     id: "19"
-    taskid: 8cad5d3d-4c9c-462d-8e5a-dc83e7b7bca5
+    taskid: 73a2c00d-1332-4663-8caf-cdc940f6bd26
     type: regular
     task:
-      id: 8cad5d3d-4c9c-462d-8e5a-dc83e7b7bca5
+      id: 73a2c00d-1332-4663-8caf-cdc940f6bd26
       version: -1
       name: ip
       description: Returns all services that have been found on the given host IP.
@@ -460,7 +355,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 5095
+          "y": 4045
         }
       }
     note: false
@@ -468,10 +363,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 52b74403-2a68-4d8b-8453-efb9b03fd4b0
+    taskid: 69a44bf8-8e03-47b7-8246-c51268bb5e9c
     type: condition
     task:
-      id: 52b74403-2a68-4d8b-8453-efb9b03fd4b0
+      id: 69a44bf8-8e03-47b7-8246-c51268bb5e9c
       version: -1
       name: verify context
       type: condition
@@ -496,7 +391,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 5445
+          "y": 4395
         }
       }
     note: false
@@ -504,10 +399,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: def99f58-f78e-4766-88d4-2a3d034fdc0f
+    taskid: 6af9b3cd-68d1-47db-8ecb-74b087f79fc8
     type: regular
     task:
-      id: def99f58-f78e-4766-88d4-2a3d034fdc0f
+      id: 6af9b3cd-68d1-47db-8ecb-74b087f79fc8
       version: -1
       name: search
       description: Search Shodan using the same query syntax as the website and use
@@ -537,10 +432,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: 4c920f05-0d2d-4929-80c0-4c733fe6d612
+    taskid: 3670a93d-7b58-4201-82dc-7bdf902e174c
     type: regular
     task:
-      id: 4c920f05-0d2d-4929-80c0-4c733fe6d612
+      id: 3670a93d-7b58-4201-82dc-7bdf902e174c
       version: -1
       name: shodan-search-count
       script: Shodan_v2|||shodan-search-count
@@ -558,7 +453,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 5620
+          "y": 4570
         }
       }
     note: false
@@ -566,10 +461,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: 78ffee87-9674-449d-87dc-a5312b01eb43
+    taskid: 64b90c78-53e3-401d-85a6-208ddef55219
     type: condition
     task:
-      id: 78ffee87-9674-449d-87dc-a5312b01eb43
+      id: 64b90c78-53e3-401d-85a6-208ddef55219
       version: -1
       name: verify context
       type: condition
@@ -594,7 +489,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 5795
+          "y": 4745
         }
       }
     note: false
@@ -602,10 +497,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: a711e7e2-c1ab-4f72-8416-0b4d5891013f
+    taskid: 78242824-3ad0-4193-858e-9c2fd4a26f02
     type: regular
     task:
-      id: a711e7e2-c1ab-4f72-8416-0b4d5891013f
+      id: 78242824-3ad0-4193-858e-9c2fd4a26f02
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -632,10 +527,10 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: 70e62799-d229-46f0-8a02-a8ee2dd14672
+    taskid: 739a9227-743a-4409-80c8-ce7187e1028e
     type: regular
     task:
-      id: 70e62799-d229-46f0-8a02-a8ee2dd14672
+      id: 739a9227-743a-4409-80c8-ce7187e1028e
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -662,10 +557,10 @@ tasks:
     ignoreworker: false
   "31":
     id: "31"
-    taskid: fb504239-3143-4b0e-8da6-1c9618a65909
+    taskid: ba30b45b-bdca-4356-8c2c-7ed019e94c94
     type: regular
     task:
-      id: fb504239-3143-4b0e-8da6-1c9618a65909
+      id: ba30b45b-bdca-4356-8c2c-7ed019e94c94
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -692,10 +587,10 @@ tasks:
     ignoreworker: false
   "32":
     id: "32"
-    taskid: 0853cfcc-fcc9-461a-807a-74eb1dba28c3
+    taskid: 596628c1-b716-4794-82e4-cd34afe35832
     type: regular
     task:
-      id: 0853cfcc-fcc9-461a-807a-74eb1dba28c3
+      id: 596628c1-b716-4794-82e4-cd34afe35832
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -722,10 +617,10 @@ tasks:
     ignoreworker: false
   "33":
     id: "33"
-    taskid: 800c7fb6-43b7-463d-883f-df50bc8c12da
+    taskid: 4064f997-5e31-4a36-8ce5-0eaa4b056b7a
     type: regular
     task:
-      id: 800c7fb6-43b7-463d-883f-df50bc8c12da
+      id: 4064f997-5e31-4a36-8ce5-0eaa4b056b7a
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -752,10 +647,10 @@ tasks:
     ignoreworker: false
   "34":
     id: "34"
-    taskid: 14557e56-4110-44a1-837d-966bf6874306
+    taskid: 6fffef4f-490c-4798-83b8-622402788891
     type: regular
     task:
-      id: 14557e56-4110-44a1-837d-966bf6874306
+      id: 6fffef4f-490c-4798-83b8-622402788891
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -780,12 +675,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "35":
-    id: "35"
-    taskid: de02a228-c2b3-4dce-8754-4c565ec6aa57
+  "37":
+    id: "37"
+    taskid: df84927d-52f5-496b-8ff5-2567758dc4b2
     type: regular
     task:
-      id: de02a228-c2b3-4dce-8754-4c565ec6aa57
+      id: df84927d-52f5-496b-8ff5-2567758dc4b2
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -795,7 +690,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "44"
+      - "19"
     scriptarguments:
       seconds:
         simple: "1"
@@ -810,72 +705,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "36":
-    id: "36"
-    taskid: 98d8b602-c1dc-4dff-825b-8ab2aed959ed
-    type: regular
-    task:
-      id: 98d8b602-c1dc-4dff-825b-8ab2aed959ed
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      seconds:
-        simple: "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 4395
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "37":
-    id: "37"
-    taskid: f8fd609d-6455-40cb-846f-2cb07d36b8e9
-    type: regular
-    task:
-      id: f8fd609d-6455-40cb-846f-2cb07d36b8e9
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      seconds:
-        simple: "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 4745
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "38":
     id: "38"
-    taskid: 13ae799e-3906-4609-8230-5610e2411975
+    taskid: ae08a3ab-db33-4b7d-8d36-3e62820fc51a
     type: regular
     task:
-      id: 13ae799e-3906-4609-8230-5610e2411975
+      id: ae08a3ab-db33-4b7d-8d36-3e62820fc51a
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -894,7 +729,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 5270
+          "y": 4220
         }
       }
     note: false
@@ -902,10 +737,10 @@ tasks:
     ignoreworker: false
   "39":
     id: "39"
-    taskid: ecef8a1b-8968-49c4-8970-8bc1130a5e37
+    taskid: d8d6e308-22ef-49a6-8980-19c16252f880
     type: regular
     task:
-      id: ecef8a1b-8968-49c4-8970-8bc1130a5e37
+      id: d8d6e308-22ef-49a6-8980-19c16252f880
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -932,10 +767,10 @@ tasks:
     ignoreworker: false
   "41":
     id: "41"
-    taskid: 2c760f92-140f-483d-8d48-f7147609447f
+    taskid: dc370e71-e883-4b35-82c5-e8607e10fa54
     type: regular
     task:
-      id: 2c760f92-140f-483d-8d48-f7147609447f
+      id: dc370e71-e883-4b35-82c5-e8607e10fa54
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -962,10 +797,10 @@ tasks:
     ignoreworker: false
   "42":
     id: "42"
-    taskid: 21b83842-52e4-4345-836d-9a955c1f7de3
+    taskid: 45cbca1d-9416-48f1-896f-d258b229d9bb
     type: condition
     task:
-      id: 21b83842-52e4-4345-836d-9a955c1f7de3
+      id: 45cbca1d-9416-48f1-896f-d258b229d9bb
       version: -1
       name: Alerts exist
       type: condition
@@ -997,10 +832,10 @@ tasks:
     ignoreworker: false
   "43":
     id: "43"
-    taskid: b76f6948-f3f6-441a-8d20-786d2ad4111e
+    taskid: 34949ba1-82ce-46d7-8ba3-be137409b330
     type: regular
     task:
-      id: b76f6948-f3f6-441a-8d20-786d2ad4111e
+      id: 34949ba1-82ce-46d7-8ba3-be137409b330
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1029,50 +864,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "44":
-    id: "44"
-    taskid: a09062ef-7c8c-44db-892c-f82a5072ea3a
-    type: regular
-    task:
-      id: a09062ef-7c8c-44db-892c-f82a5072ea3a
-      version: -1
-      name: random 2 digits
-      description: Generates random string
-      scriptName: GenerateRandomString
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      Digits:
-        simple: "True"
-      Length:
-        simple: "2"
-      Lowercase:
-        simple: "False"
-      Punctuation:
-        simple: "False"
-      Uppercase:
-        simple: "False"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 4045
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "45":
     id: "45"
-    taskid: a96cb9ad-6483-4e2a-8796-7035d325c456
+    taskid: e11834e6-1dcb-4002-8f2f-8d1cae9953ab
     type: condition
     task:
-      id: a96cb9ad-6483-4e2a-8796-7035d325c456
+      id: e11834e6-1dcb-4002-8f2f-8d1cae9953ab
       version: -1
       name: verify context
       type: condition
@@ -1105,7 +902,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5985,
+        "height": 4935,
         "width": 492.5,
         "x": 50,
         "y": 50
