@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 
 import json
 import requests
-from distutils.util import strtobool
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -327,7 +326,7 @@ def shodan_network_alert_set_trigger_command():
 
     res = http_request('PUT', f'/shodan/alert/{alert_id}/trigger/{trigger}')
 
-    if 'success' not in res or res['success'] != True:
+    if 'success' not in res or res['success'] is not True:
         return_error(f'Failed setting trigger {trigger} for alert {alert_id}')
 
     demisto.results(f'Set trigger "{trigger}" for alert {alert_id}')
@@ -339,7 +338,7 @@ def shodan_network_alert_remove_trigger_command():
 
     res = http_request('DELETE', f'/shodan/alert/{alert_id}/trigger/{trigger}')
 
-    if 'success' not in res or res['success'] != True:
+    if 'success' not in res or res['success'] is not True:
         return_error(f'Failed deleting trigger {trigger} for alert {alert_id}')
 
     demisto.results(f'Deleted trigger "{trigger}" for alert {alert_id}')
@@ -352,7 +351,7 @@ def shodan_network_alert_whitelist_service_command():
 
     res = http_request('PUT', f'/shodan/alert/{alert_id}/trigger/{trigger}/ignore/{service}')
 
-    if 'success' not in res or res['success'] != True:
+    if 'success' not in res or res['success'] is not True:
         return_error(f'Failed whitelisting service "{service}" for trigger {trigger} in alert {alert_id}')
 
     demisto.results(f'Whitelisted service "{service}" for trigger {trigger} in alert {alert_id}')
@@ -365,7 +364,7 @@ def shodan_network_alert_remove_service_from_whitelist_command():
 
     res = http_request('DELETE', f'/shodan/alert/{alert_id}/trigger/{trigger}/ignore/{service}')
 
-    if 'success' not in res or res['success'] != True:
+    if 'success' not in res or res['success'] is not True:
         return_error(
             f'Failed removing service "{service}" for trigger {trigger} in alert {alert_id} from the whitelist')
 
