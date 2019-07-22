@@ -1,0 +1,1 @@
+Modified the script for handling .MSG extensions to support the context as other file types

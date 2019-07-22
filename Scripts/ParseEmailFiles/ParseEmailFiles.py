@@ -3222,8 +3222,9 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
     if 'HTML' in email_data:
         md += u"* {0}:\t{1}\n".format('Body/HTML', email_data['HTML'] or "")
 
-    md += u"* {0}:\t{1}\n".format('Attachments', email_data.get('Attachments') or "")
-    md += u"\n\n" + tableToMarkdown("Headers", email_data['HeadersMap'])
+    md += u"* {0}:\t{1}\n".format('Attachments', email_data['Attachments'] or "")
+    md += u"\n\n" + tableToMarkdown("Headers", email_data['Headers']).decode("utf-8", "ignore")
+    md += u"\n\n" + tableToMarkdown("HeadersMap", email_data['HeadersMap']).decode("utf-8", "ignore")
     return md
 
 
@@ -3307,10 +3308,52 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
     if not msg:
         raise Exception("Could not parse msg file!")
 
-    email_data = msg.as_dict(max_depth)
+    msg_dict = msg.as_dict(max_depth)
+
+    try:
+        format_string = msg_dict['Headers'].split('Content-type:')[1].split(';')[0]
+    except:
+        format_string = ''
+
+    headers = []
+    flag = False
+    for x in msg_dict['Headers'].split('\n'):
+        if len(x) > 0 and not x == ' ' and not 'From nobody' in x:
+            if not x[0] == ' ' and not x[0] == '\t':
+                if flag:
+                    headers.append(
+                        {
+                            'name': the_key,
+                            'value': temp
+                        }
+                    )
+                splitted = x.split(' ')
+                the_key = splitted[0][:-1]
+                temp = ' '.join(splitted[1:])
+                temp = temp[:-1] if temp[-1:] == ' ' else temp
+                flag = True
+            else:
+                temp += x[:-1] if x[-1:] == ' ' else x
+
+    email_data = {
+        'To': msg_dict['To'],
+        'CC': msg_dict['CC'],
+        'From': msg_dict['From'],
+        'Subject': convert_to_unicode(msg_dict['Subject']),
+        'HTML': convert_to_unicode(msg_dict['HTML']),
+        'Text': convert_to_unicode(msg_dict['Text']),
+        'Headers': headers,
+        'HeadersMap': msg_dict['HeadersMap'],
+        # 'Attachments': ','.join(attachment_names) if attachment_names else '',
+        'Attachments': '',
+        'Format': format_string,
+        'Depth': MAX_DEPTH_CONST - max_depth
+    }
 
     if parse_only_headers:
-        return {"HeadersMap": email_data.get("HeadersMap")}, []
+        return {
+                   "HeadersMap": email_data["HeadersMap"]
+               }, []
 
     attached_emails_emls = save_attachments(msg.get_all_attachments(), file_name, max_depth - 1)
     # add eml attached emails
@@ -3381,7 +3424,9 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
             raise Exception("Could not parse eml file!")
 
         if parse_only_headers:
-            return {"HeadersMap": headers_map}, []
+            return {
+                       "HeadersMap": headers_map
+                   }, []
 
         html = ''
         text = ''
