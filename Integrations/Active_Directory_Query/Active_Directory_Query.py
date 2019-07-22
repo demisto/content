@@ -310,11 +310,11 @@ def search_users(default_base_dn, page_size):
     limit = int(args.get('limit', '0'))
 
     # default query - list all users
-    query = "(objectClass=User)(objectCategory=person)"
+    query = "(&(objectClass=User)(objectCategory=person))"
 
     # query by user DN
     if args.get('dn'):
-        query = "(&(objectClass=User)(objectCategory=person)(dn={}))".format(args['dn'])
+        query = "(&(objectClass=User)(objectCategory=person)(distinguishedName={}))".format(args['dn'])
 
     # query by name
     if args.get('name'):
