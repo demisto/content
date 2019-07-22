@@ -23,14 +23,7 @@ requests.packages.urllib3.disable_warnings()
 BASE_URL = 'https://urlscan.io/api/v1/'
 APIKEY = demisto.params().get('apikey')
 THRESHOLD = int(demisto.params().get('url_threshold', '1'))
-INSECURE = demisto.params().get('insecure', None) if demisto.params().get('insecure', None) else \
-    not demisto.params().get('insecure_new')  # Backward compatibility issue, the old logic of insecure was reversed
-PROXY = demisto.params().get('proxy')
-if not demisto.params().get('proxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+USE_SSL = not demisto.params().get('insecure', False)
 
 
 '''HELPER FUNCTIONS'''
@@ -50,7 +43,7 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
         BASE_URL + url_suffix,
         data=json,
         headers=headers,
-        verify=INSECURE
+        verify=USE_SSL
     )
     if r.status_code != 200:
         if r.status_code == 429:
@@ -98,7 +91,7 @@ def polling(uuid):
     uri = BASE_URL + 'result/{}'.format(uuid)
 
     ready = poll(
-        lambda: requests.get(uri, verify=INSECURE).status_code == 200,
+        lambda: requests.get(uri, verify=USE_SSL).status_code == 200,
         step=5,
         ignore_exceptions=(requests.exceptions.ConnectionError),
         timeout=int(TIMEOUT)
@@ -108,7 +101,7 @@ def polling(uuid):
 
 def poll_uri():
     uri = demisto.args().get('uri')
-    demisto.results(requests.get(uri, verify=INSECURE).status_code)
+    demisto.results(requests.get(uri, verify=USE_SSL).status_code)
 
 
 def step_constant(step):
@@ -207,7 +200,7 @@ def format_results(uuid):
     human_readable['Effective URL'] = response['page']['url']
     cont['EffectiveURL'] = response['page']['url']
     if 'uuid' in scan_tasks:
-        ec['URLScan']['UUID']
+        ec['URLScan']['UUID'] = scan_tasks['uuid']
     if 'ips' in scan_lists:
         ip_asn_MD = []
         ip_ec_info = makehash()
@@ -234,7 +227,6 @@ def format_results(uuid):
     # add redirected URLs
     if 'requests' in scan_data:
         redirected_urls = []
-        demisto.log(str(scan_data['requests']))
         for o in scan_data['requests']:
             if 'redirectResponse' in o['request']:
                 if 'url' in o['request']['redirectResponse']:
@@ -312,7 +304,7 @@ def format_results(uuid):
     if 'screenshotURL' in scan_tasks:
         human_readable['Screenshot'] = scan_tasks['screenshotURL']
         screen_path = scan_tasks['screenshotURL']
-        response_img = requests.request("GET", screen_path)
+        response_img = requests.request("GET", screen_path, verify=USE_SSL)
         stored_img = fileResult('screenshot.png', response_img.content)
 
     demisto.results({
@@ -544,6 +536,7 @@ def format_http_transaction_list():
 
 """COMMAND FUNCTIONS"""
 try:
+    handle_proxy()
     if demisto.command() == 'test-module':
         search_type = 'ip'
         query = '8.8.8.8'

@@ -15,12 +15,10 @@ configuration:
   required: true
 - display: Trust any certificate (unsecure)
   name: insecure
-  defaultvalue: "false"
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
   type: 8
   required: false
 script:
@@ -161,7 +159,9 @@ script:
 
             res = http(
                     redirectUrl,
-                    httpParams
+                    httpParams,
+                    insecure,
+                    proxy
             );
         }
 
