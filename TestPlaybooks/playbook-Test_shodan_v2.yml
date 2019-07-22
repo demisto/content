@@ -1,5 +1,5 @@
 id: "Test-Shodan_v2"
-version: 23
+version: 26
 name: "Test-Shodan_v2"
 starttaskid: "0"
 tasks:
@@ -42,7 +42,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "22"
     scriptarguments:
       all:
         simple: "yes"
@@ -87,7 +87,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1420
+          "y": 1945
         }
       }
     note: false
@@ -113,7 +113,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 370
+          "y": 895
         }
       }
     note: false
@@ -142,7 +142,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1420
         }
       }
     note: false
@@ -195,7 +195,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1770
+          "y": 2295
         }
       }
     note: false
@@ -230,7 +230,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2120
+          "y": 2645
         }
       }
     note: false
@@ -265,7 +265,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2470
+          "y": 2995
         }
       }
     note: false
@@ -296,7 +296,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2820
+          "y": 3345
         }
       }
     note: false
@@ -325,7 +325,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3170
+          "y": 3695
         }
       }
     note: false
@@ -365,7 +365,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3695
+          "y": 4220
         }
       }
     note: false
@@ -394,7 +394,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 4045
+          "y": 4570
         }
       }
     note: false
@@ -430,7 +430,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 4395
+          "y": 4920
         }
       }
     note: false
@@ -460,7 +460,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 4570
+          "y": 5095
         }
       }
     note: false
@@ -496,7 +496,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 4920
+          "y": 5445
         }
       }
     note: false
@@ -518,7 +518,7 @@ tasks:
       brand: Shodan_v2
     nexttasks:
       '#none#':
-      - "45"
+      - "39"
     scriptarguments:
       facets: {}
       page: {}
@@ -529,7 +529,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 5620
+          "y": 370
         }
       }
     note: false
@@ -549,7 +549,7 @@ tasks:
       brand: Shodan_v2
     nexttasks:
       '#none#':
-      - "39"
+      - "24"
     scriptarguments:
       query:
         simple: country:HK product:Apache
@@ -558,7 +558,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 5095
+          "y": 5620
         }
       }
     note: false
@@ -577,7 +577,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "22"
+      - "9"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -594,7 +594,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 5445
+          "y": 5795
         }
       }
     note: false
@@ -624,7 +624,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1595
+          "y": 2120
         }
       }
     note: false
@@ -654,7 +654,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 545
+          "y": 1070
         }
       }
     note: false
@@ -684,7 +684,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1945
+          "y": 2470
         }
       }
     note: false
@@ -714,7 +714,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2295
+          "y": 2820
         }
       }
     note: false
@@ -744,7 +744,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2645
+          "y": 3170
         }
       }
     note: false
@@ -774,7 +774,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2995
+          "y": 3520
         }
       }
     note: false
@@ -804,7 +804,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3345
+          "y": 3870
         }
       }
     note: false
@@ -834,7 +834,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3870
+          "y": 4395
         }
       }
     note: false
@@ -864,7 +864,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 4220
+          "y": 4745
         }
       }
     note: false
@@ -894,7 +894,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 4745
+          "y": 5270
         }
       }
     note: false
@@ -915,7 +915,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "24"
+      - "45"
     scriptarguments:
       seconds:
         simple: "1"
@@ -924,7 +924,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 5270
+          "y": 545
         }
       }
     note: false
@@ -954,7 +954,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1595
         }
       }
     note: false
@@ -989,7 +989,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 720
+          "y": 1245
         }
       }
     note: false
@@ -1023,7 +1023,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1245
+          "y": 1770
         }
       }
     note: false
@@ -1061,7 +1061,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3520
+          "y": 4045
         }
       }
     note: false
@@ -1069,10 +1069,10 @@ tasks:
     ignoreworker: false
   "45":
     id: "45"
-    taskid: 77c5a4d8-9749-4fb4-842f-4802837f757c
+    taskid: a96cb9ad-6483-4e2a-8796-7035d325c456
     type: condition
     task:
-      id: 77c5a4d8-9749-4fb4-842f-4802837f757c
+      id: a96cb9ad-6483-4e2a-8796-7035d325c456
       version: -1
       name: verify context
       type: condition
@@ -1080,35 +1080,21 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "9"
+      - "4"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualNumber
+      - - operator: isExists
           left:
             value:
-              complex:
-                root: Shodan
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Shodan.Banner.IP
-                      iscontext: true
-                    right:
-                      value:
-                        simple: 123.176.102.168
-                accessor: Banner.Port
+              simple: Shodan.Banner.IP
             iscontext: true
-          right:
-            value:
-              simple: "81"
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 5795
+          "y": 720
         }
       }
     note: false
