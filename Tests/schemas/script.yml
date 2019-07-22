@@ -59,10 +59,12 @@ mapping:
     type: text
   dockerimage:
     type: str
+  alt_dockerimages:
+    type: seq
+    sequence:
+    - type: str
   runonce:
     type: bool
-  releaseNotes:
-    type: str
   tests:
     type: seq
     sequence:

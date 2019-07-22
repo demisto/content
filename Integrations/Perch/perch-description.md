@@ -1,5 +1,7 @@
 Perch Security is a crowd-sourced threat and intelligence feed which also provides network security.
 
-To configure your integration, you must first navigate to the [integrations](https://app.perchsecurity.com/settings/integrations) menu and generate a **Key**.
+When you configure an instance of the Perch Security integration in Demisto, you need to enter your Perch Key.
 
-The key is used in the configuration of your Perch instance within Demisto.
+## Generate your Perch key
+1. Log in to your Perch environment and navigate to the [Integrations menu](https://app.perchsecurity.com/settings/integrations).
+2. Generate a **Key**.
