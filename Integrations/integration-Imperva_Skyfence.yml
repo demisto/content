@@ -187,3 +187,5 @@ script:
       endpoint notification, or from any
       other implemented manual or automated input.'
     execution: true
+tests:
+  - No tests
