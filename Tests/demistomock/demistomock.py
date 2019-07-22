@@ -531,3 +531,8 @@ def createIncidents(incidents, lastRun = None, userID = None):
 
 def findUser(username = None, email = None):
     return {}
+
+def handleEntitlementForUser(incidentID, guid, email, content, taskID=""):
+    return {}
+
+

@@ -55,7 +55,7 @@ configuration:
   required: false
   type: 8
 description: Send messages and notifications to your Slack Team.
-display: SlackV2
+display: Slack V2
 name: SlackV2
 script:
   commands:
@@ -100,7 +100,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: group
-      description: Mirror the incident to a group or a channel.
+      description: Mirror the incident to a group (private) or a channel (public).
       isArray: false
       name: mirrorTo
       predefined:
@@ -187,12 +187,6 @@ script:
       required: false
       secret: false
     - default: false
-      description: Send a message to a specified group.
-      isArray: false
-      name: group
-      required: false
-      secret: false
-    - default: false
       description: Send a link to an entry to Slack.
       isArray: false
       name: entry
@@ -203,7 +197,7 @@ script:
       defaultValue: 'false'
       description: Do not add a URL to the Demisto management console.
       isArray: false
-      name: IgnoreAddURL
+      name: ignoreAddURL
       predefined:
       - 'true'
       - 'false'
