@@ -633,8 +633,6 @@ script:
   script: ''
   type: python
   subtype: python3
-releaseNotes: "-"
 tests:
 - Palo Alto Networks Cortex Test
 fromversion: 4.1.0
-releaseNotes: "Added Cortex XDR Analytics query type for fetch incidents"

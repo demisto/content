@@ -328,6 +328,5 @@ script:
   script: ''
   type: python
   subtype: python3
-releaseNotes: "-"
 tests:
   - Test - CrowdStrike Falcon

@@ -43,7 +43,9 @@ LAYOUT_REGEX = r"{}.*layout-.*\.json$".format(LAYOUTS_DIR)
 INCIDENT_FIELDS_REGEX = r"{}.*incidentfields.*\.json$".format(INCIDENT_FIELDS_DIR)
 INCIDENT_FIELD_REGEX = r"{}.*incidentfield-.*\.json$".format(INCIDENT_FIELDS_DIR)
 MISC_REGEX = r"{}.*reputations.*\.json$".format(MISC_DIR)
+REPUTATION_REGEX = r"{}.*reputation-.*\.json$".format(MISC_DIR)
 REPORT_REGEX = r"{}.*report-.*\.json$".format(REPORTS_DIR)
+MISC_REPUTATIONS_REGEX = r"{}.reputations.json$".format(MISC_DIR)
 
 BETA_SCRIPT_REGEX = r"{}.*script-.*\.yml$".format(BETA_INTEGRATIONS_DIR)
 BETA_PLAYBOOK_REGEX = r"{}.*playbook-.*\.yml$".format(BETA_INTEGRATIONS_DIR)
@@ -51,7 +53,8 @@ BETA_INTEGRATION_REGEX = r"{}.*integration-.*\.yml$".format(BETA_INTEGRATIONS_DI
 
 CHECKED_TYPES_REGEXES = [PLAYBOOK_REGEX, INTEGRATION_YML_REGEX,
                          WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX, CLASSIFIER_REGEX, SCRIPT_YML_REGEX,
-                         LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, INCIDENT_FIELD_REGEX, MISC_REGEX, REPORT_REGEX]
+                         LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, INCIDENT_FIELD_REGEX, MISC_REGEX, REPORT_REGEX,
+                         REPUTATION_REGEX]
 
 PACKAGE_SUPPORTING_DIRECTORIES = [INTEGRATIONS_DIR, SCRIPTS_DIR]
 
@@ -73,7 +76,15 @@ DIR_LIST = [
     BETA_INTEGRATIONS_DIR
 ]
 
-KNOWN_FILE_STATUSES = ['a', 'm', 'd'] + ['r{:03}'.format(i) for i in range(101)]
+SPELLCHECK_FILE_TYPES = [
+    INTEGRATION_REGEX,
+    INTEGRATION_YML_REGEX,
+    PLAYBOOK_REGEX,
+    SCRIPT_REGEX,
+    SCRIPT_YML_REGEX
+]
+
+KNOWN_FILE_STATUSES = ['a', 'm', 'd', 'r'] + ['r{:03}'.format(i) for i in range(101)]
 
 CODE_FILES_REGEX = [INTEGRATION_JS_REGEX, INTEGRATION_PY_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX]
 
