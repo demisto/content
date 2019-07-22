@@ -6,9 +6,9 @@ import io
 import csv
 
 
-def json_to_csv(data):
+def json_to_csv(data, delimiter):
     si = io.BytesIO()
-    cw = csv.writer(si)
+    cw = csv.writer(si, delimiter=delimiter)
     keys = list(data[0].keys())
     cw.writerow(keys)
     for d in data:
@@ -43,7 +43,7 @@ def main(entry_id, out_filename, delimiter='|'):
 
     dictlist = json.loads(data)
 
-    csv_out = json_to_csv(dictlist)
+    csv_out = json_to_csv(dictlist, delimiter)
 
     # output cvs as a file to war-room
     demisto.results(fileResult(out_filename, csv_out.encode("utf-8")))
