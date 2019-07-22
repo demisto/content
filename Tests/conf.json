@@ -1693,6 +1693,10 @@
         {
             "integrations": "VulnDB",
             "playbookID": "Test-VulnDB"
+        },
+        {
+            "integrations": "Shodan_v2",
+            "playbookID": "Test-Shodan_v2"
         }
     ],
     "skipped_tests": {

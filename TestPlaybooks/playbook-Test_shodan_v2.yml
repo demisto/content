@@ -1,6 +1,6 @@
-id: 7ad4ce99-bd7e-4528-8abb-33aa14bbcd6a
-version: 22
-name: shodan_v2_test_playbook
+id: "Test-Shodan_v2"
+version: 26
+name: "Test-Shodan_v2"
 starttaskid: "0"
 tasks:
   "0":
@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 50
         }
       }
@@ -42,7 +42,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "22"
     scriptarguments:
       all:
         simple: "yes"
@@ -54,7 +54,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 195
         }
       }
@@ -86,8 +86,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1420
+          "x": 162.5,
+          "y": 1945
         }
       }
     note: false
@@ -112,8 +112,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 162.5,
+          "y": 895
         }
       }
     note: false
@@ -141,8 +141,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 895
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
@@ -163,8 +163,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5795
+          "x": 162.5,
+          "y": 5970
         }
       }
     note: false
@@ -194,8 +194,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1770
+          "x": 162.5,
+          "y": 2295
         }
       }
     note: false
@@ -229,8 +229,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2120
+          "x": 162.5,
+          "y": 2645
         }
       }
     note: false
@@ -264,8 +264,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2470
+          "x": 162.5,
+          "y": 2995
         }
       }
     note: false
@@ -295,8 +295,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2820
+          "x": 162.5,
+          "y": 3345
         }
       }
     note: false
@@ -324,8 +324,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3170
+          "x": 162.5,
+          "y": 3695
         }
       }
     note: false
@@ -364,8 +364,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3695
+          "x": 162.5,
+          "y": 4220
         }
       }
     note: false
@@ -393,8 +393,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4045
+          "x": 162.5,
+          "y": 4570
         }
       }
     note: false
@@ -429,8 +429,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4395
+          "x": 162.5,
+          "y": 4920
         }
       }
     note: false
@@ -459,8 +459,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4570
+          "x": 162.5,
+          "y": 5095
         }
       }
     note: false
@@ -495,8 +495,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4920
+          "x": 162.5,
+          "y": 5445
         }
       }
     note: false
@@ -518,7 +518,7 @@ tasks:
       brand: Shodan_v2
     nexttasks:
       '#none#':
-      - "9"
+      - "39"
     scriptarguments:
       facets: {}
       page: {}
@@ -528,8 +528,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5620
+          "x": 162.5,
+          "y": 370
         }
       }
     note: false
@@ -549,7 +549,7 @@ tasks:
       brand: Shodan_v2
     nexttasks:
       '#none#':
-      - "39"
+      - "24"
     scriptarguments:
       query:
         simple: country:HK product:Apache
@@ -557,8 +557,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5095
+          "x": 162.5,
+          "y": 5620
         }
       }
     note: false
@@ -577,7 +577,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "22"
+      - "9"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -593,8 +593,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5445
+          "x": 162.5,
+          "y": 5795
         }
       }
     note: false
@@ -623,8 +623,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1595
+          "x": 162.5,
+          "y": 2120
         }
       }
     note: false
@@ -653,8 +653,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 162.5,
+          "y": 1070
         }
       }
     note: false
@@ -683,8 +683,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1945
+          "x": 162.5,
+          "y": 2470
         }
       }
     note: false
@@ -713,8 +713,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2295
+          "x": 162.5,
+          "y": 2820
         }
       }
     note: false
@@ -743,8 +743,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2645
+          "x": 162.5,
+          "y": 3170
         }
       }
     note: false
@@ -773,8 +773,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2995
+          "x": 162.5,
+          "y": 3520
         }
       }
     note: false
@@ -803,8 +803,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3345
+          "x": 162.5,
+          "y": 3870
         }
       }
     note: false
@@ -833,8 +833,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3870
+          "x": 162.5,
+          "y": 4395
         }
       }
     note: false
@@ -863,8 +863,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4220
+          "x": 162.5,
+          "y": 4745
         }
       }
     note: false
@@ -893,8 +893,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4745
+          "x": 162.5,
+          "y": 5270
         }
       }
     note: false
@@ -915,7 +915,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "24"
+      - "45"
     scriptarguments:
       seconds:
         simple: "1"
@@ -923,8 +923,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5270
+          "x": 162.5,
+          "y": 545
         }
       }
     note: false
@@ -953,8 +953,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1070
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -988,8 +988,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 162.5,
+          "y": 1245
         }
       }
     note: false
@@ -1022,8 +1022,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
+          "x": 162.5,
+          "y": 1770
         }
       }
     note: false
@@ -1060,8 +1060,41 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3520
+          "x": 162.5,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "45":
+    id: "45"
+    taskid: a96cb9ad-6483-4e2a-8796-7035d325c456
+    type: condition
+    task:
+      id: a96cb9ad-6483-4e2a-8796-7035d325c456
+      version: -1
+      name: verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Shodan.Banner.IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
         }
       }
     note: false
@@ -1072,7 +1105,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5810,
+        "height": 5985,
         "width": 492.5,
         "x": 50,
         "y": 50
