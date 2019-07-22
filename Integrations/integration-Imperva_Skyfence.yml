@@ -187,6 +187,5 @@ script:
       endpoint notification, or from any
       other implemented manual or automated input.'
     execution: true
-releaseNotes: 'Change documentation'
 tests:
   - No tests
