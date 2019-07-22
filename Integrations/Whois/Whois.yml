@@ -1,0 +1,155 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Whois
+  version: -1
+configuration:
+- display: Return Errors
+  name: with_error
+  required: false
+  type: 8
+description: Provides data enrichment for domains and IP addresses.
+display: Whois
+name: Whois
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: URL, IP, or domain to be enriched
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: Provides data enrichment for Domains, URLs, and IP addresses.
+    execution: false
+    name: whois
+    outputs:
+    - contextPath: Domain.Whois.Name
+      description: Domain name
+      type: string
+    - contextPath: Domain.Whois.DomainStatus
+      description: Domain Status
+      type: string
+    - contextPath: Domain.Whois.DNSSec
+      description: DNSSEC
+      type: string
+    - contextPath: Domain.Whois.NameServers
+      description: Name Servers
+      type: string
+    - contextPath: Domain.Whois.CreationDate
+      description: Creation Date
+      type: date
+    - contextPath: Domain.Whois.UpdatedDate
+      description: Updated Date
+      type: date
+    - contextPath: Domain.Whois.ExpirationDate
+      description: Expiration Date
+      type: date
+    - contextPath: Domain.Whois.Registrar.Name
+      description: Registrar's Name
+      type: string
+    - contextPath: Domain.Whois.Emails
+      description: Abuse Emails
+      type: string
+    - contextPath: Domain.Whois.Registrar.AbuseEmail
+      description: Registrar's Abuse Email
+      type: string
+    - contextPath: Domain.Whois.Registrant.name
+      description: Registrant's Name
+      type: string
+    - contextPath: Domain.Whois.Registrant.email
+      description: Registrant's Email
+      type: string
+    - contextPath: Domain.Whois.Raw
+      description: Raw Output
+      type: string
+    - contextPath: Domain.Whois.Administrator.country
+      description: The country of domain admin
+      type: string
+    - contextPath: Domain.Whois.Administrator.name
+      description: The name of domain admin
+      type: string
+    - contextPath: Domain.Whois.Administrator.state
+      description: The state of domain admin
+      type: string
+    - contextPath: Domain.Whois.Administrator.email
+      description: The email of the domain admin
+      type: string
+    - contextPath: Domain.Whois.Administrator.organization
+      description: The organization of the domain admin
+      type: string
+    - contextPath: Domain.Whois.Administrator.postalcode
+      description: The post code of the domain admin
+      type: string
+    - contextPath: Domain.Whois.Administrator.street
+      description: The street of the domain admin
+      type: string
+    - contextPath: Domain.Whois.Administrator.phone
+      description: The phone of the domain admin
+      type: string
+    - contextPath: Domain.Whois.Administrator.city
+      description: The city of the domain admin
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.country
+      description: The country of tech admin
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.name
+      description: The name of tech admin
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.state
+      description: The state of tech admin
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.email
+      description: The email of the tech admin
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.organization
+      description: The organization of the tech admin
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.postalcode
+      description: The post code of the tech admin
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.street
+      description: The street of the tech admin
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.phone
+      description: The phone of the tech admin
+      type: string
+    - contextPath: Domain.Whois.TechAdmin.city
+      description: The city of the tech admin
+      type: string
+    - contextPath: Domain.Whois.Registrant.country
+      description: The country of registrant
+      type: string
+    - contextPath: Domain.Whois.Registrant.state
+      description: The state of the registrant
+      type: string
+    - contextPath: Domain.Whois.Registrant.organization
+      description: The organization of the registrant
+      type: string
+    - contextPath: Domain.Whois.Registrant.postalcode
+      description: The post code of the registrant
+      type: string
+    - contextPath: Domain.Whois.Registrant.street
+      description: The street of the registrant
+      type: string
+    - contextPath: Domain.Whois.Registrant.phone
+      description: The phone of the registrant
+      type: string
+    - contextPath: Domain.Whois.Registrant.city
+      description: The city of the registrant
+      type: string
+    - contextPath: Domain.Whois.ID
+      description: ID of the domain
+      type: string
+    - contextPath: Domain.Whois.QueryStatus
+      description: The result of the command(Success/Failed).
+      type: string
+  dockerimage: demisto/ippysocks
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+defaultEnabled: false
+tests:
+- whois_test
+fromversion: 4.1.0

@@ -1,0 +1,1 @@
+Fetch offenses as incidents and search QRadar

@@ -580,6 +580,5 @@ outputs:
   description: The device information about the hostname that was enriched using Cylance
     Protect v2.
   type: unknown
-releaseNotes: "The playbook now uses v2.1 enrichment playbooks that feature v2 integrations."
 tests:
   - no test - each enrichment sub-playbook has or will have its own test

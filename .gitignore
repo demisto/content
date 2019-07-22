@@ -8,6 +8,7 @@ TestData/EmailWithNonUnicodeSubject.eml
 .pytest_cache
 
 CommonServerPython.py
+!Scripts/CommonServerPython/CommonServerPython.py
 CommonServerUserPython.py
 demistomock.py
 Tests/filter_file.txt
@@ -16,3 +17,5 @@ Tests/id_set.json
 Scripts/*/*_unified.yml
 Integrations/*/*_unified.yml
 Beta_Integrations/*/*_unified.yml
+conftest.py
+!Tests/scripts/dev_envs/pytest/conftest.py
