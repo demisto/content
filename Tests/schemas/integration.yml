@@ -10,12 +10,20 @@ mapping:
       version:
         type: int
         required: yes
+      sortvalues:
+        type: seq
+        sequence:
+        - include: sortvalue_schema
   name:
     type: str
     required: yes
   display:
       type: str
       required: yes
+  deprecated:
+    type: bool
+  beta:
+    type: bool
   category:
     type: str
     enum: [
@@ -53,6 +61,10 @@ mapping:
         required: yes
       dockerimage:
         type: str
+      alt_dockerimages:
+        type: seq
+        sequence:
+        - type: str
       isfetch:
         type: bool
       commands:
@@ -72,8 +84,6 @@ mapping:
     type: any
   defaultEnabled:
     type: bool
-  releaseNotes:
-    type: str
   tests:
     type: seq
     sequence:
@@ -82,6 +92,8 @@ mapping:
     type: bool
 
 schema;commonfields_schema:
+
+schema;sortvalue_schema:
 
 # integration->configuration
 schema;configuration_schema:

@@ -66,7 +66,7 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
     yml_text, script_path = insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data)
     image_path = None
     desc_path = None
-    if dir_name == 'Integrations':
+    if dir_name == 'Integrations' or dir_name == 'Beta_Integrations':
         yml_text, image_path = insert_image_to_yml(dir_name, package_path, yml_data, yml_text)
         yml_text, desc_path = insert_description_to_yml(dir_name, package_path, yml_data, yml_text)
 
@@ -112,7 +112,7 @@ def get_data(dir_name, package_path, extension):
     data_path = glob.glob(package_path + extension)
     data = None
     found_data_path = None
-    if dir_name == 'Integrations' and data_path:
+    if dir_name in ('Integrations', 'Beta_Integrations') and data_path:
         found_data_path = data_path[0]
         with open(found_data_path, 'rb') as data_file:
             data = data_file.read()
@@ -131,7 +131,7 @@ def get_code_file(package_path, script_type):
     :rtype: str
     """
 
-    ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|demistomock\.py|test_.*\.py|_test\.py'
+    ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|demistomock\.py|test_.*\.py|_test\.py|conftest\.py'
     if not package_path.endswith('/'):
         package_path += '/'
     if package_path.endswith('Scripts/CommonServerPython/'):
