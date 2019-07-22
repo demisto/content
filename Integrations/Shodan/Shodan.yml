@@ -52,57 +52,68 @@ script:
       name: page
       required: false
       secret: false
-    outputs:
-    - contextPath: Shodan.Banner.Org
-      description: 'The name of the organization that is assigned the IP space for this device'
-      type: String
-    - contextPath: Shodan.Banner.Isp
-      description: 'The ISP that is providing the organization with the IP space for this device. Consider this the "parent" of the organization in terms of IP ownership'
-      type: String
-    - contextPath: Shodan.Banner.Transport
-      description: 'Either "udp" or "tcp" to indicate which IP transport protocol was used to fetch the information'
-      type: String
-    - contextPath: Shodan.Banner.Asn
-      description: 'The autonomous system number (ex. "AS4837").'
-      type: String
-    - contextPath: Shodan.Banner.IP //take ip_str
-      description: 'The IP address of the host as a string'
-      type: String
-    - contextPath: Shodan.Banner.Port
-      description: 'The port number that the service is operating on'
-      type: Number
-    - contextPath: Shodan.Banner.Ssl.versions
-      description: 'list of SSL versions that are supported by the server. If a version isnt supported the value is prefixed with a "-". Example: ["TLSv1", "-SSLv2"] means that the server supports TLSv1 but doesnt support SSLv2.'
-      type: String
-    - contextPath: Shodan.Banner.Hostnames
-      description: 'An array of strings containing all of the hostnames that have been assigned to the IP address for this device.'
-      type: String
-    - contextPath: Shodan.Banner.Location.City
-      description: 'The name of the city where the device is located'
-      type: String
-    - contextPath: Shodan.Banner.Location.Longitude
-      description: 'The longitude for the geolocation of the device'
-      type: Number
-    - contextPath: Shodan.Banner.Location.Latitude
-      description: 'The latitude for the geolocation of the device'
-      type: Number
-    - contextPath: Shodan.Banner.Location.Country
-      description: 'The name of the country where the device is located'
-      type: String
-    - contextPath: Shodan.Banner.Timestamp
-      description: 'The timestamp for when the banner was fetched from the device in the UTC timezone'
-      type: Date
-    - contextPath: Shodan.Banner.Domains
-      description: 'An array of strings containing the top-level domains for the hostnames of the device. This is a utility property in case you want to filter by TLD instead of subdomain. It is smart enough to handle global TLDs with several dots in the domain (ex. "co.uk")'
-      type: String
-    - contextPath: Shodan.Banner.OS
-      description: 'The operating system that powers the device'
-      type: String
     deprecated: false
     description: Search Shodan using the same query syntax as the website and use
       facets to get summary information for different properties.
     execution: false
     name: search
+    outputs:
+    - contextPath: Shodan.Banner.Org
+      description: The name of the organization that is assigned the IP space for
+        this device
+      type: String
+    - contextPath: Shodan.Banner.Isp
+      description: The ISP that is providing the organization with the IP space for
+        this device. Consider this the "parent" of the organization in terms of IP
+        ownership
+      type: String
+    - contextPath: Shodan.Banner.Transport
+      description: Either "udp" or "tcp" to indicate which IP transport protocol was
+        used to fetch the information
+      type: String
+    - contextPath: Shodan.Banner.Asn
+      description: The autonomous system number (ex. "AS4837").
+      type: String
+    - contextPath: Shodan.Banner.IP
+      description: The IP address of the host as a string
+      type: String
+    - contextPath: Shodan.Banner.Port
+      description: The port number that the service is operating on
+      type: Number
+    - contextPath: Shodan.Banner.Ssl.versions
+      description: 'list of SSL versions that are supported by the server. If a version
+        isnt supported the value is prefixed with a "-". Example: ["TLSv1", "-SSLv2"]
+        means that the server supports TLSv1 but doesnt support SSLv2.'
+      type: String
+    - contextPath: Shodan.Banner.Hostnames
+      description: An array of strings containing all of the hostnames that have been
+        assigned to the IP address for this device.
+      type: String
+    - contextPath: Shodan.Banner.Location.City
+      description: The name of the city where the device is located
+      type: String
+    - contextPath: Shodan.Banner.Location.Longitude
+      description: The longitude for the geolocation of the device
+      type: Number
+    - contextPath: Shodan.Banner.Location.Latitude
+      description: The latitude for the geolocation of the device
+      type: Number
+    - contextPath: Shodan.Banner.Location.Country
+      description: The name of the country where the device is located
+      type: String
+    - contextPath: Shodan.Banner.Timestamp
+      description: The timestamp for when the banner was fetched from the device in
+        the UTC timezone
+      type: Date
+    - contextPath: Shodan.Banner.Domains
+      description: An array of strings containing the top-level domains for the hostnames
+        of the device. This is a utility property in case you want to filter by TLD
+        instead of subdomain. It is smart enough to handle global TLDs with several
+        dots in the domain (ex. "co.uk")
+      type: String
+    - contextPath: Shodan.Banner.OS
+      description: The operating system that powers the device
+      type: String
   - arguments:
     - default: true
       description: Host IP address

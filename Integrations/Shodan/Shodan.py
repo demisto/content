@@ -129,7 +129,52 @@ def search_command():
     if page:
         params['page'] = page
 
-    http_request('GET', '/shodan/host/search', params)
+    res = http_request('GET', '/shodan/host/search', params)
+
+    matches = res.get('matches', [])
+    for match in matches:
+        location = match.get('location', {'city': '', 'country_name': '', 'longitude': 0, 'latitude': 0})
+        ec = {
+            'Shodan': {
+                'Banner': {
+                    'Org': match.get('org', ''),
+                    'Isp': match.get('isp', ''),
+                    'Transport': match.get('transport', ''),
+                    'Asn': match.get('asn', ''),
+                    'IP': match.get('ip_str', ''),
+                    'Port': match.get('port', 0),
+                    'Ssl': {
+                        'versions': match.get('ssl', {'versions': []})['versions']
+                    },
+                    'Hostnames': match.get('hostnames', []),
+                    'Location': {
+                        'City': location['city'],
+                        'Longitude': location['longitude'],
+                        'Latitude': location['latitude'],
+                        'Country': location['country_name']
+                    },
+                    'Timestamp': match.get('timestamp', ''),
+                    'Domains': match.get('domains', []),
+                    'OS': match.get('os', '')
+                }
+            }
+        }
+
+        human_readable = tableToMarkdown(f'Search results for query "{query}" - page {page}, facets: {facets}',
+                                         {
+                                             'IP': ec['Shodan']['Banner']['IP'],
+                                             'Port': ec['Shodan']['Banner']['Port'],
+                                             'Timestamp': ec['Shodan']['Banner']['Timestamp']
+                                         })
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': match,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': human_readable,
+            'HumanReadableFormat': formats['markdown'],
+            'EntryContext': ec
+        })
 
 
 def ip_command():
