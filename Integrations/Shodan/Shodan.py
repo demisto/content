@@ -115,7 +115,7 @@ def test_module():
     """
     Performs basic get request to get item samples
     """
-    http_request('/shodan/ports', {'query': 'test'})
+    http_request('GET', '/shodan/ports', {'query': 'test'})
 
 
 def search_command():
