@@ -1847,6 +1847,7 @@
         "McAfee NSM": "Nightly - Checking",
         "Forcepoint": "Nightly - Checking",
         "Phishme Intelligence": "Proxy has a non empty default value, will require fixing and merging",
+        "Cofense Intelligence": "Proxy has a non empty default value, will require fixing and merging",
         "palo_alto_firewall": "Need to check test module",
         "Signal Sciences WAF": "error with certificate",
         "google": "'unsecure' parameter not working",
