@@ -110,7 +110,7 @@ def get_entry_from_args():
     res = demisto.executeCommand('getFilePath', {'id': entry_id})
 
     if len(res) > 0 and res[0]['Type'] == entryTypes['error']:
-        return_error('Failed to get the file path for entry: ' + entry_id)
+        return_error(f'Failed to get the file path for entry: {entry_id}')
 
     return res, entry_id
 
@@ -382,7 +382,7 @@ if __name__ == "builtins":
                                  "application/ld+json", "application/javascript",
                                  "multipart/alternative", "application/x-www-form-urlencoded")
     else:
-        ALLOWED_CONTENT_TYPES = tuple(demisto.args()["allowedContentTypes"].split(","))
+        ALLOWED_CONTENT_TYPES = tuple(demisto.args()["allowedContentTypes"].split(","))  # type: ignore
 
     # Work on the pcap file and return a result
     http_flows = get_http_flows(pcap_file_path_in_container)
