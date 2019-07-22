@@ -564,4 +564,4 @@ outputs:
   description: Additional information for the URL.
   type: string
 tests:
-  - url_enrichment_-_generic_test
+  - URL Enrichment - Generic v2 - Test

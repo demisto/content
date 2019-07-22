@@ -1,7 +1,6 @@
 {
 	"id": "incident_telephoneno",
 	"version": -1,
-	"releaseNotes": "New incident field for GDPR Data Breach incident",
 	"modified": "2019-04-14T11:18:42.50105672Z",
 	"name": "Telephone no.",
 	"ownerOnly": false,
