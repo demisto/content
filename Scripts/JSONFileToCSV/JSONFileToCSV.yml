@@ -12,7 +12,7 @@ args:
   required: true
   secret: false
 - default: true
-  defaultValue: '|'
+  defaultValue: ','
   description: CSV Delimiter.
   isArray: false
   name: delimiter

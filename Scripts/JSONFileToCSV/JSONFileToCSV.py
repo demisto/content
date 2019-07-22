@@ -8,7 +8,7 @@ import csv
 
 def json_to_csv(data, delimiter):
     si = io.BytesIO()
-    cw = csv.writer(si)
+    cw = csv.writer(si, delimiter=delimiter)
     keys = list(data[0].keys())
     cw.writerow(keys)
     for d in data:
@@ -51,4 +51,4 @@ def main(entry_id, out_filename, delimiter):
 
 if __name__ in ('__builtin__', 'builtins'):
     args = demisto.args()
-    main(args['entryid'], args['filename'], args.get('delimiter', '|').encode("utf-8"))
+    main(args['entryid'], args['filename'], args.get('delimiter', ',').encode("utf-8"))
