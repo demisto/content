@@ -234,7 +234,7 @@ script:
     name: shodan-scan-internet
     outputs:
     - contextPath: Shodan.Scan.ID
-      description: TODO
+      description: ID of the internet scan
       type: String
   - arguments:
     - default: false
