@@ -1,0 +1,1 @@
+Fixed Active Directory V2 default query & fixed DN bug
