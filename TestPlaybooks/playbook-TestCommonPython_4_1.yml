@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e6a8ccf1-cb16-4d6a-85c1-38f7205bd551
+    taskid: 8388123f-a53f-40eb-88db-a967d30575e3
     type: start
     task:
-      id: e6a8ccf1-cb16-4d6a-85c1-38f7205bd551
+      id: 8388123f-a53f-40eb-88db-a967d30575e3
       version: -1
       name: ""
       iscommand: false
@@ -30,10 +30,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 0b8ac2f9-85a9-437c-8e26-e00e2503d60b
+    taskid: 7810e8d0-a54e-4825-873e-d127129e1176
     type: regular
     task:
-      id: 0b8ac2f9-85a9-437c-8e26-e00e2503d60b
+      id: 7810e8d0-a54e-4825-873e-d127129e1176
       version: -1
       name: Test DQ
       script: TestPYCommonServer
@@ -59,10 +59,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: a27e4383-2a76-4bcb-805e-2581947b4cfb
+    taskid: a4035f73-bb12-4b03-8b87-af33dc8760f9
     type: regular
     task:
-      id: a27e4383-2a76-4bcb-805e-2581947b4cfb
+      id: a4035f73-bb12-4b03-8b87-af33dc8760f9
       version: -1
       name: Test MarkDown
       description: Tests for common functions createEntry and TableToMarkDown
@@ -89,10 +89,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: bb5a7b59-cbae-46bd-8c67-802d222a820b
+    taskid: 61c4182b-acaf-48ee-8bc4-df220def004c
     type: regular
     task:
-      id: bb5a7b59-cbae-46bd-8c67-802d222a820b
+      id: 61c4182b-acaf-48ee-8bc4-df220def004c
       version: -1
       name: Test XML JSON relations
       description: 'Tests for common functions xml2json and json2xml '
@@ -119,10 +119,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: c6ca16d5-588e-4279-82e6-3ddb59d7a884
+    taskid: 55a29cdb-e67d-45cf-8bd7-4befa22b28fe
     type: regular
     task:
-      id: c6ca16d5-588e-4279-82e6-3ddb59d7a884
+      id: 55a29cdb-e67d-45cf-8bd7-4befa22b28fe
       version: -1
       name: Test tableToMarkdown
       description: Tests underscoreToCamelCase and tableToMarkDown with and without
@@ -133,7 +133,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "14"
     scriptarguments:
       extend-context: {}
       test_type:
@@ -151,10 +151,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: dc9550d6-e9c8-4899-8eb0-76f14414cd9b
+    taskid: 46b526ac-1fe5-481e-89b7-0ca386abd86a
     type: regular
     task:
-      id: dc9550d6-e9c8-4899-8eb0-76f14414cd9b
+      id: 46b526ac-1fe5-481e-89b7-0ca386abd86a
       version: -1
       name: Test hash function
       script: TestPYCommonServer
@@ -180,10 +180,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 9cf4a170-a9af-4c73-8263-b1c6ca65407e
+    taskid: f97793df-bd3d-4530-82a8-6f3a4f7c0ae4
     type: regular
     task:
-      id: 9cf4a170-a9af-4c73-8263-b1c6ca65407e
+      id: f97793df-bd3d-4530-82a8-6f3a4f7c0ae4
       version: -1
       name: Test date_to_timestamp
       script: TestPYCommonServer
@@ -201,7 +201,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -209,10 +209,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: c8c57dc9-8ec2-42f8-8335-d159ec9ddcc2
+    taskid: 8db21cbb-14d9-4935-8350-12168619e18e
     type: regular
     task:
-      id: c8c57dc9-8ec2-42f8-8335-d159ec9ddcc2
+      id: 8db21cbb-14d9-4935-8350-12168619e18e
       version: -1
       name: Test camelize
       script: TestPYCommonServer
@@ -230,7 +230,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -238,10 +238,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: c0b2f5a6-9db6-43b7-894d-8f516b2ca02e
+    taskid: 2b147f09-a6f8-457d-8f24-3bfcfe4c645c
     type: regular
     task:
-      id: c0b2f5a6-9db6-43b7-894d-8f516b2ca02e
+      id: 2b147f09-a6f8-457d-8f24-3bfcfe4c645c
       version: -1
       name: Test PascalToSpace
       script: TestPYCommonServer
@@ -259,7 +259,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
@@ -267,10 +267,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: bbe32630-e4a0-42d6-88ce-b5bbdbaac5ee
+    taskid: 696afb0b-b76a-45a6-8ec0-593dc41c000d
     type: regular
     task:
-      id: bbe32630-e4a0-42d6-88ce-b5bbdbaac5ee
+      id: 696afb0b-b76a-45a6-8ec0-593dc41c000d
       version: -1
       name: Test return_outputs
       script: TestPYCommonServer
@@ -288,7 +288,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
@@ -296,10 +296,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: dee38c81-e174-471f-812c-4365b9b5c876
+    taskid: 77f66590-aa52-4f8d-8744-8ee76f550111
     type: condition
     task:
-      id: dee38c81-e174-471f-812c-4365b9b5c876
+      id: 77f66590-aa52-4f8d-8744-8ee76f550111
       version: -1
       name: check if context contain foo
       type: condition
@@ -324,7 +324,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1945
         }
       }
     note: false
@@ -332,10 +332,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 3bd2d4c5-e750-4373-8a65-4bc94c4c5e91
+    taskid: 3610ddab-fdf8-46fa-8e29-0d7390730c7f
     type: title
     task:
-      id: 3bd2d4c5-e750-4373-8a65-4bc94c4c5e91
+      id: 3610ddab-fdf8-46fa-8e29-0d7390730c7f
       version: -1
       name: Test Success
       type: title
@@ -346,7 +346,35 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: f52fa6f7-0d36-4ee5-8102-28b7615680e1
+    type: regular
+    task:
+      id: f52fa6f7-0d36-4ee5-8102-28b7615680e1
+      version: -1
+      name: 'CallTableToMarkdown encoding non-ascii chars '
+      description: Tests that tableToMarkdown handles encoding of non-ascii chars
+        in nested dicts (python 2)
+      script: CallTableToMarkdown
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -357,7 +385,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1960,
+        "height": 2135,
         "width": 380,
         "x": 50,
         "y": 50

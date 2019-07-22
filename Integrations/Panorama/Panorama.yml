@@ -1,0 +1,2010 @@
+category: Network Security
+commonfields:
+  id: Panorama
+  version: -1
+fromversion: 3.0.0
+configuration:
+- display: Server URL (e.g., https://192.168.0.1)
+  name: server
+  required: true
+  type: 0
+- defaultvalue: '443'
+  display: Port (e.g 443)
+  name: port
+  required: false
+  type: 0
+- display: API Key
+  name: key
+  required: true
+  type: 4
+- display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Device group - Panorama instances only
+  name: device_group
+  required: false
+  type: 0
+- display: Vsys - Firewall instances only
+  name: vsys
+  required: false
+  type: 0
+description: Manage Palo Alto Networks Firewall and Panorama. Make sure you read
+  the Detailed Instructions section.
+display: Palo Alto Networks PAN-OS
+name: Panorama
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Choose an available  action(show, get, set, edit, delete, rename,
+        clone, move, override)
+      isArray: false
+      name: action
+      predefined:
+      - set
+      - edit
+      - delete
+      - rename
+      - clone
+      - move
+      - override
+      - muti-move
+      - multi-clone
+      - complete
+      - show
+      - get
+      required: false
+      secret: false
+    - default: false
+      description: Category parameter, for example, when exporting a configuration file use
+        "category=configuration".
+      isArray: false
+      name: category
+      required: false
+      secret: false
+    - default: false
+      description: Used for operations commands cmd specifies the xml struct that
+        defines the command.
+      isArray: false
+      name: cmd
+      required: false
+      secret: false
+    - default: false
+      description: Run a command. e.g. command =<show><arp><entry name='all'/></arp></show>
+      isArray: false
+      name: command
+      required: false
+      secret: false
+    - default: false
+      description: Specifies destination
+      isArray: false
+      name: dst
+      required: false
+      secret: false
+    - default: false
+      description: Used to define a new value for an object
+      isArray: false
+      name: element
+      required: false
+      secret: false
+    - default: false
+      description: To parameter (used in specifying time and when cloning an object)
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: From parameter (used in specifying time and when cloning an object)
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: Sets a key value
+      isArray: false
+      name: key
+      required: false
+      secret: false
+    - default: false
+      description: Used for retrieving logs. e.g. log-type=threat for threat logs
+      isArray: false
+      name: log-type
+      required: false
+      secret: false
+    - default: false
+      description: Specifies the type of a move operation (e.g. where=after, where=before,
+        where=top, where=bottom)
+      isArray: false
+      name: where
+      required: false
+      secret: false
+    - default: false
+      description: Describe a time period. E.g. period=last-24-hrs
+      isArray: false
+      name: period
+      required: false
+      secret: false
+    - default: false
+      description: Defines a location e.g. xpath=/config/predefined/application/entry[@name='hotmail']
+      isArray: false
+      name: xpath
+      required: false
+      secret: false
+    - default: false
+      description: The threat pcap ID in the threat log
+      isArray: false
+      name: pcap-id
+      required: false
+      secret: false
+    - default: false
+      description: Specifies the device serial number
+      isArray: false
+      name: serialno
+      required: false
+      secret: false
+    - default: false
+      description: Choose dynamic, predefined or custom report
+      isArray: false
+      name: reporttype
+      required: false
+      secret: false
+    - default: false
+      description: The report name
+      isArray: false
+      name: reportname
+      required: false
+      secret: false
+    - default: false
+      defaultValue: keygen,config,commit,op,report,log,import,export,user-id,version
+      description: The request type (e.g. export, import, log, config)
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    - default: false
+      description: Used for threat PCAPs, the time that the PCAP was received on the
+        firewall.
+      isArray: false
+      name: search-time
+      required: false
+      secret: false
+    - default: false
+      description: target number of the firewall. use only on Panorama instance
+      isArray: false
+      name: target
+      required: false
+      secret: false
+    - default: false
+      description: Job ID
+      isArray: false
+      name: job-id
+      required: false
+      secret: false
+    - default: false
+      description: Query string
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    deprecated: false
+    description: Run any command supported in the API
+    execution: false
+    name: panorama
+  - deprecated: false
+    description: Commits a configuration to Palo Alto Firewall or Panorama, but does
+      not validate if the commit was successful. Commiting to Panorama will not push
+      the configuration to the Firewalls. To push the configuration, run the panorama-push-to-device-group
+      command.
+    execution: false
+    name: panorama-commit
+    outputs:
+    - contextPath: Panorama.Commit.JobID
+      description: Job ID of the configuration to be committed
+      type: number
+    - contextPath: Panorama.Commit.Status
+      description: Commit status
+      type: string
+  - deprecated: false
+    description: Pushes rules from Palo Alto Panorama to the configured device group
+    execution: false
+    name: panorama-push-to-device-group
+    outputs:
+    - contextPath: Panorama.Push.DeviceGroup
+      description: Device group the policies were pushed into
+      type: string
+    - contextPath: Panorama.Push.JobID
+      description: Job ID of the configuration to be pushed
+      type: number
+    - contextPath: Panorama.Push.Status
+      description: Push status
+      type: string
+  - deprecated: false
+    description: Returns a list of addresses
+    execution: false
+    name: panorama-list-addresses
+    outputs:
+    - contextPath: Panorama.Addresses.Name
+      description: Address name
+      type: string
+    - contextPath: Panorama.Addresses.Description
+      description: Address description
+      type: string
+    - contextPath: Panorama.Addresses.FQDN
+      description: Address fqdn
+      type: string
+    - contextPath: Panorama.Addresses.IP_Netmask
+      description: Address IP netmask
+      type: string
+    - contextPath: Panorama.Addresses.IP_Range
+      description: Address IP range
+      type: string
+  - arguments:
+    - default: false
+      description: Address name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns address details for the supplied address name
+    execution: false
+    name: panorama-get-address
+    outputs:
+    - contextPath: Panorama.Addresses.Name
+      description: Address name
+      type: string
+    - contextPath: Panorama.Addresses.Description
+      description: Address description
+      type: string
+    - contextPath: Panorama.Addresses.FQDN
+      description: Address fqdn
+      type: string
+    - contextPath: Panorama.Addresses.IP_Netmask
+      description: Address IP netmask
+      type: string
+    - contextPath: Panorama.Addresses.IP_Range
+      description: Address IP range
+      type: string
+  - arguments:
+    - default: false
+      description: Name for the new address
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: A description of the new address
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: FQDN of the new address
+      isArray: false
+      name: fqdn
+      required: false
+      secret: false
+    - default: false
+      description: IP netmask of the new address, e.g., 10.10.10.10/24
+      isArray: false
+      name: ip_netmask
+      required: false
+      secret: false
+    - default: false
+      description: IP range of the new address, e.g., 10.10.10.0-10.10.10.255
+      isArray: false
+      name: ip_range
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates an address object
+    execution: false
+    name: panorama-create-address
+    outputs:
+    - contextPath: Panorama.Addresses.Name
+      description: Address name
+      type: string
+    - contextPath: Panorama.Addresses.Description
+      description: Address description
+      type: string
+    - contextPath: Panorama.Addresses.FQDN
+      description: Address fqdn
+      type: string
+    - contextPath: Panorama.Addresses.IP_Netmask
+      description: Address IP netmask
+      type: string
+    - contextPath: Panorama.Addresses.IP_Range
+      description: Address IP range
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the address to delete
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an address object
+    execution: false
+    name: panorama-delete-address
+    outputs:
+    - contextPath: Panorama.Addresses.Name
+      description: Name of the address that was deleted
+      type: string
+  - deprecated: false
+    description: Returns a list of address groups
+    execution: false
+    name: panorama-list-address-groups
+    outputs:
+    - contextPath: Panorama.AddressGroups.Name
+      description: Address group name
+      type: string
+    - contextPath: Panorama.AddressGroups.Type
+      description: Address group type
+      type: string
+    - contextPath: Panorama.AddressGroups.Match
+      description: Dynamic Address group match
+      type: string
+    - contextPath: Panorama.AddressGroups.Description
+      description: Address group description
+      type: string
+    - contextPath: Panorama.AddressGroups.Addresses
+      description: Static Address group addresses
+      type: string
+  - arguments:
+    - default: false
+      description: Address group name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get details for the specified address group
+    execution: false
+    name: panorama-get-address-group
+    outputs:
+    - contextPath: Panorama.AddressGroups.Name
+      description: Address group name
+      type: string
+    - contextPath: Panorama.AddressGroups.Type
+      description: Address group type
+      type: string
+    - contextPath: Panorama.AddressGroups.Match
+      description: Dynamic Address group match
+      type: string
+    - contextPath: Panorama.AddressGroups.Description
+      description: Address group description
+      type: string
+    - contextPath: Panorama.AddressGroups.Addresses
+      description: Static Address group addresses
+      type: string
+  - arguments:
+    - default: false
+      description: Address group name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Address group type
+      isArray: false
+      name: type
+      predefined:
+      - dynamic
+      - static
+      required: true
+      secret: false
+    - default: false
+      description: 'Dynamic Address group match. e.g: "1.1.1.1 or 2.2.2.2"'
+      isArray: false
+      name: match
+      required: false
+      secret: false
+    - default: false
+      description: Static address group list of addresses
+      isArray: true
+      name: addresses
+      required: false
+      secret: false
+    - default: false
+      description: Address group description
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates an address group; "static" or "dynamic"
+    execution: false
+    name: panorama-create-address-group
+    outputs:
+    - contextPath: Panorama.AddressGroups.Name
+      description: Address group name
+      type: string
+    - contextPath: Panorama.AddressGroups.Type
+      description: Address group type
+      type: string
+    - contextPath: Panorama.AddressGroups.Match
+      description: Dynamic Address group match
+      type: string
+    - contextPath: Panorama.AddressGroups.Addresses
+      description: Static Address group list
+      type: string
+    - contextPath: Panorama.AddressGroups.Description
+      description: Address group description
+      type: string
+  - arguments:
+    - default: false
+      description: Name of address group to delete
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes an address group
+    execution: false
+    name: panorama-delete-address-group
+    outputs:
+    - contextPath: Panorama.AddressGroups.Name
+      description: Name of address group that was deleted
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the address group to edit
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Address group type
+      isArray: false
+      name: type
+      predefined:
+      - static
+      - dynamic
+      required: true
+      secret: false
+    - default: false
+      description: 'Address group new match. e.g: "1.1.1.1 and 2.2.2.2"'
+      isArray: false
+      name: match
+      required: false
+      secret: false
+    - default: false
+      description: Element to add to the list of the static address group. only existing
+        Address objects can be added
+      isArray: false
+      name: element_to_add
+      required: false
+      secret: false
+    - default: false
+      description: Element to remove to the list of the static address group. only
+        existing Address objects can be removed
+      isArray: false
+      name: element_to_remove
+      required: false
+      secret: false
+    - default: false
+      description: Address group new description
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Edit an address group; "static" or "dynamic"
+    execution: false
+    name: panorama-edit-address-group
+    outputs:
+    - contextPath: Panorama.AddressGroups.Name
+      description: Address group name
+      type: string
+    - contextPath: Panorama.AddressGroups.Type
+      description: Address group type
+      type: string
+    - contextPath: Panorama.AddressGroups.Filter
+      description: Dynamic Address group match
+      type: string
+    - contextPath: Panorama.AddressGroups.Description
+      description: Address group description
+      type: string
+    - contextPath: Panorama.AddressGroups.Addresses
+      description: Static Address group addresses
+      type: string
+  - deprecated: false
+    description: Returns a list of addresses
+    execution: false
+    name: panorama-list-services
+    outputs:
+    - contextPath: Panorama.Services.Name
+      description: Service name
+      type: string
+    - contextPath: Panorama.Services.Protocol
+      description: Service protocol
+      type: string
+    - contextPath: Panorama.Services.Description
+      description: Service description
+      type: string
+    - contextPath: Panorama.Services.DestinationPort
+      description: Service destination port
+      type: string
+    - contextPath: Panorama.Services.SourcePort
+      description: Service source port
+      type: string
+  - arguments:
+    - default: false
+      description: Service name
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns service details for the supplied service name
+    execution: false
+    name: panorama-get-service
+    outputs:
+    - contextPath: Panorama.Services.Name
+      description: Service name
+      type: string
+    - contextPath: Panorama.Services.Protocol
+      description: Service protocol
+      type: string
+    - contextPath: Panorama.Services.Description
+      description: Service description
+      type: string
+    - contextPath: Panorama.Services.DestinationPort
+      description: Service destination port
+      type: string
+    - contextPath: Panorama.Services.SourcePort
+      description: Service source port
+      type: string
+  - arguments:
+    - default: false
+      description: Name for the new service
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Protocol for the new service
+      isArray: false
+      name: protocol
+      predefined:
+      - tcp
+      - udp
+      - sctp
+      required: true
+      secret: false
+    - default: false
+      description: Destination port  for the new service
+      isArray: false
+      name: destination_port
+      required: true
+      secret: false
+    - default: false
+      description: Source port  for the new service
+      isArray: false
+      name: source_port
+      required: false
+      secret: false
+    - default: false
+      description: Description for the new service
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a service object
+    execution: false
+    name: panorama-create-service
+    outputs:
+    - contextPath: Panorama.Services.Name
+      description: Service name
+      type: string
+    - contextPath: Panorama.Services.Protocol
+      description: Service protocol
+      type: string
+    - contextPath: Panorama.Services.Descritpion
+      description: Service description
+      type: string
+    - contextPath: Panorama.Services.DestinationPort
+      description: Service destination port
+      type: string
+    - contextPath: Panorama.Services.SourcePort
+      description: Service source port
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the service to delete
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a service object
+    execution: false
+    name: panorama-delete-service
+    outputs:
+    - contextPath: Panorama.Services.Name
+      description: Name of the service that was deleted
+      type: string
+  - deprecated: false
+    description: Returns a list of service groups
+    execution: false
+    name: panorama-list-service-groups
+    outputs:
+    - contextPath: Panorama.ServiceGroups.Name
+      description: Service group name
+      type: string
+    - contextPath: Panorama.ServiceGroups.Services
+      description: Service group related services
+      type: string
+  - arguments:
+    - default: false
+      description: Service group name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get details for the specified service group
+    execution: false
+    name: panorama-get-service-group
+    outputs:
+    - contextPath: Panorama.ServiceGroups.Name
+      description: Service group name
+      type: string
+    - contextPath: Panorama.ServiceGroups.Services
+      description: Service group related services
+      type: string
+  - arguments:
+    - default: false
+      description: Service group name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Service group related services
+      isArray: true
+      name: services
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a service group
+    execution: false
+    name: panorama-create-service-group
+    outputs:
+    - contextPath: Panorama.ServiceGroups.Name
+      description: Service group name
+      type: string
+    - contextPath: Panorama.ServiceGroups.Services
+      description: Service group related services
+      type: string
+  - arguments:
+    - default: false
+      description: Name of service group to delete
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a service group
+    execution: false
+    name: panorama-delete-service-group
+    outputs:
+    - contextPath: Panorama.ServiceGroups.Name
+      description: Name of service group that was deleted
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the service group to edit
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Services to add to the service group. only existing Services objects
+        can be added
+      isArray: true
+      name: services_to_add
+      required: false
+      secret: false
+    - default: false
+      description: Services to remove from the service group. only existing Services
+        objects can be removed
+      isArray: false
+      name: services_to_remove
+      required: false
+      secret: false
+    deprecated: false
+    description: Edit a service group
+    execution: false
+    name: panorama-edit-service-group
+    outputs:
+    - contextPath: Panorama.ServiceGroups.Name
+      description: Service group name
+      type: string
+    - contextPath: Panorama.ServiceGroups.Services
+      description: Service group related services
+      type: string
+  - arguments:
+    - default: false
+      description: Custom URL category name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns information for a custom URL category
+    execution: false
+    name: panorama-get-custom-url-category
+    outputs:
+    - contextPath: Panorama.CustomURLCategory.Name
+      description: Custom URL category name
+      type: string
+    - contextPath: Panorama.CustomURLCategory.Description
+      description: Custom URL category description
+      type: string
+    - contextPath: Panorama.CustomURLCategory.Sites
+      description: Custom URL category list of sites
+      type: string
+  - arguments:
+    - default: false
+      description: Name for the custom URL category to create
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Description of the custom URL category to create
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: List of sites for the custom URL category
+      isArray: true
+      name: sites
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a custom URL category
+    execution: false
+    name: panorama-create-custom-url-category
+    outputs:
+    - contextPath: Panorama.CustomURLCategory.Name
+      description: Custom URL category name
+      type: string
+    - contextPath: Panorama.CustomURLCategory.Description
+      description: Custom URL category description
+      type: string
+    - contextPath: Panorama.CustomURLCategory.Sites
+      description: Custom URL category list of sites
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the custom URL category to delete
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: Delete a custom URL category
+    execution: false
+    name: panorama-delete-custom-url-category
+    outputs:
+    - contextPath: Panorama.CustomURLCategory.Name
+      description: Name of the custom URL category to delete
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the custom URL category to add or remove sites to
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: CSV list of sites to add to the custom URL category
+      isArray: true
+      name: sites
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Add or remove sites; "add" or "remove"
+      isArray: true
+      name: action
+      predefined:
+      - add
+      - remove
+      required: true
+      secret: false
+    deprecated: false
+    description: Add sites to, or remove sites from a custom URL category
+    execution: false
+    name: panorama-edit-custom-url-category
+    outputs:
+    - contextPath: Panorama.CustomURLCategory.Name
+      description: Custom URL category name
+      type: string
+    - contextPath: Panorama.CustomURLCategory.Description
+      description: Custom URL category description
+      type: string
+    - contextPath: Panorama.CustomURLCategory.Sites
+      description: Custom URL category list of sites
+      type: string
+  - arguments:
+    - default: false
+      description: URL to check
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a URL category from URL Filtering
+    execution: false
+    name: panorama-get-url-category
+    outputs:
+    - contextPath: Panorama.URLFilter.URL
+      description: URL
+      type: string
+    - contextPath: Panorama.URLFilter.Category
+      description: URL category
+      type: string
+  - arguments:
+    - default: false
+      description: URL Filter name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get information for a URL filtering rule
+    execution: false
+    name: panorama-get-url-filter
+    outputs:
+    - contextPath: Panorama.URLFilter.Name
+      description: URL Filter name
+      type: string
+    - contextPath: Panorama.URLFilter.Category.Name
+      description: URL Filter category name
+      type: string
+    - contextPath: Panorama.URLFilter.Category.Action
+      description: Action for the URL category
+      type: string
+    - contextPath: Panorama.URLFilter.OverrideBlockList
+      description: URL Filter override block list
+      type: string
+    - contextPath: Panorama.URLFilter.OverrideAllowList
+      description: URL Filter override allow list
+      type: string
+    - contextPath: Panorama.URLFilter.Description
+      description: URL Filter description
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the URL filter to create
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: One or more URL categories
+      isArray: true
+      name: url_category
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Action for the URL categories; "allow", "block", "alert", "continue",
+        "override"
+      isArray: false
+      name: action
+      predefined:
+      - allow
+      - block
+      - alert
+      - continue
+      - override
+      required: true
+      secret: false
+    - default: false
+      description: CSV list of URLs to exclude from the allow list
+      isArray: true
+      name: override_allow_list
+      required: false
+      secret: false
+    - default: false
+      description: CSV list of URLs to exclude from the block list
+      isArray: true
+      name: override_block_list
+      required: false
+      secret: false
+    - default: false
+      description: URL Filter description
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a URL filtering rule
+    execution: false
+    name: panorama-create-url-filter
+    outputs:
+    - contextPath: Panorama.URLFilter.Name
+      description: URL Filter name
+      type: string
+    - contextPath: Panorama.URLFilter.Category.Name
+      description: URL Filter category name
+      type: string
+    - contextPath: Panorama.URLFilter.Category.Action
+      description: Action for the URL category
+      type: string
+    - contextPath: Panorama.URLFilter.OverrideBlockList
+      description: URL Filter override allow list
+      type: string
+    - contextPath: Panorama.URLFilter.OverrideBlockList
+      description: URL Filter override block list
+      type: string
+    - contextPath: Panorama.URLFilter.Description
+      description: URL Filter description
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the URL filter to edit
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Element to change; "ovveride_allow_list", "ovveride_block_list"
+      isArray: false
+      name: element_to_change
+      predefined:
+      - override_allow_list
+      - override_block_list
+      - description
+      required: true
+      secret: false
+    - default: false
+      description: Element value, limited to one value
+      isArray: false
+      name: element_value
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: add
+      description: Add or remove an element from the Allow List field or Block List
+        field, default is "add" the element_value to the list.
+      isArray: false
+      name: add_remove_element
+      predefined:
+      - add
+      - remove
+      required: false
+      secret: false
+    deprecated: false
+    description: Edit a URL filtering rule
+    execution: false
+    name: panorama-edit-url-filter
+    outputs:
+    - contextPath: Panorama.URLFilter.Name
+      description: URL Filter name
+      type: string
+    - contextPath: Panorama.URLFilter.Description
+      description: URL Filter description
+      type: string
+    - contextPath: Panorama.URLFilter.Category.Name
+      description: URL Filter category
+      type: string
+    - contextPath: Panorama.URLFilter.Action
+      description: Action for the URL category
+      type: string
+    - contextPath: Panorama.URLFilter.OverrideAllowList
+      description: Allow Overrides for the url category
+      type: string
+    - contextPath: Panorama.URLFilter.OverrideBlockList
+      description: Block Overrides for the url category
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the URL filter rule to delete
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a URL filtering rule
+    execution: false
+    name: panorama-delete-url-filter
+    outputs:
+    - contextPath: Panorama.URLFilter.Name
+      description: URL filter rule name
+      type: string
+  - deprecated: false
+    description: Returns a list of external dynamic lists
+    execution: false
+    name: panorama-list-edls
+    outputs:
+    - contextPath: Panorama.EDL.Name
+      description: Name of the EDL
+      type: string
+    - contextPath: Panorama.EDL.Type
+      description: The type of EDL
+      type: string
+    - contextPath: Panorama.EDL.URL
+      description: URL in which the EDL is stored
+      type: string
+    - contextPath: Panorama.EDL.Description
+      description: Description of the EDL
+      type: string
+    - contextPath: Panorama.EDL.CertificateProfile
+      description: EDL certificate profile
+      type: string
+    - contextPath: Panorama.EDL.Recurring
+      description: Time interval that the EDL was pulled and updated
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the EDL
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns information for an external dynamic list
+    execution: false
+    name: panorama-get-edl
+    outputs:
+    - contextPath: Panorama.EDL.Name
+      description: Name of the EDL
+      type: string
+    - contextPath: Panorama.EDL.Type
+      description: The type of EDL
+      type: string
+    - contextPath: Panorama.EDL.URL
+      description: URL in which the EDL is stored
+      type: string
+    - contextPath: Panorama.EDL.Description
+      description: Description of the EDL
+      type: string
+    - contextPath: Panorama.EDL.CertificateProfile
+      description: EDL certificate profile
+      type: string
+    - contextPath: Panorama.EDL.Recurring
+      description: Time interval that the EDL was pulled and updated
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the EDL
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: URL from which to pull the EDL
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of EDL
+      isArray: false
+      name: type
+      predefined:
+      - ip
+      - url
+      - domain
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Time interval for pulling and updating the EDL
+      isArray: false
+      name: recurring
+      predefined:
+      - five-minute
+      - hourly
+      required: true
+      secret: false
+    - default: false
+      description: Certificate Profile name for the URL that was previously uploaded
+        to PAN OS.
+      isArray: false
+      name: certificate_profile
+      required: false
+      secret: false
+    - default: false
+      description: Description of the EDL
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates an external dynamic list
+    execution: false
+    name: panorama-create-edl
+    outputs:
+    - contextPath: Panorama.EDL.Name
+      description: Name of theEDL
+      type: string
+    - contextPath: Panorama.EDL.Type
+      description: Type of the EDL
+      type: string
+    - contextPath: Panorama.EDL.URL
+      description: URL in which the EDL is stored
+      type: string
+    - contextPath: Panorama.EDL.Description
+      description: Description of the EDL
+      type: string
+    - contextPath: Panorama.EDL.CertificateProfile
+      description: EDL certificate profile
+      type: string
+    - contextPath: Panorama.EDL.Recurring
+      description: Time interval that the EDL was pulled and updated
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the external dynamic list to edit
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The element to change (“url”, “recurring”, “certificate_profile”,
+        “description”)
+      isArray: false
+      name: element_to_change
+      predefined:
+      - url
+      - recurring
+      - certificate_profile
+      - description
+      required: true
+      secret: false
+    - default: false
+      description: The element value
+      isArray: false
+      name: element_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Modifies an element of an external dynamic list
+    execution: false
+    name: panorama-edit-edl
+    outputs:
+    - contextPath: Panorama.EDL.Name
+      description: Name of the EDL
+      type: string
+    - contextPath: Panorama.EDL.URL
+      description: URL in which the EDL is stored
+      type: string
+    - contextPath: Panorama.EDL.Description
+      description: Description of the EDL
+      type: string
+    - contextPath: Panorama.EDL.CertificateProfile
+      description: EDL certificate profile
+      type: string
+    - contextPath: Panorama.EDL.Recurring
+      description: Time interval that the EDL was pulled and updated
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the EDL to delete
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes an external dynamic list
+    execution: false
+    name: panorama-delete-edl
+    outputs:
+    - contextPath: Panorama.EDL.Name
+      description: Name of the EDL that was deleted
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the EDL
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Refreshes the specified external dynamic list
+    execution: false
+    name: panorama-refresh-edl
+  - arguments:
+    - default: false
+      description: Name of the rule to create
+      isArray: false
+      name: rulename
+      required: false
+      secret: false
+    - default: false
+      description: Description of the rule to create
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Action for the rule; "allow", "deny", "drop"
+      isArray: false
+      name: action
+      predefined:
+      - allow
+      - deny
+      - drop
+      required: true
+      secret: false
+    - default: false
+      description: Source address; "address", "address group"
+      isArray: false
+      name: source
+      required: false
+      secret: false
+    - default: false
+      description: Destination address; "address", "address group"
+      isArray: false
+      name: destination
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to negate the source (address, address group); "Yes" or
+        "No"
+      isArray: false
+      name: negate_source
+      predefined:
+      - 'Yes'
+      - 'No'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to negate the destination (address, address group); "Yes"
+        or "No"
+      isArray: false
+      name: negate_destination
+      predefined:
+      - 'Yes'
+      - 'No'
+      required: false
+      secret: false
+    - default: false
+      description: Service for the rule (service object) to create
+      isArray: false
+      name: service
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'No'
+      description: Whether to disable the rule; "Yes" or "No" (default is "No")
+      isArray: false
+      name: disable
+      predefined:
+      - 'Yes'
+      - 'No'
+      required: false
+      secret: false
+    - default: false
+      description: Application for the rule to create
+      isArray: false
+      name: application
+      required: false
+      secret: false
+    - default: false
+      defaultValue: any
+      description: Source user for the rule to create
+      isArray: false
+      name: source_user
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Pre rule or Post rule (Panorama instances)
+      isArray: false
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+      required: false
+      secret: false
+    - default: false
+      description: Specify a target firewall for the rule (Panorama instances)
+      isArray: false
+      name: target
+      required: false
+      secret: false
+    - default: false
+      description: Log forwarding profile
+      isArray: false
+      name: log_forwarding
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a policy rule
+    execution: true
+    name: panorama-create-rule
+    outputs:
+    - contextPath: Panorama.SecurityRule.Name
+      description: Rule name
+      type: string
+    - contextPath: Panorama.SecurityRule.Description
+      description: Rule description
+      type: string
+    - contextPath: Panorama.SecurityRule.Action
+      description: Action for the rule
+      type: string
+    - contextPath: Panorama.SecurityRule.Source
+      description: Source address
+      type: string
+    - contextPath: Panorama.SecurityRule.Destination
+      description: Destination address
+      type: string
+    - contextPath: Panorama.SecurityRule.NegateSource
+      description: Is the source negated (address, address group)
+      type: boolean
+    - contextPath: Panorama.SecurityRule.NegateDestination
+      description: Is the destination negated (address, address group)
+      type: boolean
+    - contextPath: Panorama.SecurityRule.Service
+      description: Service for the rule
+      type: string
+    - contextPath: Panorama.SecurityRule.Disabled
+      description: Is the rule disabled
+      type: string
+    - contextPath: Panorama.SecurityRule.Application
+      description: Application for the rule
+      type: string
+    - contextPath: Panorama.SecurityRule.Target
+      description: Target firewall (Panorama instances)
+      type: string
+    - contextPath: Panorama.SecurityRule.LogForwarding
+      description: Log forwarding profile (Panorama instances)
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the custom block policy rule to create
+      isArray: false
+      name: rulename
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Object type to block in the policy rule
+      isArray: false
+      name: object_type
+      predefined:
+      - ip
+      - address-group
+      - application
+      - url-category
+      required: true
+      secret: false
+    - default: false
+      description: Object value
+      isArray: false
+      name: object_value
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: both
+      description: Direction to block (relevant only for "ip", "address-group" block),
+        default is "both"
+      isArray: false
+      name: direction
+      predefined:
+      - to
+      - from
+      - both
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Pre rule or Post rule (Panorama instances)
+      isArray: false
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+      required: false
+      secret: false
+    - default: false
+      description: Specify a target firewall for the rule (Panorama instances)
+      isArray: false
+      name: target
+      required: false
+      secret: false
+    - default: false
+      description: Log forwarding profile
+      isArray: false
+      name: log_forwarding
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a custom block policy rule
+    execution: true
+    name: panorama-custom-block-rule
+    outputs:
+    - contextPath: Panorama.SecurityRule.Name
+      description: Rule name
+      type: string
+    - contextPath: Panorama.SecurityRule.Object
+      description: Blocked object
+      type: string
+    - contextPath: Panorama.SecurityRule.Direction
+      description: Direction blocked
+      type: string
+    - contextPath: Panorama.SecurityRule.Target
+      description: Target firewall (Panorama instances)
+      type: string
+    - contextPath: Panorama.SecurityRule.LogForwarding
+      description: Log forwarding profile (Panorama instances)
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the rule to move
+      isArray: false
+      name: rulename
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Where to move the rule to; "before", "after", "top", or "bottom".
+        If you specify "up" or "down", you need to supply the "dst" argument.
+      isArray: false
+      name: where
+      predefined:
+      - before
+      - after
+      - top
+      - bottom
+      required: true
+      secret: false
+    - default: false
+      description: Destination rule relative to the rule you are moving. Only supply
+        this argument if you specified "up" or "down" for the "where" argument.
+      isArray: false
+      name: dst
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Rule location. Mandatory for Panorama instances.
+      isArray: false
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+      required: false
+      secret: false
+    deprecated: false
+    description: Change the location of a policy rule
+    execution: true
+    name: panorama-move-rule
+    outputs:
+    - contextPath: Panorama.SecurityRule.Name
+      description: Rule name
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the rule to edit
+      isArray: false
+      name: rulename
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Parameter in the security rule to change; "source", "destination",
+        "application", "action", "category", "description", "disabled", "target"
+      isArray: false
+      name: element_to_change
+      predefined:
+      - source
+      - destination
+      - application
+      - action
+      - category
+      - description
+      - disabled
+      - target
+      required: true
+      secret: false
+    - default: false
+      description: New value for the parameter
+      isArray: false
+      name: element_value
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Pre rule or Post rule (Panorama instances)
+      isArray: false
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+      required: false
+      secret: false
+    deprecated: false
+    description: Edit a policy rule
+    execution: true
+    name: panorama-edit-rule
+    outputs:
+    - contextPath: Panorama.SecurityRule.Name
+      description: Rule name
+      type: string
+    - contextPath: Panorama.SecurityRule.Description
+      description: Rule description
+      type: string
+    - contextPath: Panorama.SecurityRule.Action
+      description: Action for the rule
+      type: string
+    - contextPath: Panorama.SecurityRule.Source
+      description: Source address
+      type: string
+    - contextPath: Panorama.SecurityRule.Destination
+      description: Destination address
+      type: string
+    - contextPath: Panorama.SecurityRule.NegateSource
+      description: Is the source negated (address, address group)
+      type: boolean
+    - contextPath: Panorama.SecurityRule.NegateDestination
+      description: Is the destination negated (address, address group)
+      type: boolean
+    - contextPath: Panorama.SecurityRule.Service
+      description: Service for the rule
+      type: string
+    - contextPath: Panorama.SecurityRule.Disabled
+      description: Is the rule disabled
+      type: string
+    - contextPath: Panorama.SecurityRule.Application
+      description: Application for the rule
+      type: string
+    - contextPath: Panorama.SecurityRule.Target
+      description: Target firewall (Panorama instances)
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the rule to delete
+      isArray: false
+      name: rulename
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Pre rule or Post rule (Panorama instances)
+      isArray: false
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+      required: false
+      secret: false
+    deprecated: false
+    description: Deletes a policy rule
+    execution: true
+    name: panorama-delete-rule
+    outputs:
+    - contextPath: Panorama.SecurityRule.Name
+      description: Rule name
+      type: string
+  - deprecated: false
+    description: Returns a list of predefined applications
+    execution: false
+    name: panorama-list-applications
+    outputs:
+    - contextPath: Panorama.Applications.Name
+      description: Application name
+      type: string
+    - contextPath: Panorama.Applications.Id
+      description: Application id
+      type: number
+    - contextPath: Panorama.Applications.Category
+      description: Application category
+      type: string
+    - contextPath: Panorama.Applications.SubCategory
+      description: Application sub category
+      type: string
+    - contextPath: Panorama.Applications.Technology
+      description: Application technology
+      type: string
+    - contextPath: Panorama.Applications.Risk
+      description: Application risk (1 to 5)
+      type: number
+    - contextPath: Panorama.Applications.Description
+      description: Application description
+      type: string
+  - arguments:
+    - default: false
+      description: Job ID to check
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get commit status for a configuration
+    execution: false
+    name: panorama-commit-status
+    outputs:
+    - contextPath: Panorama.Commit.JobID
+      description: Job ID of the configuration to be committed
+      type: number
+    - contextPath: Panorama.Commit.Status
+      description: Commit status
+      type: string
+    - contextPath: Panorama.Commit.Details
+      description: Job ID details
+      type: string
+  - arguments:
+    - default: false
+      description: Job ID to check
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get push status for a configuration
+    execution: false
+    name: panorama-push-status
+    outputs:
+    - contextPath: Panorama.Push.DeviceGroup
+      description: Device group the policies were pushed into
+      type: string
+    - contextPath: Panorama.Push.JobID
+      description: Job ID of the configuration to be pushed
+      type: number
+    - contextPath: Panorama.Push.Status
+      description: Push status
+      type: string
+    - contextPath: Panorama.Push.Details
+      description: Job ID details
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Type of Packet Capture
+      isArray: false
+      name: pcapType
+      predefined:
+      - application-pcap
+      - filter-pcap
+      - threat-pcap
+      - dlp-pcap
+      required: true
+      secret: false
+    - default: false
+      description: Filename for dlp-pcap, filters-pcap, application-pcap. <yyyymmdd>
+        for application-pcap as well
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: The new name for the PCAP file after downloading. If this argument
+        is not specified, the file name will be the PCAP file name that was set in
+        the firewall.
+      isArray: false
+      name: localName
+      required: false
+      secret: false
+    - default: false
+      description: Serial number for the request. For further information, see the
+        Panorama XML API Documentation.
+      isArray: false
+      name: serialNo
+      required: false
+      secret: false
+    - default: false
+      description: Search time for the request. For further information, see the Panorama
+        XML API Documentation.
+      isArray: false
+      name: searchTime
+      required: false
+      secret: false
+    - default: false
+      description: ID of the Pcap for the request. For further information, see the
+        Panorama XML API Documentation.
+      isArray: false
+      name: pcapID
+      required: false
+      secret: false
+    - default: false
+      description: Password for Panorama, needed for dlp-pcap only.
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    deprecated: false
+    description: Get panorama pcaps
+    execution: false
+    name: panorama-get-pcap
+    outputs:
+    - contextPath: File.Size
+      description: File size
+      type: number
+    - contextPath: File.Name
+      description: File name
+      type: string
+    - contextPath: File.Type
+      description: File type
+      type: string
+    - contextPath: File.Info
+      description: File info
+      type: string
+    - contextPath: File.Extenstion
+      description: File extenstion
+      type: string
+    - contextPath: File.EntryID
+      description: FIle entryID
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Type of Packet Capture
+      isArray: false
+      name: pcapType
+      predefined:
+      - application-pcap
+      - filter-pcap
+      - threat-pcap
+      - dlp-pcap
+      required: true
+      secret: false
+    - default: false
+      description: Password for Panorama, needed for dlp-pcap only.
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of pcap names
+    execution: false
+    name: panorama-list-pcaps
+  - arguments:
+    - default: false
+      description: Tag to register IP addresses to
+      isArray: false
+      name: tag
+      required: true
+      secret: false
+    - default: false
+      description: IP addresses to register
+      isArray: true
+      name: IPs
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether the IP addresses remain registered to the tag after device
+        reboots. "false":non-persistent, "true":persistent. Default is "true"
+      isArray: false
+      name: persistent
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Registers IP addresses to a tag
+    execution: false
+    name: panorama-register-ip-tag
+    outputs:
+    - contextPath: Panorama.DynamicTags.Tag
+      description: Name for the tag
+      type: string
+    - contextPath: Panorama.DynamicTags.IPs
+      description: Registered IP addresses
+      type: string
+  - arguments:
+    - default: false
+      description: Tag from which to unregister IP addresses
+      isArray: false
+      name: tag
+      required: true
+      secret: false
+    - default: false
+      description: IP addresses to unregister
+      isArray: true
+      name: IPs
+      required: true
+      secret: false
+    deprecated: false
+    description: Unregisters IP addresses from a tag
+    execution: false
+    name: panorama-unregister-ip-tag
+  - arguments:
+    - default: false
+      description: Specify the match criteria for the logs. This is similar to the
+        query provided in the web interface under the Monitor tab when viewing the
+        logs.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Specify the number of logs to retrieve. The default is 100 when
+        the parameter is not specified. The maximum is 5000.
+      isArray: false
+      name: number_of_logs
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: backward
+      description: Specify whether logs are shown oldest first (forward) or newest
+        first (backward). Default is backward.
+      isArray: false
+      name: direction
+      predefined:
+      - backward
+      - forward
+      required: false
+      secret: false
+    - default: false
+      description: source address for the query
+      isArray: false
+      name: source
+      required: false
+      secret: false
+    - default: false
+      description: destination address for the query
+      isArray: false
+      name: destination
+      required: false
+      secret: false
+    - default: false
+      description: receive_time greater than for the query, e.g, YYYY/MM/DD HH:MM:SS
+      isArray: false
+      name: receive_time
+      required: false
+      secret: false
+    - default: false
+      description: application for the query
+      isArray: false
+      name: application
+      required: false
+      secret: false
+    - default: false
+      description: to_port(destination port) for the query
+      isArray: false
+      name: to_port
+      required: false
+      secret: false
+    - default: false
+      description: action for the query
+      isArray: false
+      name: action
+      required: false
+      secret: false
+    deprecated: false
+    description: Query traffic logs
+    execution: false
+    name: panorama-query-traffic-logs
+    outputs:
+    - contextPath: Panorama.TrafficLogs.JobID
+      description: Job ID of the traffic logs query
+      type: Number
+    - contextPath: Panorama.TrafficLogs.Status
+      description: Status of the traffic logs query
+      type: String
+  - arguments:
+    - default: false
+      description: Job ID of the query
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Check traffic logs query status
+    execution: false
+    name: panorama-check-traffic-logs-status
+    outputs:
+    - contextPath: Panorama.TrafficLogs.JobID
+      description: Job ID of the traffic logs query
+      type: Number
+    - contextPath: Panorama.TrafficLogs.Status
+      description: Status of the traffic logs query
+      type: String
+  - arguments:
+    - default: false
+      description: Job ID of the query
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves traffic log query data by job id
+    execution: false
+    name: panorama-get-traffic-logs
+    outputs:
+    - contextPath: Panorama.TrafficLogs.JobID
+      description: Job ID of the traffic logs query
+      type: Number
+    - contextPath: Panorama.TrafficLogs.Status
+      description: Status of the traffic logs query
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Action
+      description: Action of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.ActionSource
+      description: Action source of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Application
+      description: Application of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Category
+      description: Category of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.DeviceName
+      description: Device name of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Destination
+      description: Destination of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.DestinationPort
+      description: Destination port of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.FromZone
+      description: From zone of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Protocol
+      description: Protocol of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.ReceiveTime
+      description: Receive time of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Rule
+      description: Rule of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.SessionEndReason
+      description: Session end reason of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Source
+      description: Source of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.SourcePort
+      description: Source port of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.StartTime
+      description: Start time of the traffic log
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.ToZone
+      description: To zone of the traffic log.
+      type: String
+  dockerimage: demisto/python3:3.7.3.221
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+- palo_alto_firewall_test_pb
+- palo_alto_panorama_test_pb

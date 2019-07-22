@@ -1,0 +1,726 @@
+commonfields:
+  id: Minerva Labs Anti-Evasion Platform
+  version: -1
+name: Minerva Labs Anti-Evasion Platform
+display: Minerva Labs Anti-Evasion Platform
+category: Endpoint
+image: data:image/png;base64,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
+description: Minerva eliminates the endpoint security gap while empowering companies
+  to embrace technology fearlessly.
+detaileddescription: |-
+  Minerva Labs integration with Demisto.
+  The integration queries the Minerva server for new events, endpoint status, groups and able to create active response such as adding vaccinations and exclusions.
+configuration:
+- display: Minerva Management Console URL
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |
+    ''' IMPORTS '''
+    import json
+
+    import requests
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+
+    ''' GLOBALS '''
+    USERNAME = demisto.params().get('credentials').get('identifier')
+    PASSWORD = demisto.params().get('credentials').get('password')
+    BASE_URL = demisto.params().get('url')
+    VERIFY_SSL = not demisto.params().get('insecure', False)
+
+
+    ''' HELPERS '''
+    def get_session():
+        session = requests.Session()
+        session.verify = VERIFY_SSL
+        return session
+
+
+    def create_entry_context(context_id, data):
+        ec = {}
+        if context_id.endswith('processes'):
+            context = []
+            for process in data:
+                process_context = {
+                    'Endpoint': process['endpoint'],
+                    'SHA256': process['fileHash'],
+                    'CommandLine': process['processCommandLine'],
+                    'Username': process['username'],
+                    'CreateTime': process['startTime'],
+                    'Pid': process['processId'],
+                    'Name': process['processName']
+                }
+                context.append(process_context)
+            ec['Minerva.Process(val.Id === obj.Id)'] = context
+        elif context_id.endswith('endpoints'):
+            context = []
+            for endpoint in data:
+                endpoint_context = {
+                    'Group': endpoint['group'],
+                    'Name': endpoint['endpoint'],
+                    'Users': endpoint['loggedOnUsers'],
+                    'IP': endpoint['reportedIpAddress'],
+                    'OS': endpoint['operatingSystem']
+                }
+                context.append(endpoint_context)
+            ec['Minerva.Endpoint(val.Id === obj.Id)'] = context
+        elif context_id.endswith('groups'):
+            context = []
+            for group in data:
+                group_context = {
+                    'Name': group['name'],
+                    'Id': group['id'],
+                    'Policy': group['policy'],
+                    'PolicyVersion': group['policyVersion'],
+                    'SimulationStatus': group['endpointSettings'],
+                    'Endpoints': group['endpoints'],
+                    'CreationTime': group['creationTime']
+                }
+                context.append(group_context)
+            ec['Minerva.Group(val.Id === obj.Id)'] = context
+        elif context_id.endswith('vaccination'):
+            context = []
+            if isinstance(data, list):
+                for vaccine in data:
+                    vaccine_context = {
+                        'Id': vaccine['id'],
+                        'Name': vaccine['name'],
+                        'Type': vaccine['type'],
+                        'Description': vaccine['description'],
+                        "IsMonitorOnly": vaccine['isMonitorOnly'],
+                        'Last modified by': vaccine['lastModifiedBy'],
+                        'Last modified on': vaccine['lastModifiedOn']
+                    }
+                    context.append(vaccine_context)
+                ec['Minerva.Vaccine(val.Id === obj.Id)'] = context
+            else:
+                context = {
+                    'Id': data['id'],
+                    'Name': data['name'],
+                    'Type': data['type'],
+                    'Description': data['description'],
+                    "IsMonitorOnly": data['isMonitorOnly'],
+                    'Last modified by': data['lastModifiedBy'],
+                    'Last modified on': data['lastModifiedOn']
+                    }
+                ec['Minerva.Vaccine(val.Id === obj.Id)'] = context
+        elif context_id.endswith('exclusions'):
+            context = []
+            if isinstance(data, list):
+                for exclusion in data:
+                    exclusion_context = {
+                        'Id': exclusion['id'],
+                        'Type': exclusion['type'],
+                        'Exclusion data': exclusion['data'],
+                        'Description': exclusion['description'],
+                        'Last modified by': exclusion['lastModifiedBy'],
+                        'Last modified on': exclusion['lastModifiedOn'],
+                        'Applied groups': exclusion['appliedGroupsIds']
+                    }
+                    context.append(exclusion_context)
+                ec['Minerva.Exclusion(val.Id === obj.Id)'] = context
+            else:
+                context = {
+                    'Id': data['id'],
+                    'Type': data['type'],
+                    'Exclusion data': data['data'],
+                    'Description': data['description'],
+                    'Last modified by': data['lastModifiedBy'],
+                    'Last modified on': data['lastModifiedOn'],
+                    'Applied groups': data['appliedGroupsIds']
+                }
+                ec['Minerva.Exclusion(val.Id === obj.Id)'] = context
+        else:
+            LOG('Failed to create entry context for {}'.format(context_id))
+
+        return ec
+
+
+    ''' FUNCTIONS '''
+    def get_from_url(url):
+        url_text = url.split('/')[-1]
+        response = session.get(url)
+        if response.status_code is not 200:
+            return_error('Error while fetching {}. More information: {}, {}'.format(url_text, response.status_code, response.reason))
+
+        if not response.json():
+            return {
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['markdown'],
+                'Contents': 'No contents retrieved for {}'.format(url_text)
+            }
+
+        return {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': response.json(),
+            'HumanReadable': tableToMarkdown(pascalToSpace(url_text), response.json(), headerTransform=pascalToSpace, removeNull=True),
+            'EntryContext': create_entry_context(url_text, response.json())
+        }
+
+
+    @logger
+    def login():
+        return session.post(BASE_URL + '/api/login',
+                            json={'username': USERNAME,
+                                  'password': PASSWORD})
+
+
+    @logger
+    def logout():
+        session.post(BASE_URL + '/api/login/logout')
+
+
+    def fetch_incidents():
+        try:
+            r_events = session.post(BASE_URL + '/api/events',
+                                    json={"archive": False})
+            if r_events.status_code is not 200:
+                raise Exception('Error in API call. More information: {}, {}'.format(r_exclusion.status_code, r_exclusion.reason))
+
+            incidents = []
+            for event in r_events.json():
+                incident = {
+                    'name': 'Minerva Labs Event - {}'.format(event['type']),
+                    'rawJSON': json.dumps(event)
+                }
+                incidents.append(incident)
+                session.put(BASE_URL + '/api/events/archive',
+                            json={'events': event['id']})
+            demisto.incidents(incidents)
+        except Exception, e:
+            return_error('Error while fetching incidents. More information: {}'.format(e.message))
+
+
+    @logger
+    def get_groups():
+        get_groups_url = BASE_URL + '/api/groups'
+        response = session.get(get_groups_url, params={'_limit': '1000'})
+        if response.status_code is not 200 or not response.json():
+            return_error('Error while fetching groups. More information: {}, {}'.format(response.status_code, response.reason))
+
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': response.json(),
+            'HumanReadable': tableToMarkdown('Available groups', t=response.json(), headerTransform=pascalToSpace, removeNull=True),
+            'EntryContext': create_entry_context(get_groups_url, response.json())
+        }
+        demisto.results(results)
+
+
+    @logger
+    def add_exclusion(exclusion_type, exclusion_data, exclusion_description, groups_id):
+        groups_ids_list = [group_id.strip() for group_id in groups_id.split(',')]
+        json_params = {
+            'type': exclusion_type,
+            'description': exclusion_description,
+            'data': exclusion_data,
+            'appliedGroupsIds': groups_ids_list
+        }
+        exclusions_url= BASE_URL + '/api/exclusions'
+        response = session.post(exclusions_url, json=json_params)
+        if response.status_code == 409 and response.reason == 'Conflict':
+            demisto.results('Exclusion already exists')
+            return
+        if response.status_code is not 200:
+            return_error('Error while adding exclusion. More information: {}, {}'.format(response.status_code, response.reason))
+
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': response.json(),
+            'HumanReadable': tableToMarkdown('Exclusion \'{}\' was added'.format(exclusion_description), response.json(), headerTransform=pascalToSpace, removeNull=True),
+            'EntryContext': create_entry_context(exclusions_url, response.json())
+        }
+
+        demisto.results(results)
+
+
+    @logger
+    def get_exclusions():
+        results = get_from_url(BASE_URL + '/api/exclusions')
+        demisto.results(results)
+
+
+    @logger
+    def delete_exclusion(exclusion_id, exclusion_type):
+        json_params = {
+            'id': exclusion_id,
+            'type': exclusion_type
+        }
+        response = session.post(BASE_URL + '/api/exclusions/delete', json=[json_params])
+        if response.status_code is not 200:
+            return_error('Error while deleting exclusions. More information: {}, {}'.format(response.status_code, response.reason))
+        demisto.results('Exclusion {} was deleted'.format(exclusion_id))
+
+
+    @logger
+    def add_vaccine(vaccine_name, vaccine_desc, monitor_only):
+        json_params = {'name': vaccine_name,
+                       'description': vaccine_desc,
+                       'isMonitorOnly': monitor_only,
+                       'type': 'mutex'}
+        vaccination_url = BASE_URL + '/api/vaccination'
+        response = session.post(vaccination_url, json=json_params)
+        if response.status_code == 409 and response.reason == 'Conflict':
+            demisto.results('Vaccination already exists')
+            return
+        if response.status_code is not 200:
+            return_error('Error while adding a vaccine. More information: {}, {}'.format(response.status_code, response.reason))
+
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': response.json(),
+            'HumanReadable': tableToMarkdown('Vaccination \'{}\' was added'.format(vaccine_desc), response.json(), headerTransform=pascalToSpace, removeNull=True)
+        }
+
+        if response.json():
+            results['EntryContext'] = create_entry_context(vaccination_url, response.json())
+
+        demisto.results(results)
+
+
+    @logger
+    def get_vaccines():
+        results = get_from_url(BASE_URL + '/api/vaccination')
+        demisto.results(results)
+
+
+    @logger
+    def delete_vaccines(vaccine_id):
+        response = session.delete(BASE_URL + '/api/vaccination', params={'ids': [vaccine_id]})
+        if response.status_code == 404:
+            demisto.results('Vaccination with id {} was not found'.format(vaccine_id))
+            return
+        if response.status_code is not 200:
+            return_error('Error while deleting vaccination id: {}. More information: {}, {}'.format(vaccine_id, response.status_code, response.reason))
+        demisto.results('Vaccine \'{}\' was deleted'.format(vaccine_id))
+
+
+    @logger
+    def search(search_url, search_param, search_condition, search_value):
+        json_params = {'filters': [{'param': search_param,
+                                    'condition': search_condition,
+                                    'value': search_value}]}
+        response = session.post(search_url,
+                                json=json_params)
+        if response.status_code is not 200:
+            return_error('Error while perfroming search for {}. More information: {}, {}'.format(search_url.rsplit('/')[1], response.status_code, response.reason))
+
+        results = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'Contents': response.json(),
+            'HumanReadable': tableToMarkdown('Search results for \'{}\''.format(search_url.split('/')[-1]), response.json(), headerTransform=pascalToSpace, removeNull=True),
+            'EntryContext': create_entry_context(search_url, response.json())
+        }
+
+        demisto.results(results)
+
+
+    @logger
+    def unarchive_events():
+        response = session.put(BASE_URL + '/api/events/archive', json={'shouldArchive': False})
+        if response.status_code is not 200:
+            return_error('Error while un-archiving events. More information: {}, {}'.format(response.status_code, response.reason))
+        demisto.results('Events were un-archived')
+
+
+    ''' EXECUTION '''
+    session = get_session()
+    try:
+        handle_proxy()
+
+        args = demisto.args()
+
+        def add_exclusion_command():
+            exclusion_type = args.get('type')
+            exclusion_data = args.get('data')
+            exclusion_description = args.get('description')
+            groups_id = args.get('appliedGroupsIds')
+            add_exclusion(exclusion_type, exclusion_data, exclusion_description, groups_id)
+
+        def delete_exclusion_command():
+            exclusion_id = args.get('id')
+            exclusion_type = args.get('type')
+            delete_exclusion(exclusion_id, exclusion_type)
+
+        def add_vaccine_command():
+            vaccine_name = args.get('name')
+            vaccine_desc = args.get('description')
+            monitor_only = args.get('isMonitorOnly')
+            add_vaccine(vaccine_name, vaccine_desc, monitor_only)
+
+        def delete_vaccines_command():
+            vaccine_id = args.get('vaccine_id')
+            delete_vaccines(vaccine_id)
+
+        def search_process_command():
+            processes_search_url = BASE_URL + '/api/processes'
+            search_param = args.get('param')
+            search_condition = args.get('condition')
+            search_value = args.get('value')
+            search(processes_search_url, search_param, search_condition, search_value)
+
+        def search_endpoint_command():
+            endpoint_search_url = BASE_URL + '/api/endpoints'
+            search_param = args.get('param')
+            search_condition = args.get('condition')
+            search_value = args.get('value')
+            search(endpoint_search_url, search_param, search_condition, search_value)
+
+        def get_groups_command():
+            get_groups()
+
+
+        LOG('Command is {}'.format(demisto.command()))
+        if USERNAME and PASSWORD:
+            minerva_login = login()
+        else:
+            return_error('Failed to log in, no credentials were given')
+        if demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+        elif demisto.command() == 'test-module':
+            if minerva_login.status_code == 200:
+                demisto.results('ok')
+            else:
+                return_error('Failed to log in. More information: {}, {}', minerva_login.status_code, minerva_login.reason)
+        elif demisto.command() == 'minerva-add-exclusion':
+            add_exclusion_command()
+        elif demisto.command() == 'minerva-get-exclusions':
+            get_exclusions()
+        elif demisto.command() == 'minerva-delete-exclusion':
+            delete_exclusion_command()
+        elif demisto.command() == 'minerva-add-vaccine':
+            add_vaccine_command()
+        elif demisto.command() == 'minerva-get-vaccines':
+            get_vaccines()
+        elif demisto.command() == 'minerva-delete-vaccine':
+            delete_vaccines_command()
+        elif demisto.command() == 'minerva-search-process':
+            search_process_command()
+        elif demisto.command() == 'minerva-search-endpoint':
+            search_endpoint_command()
+        elif demisto.command() == 'minerva-get-groups':
+            get_groups_command()
+        elif demisto.command() == 'minerva-unarchive-events':
+            unarchive_events()
+    except Exception, e:
+        LOG('Cannot perform the command: {}. Error: {}'.format(demisto.command(), e.message))
+        LOG.print_log()
+        return_error(e.message)
+    finally:
+        logout()
+  type: python
+  commands:
+  - name: minerva-add-exclusion
+    arguments:
+    - name: data
+      required: true
+      description: data
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - hash
+      - path
+      description: The exclusion type.
+    - name: appliedGroupsIds
+      description: A list of group IDs to which this exclusion applies.
+      isArray: true
+      defaultValue: All Groups
+    - name: description
+      required: true
+      description: A description of the exclusion.
+    outputs:
+    - contextPath: Minerva.Exclusion.Id
+      description: Exclusion ID.
+      type: string
+    - contextPath: Minerva.Exclusion.Type
+      description: Exclusion type.
+      type: string
+    - contextPath: Minerva.Exclusion.Data
+      description: Exclusion data.
+      type: string
+    - contextPath: Minerva.Exclusion.Description
+      description: A description of the exclusion.
+      type: string
+    - contextPath: Minerva.Exclusion.lastModifiedBy
+      description: The user that last modified this exclusion.
+      type: string
+    - contextPath: Minerva.Exclusion.lastModifiedOn
+      description: The date this exclusion was last modified.
+      type: date
+    - contextPath: Minerva.Exclusion.appliedGroupsIds
+      description: Group IDs to which this exclusion applies.
+      type: string
+    description: Add exclusions to Minerva Console.
+    execution: true
+  - name: minerva-add-vaccine
+    arguments:
+    - name: name
+      required: true
+      description: Name of the mutex.
+    - name: description
+      description: A description of the vaccination.
+    - name: isMonitorOnly
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: isMonitorOnly
+      defaultValue: "False"
+    outputs:
+    - contextPath: Minerva.Vaccine.Name
+      description: Name of the mutex vaccination.
+      type: string
+    - contextPath: Minerva.Vaccine.Description
+      description: A description of the mutex vaccination.
+      type: string
+    - contextPath: Minerva.Vaccine.isMonitorOnly
+      description: Whether this mutex vaccination is only monitored.
+      type: boolean
+    - contextPath: Minerva.Vaccine.lastModifiedBy
+      description: The user that last modified this mutex vaccination.
+      type: string
+    - contextPath: Minerva.Vaccine.lastModifiedOn
+      description: The date this mutex vaccination was last modified.
+      type: date
+    - contextPath: Minerva.Vaccine.Id
+      description: Mutex vaccination ID.
+      type: string
+    - contextPath: Minerva.Vaccine.Type
+      description: 'Vaccine type, for example: Mutex.'
+      type: string
+    description: Vaccinate with Minerva.
+    execution: true
+  - name: minerva-search-process
+    arguments:
+    - name: param
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - fileHash
+      - processCommandLine
+      - processName
+      - username
+      - endpoint
+      description: Parameter to search for.
+    - name: condition
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - equalTo
+      - notEqualTo
+      - contain
+      - notContain
+      - startWith
+      - endWith
+      description: A condition to apply to the search.
+    - name: value
+      required: true
+      description: value
+    outputs:
+    - contextPath: Minerva.Process.Endpoint
+      description: The name of the endpoint on which the process was run.
+      type: string
+    - contextPath: Minerva.Process.SHA256
+      description: The SHA256 hash of the process.
+      type: string
+    - contextPath: Minerva.Process.CommandLine
+      description: The process command line.
+      type: string
+    - contextPath: Minerva.Process.Username
+      description: The user name with which the process was executed.
+      type: string
+    - contextPath: Minerva.Process.Createtime
+      description: The time the process was created.
+      type: date
+    - contextPath: Minerva.Process.Pid
+      description: The process ID.
+      type: number
+    - contextPath: Minerva.Process.Name
+      description: The process name.
+      type: string
+    description: Search processes with Minerva.
+  - name: minerva-search-endpoint
+    arguments:
+    - name: param
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - group
+      - endpoint
+      - loggedOnUsers
+      - armorVersion
+      - receivedIpAddress
+      - reportedIpAddress
+      - operatingSystem
+      description: Parameter to search for.
+    - name: condition
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - equalTo
+      - notEqualTo
+      - contain
+      - notContain
+      - startWith
+      - endWith
+      description: A condition to apply to the search.
+    - name: value
+      required: true
+      description: value
+    outputs:
+    - contextPath: Minerva.Endpoint.Group
+      description: The group to which the endpoint belongs.
+      type: string
+    - contextPath: Minerva.Endpoint.Name
+      description: The endpoint name.
+      type: string
+    - contextPath: Minerva.Endpoint.Users
+      description: The list of logged-on users.
+      type: string
+    - contextPath: Minerva.Endpoint.IP
+      description: The reported IP address.
+      type: string
+    - contextPath: Minerva.Endpoint.OS
+      description: The endpoint operating system.
+      type: string
+    description: Search Minerva for an endpoint.
+  - name: minerva-get-groups
+    arguments: []
+    outputs:
+    - contextPath: Minerva.Group.Id
+      description: The ID of the group.
+      type: string
+    - contextPath: Minerva.Group.Name
+      description: The name of the group.
+      type: string
+    - contextPath: Minerva.Group.Policy
+      description: The policy applied to the group.
+      type: string
+    - contextPath: Minerva.Group.PolicyVersion
+      description: The policy version applied to the group.
+      type: string
+    - contextPath: Minerva.Group.EndpointSettings
+      description: The settings applied to the group.
+      type: string
+    - contextPath: Minerva.Group.Endpoints
+      description: The number of endpoints in the group.
+      type: number
+    - contextPath: Minerva.Group.Comment
+      description: The comment the group creator added.
+      type: string
+    - contextPath: Minerva.Group.CreationTime
+      description: The time the group was created.
+      type: date
+    description: Fetches all the groups defined in Minerva Management Console.
+  - name: minerva-get-vaccines
+    arguments: []
+    outputs:
+    - contextPath: Minerva.Vaccine.Name
+      description: Mutex vaccination name.
+      type: string
+    - contextPath: Minerva.Vaccine.Description
+      description: Mutex vaccination description.
+      type: string
+    - contextPath: Minerva.Vaccine.isMonitorOnly
+      description: Whether this mutex vaccination is only monitored without simulation.
+      type: boolean
+    - contextPath: Minerva.Vaccine.lastModifiedBy
+      description: The user that last modified this mutex vaccination.
+      type: string
+    - contextPath: Minerva.Vaccine.lastModifiedOn
+      description: The date this mutex vaccination was last modified.
+      type: date
+    - contextPath: Minerva.Vaccine.Id
+      description: Mutex vaccination ID.
+      type: string
+    description: Retrieves the mutex vaccines.
+  - name: minerva-delete-vaccine
+    arguments:
+    - name: vaccine_id
+      required: true
+      description: The vaccine the specified vaccines.
+    description: Deletes a vaccine by the vaccine ID.
+  - name: minerva-get-exclusions
+    arguments: []
+    outputs:
+    - contextPath: Minerva.Exclusion.Id
+      description: Exclusion ID.
+      type: string
+    - contextPath: Minerva.Exclusion.Type
+      description: Exclusion type.
+      type: string
+    - contextPath: Minerva.Exclusion.Data
+      description: Exclusion data.
+      type: string
+    - contextPath: Minerva.Exclusion.Description
+      description: 'Exclusion description. '
+      type: string
+    - contextPath: Minerva.Exclusion.lastModifiedBy
+      description: The user that last modified this exclusion.
+      type: string
+    - contextPath: Minerva.Exclusion.lastModifiedOn
+      description: The date this exclusion was last modified.
+      type: date
+    - contextPath: Minerva.Exclusion.appliedGroupsIds
+      description: Group IDs to which this exclusion applies.
+      type: string
+    description: Retrieves all exclusions.
+  - name: minerva-delete-exclusion
+    arguments:
+    - name: id
+      required: true
+      description: Exclusion ID.
+      isArray: true
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - hash
+      - path
+      - script
+      - certificate
+      description: Exclusion type.
+    description: Deletes an exclusion by the exculsion ID.
+  - name: minerva-unarchive-events
+    arguments: []
+    description: Moves all the events from Archive state to New event state.
+  isfetch: true
+  runonce: false
+tests:
+  - Minerva Test playbook

@@ -1,7 +1,6 @@
 {
 	"id": "incident_gdprnotifyauthorities",
 	"version": -1,
-	"releaseNotes": "New incident field for GDPR Data Breach incident",
 	"modified": "2019-04-17T13:32:10.330437058Z",
 	"name": "GDPR Notify Authorities",
 	"ownerOnly": false,

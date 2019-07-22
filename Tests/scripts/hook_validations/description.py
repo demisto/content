@@ -1,6 +1,6 @@
 import glob
 
-from Tests.test_utils import re, print_error, os, get_yaml
+from Tests.test_utils import re, print_error, print_warning, os, get_yaml
 from Tests.scripts.constants import INTEGRATION_REGEX
 
 
@@ -33,8 +33,8 @@ class DescriptionValidator(object):
             try:
                 md_file_path = glob.glob(os.path.join(os.path.dirname(self.file_path), '*.md'))[0]
             except IndexError:
-                print_error("No description file was found in the package {}."
-                            " Consider adding one.".format(package_path))
+                print_warning("No detailed description file was found in the package {}."
+                              " Consider adding one.".format(package_path))
             if md_file_path:
                 is_description_in_package = True
 

@@ -3,6 +3,11 @@ commonfields:
   id: Rasterize
   version: -1
 configuration:
+- display: 'Return Errors '
+  name: with_error
+  defaultvalue: "false"
+  type: 8
+  required: false
 - defaultvalue: 'true'
   display: Use system proxy settings
   name: proxy
@@ -100,6 +105,5 @@ script:
   script: '-'
   type: python
 defaultEnabled: true
-releaseNotes: "Rasterize URL Error handeling"
 tests:
-  - no test
+  - Rasterize Test

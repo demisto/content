@@ -1,0 +1,113 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Cymon
+  version: -1
+configuration:
+- display: Trust any certificate (unsecure)
+  name: unsecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: useProxy
+  required: false
+  type: 8
+description: Analyzes suspicious domains and IP addresses
+display: Cymon (Deprecated)
+deprecated: true
+name: Cymon
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: IP to check the reputation of
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Returns all results, of which there can be hundreds. We recommend
+        that you do not use this argument in playbooks. Default is false.
+      isArray: false
+      name: fullResponse
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: true
+    description: Check the reputation of an IP address
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: IP.Address
+      description: Malicious IP address
+      type: string
+    - contextPath: IP.ASN
+      description: Malicious IP ASN
+      type: number
+    - contextPath: IP.Geo.Country
+      description: Malicious IP country
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason the vendor made the decision
+      type: string
+    - contextPath: Cymon.IP.Domains
+      description: Related malicious domains
+      type: Unknown
+  - arguments:
+    - default: true
+      description: A domain name
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Displays all the malicious hits of the domain
+      isArray: false
+      name: fullResponse
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: true
+    description: Retrieves a report on a given domain
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious Domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason the vendor made the decision
+      type: string
+    - contextPath: Cymon.Domain.Activities.Title
+      description: 'Title describing the malicious activity '
+      type: Unknown
+    - contextPath: Cymon.Domain.Activities.Tags
+      description: Tags describing the malicious activity
+      type: Unknown
+    - contextPath: Cymon.Domain.Activities.Time
+      description: The time the activity was last reported
+      type: Unknown
+    - contextPath: Cymon.Domain.Activities.Hostname
+      description: The hostname on which the malicious activity was reported
+      type: Unknown
+    - contextPath: Cymon.Domain.Activities.IP
+      description: The IP on which the malicious activity was reported
+      type: Unknown
+  isfetch: false
+  runonce: false
+  script: ''
+  type: python
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXNSR0IArs4c6QAAFC5JREFUeAHtWgl0FFXWvtXdSXfSWbuzbyQkJOwkEBb9HR2MioOKgqCgjIKiCI4yOujMr+Muv9ugHnEBRFAURREQReSgCAooIGaDhKyE7ElnI3t6ff93K+lOJyYhcThH50zfk0pVv1f16r3v7vcVkYtcCLgQcCHgQsCFgAsBFwIuBFwIuBBwIeBCwIWACwEXAi4EXAi4EHAh4ELAhYALgd8FAkKIv5jNZmGzWoXVaEy1CrGsVoiU00LofxcT7GcSUj/t/9XNYKYXALgWR7okSTn4HZyTm3vqRFpawJVjxlD+i6+SV1AguUWGkz5xfGHIJRdtr1S5bwrDvb834FS/twn91vMBM/9kMBiezcrOnhgXG1uI3ymYU1htTY1/fX0dQXvpXH4h1Z/OIyFsVLJtZ2zQhHEPR8y5YbFJiOduJXptmyRZf+t12N//CwZ/Lep9R5LXSD9SDFOT0k9JhL/zk4JIYzN1+NssNsfNCpVKKNzd10ILKh2NvS4AoGSzmZfaOsxhzl0qjUa0NzT4qbXahhaNZo+vJB137v+111VCQPfoZmNNzQiPwMCSeqKtekkq4/EwF21paembX+3dG11bW0tlZaWxl0+/fF97e7vqTFGRUqkEXJJEkkpJCgVWDPvHnCw/kUrVaRmBcSdPvvzR0iWj/y7EimRJanOe4x4h1BeRdYZXh3miuakpwLmvr2uFUmlV6/VFZWT6NlJSZ/Z1z2DaHAwuEiIk2mZbVv3DsXn1madGNBhqVNbmFqyAlzCwJbdZzDTq3nuo6rtDZPjhKCnc3MhmMlHk7OtIc8OsvRigXwavJ1LNy8r7S/Fb68eYzRZGmZSeHpT4yMN0etULZG1vp/DZs1a2w+d5SNL7g1lUf/dUChHtkZe/I/u9D5KaCovIKyKcIhctXFwmxIyITia3+fj4/KBWq6Pd3d2pqqqaduzcGW+xWAj+l3z8/PocWl4v5n36/Y/Icq5xyfi//832iRDLb+rS5GohYn3Ky9cWb//sivyTWWRuae1zHOdGKAVpgoMo9KqURrMQT7tJ0svO/YO9lhncIMQERfbpLZkbN4+pOPYTmdraSYCnktQppecbjJkZcsN1VAvQqjIyCVpLtg4jeScn2RCBiIGeB+clU0tLe3VmFpnMJpnBKq0XNdXXU11xCbWVV1Lt6Vxtkrv7GgBVECxJPw40Xn99rEG+NTVrTr6wOqkiLYOUajUZcvLIYjSOnrjm5eehvZA1Ourr65seGhJyS1VVFalUKjJhbegjm80GWYew8zXMtIDQK9w6NVp+Jxii9PCg/C++Ije9/u5Z9y9PR/tbsPG+msLC9zOfef6iyoxTJLm7deLa30S5nfUJ7xH5BVR+5EffMdWG1RDwegj4u9w9FFLlC+Ej5eZuyHz8mTF1RcWk1KhJgWNIhMlIMFmSEgdA6Tysctv5xtGxHEmSkvhZAcB4LDd4BTaFOBQAxAJgc15f6ztpWORbBUJcFSdJhvON27v/SqKH89/edG1leiapwAgmnq87tLjgzJlbS0tKbkmIj0+tNhiGn87JIdhj+R7WXn9/f4oIDyd/nd7qHRpqjl24QGM8W0w1GSepo7lZFmj5Zvxj/Ao+2U4+ieMeyxBieyTRnPwtH19UkXmKVLBMQyEJcxA2QXmbNpN2VMLjuULsTpCk2qGMoQoh65Xlu79Krj1T5Fi4gLQKmCQGmIE+H7FE2zo6IMEaWdr5flZbYbWyp3Ib6PlhRO7WtjYfK4BkYm1hC8DvtUJ7mHihjdDk/NfXTRi76sl/zRNi8VACmXphubZi245HCz77AgzQyGPyGrXhYaSHG9mxbx81NzZK2dnZk1hjZU3l92IOU6dMoXHjxn2j1+u3oinTSNQUtGJpWACpkuvT0m8v3bptTPG333UzGc+YgEfVF1+Fjrr0D3c3Z5y8tOLQD4SYQn6vrJlwRZJiYFzBV9lC8H0dMOl1Bw/FRE+dkoJBPu4caHD/VR4m6z9qIV1K+E0mXrgHwpCwq1IsGp2uBVLOTnhAsoE5PgnxqnO5eb68AJmYQQ3nEKHZJp0U4mx/A2jIMqq9qjrUYjSRQg3GYmVq+DoknGRpbesUMjysRF/pkR/Ja+N7f35vxfK0bUSv9Demc/tZIWLEz2mv5a3fiJixUyu5X2DOviNiyeLjQ+2trbLGdkBI7cTmOSUlpWXc2LEr0bYBzHbGIRdtB04IsWlSUuIj6lfWPJD34ccOJjOWFcdPUEzhmeVNRWe1bcBBXhuwYdcQt/SODrVOd87+rp5nxk+hqEtNDSj9cp+C3YBC5UZNObnk1tw8BZ1DYzBMUXJHGwI+MITJZjJT+PTLKODee/6GGeyGXlkhQwOLG2kI90Z6BAftUUgKziFl6as6/jNpP96xSqtUPsJtfZOkLvlyryebSyab1ULesTFkrK2XAyxZm7seZHDyt35K2tjhz6DIkBEgSd92dfV5Yr8bVFv7auYb62LaGhvl4M9+owQm1KafpOgzZ2nu3Lm0Z88eagMOrLXsb6dNm2YBc+/B7y32Z3qfESmzuXyQrY6x2vDA2f0HSNllfUwIUBtPZYUiWpeVhp9lRQifNoXCb7/1xWJSrO2gtj5xNZKne0JUxE7DgUOJZvCD3Vd7bR21G2pje8/hfL9VVrsp7nUn4D4VL0lnejX3+3OdEOU3xo/IU/t4TTQhwGKf3IFAKetfr3oCJM/+HmRwWLPYb8sEDQ66eCrVpWc4gHE82wV+7pvrtUnDot5E/HDFiK4Ux3GP0wX87kr43Vkc+NlNs6Mb7zU1NdGpV16j6ZvfEQGBgdLZoiKZwREREZQ4YcKWgZjrGAcXiKaejpx/44zqn34ebULULysLWNcEP815s1152Dq6wzpaSZE6eoDUkceuz842uMGsm+EyWAp4HFNrC0wbwl9J6jKTfOfA1Kk2fdyDQbsQ76Ozj6alkmTWT0zaGTJpIibT5Ts58GKJZvPfz8H97GOZbBA27+HR5DdqJFWyX3PDs0xgBvy5fMn3ttTUUsHraxMi6+tfhZns9C1yb/c/+N2Zldt3/rPQye/ax2GgNXodTX35BUrCUVZbK1UjaubclrU3KirKqtFo3ukebeCrJEk655s4/t2gpAmylsp3Qxgt8J3Wdph9Zz2FT7WQFWo5MPEcnYkVQbLBmA6R+mXwEMeRby8j2hR+y02FfuGhZIU/40naDwa3N3GEaO9nCUVRgxL/dyVVHjxEraVlcpTLjNVGRZD/uDFybs1jsNmuQHGhaMO7NwLSh3qPWyHEMJF6ck3uuo0awWEeE97PQaAucZwMOruhqkA9fQjT/OmOHWTE+9k8s+/V+ftz3p4lPzfIf/CyP6mjo4Sw2hkDRsLkq7Amjit+K7qgDI6UpHIpKXFh0nNPZcXOvJr8kYL4Iln3DgzoDDKcVwkwPfx95X5/RLMxV0ynpFVPFLhPmrihOTcP4toprCy5Ki8w/pGHyCMgwKHJbHILtn9GFdt3PV4vxDX2oVFgcNfV1b1a8Oa64RzcsKtgYgEaufjPFHLZH2RB4XSmtrqaGurqiFMhZi4TMxiFjkZc9qhEyZ0D/IMhPoc82Nw1DIQQPv7nNPIbPZLUsBZ9CfgAw/XZBTGxDcU88yBDMsN9vrVXI8p+R+Ebpyc8M2aOubIy2dJh9FFp1P5nPvrkijMffiIpECix1nqC6ckvrSpC4PQTNLJVExaWXkC0HclEoruHxxLnYZFZk3tM9O74pXdOPfXC6kDZbwNJ1s7cte+oJ8VEv14iRE6UJBVeT7aVZza8e0MlFzMgBEzM3PBLLqbIhQsOFm7YhNhI8mILExAcTDq9noy4tjOZzx1Goy8e47ihO6zmgQYgJVn8UXVzsxsqFpgOuJI6zCMMwlu0bccAT5+/i+eF9SS019StVaJO4ObruxpSGOnd0XGpqbEp1CbkIgK7uzZ1YGABor8vUBQ6c8EZzFNF4FOD07qug8DwidDCY/jteJ8aGuTm57dfGxJyF9od1CzENMePrgsuG6rMlq+Db7ju846iovU5H2yVmcfa2Y7oOO+1N6PHP/fsaoOwfFD56WePFezY5WAum3hfWIj4e5ceO0vWJzHkHk5Zyg58T+MnJ9OCmTOpFczYuWsXcZrEOXBDQ0Mo7huL43scg6Ig5MVVZ0tQsuk2ihz1Vx86QiOXLZFrDBZUCH8tWaEUCkkKzX561VLvkfEUs3zpKMPGd//n9MHDSmsLSsp2wlq0UZEUdevND9agKNQ9G/sNOLP0IUzqjJSc2n/tJfImJWttD4K9AfjdiWmPzj5+CMF1oA0xd9z+cVjyxG5/jOCtGvXdnLfWXa/IyHo/Z907PfwuQKGEZUua2uKj71eSqgprU7JgGOvq6diDf6c0HOF6vQgOCZEDLA60SkqKlUiZ7uxjFn02pQnhdy49fZEhLR05q0OG5XtZi7nq4+bj/W+baVn4ysqpDdF/S2rapdlroMxRkdbQm2+sD1twkyFswbyaoFnXtBpy8yh/7TtRAVbrGyq5JGe3KzwluCIzJAI2aqYBIQO43Gwi86CjBD3ZWn1IXQggB/1Mn6j9slFOD0pF20Mjlt89sfHhR0e0NzXLPpZNccX+g1Rz9LiG8097VC773YULSHf1jMc12I3CpsKE7vAVZt/Xl8Y+eD+dNRikGoNBjqJZuMsAYmZm5i1wBV/j9we/nErPlkSiJzK2fjq6A/Nx5O3AlP3wsNmzyIxCirG+AdHhkIPgni/CLxZO7DRREyp7HhCahLsXHymLirrdRO0WT/IgKNPVEfX1b5d+vZ+fTUGZRLFVq9PNbynmqBWqBnNYum8/WZqaHlJHhK8EeIPWZJ6+lDK9KHd4DFdcmvkNF5riJM9SBFUr4u9avDPjxVdQOO82QqbmVgdzuWDDmj5s0cJPnid6o/c8BHbAAhKnUHtMNH26ZQtiIDCkayw+Hz12TOWp1a5FOzCjt8Fo50qWPBxStIBJNts/T7/82opiCJiDuejlMmv0vDnkNSySsl55HS3/PnPll3b94xImM9va2to6SpLO2vtQACri7IT7LJiDqlGp3KhLHD+/EqU1++4I56OlyEMR3mMUGvTOA0PtFROjrhke09NO2d9+gc46SfrKLMT/teTkPZW/83OHv7XXd+Ugzt+P4pbdVVDu77/ySUnqLHQ7vZ8LK415hRTR2EQeSGVQiyatp5aMJqPshzmo+eabb7T1dXVvoRY9F4zeisczIe3QU0uYvrMWfVv6R9vGlBxwqkXb3wGB8UJ615B5isycLnUFfPbuwZ7lVBLCiJDylyYe1gYuoYfvQ1RoY+Zy1M6CqkojOjT5upn7zp1IvUreRuOJ8IPQ5KESMxiDX2jT3Oc0fqKylybcefvFjbn5M2rgc3hP1kEWK8XftchIiWP/ip2nUke70wWD0FpRQXW7dtOVc2ZReXm5bWR8/M/4miPm+0OHAjgvZq0+dvw45eXnp4SHh6fodDrb2KgoU/W2HZriomKq5d0kuLP+sDJBaOSdNeD5a0iuAUSEUezC+XJdQRMYKGcgPJYSAmqEO2qpqEw0NTSsFpJkAvAouZyLr6xE0QYfJ2D+barpktRRJdrvGf34o5u0m7dcVnnoMHH+aOPkHPNinzQUsmGToC/iycoVLozHGsYmtD/ijQD2n0xcv2WL0psuliLby2GqR9x797dtjz0T1oKyqKTA9hqkfeT8uRQxb/bzSkn5Ze/n5HmglMpSyAys3n+ALrtj0eHhcXGPwuz8GBoaep/BULM6NS1Vzok5RmlCUFPf0EBePj6KYSqVphBRPIygbPH6Yy6/V9Yknj/WwijyGeZB7uJ/AxJ/6YKoXhs9jNwQXuat20iBUyfL6zNjE0Y/KalZPzLBO/OJZ8O9g4MflKN3LIr72pDbj7prMdk0mntlUxoieRRlCXHtiMf+cVvoyVM3NWRlj2+rqPQX/OUBf2UxSOJFeAQFaxDt9jAb+C10CQmq2Guuxl6vmwysV4Ce3Dw8nNSu8yWwGyJocrKc4/IuCu8q+cdEs7npdrZd8wmXpNwWbB1OXPXEurIv90ZbYDx9x4+1Rs6dveF7UsD19iQktjblyAS3uJvmQLM65+Hp54PSoa0Em+nfg+ESUqTkiopyeXeJy5aenp7y1xx8jYiUJR5FG87lOxVAfgMEhYXFmVhIPaFx3nFxbRpoIX/uY8VGim70KIRCyvPm1x4hIe3YdWpT6XTkgdp41NzrEYn7UNxtt5ImKNBmDQhYmfjSqktqjp9Iaa+t9YXSyJoIV2D2jYsrDZw25e2niDbLjc4Tw0yV+UTRfkRRMNZ6SABOg/sui8cBxxoPHTy4e/r06Q7JwOL9ILfXQA97+GYMnAsLcdT5/bg3ECWkyfCEgEQpoMsS9vlsYE427i1yvtd+jTwbENB0bE16t5Iiy1+SvrP3OZ/xlYbWLzj4kjayuvPY9j4EGSVqScrEu/mbrFP2b7IiIyPpipSU0yh8KI4cPpLQ2NpCs5OTKW3Fw90MBmN5I98T4MtfwLBuQwiCJ0+iYUsWba7T65/DuiGcHKu6c/XE0lFWVoqxB0yKMZfQYiI/FngUO63nAG0wkbGKTO5acrcFEHGmYjkhWkN9SOWHNci8NJO7KZWoCp8LycnxLxlsX/V/6RnAXm2oqXk2KytrEn9VCUZcDihCDh8+/ENqZoZy7pSplHrfSgeDuSI25oH7rBF/mrHLZjLyVpKAae7QhIWmVhO9h09ph1TyvNCw99CoCz34f+J40Iq9YPLhoD/+kevb/F00qqDCGBgY2KDX6QO4OuWJGjssHf5sqLdHUPDFF/3416DA+euxo/afuGbXnIEAqkjL8GUlYkirwC6RfCD9AY9tnyMvj3KB5ELAhYALARcCLgRcCLgQcCHgQsCFgAsBFwIuBFwIuBBwIeBCwIWACwEXAv0i8P/Id9hWCN0cNgAAAABJRU5ErkJggg==

@@ -1,0 +1,409 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: AlienVault USM Anywhere
+  version: -1
+configuration:
+- defaultvalue: https://www.example.com
+  display: Server URL (e.g., https://www.example.com)
+  name: url
+  required: true
+  type: 0
+- display: Client ID
+  name: client_id
+  required: true
+  type: 0
+- display: Client Secret
+  name: client_secret
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  display: Trust any certificate (insecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+description: Search and monitor alarms and events from AlienVault USM Anywhere.
+display: AlienVault USM Anywhere
+name: AlienVault USM Anywhere
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '100'
+      description: Maximum number of alarms to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Filter by alarm status.
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
+      description: Filter by alarm priority.
+      isArray: false
+      name: priority
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to include suprressed alarms in the search.
+      isArray: false
+      name: show_suppressed
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Filter by time frame, for example: Last 48 Hours.'
+      isArray: false
+      name: time_frame
+      predefined:
+      - Today
+      - Yesterday
+      - Last 7 Days
+      - Last Hour
+      - Last 24 Hours
+      - Last 48 Hours
+      - Last 30 Days
+      - Custom
+      required: false
+      secret: false
+    - default: false
+      description: 'If time_frame is Custom, specify the start time for the time range,
+        for example: 2017-06-01T12:48:16Z.'
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: 'If time_frame is Custom, specify the end time for the time range,
+        for example: 2017-06-01T12:48:16Z.'
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: false
+      description: Filter alarms by rule intention.
+      isArray: false
+      name: rule_intent
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: Filter alarms by rule method.
+      isArray: false
+      name: rule_method
+      required: false
+      secret: false
+    - default: false
+      description: Filter alarms by rule strategy
+      isArray: false
+      name: rule_strategy
+      predefined:
+      - ''
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves alarms from AlienVault.
+    execution: false
+    name: alienvault-search-alarms
+    outputs:
+    - contextPath: AlienVault.Alarm.ID
+      description: Alarm ID.
+      type: String
+    - contextPath: AlienVault.Alarm.Priority
+      description: Alarm priority.
+      type: String
+    - contextPath: AlienVault.Alarm.OccurredTime
+      description: Time the alarm occurred.
+      type: Date
+    - contextPath: AlienVault.Alarm.ReceivedTime
+      description: Time the alarm was received.
+      type: Date
+    - contextPath: AlienVault.Alarm.Source
+      description: Alarm source object.
+      type: Unknown
+    - contextPath: AlienVault.Alarm.Source.IPAddress
+      description: Alarm Source IP Address.
+      type: String
+    - contextPath: AlienVault.Alarm.Source.Organization
+      description: Source organization.
+      type: String
+    - contextPath: AlienVault.Alarm.Source.Country
+      description: Source country.
+      type: String
+    - contextPath: AlienVault.Alarm.Destination
+      description: Alarm destination object.
+      type: Unknown
+    - contextPath: AlienVault.Alarm.Destination.IPAddress
+      description: Alarm destination IP Address.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleAttackID
+      description: Rule attack ID.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleStrategy
+      description: Rule strategy.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleIntent
+      description: Rule intent.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleID
+      description: Rule ID.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleDictionary
+      description: Rule dictionary.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleMethod
+      description: Rule method.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleAttackTactic
+      description: Rule attack tactic.
+      type: Unknown
+    - contextPath: AlienVault.Alarm.RuleAttackTechnique
+      description: Rule attack technique.
+      type: String
+  - arguments:
+    - default: true
+      description: Alarm ID. Can be obtained by running the `alienvault-search-alarms` command.
+      isArray: false
+      name: alarm_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves details for an alarm, using alarm_id.
+    execution: false
+    name: alienvault-get-alarm
+    outputs:
+    - contextPath: AlienVault.Alarm.ID
+      description: Alarm ID.
+      type: String
+    - contextPath: AlienVault.Alarm.Priority
+      description: Alarm priority.
+      type: String
+    - contextPath: AlienVault.Alarm.OccurredTime
+      description: Time the alarm occurred.
+      type: Date
+    - contextPath: AlienVault.Alarm.ReceivedTime
+      description: Time the alarm was received.
+      type: Date
+    - contextPath: AlienVault.Alarm.Source
+      description: Alarm source object.
+      type: Unknown
+    - contextPath: AlienVault.Alarm.Source.IPAddress
+      description: Alarm source IP address.
+      type: String
+    - contextPath: AlienVault.Alarm.Source.Organization
+      description: Source organization.
+      type: String
+    - contextPath: AlienVault.Alarm.Source.Country
+      description: Source country.
+      type: String
+    - contextPath: AlienVault.Alarm.Destination
+      description: Alarm destination object.
+      type: Unknown
+    - contextPath: AlienVault.Alarm.Destination.IPAddress
+      description: Alarm destination IP address.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleAttackID
+      description: Rule attack ID.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleStrategy
+      description: Rule strategy.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleIntent
+      description: Rule intent.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleID
+      description: Rule ID.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleDictionary
+      description: Rule dictionary.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleMethod
+      description: Rule method.
+      type: String
+    - contextPath: AlienVault.Alarm.RuleAttackTactic
+      description: Rule attack tactic.
+      type: Unknown
+    - contextPath: AlienVault.Alarm.RuleAttackTechnique
+      description: Rule attack technique.
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '100'
+      description: Maximum number of alarms to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The account name.
+      isArray: false
+      name: account_name
+      required: false
+      secret: false
+    - default: false
+      description: Event name.
+      isArray: false
+      name: event_name
+      required: false
+      secret: false
+    - default: false
+      description: Source name.
+      isArray: false
+      name: source_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Filter by time frame, for example: Last 48 Hours.'
+      isArray: false
+      name: time_frame
+      predefined:
+      - Today
+      - Yesterday
+      - Last 7 Days
+      - Last Hour
+      - Last 24 Hours
+      - Last 48 Hours
+      - Last 30 Days
+      - Custom
+      required: false
+      secret: false
+    - default: false
+      description: 'If time_frame is Custom, specify the start time for the time range,
+        for example: 2017-06-01T12:48:16Z.'
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: 'If time_frame is Custom, specify the end time for the time range,
+        for exmaple: 2017-06-01T12:48:16Z.'
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for events.
+    execution: false
+    name: alienvault-search-events
+    outputs:
+    - contextPath: AlienVault.Event.Category
+      description: Event category.
+      type: String
+    - contextPath: AlienVault.Event.Source.IPAddress
+      description: Source IP address.
+      type: String
+    - contextPath: AlienVault.Event.Source.Port
+      description: Source port.
+      type: Number
+    - contextPath: AlienVault.Event.Destination.IPAddress
+      description: Destination IP address.
+      type: String
+    - contextPath: AlienVault.Event.Destination.Port
+      description: Destination port.
+      type: Number
+    - contextPath: AlienVault.Event.Severity
+      description: Event severity.
+      type: String
+    - contextPath: AlienVault.Event.OccurredTime
+      description: Time the even occurred.
+      type: String
+    - contextPath: AlienVault.Event.ReceivedTime
+      description: Time the even was received.
+      type: String
+    - contextPath: AlienVault.Event.AccessControlOutcome
+      description: Access control outcome.
+      type: String
+    - contextPath: AlienVault.Event.Suppressed
+      description: Whether the even is suppressed.
+      type: Bool
+    - contextPath: AlienVault.Event.ID
+      description: Event ID.
+      type: String
+    - contextPath: AlienVault.Event.Name
+      description: Event name.
+      type: String
+    - contextPath: AlienVault.Event.Subcategory
+      description: Event subcategory.
+      type: String
+  - arguments:
+    - default: true
+      description: Alarm ID to get events for. Can be obtained by running the `alienvault-search-alarms` command.
+      isArray: false 
+      name: alarm_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves events associated with an alarm.
+    execution: false
+    name: alienvault-get-events-by-alarm
+    outputs:
+    - contextPath: AlienVault.Event.Category
+      description: Event category.
+      type: String
+    - contextPath: AlienVault.Event.Source.IPAddress
+      description: Source IP address.
+      type: String
+    - contextPath: AlienVault.Event.Source.Port
+      description: Source port.
+      type: Number
+    - contextPath: AlienVault.Event.Destination.IPAddress
+      description: Destination IP address.
+      type: String
+    - contextPath: AlienVault.Event.Destination.Port
+      description: Destination port.
+      type: Number
+    - contextPath: AlienVault.Event.Severity
+      description: Event severity.
+      type: String
+    - contextPath: AlienVault.Event.OccurredTime
+      description: Time the event occurred.
+      type: String
+    - contextPath: AlienVault.Event.ReceivedTime
+      description: Time the event was received.
+      type: String
+    - contextPath: AlienVault.Event.AccessControlOutcome
+      description: Access control outcome.
+      type: String
+    - contextPath: AlienVault.Event.Suppressed
+      description: Whether the event is suppressed.
+      type: Bool
+    - contextPath: AlienVault.Event.ID
+      description: Event ID.
+      type: String
+    - contextPath: AlienVault.Event.Name
+      description: Event name.
+      type: String
+    - contextPath: AlienVault.Event.Subcategory
+      description: Event subcategory.
+      type: String
+  dockerimage: demisto/python3:3.7.3.286
+  subtype: python3
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
