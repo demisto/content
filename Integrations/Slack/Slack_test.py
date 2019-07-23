@@ -3,6 +3,7 @@ import pytest
 import asyncio
 import demistomock as demisto
 import json
+from unittest.mock import mock_open
 
 USERS = '''[{
     "id": "U012A3CDE",
@@ -148,6 +149,7 @@ BOT = '''{
 MIRRORS = '''
    [{
      "channel_id":"GKQ86DVPH",
+     "channel_name": "group1",
      "investigation_id":"681",
      "mirror_type":"all",
      "mirror_direction":"both",
@@ -157,6 +159,7 @@ MIRRORS = '''
   },
   {
      "channel_id":"GKB19PA3V",
+     "channel_name": "group2",
      "investigation_id":"684",
      "mirror_type":"all",
      "mirror_direction":"both",
@@ -166,6 +169,7 @@ MIRRORS = '''
   },
   {
      "channel_id":"GKWBPCNQN",
+     "channel_name": "group3",
      "investigation_id":"692",
      "mirror_type":"all",
      "mirror_direction":"both",
@@ -175,6 +179,7 @@ MIRRORS = '''
   },
   {
      "channel_id":"GKNEJU4P9",
+     "channel_name": "group4",
      "investigation_id":"713",
      "mirror_type":"all",
      "mirror_direction":"both",
@@ -184,6 +189,7 @@ MIRRORS = '''
   },
   {
      "channel_id":"GL8GHC0LV",
+     "channel_name": "group5",
      "investigation_id":"734",
      "mirror_type":"all",
      "mirror_direction":"both",
@@ -442,7 +448,7 @@ def test_mirror_investigation_new_mirror(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
     mocker.patch.object(slack.WebClient, 'channels_create', return_value={'channel': {
-        'id': 'new_channel'
+        'id': 'new_channel', 'name': 'A new channel!'
     }})
     mocker.patch.object(slack.WebClient, 'groups_create', return_value={'group': {
         'id': 'new_group', 'name': 'A new group!'
@@ -451,6 +457,7 @@ def test_mirror_investigation_new_mirror(mocker):
 
     new_mirror = {
         'channel_id': 'new_group',
+        'channel_name': 'A new group!',
         'investigation_id': '999',
         'mirror_type': 'all',
         'mirror_direction': 'both',
@@ -562,6 +569,7 @@ def test_mirror_investigation_existing_mirror(mocker):
 
     new_mirror = {
         'channel_id': 'GKQ86DVPH',
+        'channel_name': 'group1',
         'investigation_id': '681',
         'mirror_type': 'chat',
         'mirror_direction': 'FromDemisto',
@@ -1364,7 +1372,6 @@ def test_send_message(mocker):
 
 
 def test_send_message_retry(mocker):
-    mocker.patch.object(demisto, 'params', return_value={'footer': 'View it on:'})
     import Slack
     from slack.errors import SlackApiError
     # Set
@@ -1493,3 +1500,74 @@ def test_get_conversation_by_name_paging(mocker):
     assert second_args['cursor'] == 'dGVhbTpDQ0M3UENUTks='
     assert channel['id'] == 'C248918AB'
     assert slack.WebClient.conversations_list.call_count == 2
+
+
+def test_send_file_no_args_investigation(mocker):
+    import Slack
+
+    # Set
+
+    def getIntegrationContext():
+        return {
+            'mirrors': MIRRORS,
+            'users': USERS,
+            'conversations': CONVERSATIONS,
+            'bot_id': 'W12345678'
+        }
+
+    mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '681'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
+    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'path', 'name': 'name'})
+    mocker.patch('builtins.open', mock_open(read_data="data"))
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(Slack, 'slack_send_request', return_value='cool')
+
+    # Arrange
+    Slack.slack_send_file()
+
+    send_args = Slack.slack_send_request.call_args
+    success_results = demisto.results.call_args[0]
+
+    # Assert
+    assert Slack.slack_send_request.call_count == 1
+    assert success_results[0] == 'File sent to Slack successfully.'
+
+    assert send_args[0][1] == 'group1'
+    assert send_args[1]['file'] == {
+        'data': 'data',
+        'name': 'name',
+        'comment': ''
+    }
+
+
+def test_send_file_no_args_no_investigation(mocker):
+    import Slack
+
+    # Set
+
+    def getIntegrationContext():
+        return {
+            'mirrors': MIRRORS,
+            'users': USERS,
+            'conversations': CONVERSATIONS,
+            'bot_id': 'W12345678'
+        }
+
+    mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '999'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
+    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(Slack, 'slack_send_request', return_value='cool')
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
+
+    # Arrange
+    with pytest.raises(InterruptedError):
+        Slack.slack_send_file()
+
+    err_msg = return_error_mock.call_args[0][0]
+
+    # Assert
+    assert Slack.slack_send_request.call_count == 0
+    assert err_msg == 'Either a user, group or channel must be provided.'

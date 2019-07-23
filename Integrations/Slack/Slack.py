@@ -39,8 +39,6 @@ TOKEN: str
 CHANNEL_TOKEN: str
 PROXY: str
 DEDICATED_CHANNEL: str
-LINK_FOOTER: str
-GENERAL_FOOTER: str
 CLIENT: slack.WebClient
 CHANNEL_CLIENT: slack.WebClient
 ALLOW_INCIDENTS: bool
@@ -247,6 +245,7 @@ def mirror_investigation():
         conversations.append(conversation)
         mirrors.append({
             'channel_id': conversation_id,
+            'channel_name': conversation.get('name'),
             'investigation_id': investigation.get('id'),
             'mirror_type': mirror_type,
             'mirror_direction': mirror_direction,
@@ -711,6 +710,20 @@ def slack_send_file():
     thread_id = demisto.args().get('threadID')
     comment = demisto.args().get('comment', '')
 
+    if not (to or channel or group):
+        investigation = demisto.investigation()
+        if investigation:
+            integration_context = demisto.getIntegrationContext()
+            if integration_context.get('mirrors'):
+                mirrors = json.loads(integration_context['mirrors'])
+                investigation_filter = list(filter(lambda m: m['investigation_id'] == investigation.get('id'), mirrors))
+                if investigation_filter:
+                    mirror = investigation_filter[0]
+                    channel = mirror.get('channel_name')
+
+    if not (to or channel or group):
+        return_error('Either a user, group or channel must be provided.')
+
     file_path = demisto.getFilePath(entry_id)
     with open(file_path['path'], 'rb') as file:
         data = file.read()
@@ -744,7 +757,7 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
         message = '\n'
     if ignore_add_url and isinstance(ignore_add_url, str):
         ignore_add_url = bool(strtobool(ignore_add_url))
-    if not ignore_add_url and LINK_FOOTER:
+    if not ignore_add_url:
         investigation = demisto.investigation()
         server_links = demisto.demistoUrls()
         if investigation:
@@ -754,7 +767,7 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
                     if entry:
                         link += '/' + entry
                     message += '\n{} {}'.format('View it on:', link)
-            elif not ignore_add_url and GENERAL_FOOTER:
+            elif not ignore_add_url:
                 link = server_links.get('server', '')
                 if link:
                     message += '\n{} {}'.format('View it on:', link + '#/home')
@@ -934,15 +947,13 @@ def init_globals():
     """
     Initializes global variables according to the integration parameters
     """
-    global TOKEN, CHANNEL_TOKEN, PROXY, DEDICATED_CHANNEL, LINK_FOOTER, GENERAL_FOOTER, CLIENT, CHANNEL_CLIENT
+    global TOKEN, CHANNEL_TOKEN, PROXY, DEDICATED_CHANNEL, CLIENT, CHANNEL_CLIENT
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE
 
     TOKEN = demisto.params().get('bot_token')
     CHANNEL_TOKEN = demisto.params().get('channel_token')
     PROXY = handle_proxy().get('https')
     DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel')
-    LINK_FOOTER = demisto.params().get('footer', True)
-    GENERAL_FOOTER = demisto.params().get('general_footer', True)
     CLIENT = slack.WebClient(token=TOKEN, proxy=PROXY)
     CHANNEL_CLIENT = slack.WebClient(token=CHANNEL_TOKEN, proxy=PROXY)
     SEVERITY_THRESHOLD = SEVERITY_DICT.get(demisto.params().get('min_severity', 'Low'), 1)

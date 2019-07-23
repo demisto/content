@@ -34,14 +34,6 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Display a footer with a link to Demisto in relevant messages
-  name: general_footer
-  required: false
-  type: 8
-- display: Display a footer with a link to the incident in relevant messages
-  name: footer
-  required: false
-  type: 8
 - display: Allow external users to create incidents via DM
   name: allow_incidents
   required: false
@@ -317,7 +309,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Send a file to a slack user, channel or group.
+    description: Send a file to a slack user, channel or group. If none are specified,
+      the file is sent to the mirrored investigation channel (if it exists).
     execution: false
     name: slack-send-file
   dockerimage: demisto/slack:1.0.0.814
