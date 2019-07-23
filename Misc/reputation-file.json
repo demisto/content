@@ -364,6 +364,7 @@
   "manualMapping": null,
   "fileHashesPriority": [
     "ssdeep",
+    "sha512",
     "md5",
     "sha1",
     "sha256"
