@@ -1824,7 +1824,6 @@
         "WhatsMyBrowser": "Checking",
         "okta": "Test Module failing, suspect it requires SSL",
         "Awake Security": "Checking",
-        "Cylance Protect v2": "Checking",
         "ArcSight ESM v2": "Checking",
         "Phish.AI": "Checking",
         "Intezer": "Nightly - Checking",

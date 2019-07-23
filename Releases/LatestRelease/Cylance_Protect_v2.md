@@ -1,2 +1,3 @@
-- Improved handling of error messages.
-- Improved logging functionality.
+ - Improved handling of error messages.
+ - Improved logging functionality.
+ - Added `Trust any certificate` parameter.
