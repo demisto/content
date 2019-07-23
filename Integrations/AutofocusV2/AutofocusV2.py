@@ -573,7 +573,9 @@ def samples_search_results_command():
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': results,
-        'EntryContext': {'AutoFocus.SamplesResults(val.ID == obj.ID)': results},
+        'EntryContext': {'AutoFocus.SamplesResults(val.ID == obj.ID)': results,
+                         'AutoFocus.SamplesSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
+                                                                                   'AFCookie': af_cookie}},
         'HumanReadable': md
     })
 
@@ -587,7 +589,9 @@ def sessions_search_results_command():
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': results,
-        'EntryContext': {'AutoFocus.SessionsResults(val.ID == obj.ID)': results},
+        'EntryContext': {'AutoFocus.SessionsResults(val.ID == obj.ID)': results,
+                         'AutoFocus.SessionsSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
+                                                                                    'AFCookie': af_cookie}},
         'HumanReadable': md
     })
 
@@ -668,7 +672,9 @@ def top_tags_results_command():
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': results,
-        'EntryContext': {'AutoFocus.TopTagsResults(val.PublicTagName == obj.PublicTagName)': context},
+        'EntryContext': {'AutoFocus.TopTagsResults(val.PublicTagName == obj.PublicTagName)': context,
+                         'AutoFocus.SessionsSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
+                                                                                    'AFCookie': af_cookie}},
         'HumanReadable': md
     })
 
