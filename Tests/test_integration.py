@@ -249,9 +249,8 @@ def configure_proxy_unsecure(integration_params):
         integration_params: dict of the integration parameters.
     """
     integration_params_copy = copy.deepcopy(integration_params)
-    if integration_params_copy:
-        for param in ('proxy', 'useProxy', 'insecure', 'unsecure'):
-            integration_params[param] = True
+    for param in ('proxy', 'useProxy', 'insecure', 'unsecure'):
+        integration_params[param] = True
 
     return integration_params_copy
 
