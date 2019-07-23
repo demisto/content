@@ -3312,17 +3312,20 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
 
     try:
         format_string = msg_dict['Headers'].split('Content-type:')[1].split(';')[0]
-    except:
+    except ValueError:
+        format_string = ''
+    except IndexError:
         format_string = ''
 
     headers = []
     headers_map = {}
-    is_header_done = False
+    header_key = 'initial key'
+    header_value = 'initial header'
 
     for header in msg_dict['Headers'].split('\n'):
-        if len(header) > 0 and not header == ' ' and not 'From nobody' in header:
+        if len(header) > 0 and not header == ' ' and 'From nobody' not in header:
             if not header[0] == ' ' and not header[0] == '\t':
-                if is_header_done:
+                if header_value != 'initial header':
                     headers.append(
                         {
                             'name': header_key,
@@ -3342,14 +3345,11 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
                     else:
                         headers_map[header_key] = header_value
 
-                    is_header_done = False
-
                 splitted = header.split(' ')
                 header_key = splitted[0][:-1]
                 header_value = ' '.join(splitted[1:])
                 header_value = header_value[:-1] if header_value[-1:] == ' ' \
                     else header_value
-                is_header_done = True
 
             else:
                 header_value += header[:-1] if header[-1:] == ' ' else header
@@ -3369,9 +3369,7 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
     }
 
     if parse_only_headers:
-        return {
-                   "HeadersMap": email_data["HeadersMap"]
-               }, []
+        return {"HeadersMap": email_data["HeadersMap"]}, []
 
     attached_emails_emls = save_attachments(msg.get_all_attachments(), file_name, max_depth - 1)
     # add eml attached emails
@@ -3442,9 +3440,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
             raise Exception("Could not parse eml file!")
 
         if parse_only_headers:
-            return {
-                       "HeadersMap": headers_map
-                   }, []
+            return {"HeadersMap": headers_map}, []
 
         html = ''
         text = ''
