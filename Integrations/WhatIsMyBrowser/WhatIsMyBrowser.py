@@ -34,7 +34,7 @@ def http_request(json):
         headers=headers,
         verify=INSECURE
     )
-    if r.status_code is not 200:
+    if r.status_code != 200:
         return_error('Error in API call to WhatIsMyBrowser [%d] - %s' % (r.status_code, r.reason))
     return r.content
 
@@ -108,7 +108,7 @@ def ua_parse_command():
             'HumanReadable': tableToMarkdown('Parsed result for {}'.format(user_agent), hr),
             'EntryContext': ec
         })
-    if r['result']['code'] is 'error':
+    if r['result']['code'] == 'error':
         error_msg = r['result']['message']
         demisto.results({
             'Type': entryTypes['note'],
@@ -121,10 +121,11 @@ def ua_parse_command():
 def test_command():
     post_data = {
         # disable-secrets-detection
-        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36"
+        "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_5) AppleWebKit/537.36 (KHTML, like Gecko) "
+                      "Chrome/64.0.3282.140 Safari/537.36"
     }
     post_json = json.dumps(post_data)
-    r = http_request(post_json)
+    http_request(post_json)
     demisto.results('ok')
 
 
