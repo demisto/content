@@ -57,8 +57,8 @@ def ua_parse_command():
     r = json.loads(raw)
     if 'success' in r['result']['code']:
         parsed = r['parse']
-        hr = defaultdict()
-        ua_ec = defaultdict(lambda: defaultdict(int))
+        hr = defaultdict()  # type: dict
+        ua_ec = defaultdict(lambda: defaultdict(int))  # type: dict
         if 'software' in parsed:
             hr['Software'] = parsed['software']
             ua_ec['Software'] = parsed['software']
