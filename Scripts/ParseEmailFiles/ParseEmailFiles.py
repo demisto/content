@@ -3316,24 +3316,43 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
         format_string = ''
 
     headers = []
-    flag = False
-    for x in msg_dict['Headers'].split('\n'):
-        if len(x) > 0 and not x == ' ' and not 'From nobody' in x:
-            if not x[0] == ' ' and not x[0] == '\t':
-                if flag:
+    headers_map = {}
+    is_header_done = False
+
+    for header in msg_dict['Headers'].split('\n'):
+        if len(header) > 0 and not header == ' ' and not 'From nobody' in header:
+            if not header[0] == ' ' and not header[0] == '\t':
+                if is_header_done:
                     headers.append(
                         {
-                            'name': the_key,
-                            'value': temp
+                            'name': header_key,
+                            'value': header_value
                         }
                     )
-                splitted = x.split(' ')
-                the_key = splitted[0][:-1]
-                temp = ' '.join(splitted[1:])
-                temp = temp[:-1] if temp[-1:] == ' ' else temp
-                flag = True
+
+                    if header_key in headers_map:
+                        # in case there is already such header
+                        # then add that header value to value array
+                        if not isinstance(headers_map[header_key], list):
+                            # convert the existing value to array
+                            headers_map[header_key] = [headers_map[header_key]]
+
+                        # add the new value to the value array
+                        headers_map[header_key].append(header_value)
+                    else:
+                        headers_map[header_key] = header_value
+
+                    is_header_done = False
+
+                splitted = header.split(' ')
+                header_key = splitted[0][:-1]
+                header_value = ' '.join(splitted[1:])
+                header_value = header_value[:-1] if header_value[-1:] == ' ' \
+                    else header_value
+                is_header_done = True
+
             else:
-                temp += x[:-1] if x[-1:] == ' ' else x
+                header_value += header[:-1] if header[-1:] == ' ' else header
 
     email_data = {
         'To': msg_dict['To'],
@@ -3343,8 +3362,7 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
         'HTML': convert_to_unicode(msg_dict['HTML']),
         'Text': convert_to_unicode(msg_dict['Text']),
         'Headers': headers,
-        'HeadersMap': msg_dict['HeadersMap'],
-        # 'Attachments': ','.join(attachment_names) if attachment_names else '',
+        'HeadersMap': headers_map,
         'Attachments': '',
         'Format': format_string,
         'Depth': MAX_DEPTH_CONST - max_depth
