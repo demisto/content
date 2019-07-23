@@ -19,7 +19,7 @@ configuration:
   required: true
 - display: Trust any certificate (unsecure)
   name: unsecure
-  defaultvalue: "True"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Fetch incidents
@@ -34,7 +34,7 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "False"
+  defaultvalue: ""
   type: 8
   required: true
 - display: 'Comma-separated list of threat behaviors to generate incidents for, e.g.,
