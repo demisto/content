@@ -295,6 +295,7 @@ log_handler = None
 
 def start_logging():
     global log_stream
+    global log_handler
     if log_stream is None:
         log_stream = StringIO()
         log_handler = logging.StreamHandler(stream=log_stream)
