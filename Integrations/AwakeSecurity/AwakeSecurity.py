@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 ''' IMPORTS '''
 import base64
-import datetime
 import re
 import requests
 
@@ -36,36 +35,36 @@ request = {}
 ''' HELPERS '''
 
 
-def http_request(uri, method, headers={}, body={}, params={}, files=None):
-    ''' Makes an API call with the given arguments '''
-    result = requests.request(
-        method,
-        uri,
-        headers=headers,
-        data=body,
-        verify=USE_SSL,
-        params=params,
-        files=files
-    )
-    if result.status_code < 200 or result.status_code >= 300:
-        return_error('Request Failed.\nStatus code: {} with body {} with headers {}'.format(
-            str(result.status_code),
-            result.content,
-            str(result.headers))
-        )
-
-    jresult = json.loads(xml2json(result.text))
-    if jresult['response']['@status'] != 'success':
-        if '@code' in jresult['response']:
-            return_error('Request Failed.\nStatus code: ' + jresult['response']
-                         ['@code'] + '\nWith message: ' + jresult['response']['msg']['line'])
-        elif '@status' in jresult['response']:
-            return_error('Request Failed.\nStatus: ' + jresult['response']
-                         ['@status'] + '\nWith message: ' + jresult['response']['msg']['line'])
-        else:
-            return_error('Request Failed.\n' + jresult['response'])
-
-    return jresult
+# def http_request(uri, method, headers={}, body={}, params={}, files=None):
+#     ''' Makes an API call with the given arguments '''
+#     result = requests.request(
+#         method,
+#         uri,
+#         headers=headers,
+#         data=body,
+#         verify=USE_SSL,
+#         params=params,
+#         files=files
+#     )
+#     if result.status_code < 200 or result.status_code >= 300:
+#         return_error('Request Failed.\nStatus code: {} with body {} with headers {}'.format(
+#             str(result.status_code),
+#             result.content,
+#             str(result.headers))
+#         )
+#
+#     jresult = json.loads(xml2json(result.text))
+#     if jresult['response']['@status'] != 'success':
+#         if '@code' in jresult['response']:
+#             return_error('Request Failed.\nStatus code: ' + jresult['response']
+#                          ['@code'] + '\nWith message: ' + jresult['response']['msg']['line'])
+#         elif '@status' in jresult['response']:
+#             return_error('Request Failed.\nStatus: ' + jresult['response']
+#                          ['@status'] + '\nWith message: ' + jresult['response']['msg']['line'])
+#         else:
+#             return_error('Request Failed.\n' + jresult['response'])
+#
+#     return jresult
 
 # Convenient utility to marshal command arguments into the request body
 
@@ -82,7 +81,7 @@ def displayTable(contents, fields):
     # We don't use a set() because we want to preserve field order
     #
     # The fields are ordered to put the most relevant information first
-    presentFields = []
+    presentFields = []  # type: List[str]
     # Omit table columns that are all empty
     for content in contents:
         for field in fields:
@@ -418,10 +417,10 @@ def fetchIncidents():
     formatString = "%Y-%m-%d %H:%M:%S+0000"
     earlyTimeString = "1970-01-01 00:00:00+0000"
     startTimeString = lastRun.get("time") or earlyTimeString
-    startTime = datetime.datetime.strptime(startTimeString, formatString)
-    endTime = datetime.datetime.utcnow()
-    endTimeString = datetime.datetime.strftime(endTime, formatString)
-    if datetime.timedelta(minutes=int(params['fetch_interval'])) <= endTime - startTime:
+    startTime = datetime.strptime(startTimeString, formatString)
+    endTime = datetime.utcnow()
+    endTimeString = datetime.strftime(endTime, formatString)
+    if timedelta(minutes=int(params['fetch_interval'])) <= endTime - startTime:
         jsonRequest = {
             "startTime": startTimeString,
             "endTime": endTimeString,
