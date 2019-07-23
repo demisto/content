@@ -1,0 +1,1 @@
+New commands: list-metadata and get-alert-by-uuid
