@@ -7,6 +7,8 @@ import re
 import zipfile
 from StringIO import StringIO
 from datetime import datetime, timedelta
+# disable insecure warnings
+requests.packages.urllib3.disable_warnings()
 
 # CONSTANTS
 TOKEN_TIMEOUT = 300  # 5 minutes
