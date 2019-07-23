@@ -1,4 +1,5 @@
 import json
+import logging
 
 integrationContext = {}
 
@@ -390,7 +391,7 @@ def command():
 
 
 def log(msg):
-    print (msg)
+    logging.getLogger().info(msg)
 
 
 def get(obj, field):
@@ -429,7 +430,8 @@ def info(*args):
 
 
 def error(*args):
-    log(args)
+    # print to stdout so pytest fail if not mocked
+    print(args)
 
 
 def debug(*args):
@@ -443,11 +445,11 @@ def getAllSupportedCommands():
 def results(results):
     if type(results) is dict and results.get("contents"):
         results = results.get("contents")
-    print ("demisto results: {}".format(json.dumps(results, indent=4, sort_keys=True)))
+    log("demisto results: {}".format(json.dumps(results, indent=4, sort_keys=True)))
 
 
 def credentials(credentials):
-    print ("credentials: {}".format(credentials))
+    log("credentials: {}".format(credentials))
 
 
 def getFilePath(id):
@@ -488,11 +490,23 @@ def getIntegrationContext():
 
 
 def incidents(incidents=None):
-    if not incidents:
-        return ""
-    return results(
-        {"Type": 1, "Contents": json.dumps(incidents), "ContentsFormat": "json"}
-    )
+    """
+    In Scripts this returns the `Incidents` list from the context
+
+    In integrations this is used to return incidents to the server
+
+    Arguments:
+        incidents {list with objects} -- List with incident objects
+
+    Returns:
+        [type] -- [description]
+    """
+    if incidents is None:
+        return exampleIncidents[0]['Contents']['data']
+    else:
+        return results(
+            {"Type": 1, "Contents": json.dumps(incidents), "ContentsFormat": "json"}
+        )
 
 
 def setContext(contextPath, value):
@@ -501,7 +515,6 @@ def setContext(contextPath, value):
 
 def demistoUrls():
     return exampleDemistoUrls
-
 
 
 def appendContext(key, data, dedup=False):

@@ -1,3 +1,1 @@
-Support equal sign (=) in email indicator
-Updated file reputations
-
+Add new FQDN indicator type

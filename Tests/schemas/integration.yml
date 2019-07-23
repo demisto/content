@@ -10,6 +10,10 @@ mapping:
       version:
         type: int
         required: yes
+      sortvalues:
+        type: seq
+        sequence:
+        - include: sortvalue_schema
   name:
     type: str
     required: yes
@@ -92,6 +96,8 @@ mapping:
     type: bool
 
 schema;commonfields_schema:
+
+schema;sortvalue_schema:
 
 # integration->configuration
 schema;configuration_schema:
