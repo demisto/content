@@ -1836,7 +1836,6 @@
         "Cybereason": "Insecure has a non empty default value, will require fixing and merging",
         "Anomali ThreatStream": "'proxy' parameter not working",
         "Palo Alto Networks Cortex": "SDK",
-        "Netcraft": "SSL failure",
         "AWS - EC2": "SSL Validation fails for STS",
         "Recorded Future": "might be dynamic test",
         "Cylance Protect": "Test module issue",
