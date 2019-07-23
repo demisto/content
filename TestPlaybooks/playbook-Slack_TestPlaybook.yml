@@ -11,7 +11,6 @@ tasks:
       id: c25af2be-e919-4909-830e-09fcc9ebd572
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -30,14 +29,14 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 1a69056c-8ebf-4708-8c42-7c50084b6187
+    taskid: d70a6c57-1e64-4bd0-8ac2-0709135133af
     type: regular
     task:
-      id: 1a69056c-8ebf-4708-8c42-7c50084b6187
+      id: d70a6c57-1e64-4bd0-8ac2-0709135133af
       version: -1
       name: Mirror investigation
       description: Mirror the investigation in slack
-      script: SlackV2|||slack-mirror-investigation
+      script: SlackV2|||mirror-investigation
       type: regular
       iscommand: true
       brand: SlackV2
@@ -50,7 +49,6 @@ tasks:
         simple: FromDemisto
       mirrorTo: {}
       type: {}
-    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -64,14 +62,14 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 99992a57-416c-4b7b-82fb-417069cbccfe
+    taskid: 59ae8cfd-0d20-48e9-865a-1f5f4db93085
     type: regular
     task:
-      id: 99992a57-416c-4b7b-82fb-417069cbccfe
+      id: 59ae8cfd-0d20-48e9-865a-1f5f4db93085
       version: -1
       name: Send a message
       description: Send a message to a slack user, group or channel.
-      script: SlackV2|||slack-send
+      script: SlackV2|||send-notification
       type: regular
       iscommand: true
       brand: SlackV2
@@ -79,11 +77,10 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      IgnoreAddURL: {}
-      channel: {}
-      entry: {}
-      group:
+      channel:
         simple: incident-${incident.id}
+      entry: {}
+      ignoreAddURL: {}
       message: {}
       threadID: {}
       to: {}
@@ -134,10 +131,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: a17c15e0-78cd-4314-8f95-7c8ed60dce8e
+    taskid: 3aae9361-2eb3-42a6-86bb-d686ffe7bf66
     type: regular
     task:
-      id: a17c15e0-78cd-4314-8f95-7c8ed60dce8e
+      id: 3aae9361-2eb3-42a6-86bb-d686ffe7bf66
       version: -1
       name: Send a file
       description: Send a file to a slack user, channel or group.
@@ -153,8 +150,7 @@ tasks:
       comment: {}
       file:
         simple: ${File.EntryID}
-      group:
-        simple: incident-${incident.id}
+      group: {}
       threadID: {}
       to: {}
     separatecontext: false
@@ -170,14 +166,14 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 96cc01a0-87f4-4c57-82c8-b13dd264d224
+    taskid: 9d3be335-45fe-4f02-816f-29434e408b2c
     type: regular
     task:
-      id: 96cc01a0-87f4-4c57-82c8-b13dd264d224
+      id: 9d3be335-45fe-4f02-816f-29434e408b2c
       version: -1
       name: Close the channel
       description: Close the mirrored Slack channel for this incident.
-      script: SlackV2|||slack-close-channel
+      script: SlackV2|||close-channel
       type: regular
       iscommand: true
       brand: SlackV2
