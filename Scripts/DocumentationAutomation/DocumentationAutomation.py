@@ -231,6 +231,8 @@ def generate_single_command_section(index, cmd, example_dict):
         '### {}. {}'.format(index + 1, cmd['name']),
         '---',
         cmd.get('description', ' '),
+        '##### Required Permissions',
+        '**FILL IN REQUIRED PERMISSIONS HERE**',
         '##### Base Command',
         '',
         '`{}`'.format(cmd['name']),
