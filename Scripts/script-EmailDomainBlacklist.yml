@@ -1,0 +1,48 @@
+commonfields:
+  id: EmailDomainWhitelist
+  version: -1
+name: EmailDomainBlacklist
+script: |-
+  def csv_string_to_list(v):
+      if type(v) == str: # requires python3
+          return v.lower().replace(' ', '').replace('\n','').split(',')
+      v = [val.lower() for val in v]
+      return v
+
+  DOMAIN_LIST = csv_string_to_list( demisto.args()['domain_list'] )
+  EMAIL_ADDRESSES = csv_string_to_list( demisto.args()['value'] )
+
+  filtered_addresses = []
+
+  for address in EMAIL_ADDRESSES:
+      [user, domain] = address.split('@')
+
+      if not domain in DOMAIN_LIST:
+          filtered_addresses.append(address)
+
+  if len(filtered_addresses) != 0:
+      demisto.results(filtered_addresses)
+  else:
+      demisto.results(None)
+type: python
+tags:
+- transformer
+- general
+- entirelist
+comment: Accepts an array of domains as a blacklist, and a list of email addresses.   It
+  will then then filter out any email address whose domain is in the blacklist.  The
+  filtered list will be returned as an array.
+enabled: true
+args:
+- name: value
+  required: true
+  description: An array of email addresses to be filtered by domain
+  isArray: true
+- name: domain_list
+  required: true
+  description: An array containing domains to blacklist
+  isArray: true
+scripttarget: 0
+runonce: false
+dockerimage: demisto/python3:3.7.4.977
+runas: DBotWeakRole
