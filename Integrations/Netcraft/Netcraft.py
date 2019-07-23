@@ -51,7 +51,6 @@ TAKEDOWN_INFO_TITLE = "Takedowns information found:"
 REPORT_MALICIOUS_SUCCESS_TITLE = "New takedown successfully created"
 
 
-
 ''' HELPER FUNCTIONS '''
 
 
