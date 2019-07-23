@@ -3318,7 +3318,7 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
         format_string = ''
 
     headers = []
-    headers_map = {}
+    headers_map = dict()  # type: dict
     header_key = 'initial key'
     header_value = 'initial header'
 
