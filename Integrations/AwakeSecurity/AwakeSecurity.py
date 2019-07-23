@@ -10,15 +10,11 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS '''
+handle_proxy()
 params = demisto.params()
 server = params["server"]
 prefix = server + "/awakeapi/v1"
-verify = params.get('unsecure', False)
-if not params.get("proxy", False):
-    del os.environ["HTTP_PROXY"]
-    del os.environ["HTTPS_PROXY"]
-    del os.environ["http_proxy"]
-    del os.environ["https_proxy"]
+verify = not params.get('unsecure', False)
 credentials = params["credentials"]
 identifier = credentials["identifier"]
 password = credentials["password"]
@@ -52,8 +48,11 @@ def http_request(uri, method, headers={}, body={}, params={}, files=None):
         files=files
     )
     if result.status_code < 200 or result.status_code >= 300:
-        return_error('Request Failed.\nStatus code: ' + str(result.status_code) +
-                     ' with body ' + result.content + ' with headers ' + str(result.headers))
+        return_error('Request Failed.\nStatus code: {} with body {} with headers {}'.format(
+            str(result.status_code),
+            result.content,
+            str(result.headers))
+        )
 
     jresult = json.loads(xml2json(result.text))
     if jresult['response']['@status'] != 'success':
@@ -165,8 +164,12 @@ def lookup(lookup_type, lookup_key):
     request["lookback_minutes"] = int(args["lookback_minutes"])
     response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
     if response.status_code < 200 or response.status_code >= 300:
-        return_error('Request Failed.\nStatus code: ' + str(response.status_code) +
-                     ' with body ' + response.content + ' with headers ' + str(response.headers))
+        return_error('Request Failed.\nStatus code: {} with body {} with headers {}'.format(
+            str(response.status_code),
+            response.content,
+            str(response.headers))
+        )
+
     return response.json()
 
 
@@ -307,8 +310,11 @@ def query(lookup_type):
     path = "/query/" + lookup_type
     response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
     if response.status_code < 200 or response.status_code >= 300:
-        return_error('Request Failed.\nStatus code: ' + str(response.status_code) +
-                     ' with body ' + response.content + ' with headers ' + str(response.headers))
+        return_error('Request Failed.\nStatus code: {} with body {} with headers {}'.format(
+            str(response.status_code),
+            response.content,
+            str(response.headers))
+        )
     contents = response.json()
     return request["queryExpression"], contents
 
@@ -393,8 +399,11 @@ def pcapDownload():
     path = "/pcap/download"
     response = requests.post(prefix + path, json=request, headers=headers, verify=verify)
     if response.status_code < 200 or response.status_code >= 300:
-        return_error('Request Failed.\nStatus code: ' + str(response.status_code) +
-                     ' with body ' + response.content + ' with headers ' + str(response.headers))
+        return_error('Request Failed.\nStatus code: {} with body {} with headers {}'.format(
+            str(response.status_code),
+            response.content,
+            str(response.headers))
+        )
     b64 = response.json()["pcap"]
     bytes = base64.b64decode(b64)
     demisto.results(fileResult("download.pcap", bytes))
