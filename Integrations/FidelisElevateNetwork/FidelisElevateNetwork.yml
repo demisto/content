@@ -338,18 +338,11 @@ script:
       description: Alert UUID
       type: String
   - arguments:
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Filter by time frame, e.g., Last 48 Hours
       isArray: false
       name: time_frame
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: If time_frame is Custom, specify the start time for the time range,
-        e.g.2017-06-01T12:48:16.734
-      isArray: false
-      name: start_time
       predefined:
       - Today
       - Yesterday
@@ -359,6 +352,15 @@ script:
       - Last 48 Hours
       - Last 30 Days
       - Custom
+      required: false
+      secret: false
+    - default: false
+      description: If time_frame is Custom, specify the start time for the time range,
+        e.g.2017-06-01T12:48:16.734
+      isArray: false
+      name: start_time
+      predefined:
+      - ''
       required: false
       secret: false
     - default: false
