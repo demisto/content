@@ -382,6 +382,17 @@ script:
       name: server_ip
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: direction of the request - either client to server or server to
+        client
+      isArray: false
+      name: request_direction
+      predefined:
+      - s2c
+      - c2s
+      required: false
+      secret: false
     deprecated: false
     description: Get metadata list
     execution: false
