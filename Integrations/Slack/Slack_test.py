@@ -1192,7 +1192,7 @@ def test_send_request_with_severity(mocker):
     assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
 
 
-def test_send_request_with_severity_user_doesnt_exist(mocker):
+def test_send_request_with_severity_user_doesnt_exist(mocker, capfd):
     import Slack
 
     mocker.patch.object(demisto, 'params', return_value={'incidentNotificationChannel': 'general',
@@ -1227,7 +1227,8 @@ def test_send_request_with_severity_user_doesnt_exist(mocker):
     mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
 
     # Arrange
-    Slack.slack_send()
+    with capfd.disabled():
+        Slack.slack_send()
 
     send_args = Slack.send_message.call_args[0]
 
@@ -1247,7 +1248,7 @@ def test_send_request_with_severity_user_doesnt_exist(mocker):
     assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
 
 
-def test_send_request_no_user(mocker):
+def test_send_request_no_user(mocker, capfd):
     import Slack
 
     # Set
@@ -1276,8 +1277,10 @@ def test_send_request_no_user(mocker):
     mocker.patch.object(Slack, 'send_message', return_value='cool')
 
     # Arrange
-    with pytest.raises(InterruptedError):
-        Slack.slack_send_request('alexios', None, None, message='Hi')
+
+    with capfd.disabled():
+        with pytest.raises(InterruptedError):
+            Slack.slack_send_request('alexios', None, None, message='Hi')
     err_msg = return_error_mock.call_args[0][0]
 
     # Assert
