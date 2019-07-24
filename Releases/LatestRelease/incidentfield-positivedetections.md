@@ -1,0 +1,1 @@
+Number of engines that positively detected the indicator as malicious
