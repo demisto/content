@@ -391,5 +391,6 @@ script:
   dockerimage: demisto/boto3py3:1.0.0.1030
   runonce: false
   subtype: python3
+beta: true
 tests:
 - Beta-Athena-Test
