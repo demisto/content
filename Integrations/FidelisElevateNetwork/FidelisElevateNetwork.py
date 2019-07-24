@@ -451,13 +451,16 @@ def upload_pcap_command():
     })
 
 
-def list_metadata_request(time_frame=None, start_time=None, end_time=None, client_ip=None, server_ip=None):
+def list_metadata_request(time_frame=None, start_time=None, end_time=None, client_ip=None, server_ip=None,
+                          request_direction=None):
 
     filters = []
     if client_ip is not None:
         filters.append({'simple': {'column': 'ClientIP', 'operator': '=', 'value': client_ip}})
     if server_ip is not None:
         filters.append({'simple': {'column': 'ServerIP', 'operator': '=', 'value': server_ip}})
+    if request_direction is not None:
+        filters.append({'simple': {'column': 'Direction', 'operator': '=', 'value': request_direction}})
     search_id = str([random.randint(1, 9) for _ in range(8)])
 
     data = {
@@ -495,12 +498,13 @@ def list_metadata():
     end_time = args.get('end_time')
     client_ip = args.get('client_ip')
     server_ip = args.get('server_ip')
+    request_direction = args.get('request_direction')
 
     data = []
     event_context = []
 
     results = list_metadata_request(time_frame=time_frame, start_time=start_time, end_time=end_time,
-                                    client_ip=client_ip, server_ip=server_ip)
+                                    client_ip=client_ip, server_ip=server_ip, request_direction=request_direction)
     for event in results:
         data.append({
             'Timestamp': event.get('Timestamp'),
