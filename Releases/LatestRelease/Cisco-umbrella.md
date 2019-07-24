@@ -1,1 +1,1 @@
-* Reversed logic of the "Trust any certificate" setting.
+The `Trust any certificate` parameter now works as expected.

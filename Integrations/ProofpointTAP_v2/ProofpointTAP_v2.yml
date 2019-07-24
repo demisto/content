@@ -1,0 +1,143 @@
+category: Email Gateway
+commonfields:
+  id: Proofpoint TAP v2
+  version: -1
+configuration:
+- display: 'Server URL (e.g., https://tap-api-v2.proofpoint.com)'
+  name: url
+  defaultvalue: https://tap-api-v2.proofpoint.com
+  type: 0
+  required: true
+- display: Service Principal (the Password refers to Secret)
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: 'API Version '
+  name: api_version
+  defaultvalue: v2
+  type: 15
+  required: false
+  options:
+  - v1
+  - v2
+- display: Trust any certificate (insecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: 'A string specifying which threat type to return. If empty, all threat types are returned. Can be "url", "attachment", or "messageText".'
+  name: threat_type
+  defaultvalue: ""
+  type: 16
+  required: false
+  options:
+  - url
+  - attachment
+  - messageText
+- display: 'A string specifying which threat statuses to return.
+    If empty, will return "active" and "cleared" threats. '
+  name: threat_status
+  defaultvalue: ""
+  type: 16
+  required: false
+  options:
+  - active
+  - cleared
+  - falsePositive
+- display: Events to fetch
+  name: events_type
+  defaultvalue: All
+  type: 15
+  required: false
+  options:
+  - All
+  - Issues
+  - Blocked Clicks
+  - Permitted Clicks
+  - Blocked Messages
+  - Delivered Messages
+- display: First fetch time range (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  defaultvalue: 3 days
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+description: Use the Proofpoint Targeted Attack Protection (TAP) integration to protect against and
+  provide additional visibility into phishing and other malicious email attacks.
+display: Proofpoint TAP v2
+name: Proofpoint TAP v2
+script:
+  commands:
+  - name: proofpoint-get-events
+    arguments:
+    - name: interval
+      description: 'A string containing an ISO8601-formatted interval. If this interval
+        overlaps with previous requests for data, records from the previous request
+        might be duplicated. The minimum interval is thirty seconds. The maximum interval
+        is one hour. Examples:  2016-05-01T12:00:00Z/2016-05-01T13:00:00Z - an hour
+        interval, beginning at noon UTC on 05-01-2016 PT30M/2016-05-01T12:30:00Z -
+        the thirty minutes beginning at noon UTC on 05-01-2016 and ending at 12:30pm
+        UTC 2016-05-01T05:00:00-0700/PT30M - the same interval as above, but using
+        -0700 as the time zone'
+    - name: threatType
+      auto: PREDEFINED
+      predefined:
+      - url
+      - attachment
+      - messageText
+      description: 'A string specifying which threat type to return. If empty, all threat types are returned. The following
+        values are accepted: url,attachment, messageText'
+    - name: threatStatus
+      auto: PREDEFINED
+      predefined:
+      - active
+      - cleared
+      - falsePositive
+      description: 'A string specifying which threat statuses to return. If empty, active and cleared threats are returned.
+        Can be "active", "cleared", "falsePositive".'
+    - name: sinceTime
+      description: 'A string containing an ISO8601 date. It represents the start of
+        the data retrieval period. The end of the period is determined by the current
+        API server time rounded to the nearest minute. If JSON output is selected,
+        the end time is included in the returned result. Example: 2016-05-01T12:00:00Z'
+    - name: sinceSeconds
+      description: An integer representing a time window (in seconds) from the current
+        API server time. The start of the window is the current API server time, rounded
+        to the nearest minute, less the number of seconds provided. The end of the
+        window is the current API server time rounded to the nearest minute. If JSON
+        output is selected, the end time is included in the returned result.
+    - name: eventTypes
+      auto: PREDEFINED
+      predefined:
+      - All
+      - Issues
+      - Delivered Messages
+      - Blocked Messages
+      - Permitted Clicks
+      - Blocked Clicks
+      description: Event types to return.
+      defaultValue: All
+    description: Fetches events for all clicks and messages relating to known threats
+      within the specified time period. Details as per clicks/blocked.
+  isfetch: true
+  dockerimage: demisto/python3:3.7.4.977
+  runonce: false
+  script: '-'
+  type: python
+tests:
+  - No test - no instance

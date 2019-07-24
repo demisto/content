@@ -22,7 +22,7 @@ configuration:
   type: 8
   required: false
 - display: Trust any certificate (unsecure)
-  name: insecure_new
+  name: insecure
   defaultvalue: ""
   type: 8
   required: false
