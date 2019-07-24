@@ -11,13 +11,8 @@ requests.packages.urllib3.disable_warnings()
 '''GLOBAL VARS'''
 API_URL = demisto.params().get('url')
 API_KEY = demisto.params().get('api_key')
-INSECURE = demisto.params().get('insecure')
+USE_SSL = not demisto.params().get('insecure')
 PROXY = demisto.params().get('proxy')
-if not demisto.params().get('proxy', False) or demisto.params()['proxy'] == 'false':
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 
 '''HELPER FUNCTIONS'''
@@ -32,7 +27,7 @@ def http_request(json):
         API_URL,
         data=json,
         headers=headers,
-        verify=INSECURE
+        verify=USE_SSL
     )
     if r.status_code != 200:
         return_error('Error in API call to WhatIsMyBrowser [%d] - %s' % (r.status_code, r.reason))
@@ -131,11 +126,10 @@ def test_command():
 
 '''EXECUTION BLOCK'''
 try:
+    handle_proxy()
     if demisto.command() == 'ua-parse':
         ua_parse_command()
     if demisto.command() == 'test-module':
         test_command()
 except Exception as e:
-    LOG(e)
-    LOG.print_log(False)
-    return_error(e.message)
+    return_error(str(e))
