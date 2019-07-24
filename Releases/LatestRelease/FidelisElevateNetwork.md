@@ -1,1 +1,1 @@
-New commands: list-metadata and get-alert-by-uuid
+New commands: list-metadata and get-alert-by-uuid and list-alert-by-ip

@@ -410,6 +410,84 @@ def list_alerts(time_frame=None, start_time=None, end_time=None, severity=None, 
     return res['aaData']
 
 
+def list_alerts_by_ip_request(time_frame=None, start_time=None, end_time=None, src_ip=None, dest_ip=None):
+
+    filters = []
+    if src_ip is not None:
+        filters.append({'simple': {'column': 'SRC_IP', 'operator': 'IN', 'value': src_ip}})
+    if dest_ip is not None:
+        filters.append({'simple': {'column': 'DEST_IP', 'operator': 'IN', 'value': dest_ip}})
+
+    data = {
+        'commandPosts': [],
+        'filter': {
+            'composite': {
+                'logic': 'or',
+                'filters': filters
+            }
+        },
+        'order': [
+            {
+                'column': 'ALERT_TIME',
+                'direction': 'DESC'
+            }
+        ],
+        'pagination': {
+            'page': 1,
+            'size': 100
+        },
+        'columns': ['ALERT_TIME', 'UUID', 'ALERT_ID', 'DISTRIBUTED_ALERT_ID', 'USER_RATING', 'HOST_IP', 'ASSET_ID',
+                    'ALERT_TYPE', 'DEST_COUNTRY_NAME', 'SRC_COUNTRY_NAME', 'DEST_IP', 'SRC_IP'],
+
+        'timeSettings': generate_time_settings(time_frame, start_time, end_time)
+    }
+
+    res = http_request('POST', '/j/rest/v1/alert/search/', data=data)
+    return res['aaData']
+
+
+def list_alerts_by_ip():
+    """
+    List alerts by the source IP or destination IP
+    """
+    args = demisto.args()
+    time_frame = args.get('time_frame')
+    start_time = args.get('start_time')
+    end_time = args.get('end_time')
+    src_ip = args.get('src_ip')
+    dest_ip = args.get('dest_ip')
+    headers = ['Time', 'AlertUUID', 'ID', 'DistributedAlertID', 'UserRating', 'HostIP', 'AssetID',
+               'Type', 'DestinationCountry', 'SourceCountry', 'DestinationIP', 'SourceIP']
+    results = list_alerts_by_ip_request(time_frame=time_frame, start_time=start_time, end_time=end_time, src_ip=src_ip,
+                                        dest_ip=dest_ip)
+    output = [{
+        'ID': alert.get('ALERT_ID'),
+        'Time': alert.get('ALERT_TIME'),
+        'AlertUUID': alert.get('UUID'),
+        'DistributedAlertID': alert.get('DISTRIBUTED_ALERT_ID'),
+        'Type': alert.get('ALERT_TYPE'),
+        'UserRating': alert.get('USER_RATING'),
+        'HostIP': alert.get('HOST_IP'),
+        'AssetID': alert.get('ASSET_ID'),
+        'DestinationCountry': alert.get('DEST_COUNTRY_NAME'),
+        'SourceCountry': alert.get('SRC_COUNTRY_NAME'),
+        'DestinationIP': alert.get('DEST_IP'),
+        'SourceIP': alert.get('SRC_IP')
+    } for alert in results]
+
+    context = {
+        'Fidelis.Alert(val.ID && val.ID == obj.ID)': output
+    }
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': results,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Found {} Alerts:'.format(len(output)), output, headers),
+        'EntryContext': context
+    })
+
+
 def get_alert_by_uuid():
 
     alert_uuid = demisto.args().get('alert_uuid')
@@ -422,7 +500,7 @@ def get_alert_by_uuid():
         'Summary': alert['SUMMARY'],
         'Severity': alert['SEVERITY'],
         'Type': alert['ALERT_TYPE'],
-        'UUID':alert['UUID']
+        'UUID': alert['UUID']
     } for alert in results]
 
     demisto.results({
@@ -464,26 +542,26 @@ def list_metadata_request(time_frame=None, start_time=None, end_time=None, clien
     search_id = str([random.randint(1, 9) for _ in range(8)])
 
     data = {
-        "collectors": [],
-        "action": "new",
-        "allCollectors": True,
-        "timeSettings": generate_time_settings(time_frame, start_time, end_time),
-        "displaySettings": {
-            "pageSize": 1000,
-            "currentPage": 1,
-            "pageNavigation": "",
-            "sorting": {
-                "column": "Timestamp",
-                "sortingOrder": "D"
+        'collectors': [],
+        'action": 'new',
+        'allCollectors': True,
+        'timeSettings': generate_time_settings(time_frame, start_time, end_time),
+        'displaySettings': {
+            'pageSize': 1000,
+            'currentPage': 1,
+            'pageNavigation': "",
+            'sorting': {
+                'column': 'Timestamp',
+                'sortingOrder': 'D'
             }
         },
-        "dataSettings": {
-            "composite": {
-                "logic": "and",
-                "filters": filters
+        'dataSettings': {
+            'composite': {
+                'logic': 'and',
+                'filters': filters
             }
         },
-        "searchId": search_id
+        'searchId': search_id
     }
     res = http_request('POST', '/j/rest/metadata/search/', data=data)
 
@@ -705,6 +783,8 @@ def main():
             get_alert_by_uuid()
         elif command == 'fidelis-list-metadata':
             list_metadata()
+        elif command == 'fidelis-list-alerts-by-ip':
+            list_alerts_by_ip()
 
     except Exception as e:
         return_error('error has occurred: {}'.format(str(e)))
