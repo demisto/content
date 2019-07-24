@@ -23,6 +23,7 @@ authTokenRequest = {
     "loginUsername": identifier,
     "loginPassword": password
 }
+demisto.info('~~~~~~~~~{}'.format(verify))
 authTokenResponse = requests.post(prefix + "/authtoken", json=authTokenRequest, verify=verify)
 authToken = authTokenResponse.json()["token"]["value"]
 headers = {
