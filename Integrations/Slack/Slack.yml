@@ -15,7 +15,7 @@ configuration:
   name: incidentNotificationChannel
   required: true
   type: 0
-- display: Send notifications about new incidents to the dedicated channel
+- display: Send notifications about incidents to the dedicated channel
   name: notify_incidents
   required: false
   type: 8
@@ -102,7 +102,7 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Mirror the investigation in slack
+    description: This command is deprecated. Use mirror-investigation instead.
     execution: false
     name: slack-mirror-investigation
   - arguments:
@@ -152,6 +152,12 @@ script:
       predefined:
       - channel
       - group
+      required: false
+      secret: false
+    - default: false
+      description: The name of the channel in Slack - the default is "incident-<incidentID>"
+      isArray: false
+      name: channelName
       required: false
       secret: false
     deprecated: false
@@ -261,11 +267,11 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Send a message to a slack user, group or channel.
+    description: This command is deprecated. Use send-notification instead.
     execution: false
     name: slack-send
   - deprecated: true
-    description: Close the mirrored Slack channel for this incident.
+    description: This command is deprecated. Use close-channel instead.
     execution: false
     name: slack-close-channel
   - deprecated: false
