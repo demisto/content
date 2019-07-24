@@ -153,6 +153,10 @@
             "playbookID": "hashicorp_test"
         },
         {
+            "integrations": "AWS - Athena - Beta",
+            "playbookID": "Beta-Athena-Test"
+        },
+        {
             "integrations": "BeyondTrust Password Safe",
             "playbookID": "BeyondTrust-Test"
         },
@@ -1725,6 +1729,7 @@
         "Zoom_test": "Added here because test existed but was not configured - need to review the test",
         "Test - CrowdStrike Falcon": "Test is unmockable, and has its data deleted every few weeks",
         "DomainTools-Test": "No instance",
+        "Beta-Athena-Test": "Beta integration & test is expensive to run",
         "Remedy-On-Demand-Test": "No instance",
         "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Skipped pending PR",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Skipped pending PR",
