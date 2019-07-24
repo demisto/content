@@ -6,6 +6,7 @@ from ldap3.extend import microsoft
 import ssl
 from datetime import datetime
 import traceback
+import os
 
 
 # global connection
@@ -70,7 +71,7 @@ def initialize_server(host, port, secure_connection, unsecure):
         demisto.debug("initializing sever with ssl (unsecure: {}). port: {}". format(unsecure, port or 'default(636)'))
         if not unsecure:
             demisto.debug("will require server certificate.")
-            tls = Tls(validate=ssl.CERT_REQUIRED)
+            tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'))
             if port:
                 return Server(host, port=port, use_ssl=True, tls=tls)
             return Server(host, use_ssl=True, tls=tls)
