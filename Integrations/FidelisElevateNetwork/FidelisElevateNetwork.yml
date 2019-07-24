@@ -473,6 +473,81 @@ script:
     - contextPath: Fidelis.Metadata.MD5
       description: MD5 of the file
       type: String
+  - arguments:
+    - default: false
+      description: Today,Yesterday,Last 7 Days,Last Hour,Last 24 Hours,Last 48 Hours,Last
+        30 Days,Custom
+      isArray: false
+      name: time_frame
+      required: false
+      secret: false
+    - default: false
+      description: If time_frame is Custom, specify the start time for the time range,
+        e.g.2017-06-01T12:48:16.734
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: If time_frame is Custom, specify the start time for the time range,
+        e.g.2017-06-01T12:48:16.734
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: false
+      description: List the alerts by the source IP
+      isArray: false
+      name: src_ip
+      required: false
+      secret: false
+    - default: false
+      description: List the alerts by the destination IP
+      isArray: false
+      name: dest_ip
+      required: false
+      secret: false
+    deprecated: false
+    description: List alerts by source IP or destination IP
+    execution: false
+    name: fidelis-list-alerts-by-ip
+    outputs:
+    - contextPath: Fidelis.Alert.SourceIP
+      description: 'The alert source IP '
+      type: String
+    - contextPath: Fidelis.Alert.UserRating
+      description: User rating
+      type: String
+    - contextPath: Fidelis.Alert.DestinationCountry
+      description: Destination country of the alert
+      type: String
+    - contextPath: Fidelis.Alert.AssetID
+      description: The ID of the asset
+      type: Number
+    - contextPath: Fidelis.Alert.Time
+      description: Time of the alert
+      type: Date
+    - contextPath: Fidelis.Alert.HostIP
+      description: The Host IP of the alert
+      type: String
+    - contextPath: Fidelis.Alert.DistributedAlertID
+      description: Alert distributed ID
+      type: String
+    - contextPath: Fidelis.Alert.DestinationIP
+      description: Alert destination IP
+      type: String
+    - contextPath: Fidelis.Alert.AlertUUID
+      description: The alert UUID
+      type: String
+    - contextPath: Fidelis.Alert.Type
+      description: The type of the alert
+      type: String
+    - contextPath: Fidelis.Alert.ID
+      description: The ID of the alert
+      type: Number
+    - contextPath: Fidelis.Alert.SourceCountry
+      description: Alert source country
+      type: String
   isfetch: true
   runonce: false
   script: '-'
