@@ -27,7 +27,7 @@ GUID_REGEX = r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA
 ENTITLEMENT_REGEX = r'{}@(({})|\d+)(\|\S+)?\b'.format(GUID_REGEX, GUID_REGEX)
 MESSAGE_FOOTER = '\n**From Slack**'
 MIRROR_TYPE = 'mirrorEntry'
-INCIDENT_OPENED = 'incidentOpened'
+INCIDENT_OPENED = 'incidentStatusChanged'
 PLAYGROUND_INVESTIGATION_TYPE = 9
 MAX_SEVERITY = 4
 
@@ -855,7 +855,6 @@ def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignor
     :param channel: A Slack channel to send to.
     :param group: A Slack private channel to send to.
     :param entry: WarRoom entry to send.
-    :param severity: If it's a notification regrading an incident - it's the incident severity.
     :param ignore_add_url: Do not add a Demisto URL to the message.
     :param thread_id: The Slack thread ID to send to.
     :param message: A message to send.
