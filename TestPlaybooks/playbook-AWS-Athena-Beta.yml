@@ -36,10 +36,10 @@ tasks:
       version: -1
       name: aws-athena-start-query
       description: Start Athena Query.
-      script: AWS - Athena|||aws-athena-start-query
+      script: '|||aws-athena-start-query'
       type: regular
       iscommand: true
-      brand: AWS - Athena
+      brand: ""
     scriptarguments:
       ClientRequestToken: {}
       Database: {}
