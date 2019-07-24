@@ -153,6 +153,10 @@
             "playbookID": "hashicorp_test"
         },
         {
+            "integrations": "AWS - Athena - Beta",
+            "playbookID": "Beta-Athena-Test"
+        },
+        {
             "integrations": "BeyondTrust Password Safe",
             "playbookID": "BeyondTrust-Test"
         },
