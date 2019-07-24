@@ -1162,7 +1162,7 @@ def test_send_request_with_severity(mocker):
         return {'channels': json.loads(CONVERSATIONS)}
 
     mocker.patch.object(demisto, 'args', return_value={'severity': '3', 'message': '!!!',
-                                                       'messageType': 'incidentOpened'})
+                                                       'messageType': 'incidentStatusChanged'})
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
     mocker.patch.object(demisto, 'setIntegrationContext')
     mocker.patch.object(demisto, 'results')
@@ -1217,7 +1217,7 @@ def test_send_request_with_severity_user_doesnt_exist(mocker, capfd):
         return {'channels': json.loads(CONVERSATIONS)}
 
     mocker.patch.object(demisto, 'args', return_value={'severity': '3', 'message': '!!!',
-                                                       'messageType': 'incidentOpened', 'to': 'alexios'})
+                                                       'messageType': 'incidentStatusChanged', 'to': 'alexios'})
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
     mocker.patch.object(demisto, 'setIntegrationContext')
     mocker.patch.object(demisto, 'results')
@@ -1317,7 +1317,7 @@ def test_send_request_no_severity(mocker):
         return {'channels': json.loads(CONVERSATIONS)}
 
     mocker.patch.object(demisto, 'args', return_value={'severity': '2', 'message': '!!!',
-                                                       'messageType': 'incidentOpened'})
+                                                       'messageType': 'incidentStatusChanged'})
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
     mocker.patch.object(demisto, 'setIntegrationContext')
     mocker.patch.object(demisto, 'results')
