@@ -42,7 +42,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- default: true
+- defaultvalue: 'true'
   display: Long running instance
   name: longRunning
   required: false
