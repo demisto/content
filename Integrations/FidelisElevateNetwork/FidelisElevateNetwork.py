@@ -193,7 +193,7 @@ def get_alert_command():
         'Severity': alert['severity'],
         'Protocol': alert['protocol'],
         'Type': alert['alertType'],
-        'AlertUUID':alert['alertUUID'],
+        'AlertUUID': alert['alertUUID'],
         'AssignedUser': alert['ticket']['assignedUserId'] if alert['ticket'] is not None else None,
     }
 
@@ -461,26 +461,26 @@ def list_metadata_request(time_frame=None, start_time=None, end_time=None, clien
     search_id = str([random.randint(1, 9) for _ in range(8)])
 
     data = {
-            "collectors": [],
-            "action": "new",
-            "allCollectors": True,
-            "timeSettings": generate_time_settings(time_frame, start_time, end_time),
-            "displaySettings": {
-                "pageSize": 1000,
-                "currentPage": 1,
-                "pageNavigation": "",
-                "sorting": {
-                    "column": "Timestamp",
-                    "sortingOrder": "D"
-                }
-            },
-            "dataSettings": {
-                "composite": {
-                    "logic": "and",
-                    "filters": filters
-                }
-            },
-            "searchId": search_id
+        "collectors": [],
+        "action": "new",
+        "allCollectors": True,
+        "timeSettings": generate_time_settings(time_frame, start_time, end_time),
+        "displaySettings": {
+            "pageSize": 1000,
+            "currentPage": 1,
+            "pageNavigation": "",
+            "sorting": {
+                "column": "Timestamp",
+                "sortingOrder": "D"
+            }
+        },
+        "dataSettings": {
+            "composite": {
+                "logic": "and",
+                "filters": filters
+            }
+        },
+        "searchId": search_id
     }
     res = http_request('POST', '/j/rest/metadata/search/', data=data)
 
