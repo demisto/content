@@ -543,7 +543,7 @@ def list_metadata_request(time_frame=None, start_time=None, end_time=None, clien
 
     data = {
         'collectors': [],
-        'action": 'new',
+        'action': 'new',
         'allCollectors': True,
         'timeSettings': generate_time_settings(time_frame, start_time, end_time),
         'displaySettings': {
