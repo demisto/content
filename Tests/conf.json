@@ -1809,6 +1809,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "SlackV2": "Integration requires SSL",
         "Whois": "Mocks does not support sockets",
         "Panorama": "Exception: Proxy process took to long to go up. https://circleci.com/gh/demisto/content/24826",
         "Image OCR": "Does not perform network traffic",
