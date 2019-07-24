@@ -28,7 +28,7 @@ def main():
             try:
                 subprocess.check_output(
                     scp_string.format(env["SSHuser"], env["InstanceDNS"],
-                    "{}/server_{}.log".format(circle_aritfact, env["Role"].replace(' ', ''))), shell=True)
+                        "{}/server_{}.log".format(circle_aritfact, env["Role"].replace(' ', ''))), shell=True)
 
             except subprocess.CalledProcessError as exc:
                 print(exc.output)
