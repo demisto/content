@@ -35,37 +35,6 @@ request = {}
 ''' HELPERS '''
 
 
-# def http_request(uri, method, headers={}, body={}, params={}, files=None):
-#     ''' Makes an API call with the given arguments '''
-#     result = requests.request(
-#         method,
-#         uri,
-#         headers=headers,
-#         data=body,
-#         verify=USE_SSL,
-#         params=params,
-#         files=files
-#     )
-#     if result.status_code < 200 or result.status_code >= 300:
-#         return_error('Request Failed.\nStatus code: {} with body {} with headers {}'.format(
-#             str(result.status_code),
-#             result.content,
-#             str(result.headers))
-#         )
-#
-#     jresult = json.loads(xml2json(result.text))
-#     if jresult['response']['@status'] != 'success':
-#         if '@code' in jresult['response']:
-#             return_error('Request Failed.\nStatus code: ' + jresult['response']
-#                          ['@code'] + '\nWith message: ' + jresult['response']['msg']['line'])
-#         elif '@status' in jresult['response']:
-#             return_error('Request Failed.\nStatus: ' + jresult['response']
-#                          ['@status'] + '\nWith message: ' + jresult['response']['msg']['line'])
-#         else:
-#             return_error('Request Failed.\n' + jresult['response'])
-#
-#     return jresult
-
 # Convenient utility to marshal command arguments into the request body
 
 
