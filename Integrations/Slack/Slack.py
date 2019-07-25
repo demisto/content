@@ -914,16 +914,17 @@ def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignor
             if mirrors:
                 mirror_filter = list(filter(lambda m: destination_name in m['mirror_names'], mirrors))
             if conversation_filter:
+                # Channel is in cache
                 conversation = conversation_filter[0]
                 conversation_id = conversation.get('id')
-                # TODO: what happens when a mirrored channel is in the cache?
             elif mirror_filter:
+                # Channel is mirrored and has a custom name
                 mirror = mirror_filter[0]
                 conversation_id = mirror['channel_id']
             else:
+                # Unknown channel name
                 conversation = get_conversation_by_name(destination_name)
                 if not conversation:
-                    # TODO: Check if mirroring error?
                     return_error('Could not find the Slack conversation {}'.format(destination_name))
                 conversation_id = conversation.get('id')
                 conversations.append(conversation)
