@@ -933,4 +933,4 @@ script:
   isfetch: true
   runonce: false
 tests:
-  - No test
+  - Vectra-test
