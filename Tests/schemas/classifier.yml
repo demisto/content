@@ -2,17 +2,17 @@ type: map
 mapping:
   id:
     type: str
-    required: yes
+    required: True
   version:
     type: number
-    required: yes
+    required: True
   fromVersion:
     type: str
   toVersion:
     type: str
   brandName:
     type: str
-    required: yes
+    required: True
   modified:
     type: str
   defaultIncidentType:

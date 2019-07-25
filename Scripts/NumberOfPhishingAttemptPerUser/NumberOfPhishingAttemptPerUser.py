@@ -1,8 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-# Get current incident data
 
+# Get current incident data
 emailto = demisto.get(demisto.incidents()[0], 'CustomFields.emailto')
 emailfrom = demisto.get(demisto.incidents()[0], 'CustomFields.emailfrom')
 
@@ -15,7 +15,7 @@ if isError(resp[0]):
     demisto.results(resp)
     sys.exit(0)
 
-emailto_total = demisto.get(resp[0],"Contents.total")
+emailto_total = demisto.get(resp[0], "Contents.total")
 
 resp = demisto.executeCommand("getIncidents", {"query": "emailfrom:{0} --status:Closed".format(emailfrom)})
 if isError(resp[0]):
