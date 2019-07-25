@@ -12,11 +12,6 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Credentials
-  name: credentials
-  defaultvalue: ""
-  type: 9
-  required: true
 - display: Fetch incidents
   name: isFetch
   defaultvalue: ""
@@ -32,22 +27,34 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
+- display: API Token
+  name: token
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: |-
-    var username = params.credentials.identifier;
-    var password = params.credentials.password;
+    var token = params.token;
     var server = params.server.replace(/[\/]+$/, '');
     var insecure = params.insecure;
+    var proxy = params.proxy;
+
     var sendRequest = function(method, url, queryName) {
+        var headers = {'Content-Type': ['application/json']};
+            headers.Authorization = ['Token ' + token];
         var res = http(
                 url,
                 {
                     Method: method,
-                    Username: username,
-                    Password: password,
-                    Headers: {'content-type': ['application/json']},
+                    Headers: headers,
                 },
-                insecure
+                insecure,
+                proxy
             );
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             throw 'Failed to ' + queryName + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
@@ -56,20 +63,20 @@ script:
     };
 
     var urlDict = {
-        'vectra-detections': '/api/detections/',
-        'vectra-hosts':'/api/hosts/',
-        'vectra-settings':'/api/settings/',
-        'vectra-triage':'/api/rules/',
-        'vectra-sensors':'/api/sensors/',
-        'vectra-health':'/api/health/',
-        'vec-get-detetctions-by-id':'/api/detections/', //deprecated
-        'vec-detections': '/api/detections/',   //deprecated
-        'vec-hosts':'/api/hosts',               //deprecated
-        'vec-settings':'/api/settings',         //deprecated
-        'vec-triage':'/api/rules',              //deprecated
-        'vec-sensors':'/api/sensors',           //deprecated
-        'vec-health':'/api/health/',            //deprecated
-        'vec-get-host-by-id':'/api/hosts/',     //deprecate
+        'vectra-detections': '/api/v2/detections/',
+        'vectra-hosts':'/api/v2/hosts/',
+        'vectra-settings':'/api/v2/settings/',
+        'vectra-triage':'/api/v2/rules/',
+        'vectra-sensors':'/api/v2/sensors/',
+        'vectra-health':'/api/v2/health/',
+        'vec-get-detetctions-by-id':'/api/v2/detections/', //deprecated
+        'vec-detections': '/api/v2/detections/',   //deprecated
+        'vec-hosts':'/api/v2/hosts',               //deprecated
+        'vec-settings':'/api/v2/settings',         //deprecated
+        'vec-triage':'/api/v2/rules',              //deprecated
+        'vec-sensors':'/api/v2/sensors',           //deprecated
+        'vec-health':'/api/v2/health/',            //deprecated
+        'vec-get-host-by-id':'/api/v2/hosts/',     //deprecate
     };
 
     var createIncidentFromDetection = function(incident) {
@@ -924,5 +931,6 @@ script:
       description: The id of the required detection
     description: Get detections by host id
   isfetch: true
+  runonce: false
 tests:
   - No test
