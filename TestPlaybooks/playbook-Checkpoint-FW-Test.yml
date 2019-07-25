@@ -276,7 +276,7 @@ tasks:
       direction:
         simple: both
       ip:
-        simple: 1.2.4.8
+        simple: 1.2.3.4
       ipname:
         simple: bla
       rulename:
