@@ -15,7 +15,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "9"
     separatecontext: false
     view: |-
       {
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: d70a6c57-1e64-4bd0-8ac2-0709135133af
+    taskid: 21872fd2-9c5c-4ac4-8055-fb0dd31d0ad3
     type: regular
     task:
-      id: d70a6c57-1e64-4bd0-8ac2-0709135133af
+      id: 21872fd2-9c5c-4ac4-8055-fb0dd31d0ad3
       version: -1
       name: Mirror investigation
       description: Mirror the investigation in slack
@@ -45,6 +45,8 @@ tasks:
       - "2"
     scriptarguments:
       autoclose: {}
+      channelName:
+        simple: ${TimeNow}
       direction:
         simple: FromDemisto
       mirrorTo: {}
@@ -54,7 +56,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 545
         }
       }
     note: false
@@ -89,7 +91,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 720
         }
       }
     note: false
@@ -123,7 +125,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 1070
         }
       }
     note: false
@@ -158,7 +160,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1245
         }
       }
     note: false
@@ -182,7 +184,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1595
         }
       }
     note: false
@@ -214,7 +216,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 895
         }
       }
     note: false
@@ -246,7 +248,76 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 53ba130f-9e4d-4423-896d-82a35ac489f0
+    type: regular
+    task:
+      id: 53ba130f-9e4d-4423-896d-82a35ac489f0
+      version: -1
+      name: GetTime
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat: {}
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 508aa793-fb07-4f44-8cef-49dde8b4bdd8
+    type: regular
+    task:
+      id: 508aa793-fb07-4f44-8cef-49dde8b4bdd8
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -257,7 +328,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1290,
+        "height": 1640,
         "width": 380,
         "x": 50,
         "y": 50
