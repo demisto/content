@@ -9,13 +9,13 @@ import csv
 def json_to_csv(data, delimiter):
     si = io.BytesIO()
     cw = csv.writer(si, delimiter=delimiter)
-    keys = list(data[0].keys())
-    cw.writerow(keys)
+    csv_headers = list(data[0].keys())
+    cw.writerow(csv_headers)
+
     for d in data:
-        val_lst = []
-        for k in keys:
-            val_lst.append(d[k])
+        val_lst = [d[key] for key in csv_headers]
         cw.writerow(val_lst)
+
     return si.getvalue().strip("\r\n")
 
 
@@ -27,18 +27,15 @@ def main(entry_id, out_filename, delimiter):
 
     # Check to see if valid file entry id was provided as input
     if res[0]['Type'] == entryTypes['error']:
-        demisto.results({
-            'Type': entryTypes['error'],
-            'ContentsFormat': formats['text'],
-            'Contents': 'Failed to get the file path for entry: {} the error message was {}'.format(
-                entry_id,
-                res[0]['Contents'])
-        })
-        sys.exit(0)
-    filePath = res[0]['Contents']['path']
+        return_error('Failed to get the file path for entry: {} the error message was {}'.format(
+            entry_id,
+            res[0]['Contents'])
+        )
+
+    file_path = res[0]['Contents']['path']
 
     # open file and read data
-    with open(filePath, 'r') as f:
+    with open(file_path, 'r') as f:
         data = f.read()
 
     dictlist = json.loads(data)
