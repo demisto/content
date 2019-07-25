@@ -28,7 +28,7 @@
 				"name": "Disk Used Percentage",
 				"dataType": "system",
 				"widgetType": "number",
-				"query": "disk.usedPercent",
+				"query": "disk.usedPercent./",
 				"sort": null,
 				"isPredefined": true,
 				"dateRange": {
