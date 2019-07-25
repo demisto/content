@@ -17,7 +17,6 @@ tasks:
     nexttasks:
       '#none#':
       - "19"
-      - "20"
     separatecontext: false
     view: |-
       {
@@ -82,7 +81,7 @@ tasks:
       layer:
         simple: 8a5e96fb-c793-457f-b78f-c667074223a5
       name:
-        simple: bar-to-1.2.3.4 # disable-secrets-detection
+        simple: bar-to-1.2.3.4
       rule_number: {}
       uid: {}
     continueonerror: true
@@ -259,46 +258,13 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "20":
-    id: "20"
-    taskid: 0f4ea750-f268-4943-8349-6097fb1c20e1
-    type: regular
-    task:
-      id: 0f4ea750-f268-4943-8349-6097fb1c20e1
-      version: -1
-      name: Block IP
-      description: Block one or more IP addresses using Checkpoint Firewall
-      script: Check Point|||checkpoint-block-ip
-      type: regular
-      iscommand: true
-      brand: Check Point
-    scriptarguments:
-      direction:
-        simple: both
-      ip:
-        simple: 1.2.3.4
-      ipname:
-        simple: bla
-      rulename:
-        simple: blabla
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 540,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1260,
-        "width": 870,
+        "width": 380,
         "x": 50,
         "y": 50
       }
