@@ -2,6 +2,7 @@ import sys
 import os
 import json
 import subprocess
+from Tests.test_utils import print_warning, print_error
 import Tests.scripts.awsinstancetool.aws_functions as aws_functions
 
 
@@ -38,9 +39,9 @@ def main():
 
             rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
             if aws_functions.isError(rminstance):
-                raise ValueError(rminstance)
+                print_error(rminstance)
         else:
-            raise ValueError("Tests failed on {} ,keeping instance alive".format(env["Role"]))
+            print_warning("Tests failed on {} ,keeping instance alive".format(env["Role"]))
 
 
 if __name__ == "__main__":
