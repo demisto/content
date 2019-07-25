@@ -2,16 +2,14 @@ type: map
 mapping:
   typeId:
     type: str
-    required: yes
+    required: True
   TypeName:
     type: str
-    required: yes
   version:
-    type: str
-    required: yes
+    type: number
   kind:
     type: str
-    required: yes
+    required: True
   fromVersion:
     type: str
   toVersion:
@@ -23,16 +21,19 @@ mapping:
     mapping:
       id:
         type: str
-        required: yes
+        required: True
+      system:
+        type: bool
+      TypeName:
+        type: str
       version:
         type: number
-        required: yes
       kind:
         type: str
-        required: yes
+        required: True
       typeId:
         type: str
-        required: yes
+        required: True
       modified:
         type: str
       name:
@@ -47,6 +48,7 @@ mapping:
         - include: section_schema
 
 schema;tabs_schema:
+  type: any
 
 schema;section_schema:
   type: map
