@@ -13,7 +13,24 @@
         "CYFileRep",
         "SandboxDetonateFile",
         "ParseEmailFiles"
-      ]
+      ],
+      "toVersion": "4.5.0"
+    },
+    {
+      "id": "fileRep",
+      "file": true,
+      "version": -1,
+      "regex": "",
+      "details": "File enhancement scripts",
+      "enhancementScriptNames": [
+        "Strings",
+        "CYFileRep",
+        "SandboxDetonateFile",
+        "ParseEmailFiles"
+      ],
+      "fromVersion": "5.0.0",
+      "disabled": true
+
     },
     {
       "id": "ipRep",
@@ -26,49 +43,6 @@
         "SplunkSearch"
       ],
       "toVersion": "3.0.1"
-    },
-    {
-      "id": "ipRep",
-      "version": -1,
-      "regex": "\\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\b",
-      "reputationCommand": "ip",
-      "details": "IP",
-      "contextValue": "Address",
-      "contextPath": "IP(val.Address && val.Address === obj.Address)",
-      "enhancementScriptNames": [
-        "IPReputation"
-      ],
-      "fromVersion": "3.1.0",
-      "toVersion": "4.5.0"
-    },
-    {
-      "id": "ipRepEscaped",
-      "version": -1,
-      "regex": "\\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\[\\.\\]){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\b",
-      "reputationCommand": "ip",
-      "details": "IP",
-      "contextValue": "Address",
-      "contextPath": "IP(val.Address && val.Address === obj.Address)",
-      "enhancementScriptNames": [
-        "IPReputation",
-        "SplunkPySearch"
-      ],
-      "formatScript": "UnEscapeIPs",
-      "fromVersion": "3.5.1",
-      "toVersion": "4.5.0"
-    },
-    {
-      "id": "emailRep",
-      "version": -1,
-      "regex": "\\b[A-Za-z0-9._%=+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b",
-      "details": "Email",
-      "reputationCommand": "email",
-      "contextValue": "Address",
-      "contextPath": "Account.Email(val.Address && val.Address === obj.Address)",
-      "enhancementScriptNames": [
-        "EmailReputation"
-      ],
-      "toVersion": "4.5.0"
     },
     {
       "id": "urlRep",
@@ -98,22 +72,6 @@
       "toVersion": "3.5.0"
     },
     {
-      "id": "urlRep",
-      "version": -1,
-      "regex": "(?i)(?:(?:https?|ftp|hxxps?):\\/\\/|www\\[?\\.\\]?|ftp\\[?\\.\\]?)(?:[-A-Z0-9]+\\[?\\.\\]?)+[-A-Z0-9]+(?::[0-9]+)?(?:(?:\\/|\\?)[-A-Z0-9+&@#\\/%=~_$?!\\-:,.\\(\\);]*[A-Z0-9+&@#\\/%=~_$\\(\\);])?",
-      "reputationCommand": "url",
-      "details": "URL",
-      "enhancementScriptNames": [
-        "URLReputation",
-        "SplunkPySearch"
-      ],
-      "formatScript": "UnEscapeURLs",
-      "contextPath": "URL(val.Data && val.Data === obj.Data)",
-      "contextValue": "Data",
-      "fromVersion": "3.5.1",
-      "toVersion": "4.5.0"
-    },
-    {
       "id": "registryRep",
       "version": -1,
       "regex": "((?i)hk((EY_(CLASSES_ROOT|PERFORMANCE_DATA|LOCAL_MACHINE|CURRENT_(CONFIG|USER)|USERS))|LM|CR|CU|U|CC|PD))\\\\[\\\\\\w\\}\\{\\.\\-\\ \\*]+",
@@ -122,7 +80,21 @@
       "enhancementScriptNames": [
         "RegCollectValues",
         "CBEvents"
-      ]
+      ],
+      "toVersion": "4.5.0"
+    },
+        {
+      "id": "registryRep",
+      "version": -1,
+      "regex": "((?i)hk((EY_(CLASSES_ROOT|PERFORMANCE_DATA|LOCAL_MACHINE|CURRENT_(CONFIG|USER)|USERS))|LM|CR|CU|U|CC|PD))\\\\[\\\\\\w\\}\\{\\.\\-\\ \\*]+",
+      "reputationScriptName": "RegPathReputationBasicLists",
+      "details": "Registry Path Reputation",
+      "enhancementScriptNames": [
+        "RegCollectValues",
+        "CBEvents"
+      ],
+      "fromVersion": "5.0.0",
+      "disabled": true
     },
     {
       "id": "cveScore",
@@ -134,7 +106,22 @@
       "contextPath": "CVE(val.ID && val.ID === obj.ID)",
       "enhancementScriptNames": [
         "cveSearch"
-      ]
+      ],
+      "toVersion": "4.5.0"
+    },
+    {
+      "id": "cveScore",
+      "version": -1,
+      "regex": "CVE-\\d{4}-\\d{4,7}",
+      "reputationScriptName": "cveReputation",
+      "details": "CVE CVSS Score",
+      "contextValue": "ID",
+      "contextPath": "CVE(val.ID && val.ID === obj.ID)",
+      "enhancementScriptNames": [
+        "cveSearch"
+      ],
+      "fromVersion": "5.0.0",
+      "disabled": true
     },
     {
       "id": "hostnameRep",
@@ -147,6 +134,18 @@
       ]
     },
     {
+      "id": "hostnameRep",
+      "version": -1,
+      "regex": "",
+      "reputationScriptName": "",
+      "details": "hostname",
+      "enhancementScriptNames": [
+        "ADGetComputer"
+      ],
+      "fromVersion": "5.0.0",
+      "disabled": true
+    },
+    {
       "id": "usernameRep",
       "version": -1,
       "regex": "",
@@ -157,15 +156,16 @@
       ]
     },
     {
-      "id": "domainRep",
+      "id": "usernameRep",
       "version": -1,
       "regex": "",
       "reputationScriptName": "",
-      "details": "Domain",
+      "details": "username",
       "enhancementScriptNames": [
-        "DomainReputation"
+        "ADGetUser"
       ],
-      "toVersion": "4.5.0"
+      "fromVersion": "5.0.0",
+      "disabled": true
     },
     {
       "id": "domainRep2",
