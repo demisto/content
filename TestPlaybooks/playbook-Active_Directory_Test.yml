@@ -54,7 +54,7 @@ tasks:
       telephone-number: {}
       title: {}
       user-dn:
-        simple: cn=jack,dc=demisto,dc=int
+        simple: cn=jack,dc=demisto,dc=ninja
       username:
         simple: jack
     separatecontext: false
@@ -123,7 +123,7 @@ tasks:
       attribute-value:
         simple: Jack the ripper
       contact-dn:
-        simple: cn=Jack,dc=demisto,dc=int
+        simple: cn=Jack,dc=demisto,dc=ninja
     separatecontext: false
     view: |-
       {
@@ -314,7 +314,7 @@ tasks:
     scriptarguments:
       attributes: {}
       group-dn:
-        simple: CN=Users,CN=Builtin,DC=demisto,DC=int
+        simple: CN=Users,CN=Builtin,DC=demisto,DC=ninja
       member-type:
         simple: person
     separatecontext: false
@@ -359,7 +359,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: CN=jack,DC=demisto,DC=int
+                        simple: CN=jack,DC=demisto,DC=ninja
                 accessor: Groups.members.dn
             iscontext: true
     view: |-
@@ -463,7 +463,7 @@ tasks:
       brand: ""
     scriptarguments:
       user-dn:
-        simple: cn=jack,dc=demisto,dc=int
+        simple: cn=jack,dc=demisto,dc=ninja
     separatecontext: false
     view: |-
       {
@@ -595,7 +595,7 @@ tasks:
     scriptarguments:
       attributes: {}
       group-dn:
-        simple: CN=Users,CN=Builtin,DC=demisto,DC=int
+        simple: CN=Users,CN=Builtin,DC=demisto,DC=ninja
       member-type:
         simple: person
     separatecontext: false
@@ -791,7 +791,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "603"
+              simple: "10"
     view: |-
       {
         "position": {
@@ -825,7 +825,7 @@ tasks:
       context-output:
         simple: "no"
       filter:
-        simple: (&(objectCategory=person)(objectClass=user)(!(cn=andy)))
+        simple: (&(objectCategory=person)(objectClass=user)(cn=jack))
       size-limit:
         simple: "5"
       time-limit: {}
