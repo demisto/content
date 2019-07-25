@@ -102,6 +102,213 @@ BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
 AUTO_DISCOVERY = False
 SERVER_BUILD = ""
 
+START_COMPLIANCE = """
+[CmdletBinding()]
+Param(
+[Parameter(Mandatory=$True)]
+[string]$username,
+
+[Parameter(Mandatory=$True)]
+[string]$query
+)
+
+$WarningPreference = "silentlyContinue"
+# Create Credential object
+$password = Read-Host
+$secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
+$UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
+
+# Generate a unique search name
+$searchName = [guid]::NewGuid().ToString() -replace '[-]'
+$searchName = "DemistoSearch" + $searchName
+
+# open remote PS session to Office 365 Security & Compliance Center
+$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri `
+https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $UserCredential `
+-Authentication Basic -AllowRedirection
+
+if (!$session)
+{
+   "Failed to create remote PS session"
+   return
+}
+
+Import-PSSession $session -CommandName *Compliance* -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
+
+$compliance = New-ComplianceSearch -Name $searchName -ExchangeLocation All -ContentMatchQuery $query -Confirm:$false
+
+Start-ComplianceSearch -Identity $searchName
+
+$complianceSearchName = "Action status: " + $searchName
+
+$complianceSearchName | ConvertTo-Json
+
+# Close the session
+Remove-PSSession $session
+"""
+GET_COMPLIANCE = """[CmdletBinding()]
+Param(
+[Parameter(Mandatory=$True)]
+[string]$username,
+
+
+[Parameter(Mandatory=$True)]
+[string]$searchName
+)
+
+$WarningPreference = "silentlyContinue"
+# Create Credential object
+$password = Read-Host
+$secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
+$UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
+
+
+# open remote PS session to Office 365 Security & Compliance Center
+$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri `
+https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $UserCredential `
+-Authentication Basic -AllowRedirection
+
+if (!$session)
+{
+   "Failed to create remote PS session"
+   return
+}
+
+
+Import-PSSession $session -CommandName Get-ComplianceSearch -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
+
+
+
+$searchStatus = Get-ComplianceSearch $searchName
+#"Search status: " + $searchStatus.Status
+$searchStatus.Status
+if ($searchStatus.Status -eq "Completed")
+{
+   $searchStatus.SuccessResults | ConvertTo-Json
+}
+
+# Close the session
+Remove-PSSession $session
+"""
+PURGE_COMPLIANCE = """
+[CmdletBinding()]
+Param(
+[Parameter(Mandatory=$True)]
+[string]$username,
+
+[Parameter(Mandatory=$True)]
+[string]$searchName
+)
+
+$WarningPreference = "silentlyContinue"
+# Create Credential object
+$password = Read-Host
+$secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
+$UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
+
+# open remote PS session to Office 365 Security & Compliance Center
+$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri `
+https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $UserCredential `
+-Authentication Basic -AllowRedirection
+if (!$session)
+{
+   "Failed to create remote PS session"
+   return
+}
+
+
+Import-PSSession $session -CommandName *Compliance* -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
+
+# Delete mails based on an existing search criteria
+$newActionResult = New-ComplianceSearchAction -SearchName $searchName -Purge -PurgeType SoftDelete -Confirm:$false
+if (!$newActionResult)
+{
+   # Happens when there are no results from the search
+   "No action was created"
+}
+
+# Close the session
+Remove-PSSession $session
+return
+"""
+PURGE_STATUS_COMPLIANCE = """
+[CmdletBinding()]
+Param(
+[Parameter(Mandatory=$True)]
+[string]$username,
+
+[Parameter(Mandatory=$True)]
+[string]$searchName
+)
+
+$WarningPreference = "silentlyContinue"
+# Create Credential object
+$password = Read-Host
+$secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
+$UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
+
+# open remote PS session to Office 365 Security & Compliance Center
+$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri `
+https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $UserCredential `
+-Authentication Basic -AllowRedirection
+
+if (!$session)
+{
+   "Failed to create remote PS session"
+   return
+}
+
+
+Import-PSSession $session -CommandName *Compliance* -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
+
+$actionName = $searchName + "_Purge"
+$actionStatus = Get-ComplianceSearchAction $actionName
+""
+$actionStatus.Status
+
+# Close the session
+Remove-PSSession $session
+"""
+REMOVE_COMPLIANCE = """
+[CmdletBinding()]
+Param(
+[Parameter(Mandatory=$True)]
+[string]$username,
+
+[Parameter(Mandatory=$True)]
+[string]$searchName
+)
+
+$WarningPreference = "silentlyContinue"
+# Create Credential object
+$password = Read-Host
+$secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
+$UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
+
+
+# open remote PS session to Office 365 Security & Compliance Center
+
+$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri `
+https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $UserCredential `
+-Authentication Basic -AllowRedirection
+
+if (!$session)
+{
+   "Failed to create remote PS session"
+   return
+}
+
+
+Import-PSSession $session -CommandName *Compliance* -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
+
+# Remove the search
+Remove-ComplianceSearch $searchName -Confirm:$false
+
+# Close the session
+Remove-PSSession $session
+"""
+
+
 # initialized in main()
 EWS_SERVER = ''
 USERNAME = ''
@@ -1452,9 +1659,14 @@ def get_cs_status(search_name, status):
 
 def start_compliance_search(query):
     check_cs_prereqs()
-    output = subprocess.Popen(["pwsh", "/usr/local/office365startcompliancesearch.ps1", USERNAME, PASSWORD, query],
-                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = output.communicate()
+    f = open("startcompliancesearch2.0.ps1", "w+")
+    f.write(START_COMPLIANCE)
+    f.close()
+
+    output = subprocess.Popen(["pwsh", "startcompliancesearch2.0.ps1", USERNAME, query],
+                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    stdout, stderr = output.communicate(input=PASSWORD.encode())
 
     if stderr:
         return get_cs_error(stderr)
@@ -1464,6 +1676,8 @@ def start_compliance_search(query):
     sub_start = pref_ind + len(prefix)
     sub_end = sub_start + 45
     search_name = stdout[sub_start:sub_end]
+
+    os.remove("startcompliancesearch2.0.ps1")
     return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
@@ -1476,14 +1690,21 @@ def start_compliance_search(query):
 
 def get_compliance_search(search_name):
     check_cs_prereqs()
-    output = subprocess.Popen(["pwsh", "/usr/local/office365getcompliancesearch.ps1", USERNAME, PASSWORD, search_name],
-                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = output.communicate()
+    f = open("getcompliancesearch2.ps1", "w+")
+    f.write(GET_COMPLIANCE)
+    f.close()
+
+    output = subprocess.Popen(["pwsh", "getcompliancesearch2.ps1", USERNAME, search_name],
+                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = output.communicate(input=PASSWORD.encode())
+
+    os.remove("getcompliancesearch2.ps1")
 
     if stderr:
         return get_cs_error(stderr)
 
     # Get search status
+    stdout = stdout[len(PASSWORD):]
     stdout = stdout.split('\n', 1)
     results = [get_cs_status(search_name, stdout[0])]
 
@@ -1507,10 +1728,15 @@ def get_compliance_search(search_name):
 
 def purge_compliance_search(search_name):
     check_cs_prereqs()
-    output = subprocess.Popen(
-        ["pwsh", "/usr/local/office365compliancesearchstartpurge.ps1", USERNAME, PASSWORD, search_name],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = output.communicate()
+    f = open("purgecompliancesearch2.ps1", "w+")
+    f.write(PURGE_COMPLIANCE)
+    f.close()
+
+    output = subprocess.Popen(["pwsh", "purgecompliancesearch2.ps1", USERNAME, search_name],
+                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = output.communicate(input=PASSWORD.encode())
+
+    os.remove("purgecompliancesearch2.ps1")
 
     if stderr:
         return get_cs_error(stderr)
@@ -1520,10 +1746,17 @@ def purge_compliance_search(search_name):
 
 def check_purge_compliance_search(search_name):
     check_cs_prereqs()
-    output = subprocess.Popen(
-        ["pwsh", "/usr/local/office365compliancesearchcheckpurge.ps1", USERNAME, PASSWORD, search_name],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = output.communicate()
+    f = open("purgestatuscompliancesearch2.ps1", "w+")
+    f.write(PURGE_STATUS_COMPLIANCE)
+    f.close()
+
+    output = subprocess.Popen(["pwsh", "purgestatuscompliancesearch2.ps1", USERNAME, search_name],
+                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = output.communicate(input=PASSWORD.encode())
+
+    stdout = stdout[len(PASSWORD):]
+
+    os.remove("purgestatuscompliancesearch2.ps1")
 
     if stderr:
         return get_cs_error(stderr)
@@ -1533,10 +1766,17 @@ def check_purge_compliance_search(search_name):
 
 def remove_compliance_search(search_name):
     check_cs_prereqs()
+    check_cs_prereqs()
+    f = open("removecompliance2.ps1", "w+")
+    f.write(REMOVE_COMPLIANCE)
+    f.close()
+
     output = subprocess.Popen(
-        ["pwsh", "/usr/local/office365removecompliancesearch.ps1", USERNAME, PASSWORD, search_name],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = output.communicate()
+        ["pwsh", "removecompliance2.ps1", USERNAME, search_name],
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = output.communicate(input=PASSWORD.encode())
+
+    os.remove("removecompliance2.ps1")
 
     if stderr:
         return get_cs_error(stderr)
