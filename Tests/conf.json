@@ -1657,6 +1657,10 @@
             "playbookID": "AlienVaultUSMAnywhereTest"
         },
         {
+            "integrations": "Vectra",
+            "playbookID": "Vectra-test"
+        },
+        {
             "playbookID": "PhishLabsTestPopulateIndicators"
         },
         {
