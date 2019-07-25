@@ -18,7 +18,7 @@ INSECURE = demisto.params().get('unsecure')
 PROXY = demisto.params().get('proxy')
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 SESSION_ID = None
-alertUUID = re.compile('[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}')
+ALERT_UUID_REGEX = re.compile('[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}')
 
 
 ''' HELPER FUNCTIONS '''
@@ -117,7 +117,7 @@ def get_ioc_filter(ioc):
         return {'simple': {'column': 'SHA256', 'operator': '=', 'value': ioc}}
     elif sha1Regex.match(ioc):
         return {'simple': {'column': 'SHA1_HASH', 'operator': '=', 'value': ioc}}
-    elif alertUUID.match(ioc):
+    elif ALERT_UUID_REGEX.match(ioc):
         return {'simple': {'column': 'UUID', 'operator': '=', 'value': ioc}}
     else:
         return {'simple': {'column': 'ANY_STRING', 'operator': '=~', 'value': ioc}}
@@ -478,14 +478,8 @@ def list_alerts_by_ip():
     context = {
         'Fidelis.Alert(val.ID && val.ID == obj.ID)': output
     }
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': results,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Found {} Alerts:'.format(len(output)), output, headers),
-        'EntryContext': context
-    })
+
+    return_outputs(tableToMarkdown('Found {} Alerts:'.format(len(output)), output, headers), context, results)
 
 
 def get_alert_by_uuid():
@@ -499,20 +493,14 @@ def get_alert_by_uuid():
         'Time': alert['ALERT_TIME'],
         'Summary': alert['SUMMARY'],
         'Severity': alert['SEVERITY'],
-        'Type': alert['ALERT_TYPE'],
-        'UUID': alert['UUID']
+        'Type': alert['ALERT_TYPE']
     } for alert in results]
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': results,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Found {} Alerts:'.format(len(output)), output),
-        'EntryContext': {
-            'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
-        },
-    })
+    context = {
+        'Fidelis.Alert(val.ID && val.ID == obj.ID)': output
+    }
+
+    return_outputs(tableToMarkdown('Found {} Alerts:'.format(len(output)), output), context, results)
 
 
 def upload_pcap_command():
@@ -527,6 +515,66 @@ def upload_pcap_command():
         'ContentsFormat': formats['text'],
         'Contents': 'Pcap file uploaded successfully.',
     })
+
+
+@logger
+def upload_pcap(component_ip, entry_id):
+    file_info = demisto.getFilePath(entry_id)
+    shutil.copy(file_info['path'], file_info['name'])
+
+    try:
+        with open(file_info['name'], 'rb') as f:
+            http_request('POST', '/j/rest/policy/pcap/upload/{}/'.format(component_ip),
+                         files={'uploadFile': f}, is_json=False)
+    finally:
+        shutil.rmtree(file_info['name'], ignore_errors=True)
+
+
+def run_pcap_command():
+    args = demisto.args()
+    component_ip = args['component_ip']
+    file_names = args['files'].split(',')
+
+    run_pcap(component_ip, file_names)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': 'Pcap file run submitted.',
+    })
+
+
+@logger
+def run_pcap(component_ip, file_names):
+    data = {
+        'component': component_ip,
+        'files': file_names
+    }
+    res = http_request('POST', '/j/rest/policy/pcap/run/', data=data)  # noqa
+
+
+def list_pcap_components_command():
+    results = list_pcap_components()
+    output = [{
+        'IP': r['ip'],
+        'Name': r['name'],
+    } for r in results]
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': results,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('PCAP Components', output, headers=['Name', 'IP']),
+        'EntryContext': {'Fidelis.Component(val.Name && val.Name == obj.Name)': output},
+    })
+
+
+@logger
+def list_pcap_components():
+    res = http_request('GET', '/j/rest/policy/pcap/components/')
+
+    return res
 
 
 def list_metadata_request(time_frame=None, start_time=None, end_time=None, client_ip=None, server_ip=None,
@@ -624,74 +672,7 @@ def list_metadata():
         'Fidelis.Metadata(val.ID && val.ID == obj.ID)': event_context
     }
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': results,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Found {} Metadata:'.format(len(data)), data),
-        'EntryContext': context
-    })
-
-
-@logger
-def upload_pcap(component_ip, entry_id):
-    file_info = demisto.getFilePath(entry_id)
-    shutil.copy(file_info['path'], file_info['name'])
-
-    try:
-        with open(file_info['name'], 'rb') as f:
-            http_request('POST', '/j/rest/policy/pcap/upload/{}/'.format(component_ip),
-                         files={'uploadFile': f}, is_json=False)
-    finally:
-        shutil.rmtree(file_info['name'], ignore_errors=True)
-
-
-def run_pcap_command():
-    args = demisto.args()
-    component_ip = args['component_ip']
-    file_names = args['files'].split(',')
-
-    run_pcap(component_ip, file_names)
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': 'Pcap file run submitted.',
-    })
-
-
-@logger
-def run_pcap(component_ip, file_names):
-    data = {
-        'component': component_ip,
-        'files': file_names
-    }
-    res = http_request('POST', '/j/rest/policy/pcap/run/', data=data)  # noqa
-
-
-def list_pcap_components_command():
-    results = list_pcap_components()
-    output = [{
-        'IP': r['ip'],
-        'Name': r['name'],
-    } for r in results]
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': results,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('PCAP Components', output, headers=['Name', 'IP']),
-        'EntryContext': {'Fidelis.Component(val.Name && val.Name == obj.Name)': output},
-    })
-
-
-@logger
-def list_pcap_components():
-    res = http_request('GET', '/j/rest/policy/pcap/components/')
-
-    return res
+    return_outputs(tableToMarkdown('Found {} Metadata:'.format(len(data)), data), context, results)
 
 
 def test_integration():
