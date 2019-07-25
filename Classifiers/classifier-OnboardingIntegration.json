@@ -14,6 +14,10 @@
 					"simple": "Text",
 					"complex": null
 				},
+				"Email HTML": {
+					"simple": "Body",
+					"complex": null
+				},
 				"Email Body HTML": {
 					"simple": "Body",
 					"complex": null
