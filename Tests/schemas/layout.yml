@@ -3,6 +3,12 @@ mapping:
   typeId:
     type: str
     required: yes
+  TypeName:
+    type: str
+    required: yes
+  version:
+    type: str
+    required: yes
   kind:
     type: str
     required: yes
@@ -21,18 +27,26 @@ mapping:
       version:
         type: number
         required: yes
+      kind:
+        type: str
+        required: yes
+      typeId:
+        type: str
+        required: yes
       modified:
         type: str
       name:
         type: str
+      tabs:
+        type: seq
+        sequence:
+          - include: tabs_schema
       sections:
         type: seq
-        required: yes
         sequence:
         - include: section_schema
 
-
-
+schema;tabs_schema:
 
 schema;section_schema:
   type: map
