@@ -28,6 +28,7 @@ ENTITLEMENT_REGEX = r'{}@(({})|\d+)(\|\S+)?\b'.format(GUID_REGEX, GUID_REGEX)
 MESSAGE_FOOTER = '\n**From Slack**'
 MIRROR_TYPE = 'mirrorEntry'
 INCIDENT_OPENED = 'incidentStatusChanged'
+INCIDENT_NOTIFICATION_CHANNEL = 'incidentNotificationChannel'
 PLAYGROUND_INVESTIGATION_TYPE = 9
 
 
@@ -698,7 +699,8 @@ def slack_send():
         except Exception:
             pass
 
-    if not channel and message_type == INCIDENT_OPENED and severity >= SEVERITY_THRESHOLD:
+    if (channel == INCIDENT_NOTIFICATION_CHANNEL or
+            (not channel and message_type == INCIDENT_OPENED and severity >= SEVERITY_THRESHOLD)):
         channel = DEDICATED_CHANNEL
 
     if not (to or group or channel):
