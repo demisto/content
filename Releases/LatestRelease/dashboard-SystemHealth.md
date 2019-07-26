@@ -1,0 +1,1 @@
+- Support disk partition in disk usage widget
