@@ -1427,6 +1427,61 @@ def test_send_request_with_severity(mocker):
     assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
 
 
+def test_send_request_with_notification_channel(mocker):
+    import Slack
+
+    mocker.patch.object(demisto, 'params', return_value={'incidentNotificationChannel': 'general',
+                                                         'min_severity': 'High', 'notify_incidents': True})
+
+    Slack.init_globals()
+
+    # Set
+
+    def getIntegrationContext():
+        return {
+            'mirrors': MIRRORS,
+            'users': USERS,
+            'conversations': CONVERSATIONS,
+            'bot_id': 'W12345678'
+        }
+
+    def users_list(**kwargs):
+        return {'members': json.loads(USERS)}
+
+    def conversations_list(**kwargs):
+        return {'channels': json.loads(CONVERSATIONS)}
+
+    mocker.patch.object(demisto, 'args', return_value={'channel': 'incidentNotificationChannel', 'severity': '2', 'message': '!!!',
+                                                       'messageType': 'incidentStatusChanged'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
+    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
+    mocker.patch.object(slack.WebClient, 'conversations_list', side_effect=conversations_list)
+    mocker.patch.object(slack.WebClient, 'im_open', return_value={'channel': {'id': 'im_channel'}})
+    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+
+    # Arrange
+    Slack.slack_send()
+
+    send_args = Slack.send_message.call_args[0]
+
+    results = demisto.results.call_args_list[0][0]
+    # Assert
+
+    assert slack.WebClient.users_list.call_count == 0
+    assert slack.WebClient.conversations_list.call_count == 0
+    assert Slack.send_message.call_count == 1
+
+    assert send_args[0] == ['C012AB3CD']
+    assert send_args[1] is None
+    assert send_args[2] is False
+    assert send_args[4] == '!!!'
+    assert send_args[5] == ''
+
+    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+
+
 def test_send_request_with_severity_user_doesnt_exist(mocker, capfd):
     import Slack
 
