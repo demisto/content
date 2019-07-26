@@ -249,21 +249,21 @@ def uptycs_run_query():
         if demisto.args().get('asset_id') is not None:
             _id = {
                 "_id": {
-                    "equals": demisto.args().get('asset_id').encode('utf-8')
+                    "equals": demisto.args().get('asset_id')
                 }
             }
         elif demisto.args().get('host_name_is') is not None:
             _id = {
                 "host_name": {
                     "equals": demisto.args().get(
-                        'host_name_is').encode('utf-8')
+                        'host_name_is')
                 }
             }
         elif demisto.args().get('host_name_like') is not None:
             _id = {
                 "host_name": {
                     "like": "%{0}%".format(demisto.args().get(
-                        'host_name_like')).encode('utf-8')
+                        'host_name_like'))
                 }
             }
         else:
@@ -274,7 +274,7 @@ def uptycs_run_query():
             }
 
         post_data = {
-            "query": query.encode('utf-8'),
+            "query": query,
             "type": "realtime",
             "filtering": {
                 "filters": _id
@@ -2236,7 +2236,6 @@ def uptycs_fetch_incidents():
                     context.pop(key, None)
 
             alert_time = context.get('alertTime')
-            alert_time = alert_time.encode('utf-8')
 
             incident = {
                 "Name": "Uptycs Alert: %s for asset: %s" %
