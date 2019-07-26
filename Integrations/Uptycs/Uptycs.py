@@ -98,7 +98,7 @@ def severity_to_int(level_string):
 
 def remove_context_entries(context, context_entries_to_keep):
     for index in range(len(context)):
-        for key in context[index].keys():
+        for key in list(context[index]):
             if key not in context_entries_to_keep:
                 context[index].pop(key, None)
 
@@ -1516,7 +1516,7 @@ def uptycs_set_alert_status_command():
                                'updatedAt', 'updatedBy', 'updatedByAdmin',
                                'updatedByEmail']
     if context is not None:
-        for key in context.keys():
+        for key in list(context):
             if key not in context_entries_to_keep:
                 context.pop(key, None)
 
@@ -1584,7 +1584,7 @@ def uptycs_set_asset_tag_command():
     context_entries_to_keep = ['hostName', 'tags']
 
     if context is not None:
-        for key in context.keys():
+        for key in list(context):
             if key not in context_entries_to_keep:
                 context.pop(key, None)
 
@@ -1662,7 +1662,7 @@ def uptycs_get_user_information_command():
                                'userObjectGroups']
 
     if context is not None:
-        for key in context.keys():
+        for key in list(context):
             if key not in context_entries_to_keep:
                 context.pop(key, None)
 
@@ -1838,7 +1838,7 @@ def uptycs_get_threat_indicator_command():
                                'threat_vendor_id', 'threat_source_name']
 
     if context is not None:
-        for key in context.keys():
+        for key in list(context):
             if key not in context_entries_to_keep:
                 context.pop(key, None)
 
@@ -1916,7 +1916,7 @@ def uptycs_get_threat_source_command():
                                'custom', 'createdAt', 'lastDownload']
 
     if context is not None:
-        for key in context.keys():
+        for key in list(context):
             if key not in context_entries_to_keep:
                 context.pop(key, None)
 
@@ -2231,7 +2231,7 @@ def uptycs_fetch_incidents():
                                        'threatSourceName', 'indicatorType',
                                        'indicatorId']
 
-            for key in context.keys():
+            for key in list(context):
                 if key not in context_entries_to_keep:
                     context.pop(key, None)
 
