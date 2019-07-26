@@ -18,14 +18,14 @@ PROXY = demisto.params().get('proxy')
 '''HELPER FUNCTIONS'''
 
 
-def http_request(json):
+def http_request(data):
     headers = {
         'X-API-KEY': API_KEY,
     }
     r = requests.request(
         'POST',
         API_URL,
-        data=json,
+        data=data,
         headers=headers,
         verify=USE_SSL
     )
