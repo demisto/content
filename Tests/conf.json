@@ -4,7 +4,8 @@
     "tests": [
         {
             "integrations": "SlackV2",
-            "playbookID": "Slack Test Playbook"
+            "playbookID": "Slack Test Playbook",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Cortex XDR - IR",
