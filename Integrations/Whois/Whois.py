@@ -8323,13 +8323,18 @@ def test_command():
 
 
 ''' EXECUTION CODE '''
-LOG('command is {}'.format(str(demisto.command())))
-try:
-    handle_proxy()
-    if demisto.command() == 'test-module':
-        test_command()
-    elif demisto.command() == 'whois':
-        whois_command()
-except Exception as e:
-    LOG(e)
-    return_error(str(e))
+def main():
+    LOG('command is {}'.format(str(demisto.command())))
+    try:
+        handle_proxy()
+        if demisto.command() == 'test-module':
+            test_command()
+        elif demisto.command() == 'whois':
+            whois_command()
+    except Exception as e:
+        LOG(e)
+        return_error(str(e))
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
