@@ -1,7 +1,7 @@
 from CommonServerPython import *
 
 
-def test_creaet_indicator_no_date():
+def test_create_indicator_no_date():
     from PhishLabsIOC import create_indicator_content
 
     files_json = """
@@ -49,7 +49,7 @@ def test_creaet_indicator_no_date():
     assert actual == result
 
 
-def test_creaet_indicator_with_none_date():
+def test_create_indicator_with_none_date():
     from PhishLabsIOC import create_indicator_content
 
     files_json = """
@@ -98,7 +98,7 @@ def test_creaet_indicator_with_none_date():
     assert actual == result
 
 
-def test_creaet_indicator_with_date():
+def test_create_indicator_with_date():
     from PhishLabsIOC import create_indicator_content
 
     files_json = """
