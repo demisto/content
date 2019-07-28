@@ -1,1 +1,1 @@
-To be deprecated. New version is called "Cofense Intelligence"
+Deprecated. New version is called "Cofense Intelligence"
