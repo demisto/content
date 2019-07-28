@@ -832,6 +832,10 @@
             "playbookID": "listExecutedCommands-Test"
         },
         {
+            "integrations": "AWS - Lambda",
+            "playbookID": "AWS-Lambda-Test (Read-Only)"
+        },
+        {
             "integrations": "Service Manager",
             "playbookID": "TestHPServiceManager",
             "timeout": 400
