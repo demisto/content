@@ -89,11 +89,12 @@ def copy_dir_json(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
     # handle *.json files
     scan_files = glob.glob(os.path.join(dir_name, '*.json'))
     for path in scan_files:
+        dpath = os.path.basename(path)
         if dir_name == 'IndicatorFields':
-            path = path.replace('incidentfield-', 'incidentfield-indicatorfield-')
-        shutil.copyfile(path, os.path.join(bundle_post, os.path.basename(path)))
-        shutil.copyfile(path, os.path.join(bundle_pre, os.path.basename(path)))
-        shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
+            dpath = dpath.replace('incidentfield-', 'incidentfield-indicatorfield-')
+        shutil.copyfile(path, os.path.join(bundle_post, dpath))
+        shutil.copyfile(path, os.path.join(bundle_pre, dpath))
+        shutil.copyfile(path, os.path.join(bundle_test, dpath))
 
 
 def copy_dir_files(*args):
