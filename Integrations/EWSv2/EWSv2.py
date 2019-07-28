@@ -101,6 +101,7 @@ IS_TEST_MODULE = False
 BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
 AUTO_DISCOVERY = False
 SERVER_BUILD = ""
+MARK_AS_READ = demisto.params().get('markAsRead', False)
 
 # initialized in main()
 EWS_SERVER = ''
@@ -915,6 +916,10 @@ def parse_incident_from_item(item):
     if item.conversation_id:
         labels.append({'type': 'Email/ConversionID', 'value': item.conversation_id.id})
 
+    if MARK_AS_READ:
+        item.is_read = True
+        item.save()
+
     incident['labels'] = labels
     incident['rawJSON'] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
 
@@ -1555,6 +1560,30 @@ def get_autodiscovery_config():
     }
 
 
+def mark_item_as_read(item_ids, operation='read', target_mailbox=None):
+    marked_items = []
+    account = get_account(target_mailbox or ACCOUNT_EMAIL)
+    if type(item_ids) != list:
+        item_ids = item_ids.split(",")
+
+    items = get_items_from_mailbox(account, item_ids)
+    items = [x for x in items if isinstance(x, Message)]
+
+    for item in items:
+        item.is_read = True if operation == 'read' else False
+        item.save()
+
+        marked_items.append({
+            ITEM_ID: item.item_id,
+            MESSAGE_ID: item.message_id,
+            ACTION: 'marked-as-%s' % operation
+        })
+
+    return get_entry_for_object('Marked items (%s marked operation)' % operation,
+                                CONTEXT_UPDATE_EWS_ITEM,
+                                marked_items)
+
+
 def test_module():
     try:
         global IS_TEST_MODULE
@@ -1652,6 +1681,8 @@ def main():
             encode_and_submit_results(get_autodiscovery_config())
         elif demisto.command() == 'ews-expand-group':
             encode_and_submit_results(get_expanded_group(protocol, **args))
+        elif demisto.command() == 'ews-mark-items-as-read':
+            encode_and_submit_results(mark_item_as_read(**args))
 
     except Exception, e:
         import time
@@ -1682,26 +1713,26 @@ def main():
 
         if isinstance(e, ConnectionError):
             error_message_simple = "Could not connect to the server.\n" \
-                "Verify that the Hostname or IP address is correct.\n\n" \
-                "Additional information: {}".format(e.message)
+                                   "Verify that the Hostname or IP address is correct.\n\n" \
+                                   "Additional information: {}".format(e.message)
         elif exchangelib.__version__ == "1.12.0":
             from exchangelib.errors import MalformedResponseError
 
             if IS_TEST_MODULE and isinstance(e, MalformedResponseError):
                 error_message_simple = "Got invalid response from the server.\n" \
-                    "Verify that the Hostname or IP address is is correct."
+                                       "Verify that the Hostname or IP address is is correct."
 
         # Legacy error handling
         if "Status code: 401" in debug_log:
             error_message_simple = "Got unauthorized from the server. " \
-                "Check credentials are correct and authentication method are supported. "
+                                   "Check credentials are correct and authentication method are supported. "
 
             error_message_simple += "You can try using 'domain\\username' as username for authentication. " \
                 if AUTH_METHOD_STR.lower() == 'ntlm' else ''
         if "Status code: 503" in debug_log:
             error_message_simple = "Got timeout from the server. " \
-                "Probably the server is not reachable with the current settings. " \
-                "Check proxy parameter. If you are using server URL - change to server IP address. "
+                                   "Probably the server is not reachable with the current settings. " \
+                                   "Check proxy parameter. If you are using server URL - change to server IP address. "
 
         if not error_message_simple:
             error_message = error_message_simple = str(e.message)
