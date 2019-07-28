@@ -185,6 +185,9 @@ def parse_response(resp, err_operation):
         if res_json.get("message").find('Requested sample not found') != -1:
             demisto.results(err_msg)
             sys.exit(0)
+        elif res_json.get("message").find("AF Cookie Not Found") != -1:
+            demisto.results(err_msg)
+            sys.exit(0)
         else:
             return return_error(err_msg)
     # Unexpected errors (where no json object was received)
