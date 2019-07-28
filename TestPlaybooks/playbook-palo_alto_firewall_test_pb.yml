@@ -800,6 +800,16 @@ tasks:
           right:
             value:
               simple: gambling
+        - operator: isEqualString
+            left:
+              value:
+                complex:
+                  root: Panorama
+                  accessor: URLFilter.Category
+              iscontext: true
+            right:
+              value:
+                simple: cloud-unavailable
     view: |-
       {
         "position": {
