@@ -395,4 +395,4 @@ except ResponseParserError as e:
 
 except Exception as e:
     return_error('Error has occurred in the AWS S3 Integration: {error}\n {message}'.format(
-        error=type(e), message=e.message))
+        error=type(e), message=str(e)))
