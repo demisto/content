@@ -2034,13 +2034,13 @@ script:
       description: Destination address.
       type: String
     - contextPath: Panorama.SecurityRule.From
-      description: Rule from
+      description: Rule from.
       type: String
     - contextPath: Panorama.SecurityRule.Service
       description: Service for the rule.
       type: String
     - contextPath: Panorama.SecurityRule.To
-      description: Rule to
+      description: Rule to.
       type: String
     - contextPath: Panorama.SecurityRule.Source
       description: Source address.
