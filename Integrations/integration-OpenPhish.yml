@@ -163,6 +163,5 @@ script:
     arguments: []
     description: Show OpenPhish database status
 hidden: false
-releaseNotes: Integration is no longer enabled by default
 tests:
   - No test

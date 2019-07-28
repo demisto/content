@@ -58,4 +58,3 @@ outputs:
   description: Extracted SHA256
 scripttarget: 0
 deprecated: true
-releaseNotes: Deprecated this script

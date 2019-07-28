@@ -1,0 +1,972 @@
+id: Active Directory Test
+version: -1
+name: Active Directory Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ecd72042-39af-4b3c-8416-ceede1e24c5b
+    type: start
+    task:
+      id: ecd72042-39af-4b3c-8416-ceede1e24c5b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: d67330de-bbf2-49d5-8042-1a98eb5e4bf5
+    type: regular
+    task:
+      id: d67330de-bbf2-49d5-8042-1a98eb5e4bf5
+      version: -1
+      name: Add new user named jack
+      script: Active Directory Query v2|||ad-create-user
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      custom-attributes: {}
+      description: {}
+      display-name:
+        simple: Samurai Jack
+      email:
+        simple: jack@AssasinsForRent.com
+      password:
+        simple: 1q2w3e4r!
+      telephone-number: {}
+      title: {}
+      user-dn:
+        simple: cn=jack,dc=demisto,dc=ninja
+      username:
+        simple: jack
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 09a82d62-5137-4b62-86cb-e687f7b5ae31
+    type: regular
+    task:
+      id: 09a82d62-5137-4b62-86cb-e687f7b5ae31
+      version: -1
+      name: Add user to group 'Users'
+      script: Active Directory Query v2|||ad-add-to-group
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+      - "12"
+    scriptarguments:
+      base-dn: {}
+      computer-name: {}
+      group-cn:
+        simple: Users
+      username:
+        simple: Jack
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 7811ee6c-2ecb-4bd9-8d3c-b8909cb0c4fb
+    type: regular
+    task:
+      id: 7811ee6c-2ecb-4bd9-8d3c-b8909cb0c4fb
+      version: -1
+      name: Update the user's display name
+      script: Active Directory Query v2|||ad-update-contact
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      attribute-name:
+        simple: displayName
+      attribute-value:
+        simple: Jack the ripper
+      contact-dn:
+        simple: cn=Jack,dc=demisto,dc=ninja
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 03d7769d-fca0-4baa-83ff-8f8c1e03eac0
+    type: regular
+    task:
+      id: 03d7769d-fca0-4baa-83ff-8f8c1e03eac0
+      version: -1
+      name: Get information on the new user
+      script: Active Directory Query v2|||ad-get-user
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+      - "30"
+    scriptarguments:
+      attributes: {}
+      custom-field-data: {}
+      custom-field-type: {}
+      dn: {}
+      email: {}
+      limit: {}
+      name:
+        simple: jack
+      user-account-control-out: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 22537740-e286-4644-8358-71763a4d341d
+    type: condition
+    task:
+      id: 22537740-e286-4644-8358-71763a4d341d
+      version: -1
+      name: Verify new user display name is as set in 'ad-create-user'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      verified:
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ActiveDirectory.Users.displayName
+            iscontext: true
+          right:
+            value:
+              simple: Samurai Jack
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 5673ff7f-3e16-4159-8c78-062b5c9a7601
+    type: regular
+    task:
+      id: 5673ff7f-3e16-4159-8c78-062b5c9a7601
+      version: -1
+      name: Get information on the new user
+      script: Active Directory Query v2|||ad-get-user
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      attributes: {}
+      custom-field-data: {}
+      custom-field-type: {}
+      dn: {}
+      email: {}
+      limit: {}
+      name:
+        simple: jack
+      user-account-control-out: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 12f4f7c0-6ea9-4f0f-85b7-42f891fc2921
+    type: title
+    task:
+      id: 12f4f7c0-6ea9-4f0f-85b7-42f891fc2921
+      version: -1
+      name: Create a new Active Directory user
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 867783e2-f57a-4cfc-8da0-ff6695918877
+    type: title
+    task:
+      id: 867783e2-f57a-4cfc-8da0-ff6695918877
+      version: -1
+      name: Modify user attributes
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: b9a64b40-3cf5-4d1b-86c9-5a3ad9e0108e
+    type: regular
+    task:
+      id: b9a64b40-3cf5-4d1b-86c9-5a3ad9e0108e
+      version: -1
+      name: Get group 'Users' members
+      script: Active Directory Query v2|||ad-get-group-members
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      attributes: {}
+      group-dn:
+        simple: CN=Users,CN=Builtin,DC=demisto,DC=ninja
+      member-type:
+        simple: person
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 85dd1769-60a3-49bf-867c-842fc72c73a0
+    type: condition
+    task:
+      id: 85dd1769-60a3-49bf-867c-842fc72c73a0
+      version: -1
+      name: Verify 'jack' is listed as a member
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      verified:
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: verified
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ActiveDirectory
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: ActiveDirectory.Groups.members.dn
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CN=jack,DC=demisto,DC=ninja
+                accessor: Groups.members.dn
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 6889b59c-bdf3-46d8-871e-8c79875ccf31
+    type: regular
+    task:
+      id: 6889b59c-bdf3-46d8-871e-8c79875ccf31
+      version: -1
+      name: Remove jack from 'Users' group
+      script: Active Directory Query v2|||ad-remove-from-group
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      base-dn: {}
+      computer-name: {}
+      group-cn:
+        simple: Users
+      username:
+        simple: jack
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 762f7a76-be77-4289-8865-c3319c20acab
+    type: condition
+    task:
+      id: 762f7a76-be77-4289-8865-c3319c20acab
+      version: -1
+      name: Verify 'jack' is not listed as a member
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      verified:
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: verified
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: ActiveDirectory
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: ActiveDirectory.Groups.members.dn
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CN=jack,DC=demisto,DC=int
+                accessor: Groups.members.dn
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: aa655544-be04-4df6-8217-3e5455ffeb34
+    type: regular
+    task:
+      id: aa655544-be04-4df6-8217-3e5455ffeb34
+      version: -1
+      name: Delete jack
+      script: Active Directory Query v2|||ad-delete-user
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      user-dn:
+        simple: cn=jack,dc=demisto,dc=ninja
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 3218335d-5e71-48bb-8857-de9b344f31f8
+    type: regular
+    task:
+      id: 3218335d-5e71-48bb-8857-de9b344f31f8
+      version: -1
+      name: Delete all context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 1647de07-83aa-46b8-83f9-f262fe27fdb5
+    type: condition
+    task:
+      id: 1647de07-83aa-46b8-83f9-f262fe27fdb5
+      version: -1
+      name: Verify the user diaplay name was updated
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      verified:
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ActiveDirectory.Users.displayName
+            iscontext: true
+          right:
+            value:
+              simple: Jack the ripper
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: c67cf231-ae87-410b-8b8d-0ff04ab7c493
+    type: regular
+    task:
+      id: c67cf231-ae87-410b-8b8d-0ff04ab7c493
+      version: -1
+      name: Delete 'Groups' context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: ActiveDirectory.Groups
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 9068310f-5ecc-46a3-8b0b-a9f4275e6c3e
+    type: regular
+    task:
+      id: 9068310f-5ecc-46a3-8b0b-a9f4275e6c3e
+      version: -1
+      name: Get group 'Users' members
+      script: Active Directory Query v2|||ad-get-group-members
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      attributes: {}
+      group-dn:
+        simple: CN=Users,CN=Builtin,DC=demisto,DC=ninja
+      member-type:
+        simple: person
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 4d856a89-4d10-4860-833d-d31eeea22f9b
+    type: title
+    task:
+      id: 4d856a89-4d10-4860-833d-d31eeea22f9b
+      version: -1
+      name: Test enable\disable user account - tests for command success only
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 7cf6d78f-a794-42da-8dbb-04041f3cb33d
+    type: regular
+    task:
+      id: 7cf6d78f-a794-42da-8dbb-04041f3cb33d
+      version: -1
+      name: Disable new user account
+      script: Active Directory Query v2|||ad-disable-account
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      base-dn: {}
+      username:
+        simple: jack
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 2d9139b1-7c8c-4bba-8f52-aac18b27429e
+    type: regular
+    task:
+      id: 2d9139b1-7c8c-4bba-8f52-aac18b27429e
+      version: -1
+      name: Enable account
+      script: Active Directory Query v2|||ad-enable-account
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      base-dn: {}
+      username:
+        simple: jack
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 995abc7a-e471-4b52-84b5-3b8fc3af6f43
+    type: regular
+    task:
+      id: 995abc7a-e471-4b52-84b5-3b8fc3af6f43
+      version: -1
+      name: Run search command
+      script: '|||ad-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      attributes: {}
+      base-dn: {}
+      context-ouptut: {}
+      context-output: {}
+      filter:
+        simple: (&(objectCategory=person)(objectClass=user)(!(cn=andy)))
+      size-limit:
+        simple: "603"
+      time-limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 04dfe38a-2cf8-40f3-83ad-858845e4e36f
+    type: title
+    task:
+      id: 04dfe38a-2cf8-40f3-83ad-858845e4e36f
+      version: -1
+      name: Search in Active Directory
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 9141281e-511e-408d-82b0-5c8ed1bf048b
+    type: condition
+    task:
+      id: 9141281e-511e-408d-82b0-5c8ed1bf048b
+      version: -1
+      name: Verify results from search exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ActiveDirectory
+                accessor: Search
+            iscontext: true
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: ActiveDirectory
+                accessor: Search.dn
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "10"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: d0468bfd-6702-4073-8754-2923418755f9
+    type: regular
+    task:
+      id: d0468bfd-6702-4073-8754-2923418755f9
+      version: -1
+      name: Run search command with no output
+      script: '|||ad-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      attributes: {}
+      base-dn: {}
+      context-ouptut:
+        simple: "no"
+      context-output:
+        simple: "no"
+      filter:
+        simple: (&(objectCategory=person)(objectClass=user)(cn=jack))
+      size-limit:
+        simple: "5"
+      time-limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 0fd6966d-b52b-4e51-87d4-41a5a33f1008
+    type: regular
+    task:
+      id: 0fd6966d-b52b-4e51-87d4-41a5a33f1008
+      version: -1
+      name: Delete all context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 925d0184-48de-4c55-8771-d1ce8d3c9897
+    type: condition
+    task:
+      id: 925d0184-48de-4c55-8771-d1ce8d3c9897
+      version: -1
+      name: Verify results from search don't exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: ActiveDirectory
+                accessor: Search
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: b83519cb-70ad-4ba1-830d-32431b71aa41
+    type: condition
+    task:
+      id: b83519cb-70ad-4ba1-830d-32431b71aa41
+      version: -1
+      name: Make sure user email shows in context
+      description: |-
+        Make sure user email appears in context under paths:
+        - ActiveDirectory.Users.mail
+        - Accounts.Email
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      verified:
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: verified
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Account.Email
+            iscontext: true
+          right:
+            value:
+              simple: jack@AssasinsForRent.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ActiveDirectory.Users.mail
+            iscontext: true
+          right:
+            value:
+              simple: jack@AssasinsForRent.com
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4145,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

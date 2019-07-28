@@ -1,0 +1,988 @@
+id: Extract Indicators From File - Generic v2
+version: -1
+fromversion: 4.1.0
+name: Extract Indicators From File - Generic v2
+description: |-
+  Extracts indicators from a file.
+  Supported file types:
+  - PDF
+  - TXT
+  - HTM, HTML
+  - DOC, DOCX
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7820586b-f2e6-4673-8dd8-08caab0d1173
+    type: start
+    task:
+      id: 7820586b-f2e6-4673-8dd8-08caab0d1173
+      version: -1
+      description: Start
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 7872ce6f-5e06-4c00-846b-6de0d54307b1
+    type: condition
+    task:
+      id: 7872ce6f-5e06-4c00-846b-6de0d54307b1
+      version: -1
+      name: Is there a file?
+      description: |
+        Checks if there is a file in the playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.File
+                accessor: EntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: e06408f8-c0cb-4516-87c0-014108497f20
+    type: regular
+    task:
+      id: e06408f8-c0cb-4516-87c0-014108497f20
+      version: -1
+      name: Set file to local context
+      description: Set the input file into local context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      value:
+        complex:
+          root: inputs.File
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 832242ed-942e-4094-8cf4-003921e7ef7a
+    type: title
+    task:
+      id: 832242ed-942e-4094-8cf4-003921e7ef7a
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: ab59c7dd-3e82-4efe-8e36-d3065d88a590
+    type: title
+    task:
+      id: ab59c7dd-3e82-4efe-8e36-d3065d88a590
+      version: -1
+      name: Extract Indicators From Files
+      description: Extracts indicators from files
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+      - "7"
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 6bc85e4c-1f70-41b7-8bec-3c6410c9ad53
+    type: condition
+    task:
+      id: 6bc85e4c-1f70-41b7-8bec-3c6410c9ad53
+      version: -1
+      name: Is there a text-based file?
+      description: Checks if there is a text-based file in context. Skips MSG and
+        EML files.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ASCII text
+                    ignorecase: true
+                  - operator: containsString
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Rich Text Format
+                - - operator: notContainsString
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: news or mail
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: eml
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: msg
+                - - operator: notContainsString
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Composite Document File V2 Document, No summary info
+                - - operator: notContainsString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: message/rfc822
+                accessor: EntryID
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 92.5,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: d2c83c31-2092-4c86-81ad-359fcf0ee1e6
+    type: regular
+    task:
+      id: d2c83c31-2092-4c86-81ad-359fcf0ee1e6
+      version: -1
+      name: Extract indicators from text-based file
+      description: Extracts indicators from text-based files.
+      scriptName: ExtractIndicatorsFromTextFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ASCII text
+              ignorecase: true
+            - operator: containsString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Rich Text Format
+          - - operator: notContainsString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: news or mail
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: eml
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: msg
+          - - operator: notContainsString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Composite Document File V2 Document, No summary info
+          - - operator: notContainsString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: message/rfc822
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+      maxFileSize: {}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 82.5,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 79feacf1-749d-4213-85ce-9b87809c59cf
+    type: condition
+    task:
+      id: 79feacf1-749d-4213-85ce-9b87809c59cf
+      version: -1
+      name: Is there a PDF file?
+      description: Checks if there is a PDF file in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: pdf
+                    ignorecase: true
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: pdf
+                accessor: EntryID
+                transformers:
+                - operator: uniq
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: f954fb51-0ed0-44d2-837a-64f852f3dd9d
+    type: regular
+    task:
+      id: f954fb51-0ed0-44d2-837a-64f852f3dd9d
+      version: -1
+      name: Extract indicators from PDF file
+      description: Load a PDF file's content and metadata into context.
+      scriptName: ReadPDFFileV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: application/pdf
+            - operator: containsString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: application/pdf
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+      maxImages: {}
+      userPassword: {}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 596a82ed-b1a5-4a82-8eca-c351ae07e8c3
+    type: condition
+    task:
+      id: 596a82ed-b1a5-4a82-8eca-c351ae07e8c3
+      version: -1
+      name: Is there a Word file?
+      description: Checks if there is a Word file (DOC, DOCX) in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Composite Document File V2 Document
+                  - operator: containsString
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Microsoft Word
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: msg
+                    ignorecase: true
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: eml
+                    ignorecase: true
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: xls
+                    ignorecase: true
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: xlsx
+                    ignorecase: true
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                  - operator: notContainsString
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Excel
+                    ignorecase: true
+                accessor: EntryID
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 371fb092-fd79-4550-8b2e-d3c945d2cc10
+    type: title
+    task:
+      id: 371fb092-fd79-4550-8b2e-d3c945d2cc10
+      version: -1
+      name: No File To Parse
+      description: No File To Parse
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: e08be4df-5efa-4f1a-834d-05a15f8fd63f
+    type: regular
+    task:
+      id: e08be4df-5efa-4f1a-834d-05a15f8fd63f
+      version: -1
+      name: Extract indicators from Word file
+      description: Extracts indicators from word files (DOC, DOCX).
+      scriptName: ExtractIndicatorsFromWordFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Composite Document File V2 Document
+            - operator: containsString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Microsoft Word
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: msg
+              ignorecase: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: eml
+              ignorecase: true
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+            - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: xls
+              ignorecase: true
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+            - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: xlsx
+              ignorecase: true
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+            - operator: notContainsString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Excel
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 01853d00-5297-4e59-83fa-1aec87f7b3aa
+    type: condition
+    task:
+      id: 01853d00-5297-4e59-83fa-1aec87f7b3aa
+      version: -1
+      name: Were images extracted?
+      description: Checks whether images were extracted from PDF files.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: image/png
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: image/jpg
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: image/jpeg
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: image/gif
+                    ignorecase: true
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 60827e91-7450-4f79-8e82-863488b15371
+    type: condition
+    task:
+      id: 60827e91-7450-4f79-8e82-863488b15371
+      version: -1
+      name: Is Image OCR enabled?
+      description: Checks whether there is an active instance of the Image OCR integration
+        enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Image OCR
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 19fe4f88-c55b-4f13-814c-1ad0aae31cae
+    type: regular
+    task:
+      id: 19fe4f88-c55b-4f13-814c-1ad0aae31cae
+      version: -1
+      name: Extract text from images
+      description: Extracts text from PNG, JPEG, and GIF image files, and uses auto-extract
+        to get reputation for indicators.
+      script: '|||image-ocr-extract-text'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      entryid:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: image/png
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: image/jpg
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: image/jpeg
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: image/gif
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+      langs: {}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_14_yes": 0.55,
+      "12_3_#default#": 0.34,
+      "13_12_yes": 0.55,
+      "13_3_#default#": 0.19,
+      "1_10_#default#": 0.15,
+      "5_10_#default#": 0.25,
+      "7_10_#default#": 0.1,
+      "9_10_#default#": 0.16
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1765,
+        "width": 2030,
+        "x": -350,
+        "y": -20
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+  required: false
+  description: The file from which to extract indicators.
+outputs:
+- contextPath: Domain.Name
+  description: Extracted domains.
+- contextPath: Account.Email.Address
+  description: Extracted emails addresses.
+- contextPath: File.MD5
+  description: Extracted MD5 hash.
+- contextPath: File.SHA1
+  description: Extracted SHA1 hash.
+- contextPath: File.SHA256
+  description: Extracted SHA256 hash.
+- contextPath: IP.Address
+  description: Extracted IP addresses.
+- contextPath: File.Text
+  description: The text or images extracted from the PDF file.
+- contextPath: File.Producer
+  description: The PDF file producer.
+- contextPath: File.Title
+  description: The title of the PDF file.
+- contextPath: File.xap
+  description: The xap of the PDF file.
+- contextPath: File.Author
+  description: The author of the PDF file.
+- contextPath: File.dc
+  description: The dc of the PDF file.
+- contextPath: File.xapmm
+  description: The xapmm of the PDF file.
+- contextPath: File.ModDate
+  description: The ModDate of the PDF file.
+- contextPath: File.CreationDate
+  description: The CreationDate of the PDF file.
+- contextPath: File.Pages
+  description: Number of pages in PDF file.
+- contextPath: URL.Data
+  description: List of URLs that were extracted from the PDF file.
+  type: unknown
+tests:
+  - Extract Indicators From File - Generic v2 - Test

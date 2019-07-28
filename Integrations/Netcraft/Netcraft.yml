@@ -1,0 +1,232 @@
+commonfields:
+  id: Netcraft
+  version: -1
+name: Netcraft
+display: Netcraft
+category: Authentication
+description: An integration for Netcraft, allowing you to open and handle takedown requests.
+configuration:
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: The maximum number of entries (takedowns/notes) to return. Default is 100.
+  name: limit
+  defaultvalue: "100"
+  type: 0
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: unsecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  dockerimage: demisto/python3:3.7.3.221
+  commands:
+  - name: netcraft-report-attack
+    arguments:
+    - name: attack
+      required: true
+      description: The attack location you want taken down. For example, a phishing URL or
+        fraudulent email address.
+    - name: comment
+      required: true
+      description: The reason for submitting the attack, such as a description of the attack.
+    outputs:
+    - contextPath: Netcraft.Takedown.DateSubmitted
+      description: The date and time of reporting.
+      type: String
+    - contextPath: Netcraft.Takedown.LastUpdated
+      description: The date and time of the last action taken on the takedown.
+      type: String
+    - contextPath: Netcraft.Takedown.EvidenceURL
+      description: The URL of the evidence page on incident.netcraft.com.
+      type: String
+    - contextPath: Netcraft.Takedown.Reporter
+      description: The person/account that submitted the takedown.
+      type: String
+    - contextPath: Netcraft.Takedown.Domain
+      description: The domain of the URL or email address being taken down. This will
+        be blank for attacks without a domain name.
+      type: String
+    - contextPath: Netcraft.Takedown.Hostname
+      description: The full hostname of the URL or email address being taken down.
+        This will be blank for attacks without a hostname.
+      type: String
+    - contextPath: Netcraft.Takedown.CountryCode
+      description: ISO country code of the hosting country.
+      type: String
+    - contextPath: Netcraft.Takedown.DomainAttack
+      description: Whether the domain is thought to be fraudulent.
+      type: String
+    - contextPath: Netcraft.Takedown.TargetedURL
+      description: The URL that this attack is masquarading as. For example, the URL of the
+        legitimate login form that the attack targets.
+      type: String
+    - contextPath: Netcraft.Takedown.Certificate
+      description: HTTPS certificate details for the hostname, or null if no certificate
+        was found. The value returned is the output of PHP's openssl_x509_parse function.
+      type: Unknown
+    - contextPath: Netcraft.Takedown.ID
+      description: The ID of the takedown.
+      type: Number
+    - contextPath: Netcraft.Takedown.GroupID
+      description: The group ID of the takedown, can potentially be the same as ID, or empty
+        if there is no group.
+      type: Number
+    - contextPath: Netcraft.Takedown.Status
+      description: The status of the takedown.
+      type: String
+    - contextPath: Netcraft.Takedown.AttackType
+      description: The type of takedown.
+      type: String
+    - contextPath: Netcraft.Takedown.AttackURL
+      description: The location of the attack being taken down.
+      type: String
+    - contextPath: Netcraft.Takedown.Region
+      description: The customer area in which the attack resides.
+      type: String
+    - contextPath: Netcraft.Takedown.IP
+      description: The IPv4 address of the attack.
+      type: String
+    description: Reports an attack to Netcraft.
+  - name: netcraft-get-takedown-info
+    arguments:
+    - name: id
+      description: The ID of the takedowns for which to get information.
+    - name: date_from
+      description: 'Retrieve information for takedowns submitted after this date. Format: YYYY-MM-DD HH:MM:SS.'
+    - name: updated_since
+      description: 'Retrieve information for takedowns updated after this date. Format: YYYY-MM-DD HH:MM:SS.'
+    - name: url
+      description: The URL by which to filter.
+    - name: ip
+      description: The IP by which to filter.
+    - name: region
+      description: The region by which to filter. If the region is invalid
+        or not specified, all regions are returned.
+    outputs:
+    - contextPath: Netcraft.Takedown.ID
+      description: The ID of the takedown.
+      type: number
+    - contextPath: Netcraft.Takedown.GroupID
+      description: The group ID of the takedown, can potentially be the same as ID or empty
+        if there is no group.
+      type: number
+    - contextPath: Netcraft.Takedown.Status
+      description: The status of the takedown.
+      type: string
+    - contextPath: Netcraft.Takedown.AttackType
+      description: The type of takedown.
+      type: string
+    - contextPath: Netcraft.Takedown.AttackURL
+      description: The location of the attack being taken down.
+      type: string
+    - contextPath: Netcraft.Takedown.Region
+      description: The customer area in which the attack resides.
+      type: string
+    - contextPath: Netcraft.Takedown.DateSubmitted
+      description: The date and time of reporting.
+      type: string
+    - contextPath: Netcraft.Takedown.LastUpdated
+      description: The date and time of the last action taken on the takedown.
+      type: string
+    - contextPath: Netcraft.Takedown.EvidenceURL
+      description: The URL of the evidence page on incident.netcraft.com.
+      type: string
+    - contextPath: Netcraft.Takedown.Reporter
+      description: The person/account that submitted the takedown.
+      type: string
+    - contextPath: Netcraft.Takedown.IP
+      description: The IPv4 address of the attack.
+      type: Unknown
+    - contextPath: Netcraft.Takedown.Domain
+      description: "\tThe domain of the URL or email address being taken down. This
+        will be blank for attacks without a domain name."
+      type: Unknown
+    - contextPath: Netcraft.Takedown.Hostname
+      description: The full hostname of the URL or email address being taken down.
+        This will be blank for attacks without a hostname.
+      type: Unknown
+    - contextPath: Netcraft.Takedown.CountryCode
+      description: ISO country code of the hosting country.
+      type: Unknown
+    - contextPath: Netcraft.Takedown.DomainAttack
+      description: Whether the domain is thought to be fraudulent.
+      type: Unknown
+    - contextPath: Netcraft.Takedown.TargetedURL
+      description: The URL which this attack is masquerading as. For example, the URL of the
+        legitimate login form that the attack targets.
+      type: Unknown
+    - contextPath: Netcraft.Takedown.Certificate
+      description: TTPS certificate details for the hostname, or null if no certificate
+        was found. The value returned is the output of PHP's openssl_x509_parse function.
+      type: Unknown
+    description: Returns information on existing takedowns. You can retrieve the takedown ID when you report the malicious URL and open the takedown, using the netcraft-report-attack
+      command.
+  - name: netcraft-get-takedown-notes
+    arguments:
+    - name: takedown_id
+      description: The takedown to get notes for.
+    - name: group_id
+      description: A takedown group to get notes for.
+    - name: date_from
+      description: Retrieve notes created after this date.
+    - name: date_to
+      description: Retrieve notes created before this date.
+    - name: author
+      description: A specific user to get notes for.
+    outputs:
+    - contextPath: Netcraft.Takedown.Note.TakedownID
+      description: The ID of the takedown to which the note belongs.
+      type: number
+    - contextPath: Netcraft.Takedown.Note.NoteID
+      description: The ID of the note.
+      type: number
+    - contextPath: Netcraft.Takedown.Note.GroupID
+      description: If this note is attached to all takedowns in a group, group_id
+        is the ID of that group. Otherwise, the value 0 means the note is sent 
+        to a single takedown.
+      type: number
+    - contextPath: Netcraft.Takedown.Note.Author
+      description: The author of the note. "Netcraft" denotes a Netcraft authored
+        note.
+      type: string
+    - contextPath: Netcraft.Takedown.Note.Note
+      description: The content (text) of the note.
+      type: string
+    - contextPath: Netcraft.Takedown.Note.Time
+      description: 'The date/time the note was created. Format (UTC): YYYY-MM-DD HH:MM:SS.'
+      type: string
+    description: Returns notes for takedowns.
+  - name: netcraft-add-notes-to-takedown
+    arguments:
+    - name: takedown_id
+      required: true
+      description: A valid takedown ID to add the note to.
+    - name: note
+      required: true
+      description: The text to add to the takedown.
+    - name: notify
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether to notify Netcraft. Default is "true".
+    description: Adds notes to an existing takedown.
+  - name: netcraft-escalate-takedown
+    arguments:
+    - name: takedown_id
+      required: true
+      description: The ID of the takedown to escalate.
+    description: Escalates a takedown.
+  runonce: false
+  subtype: python3

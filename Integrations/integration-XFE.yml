@@ -40,23 +40,26 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: IP Threshold. Minimum risk score for the IP to be consodered malicious (ranges from 1 to 10).
+- display: IP Threshold. Minimum risk score for the IP to be consodered malicious
+    (ranges from 1 to 10).
   name: ipThreshold
   defaultvalue: "7"
   type: 0
   required: false
-- display: URL Threshold. Minimum risk score for the URL to be consodered malicious (ranges from 1 to 10).
+- display: URL Threshold. Minimum risk score for the URL to be consodered malicious
+    (ranges from 1 to 10).
   name: urlThreshold
   defaultvalue: "7"
   type: 0
   required: false
 script:
-  script: |
-    var serverUrl = 'https://api.xforce.ibmcloud.com/';
+  script: |-
+    var SERVER = 'https://api.xforce.ibmcloud.com/';
 
-    var doReq = function(method, path, query, body) {
+
+    function doReq(method, path, query, body) {
         var result = http(
-            serverUrl + path + encodeToURLQuery(query),
+            SERVER + path + encodeToURLQuery(query),
             {
                 Headers: {'Content-Type': ['application/json'], 'Accept': ['application/json'], 'Accept-Language': [params.Language]},
                 Method: method,
@@ -68,6 +71,9 @@ script:
             params.useproxy
         );
 
+        if (result.StatusCode == 401) {
+            throw '401 Unauthorized - Wrong or invalid API key.';
+        }
         if (result.StatusCode < 200 || result.StatusCode > 299 && result.StatusCode != 404) {
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode + ', body: ' + result.Body;
         }
@@ -84,9 +90,10 @@ script:
             throw 'XFE error - ' + obj.error;
         }
         return {body: result.Body, obj: obj, statusCode: result.StatusCode};
-    };
+    }
 
-    var doFile = function(hash, longFormat) {
+
+    function doFile(hash, longFormat) {
         var res = doReq('GET', 'malware/' + hash);
         if (res.statusCode === 404) {
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
@@ -140,13 +147,14 @@ script:
             }
         }
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-    };
+    }
+
 
     var doIP = function(ip, longFormat, threshold) {
         if (!threshold) {
             threshold = params.ipThreshold || 7;
         }
-        threshold = parseInt(threshold)
+        threshold = parseInt(threshold);
         // Need to make sure to be backwards compatible with the JSON
         var res = {};
         var ipRes = doReq('GET', 'ipr/' + ip);
@@ -197,7 +205,7 @@ script:
         if (!threshold) {
             threshold = params.urlThreshold || 7;
         }
-        threshold = parseInt(threshold)
+        threshold = parseInt(threshold);
         // Need to make sure to be backwards compatible with the JSON
         var res = {};
         var resolutionRes = doReq('GET', 'resolve/' + url);
@@ -264,7 +272,7 @@ script:
         return {Type: entryTypes.note, Contents: JSON.stringify(res), ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     };
 
-    var cveToMd = function(o) {
+    function cveToMd(o) {
         var cve = 'Unknown';
         if (o.stdcode) {
             for (var i=0; i<o.stdcode.length; i++) {
@@ -290,13 +298,14 @@ script:
         md += 'Confidence: **' + nvl(o.report_confidence) + '**\n';
         md += objToList(o.cvss, 'CVSS');
         if (o.references) {
-            md += '### References' + '\n'
+            md += '### References' + '\n';
             md += arrToMd(o.references) + '\n';
         }
         return md;
-    };
+    }
 
-    var cveToContext = function(o) {
+
+    function cveToContext(o) {
         var cve = 'Unknown';
         if (o.stdcode) {
             for (var i=0; i<o.stdcode.length; i++) {
@@ -307,9 +316,10 @@ script:
             }
         }
         return {ID: cve, CVSS: o.risk_level, Published: o.reported, Modified: o.reported};
-    };
+    }
 
-    var doCVE = function(cve) {
+
+    function doCVE(cve) {
         var res = doReq('GET', 'vulnerabilities/search/' + cve);
         if (res.statusCode === 404) {
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
@@ -328,12 +338,13 @@ script:
                 context[outputPaths.cve] = ec;
             }
         } else {
-            md += 'No result found.'
+            md += 'No result found.';
         }
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context};
-    };
+    }
 
-    var doCVELatest = function(limit) {
+
+    function doCVELatest(limit) {
         if (!limit) {
             limit = '30';
         }
@@ -356,10 +367,11 @@ script:
                 context[outputPaths.cve] = ec;
             }
         } else {
-            md += 'No result found.'
+            md += 'No result found.';
         }
         return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context};
-    };
+    }
+
 
     switch (command) {
         case 'test-module':
@@ -383,15 +395,12 @@ script:
   type: javascript
   commands:
   - name: url
-    deprecated: false
     arguments:
     - name: url
       required: true
-      deprecated: false
       default: true
       description: URL to be checked
     - name: long
-      deprecated: false
       auto: PREDEFINED
       predefined:
       - "true"
@@ -399,8 +408,9 @@ script:
       description: Should we return full response with detected malware on the URLs
       defaultValue: "false"
     - name: threshold
-      deprecated: false
-      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
+      description: If the score is above the given threshold, will be considered malicious.
+        If threshold is not specified, the default URL threshold, as configured in
+        the instance settings, will be used.
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
@@ -420,15 +430,12 @@ script:
       description: The actual score
     description: Check the given URL reputation
   - name: file
-    deprecated: false
     arguments:
     - name: file
       required: true
-      deprecated: false
       default: true
       description: The file hash md5/sha1/sha256 to check
     - name: long
-      deprecated: false
       auto: PREDEFINED
       predefined:
       - "true"
@@ -458,15 +465,12 @@ script:
       description: The actual score
     description: Check file reputation
   - name: ip
-    deprecated: false
     arguments:
     - name: ip
       required: true
-      deprecated: false
       default: true
       description: IP to check
     - name: long
-      deprecated: false
       auto: PREDEFINED
       predefined:
       - "true"
@@ -474,8 +478,9 @@ script:
       description: Should we return full response
       defaultValue: "false"
     - name: threshold
-      deprecated: false
-      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default IP threshold, as configured in the instance settings, will be used.
+      description: If the score is above the given threshold, will be considered malicious.
+        If threshold is not specified, the default IP threshold, as configured in
+        the instance settings, will be used.
     outputs:
     - contextPath: IP.Address
       description: Bad IP found
@@ -495,15 +500,12 @@ script:
       description: The actual score
     description: Check IP reputation
   - name: domain
-    deprecated: false
     arguments:
     - name: domain
       required: true
-      deprecated: false
       default: true
       description: The domain to check
     - name: long
-      deprecated: false
       auto: PREDEFINED
       predefined:
       - "true"
@@ -511,8 +513,9 @@ script:
       description: Should we return full response
       defaultValue: "false"
     - name: threshold
-      deprecated: false
-      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
+      description: If the score is above the given threshold, will be considered malicious.
+        If threshold is not specified, the default URL threshold, as configured in
+        the instance settings, will be used.
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
@@ -532,11 +535,9 @@ script:
       description: The actual score
     description: Check domain reputation
   - name: cve-search
-    deprecated: false
     arguments:
     - name: cveId
       required: true
-      deprecated: false
       default: true
       description: The cve to search for
     outputs:
@@ -552,10 +553,8 @@ script:
       description: The CVE description
     description: Search for details about the given CVE
   - name: cve-latest
-    deprecated: false
     arguments:
     - name: limit
-      deprecated: false
       default: true
       description: The number of results to return
     outputs:
@@ -570,5 +569,7 @@ script:
     - contextPath: CVE.Description
       description: The CVE description
     description: Return the latest vulnerabilities found
-hidden: false
+  runonce: false
 fromversion: 2.5.0
+tests:
+  - XFE Test

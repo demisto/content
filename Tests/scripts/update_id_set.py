@@ -1,57 +1,21 @@
-import argparse
+#!/usr/bin/env python
+
 import re
 import os
-import sys
 import glob
 import json
-import yaml
-from subprocess import Popen, PIPE
+import argparse
 from collections import OrderedDict
+from multiprocessing import Pool, cpu_count
+import time
+
+from Tests.scripts.constants import *
+from Tests.test_utils import get_yaml, get_to_version, get_from_version, collect_ids, get_script_or_integration_id, \
+    LOG_COLORS, print_color, run_command
 
 
-SCRIPT_YML_REGEX = r"scripts.*\.yml"
-SCRIPT_PY_REGEX = r"scripts.*\.py"
-SCRIPT_JS_REGEX = r"scripts.*\.js"
-SCRIPT_REGEX = r"scripts.*script-.*\.yml"
-INTEGRATION_YML_REGEX = r"integrations.*\.yml"
-PLAYBOOK_REGEX = r"(?!Test)playbooks.*playbook-.*\.yml"
-INTEGRATION_REGEX = r"integrations.*integration-.*\.yml"
-TEST_PLAYBOOK_REGEX = r"TestPlaybooks.*playbook-.*\.yml"
-TEST_SCRIPT_REGEX = r"TestPlaybooks.*script-.*\.yml"
-
-CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX,
-                         TEST_PLAYBOOK_REGEX, INTEGRATION_YML_REGEX]
-
-SCRIPTS_REGEX_LIST = [SCRIPT_YML_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX]
-
-TYPE_TO_EXTENSION = {
-    'python': '.py',
-    'javascript': '.js'
-}
-
-
-class LOG_COLORS:
-    NATIVE = '\033[m'
-    RED = '\033[01;31m'
-    GREEN = '\033[01;32m'
-
-
-# print srt in the given color
-def print_color(msg, color):
-    print(str(color) + str(msg) + LOG_COLORS.NATIVE)
-
-
-def print_error(error_str):
-    print_color(error_str, LOG_COLORS.RED)
-
-
-def run_git_command(command):
-    p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
-    output, err = p.communicate()
-    if err and 'CRLF will be replaced by LF' not in err:
-        print_error("Failed to run git command " + command)
-        sys.exit(1)
-    return output
+CHECKED_TYPES_REGEXES = (INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX,
+                         TEST_PLAYBOOK_REGEX, INTEGRATION_YML_REGEX)
 
 
 def checked_type(file_path, regex_list=CHECKED_TYPES_REGEXES):
@@ -75,6 +39,7 @@ def get_changed_files(files_string):
 
         file_status = file_data[0]
         file_path = file_data[1]
+
         if file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
             added_files_list.add(file_path)
         elif file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
@@ -97,68 +62,9 @@ def get_changed_files(files_string):
     return added_files_list, modified_files_list, added_script_list, modified_script_list
 
 
-def get_json(file_path):
-    data_dictionary = None
-    with open(os.path.expanduser(file_path), "r") as f:
-        if file_path.endswith(".yaml") or file_path.endswith('.yml'):
-            try:
-                data_dictionary = yaml.safe_load(f)
-            except Exception as e:
-                print_error(file_path + " has yml structure issue. Error was: " + str(e))
-                return []
-
-    if type(data_dictionary) is dict:
-        return data_dictionary
-    else:
-        return {}
-
-
-def collect_ids(file_path):
-    """Collect id mentioned in file_path"""
-    data_dictionary = get_json(file_path)
-
-    if data_dictionary:
-        return data_dictionary.get('id', '-')
-
-
-def get_script_or_integration_id(file_path):
-    data_dictionary = get_json(file_path)
-
-    if data_dictionary:
-        commonfields = data_dictionary.get('commonfields', {})
-        return commonfields.get('id', '-')
-
-
-def get_from_version(file_path):
-    data_dictionary = get_json(file_path)
-
-    if data_dictionary:
-        from_version = data_dictionary.get('fromversion', '0.0.0')
-        if from_version == "":
-            return "0.0.0"
-
-        if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", from_version):
-            raise ValueError("{} fromversion is invalid \"{}\". "
-                             "Should be of format: 4.0.0 or 4.5.0".format(file_path, from_version))
-
-        return from_version
-
-
-def get_to_version(file_path):
-    data_dictionary = get_json(file_path)
-
-    if data_dictionary:
-        to_version = data_dictionary.get('toversion', '99.99.99')
-        if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", to_version):
-            raise ValueError("{} toversion is invalid \"{}\". "
-                             "Should be of format: 4.0.0 or 4.5.0".format(file_path, to_version))
-
-        return to_version
-
-
 def get_integration_commands(file_path):
     cmd_list = []
-    data_dictionary = get_json(file_path)
+    data_dictionary = get_yaml(file_path)
     commands = data_dictionary.get('script', {}).get('commands', [])
     for command in commands:
         cmd_list.append(command.get('name'))
@@ -199,7 +105,7 @@ def get_commmands_from_playbook(data_dict):
 
 def get_integration_data(file_path):
     integration_data = OrderedDict()
-    data_dictionary = get_json(file_path)
+    data_dictionary = get_yaml(file_path)
     id = data_dictionary.get('commonfields', {}).get('id', '-')
     name = data_dictionary.get('name', '-')
 
@@ -224,7 +130,7 @@ def get_integration_data(file_path):
 
 def get_playbook_data(file_path):
     playbook_data = OrderedDict()
-    data_dictionary = get_json(file_path)
+    data_dictionary = get_yaml(file_path)
     id = data_dictionary.get('id', '-')
     name = data_dictionary.get('name', '-')
 
@@ -254,7 +160,7 @@ def get_playbook_data(file_path):
 
 def get_script_data(file_path, script_code=None):
     script_data = OrderedDict()
-    data_dictionary = get_json(file_path)
+    data_dictionary = get_yaml(file_path)
     id = data_dictionary.get('commonfields', {}).get('id', '-')
     if script_code is None:
         script_code = data_dictionary.get('script', '')
@@ -300,7 +206,7 @@ def get_depends_on(data_dict):
 
 
 def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
-    change_string = run_git_command("git diff HEAD {0}".format(file_path))
+    change_string = run_command("git diff HEAD {0}".format(file_path))
     is_added_from_version = True if re.search('\+fromversion: .*', change_string) else False
     is_added_to_version = True if re.search('\+toversion: .*', change_string) else False
 
@@ -357,7 +263,7 @@ def get_code_file(package_path, script_type):
     :rtype: str
     """
 
-    ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|demistomock\.py|test_.*\.py|_test\.py'
+    ignore_regex = r'^CommonServerPython\.py|^CommonServerUserPython\.py|demistomock\.py|test_.*\.py|_test\.py'
     script_path = list(filter(lambda x: not re.search(ignore_regex, x),
                               glob.glob(package_path + '*' + script_type)))[0]
     return script_path
@@ -366,8 +272,12 @@ def get_code_file(package_path, script_type):
 def get_script_package_data(package_path):
     if package_path[-1] != os.sep:
         package_path = os.path.join(package_path, '')
-    yml_path = glob.glob(package_path + '*.yml')[0]
-    code_type = get_json(yml_path).get('type')
+    yml_files = glob.glob(package_path + '*.yml')
+    if not yml_files:
+        raise Exception("No yml files found in package path: {}. "
+                        "Is this really a package dir? If not remove it.".format(package_path))
+    yml_path = yml_files[0]
+    code_type = get_yaml(yml_path).get('type')
     code_path = get_code_file(package_path, TYPE_TO_EXTENSION[code_type])
     with open(code_path, 'r') as code_file:
         code = code_file.read()
@@ -375,46 +285,95 @@ def get_script_package_data(package_path):
     return yml_path, code
 
 
+def process_integration(file_path):
+    """
+    Process integration dir or file
+
+    Arguments:
+        file_path {string} -- file path to integration file
+
+    Returns:
+        list -- integration data list (may be empty)
+    """
+    res = []
+    if os.path.isfile(file_path):
+        if re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE) or \
+                re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
+            print("adding {0} to id_set".format(file_path))
+            res.append(get_integration_data(file_path))
+    else:  # In case we encountered a package
+        for yml_file in glob.glob(os.path.join(file_path, '*.yml')):
+            print("adding {0} to id_set".format(yml_file))
+            res.append(get_integration_data(yml_file))
+    return res
+
+
+def process_script(file_path):
+    res = []
+    if os.path.isfile(file_path):
+        print("adding {0} to id_set".format(file_path))
+        res.append(get_script_data(file_path))
+    else:  # In case we encountered a package
+        yml_path, code = get_script_package_data(file_path)
+        print("adding {0} to id_set".format(file_path))
+        res.append(get_script_data(yml_path, script_code=code))
+    return res
+
+
+def process_playbook(file_path):
+    res = []
+    print("adding {0} to id_set".format(file_path))
+    res.append(get_playbook_data(file_path))
+    return res
+
+
+def process_testplaybook_path(file_path):
+    """
+    Process a yml file in the testplyabook dir. Maybe either a script or playbook
+
+    Arguments:
+        file_path {string} -- path to yaml file
+
+    Returns:
+        pair -- first element is a playbook second is a script. each may be None
+    """
+    print("adding {0} to id_set".format(file_path))
+    script = None
+    playbook = None
+    if re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
+        script = get_script_data(file_path)
+    elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+        playbook = get_playbook_data(file_path)
+    return playbook, script
+
+
 def re_create_id_set():
+    start_time = time.time()
     scripts_list = []
     playbooks_list = []
     integration_list = []
     testplaybooks_list = []
 
+    pool = Pool(processes=cpu_count() * 2)
+
     print_color("Starting the creation of the id_set", LOG_COLORS.GREEN)
     print_color("Starting iterating over Integrations", LOG_COLORS.GREEN)
-    for file_path in glob.glob(os.path.join('Integrations', '*')):
-        if os.path.isfile(file_path):
-            if re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
-                print("adding {0} to id_set".format(file_path))
-                integration_list.append(get_integration_data(file_path))
-        else:  # In case we encountered a package
-            for yml_file in glob.glob(os.path.join(file_path, '*.yml')):
-                print("adding {0} to id_set".format(yml_file))
-                integration_list.append(get_integration_data(yml_file))
-
+    integration_files = glob.glob(os.path.join('Integrations', '*'))
+    integration_files.extend(glob.glob(os.path.join('Beta_Integrations', '*')))
+    for arr in pool.map(process_integration, integration_files):
+        integration_list.extend(arr)
     print_color("Starting iterating over Playbooks", LOG_COLORS.GREEN)
-    for file in glob.glob(os.path.join('Playbooks', '*')):
-        print("adding {0} to id_set".format(file))
-        playbooks_list.append(get_playbook_data(file))
-
+    for arr in pool.map(process_playbook, glob.glob(os.path.join('Playbooks', '*'))):
+        playbooks_list.extend(arr)
     print_color("Starting iterating over Scripts", LOG_COLORS.GREEN)
-    for file_path in glob.glob(os.path.join('Scripts', '*')):
-        if os.path.isfile(file_path):
-            print("adding {0} to id_set".format(file_path))
-            scripts_list.append(get_script_data(file_path))
-        else:  # In case we encountered a package
-            yml_path, code = get_script_package_data(file_path)
-            print("adding {0} to id_set".format(file_path))
-            scripts_list.append(get_script_data(yml_path, script_code=code))
-
+    for arr in pool.map(process_script, glob.glob(os.path.join('Scripts', '*'))):
+        scripts_list.extend(arr)
     print_color("Starting iterating over TestPlaybooks", LOG_COLORS.GREEN)
-    for file in glob.glob(os.path.join('TestPlaybooks', '*')):
-        print("adding {0}".format(file))
-        if re.match(TEST_SCRIPT_REGEX, file, re.IGNORECASE):
-            scripts_list.append(get_script_data(file))
-        elif re.match(TEST_PLAYBOOK_REGEX, file, re.IGNORECASE):
-            testplaybooks_list.append(get_playbook_data(file))
+    for pair in pool.map(process_testplaybook_path, glob.glob(os.path.join('TestPlaybooks', '*'))):
+        if pair[0]:
+            testplaybooks_list.append(pair[0])
+        if pair[1]:
+            scripts_list.append(pair[1])
 
     new_ids_dict = OrderedDict()
     # we sort each time the whole set in case someone manually changed something
@@ -424,9 +383,10 @@ def re_create_id_set():
     new_ids_dict['integrations'] = sort(integration_list)
     new_ids_dict['TestPlaybooks'] = sort(testplaybooks_list)
 
-    print_color("Finished the creation of the id_set", LOG_COLORS.GREEN)
     with open('./Tests/id_set.json', 'w') as id_set_file:
         json.dump(new_ids_dict, id_set_file, indent=4)
+    exec_time = time.time() - start_time
+    print_color("Finished the creation of the id_set. Total time: {} seconds".format(exec_time), LOG_COLORS.GREEN)
 
 
 def sort(data):
@@ -435,13 +395,13 @@ def sort(data):
 
 
 def update_id_set():
-    branches = run_git_command("git branch")
+    branches = run_command("git branch")
     branch_name_reg = re.search("\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 
     print("Getting added files")
-    files_string = run_git_command("git diff --name-status HEAD")
-    second_files_string = run_git_command("git diff --name-status origin/master...{}".format(branch_name))
+    files_string = run_command("git diff --name-status HEAD")
+    second_files_string = run_command("git diff --name-status origin/master...{}".format(branch_name))
     added_files, modified_files, added_scripts, modified_scripts = \
         get_changed_files(files_string + '\n' + second_files_string)
 
@@ -451,12 +411,12 @@ def update_id_set():
         with open('./Tests/id_set.json', 'r') as id_set_file:
             try:
                 ids_dict = json.load(id_set_file, object_pairs_hook=OrderedDict)
-            except ValueError, ex:
+            except ValueError as ex:
                 if "Expecting property name" in ex.message:
                     # if we got this error it means we have corrupted id_set.json
                     # usually it will happen if we merged from master and we had a conflict in id_set.json
                     # so we checkout the id_set.json to be exact as in master and then run update_id_set
-                    run_git_command("git checkout origin/master Tests/id_set.json")
+                    run_command("git checkout origin/master Tests/id_set.json")
                     with open('./Tests/id_set.json', 'r') as id_set_file_from_master:
                         ids_dict = json.load(id_set_file_from_master, object_pairs_hook=OrderedDict)
                 else:
@@ -555,5 +515,9 @@ if __name__ == '__main__':
         re_create_id_set()
 
     else:
-        print("Updating the id_set.json")
-        update_id_set()
+        if os.path.isfile('./Tests/id_set.json'):
+            print("Updating the id_set.json")
+            update_id_set()
+        else:
+            print("./Tests/id_set.json is missing. Recreating...")
+            re_create_id_set()

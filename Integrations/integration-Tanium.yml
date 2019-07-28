@@ -81,6 +81,7 @@ script:
             return [ dict(zip(headers, line.split(','))) for line in lines[1:] ]
 
     def parseToJson(handler, response):
+        LOG("exporting tanium response")
         export_kwargs = {}
         export_kwargs['obj'] = response
         export_kwargs['export_format'] = 'json'
@@ -128,6 +129,7 @@ script:
         return pytan.Handler(**handler_args)
 
     def getAllObjects(handler, objtype):
+        LOG("getting all tanium objects of type %s" % objtype)
         kwargs = {}
         kwargs["objtype"] = objtype
         response = handler.get_all(**kwargs)
@@ -165,6 +167,7 @@ script:
         return create_entry('Tanium Saved Questions', parsed, {'Tanium.SavedQuestions' : parsed}, ['query_text', 'name', 'id'])
 
     def getObject(handler, objtype, name=None, id=None):
+        LOG("getting Tanium %s - %s" % (objtype, name if name != None else id))
         kwargs = {}
         kwargs["objtype"] = objtype
         kwargs["id"] = id
@@ -262,6 +265,7 @@ script:
         deploy_action(package="blah", cg_names=["ip has 192.168", "has tanium app"], action_filters=["Computer Name, that contains:a"], callbacks=callbacks)
         """
         cgs = kwargs.get("cg_names", [])
+        LOG("handling cgs %s" % cgs)
         cg_objs = [handler.get("group", name=x)[0] for x in cgs]
         cg_listobj = taniumpy.GroupList()
         [cg_listobj.append(x) for x in cg_objs]
@@ -338,6 +342,7 @@ script:
         response = []
         for pack in package_with_args:
             kwargs['package'] = pack
+            LOG("deploying Tanium package %s" % pack)
             response.append(handler.deploy_action(**kwargs))
 
         ec = {'Tanium.SavedActions(val.Id && val.Id == obj.Id)':[], 'Tanium.Actions(val.id && val.id == obj.id)':[]}
@@ -370,6 +375,7 @@ script:
         }
 
     def approveSavedAction(handler, action_id, saved_action_id):
+        LOG("approving saved action with id %s %s" % (action_id, saved_action_id))
         kwargs = {}
         if not saved_action_id and not action_id:
             raise Exception('Missing action ID')
@@ -394,6 +400,7 @@ script:
             export_kwargs = {}
             export_kwargs['obj'] = response['question_results']
             export_kwargs['export_format'] = 'csv'
+            LOG("exporting tanium question response")
             out = handler.export_obj(**export_kwargs)
 
             result = csvstr_to_list(out)
@@ -407,6 +414,7 @@ script:
             return 'Parsed query - %s\nNo results were found' % (query_text,)
 
     def getParseQueryOptions(handler , question):
+        LOG("parsing query options")
         parse_job_results = handler.parse_query(question)
         jsonable = parse_job_results.to_jsonable()
 
@@ -488,6 +496,8 @@ script:
         kwargs["sensors"] = args.get('sensors', '').split(';') if args.get('sensors', '') != '' else None
         kwargs["polling_secs"] = int(args.get('polling_secs', '5'))
         kwargs["complete_pct"] = int(args.get('complete_pct', '99'))
+
+        LOG("asking Tanium question")
         return askQuestion(handler, kwargs)
 
     def askParsedQuestion(handler , question, index):
@@ -497,6 +507,8 @@ script:
             'qtype': u'parsed',
             'get_results' : True
         }
+
+        LOG("asking Tanium question %s" % (question))
         return askQuestion(handler, kwargs)
 
     def createPackage(handler):
@@ -506,6 +518,7 @@ script:
             kwargs[key] = value
         if demisto.get(dArgs, 'file_urls'):
             kwargs['file_urls'] = dArgs['file_urls'].split(",")
+        LOG("creating Tanium package")
         response = handler.create_package(**kwargs)
         parsed = parseToJson(handler, response)
         final_result = create_entry('Tanium Package', [parsed], {'Tanium.Packages' : parsed}, ['id', 'name', 'creation_time', 'command'])
@@ -513,6 +526,7 @@ script:
 
     def restoreSoutAndExit(final_result):
         sys.stdout = sout
+        LOG.print_log()
         demisto.results(final_result)
         sys.exit(0)
 
@@ -522,11 +536,13 @@ script:
 
     try:
         handler = getHandler()
+        LOG("successfully logged into Tanium")
         response = ''
         d_args = demisto.args()
 
         if demisto.command() == 'test-module':
-            final_result = getAllPackages(handler)
+            test_question = 'get Computer Name from all machines with Computer Name contains "this is a test"'
+            final_result = askParsedQuestion(handler, test_question, '1')
             restoreSoutAndExit('ok')
         if demisto.command() == 'tn-get-package':
             final_result = getPackage(handler)
@@ -567,6 +583,7 @@ script:
 
     except Exception as ex:
         sys.stdout = sout
+        LOG.print_log()
         raise
 
     restoreSoutAndExit(final_result)

@@ -2,45 +2,15 @@ import re
 import sys
 import json
 import argparse
-from subprocess import Popen, PIPE
 
 import demisto
 from slackclient import SlackClient
 
 from test_integration import __create_integration_instance, __delete_integrations_instances
+from Tests.test_utils import str2bool, run_command, print_color, print_error, LOG_COLORS
 
 
-class LOG_COLORS:
-    NATIVE = '\033[m'
-    RED = '\033[01;31m'
-    GREEN = '\033[01;32m'
-
-
-def print_error(error_str):
-    print_color(error_str, LOG_COLORS.RED)
-
-
-# print srt in the given color
-def print_color(msg, color):
-    print(str(color) + str(msg) + LOG_COLORS.NATIVE)
-
-
-def run_git_command(command):
-    p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
-    p.wait()
-    if p.returncode != 0:
-        print_error("Failed to run git command " + command)
-        sys.exit(1)
-    return p.stdout.read()
-
-
-def str2bool(v):
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
+SERVER_URL = "https://{}"
 
 
 def options_handler():
@@ -48,9 +18,9 @@ def options_handler():
     parser.add_argument('-n', '--nightly', type=str2bool, help='is nightly build?', required=True)
     parser.add_argument('-s', '--slack', help='The token for slack', required=True)
     parser.add_argument('-e', '--secret', help='Path to secret conf file', required=True)
-    parser.add_argument('-c', '--server', help='The server URL to connect to', required=True)
     parser.add_argument('-u', '--user', help='The username for the login', required=True)
     parser.add_argument('-p', '--password', help='The password for the login', required=True)
+    parser.add_argument('-b', '--buildUrl', help='The url for the build', required=True)
     options = parser.parse_args()
 
     return options
@@ -104,7 +74,7 @@ def test_instances(secret_conf_path, server, username, password):
     return failed_integration, integrations_counter
 
 
-def get_attachments(secret_conf_path, server, user, password):
+def get_attachments(secret_conf_path, server, user, password, build_url):
     failed_integration, integrations_counter = test_instances(secret_conf_path, server, user, password)
 
     fields = []
@@ -123,25 +93,26 @@ def get_attachments(secret_conf_path, server, user, password):
         'fallback': title,
         'color': color,
         'title': title,
-        'fields': fields
+        'fields': fields,
+        'title_link': build_url
     }]
 
     return attachment, integrations_counter
 
 
-def slack_notifier(slack_token, secret_conf_path, server, user, password):
-    branches = run_git_command("git branch")
+def slack_notifier(slack_token, secret_conf_path, server, user, password, build_url):
+    branches = run_command("git branch")
     branch_name_reg = re.search("\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 
     if branch_name == 'master':
         print_color("Starting Slack notifications about instances", LOG_COLORS.GREEN)
-        attachments, integrations_counter = get_attachments(secret_conf_path, server, user, password)
+        attachments, integrations_counter = get_attachments(secret_conf_path, server, user, password, build_url)
 
         sc = SlackClient(slack_token)
         sc.api_call(
             "chat.postMessage",
-            channel="devops-events",
+            channel="dmst-content-lab",
             username="Instances nightly report",
             as_user="False",
             attachments=attachments,
@@ -152,6 +123,14 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password):
 if __name__ == "__main__":
     options = options_handler()
     if options.nightly:
-        slack_notifier(options.slack, options.secret, options.server, options.user, options.password)
+        with open('./Tests/instance_ips.txt', 'r') as instance_file:
+            instance_ips = instance_file.readlines()
+            instance_ips = [line.strip('\n').split(":") for line in instance_ips]
+
+        for ami_instance_name, ami_instance_ip in instance_ips:
+            if ami_instance_name == "Demisto GA":
+                server = SERVER_URL.format(ami_instance_ip)
+
+        slack_notifier(options.slack, options.secret, server, options.user, options.password, options.buildUrl)
     else:
         print_color("Not nightly build, stopping Slack Notifications about instances", LOG_COLORS.RED)

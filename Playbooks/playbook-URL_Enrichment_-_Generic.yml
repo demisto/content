@@ -617,3 +617,5 @@ outputs:
 - contextPath: URL.Description
   description: additional info on the url
   type: string
+tests:
+  - No test (provided a test for URL enrichment v2)
