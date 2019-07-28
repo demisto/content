@@ -28,30 +28,30 @@ data = {
     "Type": 17,
     "ContentsFormat": "bar",
     "Contents": {
-      "stats": [
-        {
-          "data": [
-            emailto_total
-          ],
-          "groups": None,
-          "name": str(emailto),
-          "label": "To: "+str(emailto),
-          "color": "rgb(255, 23, 68)"
-        },
-        {
-          "data": [
-            emailfrom_total
-          ],
-          "groups": None,
-          "name": str(emailfrom),
-          "label": "From: "+str(emailfrom),
-          "color": "rgb(255, 144, 0)"
+        "stats": [
+            {
+                "data": [
+                    emailto_total
+                ],
+                "groups": None,
+                "name": str(emailto),
+                "label": "To: " + str(emailto),
+                "color": "rgb(255, 23, 68)"
+            },
+            {
+                "data": [
+                    emailfrom_total
+                ],
+                "groups": None,
+                "name": str(emailfrom),
+                "label": "From: " + str(emailfrom),
+                "color": "rgb(255, 144, 0)"
+            }
+        ],
+        "params": {
+            "layout": "vertical"
         }
-      ],
-      "params": {
-          "layout": "vertical"
-      }
     }
-  }
+}
 
 demisto.results(data)
