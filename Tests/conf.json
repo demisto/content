@@ -1856,6 +1856,7 @@
         "Palo Alto Networks Cortex": "SDK",
         "Netcraft": "SSL failure",
         "AWS - EC2": "SSL Validation fails for STS",
+        "AWS - Lambda": "AWS not accepting self-signed certs",
         "Recorded Future": "might be dynamic test",
         "Cylance Protect": "Test module issue",
         "AlphaSOC Wisdom": "Test module issue",
