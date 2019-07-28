@@ -4,6 +4,7 @@ from CommonServerPython import *
 
 import json
 import requests
+from typing import *
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -121,7 +122,7 @@ def logout(session):
     Simple post request to /logout endpoint without params.
     """
     url_suffix = '/logout'
-    params = {}  # type: dict
+    params = {} # type: dict
     session.post(SERVER + url_suffix, data=params, verify=USE_SSL)
 
 
@@ -245,7 +246,7 @@ def update_service_group_command():
 
     old_service_groups = get_service_groups_request(group_name)
     service_group_members = [] # type: list
-    new_service_group_members = []  # type: list
+    new_service_group_members = [] # type: list
 
     if isinstance(old_service_groups, list):
         old_service_group = old_service_groups[0]
