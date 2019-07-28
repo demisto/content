@@ -25,6 +25,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "1":
     id: "1"
     taskid: 3c58da08-7839-4473-8319-bf44ec6db001
@@ -50,10 +51,11 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 225
         }
       }
     note: false
+    timertriggers: []
   "2":
     id: "2"
     taskid: 1b267d2e-ce51-4d14-8248-fd63c504da3f
@@ -73,7 +75,7 @@ tasks:
     scriptarguments:
       assignee: {}
       description:
-        simple: '"jira descriptions"'
+        simple: '"delete - this is test"'
       dueDate: {}
       issueJson: {}
       issueTypeId:
@@ -89,7 +91,7 @@ tasks:
       projectName: {}
       reporter: {}
       summary:
-        simple: '"jira playbook test"'
+        simple: '"jira playbook test - delete"'
     separatecontext: false
     view: |-
       {
@@ -99,6 +101,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "3":
     id: "3"
     taskid: de36e03d-39df-47f0-8770-3814fb47309d
@@ -116,6 +119,9 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
+      expandLinks:
+        simple: "true"
+      getAttachments: {}
       headers: {}
       issueId:
         simple: ${Ticket.Id}
@@ -128,6 +134,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "4":
     id: "4"
     taskid: ef93cc85-2f16-4f5a-893a-2736c25a6508
@@ -151,7 +158,7 @@ tasks:
       field3: {}
       field4: {}
       value1:
-        simple: '"jira playbook test"'
+        simple: '"jira playbook test - delete"'
       value2:
         simple: ${Ticket.Id}
       value3: {}
@@ -165,6 +172,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "5":
     id: "5"
     taskid: 41323a15-5d9c-4cf3-8b2f-606f9691cfb1
@@ -192,10 +200,11 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 896
+          "y": 895
         }
       }
     note: false
+    timertriggers: []
   "6":
     id: "6"
     taskid: ef7eb477-7bc8-4da5-8ea0-e56a35b33386
@@ -231,6 +240,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "9":
     id: "9"
     taskid: 9f28722d-9a90-4567-83a6-981df7a5d32e
@@ -261,6 +271,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "11":
     id: "11"
     taskid: f0a00a75-2589-4912-8d4f-5db6ca467b93
@@ -284,7 +295,7 @@ tasks:
       field3: {}
       field4: {}
       value1:
-        simple: '"jira playbook test"'
+        simple: '"jira playbook test - delete"'
       value2:
         simple: ${Ticket.Id}
       value3: {}
@@ -298,6 +309,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "12":
     id: "12"
     taskid: 8593a6f2-f2c0-418b-833c-a9b6c13b86af
@@ -329,6 +341,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "13":
     id: "13"
     taskid: 94503749-9577-49e0-843c-f1ec13b3e38f
@@ -360,6 +373,7 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
   "14":
     id: "14"
     taskid: b64bfaf1-2688-4b84-8e40-12f88afda0dd
@@ -387,16 +401,17 @@ tasks:
       status:
         simple: done
       summary:
-        simple: Edited
+        simple: please delete this issue
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1944
+          "y": 1945
         }
       }
     note: false
+    timertriggers: []
   "18":
     id: "18"
     taskid: 4c264332-3528-4f2b-812c-bd29fc08cfe6
@@ -414,7 +429,7 @@ tasks:
       - "21"
     scriptarguments:
       expectedValue:
-        simple: Edited
+        simple: please delete this issue
       fields: {}
       path:
         simple: Ticket.[0].Summary
@@ -423,10 +438,11 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2179
+          "y": 2120
         }
       }
     note: false
+    timertriggers: []
   "21":
     id: "21"
     taskid: 4f94c3a0-5c82-473f-8604-2f010861a7a7
@@ -441,7 +457,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "25"
     scriptarguments:
       expectedValue:
         simple: Done
@@ -452,11 +468,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 34,
-          "y": 2421
+          "x": 50,
+          "y": 2295
         }
       }
     note: false
+    timertriggers: []
   "22":
     id: "22"
     taskid: 178e2167-e603-4868-8920-20489b8227e4
@@ -479,11 +496,12 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 46,
-          "y": 2596
+          "x": 50,
+          "y": 2645
         }
       }
     note: false
+    timertriggers: []
   "23":
     id: "23"
     taskid: 44df5166-91cf-498c-88b6-66dc581ffcb1
@@ -496,6 +514,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
     scriptarguments:
       expectedValue:
         simple: '["Test Comment"]'
@@ -507,10 +528,11 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2820
         }
       }
     note: false
+    timertriggers: []
   "24":
     id: "24"
     taskid: de947b49-a588-4983-8176-b3677c8575cd
@@ -531,18 +553,50 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2810
+          "y": 2995
         }
       }
     note: false
+    timertriggers: []
+  "25":
+    id: "25"
+    taskid: 0c7ebbec-bbc5-46cc-8de8-72c73f11ffe8
+    type: regular
+    task:
+      id: 0c7ebbec-bbc5-46cc-8de8-72c73f11ffe8
+      version: -1
+      name: jira-get-issue with getAttachments
+      script: '|||jira-get-issue'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      getAttachments:
+        simple: '"true"'
+      headers: {}
+      issueId:
+        simple: ${Ticket.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2845,
-        "width": 396,
-        "x": 34,
+        "height": 3040,
+        "width": 380,
+        "x": 50,
         "y": 50
       }
     }

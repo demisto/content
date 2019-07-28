@@ -1,0 +1,301 @@
+commonfields:
+  id: jira-v2
+  version: -1
+name: jira-v2
+display: Atlassian Jira (v2)
+fromversion: 2.6.0
+category: Case Management
+description: Use the Jira integration to manage issues and create Demisto incidents from the projects.
+configuration:
+- display: ' Jira URL, for example: https://demisto.atlassian.net/ '
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: username
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Password
+  name: password
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: ConsumerKey
+  name: consumerKey
+  defaultvalue: OauthKey
+  type: 0
+  required: false
+- display: AccessToken
+  name: accessToken
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: PrivateKey
+  name: privateKey
+  defaultvalue: ""
+  type: 14
+  required: false
+- display: Query (in JQL) for fetching incidents
+  name: query
+  defaultvalue: status!=done
+  type: 0
+  required: false
+- display: Issue index to start fetching incidents from
+  name: idOffset
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Use created field to fetch incidents
+  name: fetchByCreated
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: API token
+  name: APItoken
+  defaultvalue: ""
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python3
+  commands:
+  - name: jira-issue-query
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: The JQL query string.
+    - name: startAt
+      description: The index (integer) of the first issue to return (0-based).
+    - name: maxResults
+      description: The maximum number of issues to return (default is 50). The maximum
+        allowed value is dictated by the JIRA property 'jira.search.views.default.max'.
+        If you specify a value that is higher than this number, your search results
+        will be truncated.
+    - name: headers
+      description: The headers to display in human readable format.
+    outputs:
+    - contextPath: Ticket.Id
+      description: The ID of the ticket.
+    - contextPath: Ticket.Key
+      description: The key of the ticket.
+    - contextPath: Ticket.Assignee
+      description: The user assigned to the ticket.
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+    - contextPath: Ticket.Summary
+      description: The summary of the ticket.
+    - contextPath: Ticket.Status
+      description: The status of the ticket.
+    description: Queries Jira issues.
+  - name: jira-get-issue
+    arguments:
+    - name: issueId
+      required: true
+      default: true
+      description: The ID of the issue.
+    - name: headers
+      description: Headers to display in human readable format.
+    - name: getAttachments
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+      description: If "true", retrives the issue's attachments.
+    - name: expandLinks
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+      description: If "true", expands the issue's links.
+    outputs:
+    - contextPath: Ticket.Id
+      description: The ID of the ticket.
+    - contextPath: Ticket.Key
+      description: The key of ticket.
+    - contextPath: Ticket.Assignee
+      description: The user assigned to the ticket.
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+    - contextPath: Ticket.Summary
+      description: The summary of the ticket.
+    - contextPath: Ticket.Status
+      description: The status of the ticket.
+    - contextPath: File.Size
+      description: The size of the file.
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+    - contextPath: File.Name
+      description: The name of the file.
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+    description: Fetches an issue from Jira.
+  - name: jira-create-issue
+    arguments:
+    - name: issueJson
+      description: The issue object (in JSON format).
+    - name: summary
+      required: true
+      description: The summary of the issue.
+    - name: projectKey
+      description: The project key with which to associate the issue.
+    - name: issueTypeName
+      description: ' Select an issue type by name, for example: "Problem". '
+    - name: issueTypeId
+      description: Select an issue type by its numeric ID.
+    - name: projectName
+      description: The project name with which to associate the issue.
+    - name: description
+      description: A description of the issue.
+    - name: labels
+      description: 'A CSV list of labels. '
+    - name: priority
+      description: ' The priorty name, for example: "High" or "Medium". '
+    - name: dueDate
+      description: ' The due date for the issue (in the format: 2018-03-11). '
+    - name: assignee
+      description: The name of the assignee.
+    - name: reporter
+      description: The name of the reporter.
+    - name: parentIssueKey
+      description: The parent issue key (if you create a sub-task).
+    - name: parentIssueId
+      description: The parent issue ID (if you create a sub-task).
+    outputs:
+    - contextPath: Ticket.Id
+      description: The ID of the ticket.
+    - contextPath: Ticket.Key
+      description: The key of the ticket.
+    description: Creates a new issue in Jira.
+  - name: jira-issue-upload-file
+    arguments:
+    - name: issueId
+      required: true
+      description: The ID of the issue.
+    - name: upload
+      description: The entry ID to upload.
+    description: Uploads a file attachment to an issue.
+  - name: jira-issue-add-comment
+    arguments:
+    - name: issueId
+      required: true
+      default: true
+      description: The ID of the issue.
+    - name: comment
+      required: true
+      description: The actual comment body.
+    - name: visibility
+      description: ' The roles that can view the comment, for example: "Administrators". '
+    description: Adds a new comment to an existing Jira issue.
+  - name: jira-issue-add-link
+    arguments:
+    - name: globalId
+      description: If a globalId is provided and a remote issue link exists with that
+        globalId, the remote issue link is updated.
+    - name: relationship
+      description: ' The object relationship to issue, for example: "causes". '
+    - name: url
+      required: true
+      description: The URL link.
+    - name: title
+      required: true
+      description: The title of the link.
+    - name: summary
+      description: The summary of the link.
+    - name: issueId
+      required: true
+      description: The ID of the issue.
+    description: Creates (or updates) an issue link.
+  - name: jira-edit-issue
+    arguments:
+    - name: issueId
+      required: true
+      description: The ID of the issue to edit.
+    - name: issueJson
+      description: The issue object (in JSON format).
+    - name: summary
+      description: The summary of the issue.
+    - name: description
+      description: The description of the issue.
+    - name: labels
+      description: ' A CSV list of labels. '
+    - name: priority
+      description: ' A priorty name, for example "High" or "Medium". '
+    - name: dueDate
+      description: The due date for the issue (in the format 2018-03-11).
+    - name: assignee
+      description: The name of the assignee.
+    - name: status
+      description: The name of the status.
+    outputs:
+    - contextPath: Ticket.Id
+      description: The ID of the ticket.
+    - contextPath: Ticket.Key
+      description: The key of the ticket.
+    - contextPath: Ticket.Assignee
+      description: The sser assigned to the ticket.
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+    - contextPath: Ticket.Summary
+      description: The summary of the ticket.
+    - contextPath: Ticket.Status
+      description: The status of the ticket.
+    description: Modifies an issue in JIRA.
+  - name: jira-get-comments
+    arguments:
+    - name: issueId
+      required: true
+      description: The ID of the issue to get comments of.
+    outputs:
+    - contextPath: Ticket.Comment.Comment
+      description: The text of the comment.
+      type: string
+    - contextPath: Ticket.Comment.Created
+      description: The issue creation date.
+      type: string
+    - contextPath: Ticket.Comment.User
+      description: The user that created the comment.
+      type: string
+    description: Returns the comments added to a ticket.
+  - name: jira-delete-issue
+    arguments:
+    - name: issueIdOrKey
+      required: true
+      description: The ID or key of the issue.
+    description: Deletes an issue in Jira.
+  - name: jira-get-id-offset
+    outputs:
+    - contextPath: Ticket.idOffSet
+      description: The ID offset.
+      type: string
+    description: Returns the ID offset, for example, the first issue ID.
+  dockerimage: demisto/python3:3.7.2.200
+  isfetch: true
+  runonce: false
+tests:
+  - Jira-v2-Test

@@ -205,4 +205,3 @@ outputs:
   description: Extracted domains
 scripttarget: 0
 deprecated: true
-releaseNotes: Deprecated this script

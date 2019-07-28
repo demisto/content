@@ -61,12 +61,83 @@ configuration:
   defaultvalue: "10"
   type: 0
   required: false
+- display: Preferred Vendors List. List of vendors which are considered more trustworthy,
+    comma separated.
+  name: preferredVendors
+  defaultvalue: ""
+  type: 12
+  required: false
+- display: 'Preferred Vendor Threshold. The minimal number of highly trusted vendors
+    needed to consider a domain, IP, URL or file malicious. '
+  name: preferredVendorsThreshold
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Determines whether to return all results, which can number in the thousands.
+    If “true”, returns all results and overrides the _fullResponse_, _long_ arguments
+    (if set to “false”) in a command. If “false”, the _fullResponse_, _long_ arguments
+    in the command determines how results are returned.
+  name: fullResponseGlobal
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: |-
     var serverUrl = params.Server;
     if (serverUrl[serverUrl.length - 1] !== '/') {
         serverUrl += '/';
     }
+
+    //THRESHOLDS PARAMETERS
+    var FILE_THRESHOLD = params.fileThreshold;
+    var IP_THRESHOLD = params.ipThreshold;
+    var URL_THRESHOLD = params.urlThreshold;
+    var DOMAIN_THRESHOLD = params.domainThreshold;
+    var PREFERRED_VENDORS = params.preferredVendors
+    var PREFERRED_VENDORS_THRESHOLD = params.preferredVendorsThreshold
+    var FULL_RESPONSE = params.fullResponseGlobal
+    if (isNaN(FILE_THRESHOLD) || isNaN(IP_THRESHOLD) || isNaN(URL_THRESHOLD) || isNaN(DOMAIN_THRESHOLD)) {
+        throw 'Threshold parameters must be numbers.\n';
+    }
+
+
+    function isEnoughPreferredVendors(scanResults) {
+
+        if (!(PREFERRED_VENDORS && PREFERRED_VENDORS_THRESHOLD)) {
+            return false;
+        }
+        if (PREFERRED_VENDORS && !(PREFERRED_VENDORS_THRESHOLD)) {
+            return("Error: If you entered Preferred Vendors List you must also enter Preferred Vendors Threshold")
+        }
+        if (!("scans" in scanResults)) {
+            return false;
+        }
+        counter = 0;
+        vendorsScansDict = scanResults["scans"];
+        listOfPrefferedVendors = PREFERRED_VENDORS.split(',');
+
+        for (var i=0; i < listOfPrefferedVendors.length; i++) {
+            listOfPrefferedVendors[i] = listOfPrefferedVendors[i].toLowerCase();
+        }
+        for (var vendorName in vendorsScansDict) {
+            if (vendorsScansDict.hasOwnProperty(vendorName)) {
+
+                curVendorScan = vendorsScansDict[vendorName];
+                vendorNameLowercase = vendorName.toLowerCase();
+
+                if (listOfPrefferedVendors.indexOf(vendorNameLowercase) != -1) {
+                    if ("detected" in curVendorScan && curVendorScan["detected"]) {
+                        counter++;
+                    }
+                }
+
+            }
+        }
+
+        return (parseInt(PREFERRED_VENDORS_THRESHOLD) <= counter);
+    }
+
+
     function createScansTable(scans){
         // Returns a table with the scan result for each vendor
 
@@ -104,10 +175,11 @@ script:
         });
 
         scans_table = positives_scans_table.concat(negative_scans_table);
-        return scans_table
+        return scans_table;
     }
 
-    var doReq = function(method, path, parameters) {
+
+    function doReq(method, path, parameters) {
         if (!parameters) {
             parameters = {};
         }
@@ -123,6 +195,15 @@ script:
             params.useproxy
         );
 
+        if (result.StatusCode == 401) {
+            throw '401 Unauthorized - Wrong or invalid API key.';
+        }
+        if (result.StatusCode == 403) {
+            throw '403 Forbidden - The API key is not valid';
+        }
+        if (result.StatusCode == 404) {
+            throw '404 - Cannot find the requested resource. Check your Server URL.';
+        }
         if (result.StatusCode < 200 || result.StatusCode > 299) {
             throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
         }
@@ -141,10 +222,14 @@ script:
         if (!Array.isArray(obj) && obj.response_code !== 1 && obj.response_code !== 0) {
             throw 'Response code: ' + obj.response_code + ', message: ' + obj.verbose_msg;
         }
-        return {body: result.Body, obj: obj, statusCode: result.StatusCode};
-    };
+        return {
+            body: result.Body,
+            obj: obj,
+            statusCode: result.StatusCode
+        };
+    }
 
-    var withRetries = function(waitForRateLimit, retries, reqCall) {
+    function withRetries(waitForRateLimit, retries, reqCall) {
         if (waitForRateLimit) {
             waitForRateLimit = parseInt(waitForRateLimit);
         }
@@ -168,11 +253,12 @@ script:
             throw 'No content received. Possible API rate limit reached.';
         }
         return res;
-    };
+    }
 
-    var doFile = function(hash, longFormat, threshold, waitForRateLimit, retries) {
+
+    function doFile(hash, longFormat, threshold, waitForRateLimit, retries) {
         if (!threshold) {
-            threshold = params.fileThreshold || 10;
+            threshold = FILE_THRESHOLD || 10;
         }
         threshold = parseInt(threshold);
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('POST', 'file/report', {resource: hash});});
@@ -189,7 +275,6 @@ script:
         } else {
             r = [res.obj];
         }
-
         var md = '';
         ec.DBotScore = [];
         ec[outputPaths.file] = [];
@@ -199,7 +284,8 @@ script:
             md += 'Positives / Total: **' + r[i].positives + '/' + r[i].total + '**\n';
             md += 'VT Link: [' + r[i].resource + '](' + r[i].permalink + ')\n';
             var dbotScore = 0;
-            if (r[i].positives >= threshold) {
+
+            if (r[i].positives >= threshold || isEnoughPreferredVendors(r[i])) {
                 dbotScore = 3;
                 var malFile = {};
                 addMalicious(malFile, outputPaths.file, {
@@ -216,6 +302,7 @@ script:
             }
             ec.DBotScore.push({Indicator: hash, Type: 'hash', Vendor: 'VirusTotal', Score: dbotScore});
             md += 'MD5 / SHA1 / SHA256: **' + r[i].md5 + ' / ' + r[i].sha1 + ' / ' + r[i].sha256 + '**\n';
+            longFormat = FULL_RESPONSE? 'true': longFormat;
             if (longFormat === 'true' && r[i].scans) { // add scans table
                 scansTable = createScansTable(r[i].scans);
                 md += tableToMarkdown('Scans', scansTable);
@@ -269,10 +356,17 @@ script:
             }
             md += '\n';
         }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-    };
+        return {
+            Type: entryTypes.note,
+            Contents: res.body,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
+    }
 
-    var calcRecentDownloads = function(checks) {
+
+    function calcRecentDownloads(checks) {
         var badDownloads = 0;
         var now = Date.now();
         for (var c=0; c<checks.length; c++) {
@@ -288,16 +382,17 @@ script:
             }
         }
         return badDownloads;
-    };
+    }
 
-    var doIP = function(ip, longFormat, threshold, sampleSize, waitForRateLimit, retries, fullResponse) {
+
+    function doIP(ip, longFormat, threshold, sampleSize, waitForRateLimit, retries, fullResponse) {
         if (!isValidIP(ip)) {
             return {Type: entryTypes.error, Contents: 'IP - ' + ip + ' is not valid IP', ContentsFormat: formats.text};
         }
         if (!threshold) {
-            threshold = params.ipThreshold || 10;
+            threshold = IP_THRESHOLD || 10;
         }
-        threshold = parseInt(threshold)
+        threshold = parseInt(threshold);
         if (!sampleSize) {
             sampleSize = 10;
         }
@@ -309,6 +404,7 @@ script:
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                 HumanReadable: 'VirusTotal does not have details about ' + ip + ' ,it sent the following response:\n' + res.obj.verbose_msg};
         }
+        full_response = FULL_RESPONSE? 'true': fullResponse;
         if (fullResponse === 'true'){
             maxLen = 1000;
         } else {
@@ -337,37 +433,24 @@ script:
         md += 'Country: **' + o.country + '**\n';
         md += 'VT Link: [' + ip + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(ip) + ')\n';
 
-        var detectedUrls = o.detected_urls || []
-        var detectedDownloadedSamples = o.detected_downloaded_samples || []
-        var undetectedDownloadedSamples = o.undetected_downloaded_samples || []
-        var detectedCommunicatingSamples = o.detected_communicating_samples || []
-        var undetectedCommunicatingSamples = o.undetected_communicating_samples || []
-        var detectedReferrerSamples = o.detected_referrer_samples || []
-        var undetectedReferrerSamples = o.undetected_referrer_samples || []
-        var resolutions = o.resolutions || []
+        var detectedUrls = o.detected_urls || [];
+        var detectedDownloadedSamples = o.detected_downloaded_samples || [];
+        var undetectedDownloadedSamples = o.undetected_downloaded_samples || [];
+        var detectedCommunicatingSamples = o.detected_communicating_samples || [];
+        var undetectedCommunicatingSamples = o.undetected_communicating_samples || [];
+        var detectedReferrerSamples = o.detected_referrer_samples || [];
+        var undetectedReferrerSamples = o.undetected_referrer_samples || [];
+        var resolutions = o.resolutions || [];
 
         var arrTitle = [{a: detectedUrls, t: 'Detected URL'}, {a: detectedDownloadedSamples, t: 'Detected downloaded sample'},
             {a: undetectedDownloadedSamples, t: 'Undetected downloaded sample'}, {a: detectedCommunicatingSamples, t: 'Detected communicating sample'},
             {a: undetectedCommunicatingSamples, t: 'Undetected communicating sample'},{a: detectedReferrerSamples, t: 'Detected referrer sample'},
             {a: undetectedReferrerSamples, t: 'Undetected referrer sample'}, {a: resolutions, t: 'Resolutions'}];
-        for (var i=0; i<arrTitle.length; i++) {
+        for (var i = 0; i<arrTitle.length; i++) {
             if (arrTitle[i].a) {
                 md += arrTitle[i].t + ' count: **' + arrTitle[i].a.length + '**\n';
             }
         }
-        ip_ec = {
-            'Address': ip,
-            "VirusTotal": {
-                'DownloadedHashes': detectedDownloadedSamples.slice(0,maxLen),
-                'UnAVDetectedDownloadedHashes': undetectedDownloadedSamples.slice(0,maxLen),
-                "DetectedURLs": detectedUrls.slice(0,maxLen),
-                'CommunicatingHashes': detectedCommunicatingSamples.slice(0,maxLen),
-                'UnAVDetectedCommunicatingHashes': undetectedCommunicatingSamples.slice(0,maxLen),
-                'Resolutions': resolutions.slice(0,maxLen),
-                'ReferrerHashes': detectedReferrerSamples.slice(0,maxLen),
-                'UnAVDetectedReferrerHashes': undetectedReferrerSamples.slice(0,maxLen)
-            }
-        };
         if (ec[outputPaths.ip]){ // malicious
             ec[outputPaths.ip]['VirusTotal'] = {
                 'DownloadedHashes': detectedDownloadedSamples.slice(0,maxLen),
@@ -380,8 +463,21 @@ script:
                 'UnAVDetectedReferrerHashes': undetectedReferrerSamples.slice(0,maxLen)
             };
         } else { // not malicious
-            ec[outputPaths.ip] = ip_ec;
+            ec[outputPaths.ip] = {
+                "Address": ip,
+                "VirusTotal": {
+                    'DownloadedHashes': detectedDownloadedSamples.slice(0,maxLen),
+                    'UnAVDetectedDownloadedHashes': undetectedDownloadedSamples.slice(0,maxLen),
+                    "DetectedURLs": detectedUrls.slice(0,maxLen),
+                    'CommunicatingHashes': detectedCommunicatingSamples.slice(0,maxLen),
+                    'UnAVDetectedCommunicatingHashes': undetectedCommunicatingSamples.slice(0,maxLen),
+                    'Resolutions': resolutions.slice(0,maxLen),
+                    'ReferrerHashes': detectedReferrerSamples.slice(0,maxLen),
+                    'UnAVDetectedReferrerHashes': undetectedReferrerSamples.slice(0,maxLen)
+                }
+            };
         }
+        longFormat = FULL_RESPONSE? 'true': longFormat;
         if (longFormat === 'true') {
             for (var j=0; j<arrTitle.length; j++) {
                 if (arrTitle[j].a) {
@@ -395,14 +491,21 @@ script:
                 }
             }
         }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-    };
+        return {
+            Type: entryTypes.note,
+            Contents: res.body,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
+    }
 
-    var doURL = function(url, threshold, longFormat, sampleSize, submitWait, waitForRateLimit, retries) {
+
+    function doURL(url, threshold, longFormat, sampleSize, submitWait, waitForRateLimit, retries) {
         //lowercase the URL protocol
         //Example: https://www.demisto.com --> https://www.demisto.com, Http://www.demisto.com --> http://www.demisto.com, www.demisto.com --> www.demisto.com
         var protocol = url.match(/\b^[^:]+(?=:\/\/)\b/);
-        if (protocol != null) { // if url doesn't start with a protocol, ignore
+        if (protocol !== null) { // if url doesn't start with a protocol, ignore
           protocol = protocol[0].toLowerCase();
           var not_protocol = url.replace(/(^\w+:|^)\/\//, '');
           url = protocol + '://' + not_protocol;
@@ -415,9 +518,9 @@ script:
             sampleSize = 10;
         }
         if (!threshold) {
-            threshold = params.urlThreshold || 10;
+            threshold = URL_THRESHOLD || 10;
         }
-        threshold = parseInt(threshold)
+        threshold = parseInt(threshold);
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('POST', 'url/report', {resource: url, scan:1});});
         var o = res.obj;
         var ec = {};
@@ -449,7 +552,7 @@ script:
             md += 'VT Link: [' + url + '](' + o.permalink + ')\n';
 
             var dbotScore = 0;
-            if (o.positives >= threshold) {
+            if (o.positives >= threshold  || isEnoughPreferredVendors(o)) {
                 dbotScore = 3;
                 addMalicious(ec, outputPaths.url, {
                     Data: url,
@@ -462,14 +565,15 @@ script:
             }
             ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'VirusTotal', Score: dbotScore};
 
+            longFormat = FULL_RESPONSE? 'true': longFormat;
             if (longFormat === 'true') { // add scans table
                 scansTable = createScansTable(o.scans);
-                md += tableToMarkdown('Scans', scansTable)
+                md += tableToMarkdown('Scans', scansTable);
                 if (ec[outputPaths.url]){ // malicious
                     scans_ec = {
                         Scans: scansTable,
                         ScanID: o.scan_id
-                    }
+                    };
                     ec[outputPaths.url].VirusTotal = scans_ec;
                 } else { // not malicious
                     scans_ec = {
@@ -478,7 +582,7 @@ script:
                             Scans: scansTable,
                             ScanID: o.scan_id
                         }
-                    }
+                    };
                     ec[outputPaths.url] = scans_ec;
                 }
             } else { // short format
@@ -497,17 +601,24 @@ script:
             }
         }
 
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-    };
+        return {
+            Type: entryTypes.note,
+            Contents: res.body,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
+    }
 
-    var doDomain = function(domain, threshold, longFormat, sampleSize, waitForRateLimit, retries, fullResponse) {
+
+    function doDomain(domain, threshold, longFormat, sampleSize, waitForRateLimit, retries, fullResponse) {
         if (!sampleSize) {
             sampleSize = 10;
         }
         if (!threshold) {
-            threshold = params.domainThreshold || 10;
+            threshold = DOMAIN_THRESHOLD || 10;
         }
-        threshold = parseInt(threshold)
+        threshold = parseInt(threshold);
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('GET', 'domain/report', {domain: domain});});
         var o = res.obj;
         var ec = {};
@@ -516,7 +627,8 @@ script:
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                 HumanReadable: 'VirusTotal does not have details about ' + domain + '\n' + res.obj.verbose_msg};
         }
-        if (fullResponse === 'true'){
+        full_response = FULL_RESPONSE? 'true': fullResponse;
+        if (fullResponse === 'true') {
             maxLen = 1000;
         } else {
             maxLen = 50;
@@ -539,32 +651,33 @@ script:
         md += '#### Domain categories: *' + o.categories + "*\n";
         md += 'VT Link: [' + domain + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(domain) + ')\n';
 
-        var detectedUrls = o.detected_urls || []
-        var detectedDownloadedSamples = o.detected_downloaded_samples || []
-        var undetectedDownloadedSamples = o.undetected_downloaded_samples || []
-        var detectedCommunicatingSamples = o.detected_communicating_samples || []
-        var undetectedCommunicatingSamples = o.undetected_communicating_samples || []
-        var detectedReferrerSamples = o.detected_referrer_samples || []
-        var undetectedReferrerSamples = o.undetected_referrer_samples || []
-        var resolutions = o.resolutions || []
+        var detectedUrls = o.detected_urls || [];
+        var detectedDownloadedSamples = o.detected_downloaded_samples || [];
+        var undetectedDownloadedSamples = o.undetected_downloaded_samples || [];
+        var detectedCommunicatingSamples = o.detected_communicating_samples || [];
+        var undetectedCommunicatingSamples = o.undetected_communicating_samples || [];
+        var detectedReferrerSamples = o.detected_referrer_samples || [];
+        var undetectedReferrerSamples = o.undetected_referrer_samples || [];
+        var resolutions = o.resolutions || [];
 
         var arrTitle = [{a: detectedUrls, t: 'Detected URL'}, {a: detectedDownloadedSamples, t: 'Detected downloaded sample'},
             {a: undetectedDownloadedSamples, t: 'Undetected downloaded sample'}, {a: detectedCommunicatingSamples, t: 'Detected communicating sample'},
             {a: undetectedCommunicatingSamples, t: 'Undetected communicating sample'},{a: detectedReferrerSamples, t: 'Detected referrer sample'},
             {a: undetectedReferrerSamples, t: 'Undetected referrer sample'}, {a: resolutions, t: 'Resolutions'}];
 
-        for (var i=0; i<arrTitle.length; i++) {
+        for (var i = 0; i<arrTitle.length; i++) {
             if (arrTitle[i].a) {
                 md += arrTitle[i].t + ' count: **' + arrTitle[i].a.length + '**\n';
             }
         }
+        longFormat = FULL_RESPONSE? 'true': longFormat;
         if (longFormat === 'true') {
-            for (var j=0; j<arrTitle.length; j++) {
+            for (var j = 0; j<arrTitle.length; j++) {
                 if (arrTitle[j].a) {
                     md += '### ' + arrTitle[j].t + '\n';
                     // Print only the first 10 rows
                     var curr = [];
-                    for (var k=0; k<Math.min(arrTitle[j].a.length, sampleSize); k++) {
+                    for (var k = 0; k<Math.min(arrTitle[j].a.length, sampleSize); k++) {
                         curr.push(arrTitle[j].a[k]);
                     }
                     md += arrToMd(curr) + '\n';
@@ -574,7 +687,7 @@ script:
 
         if (o.domain_siblings && o.domain_siblings.length > 0) {
             md += "### Observed subdomains\n";
-            for (var i = 0; i < o.domain_siblings.length; i++) {
+            for (i = 0; i < o.domain_siblings.length; i++) {
                 md += "- " + o.domain_siblings[i] + "\n";
             }
         }
@@ -582,7 +695,7 @@ script:
             var whoIs = o.whois.trim();
             var lines = whoIs ? whoIs.split("\n") : [];
             md += '### Whois Lookup\n';
-            for (var i = 0; i < lines.length; i++) {
+            for (i = 0; i < lines.length; i++) {
                 var parts = lines[i].split(': ');
                 if (parts[0] && parts[1]) {
                     md += "**" + parts[0].trim() + "**: " + parts[1] + "\n";
@@ -590,62 +703,62 @@ script:
             }
         }
 
-        var detected_downloaded_samples = o.detected_downloaded_samples
-        if (detected_downloaded_samples == undefined) {
-            detected_downloaded_samples = []
+        var detected_downloaded_samples = o.detected_downloaded_samples;
+        if (detected_downloaded_samples === undefined) {
+            detected_downloaded_samples = [];
         } else {
-            detected_downloaded_samples = detected_downloaded_samples.slice(0,maxLen)
+            detected_downloaded_samples = detected_downloaded_samples.slice(0,maxLen);
         }
 
-        var undetected_downloaded_samples = o.undetected_downloaded_samples
-        if (undetected_downloaded_samples == undefined) {
-            undetected_downloaded_samples = []
+        var undetected_downloaded_samples = o.undetected_downloaded_samples;
+        if (undetected_downloaded_samples === undefined) {
+            undetected_downloaded_samples = [];
         } else {
-            undetected_downloaded_samples = undetected_downloaded_samples.slice(0,maxLen)
+            undetected_downloaded_samples = undetected_downloaded_samples.slice(0,maxLen);
         }
 
-        var detected_urls = o.detected_urls
-        if (detected_urls == undefined) {
-            detected_urls = []
+        var detected_urls = o.detected_urls;
+        if (detected_urls === undefined) {
+            detected_urls = [];
         } else {
-            detected_urls = detected_urls.slice(0,maxLen)
+            detected_urls = detected_urls.slice(0,maxLen);
         }
 
-        var detected_communicating_samples = o.detected_communicating_samples
-        if (detected_communicating_samples == undefined) {
-            detected_communicating_samples = []
+        var detected_communicating_samples = o.detected_communicating_samples;
+        if (detected_communicating_samples === undefined) {
+            detected_communicating_samples = [];
         } else {
-            detected_communicating_samples = detected_communicating_samples.slice(0,maxLen)
+            detected_communicating_samples = detected_communicating_samples.slice(0,maxLen);
         }
-        var undetected_communicating_samples = o.undetected_communicating_samples
-        if (undetected_communicating_samples == undefined) {
-            undetected_communicating_samples = []
+        var undetected_communicating_samples = o.undetected_communicating_samples;
+        if (undetected_communicating_samples === undefined) {
+            undetected_communicating_samples = [];
         } else {
-            undetected_communicating_samples = undetected_communicating_samples.slice(0,maxLen)
+            undetected_communicating_samples = undetected_communicating_samples.slice(0,maxLen);
         }
-        var resolutions = o.resolutions
-        if (resolutions == undefined) {
-            resolutions = []
+        resolutions = o.resolutions;
+        if (resolutions === undefined) {
+            resolutions = [];
         } else {
-            resolutions = resolutions.slice(0,maxLen)
+            resolutions = resolutions.slice(0,maxLen);
         }
-        var detected_referrer_samples = o.detected_referrer_samples
-        if (detected_referrer_samples == undefined) {
-            detected_referrer_samples = []
+        var detected_referrer_samples = o.detected_referrer_samples;
+        if (detected_referrer_samples === undefined) {
+            detected_referrer_samples = [];
         } else {
-            detected_referrer_samples = detected_referrer_samples.slice(0,maxLen)
+            detected_referrer_samples = detected_referrer_samples.slice(0,maxLen);
         }
-        var undetected_referrer_samples = o.undetected_referrer_samples
-        if (undetected_referrer_samples == undefined) {
-            undetected_referrer_samples = []
+        var undetected_referrer_samples = o.undetected_referrer_samples;
+        if (undetected_referrer_samples === undefined) {
+            undetected_referrer_samples = [];
         } else {
-            undetected_referrer_samples = undetected_referrer_samples.slice(0,maxLen)
+            undetected_referrer_samples = undetected_referrer_samples.slice(0,maxLen);
         }
-        var domain_siblings = o.domain_siblings
-        if (domain_siblings == undefined) {
-            domain_siblings = []
+        var domain_siblings = o.domain_siblings;
+        if (domain_siblings === undefined) {
+            domain_siblings = [];
         } else {
-            domain_siblings = domain_siblings.slice(0,maxLen)
+            domain_siblings = domain_siblings.slice(0,maxLen);
         }
         domain_ec = {
             "Name": domain,
@@ -674,15 +787,22 @@ script:
                 'UnAVDetectedReferrerHashes': undetected_referrer_samples,
                 'Whois': o.whois,
                 'Subdomains': domain_siblings,
-            }
+            };
         } else { // not malicious
             ec[outputPaths.domain] = domain_ec;
         }
 
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-    };
+        return {
+            Type: entryTypes.note,
+            Contents: res.body,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
+    }
 
-    var scanURL = function(url) {
+
+    function scanURL(url) {
         var res = doReq('POST', 'url/scan', {url: url});
         var r = [];
         if (Array.isArray(res.obj)) { // Got multiple URLs so need to nicely iterate
@@ -698,10 +818,17 @@ script:
             ec.vtScanID.push(r[i].scan_id);
             md += 'Scan Date: **' + r[i].scan_date + '**\n\n';
         }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-    };
+        return {
+            Type: entryTypes.note,
+            Contents: res.body,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
+    }
 
-    var scanFile = function(entry, uploadURL) {
+
+    function scanFile(entry, uploadURL) {
         var url = uploadURL ? uploadURL : serverUrl + 'file/scan';
         var fileName = dq(invContext, "File(val.EntryID == '" + entry + "').Name");
         if (Array.isArray(fileName)) {
@@ -736,10 +863,18 @@ script:
         var md = '## VirusTotal scan file for [' + entry + '](' + obj.permalink + ')\n';
         md += 'Resource: **' + obj.resource + '**\n';
         md += 'MD5 / SHA1 / SHA256: **' + obj.md5 + ' / ' + obj.sha1 + ' / ' + obj.sha256 + '**\n';
-        return {Type: entryTypes.note, Contents: result.Body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-    };
 
-    var rescanFile = function(hash) {
+        return {
+            Type: entryTypes.note,
+            Contents: result.Body,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
+    }
+
+
+    function rescanFile(hash) {
         var res = doReq('POST', 'file/rescan', {resource: hash});
         var r = [];
         if (Array.isArray(res.obj)) { // Got multiple hashes so need to nicely iterate
@@ -755,29 +890,55 @@ script:
             ec.vtScanID.push(r[i].scan_id);
             md += 'MD5 / SHA1 / SHA256: **' + r[i].md5 + ' / ' + r[i].sha1 + ' / ' + r[i].sha256 + '**\n\n';
         }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
-    };
-
-    var doComments = function(resource, comment) {
-        var res = doReq('POST', 'comments/put', {resource: resource, comment: comment});
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: res.obj.verbose_msg};
+        return {
+            Type: entryTypes.note,
+            Contents: res.body,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
     }
 
-    var getComments = function(resource, before) {
+
+    function doComments(resource, comment) {
+        var res = doReq('POST', 'comments/put', {resource: resource, comment: comment});
+        return {
+            Type: entryTypes.note,
+            Contents: res.body,
+            ContentsFormat: formats.json,
+            HumanReadable: res.obj.verbose_msg
+        };
+    }
+
+
+    function getComments(resource, before) {
         var params = {resource: resource};
         if (before) {
             params.before = before;
         }
         var res = doReq('GET', 'comments/get', params);
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: arrToMd(res.obj.comments)};
+        return {
+            Type: entryTypes.note,
+            Contents: res.body,
+            ContentsFormat: formats.json,
+            HumanReadable: arrToMd(res.obj.comments)
+        };
     }
 
-    var fileScanUploadURL = function() {
+
+    function fileScanUploadURL() {
         var res = doReq('GET', 'file/scan/upload_url');
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: res.obj.upload_url, EntryContext: {vtUploadURL: res.obj.upload_url}};
+        return {
+            Type: entryTypes.note,
+            Contents: res.body,
+            ContentsFormat: formats.json,
+            HumanReadable: res.obj.upload_url,
+            EntryContext: {vtUploadURL: res.obj.upload_url}
+        };
     }
 
-    var test = function(){
+
+    function test() {
         // if getting "No content received. Possible API rate limit reached." it's means that the api key use not usable right now, but it's working
         try
         {
@@ -787,10 +948,11 @@ script:
             if (err == "No content received. Possible API rate limit reached."){
                 return true;
             }
-            return err;
+            return String(err);
         }
         return true;
     }
+
 
     try {
         switch (command) {
@@ -819,13 +981,13 @@ script:
             default:
                 throw 'Unknown command - ' + command;
         }
-    }catch (err) {
-
-        return {'Type' : entryTypes.error,
+    } catch (err) {
+        return {
+            'Type' : entryTypes.error,
             'ContentsFormat' : formats.text,
             'Contents': err,
             'EntryContext': {'Error': err}
-        }
+        };
     }
   type: javascript
   commands:
@@ -1153,4 +1315,4 @@ script:
     description: Private API. Retrieve comments for a given resource
   runonce: false
 tests:
-  - virusTotal-test-playbook
+- virusTotal-test-playbook

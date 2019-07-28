@@ -36,6 +36,10 @@ args:
   description: OS of the remote system (windows/linux/OSX)
 - name: arch
   description: Choose amd64 for 64bit systems and i386 for 32bit systems
+- name: engineName
+  description: Engine to be used if required
 scripttarget: 0
 dependson: {}
 timeout: 0s
+tests:
+  - No Test

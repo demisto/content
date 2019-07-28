@@ -19,7 +19,7 @@ configuration:
   required: true
 - display: Do not verify server SSL
   name: insecure
-  defaultvalue: "False"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Minimum severity when fetching events; "Very High", "High", "Medium"
@@ -37,7 +37,8 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: Number of days to go back for the initial fetch. Use "0" to only retrieve new incidents.
+- display: Number of days to go back for the initial fetch. Use "0" to only retrieve
+    new incidents.
   name: first_fetch
   defaultvalue: "0"
   type: 0
@@ -48,7 +49,7 @@ script:
     import base64
     import socket
     import json
-    import datetime
+    from datetime import datetime
     import time
     import os
 
@@ -354,8 +355,10 @@ script:
 
         for event in events['eventdata']:
             event_date = event['timeStamp']
-            event_time = int(time.mktime(time.strptime(event_date,date_pattern))) * 1000
-            new_last_run = max(new_last_run, event_time)
+            date_obj = datetime.strptime(event_date, date_pattern)
+            event_timestamp = int((date_obj - datetime(1970, 1, 1)).total_seconds()) * 1000 + date_obj.microsecond / 1000
+            new_last_run = max(new_last_run, event_timestamp)
+
             demisto_severity = attivo_api.convert_to_demisto_severity(event['alertLevel'])
             event_type = event['details']['Attack Phase']
             incidents.append({
@@ -367,7 +370,8 @@ script:
                 'rawJSON': json.dumps(event)
             })
 
-        if len(incidents) > 0:
+        if len(incidents) > 0 and new_last_run > 0:
+            new_last_run += 1
             demisto.info("Setting new last run value to {}".format(new_last_run))
             demisto.setLastRun({'time': new_last_run})
         else:
@@ -468,7 +472,11 @@ script:
             playbook_status = attivo_api.run_playbook(playbook_id, attacker_ip)
             demisto.info("Run playbook status = {}".format(playbook_status))
 
-            if playbook_status['status']:
+            if 'error' in playbook_status:
+                error_text = playbook_status['error']
+                status_message = error_text
+                status=False
+            elif 'status' in playbook_status:
                 status_text = playbook_status['status']
                 if status_text == 'submitted':
                     status=True
@@ -798,8 +806,8 @@ script:
       description: Is the user part of the Deception environment
       type: boolean
     - contextPath: Attivo.User.Groups
-      description: If the user is part of the Deception environment, the member is a member
-        of these groups
+      description: If the user is part of the Deception environment, the member is
+        a member of these groups
     description: Checks whether a user is deceptive
   - name: attivo-check-host
     arguments:
@@ -877,14 +885,15 @@ script:
       - Low
       - VeryLow
       - SystemActivity
-      description: The minimum Attivo severity for the events, default is "Medium"; "VeryHigh", "High", "Medium", "Low", "VeryLow", "SystemActivity"
+      description: The minimum Attivo severity for the events, default is "Medium";
+        "VeryHigh", "High", "Medium", "Low", "VeryLow", "SystemActivity"
       defaultValue: Medium
     - name: alerts_start_date
-      description: Date and time to start looking for events, e.g.,  2018-12-10
-        or 2018-12-10T13:59:05Z
+      description: Date and time to start looking for events, e.g.,  2018-12-10 or
+        2018-12-10T13:59:05Z
     - name: alerts_end_date
-      description: Date and time to stop looking for events, e.g.,  2018-12-10
-        or 2018-12-10T13:59:05Z
+      description: Date and time to stop looking for events, e.g.,  2018-12-10 or
+        2018-12-10T13:59:05Z
     outputs:
     - contextPath: Attivo.Events.Count
       description: Total number of events retrieved

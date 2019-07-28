@@ -3695,6 +3695,5 @@ script:
     description: Reset Archer's integration cache. Run this command if you change the fields of your Archer application
   isfetch: true
   runonce: false
-releaseNotes: "New command 'archer-reset-cache' to reset the integration cache"
 tests:
   - Archer-Test-Playbook

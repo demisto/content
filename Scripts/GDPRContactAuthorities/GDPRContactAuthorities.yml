@@ -1,0 +1,84 @@
+commonfields:
+  id: GDPRContactAuthorities
+  version: -1
+name: GDPRContactAuthorities
+script: ''
+type: python
+tags: []
+comment: |-
+  GDPR Data Protection Supervisory Authority Listing.
+
+  "'supervisory authority' means an independent public authority which is established by a Member State pursuant to
+  Article 51.
+
+  'supervisory authority concerned' means a supervisory authority which is concerned by the processing of personal
+  data because:
+  (a) the controller or processor is established on the territory of the Member State of that supervisory authority.
+  (b) data subjects residing in the Member State of that supervisory authority are substantially affected or likely
+  to be substantially affected by the processing, or
+  (c) a complaint has been lodged with that supervisory authority."
+
+  GDPR - Art. 4 - https://gdpr-info.eu/art-4-gdpr/
+enabled: true
+args:
+- name: country
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - Austria
+  - Belgium
+  - Bulgaria
+  - Croatia
+  - Cyprus
+  - Czech Republic
+  - Denmark
+  - Estonia
+  - Finland
+  - France
+  - Germany
+  - Greece
+  - Hungary
+  - Ireland
+  - Italy
+  - Latvia
+  - Lithuania
+  - Luxembourg
+  - Malta
+  - Netherlands
+  - Poland
+  - Portugal
+  - Romania
+  - Slovakia
+  - Slovenia
+  - Spain
+  - Sweden
+  - United Kingdom
+  - Iceland
+  - Liechtenstein
+  - Norway
+  - Switzerland
+  - ""
+  description: The name of the authoritie's country
+outputs:
+- contextPath: GDPR.Authority.Name
+  description: Authority name
+  type: string
+- contextPath: GDPR.Authority.Email
+  description: Authority email address
+  type: string
+- contextPath: GDPR.Authority.Tel
+  description: Authority telephone number
+  type: string
+- contextPath: GDPR.Authority.Site
+  description: Authority's website
+  type: string
+- contextPath: GDPR.Authority.Country
+  description: Authority country
+  type: string
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
+dockerimage: demisto/python3:3.7.3.260
+subtype: python3
+tests:
+  - GDPRContactAuthorities Test

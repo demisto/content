@@ -1,0 +1,67 @@
+args:
+- default: false
+  description: Incident description.
+  isArray: false
+  name: description
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: false
+  description: Incident priority.
+  isArray: false
+  name: priority
+  predefined:
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  - '6'
+  required: true
+  secret: false
+- default: false
+  description: Incident owner.
+  isArray: false
+  name: owned_by
+  required: false
+  secret: false
+- default: false
+  description: Service needed.
+  isArray: false
+  name: service
+  required: false
+  secret: false
+- default: false
+  description: Requesting customer name.
+  isArray: false
+  name: customer_display_name
+  required: true
+  secret: false
+comment: This script is an example script of how to create an incident in Cherwell.
+  The script wraps the create business object command in the cherwell integration.
+  When writing your own script to create a business object, follow the instructions
+  in the configuration part, but do not change the execution section.
+commonfields:
+  id: CherwellCreateIncident
+  version: -1
+enabled: false
+name: CherwellCreateIncident
+outputs:
+- contextPath: Cherwell.BusinessObjects.PublicId
+  description: Incident public ID
+  type: String
+- contextPath: Cherwell.BusinessObjects.RecordId
+  description: Incident record ID
+  type: String
+script: '-'
+system: false
+tags: [Cherwell]
+timeout: '0'
+type: python
+dependson:
+  must:
+  - Cherwell|||cherwell-create-business-object
+dockerimage: demisto/python3:3.7.2.214
+subtype: python3
+tests:
+- Cherwell Example Scripts - test
