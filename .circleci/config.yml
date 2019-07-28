@@ -10,9 +10,9 @@ jobs:
       - image: devdemisto/content-build-2and3:2.0.0.877  # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.7.0"
+      CONTENT_VERSION: "19.7.2"
       SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "acafc2290bf4e4fa59e0b143a64c154fcdb0b546" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "b127a27e348b2f5cc53129da93ca153ce51572c4" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
