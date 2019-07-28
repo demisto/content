@@ -1282,6 +1282,7 @@ tasks:
       password: {}
       pcapType:
         simple: filter-pcap
+    continueonerror: true
     separatecontext: false
     view: |-
       {
