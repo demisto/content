@@ -273,7 +273,8 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
         if is_mock_run:
             configure_proxy_unsecure(integration_params)
 
-        module_instance = __create_integration_instance(client, integration_name, integration_instance_name, integration_params, is_byoi)
+        module_instance = __create_integration_instance(client, integration_name, integration_instance_name,
+                                                        integration_params, is_byoi)
         if module_instance is None:
             print_error('Failed to create instance')
             __delete_integrations_instances(client, module_instances)
