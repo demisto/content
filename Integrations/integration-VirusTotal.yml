@@ -292,6 +292,8 @@ script:
                     MD5: r[i].md5,
                     SHA1: r[i].sha1,
                     SHA256: r[i].sha256,
+                    Positives: r[i].positives,
+                    DetectionEngines: Object.keys(r[i].scans).length,
                     Malicious: {Vendor: 'VirusTotal', Detections: r[i].positives, TotalEngines: r[i].total}
                 });
                 ec[outputPaths.file].push(malFile[outputPaths.file]);
@@ -315,8 +317,12 @@ script:
                         ec[outputPaths.file][i].VirusTotal = scans_ec;
                     } else { // not malicious
                         ec[outputPaths.file][i] = {
+                            SHA256: r[i].sha256,
+                            SHA1: r[i].sha1,
                             MD5: r[i].md5,
-                            VirusTotal: scans_ec
+                            VirusTotal: scans_ec,
+                            Positives: r[i].positives,
+                            DetectionEngines: Object.keys(r[i].scans).length
                         };
                     }
                 } else {
@@ -327,7 +333,9 @@ script:
                         VirusTotal: {
                             Scans: scansTable,
                             ScanID: r[i].scan_id
-                        }
+                        },
+                        Positives: r[i].positives,
+                        DetectionEngines: Object.keys(r[i].scans).length
                     };
                     ec[outputPaths.file] = scans_ec;
                 }
@@ -340,16 +348,24 @@ script:
                         ec[outputPaths.file][i].VirusTotal = scans_ec;
                     } else { // not malicious
                         ec[outputPaths.file][i] = {
+                            SHA256: r[i].sha256,
+                            SHA1: r[i].sha1,
                             MD5: r[i].md5,
-                            VirusTotal: scans_ec
+                            VirusTotal: scans_ec,
+                            Positives: r[i].positives,
+                            DetectionEngines: Object.keys(r[i].scans).length
                         };
                     }
                 } else {
                     scans_ec = {
+                        SHA256: r[i].sha256,
+                        SHA1: r[i].sha1,
                         MD5: r[i].md5,
                         VirusTotal: {
                             ScanID: r[i].scan_id
-                        }
+                        },
+                        Positives: r[i].positives,
+                        DetectionEngines: Object.keys(r[i].scans).length
                     };
                     ec[outputPaths.file] = scans_ec;
                 }
@@ -474,7 +490,9 @@ script:
                     'Resolutions': resolutions.slice(0,maxLen),
                     'ReferrerHashes': detectedReferrerSamples.slice(0,maxLen),
                     'UnAVDetectedReferrerHashes': undetectedReferrerSamples.slice(0,maxLen)
-                }
+                },
+                'ASN': o.asn,
+                'Geo': {Country: o.country}
             };
         }
         longFormat = FULL_RESPONSE? 'true': longFormat;
@@ -543,7 +561,9 @@ script:
                 Data: url,
                 VirusTotal: {
                     ScanID: o.scan_id
-                }
+                },
+                DetectionEngines: 0,
+                PositiveDetections: 0
             };
         } else {
             md += 'Last scan date: *' + o.scan_date + '*\n';
@@ -556,7 +576,9 @@ script:
                 dbotScore = 3;
                 addMalicious(ec, outputPaths.url, {
                     Data: url,
-                    Malicious: {Vendor: 'VirusTotal', Description: 'Positives / Total: ' + o.positives + ' / ' + o.total}
+                    Malicious: {Vendor: 'VirusTotal', Description: 'Positives / Total: ' + o.positives + ' / ' + o.total},
+                    DetectionEngines: Object.keys(o.scans).length,
+                    PositiveDetections: o.positives
                 });
             } else if (o.positives >= threshold / 2) {
                 dbotScore = 2;
@@ -581,7 +603,9 @@ script:
                         "VirusTotal": {
                             Scans: scansTable,
                             ScanID: o.scan_id
-                        }
+                        },
+                        DetectionEngines: Object.keys(o.scans).length,
+                        PositiveDetections: o.positives
                     };
                     ec[outputPaths.url] = scans_ec;
                 }
@@ -595,7 +619,9 @@ script:
                         Data: url,
                         VirusTotal: {
                             ScanID: o.scan_id,
-                        }
+                        },
+                        DetectionEngines: Object.keys(o.scans).length,
+                        PositiveDetections: o.positives
                     };
                 }
             }
@@ -1046,6 +1072,12 @@ script:
     - contextPath: File.VirusTotal.ScanID
       description: Scan ID for this hash
       type: string
+    - contextPath: File.PositiveDetections
+      description: Number of engines that positively detected the indicator as malicious
+      type: number
+    - contextPath: File.DetectionEngines
+      description: Total number of engines that checked the indicator
+      type: number
     description: Check file reputation of the given hash
   - name: ip
     arguments:
@@ -1175,6 +1207,12 @@ script:
       description: Scan detection for this URL (True/False)
     - contextPath: URL.VirusTotal.Scans.Result
       description: Scan result for this URL - signature, etc.
+    - contextPath: URL.DetectionEngines
+      description: Total number of engines that checked the indicator
+      type: number
+    - contextPath: URL.PositiveDetections
+      description: Number of engines that positively detected the indicator as malicious
+      type: number
     description: Check URL Reputation
   - name: domain
     arguments:
