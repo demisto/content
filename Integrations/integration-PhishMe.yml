@@ -646,4 +646,4 @@ script:
   runonce: false
 hidden: false
 tests:
-  - Test - PhishMe Intelligence
+  - No test - Replaced by Cofense Integration
