@@ -2,6 +2,7 @@ category: Network Security
 commonfields:
   id: Panorama
   version: -1
+fromversion: 3.0.0
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
   name: server
@@ -1342,19 +1343,19 @@ script:
     outputs:
     - contextPath: Panorama.SecurityRule.Name
       description: Rule name
-      type: String
+      type: string
     - contextPath: Panorama.SecurityRule.Description
       description: Rule description
-      type: String
+      type: string
     - contextPath: Panorama.SecurityRule.Action
       description: Action for the rule
-      type: String
+      type: string
     - contextPath: Panorama.SecurityRule.Source
       description: Source address
-      type: String
+      type: string
     - contextPath: Panorama.SecurityRule.Destination
       description: Destination address
-      type: String
+      type: string
     - contextPath: Panorama.SecurityRule.NegateSource
       description: Is the source negated (address, address group)
       type: boolean
@@ -1363,19 +1364,19 @@ script:
       type: boolean
     - contextPath: Panorama.SecurityRule.Service
       description: Service for the rule
-      type: String
+      type: string
     - contextPath: Panorama.SecurityRule.Disabled
       description: Is the rule disabled
       type: string
     - contextPath: Panorama.SecurityRule.Application
       description: Application for the rule
-      type: String
+      type: string
     - contextPath: Panorama.SecurityRule.Target
       description: Target firewall (Panorama instances)
-      type: String
+      type: string
     - contextPath: Panorama.SecurityRule.LogForwarding
       description: Log forwarding profile (Panorama instances)
-      type: String
+      type: string
   - arguments:
     - default: false
       description: Name of the custom block policy rule to create
