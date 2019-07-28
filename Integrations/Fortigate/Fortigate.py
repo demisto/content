@@ -31,7 +31,8 @@ if not demisto.params().get('proxy'):
 
 def login():
     """
-    Due to token not providing the right level of access, we are going to create a session and inject into its headers the csrf token provided with the service.
+    Due to token not providing the right level of access, we are going to create a session
+    and inject into its headers the csrf token provided with the service.
     This won't work with usual requests as the session must be kept alive during this time.
     """
     # create session.
@@ -43,7 +44,8 @@ def login():
         'ajax': 1
     }
     session.post(SERVER + url_suffix, data=params, verify=USE_SSL)
-    # check for the csrf token in cookies we got, add it to headers of session or else we can't perform HTTP request that is not get.
+    # check for the csrf token in cookies we got, add it to headers of session,
+    # or else we can't perform HTTP request that is not get.
     for cookie in session.cookies:
         if cookie.name == 'ccsrftoken':
             csrftoken = cookie.value[1:-1]  # strip quotes
@@ -115,7 +117,8 @@ def generate_src_or_dst_request_data(policy_id, policy_field, policy_field_value
 
 def logout(session):
     """
-    Due to limited amount of simultaneous connections we log out after each API request. Simple post request to /logout endpoint without params.
+    Due to limited amount of simultaneous connections we log out after each API request.
+    Simple post request to /logout endpoint without params.
     """
     url_suffix = '/logout'
     params = {}
@@ -141,7 +144,7 @@ def test_module():
     """
     Perform basic login and logout operation, validate connection.
     """
-    login_check = http_request('GET', 'cmdb/system/vdom')
+    http_request('GET', 'cmdb/system/vdom')
     return True
 
 
@@ -232,9 +235,7 @@ def get_service_groups_request(name):
 
 
 def update_service_group_command():
-    contents = {}
     context = {}
-    service_group_context = {}
 
     group_name = demisto.args().get('groupName')
     service_name = demisto.args().get('serviceName')
@@ -257,7 +258,7 @@ def update_service_group_command():
             if service_group_member.get('name') != service_name:
                 new_service_group_members.append(service_group_member)
 
-    response = update_service_group_request(group_name, new_service_group_members)
+    update_service_group_request(group_name, new_service_group_members)
     service_group = get_service_groups_request(group_name)[0]
 
     service_group_members = []
@@ -303,12 +304,10 @@ def update_service_group_request(group_name, members_list):
 
 
 def delete_service_group_command():
-    contents = {}
     context = {}
-    service_group_context = {}
     group_name = demisto.args().get('groupName').encode('utf-8')
 
-    response = delete_service_group_request(group_name)
+    delete_service_group_request(group_name)
 
     service_group_context = {
         'Name': group_name,
@@ -386,7 +385,7 @@ def create_firewall_service_command():
     tcp_range = demisto.args().get('tcpRange', '')
     udp_range = demisto.args().get('udpRange', '')
 
-    response = create_firewall_service_request(service_name, tcp_range, udp_range)
+    create_firewall_service_request(service_name, tcp_range, udp_range)
 
     contents.append({
         'Name': service_name,
@@ -445,8 +444,9 @@ def get_policy_command():
             if policy_name or policy_id:
                 policy_title = policy.get('name')
             security_profiles = []
-            all_security_profiles = [policy.get('webfilter-profile'), policy.get('ssl-ssh-profile'), policy.get(
-                'dnsfilter-profile'), policy.get('profile-protocol-options'), policy.get('profile-type'), policy.get('av-profile')]
+            all_security_profiles = [policy.get('webfilter-profile'), policy.get('ssl-ssh-profile'),
+                                     policy.get('dnsfilter-profile'), policy.get('profile-protocol-options'),
+                                     policy.get('profile-type'), policy.get('av-profile')]
             for security_profile in all_security_profiles:
                 if security_profile:
                     security_profiles.append(security_profile)
@@ -504,9 +504,12 @@ def get_policy_request(policy_id):
     uri_suffix = 'cmdb/firewall/policy/'
     if policy_id:
         uri_suffix = uri_suffix + policy_id + '/'
-    # We have the option to filter only the data we need from each policy, reducing by over 80% the amount of data we need to read.
+    # We have the option to filter only the data we need from each policy,
+    # reducing by over 80% the amount of data we need to read.
     params = {
-        'format': 'policyid|action|name|comments|status|service|logtraffic|srcaddr|dstaddr|webfilter-profile|ssl-ssh-profile|dnsfilter-profile|profile-protocol-options|profile-type|av-profile|nat'
+        'format': 'policyid|action|name|comments|status|service|logtraffic|srcaddr|'
+                  'dstaddr|webfilter-profile|ssl-ssh-profile|dnsfilter-profile|'
+                  'profile-protocol-options|profile-type|av-profile|nat'
     }
     response = http_request('GET', uri_suffix, params)
     return response.get('results')
@@ -527,7 +530,7 @@ def update_policy_command():
     if keep_original_data and keep_original_data.lower() == 'true' and not add_or_remove:
         return_error("Error: add_or_remove must be specified if keep_original_data is true.")
 
-    update_policy = update_policy_request(policy_id, policy_field, policy_field_value, keep_original_data, add_or_remove)
+    update_policy_request(policy_id, policy_field, policy_field_value, keep_original_data, add_or_remove)
     policy = get_policy_request(policy_id)[0]
     all_security_profiles = [policy.get('webfilter-profile'), policy.get('ssl-ssh-profile'), policy.get(
         'dnsfilter-profile'), policy.get('profile-protocol-options'), policy.get('profile-type'), policy.get('av-profile')]
@@ -631,8 +634,9 @@ def create_policy_command():
     policy_log = demisto.args().get('log')
     policy_nat = demisto.args().get('nat')
 
-    create_policy = create_policy_request(policy_name, policy_description, policy_srcintf, policy_dstintf, policy_source_address,
-                                          policy_destination_address, policy_service, policy_action, policy_status, policy_log, policy_nat)
+    create_policy_request(policy_name, policy_description, policy_srcintf, policy_dstintf,
+                          policy_source_address, policy_destination_address, policy_service,
+                          policy_action, policy_status, policy_log, policy_nat)
     contents.append({
         'Name': policy_name,
         'Description': policy_description,
@@ -681,7 +685,9 @@ def create_policy_command():
     })
 
 
-def create_policy_request(policy_name, policy_description, policy_srcintf, policy_dstintf, policy_source_address, policy_destination_address, policy_service, policy_action, policy_status, policy_log, policy_nat):
+def create_policy_request(policy_name, policy_description, policy_srcintf, policy_dstintf,
+                          policy_source_address, policy_destination_address, policy_service,
+                          policy_action, policy_status, policy_log, policy_nat):
 
     uri_suffix = 'cmdb/firewall/policy/'
 
@@ -713,7 +719,7 @@ def move_policy_command():
     position = demisto.args().get('position')
     neighbour = demisto.args().get('neighbor')
 
-    response = move_policy_request(policy_id, position, neighbour)
+    move_policy_request(policy_id, position, neighbour)
 
     policy_context = {
         'ID': int(policy_id),
@@ -752,7 +758,7 @@ def delete_policy_command():
     context = {}
     policy_id = demisto.args().get('policyID')
 
-    response = delete_policy_request(policy_id)
+    delete_policy_request(policy_id)
 
     policy_context = {
         'ID': policy_id,
@@ -850,7 +856,7 @@ def update_address_group_command():
             if address_group_member.get('name') != address:
                 new_address_group_members.append(address_group_member)
 
-    response = update_address_group_request(group_name, new_address_group_members)
+    update_address_group_request(group_name, new_address_group_members)
     address_group = get_address_groups_request(group_name)[0]
     members = address_group.get('member')
     members_list = []
@@ -900,7 +906,7 @@ def create_address_group_command():
     group_name = demisto.args().get('groupName', '')
     address = demisto.args().get('address', '')
 
-    response = create_address_group_request(group_name, address)
+    create_address_group_request(group_name, address)
 
     contents.append({
         'Name': group_name,
@@ -940,7 +946,7 @@ def delete_address_group_command():
     address_group_context = []
     name = demisto.args().get('name', '')
 
-    response = delete_address_group_request(name)
+    delete_address_group_request(name)
 
     contents.append({
         'Name': name,
