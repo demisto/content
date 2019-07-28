@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 import boto3
 import datetime
 import base64
-from datetime import datetime, date
 from botocore.config import Config
 from botocore.parsers import ResponseParserError
 import urllib3.util
@@ -313,7 +312,6 @@ def remove_permission(args):
         roleSessionName=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'),
     )
-    obj = vars(client._client_config)
     kwargs = {
         'FunctionName': args.get('functionName'),
         'StatementId': args.get('StatementId')
