@@ -43,7 +43,7 @@ def login():
         'secretkey': PASSWORD,
         'ajax': 1
     }
-    session.post(SERVER + url_suffix, data=params, verify=USE_SSL)
+    session.post(SERVER + url_suffix, data=params, verify=USE_SSL) # type: ignore
     # check for the csrf token in cookies we got, add it to headers of session,
     # or else we can't perform HTTP request that is not get.
     for cookie in session.cookies:
@@ -121,7 +121,7 @@ def logout(session):
     Simple post request to /logout endpoint without params.
     """
     url_suffix = '/logout'
-    params = {}
+    params = {}  # type: dict
     session.post(SERVER + url_suffix, data=params, verify=USE_SSL)
 
 
@@ -244,8 +244,8 @@ def update_service_group_command():
         return_error('Action must be add or remove')
 
     old_service_groups = get_service_groups_request(group_name)
-    service_group_members = []
-    new_service_group_members = []
+    service_group_members = [] # type: list
+    new_service_group_members = []  # type: list
 
     if isinstance(old_service_groups, list):
         old_service_group = old_service_groups[0]
@@ -842,8 +842,8 @@ def update_address_group_command():
         return_error('Action must be add or remove')
 
     old_address_groups = get_address_groups_request(group_name)
-    address_group_members = []
-    new_address_group_members = []
+    address_group_members = [] # type: list
+    new_address_group_members = [] # type: list
 
     if isinstance(old_address_groups, list):
         old_address_group = old_address_groups[0]
