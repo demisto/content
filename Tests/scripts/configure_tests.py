@@ -569,6 +569,7 @@ def create_test_file(is_nightly, skip_save=False):
             files_string = run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
         tests = get_test_list(files_string, branch_name)
+        tests = ['McAfeeESMTest']
 
         tests_string = '\n'.join(tests)
         if tests_string:
