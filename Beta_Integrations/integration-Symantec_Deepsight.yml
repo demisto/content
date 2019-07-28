@@ -1,0 +1,930 @@
+commonfields:
+  id: Symantec Deepsight Intelligence
+  version: -1
+name: Symantec Deepsight Intelligence
+display: Symantec Deepsight Intelligence
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: Leverage Symantec Deepsight Intelligence
+configuration:
+- display: Base URL
+  name: url
+  defaultvalue: https://deepsightapi.symantec.com
+  type: 0
+  required: true
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
+  name: unsecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |
+    import requests
+    import json
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+
+    ''' Global Variables '''
+    APIKEY = demisto.params()['apikey']
+    VERIFY = not demisto.params()['unsecure']
+    BASE_URL = 'https://deepsightapi.symantec.com/v1/'
+    DOMAIN_ACCESS_SUFFIX = 'domains/{0}'
+    IP_ACCESS_SUFFIX = 'ips/{0}'
+    URL_ACCESS_SUFFIX = 'urls/{0}'
+    FILE_ACCESS_SUFFIX = 'files/{0}'
+    USAGE_LIMIT_STATUS_SUFFIX = 'application/usage_limit_status'
+    HEADERS = {'API-KEY': APIKEY, 'Accept': 'application/json'}
+
+
+    #dict used to switch names of fields from returned value name to demisto context standards name
+
+
+    if not demisto.getParam('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+
+    ''' Helper Functions'''
+
+
+    def convert_deepsight_date_to_demisto_format(date_from_deepsight):
+        """Remove 'Z' from the end of the date and return it. If empty date - return unchanged.
+        """
+        if date_from_deepsight == "":
+            return ""
+        demisto_format_date = date_from_deepsight[:-1]
+        return demisto_format_date
+
+
+    def return_code_match(statusCode):
+        if statusCode == 200:
+            return "200: Success"
+        if statusCode == 400:
+            return "400: Invalid Input. Input was incorrect format."
+        if statusCode == 403:
+            return "403: Access Denied. API key successful, but license does not permit access to the requested resource."
+        if statusCode == 404:
+            return "404: Data not found"
+        if statusCode == 429:
+            return "429: License count usage has been exceeded."
+        return "503: Server is overloaded.  Try again later"
+
+
+    def calc_dbot_score(url_data_json):
+        dbotscore = 0
+        if 'reputationValues' in url_data_json:
+            reputation_values_data = url_data_json["reputationValues"]
+            reputation_score = reputation_values_data["reputation"]
+            if reputation_score > 5:
+                dbotscore = 3
+            else:
+                dbotscore = 2
+        return dbotscore
+
+
+    def create_behaviour_context(behaviour_data_json):
+        behavior_context = {
+            "Type" : behaviour_data_json.get("type", ""),
+            "Behaviour" : behaviour_data_json.get("behaviour", ""),
+            "Description" : behaviour_data_json.get("description", ""),
+        }
+        return behavior_context
+
+
+    def create_behaviours_context(data_json):
+        all_behaviours_contexts = []
+        list_of_behaviour_data_jsons = data_json.get("behaviours", [])
+        for behaviour_data_json in list_of_behaviour_data_jsons:
+            cur_behaviour_context = create_behaviour_context(behaviour_data_json)
+            all_behaviours_contexts.append(cur_behaviour_context)
+
+        return all_behaviours_contexts
+
+
+    def create_malicious_data(data_from_api_json):
+        malicious_description = ""
+        if 'reputationValues' in data_from_api_json:
+             malicious_description = 'Reputation: {}'.format(data_from_api_json['reputationValues'].get("reputation", "Unknown")),
+        malicious_data = {
+            'Description': malicious_description,
+            'Vendor': 'Symantec Deepsight Intelligence'
+        }
+        return malicious_data
+
+
+    def create_reputation_values_context(data_from_api_json):
+        reputation_data = data_from_api_json.get("reputationValues", None)
+        reputation_values_context = {
+            "Reputation": "",
+            "Confidence": "",
+            "Hostility": ""
+        }
+
+        if reputation_data:
+            reputation_values_context["Reputation"] = reputation_data.get("reputation", "")
+            reputation_values_context["Confidence"] = reputation_data.get("confidence", "")
+            reputation_values_context["Hostility"] = reputation_data.get("hostility", "")
+
+        return reputation_values_context
+
+
+    def return_mati_report_entry_context(data_from_api_json):
+        mati_entry_context = {}
+        mati_reports = data_from_api_json.get('matiReports', [])
+        all_mati_reports_contexts = []
+
+        for report in mati_reports:
+            mati_report_context = {
+                "ID": report.get('id', ""),
+                "Title": report.get('title', ""),
+                "Date": report.get('date', "")
+            }
+            all_mati_reports_contexts.append(mati_report_context)
+        return all_mati_reports_contexts
+
+
+    def merge_two_dicts(dict_a, dict_b):
+        merged_dict = dict_a.copy()
+        merged_dict.update(dict_b)
+        return merged_dict
+
+
+    def create_deepsight_domain_entry_context(generic_domain_entry_context, domain_data_json):
+        network_data = domain_data_json.get("network", None)
+        first_seen_date = domain_data_json.get("firstSeen", "")
+        first_seen_date = convert_deepsight_date_to_demisto_format(first_seen_date)
+        last_seen_date = domain_data_json.get("lastSeen", "")
+        last_seen_date = convert_deepsight_date_to_demisto_format(last_seen_date)
+        deepsight_domain_entry_context = {
+            'Whitelisted': domain_data_json.get("whitelisted", ""),
+            'FirstSeen': first_seen_date,
+            'LastSeen': last_seen_date,
+            'ReputationValues': create_reputation_values_context(domain_data_json),
+            'Report': return_mati_report_entry_context(domain_data_json),
+            'ProxyType': "",
+            'Behaviour': create_behaviours_context(domain_data_json),
+            'Domain': domain_data_json.get("domain", ""),
+            'TargetCountries': domain_data_json.get("targetCountries", ""),
+        }
+
+        if network_data:
+            deepsight_ip_entry_context['ProxyType'] = network_data.get("proxyType", "")
+
+        deepsight_domain_entry_context = merge_two_dicts(deepsight_domain_entry_context, generic_domain_entry_context)
+        return deepsight_domain_entry_context
+
+
+
+    def create_registrant_context(whois_data_from_api):
+        registrant_data_dict = {
+            'Name': whois_data_from_api.get('person', ""),
+            'Email': whois_data_from_api.get('email', "")
+        }
+        return registrant_data_dict
+
+    def create_registrar_context(whois_data_from_api):
+        registrar_data_dict = {
+            'Name': whois_data_from_api.get('registrar', ""),
+        }
+        return registrar_data_dict
+
+
+    def get_nameservers_data(whois_data_from_api):
+
+        string_of_name_servers = ""
+        array_of_name_servers = whois_data_from_api.get('nameServers', None)
+        if array_of_name_servers:
+            string_of_name_servers = " ".join(array_of_name_servers)
+        return string_of_name_servers
+
+
+    #generate whois data dict
+    def gen_whois_data_dict(domain_data_json):
+        whois_data_for_entry_context = {}
+        whois_data_from_api = domain_data_json.get("whois", None)
+
+        if whois_data_from_api:
+            created_date = whois_data_from_api.get('created', "")
+            created_date = convert_deepsight_date_to_demisto_format(created_date)
+            updated_date = whois_data_from_api.get('updated', "")
+            updated_date = convert_deepsight_date_to_demisto_format(updated_date)
+            expiration_date = whois_data_from_api.get('expires', "")
+            expiration_date = convert_deepsight_date_to_demisto_format(expiration_date)
+
+            whois_data_for_entry_context = {
+                "CreationDate": created_date,
+                "UpdatedDate": updated_date,
+                "ExpirationDate": expiration_date,
+                "NameServers": get_nameservers_data(whois_data_from_api),
+                "Registrant": create_registrant_context(whois_data_from_api),
+                "Registrar": create_registrar_context(whois_data_from_api)
+            }
+        return whois_data_for_entry_context
+
+
+    #generate domain data dict for context in Demisto standard
+    def create_generic_domain_entry_context(domain_data_json):
+        domain_entry_context = {
+            'WHOIS': gen_whois_data_dict(domain_data_json),
+            'Name': domain_data_json.get('domain', "")
+        }
+        return domain_entry_context
+
+
+    def calc_file_dbot_score(file_data_json):
+        dbotscore = 0
+        if 'reputation' in file_data_json:
+            file_rep = file_data_json['reputation']
+            if file_rep  == "Clean" or file_rep  == "Trending Clean":
+                dbotscore = 1
+            elif file_rep  == "Trending Bad":
+                dbotscore = 2
+            elif file_rep  == "Malicious":
+                dbotscore = 3
+        return dbotscore
+
+
+    def create_deepsight_file_entry_context(generic_file_entry_context, file_data_json):
+        deepsight_file_entry_context = {
+            "Report": return_mati_report_entry_context(file_data_json),
+        }
+        deepsight_file_entry_context = merge_two_dicts(deepsight_file_entry_context, generic_file_entry_context)
+        return deepsight_file_entry_context
+
+
+    def get_generic_file_entry_context(file_data_json):
+        entry_context = {
+            'MD5': file_data_json.get('MD5', ""),
+            'SHA256': file_data_json.get('SHA256', "")
+        }
+        return entry_context
+
+
+    def gen_file_malicious_data(file_data_json, dbotscore):
+        malicious_data = None
+        if dbotscore == 3:
+            malicious_description = 'Reputation of file: {}'.format(file_data_json.get('reputation', 'Not found')),
+            malicious_data = {
+                'Description': malicious_description,
+                'Vendor': 'Symantec Deepsight Intelligence'
+            }
+        return malicious_data
+
+
+    def create_deepsight_ip_entry_context(generic_entry_context, ip_data_json):
+        network_data = ip_data_json.get("network", None)
+        first_seen_date = ip_data_json.get("firstSeen", "")
+        first_seen_date = convert_deepsight_date_to_demisto_format(first_seen_date)
+        last_seen_date = ip_data_json.get("lastSeen", "")
+        last_seen_date = convert_deepsight_date_to_demisto_format(last_seen_date)
+
+        deepsight_ip_entry_context = {
+            'Whitelisted': ip_data_json.get("whitelisted", ""),
+            'FirstSeen': ip_data_json.get("firstSeen", ""),
+            'LastSeen': ip_data_json.get("lastSeen", ""),
+            'ReputationValues': create_reputation_values_context(ip_data_json),
+            'Report': return_mati_report_entry_context(ip_data_json),
+            'ProxyType': "",
+            'Behaviour': create_behaviours_context(ip_data_json),
+            'Domain': ip_data_json.get("domain", ""),
+            'TargetCountries': ip_data_json.get("targetCountries", ""),
+        }
+
+        if network_data:
+            deepsight_ip_entry_context['ProxyType'] = network_data.get("proxyType", "")
+
+        deepsight_ip_entry_context = merge_two_dicts(deepsight_ip_entry_context, generic_entry_context)
+        return deepsight_ip_entry_context
+
+
+    def gen_geo_data_dict(data_from_api):
+        geo_data_dict = {}
+        geo_data_from_api = data_from_api.get('geolocation', None)
+        if geo_data_from_api:
+            keys = geo_data_from_api.keys()
+            geo_data_dict = {
+                'Country': geo_data_from_api.get("country", ""),
+                'City': geo_data_from_api.get("city", "")
+            }
+            if 'latitude' in keys and 'longtitude' in keys:
+                geo_data_dict['Location'] = "{0}, {1}".format(geo_data_from_api['latitude'], geo_data_from_api['longtitude'])
+        return geo_data_dict
+
+
+    def create_generic_ip_entry_context(ip_data_json, ip):
+        """Returns an entry context dict with the relevant values for the general !ip context standards.
+        """
+        entry_context = {
+            'Geo': gen_geo_data_dict(ip_data_json),
+            'Address': ip,
+            'ASN': "",
+        }
+
+        network_data = ip_data_json.get("network", None)
+        if network_data:
+            entry_context['ASN'] = network_data.get("asn", "")
+
+        return entry_context
+
+
+    ''' Commands '''
+
+
+    # Build Markdown contextual data for human readable data in war room output
+    def build_md(jsondata, searchItem):
+        mdOutput = "## Symantec Deepsight Intelligence: " + str(searchItem).upper()
+        for key in jsondata.keys():
+            if isinstance(jsondata[key],dict):
+                mdOutput += "\n\n__" + key.upper() + "__"
+                for k in jsondata[key]:
+                    if str(k) != 'uri':
+                        mdOutput += "\n- __" + (str(k)).upper() + "__: " + str(jsondata[key][k])
+            elif isinstance(jsondata[key], list):
+                mdOutput += "\n\n__" + key.upper() + "__"
+                for i in range(len(jsondata[key])):
+                    if isinstance(jsondata[key][i], dict):
+                        for x in jsondata[key][i]:
+                            if str(x) != 'uri':
+                                mdOutput += "\n- __" + (str(x)).upper() + "__: " + str(jsondata[key][i][x])
+                    else:
+                        mdOutput += "\n- __" + (str(i)).upper() + "__: " + str(jsondata[key][i])
+            else:
+                mdOutput += "\n\n__" + key.upper() + "__: " + str(jsondata[key])
+        return mdOutput
+
+
+    def get_domain_data(domain):
+        request_url = BASE_URL + DOMAIN_ACCESS_SUFFIX.format(domain)
+        dom_req = requests.get(request_url, headers=HEADERS, verify=VERIFY)
+        domain_data_json = json.loads(dom_req.content)
+        return domain_data_json
+
+
+    def get_domain_data_command():
+        domain = demisto.args()['domain']
+        domain_data_json = get_domain_data(domain)
+
+        dbotscore = calc_dbot_score(domain_data_json)
+        dbotscore_context = {
+            'Indicator' : domain,
+            'Score' : dbotscore,
+            'Type' : 'domain',
+            'Vendor' : 'Symantec Deepsight Intelligence'
+        }
+
+        generic_domain_entry_context = create_generic_domain_entry_context(domain_data_json)
+        if dbotscore == 3:
+            generic_domain_entry_context["Malicious"] = create_malicious_data(domain_data_json)
+
+        deepsight_domain_entry_context = create_deepsight_domain_entry_context(generic_domain_entry_context, domain_data_json)
+        md = build_md(domain_data_json, domain)
+        entry_context = {
+            'DBotScore': dbotscore_context,
+            'Domain(val.Domain && val.Domain == obj.Domain)':generic_domain_entry_context,
+            'Deepsight.Domain(val.Domain && val.Domain == obj.Domain)':deepsight_domain_entry_context
+        }
+        demisto.results({
+            'Type' : entryTypes['note'],
+            'Contents' : domain_data_json,
+            'ContentsFormat' : formats['json'],
+            'HumanReadable' : md, # not sure if need to build the md first?
+            'ReadableContentsFormat' : formats['markdown'],
+            'EntryContext' : entry_context
+        })
+
+
+    def get_ip_data(ip):
+        request_url = BASE_URL + IP_ACCESS_SUFFIX.format(ip)
+        ip_data_from_api = requests.get(request_url, headers=HEADERS, verify=VERIFY)
+        ip_data_json = json.loads(ip_data_from_api.content)
+        return ip_data_json
+
+
+    def get_ip_data_command():
+        ip = demisto.args()['ip']
+        ip_data_json = get_ip_data(ip)
+
+        dbotscore = calc_dbot_score(ip_data_json)
+        dbotscore_context = {
+            'Indicator' : ip,
+            'Score' : dbotscore,
+            'Type' : 'ip',
+            'Vendor' : 'Symantec Deepsight Intelligence'
+        }
+        generic_ip_entry_context = create_generic_ip_entry_context(ip_data_json, ip)
+
+        if dbotscore == 3:
+            generic_ip_entry_context['Malicious'] = create_malicious_data(ip_data_json)
+
+        deepsight_ip_entry_context = create_deepsight_ip_entry_context(generic_ip_entry_context, ip_data_json)
+
+        md = build_md(ip_data_json, ip)
+        entry_context = {
+            'DBotScore': dbotscore_context,
+            'IP(val.Address && val.Address == obj.Address)': generic_ip_entry_context,
+            'Deepsight.IP(val.Address && val.Address == obj.Address)': deepsight_ip_entry_context,
+        }
+
+        demisto.results({
+            'Type' : entryTypes['note'],
+            'Contents' : ip_data_json,
+            'ContentsFormat' : formats['json'],
+            'HumanReadable' : md, # not sure if need to build the md first?
+            'ReadableContentsFormat' : formats['markdown'],
+            'EntryContext' : entry_context
+        })
+
+
+    def get_file_data(file_hash):
+        request_url = BASE_URL + FILE_ACCESS_SUFFIX.format(file_hash)
+        file_data_from_api = requests.get(request_url, headers=HEADERS, verify=VERIFY)
+        file_data_json = json.loads(file_data_from_api.content)
+        return file_data_json
+
+
+    # Return data based on a sha256 or md5 hash search
+    def get_file_data_command():
+        filehash = demisto.args()['file']
+        file_data_json = get_file_data(filehash)
+
+        dbotscore = calc_file_dbot_score(file_data_json)
+        dbotscore_context = {
+            'Indicator' : filehash,
+            'Type' : 'hash',
+            'Vendor' : 'Symantec Deepsight Intelligence',
+            'Score' : dbotscore
+        }
+
+        generic_file_entry_context = get_generic_file_entry_context(file_data_json)
+
+        if dbotscore == 3:
+            generic_file_entry_context['Malicious'] = create_malicious_data(file_data_json)
+
+        deepsight_file_entry_context = create_deepsight_file_entry_context(generic_file_entry_context, file_data_json)
+
+        md = tableToMarkdown(filehash, file_data_json, headers=None, headerTransform=None, removeNull=False, metadata=None)
+        entry_context = {
+            'DBotScore': dbotscore_context,
+            'File(val.File && val.File == obj.File)': generic_file_entry_context,
+            'Deepsight.File(val.File && val.File == obj.File)': deepsight_file_entry_context
+        }
+        demisto.results({
+            'Type' : entryTypes['note'],
+            'Contents' : file_data_json,
+            'ContentsFormat' : formats['json'],
+            'HumanReadable' : md, # not sure if need to build the md first?
+            'ReadableContentsFormat' : formats['markdown'],
+            'EntryContext' : entry_context
+        })
+
+
+    def get_url_data(url):
+        url_to_send_request_to = BASE_URL + URL_ACCESS_SUFFIX.format(url)
+        url_data_from_request = requests.get(url_to_send_request_to, headers=HEADERS, verify=VERIFY)
+        url_data_json = json.loads(url_data_from_request.content)
+        return url_data_json
+
+
+    # Search for intel based on an URL
+    # if behaviour has value other than SPAM => malicous (possible values are Attack, Bot, CnC, Fraud, Malware, Phish_host or SPAM)
+    #  else if behaviour is SPAM => suspicious
+    #  if no behaviour, then unknown
+    def get_url_data_command():
+        url = demisto.args()['url']
+        url_data_json = get_url_data(url)
+
+        md = build_md(url_data_json, url)
+        dbotscore = calc_dbot_score(url_data_json)
+
+        generic_url_entry_context = {
+            'Data': url
+        }
+
+        if dbotscore == 3:
+            generic_url_entry_context["Malicious"] = create_malicious_data(data_from_api_json)
+
+        dbotscore_context = {
+            'Indicator' : url,
+            'Score' : dbotscore,
+            'Type' : 'url',
+            'Vendor' : 'Symantec Deepsight Intelligence'
+        }
+
+        entry_context = {
+            'DBotScore': dbotscore_context,
+            'URL(val.Data && val.Data == obj.Data)': generic_url_entry_context,
+            'Deepsight.URL(val.Data && val.Data == obj.Data)': generic_url_entry_context
+        }
+
+        demisto.results({
+            'Type' : entryTypes['note'],
+            'Contents' : url_data_json,
+            'ContentsFormat' : formats['json'],
+            'HumanReadable' : md, # not sure if need to build the md first?
+            'ReadableContentsFormat' : formats['markdown'],
+            'EntryContext' : entry_context
+        })
+
+
+    def get_request_status():
+        request_url = BASE_URL + USAGE_LIMIT_STATUS_SUFFIX
+        status_data = requests.get(request_url, headers=HEADERS, verify=VERIFY)
+        status_data_json = json.loads(status_data.content)
+        return status_data_json
+
+    # get results of request status - determine current limit usage of the api license
+    def get_request_status_command():
+        status_data_json = get_request_status()
+        md = build_md(status_data_json, "Requests Limit Status")
+
+        entry_context = {
+            'Deepsight.RequestLimitPerDay': status_data_json.get("X-License-Limit-Limit", ""),
+            'Deepsight.RequestsRemaining': status_data_json.get("X-License-Limit-Remaining", ""),
+            'Deepsight.SecondsToLimitReset': status_data_json.get("X-License-Limit-Reset", "")
+        }
+
+        demisto.results({
+            'Type' : entryTypes['note'],
+            'Contents' : status_data_json,
+            'ContentsFormat' : formats['json'],
+            'ReadableContentsFormat' : formats['markdown'],
+            'HumanReadable' : md,
+            'EntryContext' : entry_context
+        })
+
+
+    def test_module():
+        try:
+            result = get_ip_data("5.79.86.16")
+            ip = result["ip"]
+        except Exception, e:
+            raise Exception("Test failed: API request did not succeed")
+        demisto.results('ok')
+
+    LOG('command is %s' % (demisto.command(), ))
+    try:
+        if demisto.command() == 'test-module':
+            test_module()
+        elif demisto.command() == 'domain':
+            get_domain_data_command()
+        elif demisto.command() == 'ip':
+            get_ip_data_command()
+        elif demisto.command() == 'file':
+            get_file_data_command()
+        elif demisto.command() == 'url':
+            get_url_data_command()
+        elif demisto.command() == 'deepsight-get-request-status':
+            request_status_command()
+    except Exception as e:
+        return_error(str(e))
+  type: python
+  commands:
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: ip to be enriched.
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator value
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator's type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The indicator's vendor
+      type: string
+    - contextPath: DBotScore.Score
+      description: The indicator's score
+      type: number
+    - contextPath: IP.Address
+      description: The IP Address
+      type: string
+    - contextPath: Deepsight.IP.Address
+      description: The IP Address
+      type: string
+    - contextPath: IP.ASN
+      description: The IP's ASN
+      type: number
+    - contextPath: Deepsight.IP.ASN
+      description: The IP's ASN
+      type: number
+    - contextPath: IP.Geo.Country
+      description: The IP's country
+      type: string
+    - contextPath: Deepsight.IP.Geo.Country
+      description: The IP's country
+      type: string
+    - contextPath: IP.Geo.City
+      description: The IP's city
+      type: string
+    - contextPath: Deepsight.IP.Geo.City
+      description: The IP's city
+      type: string
+    - contextPath: IP.Geo.Location
+      description: The IP's latitude and longtitude
+      type: string
+    - contextPath: Deepsight.IP.Geo.Location
+      description: The IP's latitude and longtitude
+      type: string
+    - contextPath: Deepsight.IP.Whitelisted
+      description: Is the IP whitelisted
+      type: boolean
+    - contextPath: Deepsight.IP.FirstSeen
+      description: When was the IP first seen
+      type: date
+    - contextPath: Deepsight.IP.LastSeen
+      description: When was the IP last seen
+      type: date
+    - contextPath: Deepsight.IP.ProxyType
+      description: The type of the IP's proxy
+      type: string
+    - contextPath: Deepsight.IP.Behaviours
+      description: Behaviours of the IP
+    - contextPath: Deepsight.IP.Domain
+      description: The domain associated with the IP address
+      type: string
+    - contextPath: Deepsight.IP.TargetCountries
+      description: Three-letter ISO3 code representing a country associated with the
+        IP address's activity
+    - contextPath: Deepsight.IP.Report.ID
+      description: The MATI report identification number
+      type: string
+    - contextPath: Deepsight.IP.Report.Title
+      description: The MATI report identification title
+      type: string
+    - contextPath: Deepsight.IP.Report.Date
+      description: The MATI report identification date
+      type: date
+    - contextPath: Deepsight.IP.ReputationValues.Reputation
+      description: A value that combines an item’s behaviors exhibited, confidence
+        in the listing, hostility of the item, consecutive listings and listing ratio;
+        values range from 1 to 10 with higher values representing a worse reputation
+      type: number
+    - contextPath: Deepsight.IP.ReputationValues.Confidence
+      description: Shows our confidence on whether the listing is correct or a false
+        positive with values ranging from 1 to 5 with higher values representing more
+        confidence in the listing
+      type: number
+    - contextPath: Deepsight.IP.ReputationValues.Hostility
+      description: Enumerates the IP address’ hostility level with values ranging
+        from 1 to 5 with higher values representing a more hostile item
+      type: number
+    - contextPath: IP.Malicious.Description
+      description: Description of the malicious IP
+      type: string
+    - contextPath: Deepsight.IP.Malicious.Description
+      description: Description of the malicious IP
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: Vendor of the data about the malicious IP
+      type: string
+    - contextPath: Deepsight.IP.Malicious.Vendor
+      description: Vendor of the data about the malicious IP
+      type: string
+    description: Enrich an IP address from Symantec Deepsight Intelligence
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Domain to enrich
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator value
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator's type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The indicator's vendor
+      type: string
+    - contextPath: DBotScore.Score
+      description: The indicator's score
+      type: number
+    - contextPath: Domain.Name
+      description: The domain itself
+      type: string
+    - contextPath: Deepsight.Domain.Name
+      description: The domain itself
+      type: string
+    - contextPath: Domain.WHOIS.CreationDate
+      description: The creation date of the domain
+      type: date
+    - contextPath: Deepsight.Domain.WHOIS.CreationDate
+      description: The creation date of the domain
+      type: date
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: The last update date of the domain
+      type: date
+    - contextPath: Deepsight.Domain.WHOIS.UpdatedDate
+      description: The last update date of the domain
+      type: date
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: The expiration date of the domain
+      type: date
+    - contextPath: Deepsight.Domain.WHOIS.ExpirationDate
+      description: The expiration date of the domain
+      type: date
+    - contextPath: Domain.WHOIS.NameServers
+      description: An array of name servers associated with the registered person
+        in the whois record
+      type: string
+    - contextPath: Deepsight.Domain.WHOIS.NameServers
+      description: An array of name servers associated with the registered person
+        in the whois record
+      type: string
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: The name of the domain's registrar
+      type: string
+    - contextPath: Deepsight.Domain.WHOIS.Registrar.Name
+      description: The name of the domain's registrar
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Name
+      description: The name of the domain's registrant
+      type: string
+    - contextPath: Deepsight.Domain.WHOIS.Registrant.Name
+      description: The name of the domain's registrant
+      type: string
+    - contextPath: Domain.WHOIS.Registrant.Email
+      description: The email of the domain's registrant
+      type: string
+    - contextPath: Deepsight.Domain.WHOIS.Registrant.Email
+      description: The email of the domain's registrant
+      type: string
+    - contextPath: Deepsight.Domain.Whitelisted
+      description: Indicates whether the domain is whitelisted
+      type: boolean
+    - contextPath: Deepsight.Domain.FirstSeen
+      description: The time and date that the domain first appeared in the database
+      type: date
+    - contextPath: Deepsight.Domain.LastSeen
+      description: The time and date that the domain last appeared in the database
+      type: date
+    - contextPath: Deepsight.Domain.ReputationValues.Reputation
+      description: A value that combines an item’s behaviors exhibited, confidence
+        in the listing, hostility of the item, consecutive listings and listing ratio;
+        values range from 1 to 10 with higher values representing a worse reputation
+      type: number
+    - contextPath: Deepsight.Domain.ReputationValues.Confidence
+      description: Shows our confidence on whether the listing is correct or a false
+        positive with values ranging from 1 to 5 with higher values representing more
+        confidence in the listing
+      type: number
+    - contextPath: Deepsight.Domain.ReputationValues.Hostility
+      description: ' Enumerates the IP address’ hostility level with values ranging
+        from 1 to 5 with higher values representing a more hostile item'
+      type: string
+    - contextPath: Deepsight.Domain.Domain
+      description: The domain itself
+      type: string
+    - contextPath: Deepsight.Domain.TargetCountries
+      description: Three-letter ISO3 code representing a country associated with the
+        domain's activity
+      type: unknown
+    - contextPath: Deepsight.Domain.Report.ID
+      description: The MATI report identification number
+      type: number
+    - contextPath: Deepsight.Domain.Report.Title
+      description: The MATI report title
+      type: string
+    - contextPath: Deepsight.Domain.Report.Date
+      description: The MATI report creation date
+      type: date
+    - contextPath: Deepsight.Domain.Behaviour.Type
+      description: A subcategory of behaviour
+      type: string
+    - contextPath: Deepsight.Domain.Behaviour.Behaviour
+      description: 'Indicates that the domain has been observed as part of a specific
+        activity: Attack, Bot, CnC, Fraud, Malware, Phish_host, or Spam'
+      type: string
+    - contextPath: Deepsight.Domain.Behaviour.Description
+      description: A description of the activity observed
+    - contextPath: Domain.Malicious.Description
+      description: Description of the malicious domain
+      type: string
+    - contextPath: Deepsight.Domain.Malicious.Description
+      description: Description of the malicious domain
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: Vendor of the malicious domain
+      type: string
+    - contextPath: Deepsight.Domain.Malicious.Vendor
+      description: Vendor of the malicious domain
+      type: string
+    description: Enrich a domain from Symantec Deepsight intelligence
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: sha256 or md5 hash only
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator value
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator's type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The indicator's vendor
+      type: string
+    - contextPath: DBotScore.Score
+      description: The indicator's score
+      type: number
+    - contextPath: File.MD5
+      description: The MD5 hash string
+      type: string
+    - contextPath: Deepsight.File.MD5
+      description: The MD5 hash string
+      type: string
+    - contextPath: File.SHA256
+      description: The SHA256 hash string
+      type: string
+    - contextPath: Deepsight.File.SHA256
+      description: The SHA256 hash string
+      type: string
+    - contextPath: Deepsight.File.Report.ID
+      description: ' The MATI report ID'
+      type: string
+    - contextPath: Deepsight.File.Report.Title
+      description: ' The MATI report title'
+      type: string
+    - contextPath: Deepsight.File.Report.Date
+      description: ' The MATI report date'
+      type: date
+    - contextPath: File.Malicious.Description
+      description: The description of the malicious file, including it's reputation
+        (if found in Deepsight data)
+      type: string
+    - contextPath: Deepsight.File.Malicious.Description
+      description: The description of the malicious file, including it's reputation
+        (if found in Deepsight data)
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: The vendor of the data about the malicious file
+      type: string
+    - contextPath: Deepsight.File.Malicious.Vendor
+      description: The vendor of the data about the malicious file
+      type: string
+    description: Enrich a file from Symantec Deepsight Intelligence
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: URL to enrich, Should contain HTTP(S)://
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator value
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator's type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The indicator's vendor
+      type: string
+    - contextPath: DBotScore.Score
+      description: The indicator's score
+      type: number
+    - contextPath: URL.Data
+      description: The URL itself
+      type: string
+    - contextPath: Deepsight.URL.Data
+      description: The URL itself
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: Description of the malicious URL
+      type: string
+    - contextPath: Deepsight.URL.Malicious.Description
+      description: Description of the malicious URL
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor of the data about the malicious URL
+      type: string
+    - contextPath: Deepsight.URL.Malicious.Vendor
+      description: The vendor of the data about the malicious URL
+      type: string
+    description: Enrich an URL from Symantec Deepsight Intelligence
+  - name: deepsight-get-request-status
+    arguments: []
+    description: Get API Usage status for current license period
+  dockerimage: demisto/python:1.3-alpine
+  runonce: false
+tests:
+- Symantec Deepsight Test

@@ -1,0 +1,462 @@
+commonfields:
+  id: Exchange 2016 Compliance Search
+  version: -1
+name: Exchange 2016 Compliance Search
+display: Exchange 2016 Compliance Search
+category: Messaging
+image: data:image/png;base64,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
+description: Exchange Server 2016 Compliance Search enables you to search for and delete an email message
+  from all mailboxes in your organization.
+detaileddescription: |-
+  The Compliance Search feature in Exchange Server 2016 enables you to search all mailboxes in your organization. This integration must run on an engine that is installed on a target machine, which is part of a domain.
+  The user need to be assigned permissions before running commands of the integration.
+configuration:
+- display: DOMAIN\USERNAME (e.g., DEMISTO.INT\admin)
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Exchange Server fully qualified domain name (FQDN)
+  name: exchangeFQDN
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |-
+    import sys, subprocess
+    import uuid
+
+    USERNAME = demisto.params()['credentials']['identifier'].replace("'", "''")
+    PASSWORD = demisto.params()['credentials']['password'].replace("'", "''")
+    EXCHANGE_FQDN = demisto.params()['exchangeFQDN'].replace("'", "''")
+    UNSECURE = demisto.params()['insecure']
+
+    STARTCS = '''
+    [CmdletBinding()]
+    Param(
+    [Parameter(Mandatory=$True)]
+    [string]$username,
+    [Parameter(Mandatory=$True)]
+    [string]$password,
+    [Parameter(Mandatory=$True)]
+    [string]$query,
+    [Parameter(Mandatory=$True)]
+    [string]$server,
+    [Parameter(Mandatory=$True)]
+    [bool]$unsecure
+    )
+    $WarningPreference = "silentlyContinue"
+    $secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
+    $UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
+    $searchName = [guid]::NewGuid().ToString() -replace '[-]'
+    $searchName = "DemistoSearch" + $searchName
+    if($unsecure){
+        $url = "http://" + $server + "/PowerShell"
+        $session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri $url -Credential $UserCredential -Authentication Kerberos
+    }else{
+        $url = "https://" + $server + "/PowerShell"
+        $session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri $url -Credential $UserCredential -Authentication Basic -AllowRedirection
+    }
+    if (!$session)
+    {
+        "Failed to create remote PS session"
+        return
+    }
+    Import-PSSession $session -CommandName *Compliance* -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
+    $compliance = New-ComplianceSearch -Name $searchName -ExchangeLocation All -ContentMatchQuery $query -Confirm:$false
+    Start-ComplianceSearch -Identity $searchName
+    $complianceSearchName = "Action status: " + $searchName
+    $complianceSearchName | ConvertTo-Json
+    Remove-PSSession $session
+    '''
+
+    GETCS = '''
+    [CmdletBinding()]
+    Param(
+    [Parameter(Mandatory=$True)]
+    [string]$username,
+    [Parameter(Mandatory=$True)]
+    [string]$password,
+    [Parameter(Mandatory=$True)]
+    [string]$searchName,
+    [Parameter(Mandatory=$True)]
+    [string]$server,
+    [Parameter(Mandatory=$True)]
+    [bool]$unsecure
+    )
+    $WarningPreference = "silentlyContinue"
+    $secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
+    $UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
+    if($unsecure){
+        $url = "http://" + $server + "/PowerShell"
+        $session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri $url -Credential $UserCredential -Authentication Kerberos
+    }else{
+        $url = "https://" + $server + "/PowerShell"
+        $session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri $url -Credential $UserCredential -Authentication Basic -AllowRedirection
+    }
+    if (!$session)
+    {
+        "Failed to create remote PS session"
+        return
+    }
+    Import-PSSession $session -CommandName Get-ComplianceSearch -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
+    $searchStatus = Get-ComplianceSearch $searchName
+    $searchStatus.Status
+    if ($searchStatus.Status -eq "Completed")
+    {
+        $searchStatus.SuccessResults | ConvertTo-Json
+    }
+    Remove-PSSession $session
+    '''
+
+    REMOVECS = '''
+    [CmdletBinding()]
+    Param(
+    [Parameter(Mandatory=$True)]
+    [string]$username,
+    [Parameter(Mandatory=$True)]
+    [string]$password,
+    [Parameter(Mandatory=$True)]
+    [string]$searchName,
+    [Parameter(Mandatory=$True)]
+    [string]$server,
+    [Parameter(Mandatory=$True)]
+    [bool]$unsecure
+    )
+    $WarningPreference = "silentlyContinue"
+    $secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
+    $UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
+    if($unsecure){
+        $url = "http://" + $server + "/PowerShell"
+        $session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri $url -Credential $UserCredential -Authentication Kerberos
+    }else{
+        $url = "https://" + $server + "/PowerShell"
+        $session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri $url -Credential $UserCredential -Authentication Basic -AllowRedirection
+    }
+    if (!$session)
+    {
+        "Failed to create remote PS session"
+        return
+    }
+    Import-PSSession $session -CommandName *Compliance* -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
+    Remove-ComplianceSearch $searchName -Confirm:$false
+    Remove-PSSession $session
+    '''
+
+    STARTPURGE = '''
+    [CmdletBinding()]
+    Param(
+    [Parameter(Mandatory=$True)]
+    [string]$username,
+    [Parameter(Mandatory=$True)]
+    [string]$password,
+    [Parameter(Mandatory=$True)]
+    [string]$searchName,
+    [Parameter(Mandatory=$True)]
+    [string]$server,
+    [Parameter(Mandatory=$True)]
+    [bool]$unsecure
+    )
+    $WarningPreference = "silentlyContinue"
+    $secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
+    $UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
+    if($unsecure){
+        $url = "http://" + $server + "/PowerShell"
+        $session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri $url -Credential $UserCredential -Authentication Kerberos
+    }else{
+        $url = "https://" + $server + "/PowerShell"
+        $session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri $url -Credential $UserCredential -Authentication Basic -AllowRedirection
+    }
+    if (!$session)
+    {
+        "Failed to create remote PS session"
+        return
+    }
+    Import-PSSession $session -CommandName *Compliance* -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
+    $newActionResult = New-ComplianceSearchAction -SearchName $searchName -Purge -PurgeType SoftDelete -Confirm:$false
+    if (!$newActionResult)
+    {
+        "No action was created"
+    }
+    Remove-PSSession $session
+    return
+    '''
+
+    CHECKPURGE = '''
+    [CmdletBinding()]
+    Param(
+    [Parameter(Mandatory=$True)]
+    [string]$username,
+    [Parameter(Mandatory=$True)]
+    [string]$password,
+    [Parameter(Mandatory=$True)]
+    [string]$searchName,
+    [Parameter(Mandatory=$True)]
+    [string]$server,
+    [Parameter(Mandatory=$True)]
+    [bool]$unsecure
+    )
+    $WarningPreference = "silentlyContinue"
+    $secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
+    $UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
+    if($unsecure){
+        $url = "http://" + $server + "/PowerShell"
+        $session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri $url -Credential $UserCredential -Authentication Kerberos
+    }else{
+        $url = "https://" + $server + "/PowerShell"
+        $session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri $url -Credential $UserCredential -Authentication Basic -AllowRedirection
+    }
+    if (!$session)
+    {
+        "Failed to create remote PS session"
+        return
+    }
+    Import-PSSession $session -CommandName *Compliance* -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
+    $actionName = $searchName + "_Purge"
+    $actionStatus = Get-ComplianceSearchAction $actionName
+    ""
+    $actionStatus.Status
+    Remove-PSSession $session
+    '''
+
+    TESTCON = '''
+    [CmdletBinding()]
+    Param(
+    [Parameter(Mandatory=$True)]
+    [string]$username,
+    [Parameter(Mandatory=$True)]
+    [string]$password,
+    [Parameter(Mandatory=$True)]
+    [string]$server,
+    [Parameter(Mandatory=$True)]
+    [bool]$unsecure
+    )
+    $errorActionPreference = 'Stop'
+    $WarningPreference = "silentlyContinue"
+    $secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
+    $UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
+    try{
+        if($unsecure){
+            $url = "http://" + $server + "/PowerShell"
+            $session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri $url -Credential $UserCredential -Authentication Kerberos
+        }else{
+            $url = "https://" + $server + "/PowerShell"
+            $session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri $url -Credential $UserCredential -Authentication Basic -AllowRedirection
+        }
+        echo "successful connection"
+    } catch {
+        $e = $_.Exception
+        echo $e.Message
+    } finally {
+        Remove-PSSession $session
+    }
+    '''
+
+    def prepare_args(d):
+        return dict((k.replace("-", "_"), v) for k, v in d.items())
+
+    def str_to_unicode(obj):
+        if isinstance(obj, dict):
+            obj = {k: str_to_unicode(v) for k,v in obj.iteritems()}
+        elif isinstance(obj, list):
+            obj = map(str_to_unicode, obj)
+        elif isinstance(obj, str):
+            obj = unicode(obj, "utf-8")
+        return obj
+
+    def encode_and_submit_results(obj):
+        demisto.results(str_to_unicode(obj))
+
+    def get_cs_status(search_name, status):
+        return {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': 'Search {} status: {}'.format(search_name, status),
+            'EntryContext': {
+                'EWS.ComplianceSearch(val.Name === obj.Name)': {'Name': search_name, 'Status': status}
+            }
+        }
+
+    def create_ps_file(ps_name, ps_content):
+        temp_path = os.getenv('TEMP')
+        if not temp_path:
+            return_error("Check that the integration is using single engine without docker. If so, add TEMP variable to the enviroment varibes.")
+
+        ps_path = temp_path + '\\' + ps_name
+        with open(ps_path, 'w+') as file:
+            file.write(ps_content)
+        return ps_path
+
+    def delete_ps_file(ps_path):
+        if os.path.exists(ps_path):
+            os.remove(ps_path)
+
+    def start_compliance_search(query):
+        ps_path = create_ps_file('startcs_' + str(uuid.uuid4()).replace('-','') + '.ps1', STARTCS)
+        output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'", "'" + PASSWORD + "'", "'" + str(query).replace("'", "''") + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)], \
+                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = output.communicate()
+        delete_ps_file(ps_path)
+
+        if stderr:
+            return_error(stderr)
+        prefix = '"Action status: '
+        pref_ind = stdout.find(prefix)
+        sub_start = pref_ind + len(prefix)
+        sub_end = sub_start + 45
+        search_name = stdout[sub_start:sub_end]
+        return {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': 'Search started: {}'.format(search_name),
+            'EntryContext': {
+                'EWS.ComplianceSearch': {'Name': search_name, 'Status': 'Starting'}
+            }
+        }
+
+    def get_compliance_search(search_name):
+        ps_path = create_ps_file('getcs_' + search_name + '.ps1', GETCS)
+        output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'", "'" + PASSWORD + "'", "'" + search_name + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)], \
+                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = output.communicate()
+        delete_ps_file(ps_path)
+
+        if stderr:
+            return_error(stderr)
+        stdout = stdout.split('\n', 1)
+        status = stdout[0].strip()
+        results = [get_cs_status(search_name, status)]
+
+        if status == 'Completed' and len(stdout[1].strip()) > 4:
+            res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-4].split(r'\r\n'))
+            res = map(lambda x: {k: v for k,v in (s.split(': ') for s in x)}, res)
+            results.append(
+                {
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['text'],
+                    'Contents': stdout,
+                    'ReadableContentsFormat': formats['markdown'],
+                    'HumanReadable': tableToMarkdown('Exchange 2016 Compliance search results', res, ['Location', 'Item count', 'Total size'])
+                }
+            )
+        return results
+
+    def remove_compliance_search(search_name):
+        ps_path = create_ps_file('removecs_' + search_name + '.ps1', REMOVECS)
+        output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'", "'" + PASSWORD + "'", "'" + search_name + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)], \
+                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = output.communicate()
+        delete_ps_file(ps_path)
+
+        return return_error(stderr) if stderr else get_cs_status(search_name, 'Removed')
+
+    def purge_compliance_search(search_name):
+        ps_path = create_ps_file('startpurge_' + search_name + '.ps1', STARTPURGE)
+        output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'", "'" + PASSWORD + "'", "'" + search_name + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)], \
+                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = output.communicate()
+        delete_ps_file(ps_path)
+
+        return return_error(stderr) if stderr else get_cs_status(search_name, 'Purging')
+
+    def check_purge_compliance_search(search_name):
+        ps_path = create_ps_file('checkpurge_' + search_name + '.ps1', CHECKPURGE)
+        output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'", "'" + PASSWORD + "'", "'" + search_name + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)], \
+                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = output.communicate()
+        delete_ps_file(ps_path)
+
+        return return_error(stderr) if stderr else get_cs_status(search_name, 'Purged' if stdout.strip() == 'Completed' else 'Purging')
+
+    def test_module():
+        ps_path = create_ps_file('testcon_' + str(uuid.uuid4()).replace('-','') + '.ps1', TESTCON)
+        output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'", "'" + PASSWORD + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)], \
+                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout = output.communicate()[0].strip()
+        delete_ps_file(ps_path)
+
+        if stdout == "successful connection":
+            demisto.results('ok')
+        else:
+            return_error(stdout)
+
+
+    args = prepare_args(demisto.args())
+    try:
+        if demisto.command() == 'exchange2016-start-compliance-search':
+            encode_and_submit_results(start_compliance_search(**args))
+        elif demisto.command() == 'exchange2016-get-compliance-search':
+            encode_and_submit_results(get_compliance_search(**args))
+        elif demisto.command() == 'exchange2016-remove-compliance-search':
+            encode_and_submit_results(remove_compliance_search(**args))
+        elif demisto.command() == 'exchange2016-purge-compliance-search-results':
+            encode_and_submit_results(purge_compliance_search(**args))
+        elif demisto.command() == 'exchange2016-get-compliance-search-purge-status':
+            encode_and_submit_results(check_purge_compliance_search(**args))
+        elif demisto.command() == 'test-module':
+            test_module()
+    except Exception, e:
+        if isinstance(e, WindowsError):
+            return_error("Could not open powershell on the target engine.")
+        else:
+            return_error(e)
+  type: python
+  commands:
+  - name: exchange2016-start-compliance-search
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query for finding mail messages
+    outputs:
+    - contextPath: EWS.ComplianceSearch.Name
+      description: The name of the compliance search
+      type: string
+    - contextPath: EWS.ComplianceSearch.Status
+      description: The status of the compliance search
+      type: string
+    description: Initiates a compliance search.
+  - name: exchange2016-get-compliance-search
+    arguments:
+    - name: search-name
+      required: true
+      default: true
+      description: Name of the compliance search
+    outputs:
+    - contextPath: EWS.ComplianceSearch.Status
+      description: The status of the compliance search
+      type: string
+    description: Gets the status and results of a compliance search.
+  - name: exchange2016-remove-compliance-search
+    arguments:
+    - name: search-name
+      required: true
+      default: true
+      description: Name of the compliance search
+    outputs:
+    - contextPath: EWS.ComplianceSearch.Status
+      description: The status of the compliance search
+      type: string
+    description: Removes the compliance search from the Exchange Server.
+  - name: exchange2016-purge-compliance-search-results
+    arguments:
+    - name: search-name
+      required: true
+      default: true
+      description: Name of the compliance search
+    description: Purges the results found during the compliance search.
+  - name: exchange2016-get-compliance-search-purge-status
+    arguments:
+    - name: search-name
+      required: true
+      default: true
+      description: Name of the compliance search
+    description: Checks the status of the purge operation on the compliance search.
+  runonce: false
+tests:
+  - No test

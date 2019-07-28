@@ -1,0 +1,29 @@
+commonfields:
+  id: DeleteIndicators
+  version: -1
+name: DeleteIndicators
+script: |
+  args = {
+      'query': demisto.args().get('query'),
+      'doNotWhitelist': demisto.args().get('whitelist') == 'false'
+  }
+  # Calling a command - returns a list of one or more entries
+  res = demisto.executeCommand("deleteIndicators", args)
+  demisto.results(res)
+type: python
+tags: []
+enabled: true
+args:
+- name: query
+  required: true
+  description: query of Indicators to delete
+- name: whitelist
+  auto: PREDEFINED
+  predefined:
+  - "false"
+  - "true"
+  description: If true will whitelist the deleted indicator
+  defaultValue: "false"
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole

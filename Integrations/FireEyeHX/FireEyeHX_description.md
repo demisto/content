@@ -1,0 +1,1 @@
+FireEye Endpoint Security is an integrated solution that detects what others miss and protects endpoint against known and unknown threats. The HX Demisto integration provides access to information about endpoints, acquisitions, alerts, indicators, and containment. Customers can extract critical data and effectively operate security operations automated playbook

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 This script is used to create a filter_file.txt file which will run only the needed the tests for a given change.
 """
@@ -6,76 +7,31 @@ import os
 import sys
 import json
 import glob
+import random
 import argparse
-from subprocess import Popen, PIPE
 
-try:
-    import yaml
-except ImportError:
-    print "Please install pyyaml, you can do it by running: `pip install pyyaml`"
-    sys.exit(1)
+from Tests.scripts.constants import *
+from Tests.test_utils import get_yaml, str2bool, get_from_version, get_to_version, \
+    collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color, print_warning
 
 # Search Keyword for the changed file
-RUN_ALL_TESTS_FORMAT = 'Run all tests'
 NO_TESTS_FORMAT = 'No test( - .*)?'
-
-# file types regexes
-CONF_REGEX = "Tests/conf.json"
-SCRIPT_PY_REGEX = r"scripts.*\.py$"
-SCRIPT_JS_REGEX = r"scripts.*\.js$"
-SCRIPT_YML_REGEX = r"scripts.*\.yml$"
-SCRIPT_REGEX = r"scripts.*script-.*\.yml$"
-INTEGRATION_PY_REGEX = r"integrations.*\.py$"
-INTEGRATION_JS_REGEX = r"integrations.*\.js$"
-INTEGRATION_YML_REGEX = r"integrations.*\.yml$"
-PLAYBOOK_REGEX = r"(?!Test)playbooks.*playbook-.*\.yml$"
-INTEGRATION_REGEX = r"integrations.*integration-.*\.yml$"
-TEST_PLAYBOOK_REGEX = r"TestPlaybooks.*playbook-.*\.yml$"
-TEST_NOT_PLAYBOOK_REGEX = r"TestPlaybooks.(?!playbook).*-.*\.yml$"
-BETA_SCRIPT_REGEX = r"beta_integrations.*script-.*\.yml$"
-BETA_PLAYBOOK_REGEX = r"beta_integrations.*playbook-.*\.yml$"
-BETA_INTEGRATION_REGEX = r"beta_integrations.*integration-.*\.yml$"
 
 CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, TEST_NOT_PLAYBOOK_REGEX,
                          BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX, SCRIPT_YML_REGEX,
                          INTEGRATION_YML_REGEX]
 
-CODE_FILES_REGEX = [INTEGRATION_JS_REGEX, INTEGRATION_PY_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX]
-
-# File type regex
-SCRIPT_TYPE_REGEX = ".*script-.*.yml"
-
 # File names
 ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonIntegrationPython.yml",
-             "scripts/script-CommonServer.yml", "scripts/script-CommonServerPython.yml",
-             "scripts/script-CommonServerUserPython.yml", "scripts/script-CommonUserServer.yml"]
+             "scripts/script-CommonServer.yml", "scripts/script-CommonServerUserPython.yml",
+             "scripts/script-CommonUserServer.yml", "scripts/CommonServerPython/CommonServerPython.yml"]
 
 # secrets white list file to be ignored in tests to prevent full tests running each time it is updated
 SECRETS_WHITE_LIST = 'secrets_white_list.json'
 
 
-class LOG_COLORS:
-    NATIVE = '\033[m'
-    RED = '\033[01;31m'
-    GREEN = '\033[01;32m'
-
-
-# print srt in the given color
-def print_color(msg, color):
-    print(str(color) + str(msg) + LOG_COLORS.NATIVE)
-
-
-def print_error(error_str):
-    print_color(error_str, LOG_COLORS.RED)
-
-
-def run_git_command(command):
-    p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
-    p.wait()
-    if p.returncode != 0:
-        print_error("Failed to run git command " + command)
-        sys.exit(1)
-    return p.stdout.read()
+# Global used to indicate if failed during any of the validation states
+_FAILED = False
 
 
 def checked_type(file_path, regex_list):
@@ -87,113 +43,84 @@ def checked_type(file_path, regex_list):
     return False
 
 
-def str2bool(v):
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
-        return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
-        return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
+def validate_not_a_package_test_script(file_path):
+    return '_test' not in file_path and 'test_' not in file_path
 
 
 def get_modified_files(files_string):
     """Get a string of the modified files"""
     is_conf_json = False
+    is_reputations_json = False
+
+    sample_tests = []
     all_tests = []
     modified_files_list = []
     modified_tests_list = []
     all_files = files_string.split('\n')
 
-    for file in all_files:
-        file_data = file.split()
+    for _file in all_files:
+        file_data = _file.split()
         if not file_data:
             continue
 
         file_path = file_data[1]
         file_status = file_data[0]
 
+        # ignoring renamed and deleted files.
+        # also, ignore files in ".circle", ".github" and ".hooks" directories and .gitignore
         if (file_status.lower() == 'm' or file_status.lower() == 'a') and not file_path.startswith('.'):
-            if checked_type(file_path, CODE_FILES_REGEX):
+            if checked_type(file_path, CODE_FILES_REGEX) and validate_not_a_package_test_script(file_path):
                 dir_path = os.path.dirname(file_path)
                 file_path = glob.glob(dir_path + "/*.yml")[0]
 
+            # Common scripts (globally used so must run all tests)
             if checked_type(file_path, ALL_TESTS):
                 all_tests.append(file_path)
+                modified_files_list.append(file_path)
+
+            # integrations, scripts, playbooks, test-scripts
             elif checked_type(file_path, CHECKED_TYPES_REGEXES):
                 modified_files_list.append(file_path)
+
+            # tests
             elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 modified_tests_list.append(file_path)
+
+            # reputations.json
+            elif re.match(MISC_REPUTATIONS_REGEX, file_path, re.IGNORECASE):
+                is_reputations_json = True
+
+            # conf.json
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
                 is_conf_json = True
-            elif SECRETS_WHITE_LIST in file_path:
-                modified_files_list.append(file_path)
-            elif file_status.lower() == 'm' and 'id_set.json' not in file_path:
-                all_tests.append(file_path)
 
-    return modified_files_list, modified_tests_list, all_tests, is_conf_json
+            # docs and test files does not influence integration tests filtering
+            elif file_path.startswith(INTEGRATIONS_DIR) or file_path.startswith(SCRIPTS_DIR):
+                if os.path.splitext(file_path)[-1] not in FILE_TYPES_FOR_TESTING:
+                    continue
 
+            elif re.match(DOCS_REGEX, file_path) or os.path.splitext(file_path)[-1] in ['.md', '.png']:
+                continue
 
-def collect_ids(file_path):
-    """Collect id mentioned in file_path"""
-    data_dictionary = get_json(file_path)
+            elif SECRETS_WHITE_LIST not in file_path:
+                sample_tests.append(file_path)
 
-    if data_dictionary:
-        return data_dictionary.get('id', '-')
+    return modified_files_list, modified_tests_list, all_tests, is_conf_json, sample_tests, is_reputations_json
 
 
 def get_name(file_path):
-    data_dictionary = get_json(file_path)
+    data_dictionary = get_yaml(file_path)
 
     if data_dictionary:
         return data_dictionary.get('name', '-')
 
 
-def get_from_version(file_path):
-    data_dictionary = get_json(file_path)
-
-    if data_dictionary:
-        return data_dictionary.get('fromversion', '0.0.0')
-
-
-def get_to_version(file_path):
-    data_dictionary = get_json(file_path)
-
-    if data_dictionary:
-        return data_dictionary.get('toversion', '99.99.99')
-
-
 def get_tests(file_path):
     """Collect tests mentioned in file_path"""
-    data_dictionary = get_json(file_path)
+    data_dictionary = get_yaml(file_path)
     # inject no tests to whitelist so adding values to white list will not force all tests
-    if SECRETS_WHITE_LIST in file_path:
-        data_dictionary = {'tests': ["No test - whitelist"]}
     if data_dictionary:
         return data_dictionary.get('tests', [])
-
-
-def get_script_or_integration_id(file_path):
-    data_dictionary = get_json(file_path)
-
-    if data_dictionary:
-        commonfields = data_dictionary.get('commonfields', {})
-        return commonfields.get('id', ['-', ])
-
-
-def get_json(file_path):
-    data_dictionary = None
-    with open(os.path.expanduser(file_path), "r") as f:
-        if file_path.endswith(".yaml") or file_path.endswith('.yml'):
-            try:
-                data_dictionary = yaml.safe_load(f)
-            except Exception as e:
-                print_error(file_path + " has yml structure issue. Error was: " + str(e))
-                return []
-
-    if type(data_dictionary) is dict:
-        return data_dictionary
-    else:
-        return {}
 
 
 def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, catched_playbooks, tests_set):
@@ -252,7 +179,7 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
         if detected_usage and test_playbook_id not in test_ids:
             caught_missing_test = True
             print_error("The playbook {} does not appear in the conf.json file, which means no test with it will run."
-                        "pleae update the conf.json file accordingly".format(test_playbook_name))
+                        "please update the conf.json file accordingly".format(test_playbook_name))
 
     missing_ids = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts,
                                       integration_ids, playbook_ids, script_ids)
@@ -269,15 +196,16 @@ def update_missing_sets(catched_intergrations, catched_playbooks, catched_script
     return missing_ids
 
 
-def get_test_ids():
+def get_test_ids(check_nightly_status=False):
     test_ids = []
     with open("./Tests/conf.json", 'r') as conf_file:
         conf = json.load(conf_file)
 
     conf_tests = conf['tests']
     for t in conf_tests:
-        playbook_id = t['playbookID']
-        test_ids.append(playbook_id)
+        if not check_nightly_status or not t.get('nightly', False):
+            playbook_id = t['playbookID']
+            test_ids.append(playbook_id)
 
     return test_ids
 
@@ -310,7 +238,8 @@ def find_tests_for_modified_files(modified_files):
         print_color(message, LOG_COLORS.RED)
 
     if caught_missing_test or len(missing_ids) > 0:
-        sys.exit(1)
+        global _FAILED
+        _FAILED = True
 
     return tests_set
 
@@ -324,18 +253,19 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
             if test in test_ids or re.match(NO_TESTS_FORMAT, test, re.IGNORECASE):
                 if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                         re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
-                    id = get_script_or_integration_id(file_path)
+                    _id = get_script_or_integration_id(file_path)
 
                 else:
-                    id = get_name(file_path)
+                    _id = get_name(file_path)
 
-                missing_ids = missing_ids - set([id])
+                missing_ids = missing_ids - {_id}
                 tests.add(test)
 
             else:
                 message = "The test '{0}' does not exist in the conf.json file, please re-check your code".format(test)
                 print_color(message, LOG_COLORS.RED)
-                sys.exit(1)
+                global _FAILED
+                _FAILED = True
 
     return missing_ids
 
@@ -345,7 +275,8 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     playbook_to_version = {}
     integration_to_version = {}
     for file_path in modified_files:
-        if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE):
+        if re.match(SCRIPT_TYPE_REGEX, file_path, re.IGNORECASE) or \
+                re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE):
             name = get_name(file_path)
             script_names.add(name)
             script_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
@@ -354,10 +285,11 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
             playbook_names.add(name)
             playbook_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
         elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
-                re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
-            id = get_script_or_integration_id(file_path)
-            integration_ids.add(id)
-            integration_to_version[id] = (get_from_version(file_path), get_to_version(file_path))
+                re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
+            _id = get_script_or_integration_id(file_path)
+            integration_ids.add(_id)
+            integration_to_version[_id] = (get_from_version(file_path), get_to_version(file_path))
 
     with open("./Tests/id_set.json", 'r') as conf_file:
         id_set = json.load(conf_file)
@@ -539,13 +471,13 @@ def update_test_set(tests_set, tests):
 def get_test_from_conf(branch_name):
     tests = set([])
     changed = set([])
-    change_string = run_git_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
-    added_groups = re.findall('(\+[ ]+")(.*)(":)', change_string)
+    change_string = run_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
+    added_groups = re.findall(r'(\+[ ]+")(.*)(":)', change_string)
     if added_groups:
         for group in added_groups:
             changed.add(group[1])
 
-    deleted_groups = re.findall('(\-[ ]+")(.*)(":)', change_string)
+    deleted_groups = re.findall(r'(-[ ]+")(.*)(":)', change_string)
     if deleted_groups:
         for group in deleted_groups:
             changed.add(group[1])
@@ -574,11 +506,18 @@ def get_test_from_conf(branch_name):
     return tests
 
 
-def get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json, branch_name):
+def get_test_list(files_string, branch_name):
     """Create a test list that should run"""
+    modified_files, modified_tests_list, all_tests, is_conf_json, sample_tests, is_reputations_json = \
+        get_modified_files(files_string)
+
     tests = set([])
     if modified_files:
         tests = find_tests_for_modified_files(modified_files)
+
+    # Adding a unique test for a json file.
+    if is_reputations_json:
+        tests.add('reputations.json Test')
 
     for file_path in modified_tests_list:
         test = collect_ids(file_path)
@@ -589,35 +528,47 @@ def get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json, 
         tests = tests.union(get_test_from_conf(branch_name))
 
     if all_tests:
+        print_warning('Running all tests due to: {}'.format(','.join(all_tests)))
         tests.add("Run all tests")
 
-    if not tests and (modified_files or modified_tests_list or all_tests):
-        print_color("There are no tests that check the changes you've done, please make sure you write one",
-                    LOG_COLORS.RED)
-        sys.exit(1)
+    if sample_tests:  # Choosing 3 random tests for infrastructure testing
+        print_warning('Collecting sample tests due to: {}'.format(','.join(sample_tests)))
+        test_ids = get_test_ids(check_nightly_status=True)
+        rand = random.Random(files_string + branch_name)
+        while len(tests) < 3:
+            tests.add(rand.choice(test_ids))
+
+    if not tests:
+        if modified_files or modified_tests_list or all_tests:
+            print_error("There are no tests that check the changes you've done, please make sure you write one")
+            global _FAILED
+            _FAILED = True
+        else:
+            print_warning("Running Sanity check only")
+            tests.add('DocumentationTest')  # test with integration configured
+            tests.add('TestCommonPython')  # test with no integration configured
 
     return tests
 
 
-def create_test_file(is_nightly):
+def create_test_file(is_nightly, skip_save=False):
     """Create a file containing all the tests we need to run for the CI"""
     tests_string = ''
     if not is_nightly:
-        branches = run_git_command("git branch")
-        branch_name_reg = re.search("\* (.*)", branches)
+        branches = run_command("git branch")
+        branch_name_reg = re.search(r"\* (.*)", branches)
         branch_name = branch_name_reg.group(1)
 
         print("Getting changed files from the branch: {0}".format(branch_name))
         if branch_name != 'master':
-            files_string = run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
+            files_string = run_command("git diff --name-status origin/master...{0}".format(branch_name))
         else:
-            commit_string = run_git_command("git log -n 2 --pretty='%H'")
+            commit_string = run_command("git log -n 2 --pretty='%H'")
             commit_string = commit_string.replace("'", "")
             last_commit, second_last_commit = commit_string.split()
-            files_string = run_git_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
+            files_string = run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
-        modified_files, modified_tests_list, all_tests, is_conf_json = get_modified_files(files_string)
-        tests = get_test_list(modified_files, modified_tests_list, all_tests, is_conf_json, branch_name)
+        tests = get_test_list(files_string, branch_name)
 
         tests_string = '\n'.join(tests)
         if tests_string:
@@ -625,9 +576,10 @@ def create_test_file(is_nightly):
         else:
             print('No filter configured, running all tests')
 
-    print("Creating filter_file.txt")
-    with open("./Tests/filter_file.txt", "w") as filter_file:
-        filter_file.write(tests_string)
+    if not skip_save:
+        print("Creating filter_file.txt")
+        with open("./Tests/filter_file.txt", "w") as filter_file:
+            filter_file.write(tests_string)
 
 
 if __name__ == "__main__":
@@ -635,10 +587,15 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Utility CircleCI usage')
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly or not')
+    parser.add_argument('-s', '--skip-save', type=str2bool,
+                        help='Skipping saving the test filter file (good for simply doing validation)')
     options = parser.parse_args()
 
     # Create test file based only on committed files
-    create_test_file(options.nightly)
-
-    print_color("Finished creation of the test filter file", LOG_COLORS.GREEN)
-    sys.exit(0)
+    create_test_file(options.nightly, options.skip_save)
+    if not _FAILED:
+        print_color("Finished test configuration", LOG_COLORS.GREEN)
+        sys.exit(0)
+    else:
+        print_color("Failed test configuration. See previous errors.", LOG_COLORS.RED)
+        sys.exit(1)

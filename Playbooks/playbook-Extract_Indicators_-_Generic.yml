@@ -236,4 +236,3 @@ outputs:
   type: string
 tests:
     - No tests - Deprecated
-releaseNotes: Deprecated this playbook

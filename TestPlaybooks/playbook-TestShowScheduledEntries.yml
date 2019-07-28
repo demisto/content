@@ -1,0 +1,318 @@
+id: TestShowScheduledEntries
+version: -1
+name: TestShowScheduledEntries
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d6ecfc1b-b9e3-4cb1-8d28-7777ade7206c
+    type: start
+    task:
+      id: d6ecfc1b-b9e3-4cb1-8d28-7777ade7206c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 0c6de3c7-fe6e-40ee-8cfd-e52733eb59bf
+    type: regular
+    task:
+      id: 0c6de3c7-fe6e-40ee-8cfd-e52733eb59bf
+      version: -1
+      name: Schedule Print
+      scriptName: ScheduleCommand
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      command:
+        simple: '!Print value="Hello World"'
+      cron:
+        simple: '* * * * *'
+      endDate: {}
+      times:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 1bfff7ee-4bd0-4987-88dc-b4971da5d8ac
+    type: regular
+    task:
+      id: 1bfff7ee-4bd0-4987-88dc-b4971da5d8ac
+      version: -1
+      name: ShowScheduledEntries
+      scriptName: ShowScheduledEntries
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      incidentId: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: f6a3f593-9f68-4323-8f22-f9a7a4cfcbd2
+    type: regular
+    task:
+      id: f6a3f593-9f68-4323-8f22-f9a7a4cfcbd2
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: a8523d5a-9359-4deb-8dd0-5dd64528f109
+    type: condition
+    task:
+      id: a8523d5a-9359-4deb-8dd0-5dd64528f109
+      version: -1
+      name: Found Scheduled Tasks
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ScheduledEntries.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: b1071922-80ce-41cf-80e1-0707bbdb2660
+    type: regular
+    task:
+      id: b1071922-80ce-41cf-80e1-0707bbdb2660
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 523628ef-7fa9-42d8-816f-800c3a672287
+    type: regular
+    task:
+      id: 523628ef-7fa9-42d8-816f-800c3a672287
+      version: -1
+      name: Sleep
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      seconds:
+        simple: "120"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: a3f7ebef-9909-432d-80d1-d976574067c2
+    type: condition
+    task:
+      id: a3f7ebef-9909-432d-80d1-d976574067c2
+      version: -1
+      name: Found No Scheduled Tasks
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: ScheduledEntries.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 231156b1-84bc-4948-88a6-6794bd2d72c1
+    type: regular
+    task:
+      id: 231156b1-84bc-4948-88a6-6794bd2d72c1
+      version: -1
+      name: Close
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      dataclassification: {}
+      id: {}
+      location: {}
+      priority: {}
+      reviewcomment: {}
+      reviewedby: {}
+      rsshandoverfeed: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 959ec6ab-c367-4d7f-8078-608d8da1855b
+    type: regular
+    task:
+      id: 959ec6ab-c367-4d7f-8078-608d8da1855b
+      version: -1
+      name: ShowScheduled
+      scriptName: ShowScheduledEntries
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      incidentId: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1640,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

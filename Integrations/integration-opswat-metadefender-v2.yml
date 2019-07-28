@@ -1,0 +1,332 @@
+commonfields:
+  id: OPSWAT-Metadefender V2
+  version: -1
+  sortvalues: []
+name: OPSWAT-Metadefender V2
+display: OPSWAT-Metadefender V2
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: multi-scanning engine uses 30+ anti-malware engines to scan files for
+  threats, significantly increasing malware detection.
+configuration:
+- display: Server URL (e.g. http://localhost:8008/metascan_rest/)
+  name: url
+  defaultvalue: http://localhost:8008/metascan_rest/
+  type: 0
+  required: true
+- display: API Key - Needed in cloud based solutions
+  name: api_key
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Cloud based
+  name: cloud
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: The high threshold
+  name: highPercnt
+  defaultvalue: "66"
+  type: 0
+  required: false
+- display: The low threshold
+  name: lowPercnt
+  defaultvalue: "34"
+  type: 0
+  required: false
+script:
+  script: |
+    import os
+    import requests
+    import json
+    import shutil
+
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBAL VARS '''
+    PARAMS = demisto.params()
+    BASE_URL = PARAMS['url'] + '/' if PARAMS['url'][-1] != '/' else PARAMS['url']
+    USE_SSL = not PARAMS.get('insecure', False)
+    API_KEY = PARAMS.get('api_key', '')
+    USE_CLOUD = PARAMS.get('cloud', False)
+    HIGH_THRESHOLD = int(PARAMS.get('highPercnt', 66))
+    LOW_THRESHOLD = int(PARAMS.get('lowPercnt', 34))
+
+
+
+    DEFAULT_HEADERS = {
+        'Accept': 'application/json'
+    }
+
+    HTTP_ERROR_CODES = {
+         '400': 'Request failed, got status 400: bad request. Check command parameters',
+         '401': 'Request failed, got status 401: unauthorized. Check your API Key',
+         '404': 'Request failed, got status 404: not found. Check integration URL Address',
+     }
+
+    ''' HELPER FUNCTIONS '''
+    def http_req(method='GET', url_suffix='', file=None, parse_json=True):
+        data = None
+        url = BASE_URL + url_suffix
+        headers = DEFAULT_HEADERS
+        if USE_CLOUD:
+            headers['apikey'] = API_KEY
+        if file:
+            headers['filename'] = file['file_name']
+            headers['content-type'] = 'application/json'
+            data=file['data']
+        if method.upper() == 'GET':
+            res = requests.get(url, verify=USE_SSL, headers=headers)
+        elif method.upper() == 'POST':
+            res = requests.post(url, verify=USE_SSL, data=data, headers=headers)
+        else:
+            return_error(f'Got unsupporthed http method: {method}')
+            return ''
+        status = res.status_code
+        if status != 200:
+            if str(status) in HTTP_ERROR_CODES:
+                return_error(HTTP_ERROR_CODES[str(status)])
+            else:
+                return_error(f'Request failed got status {status}')
+        if parse_json:
+            return res.json()
+        else:
+            return res.content
+
+    def scan_file(file_entry_id):
+        try:
+            file_entry = demisto.getFilePath(file_entry_id)
+        except ValueError as e:
+            return_error(f'Failed to find file entry with id:\"{file_entry_id}\". got error: {e}')
+        file_name = file_entry['name']
+        shutil.copy(file_entry['path'], file_name)
+        try:
+            with open(file_name, 'rb') as f:
+                fileContent = f.read()
+                res = http_req(method='POST', url_suffix='file', file={'file_name': file_name, 'data':fileContent})
+        finally:
+            shutil.rmtree(file_name, ignore_errors=True)
+        return res, file_name
+
+
+    def get_hash_info(file_hash):
+        res = http_req(method='GET', url_suffix=f'hash/{file_hash}')
+        return res
+
+    def get_scan_result(scan_id):
+        res = http_req(method='GET', url_suffix=f'file/{scan_id}')
+        return res
+
+    def get_hash_info_command():
+        file_hash = demisto.args()['hash']
+        res = get_hash_info(file_hash)
+        ec = {}
+        md ='# OPSWAT-Metadefender\n'
+        dbotScore = 0;
+
+        if 'file_info' in res:
+            file_info = res['file_info']
+            display_name = file_info['display_name']
+            scan_results = res['scan_results']
+            file_type_description = file_info['file_type_description']
+            scan_all_result_a = scan_results['scan_all_result_a']
+            total_avs = scan_results['total_avs']
+            scan_details = scan_results['scan_details']
+            total_detected_avs = 0
+            if 'total_detected_avs' in scan_results:
+                    total_detected_avs = scan_results['total_detected_avs']
+            else:
+                for key in scan_details:
+                    if scan_details[key]['threat_found'] != '':
+                        total_detected_avs = total_detected_avs +1
+
+            md += f'File name: {display_name}\n';
+            md += f'File description: {file_type_description}\n';
+            md += f'Scan result: {scan_all_result_a}\n';
+            md += f'Detected AV: {total_detected_avs}/{total_avs}\n';
+            md += 'AV Name|Def Time|Threat Name Found\n';
+            md += '---|---|---\n';
+
+            for key, scan in scan_details.items():
+                def_time = scan['def_time']
+                threat_found = scan['threat_found']
+                md += f'{key}|{def_time}|{threat_found}\n'
+            percntBad = (total_detected_avs / total_avs) * 100
+            if percntBad >= HIGH_THRESHOLD:
+                dbotScore = 3
+                ec[outputPaths['file']] = {
+                    'Hash': file_hash,
+                    'Malicious': {'Vendor': 'OPSWAT', 'Description': 'Result from OPSWAT-Metadefender'} }
+            elif percntBad >= LOW_THRESHOLD:
+                dbotScore = 2
+            else:
+                dbotScore = 1
+
+            ec['DBotScore'] = {'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'OPSWAT', 'Score': dbotScore}
+        else:
+            md += f'No results for hash {file_hash}\n'
+        entry = {
+                'ContentsFormat': formats['json'],
+                'Type': entryTypes['note'],
+                'Contents': res,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': md,
+                'EntryContext': ec
+                }
+        demisto.results(entry)
+
+
+    def scan_file_command():
+        file_entry_id = demisto.args()['fileId']
+        res, file_name= scan_file(file_entry_id)
+        scan_id = res['data_id']
+        md = '# OPSWAT-Metadefender\n'
+        ec = {'OPSWAT': {
+            'FileName': file_name,
+            'ScanId': scan_id
+        }}
+
+        md += 'The file has been successfully submitted to scan.\n'
+        md += f'Scan id: {scan_id}\n'
+        entry = {
+                'ContentsFormat': formats['json'],
+                'Type': entryTypes['note'],
+                'Contents': res,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': md,
+                'EntryContext': ec
+                }
+        demisto.results(entry)
+
+    def get_scan_result_command():
+        scan_id = demisto.args()['id']
+        res = get_scan_result(scan_id)
+        md = '# OPSWAT-Metadefender\n';
+        md += f'### Results for scan id {scan_id}\n';
+        ec = {};
+        dbotScore = 0;
+
+
+        if 'file_info' in res and 'file_type_description' in res['file_info']:
+            file_info = res['file_info']
+            process_info = res['process_info']
+            display_name = file_info['display_name']
+            progress_percentage = process_info['progress_percentage']
+            if progress_percentage < 100:
+                md += f'### The scan proccess is in progrees (done: {progress_percentage}%) \n'
+            md += f'File name: {display_name}\n';
+            if 'scan_results' in res:
+                scan_results = res['scan_results']
+                total_avs = scan_results['total_avs']
+                scan_all_result_a = scan_results['scan_all_result_a']
+                scan_all_result_i = scan_results['scan_all_result_i']
+                md += f'Scan result:{scan_all_result_a}\n'
+                md += f'Detected AV: {scan_all_result_i}/{total_avs}\n'
+                md += 'AV Name|Def Time|Threat Name Found\n';
+                md += '---|---|---\n';
+                avRes = scan_results['scan_details']
+                for key, scan in avRes.items():
+                    def_time = scan['def_time']
+                    threat_found = scan['threat_found']
+                    md += f'{key}|{def_time}|{threat_found}\n'
+                percntBad = (scan_all_result_i / total_avs) * 100
+
+                ec[f'OPSWAT(val.ScanId == {scan_id}).ScanProgress'] = progress_percentage
+                ec[f'OPSWAT(val.ScanId == {scan_id}).PercentageBad'] = percntBad
+                ec[f'OPSWAT(val.ScanId == {scan_id}).Result'] = scan_all_result_a
+
+                if percntBad >= percntBad >= HIGH_THRESHOLD:
+                    dbotScore = 3
+                    ec[outputPaths['file']] = {
+                    'Hash': file_info['md5'],
+                    'MD5': file_info['md5'],
+                    'Malicious': {'Vendor': 'OPSWAT', 'Description': 'Result from OPSWAT-Metadefender'} }
+                elif percntBad >= LOW_THRESHOLD:
+                    dbotScore = 2
+                else:
+                    dbotScore = 1
+                ec['DBotScore'] = {'Indicator': file_info['md5'], 'Type': 'hash', 'Vendor': 'OPSWAT', 'Score': dbotScore}
+        else:
+            md += 'No results for this id\n';
+        entry = {
+                'ContentsFormat': formats['json'],
+                'Type': entryTypes['note'],
+                'Contents': res,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': md,
+                'EntryContext': ec
+                }
+        demisto.results(entry)
+
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    LOG('Command being called is %s' % (demisto.command()))
+
+    try:
+        # Remove proxy if not set to true in params
+        handle_proxy()
+
+        if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+            get_hash_info('66DA1A91E1ED5D59BECFAD85F53C05F9')
+            demisto.results('ok')
+        if demisto.command() == 'opswat-scan-file':
+            scan_file_command()
+        if demisto.command() == 'opswat-hash':
+            get_hash_info_command()
+        if demisto.command() == 'opswat-scan-result':
+            get_scan_result_command()
+    except Exception as e:
+        message = f'Unexpected error: {e}'
+        LOG(str(e))
+        LOG.print_log()
+        return_error(message)
+  type: python
+  commands:
+  - name: opswat-scan-file
+    arguments:
+    - name: fileId
+      required: true
+      default: true
+      description: Entry id of a file in Demisto
+    outputs:
+    - contextPath: OPSWAT.FileName
+      description: OPSWAT file name to scan
+      type: string
+    - contextPath: OPSWAT.ScanId
+      description: OPSWAT scan id of the scan
+      type: string
+    description: Scan file in OPSWAT
+  - name: opswat-hash
+    arguments:
+    - name: hash
+      required: true
+      default: true
+      description: File hash (Can be any hash type)
+    description: Check file hash on OPSWAT
+  - name: opswat-scan-result
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: OPSWAT scan id
+    description: Get OPSWAT result
+  dockerimage: demisto/python3:3.7.2.214
+  subtype: python3
+  runonce: false
+tests:
+  - No tests - no instance

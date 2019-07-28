@@ -561,14 +561,13 @@ script:
       description: API key
     - name: deployment_profile
       required: true
-      description: Sensor profile to be deployed
+      description: The ID of the sensor profile to be deployed. To get the ID, run the `!endgame-get-deployment-profiles` command.
     - name: endpoints_transaction_id
-      description: Last transaction id
+      description: The ID of the last transaction. To get the ID, run the `!endgame-get-unmanaged-endpoints` command or the `endgame-get-endpoint-status` command. The value is available from the ${EndGame.TransactionID} context key.
     - name: endpoint_ids
-      description: ID's of endpoints to be deployed. Must provide IP's as well
+      description: The IDs of endpoints to be deployed. Must also provide IPs. To get the IDs, run the `!endgame-get-unmanaged-endpoints` command, and copy the ID (not to be confused with the machine ID).
     - name: endpoint_ips
-      description: IP addresses of endpoints to be deployed. Must provide ID's as
-        well
+      description: The IP addresses of endpoints to be deployed. Must also provide IDs.
     outputs:
     - contextPath: EndGame.Deployment.DeploymentProfile
       description: The deployed sensor profile
@@ -603,9 +602,9 @@ script:
     arguments: []
     outputs:
     - contextPath: EndGame.TransactionID
-      description: id of transaction to use when deploying
+      description: ID of transaction to use when deploying
     - contextPath: EndGame.Endpoints.MachineId
-      description: Endgame id of the machine
+      description: Endgame ID of the machine
     - contextPath: EndGame.Endpoints.CoreOs
       description: Core OS of the machine
     - contextPath: EndGame.Endpoints.Name
@@ -616,6 +615,8 @@ script:
       description: IP address of the machine
     - contextPath: EndGame.Endpoints.UpdatedAt
       description: Last updates time
+    - contextPath: EndGame.Endpoints.ID
+      description: Endpoint ID
     description: Get all unmanaged endpoint details
   - name: endgame-get-endpoint-status
     arguments:
@@ -792,3 +793,5 @@ script:
     - contextPath: EndGame.Investigations.Status
       description: Endgame investigation status
     description: Returns the current investigation status
+tests:
+  - No test - no instance

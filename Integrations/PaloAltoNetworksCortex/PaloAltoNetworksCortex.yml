@@ -1,0 +1,638 @@
+category: Analytics & SIEM
+commonfields:
+  id: Palo Alto Networks Cortex
+  version: -1
+configuration:
+- display: Authentication Token
+  name: token
+  required: true
+  type: 4
+- display: Authentication ID
+  name: auth_id
+  required: true
+  type: 4
+- display: Authentication Key
+  name: auth_key
+  required: true
+  type: 4
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: Traps Threats
+  display: Query for fetching events
+  name: fetch_query
+  options:
+  - Traps Threats
+  - Firewall Threats
+  - Cortex XDR Analytics
+  required: false
+  type: 15
+- defaultvalue: 24 hours
+  display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
+    1 year)
+  name: first_fetch_timestamp
+  required: false
+  type: 0
+- display: Severity of events to fetch (Traps)
+  name: traps_severity
+  options:
+  - all
+  - critical
+  - high
+  - medium
+  - low
+  - informational
+  - configuration
+  required: false
+  type: 16
+- display: Severity of events to fetch (Firewall)
+  name: firewall_severity
+  options:
+  - all
+  - critical
+  - high
+  - medium
+  - low
+  - informational
+  - unused
+  required: false
+  type: 16
+- display: Subtype of events to fetch (Firewall)
+  name: firewall_subtype
+  options:
+  - all
+  - url
+  - antivirus
+  - spyware
+  - vulnerability
+  - file
+  - scan
+  - flood
+  - packet
+  - resource
+  - data
+  - wildfire
+  - wildfire-virus
+  required: false
+  type: 16
+- display: Severity of alerts to fetch (XDR Analytics)
+  name: xdr_severity
+  defaultvalue: ""
+  type: 16
+  required: false
+  options:
+  - all
+  - High
+  - Medium
+  - Low
+  - Info
+- display: Category of alerts to fetch (XDR Analytics)
+  name: xdr_category
+  defaultvalue: ""
+  type: 16
+  required: false
+  options:
+  - all
+  - Consecutive Connections
+  - DNS Tunneling
+  - Failed Connections
+  - Failed DNS
+  - Grayware
+  - High Connection Rate
+  - Large Upload (FTP)
+  - Large Upload (Generic)
+  - Large Upload (HTTPS)
+  - Large Upload (SMTP)
+  - Malware
+  - New Administrative Behavior
+  - Port Scan
+  - Random Looking DNS
+  - Recurring Rare Domain Access
+  - Recurring Rare IP Access
+  - Remote Command Execution
+  - Reverse Connection
+  - SMB/KRB Traffic from Non-Standard Process
+  - Script Connecting to Rare External Host
+  - SpamBot Traffic
+  - Tunneling Process
+  - Uncommon ARP Cache Listing via arp.exe
+  - Uncommon IP Configuration Listing via ipconfig.exe
+  - Uncommon Local Scheduled Task Creation via schtasks.exe
+  - Uncommon Net Group Execution
+  - Uncommon Net User
+  - Uncommon Remote Scheduled Task Creation via schtasks.exe
+  - Uncommon Routing Table Listing via route.exe
+  - Uncommon net localgroup Execution
+  - scrons.exe Rare Child Process
+  - wmiprsve.exe Rare Child Process
+  - wsmprovhost.exe Rare Child Process
+description: This framework manages all PA's cloud managed products
+display: Palo Alto Networks Cortex
+name: Palo Alto Networks Cortex
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: '1970-01-01 00:00:00'
+      description: The query start time. For example, startTime="2018-04-26 00:00:00"
+      isArray: false
+      name: startTime
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '2020-01-01 00:00:00'
+      description: The query end time. For example, endTime="2018-04-26 00:00:00"
+      isArray: false
+      name: endTime
+      required: false
+      secret: false
+    - default: false
+      defaultValue: select * from panw.traffic limit 5
+      description: 'A free-text SQL query. For example, query="select * from panw.traffic
+        limit 5". There are multiple tables in Loggings, for example: threat, traffic,
+        and so on. Refer to the Cortex Logging service schema reference for the full
+        list.'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The time range for the query, used with the rangeValue argument.
+        For example, timeRange="weeks" timeValue="1" would run the query on the previous
+        week.
+      isArray: false
+      name: timeRange
+      predefined:
+      - minutes
+      - days
+      - weeks
+      required: false
+      secret: false
+    - default: false
+      description: The time value for the query, used with the timeRange argument.
+        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
+        week.
+      isArray: false
+      name: rangeValue
+      required: false
+      secret: false
+    deprecated: false
+    description: Runs a query on the Cortex logging service.
+    execution: false
+    name: cortex-query-logs
+    outputs:
+    - contextPath: Cortex.Logging.id
+      description: The ID of the log.
+      type: string
+    - contextPath: Cortex.Logging.score
+      description: The score of the log.
+      type: number
+    - contextPath: Cortex.Logging.action
+      description: The action of the log.
+      type: Unknown
+    - contextPath: Cortex.Logging.app
+      description: The app of the log.
+      type: Unknown
+    - contextPath: Cortex.Logging.proto
+      description: The protocol used.
+      type: string
+    - contextPath: Cortex.Logging.dst
+      description: The destination IP.
+      type: string
+    - contextPath: Cortex.Logging.rule
+      description: The rule used.
+      type: Unknown
+    - contextPath: Cortex.Logging.src
+      description: The source of the action.
+      type: Unknown
+    - contextPath: Cortex.Logging.category-of-app
+      description: The category of the application.
+      type: string
+    - contextPath: Cortex.Logging.srcloc
+      description: The source location.
+      type: string
+    - contextPath: Cortex.Logging.dstloc
+      description: The destination location.
+      type: string
+    - contextPath: Cortex.Logging.characteristic-of-app
+      description: The application's characteristics.
+      type: Unknown
+    - contextPath: Cortex.Logging.device_name
+      description: The name of the device.
+      type: string
+    - contextPath: Cortex.Logging.nat
+      description: Whether NAT was used.
+      type: number
+    - contextPath: Cortex.Logging.natdport
+      description: The NAT port.
+      type: Unknown
+    - contextPath: Cortex.Logging.natdst
+      description: The NAT destination.
+      type: Unknown
+    - contextPath: Cortex.Logging.natsrc
+      description: The NAT source.
+      type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: '1970-01-01 00:00:00'
+      description: The query start time. For example, startTime="2018-04-26 00:00:00"
+      isArray: false
+      name: startTime
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '2020-01-01 00:00:00'
+      description: The query end time. For example, endTime="2018-04-26 00:00:00"
+      isArray: false
+      name: endTime
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: The number of logs to return. Default is 10
+      isArray: false
+      name: logsAmount
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The time range for the query, used with the rangeValue argument.
+        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
+        week.
+      isArray: false
+      name: timeRange
+      predefined:
+      - minutes
+      - days
+      - weeks
+      required: false
+      secret: false
+    - default: false
+      description: The time value for the query, used with the timeRange argument.
+        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
+        week.
+      isArray: false
+      name: rangeValue
+      required: false
+      secret: false
+    deprecated: false
+    description: Runs a query on the Cortex logging service, according to preset queries.
+    execution: false
+    name: cortex-get-critical-threat-logs
+    outputs:
+    - contextPath: Cortex.Logging.id
+      description: The ID of the log.
+      type: string
+    - contextPath: Cortex.Logging.score
+      description: The score of the log.
+      type: number
+    - contextPath: Cortex.Logging.action
+      description: The action of the log.
+      type: Unknown
+    - contextPath: Cortex.Logging.app
+      description: The app of the log.
+      type: Unknown
+    - contextPath: Cortex.Logging.proto
+      description: The protocol used.
+      type: string
+    - contextPath: Cortex.Logging.dst
+      description: The destination IP.
+      type: string
+    - contextPath: Cortex.Logging.rule
+      description: The rule used.
+      type: Unknown
+    - contextPath: Cortex.Logging.src
+      description: The source of the action.
+      type: Unknown
+    - contextPath: Cortex.Logging.category-of-app
+      description: The category of the application.
+      type: string
+    - contextPath: Cortex.Logging.srcloc
+      description: The source location.
+      type: string
+    - contextPath: Cortex.Logging.dstloc
+      description: The destination location.
+      type: string
+    - contextPath: Cortex.Logging.characteristic-of-app
+      description: The application's characteristics.
+      type: Unknown
+    - contextPath: Cortex.Logging.device_name
+      description: The name of the device.
+      type: string
+    - contextPath: Cortex.Logging.nat
+      description: Whether NAT was used.
+      type: number
+    - contextPath: Cortex.Logging.natdport
+      description: The NAT port.
+      type: Unknown
+    - contextPath: Cortex.Logging.natdst
+      description: The NAT destination.
+      type: Unknown
+    - contextPath: Cortex.Logging.natsrc
+      description: The NAT source.
+      type: Unknown
+    - contextPath: Cortex.Logging.risk-of-app
+      description: The risk of the application.
+      type: Unknown
+    - contextPath: Cortex.Logging.type
+      description: The threat type.
+      type: Unknown
+    - contextPath: Cortex.Logging.pcad_id
+      description: The PCAP ID.
+      type: Unknown
+    - contextPath: Cortex.Logging.reportid
+      description: The report ID.
+      type: number
+    - contextPath: Cortex.Logging.category-of-threatid
+      description: The category of the threat ID.
+      type: Unknown
+    - contextPath: Cortex.Logging.subtype
+      description: The threat sub-type.
+      type: Unknown
+    - contextPath: Cortex.Logging.time_received
+      description: The time the logging was received.
+      type: Unknown
+    - contextPath: Cortex.Logging.pcap
+      description: The PCAP.
+      type: Unknown
+    - contextPath: Cortex.Logging.name-of-threatid
+      description: The name of the threat ID.
+      type: string
+    - contextPath: Cortex.Logging.severity
+      description: The threat severity.
+      type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: '1970-01-01 00:00:00'
+      description: Query start time. For example, startTime="2018-04-26 00:00:00"
+      isArray: false
+      name: startTime
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '2020-01-01 00:00:00'
+      description: Query end time. For example, endTime="2018-04-26 00:00:00"
+      isArray: false
+      name: endTime
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Amount of logs. Default is 10
+      isArray: false
+      name: logsAmount
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The time range for the query, used with the rangeValue argument.
+        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
+        week.
+      isArray: false
+      name: timeRange
+      predefined:
+      - minutes
+      - days
+      - weeks
+      required: false
+      secret: false
+    - default: false
+      description: The time value for the query, used with the timeRange argument.
+        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
+        week.
+      isArray: false
+      name: rangeValue
+      required: false
+      secret: false
+    deprecated: false
+    description: Runs a query on the Cortex logging service, according to preset queries.
+    execution: false
+    name: cortex-get-social-applications
+    outputs:
+    - contextPath: Cortex.Logging.id
+      description: The id of the log.
+      type: string
+    - contextPath: Cortex.Logging.score
+      description: The score of the log.
+      type: number
+    - contextPath: Cortex.Logging.action
+      description: The action of the log.
+      type: Unknown
+    - contextPath: Cortex.Logging.app
+      description: The app of the log.
+      type: Unknown
+    - contextPath: Cortex.Logging.proto
+      description: The protocol used.
+      type: string
+    - contextPath: Cortex.Logging.dst
+      description: The destination IP.
+      type: string
+    - contextPath: Cortex.Logging.rule
+      description: The rule used.
+      type: Unknown
+    - contextPath: Cortex.Logging.src
+      description: The source of the action.
+      type: Unknown
+    - contextPath: Cortex.Logging.category-of-app
+      description: The category of the application.
+      type: string
+    - contextPath: Cortex.Logging.srcloc
+      description: The source location.
+      type: string
+    - contextPath: Cortex.Logging.dstloc
+      description: The destination location.
+      type: string
+    - contextPath: Cortex.Logging.characteristic-of-app
+      description: The application's characteristics.
+      type: Unknown
+    - contextPath: Cortex.Logging.device_name
+      description: The name of the device.
+      type: string
+    - contextPath: Cortex.Logging.nat
+      description: Whether NAT was used.
+      type: number
+    - contextPath: Cortex.Logging.natdport
+      description: The NAT port.
+      type: Unknown
+    - contextPath: Cortex.Logging.natdst
+      description: The NAT destination.
+      type: Unknown
+    - contextPath: Cortex.Logging.natsrc
+      description: The NAT source.
+      type: Unknown
+    - contextPath: Cortex.Logging.risk-of-app
+      description: The risk of the application.
+      type: Unknown
+    - contextPath: Cortex.Logging.aggregations.size
+      description: The aggregations size.
+      type: Unknown
+    - contextPath: Cortex.Logging.natsport
+      description: The NAT port.
+      type: Unknown
+    - contextPath: Cortex.Logging.start
+      description: The traffic start.
+      type: Unknown
+    - contextPath: Cortex.Logging.subcategory-of-apptime_received
+      description: The sub-category of the application time.
+      type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: '1970-01-01 00:00:00'
+      description: The query start time. For example, startTime="2018-04-26 00:00:00"
+      isArray: false
+      name: startTime
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '2020-01-01 00:00:00'
+      description: The query end time. For example, endTime="2018-04-26 00:00:00"
+      isArray: false
+      name: endTime
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: The number of logs to return. Default is 10.
+      isArray: false
+      name: logsAmount
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The time range for the query, used with the rangeValue argument.
+        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
+        week.
+      isArray: false
+      name: timeRange
+      predefined:
+      - minutes
+      - days
+      - weeks
+      required: false
+      secret: false
+    - default: false
+      description: The time value for the query, used with the timeRange argument.
+        For example, timeRange="weeks" rangeValue="1" would run the query on the last
+        week.
+      isArray: false
+      name: rangeValue
+      required: false
+      secret: false
+    - default: false
+      description: The SHA256 hash of the file for the query. For example, SHA256="503ca1a4fc0d48b18c0336f544ba0f0abf305ae3a3f49b3c2b86b8645d6572dc"
+        would return all logs associated with this file.
+      isArray: false
+      name: SHA256
+      required: true
+      secret: false
+    deprecated: false
+    description: Runs a query on the Cortex logging service, according to preset queries.
+    execution: false
+    name: cortex-search-by-file-hash
+    outputs:
+    - contextPath: Cortex.Logging.id
+      description: The ID of the log.
+      type: string
+    - contextPath: Cortex.Logging.score
+      description: The score of the log.
+      type: number
+    - contextPath: Cortex.Logging.action
+      description: The action of the log.
+      type: Unknown
+    - contextPath: Cortex.Logging.app
+      description: The app of the log.
+      type: Unknown
+    - contextPath: Cortex.Logging.proto
+      description: The protocol used.
+      type: string
+    - contextPath: Cortex.Logging.dst
+      description: The destination IP address.
+      type: string
+    - contextPath: Cortex.Logging.rule
+      description: The rule used.
+      type: Unknown
+    - contextPath: Cortex.Logging.src
+      description: The source of the action.
+      type: Unknown
+    - contextPath: Cortex.Logging.category-of-app
+      description: The category of the application.
+      type: string
+    - contextPath: Cortex.Logging.srcloc
+      description: The source location.
+      type: string
+    - contextPath: Cortex.Logging.dstloc
+      description: The destination location.
+      type: string
+    - contextPath: Cortex.Logging.characteristic-of-app
+      description: The application's characteristics.
+      type: Unknown
+    - contextPath: Cortex.Logging.device_name
+      description: The name of the device.
+      type: string
+    - contextPath: Cortex.Logging.nat
+      description: Whether NAT was used.
+      type: number
+    - contextPath: Cortex.Logging.natdport
+      description: The NAT port.
+      type: Unknown
+    - contextPath: Cortex.Logging.natdst
+      description: The NAT destination.
+      type: Unknown
+    - contextPath: Cortex.Logging.natsrc
+      description: The NAT source.
+      type: Unknown
+    - contextPath: Cortex.Logging.risk-of-app
+      description: The risk of the application.
+      type: Unknown
+    - contextPath: Cortex.Logging.type
+      description: The threat type.
+      type: Unknown
+    - contextPath: Cortex.Logging.pcad_id
+      description: The PCAP ID.
+      type: Unknown
+    - contextPath: Cortex.Logging.reportid
+      description: The report ID.
+      type: number
+    - contextPath: Cortex.Logging.category-of-threatid
+      description: The category of the threat ID.
+      type: Unknown
+    - contextPath: Cortex.Logging.subtype
+      description: The threat sub-type.
+      type: Unknown
+    - contextPath: Cortex.Logging.time_received
+      description: The time the logging was received.
+      type: Unknown
+    - contextPath: Cortex.Logging.pcap
+      description: The PCAP.
+      type: Unknown
+    - contextPath: Cortex.Logging.name-of-threatid
+      description: The name of the threat ID.
+      type: string
+    - contextPath: Cortex.Logging.severity
+      description: Threat Severity.
+      type: Unknown
+  dockerimage: demisto/python_pancloud:1.0.0.286
+  isfetch: true
+  runonce: false
+  script: ''
+  type: python
+  subtype: python3
+tests:
+- Palo Alto Networks Cortex Test
+fromversion: 4.1.0

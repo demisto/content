@@ -95,4 +95,3 @@ outputs:
   description: Extracted URLs
 scripttarget: 0
 deprecated: true
-releaseNotes: Deprecated this script
