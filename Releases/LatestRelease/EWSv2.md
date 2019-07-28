@@ -1,0 +1,3 @@
+- Added new commands:
+  - ews-mark-items-as-read
+- Added option to mark fetched items as read from instance configuration. 
