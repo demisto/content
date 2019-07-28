@@ -548,6 +548,63 @@ script:
     - contextPath: Fidelis.Alert.SourceCountry
       description: Alert source country
       type: String
+  - arguments:
+    - default: false
+      description: The alert ID to download the file from
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Download a malware file from a specified alert
+    execution: false
+    name: fidelis-download-malware-file
+    outputs:
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the file
+      type: String
+    - contextPath: InfoFile.Extension
+      description: 'The file extenstion '
+      type: String
+    - contextPath: InfoFile.Info
+      description: Inforamtion about the file
+      type: String
+    - contextPath: InfoFile.Name
+      description: The name of the file
+      type: String
+    - contextPath: InfoFile.Size
+      description: The size of the file
+      type: Number
+    - contextPath: InfoFile.Type
+      description: The type of the file
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the alert to download the file from
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Download the PCAP file from an alert
+    execution: false
+    name: fidelis-download-pcap-file
+    outputs:
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the file
+      type: String
+    - contextPath: InfoFile.Info
+      description: File information
+      type: String
+    - contextPath: InfoFile.Name
+      description: Name of the file
+      type: String
+    - contextPath: InfoFile.Size
+      description: File size
+      type: Number
+    - contextPath: InfoFile.Type
+      description: The type of the file
+      type: String
   isfetch: true
   runonce: false
   script: '-'

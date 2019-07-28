@@ -6,6 +6,7 @@ import json
 import shutil
 import requests
 import random
+import urllib
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -41,6 +42,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, is_json
         files=files,
         verify=not INSECURE,
     )
+    # print(res.request.url)
     # Handle error responses gracefully
     if res.status_code not in {200, 201}:
         if res.status_code == 500:
@@ -675,6 +677,79 @@ def list_metadata():
     return_outputs(tableToMarkdown('Found {} Metadata:'.format(len(data)), data), context, results)
 
 
+def request_dpath(alert_id):
+
+    res = http_request('GET', '/j/rest/v1/alert/dpath/{}/'.format(alert_id))
+    dpath = res.get('decodingPaths')[0]
+    link_path = dpath.get('linkPath')
+    encoded_path = urllib.quote(link_path)
+    return encoded_path
+
+
+def download_malware_file_request(alert_id):
+
+    dpath = request_dpath(alert_id)
+    query_params = {
+        'uid': SESSION_ID,
+        'alert_id': alert_id,
+        'type': '1',
+        'params': dpath
+    }
+    res = http_request(
+        'GET',
+        '/query/tcpses_getfile.cgi',
+        params=query_params,
+        is_json=False)
+
+    return res
+
+
+def download_malware_file():
+    """
+    Download specific malware from the alert
+    """
+    alert_id = demisto.args().get('alert_id')
+    file_name = request_dpath(alert_id)
+    decoded_file_name = urllib.unquote(file_name)
+    results = download_malware_file_request(alert_id)
+
+    demisto.results(fileResult(
+        decoded_file_name + '.zip',
+        results,
+        file_type=entryTypes['entryInfoFile']))
+
+
+def download_pcap_request(alert_id):
+
+    query_params = {
+        'uid': SESSION_ID,
+        'alert_id': alert_id,
+        'commandpost': '127.0.0.1',
+    }
+
+    results = http_request(
+        'GET',
+        '/e.cgi',
+        params=query_params,
+        is_json=False
+    )
+
+    return results
+
+
+def download_pcap_file():
+    """
+    Download PCAP from an alert
+    """
+    alert_id = demisto.args().get('alert_id')
+
+    results = download_pcap_request(alert_id)
+    demisto.results(fileResult(
+        'Alert ID_' + alert_id + '.pcap',
+        results,
+        file_type=entryTypes['entryInfoFile']))
+
+
 def test_integration():
     # the login is executed in the switch panel code
     if IS_FETCH:
@@ -766,6 +841,10 @@ def main():
             list_metadata()
         elif command == 'fidelis-list-alerts-by-ip':
             list_alerts_by_ip()
+        elif command == 'fidelis-download-malware-file':
+            download_malware_file()
+        elif command == 'fidelis-download-pcap-file':
+            download_pcap_file()
 
     except Exception as e:
         return_error('error has occurred: {}'.format(str(e)))
