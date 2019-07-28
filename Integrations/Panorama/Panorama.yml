@@ -2002,7 +2002,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Rules location. Mandatory for Panorama instances.
+      description: Rules location. Can be "pre-rulebase" or "post-rulebase". Mandatory for Panorama instances.
       isArray: false
       name: pre_post
       predefined:
@@ -2011,39 +2011,39 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of predefined Security Rules
+    description: Returns a list of predefined Security Rules.
     execution: false
     name: panorama-list-rules
     outputs:
     - contextPath: Panorama.SecurityRule.Name
-      description: Rule name
+      description: Rule name.
       type: String
     - contextPath: Panorama.SecurityRule.Action
-      description: Action for the rule
+      description: Action for the rule.
       type: String
     - contextPath: Panorama.SecurityRule.Location
-      description: Rule location
+      description: Rule location.
       type: String
     - contextPath: Panorama.SecurityRule.Category
-      description: Rule category
+      description: Rule category.
       type: String
     - contextPath: Panorama.SecurityRule.Application
-      description: Application for the rule
+      description: Application for the rule.
       type: String
     - contextPath: Panorama.SecurityRule.Destination
-      description: Destination address
+      description: Destination address.
       type: String
     - contextPath: Panorama.SecurityRule.From
       description: Rule from
       type: String
     - contextPath: Panorama.SecurityRule.Service
-      description: Service for the rule
+      description: Service for the rule.
       type: String
     - contextPath: Panorama.SecurityRule.To
       description: Rule to
       type: String
     - contextPath: Panorama.SecurityRule.Source
-      description: Source address
+      description: Source address.
       type: String
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
