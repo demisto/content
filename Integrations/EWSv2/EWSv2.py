@@ -1689,7 +1689,7 @@ def start_compliance_search(query):
 
 def get_compliance_search(search_name):
     check_cs_prereqs()
-    with open("startcompliancesearch2.ps1", "w+") as f:
+    with open("getcompliancesearch2.ps1", "w+") as f:
         f.write(GET_COMPLIANCE)
 
     output = subprocess.Popen(["pwsh", "getcompliancesearch2.ps1", USERNAME, search_name],
@@ -1726,7 +1726,7 @@ def get_compliance_search(search_name):
 
 def purge_compliance_search(search_name):
     check_cs_prereqs()
-    with open("startcompliancesearch2.ps1", "w+") as f:
+    with open("purgecompliancesearch2.ps1", "w+") as f:
         f.write(PURGE_COMPLIANCE)
 
     output = subprocess.Popen(["pwsh", "purgecompliancesearch2.ps1", USERNAME, search_name],
@@ -1743,7 +1743,7 @@ def purge_compliance_search(search_name):
 
 def check_purge_compliance_search(search_name):
     check_cs_prereqs()
-    with open("startcompliancesearch2.ps1", "w+") as f:
+    with open("purgestatuscompliancesearch2.ps1", "w+") as f:
         f.write(PURGE_STATUS_COMPLIANCE)
 
     output = subprocess.Popen(["pwsh", "purgestatuscompliancesearch2.ps1", USERNAME, search_name],
@@ -1762,7 +1762,7 @@ def check_purge_compliance_search(search_name):
 
 def remove_compliance_search(search_name):
     check_cs_prereqs()
-    with open("startcompliancesearch2.ps1", "w+") as f:
+    with open("removecompliance2.ps1", "w+") as f:
         f.write(REMOVE_COMPLIANCE)
 
     output = subprocess.Popen(
