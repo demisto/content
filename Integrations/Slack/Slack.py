@@ -27,7 +27,7 @@ GUID_REGEX = r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA
 ENTITLEMENT_REGEX = r'{}@(({})|\d+)(\|\S+)?\b'.format(GUID_REGEX, GUID_REGEX)
 MESSAGE_FOOTER = '\n**From Slack**'
 MIRROR_TYPE = 'mirrorEntry'
-INCIDENT_OPENED = 'incidentStatusChanged'
+INCIDENT_OPENED = 'incidentOpened'
 INCIDENT_NOTIFICATION_CHANNEL = 'incidentNotificationChannel'
 PLAYGROUND_INVESTIGATION_TYPE = 9
 
@@ -690,7 +690,7 @@ def slack_send():
         # return so there will not be a loop of messages
         return
 
-    if (to and group) or (to and channel) or (to and channel and group) or (channel and group):
+    if (to and group) or (to and channel) or (to and channel and group):
         return_error('Only one destination can be provided.')
 
     if severity:
@@ -699,9 +699,11 @@ def slack_send():
         except Exception:
             pass
 
-    if (channel == INCIDENT_NOTIFICATION_CHANNEL or
-            (not channel and message_type == INCIDENT_OPENED and severity >= SEVERITY_THRESHOLD)):
+    if channel == INCIDENT_NOTIFICATION_CHANNEL or (not channel and message_type == INCIDENT_OPENED):
         channel = DEDICATED_CHANNEL
+
+    if channel == DEDICATED_CHANNEL and severity < SEVERITY_THRESHOLD:
+        channel = None
 
     if not (to or group or channel):
         return_error('Either a user, group or channel must be provided.')
@@ -793,7 +795,7 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
                     if entry:
                         link += '/' + entry
                     message += '\n{} {}'.format('View it on:', link)
-            elif not ignore_add_url:
+            else:
                 link = server_links.get('server', '')
                 if link:
                     message += '\n{} {}'.format('View it on:', link + '#/home')
