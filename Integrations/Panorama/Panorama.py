@@ -121,6 +121,11 @@ def http_request(uri: str, method: str, headers: Dict = {},
                 return_error(
                     'Object was not found, verify that the name is correct and that the instance was committed.')
 
+            #  catch urlfiltering error and display a meaningful message
+            elif str(json_result['response']['msg']['line']).find('test -> url  is unexpected') != -1:
+                return_error('The URL filtering license is either expired or not active.'
+                             'Please contact your PAN-OS representative.')
+
             # catch non valid jobID errors and display a meaningful message
             elif isinstance(json_result['response']['msg']['line'], str) and \
                     json_result['response']['msg']['line'].find('job') != -1 and \
