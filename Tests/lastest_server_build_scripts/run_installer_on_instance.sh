@@ -3,11 +3,6 @@ set -e
 
 INSTANCE_ID=$(cat ./env_results.json | jq .[0].InstanceID)
 
-echo "Making sure instance started"
-aws ec2 wait instance-exists --instance-ids ${INSTANCE_ID}
-aws ec2 wait instance-running --instance-ids ${INSTANCE_ID}
-echo "Instance started. fetching IP"
-
 PUBLIC_IP=$(cat ./env_results.json | jq .[0].InstanceDNS)
 echo "Instance public IP is: $PUBLIC_IP"
 
