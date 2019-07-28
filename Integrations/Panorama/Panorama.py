@@ -1706,6 +1706,8 @@ def panorama_custom_url_category_add_sites_command():
 
     custom_url_category = panorama_get_custom_url_category(custom_url_category_name)
 
+    if '@dirtyId' in custom_url_category:
+        return_error('Please commit the instance prior to editing the Custom URL Category')
     description = custom_url_category.get('description')
 
     custom_url_category_sites: List[str] = []
@@ -1713,7 +1715,7 @@ def panorama_custom_url_category_add_sites_command():
         if custom_url_category['list']:
             custom_url_category_sites = argToList(custom_url_category['list']['member'])
 
-    sites = argToList(demisto.args()['list'])
+    sites = argToList(demisto.args()['sites'])
     merged_sites = list((set(sites)).union(set(custom_url_category_sites)))
 
     result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, merged_sites,
@@ -1739,6 +1741,8 @@ def panorama_custom_url_category_remove_sites_command():
     custom_url_category_name = demisto.args()['name']
 
     custom_url_category = panorama_get_custom_url_category(custom_url_category_name)
+    if '@dirtyId' in custom_url_category:
+        return_error('Please commit the instance prior to editing the Custom URL Category')
     description = custom_url_category.get('description')
 
     if 'list' in custom_url_category:
