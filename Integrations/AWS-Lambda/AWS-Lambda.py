@@ -394,5 +394,5 @@ except ResponseParserError as e:
     LOG(str(e))
 
 except Exception as e:
-    return_error('Error has occurred in the AWS S3 Integration: {error}\n {message}'.format(
+    return_error('Error has occurred in the AWS Lambda Integration: {error}\n {message}'.format(
         error=type(e), message=str(e)))
