@@ -60,7 +60,7 @@ For instructions about adding/modifying playbooks and scripts please see our [co
 Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/), or at [info@demisto.com](mailto:info@demisto.com)
 
 ## Release Notes
-For information about content release notes conventions please see our [release notes documentation](https://github.com/demisto/content/blob/master/docs/release_notes/README.md).
+For information about content release notes conventions, refer to our [release notes documentation](https://github.com/demisto/content/blob/master/docs/release_notes/README.md).
 
 ## Git configuration
 Copy the pre-commit hook from .hooks to .git/hooks. Run the following command from the repository root:
