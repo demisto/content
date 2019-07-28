@@ -5,6 +5,7 @@ import re
 import socket
 import sys
 from codecs import encode, decode
+import socks
 
 ENTRY_TYPE = entryTypes['error'] if demisto.params().get('with_error', False) else entryTypes['warning']
 
@@ -7234,7 +7235,7 @@ def whois_request(domain, server, port=43):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sock.connect((server, port))
-    except socket.error as msg:
+    except Exception as msg:
         context = ({
             outputPaths['domain']: {
                 'Name': domain,
@@ -7248,7 +7249,7 @@ def whois_request(domain, server, port=43):
             {
                 'ContentsFormat': 'text',
                 'Type': ENTRY_TYPE,
-                'Contents': 'Whois returned - Couldnt connect with the socket-server: {}'.format(msg),
+                'Contents': "Whois returned - Couldn't connect with the socket-server: {}".format(msg),
                 'EntryContext': context
             }
         )
@@ -7269,6 +7270,8 @@ def whois_request(domain, server, port=43):
             d = buff.decode("latin-1")
 
         return d
+    finally:        
+        sock.close()
 
 
 airports = {} # type: dict
@@ -8322,14 +8325,51 @@ def test_command():
         demisto.results('ok')
 
 
+def setup_proxy():
+    scheme_to_proxy_type = {
+        'socks5': [socks.PROXY_TYPE_SOCKS5, False],
+        'socks5h': [socks.PROXY_TYPE_SOCKS5, True],
+        'socks4': [socks.PROXY_TYPE_SOCKS4, False],
+        'socks4a': [socks.PROXY_TYPE_SOCKS4, True],
+        'http': [socks.PROXY_TYPE_HTTP, True]
+    }
+    proxy_url = demisto.params().get('proxy_url')    
+    def_scheme = 'socks5h'
+    if proxy_url == 'system_http':
+        system_proxy = handle_proxy('proxy_url')
+        # use system proxy. Prefer https and fallback to http
+        proxy_url = system_proxy.get('https') if system_proxy.get('https') else system_proxy.get('http')
+        def_scheme = 'http'
+    if not proxy_url:
+        return
+    scheme, host = (def_scheme, proxy_url) if '://' not in proxy_url else proxy_url.split('://')
+    host, port = (host, None) if ':'  not in host else host.split(':')
+    if port:
+        port = int(port)
+    proxy_type = scheme_to_proxy_type.get(scheme)
+    if not proxy_type:
+        raise ValueError("Un supported proxy scheme: {}".format(scheme))
+    socks.set_default_proxy(proxy_type[0], host, port, proxy_type[1])
+    socket.socket = socks.socksocket  # type: ignore
+    
+
 ''' EXECUTION CODE '''
-LOG('command is {}'.format(str(demisto.command())))
-try:
-    handle_proxy()
-    if demisto.command() == 'test-module':
-        test_command()
-    elif demisto.command() == 'whois':
-        whois_command()
-except Exception as e:
-    LOG(e)
-    return_error(str(e))
+def main():
+    LOG('command is {}'.format(str(demisto.command())))
+    org_socket = socket.socket
+    try:
+        setup_proxy()
+        if demisto.command() == 'test-module':
+            test_command()
+        elif demisto.command() == 'whois':
+            whois_command()
+    except Exception as e:
+        LOG(e)
+        return_error(str(e))
+    finally:
+        socks.set_default_proxy()  # clear proxy settings
+        socket.socket = org_socket  # type: ignore
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
