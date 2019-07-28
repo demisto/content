@@ -438,6 +438,5 @@ script:
   runonce: false
   script: ''
   type: python
-releaseNotes: New integration
 tests:
 - AWS-Lambda-Test (Read-Only)
