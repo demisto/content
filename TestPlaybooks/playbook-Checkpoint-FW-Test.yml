@@ -67,7 +67,7 @@ tasks:
       id: 596137cc-b7f2-46d3-81a7-5a681a317a2f
       version: -1
       name: checkpoint-set-rule
-      description: Set attributes of an access rule object configured in Checkpoint
+      description: Set attributes of an access rule object configured in Checkpoint.
         FW.
       script: '|||checkpoint-set-rule'
       type: regular
