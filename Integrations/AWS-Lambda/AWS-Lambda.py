@@ -4,8 +4,8 @@ from CommonServerUserPython import *
 
 """IMPORTS"""
 import boto3
-import datetime
 import base64
+from datetime import datetime, date
 from botocore.config import Config
 from botocore.parsers import ResponseParserError
 import urllib3.util
@@ -294,11 +294,11 @@ def invoke(args):
         'Region': obj['_user_provided_options']['region_name'],
     })
     if 'LogResult' in response:
-        data[0].update({'LogResult': base64.b64decode(response['LogResult'])})
+        data[0].update({'LogResult': base64.b64decode(response['LogResult'])})  # type:ignore
     if 'Payload' in response:
-        data[0].update({'Payload': json.dumps(response['Payload'])})
+        data[0].update({'Payload': json.dumps(response['Payload'])})  # type:ignore
     if 'ExecutedVersion' in response:
-        data[0].update({'ExecutedVersion': response['ExecutedVersion']})
+        data[0].update({'ExecutedVersion': response['ExecutedVersion']})  # type:ignore
 
     ec = {'AWS.Lambda.InvokedFunctions': data}
     human_readable = tableToMarkdown('AWS Lambda Invoked Functions', data)
