@@ -1251,6 +1251,7 @@ tasks:
         simple: filter-pcap
       searchTime: {}
       serialNo: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
