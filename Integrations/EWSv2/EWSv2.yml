@@ -36,6 +36,10 @@ configuration:
   name: isFetch
   required: false
   type: 8
+- display: Mark fetched emails as read
+  name: markAsRead
+  required: false
+  type: 8
 - display: Incident type
   name: incidentType
   required: false
@@ -1039,6 +1043,44 @@ script:
       command expands nested distribution lists and returns all the members.
     execution: false
     name: ews-expand-group
+  - arguments:
+    - default: false
+      description: The item ids. List or comma-separated value are supported.
+      isArray: true
+      name: item-ids
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: read
+      description: The mark operation to perform on item. By default is set to read.
+      isArray: false
+      name: operation
+      predefined:
+      - read
+      - unread
+      required: false
+      secret: false
+    - default: false
+      description: The mailbox to apply the command on.
+      isArray: false
+      name: target-mailbox
+      required: false
+      secret: false
+    deprecated: false
+    description: Marks items as read or unread.
+    execution: false
+    name: ews-mark-items-as-read
+    outputs:
+    - contextPath: EWS.Items.action
+      description: The action that was performed on item.
+      type: String
+    - contextPath: EWS.Items.itemId
+      description: The Id of the item.
+      type: String
+    - contextPath: EWS.Items.messageId
+      description: The message Id of the item.
+      type: String
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
