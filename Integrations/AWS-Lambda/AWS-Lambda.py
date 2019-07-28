@@ -391,7 +391,7 @@ try:
 except ResponseParserError as e:
     return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
         error=type(e)))
-    LOG(e.message)
+    LOG(str(e))
 
 except Exception as e:
     return_error('Error has occurred in the AWS S3 Integration: {error}\n {message}'.format(
