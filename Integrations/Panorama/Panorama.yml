@@ -1342,19 +1342,19 @@ script:
     outputs:
     - contextPath: Panorama.SecurityRule.Name
       description: Rule name
-      type: string
+      type: String
     - contextPath: Panorama.SecurityRule.Description
       description: Rule description
-      type: string
+      type: String
     - contextPath: Panorama.SecurityRule.Action
       description: Action for the rule
-      type: string
+      type: String
     - contextPath: Panorama.SecurityRule.Source
       description: Source address
-      type: string
+      type: String
     - contextPath: Panorama.SecurityRule.Destination
       description: Destination address
-      type: string
+      type: String
     - contextPath: Panorama.SecurityRule.NegateSource
       description: Is the source negated (address, address group)
       type: boolean
@@ -1363,19 +1363,19 @@ script:
       type: boolean
     - contextPath: Panorama.SecurityRule.Service
       description: Service for the rule
-      type: string
+      type: String
     - contextPath: Panorama.SecurityRule.Disabled
       description: Is the rule disabled
       type: string
     - contextPath: Panorama.SecurityRule.Application
       description: Application for the rule
-      type: string
+      type: String
     - contextPath: Panorama.SecurityRule.Target
       description: Target firewall (Panorama instances)
-      type: string
+      type: String
     - contextPath: Panorama.SecurityRule.LogForwarding
       description: Log forwarding profile (Panorama instances)
-      type: string
+      type: String
   - arguments:
     - default: false
       description: Name of the custom block policy rule to create
@@ -2018,7 +2018,7 @@ script:
       description: Rule name
       type: String
     - contextPath: Panorama.SecurityRule.Action
-      description: Rule action
+      description: Action for the rule
       type: String
     - contextPath: Panorama.SecurityRule.Location
       description: Rule location
@@ -2027,10 +2027,22 @@ script:
       description: Rule category
       type: String
     - contextPath: Panorama.SecurityRule.Application
-      description: Rule application
+      description: Application for the rule
       type: String
     - contextPath: Panorama.SecurityRule.Destination
-      description: Rule destination
+      description: Destination address
+      type: String
+    - contextPath: Panorama.SecurityRule.From
+      description: Rule from
+      type: String
+    - contextPath: Panorama.SecurityRule.Service
+      description: Service for the rule
+      type: String
+    - contextPath: Panorama.SecurityRule.To
+      description: Rule to
+      type: String
+    - contextPath: Panorama.SecurityRule.Source
+      description: Source address
       type: String
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
