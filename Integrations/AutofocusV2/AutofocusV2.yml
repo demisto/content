@@ -31,7 +31,7 @@ script:
     - name: query
       required: true
       description: The query for which to retrieve samples. For additional information on how to build your query using the
-        AF GUI, see the deatiled description.
+        AF GUI, see the detailed description.
     - name: max_results
       description: Number of results to return.
       defaultValue: "30"
