@@ -11,11 +11,6 @@ from distutils.util import strtobool
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-if not demisto.params()['proxy']:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 ''' GLOBAL VARS '''
 BASE_URL = 'https://api.sndbox.com/'
@@ -271,6 +266,7 @@ def download_request(analysis_id, rsc_type):
 ''' EXECUTION CODE '''
 LOG('command is %s' % (demisto.command(),))
 try:
+    handle_proxy()
     if demisto.command() in ['test-module', 'sndbox-is-online']:
         # This is the call made when pressing the integration test button.
         if is_online():
