@@ -359,7 +359,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 192.168.1.103
+              simple: 192.168
     view: |-
       {
         "position": {
