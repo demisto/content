@@ -26,8 +26,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
   "1":
     id: "1"
     taskid: e3ac3ce0-358d-4745-85d3-9b56b38976eb
@@ -57,8 +55,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
   "2":
     id: "2"
     taskid: 72cae45a-aeed-4ec8-83ca-318e7d92a696
@@ -84,8 +80,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
   "3":
     id: "3"
     taskid: 583fad8a-293e-41ae-8d0a-4bfda3a62b41
@@ -111,8 +105,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
   "4":
     id: "4"
     taskid: a38b99a4-2d26-4431-8e6a-4480336f3aa8
@@ -140,8 +132,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
   "5":
     id: "5"
     taskid: e92550e2-a705-42ed-8ed0-e077bd4a67ee
@@ -162,8 +152,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
   "6":
     id: "6"
     taskid: 306f7838-d33d-4bff-818b-f1688f962a7b
@@ -196,8 +184,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
   "7":
     id: "7"
     taskid: 9c43bc4f-9846-45e2-88fe-397a2eea5dcb
@@ -231,8 +217,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
   "8":
     id: "8"
     taskid: b1e69a35-1f83-4fb5-8400-80be45c8485e
@@ -259,8 +243,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
   "12":
     id: "12"
     taskid: f709ce63-0537-4e4d-86ca-22e17517ee70
@@ -290,8 +272,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
   "16":
     id: "16"
     taskid: d77709cc-fa0b-40f9-8ec9-518f69fc515e
@@ -330,14 +310,12 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
   "17":
     id: "17"
-    taskid: 158bcaaf-f304-4d8e-81f9-0b52074240f9
+    taskid: e221f702-c41d-45f9-85e1-2fa3ff6d912a
     type: condition
     task:
-      id: 158bcaaf-f304-4d8e-81f9-0b52074240f9
+      id: e221f702-c41d-45f9-85e1-2fa3ff6d912a
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -352,14 +330,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: isExists
           left:
             value:
               simple: McAfee.ePO.Endpoint.IPAddress
             iscontext: true
-          right:
-            value:
-              simple: 192.168
     view: |-
       {
         "position": {
@@ -368,8 +343,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
   "18":
     id: "18"
     taskid: 3eaac858-bd1a-4ef6-883b-cb1f260216ac
@@ -403,8 +376,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
   "19":
     id: "19"
     taskid: cf287e6e-25a2-48f2-820e-1533167c48f2
@@ -435,8 +406,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
   "20":
     id: "20"
     taskid: 188b0c44-082b-43bf-8175-d89df9bb7056
@@ -467,8 +436,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
   "22":
     id: "22"
     taskid: f9a32e9e-7ffb-484f-8fe1-7a1394198a8a
@@ -496,8 +463,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
   "23":
     id: "23"
     taskid: 234e817e-a9b3-4354-8b8a-d3ad343a3ef2
@@ -532,8 +497,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
   "24":
     id: "24"
     taskid: 8ac731ed-25aa-47a2-8046-734486454d01
@@ -559,8 +522,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
   "25":
     id: "25"
     taskid: c17a55d4-38f0-4f5d-84a6-c7ab542c2a7b
@@ -590,8 +551,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
   "26":
     id: "26"
     taskid: f59a8be7-0771-43c9-8e9e-31d0152ac241
@@ -622,8 +581,6 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
