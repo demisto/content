@@ -1794,6 +1794,8 @@
         "Tenable.io": "Unstable instance (issue 16115)",
 
       "_comment": "~~~ OTHER ~~~",
+        "SumoLogic": "Shelly working on fixing it",
+        "Windows Defender Advanced Threat Protection": "Avidan working on fixing it",
         "iDefense": "DevOps investigation",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
