@@ -164,12 +164,12 @@ script:
   commands:
   - name: imp-sf-list-endpoints
     arguments: []
-    description: The endpoints list request enables a client application to receive
+    description: 'The endpoints list request enables a client application to receive
       a list of all managed and unmanaged endpoints, with their basic details. This
       list can then be externally filtered or searched by the application to identify
       individual endpoints that might require action. For any such endpoint, the application
       can obtain fuller details (see Endpoint Details Request below) and if relevant
-      change its enrollment status.
+      change its enrollment status.'
   - name: imp-sf-set-endpoint-status
     arguments:
     - name: endpointId
