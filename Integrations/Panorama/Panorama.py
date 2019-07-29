@@ -1706,6 +1706,8 @@ def panorama_custom_url_category_add_sites_command():
 
     custom_url_category = panorama_get_custom_url_category(custom_url_category_name)
 
+    if '@dirtyId' in custom_url_category:
+        return_error('Please commit the instance prior to editing the Custom URL Category')
     description = custom_url_category.get('description')
 
     custom_url_category_sites: List[str] = []
@@ -1713,7 +1715,7 @@ def panorama_custom_url_category_add_sites_command():
         if custom_url_category['list']:
             custom_url_category_sites = argToList(custom_url_category['list']['member'])
 
-    sites = argToList(demisto.args()['list'])
+    sites = argToList(demisto.args()['sites'])
     merged_sites = list((set(sites)).union(set(custom_url_category_sites)))
 
     result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, merged_sites,
@@ -1739,6 +1741,8 @@ def panorama_custom_url_category_remove_sites_command():
     custom_url_category_name = demisto.args()['name']
 
     custom_url_category = panorama_get_custom_url_category(custom_url_category_name)
+    if '@dirtyId' in custom_url_category:
+        return_error('Please commit the instance prior to editing the Custom URL Category')
     description = custom_url_category.get('description')
 
     if 'list' in custom_url_category:
@@ -2091,6 +2095,76 @@ def panorama_delete_url_filter_command():
 ''' Security Rules Managing '''
 
 
+def prettify_rule(rule):
+    pretty_rule = {
+        'Name': rule['@name'],
+        'Action': rule['action']
+    }
+    if '@loc' in rule:
+        pretty_rule['Location'] = rule['@loc']
+    if 'category' in rule and 'member' in rule['category']:
+        pretty_rule['CustomUrlCategory'] = rule['category']['member']
+    if 'application' in rule and 'member' in rule['application']:
+        pretty_rule['Application'] = rule['application']['member']
+    if 'destination' in rule and 'member' in rule['destination']:
+        pretty_rule['Destination'] = rule['destination']['member']
+    if 'from' in rule and 'member' in rule['from']:
+        pretty_rule['From'] = rule['from']['member']
+    if 'service' in rule and 'member' in rule['service']:
+        pretty_rule['Service'] = rule['service']['member']
+    if 'to' in rule and 'member' in rule['to']:
+        pretty_rule['To'] = rule['to']['member']
+    if 'source' in rule and 'member' in rule['source']:
+        pretty_rule['Source'] = rule['source']['member']
+
+    return pretty_rule
+
+
+def prettify_rules(rules):
+    if not isinstance(rules, list):
+        return prettify_rule(rules)
+    pretty_rules_arr = []
+    for rule in rules:
+        pretty_rule = prettify_rule(rule)
+        pretty_rules_arr.append(pretty_rule)
+
+    return pretty_rules_arr
+
+
+@logger
+def panorama_list_rules_command():
+    """
+        List security rules
+    """
+    params = {
+        'type': 'config',
+        'action': 'get',
+        'key': API_KEY
+    }
+    if DEVICE_GROUP:
+        if 'pre_post' not in demisto.args():
+            return_error('Please provide the pre_post argument when listing rules in Panorama instance.')
+        else:
+            params['xpath'] = XPATH_SECURITY_RULES + demisto.args()['pre_post'] + '/security/rules/entry'
+    else:
+        params['xpath'] = XPATH_SECURITY_RULES
+
+    rules = http_request(URL, 'POST', params=params)
+    pretty_rules = prettify_rules(rules['response']['result']['entry'])
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': rules,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Security Rules:', pretty_rules,
+                                         ['Name', 'Location', 'Action', 'From', 'To', 'CustomUrlCategory', 'Service'],
+                                         removeNull=True),
+        'EntryContext': {
+            "Panorama.SecurityRule(val.Name == obj.Name)": pretty_rules
+        }
+    })
+
+
 @logger
 def panorama_move_rule_command():
     """
@@ -2327,7 +2401,7 @@ def panorama_custom_block_rule_command():
             result = http_request(URL, 'POST', params=params)
         custom_block_output['IP'] = object_value
 
-    elif object_type == 'address-group':
+    elif object_type == 'address-group' or 'edl':
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
                                                   destination='any', rulename=rulename + '-from', target=target,
@@ -3335,6 +3409,9 @@ def main():
             panorama_unregister_ip_tag_command()
 
         # Security Rules Managing
+        elif demisto.command() == 'panorama-list-rules':
+            panorama_list_rules_command()
+
         elif demisto.command() == 'panorama-move-rule':
             panorama_move_rule_command()
 
