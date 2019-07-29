@@ -553,6 +553,26 @@ script:
 
     }
 
+    function epoMoveSystem() {
+        var pArgs = {
+            'names': args.names,
+            'parentGroupId': args.parentGroupId
+        };
+
+        var result;
+        result = callEpo('system.move', pArgs);
+        if (result === true) {
+            result = 'System ' + args.names + ' moved successfully to GroupId ' + args.parentGroupId;
+        }
+
+        return {
+            Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.text,
+            HumanReadable: result,
+        };
+    }
+
     function parseCommandArgs(command, commandArgs) {
         //commandArgs should be in the format of:  keyName1:keyValue1, keyName2:KeyValue2
         if (!commandArgs) {
@@ -651,6 +671,10 @@ script:
 
         case 'epo-get-version':
             return epoGetVersion();
+
+        case 'epo-move-system':
+            return epoMoveSystem();
+
 
         case 'epo-command':
             if (!args.command) {
@@ -947,6 +971,15 @@ script:
       description: ePO version
       type: string
     description: Gets the ePO version. This requires global admin permissions.
+  - name: epo-move-system
+    arguments:
+    - name: names
+      required: true
+      description: Asset name
+    - name: parentGroupId
+      required: true
+      description: Group ID
+    description: Moves a system to a different group
   runonce: false
 tests:
 - Test Playbook McAfee ePO
