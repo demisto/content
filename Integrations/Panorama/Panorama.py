@@ -1797,12 +1797,12 @@ def populate_url_filter_category_from_context(category):
     if not url_filter_category:
         return []
     elif isinstance(url_filter_category, dict):
-        if isinstance(url_filter_category["URL"], str):
-            return [url_filter_category["URL"]]
+        if isinstance(url_filter_category.get("URL"), str):
+            return [url_filter_category.get("URL")]
         else:
-            return url_filter_category["URL"]
+            return url_filter_category.get("URL")
     else:  # url_filter_category is a list of only 1 item
-        return url_filter_category[0]["URL"]
+        return url_filter_category[0].get("URL")
 
 
 def panorama_get_url_category_command():
