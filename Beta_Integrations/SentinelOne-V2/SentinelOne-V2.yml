@@ -282,7 +282,7 @@ script:
       description: User ID of the user that added the item.
       type: string
     - contextPath: SentinelOne.Exclusions.UpdatedAt
-      description: Timestamp when the item was updated.
+      description: Timestamp when the item was updated
       type: date
     - contextPath: SentinelOne.Exclusions.OsType
       description: OS type.
