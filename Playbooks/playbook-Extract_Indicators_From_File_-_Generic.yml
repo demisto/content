@@ -365,17 +365,16 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: application/pdf
+                        simple: pdf
                     ignorecase: true
-                  - operator: containsString
+                - - operator: containsString
                     left:
                       value:
                         simple: File.Info
                       iscontext: true
                     right:
                       value:
-                        simple: application/pdf
-                    ignorecase: true
+                        simple: pdf
                 accessor: EntryID
                 transformers:
                 - operator: uniq
@@ -445,10 +444,10 @@ tasks:
     timertriggers: []
   "9":
     id: "9"
-    taskid: d729d532-4b81-4cef-8baa-278a442408de
+    taskid: 9ba76882-583c-4eb1-8d44-6c28ddd44d13
     type: condition
     task:
-      id: d729d532-4b81-4cef-8baa-278a442408de
+      id: 9ba76882-583c-4eb1-8d44-6c28ddd44d13
       version: -1
       name: Is there a Word file?
       description: Checks if there is a Word file (DOC, DOCX) in context.
@@ -486,22 +485,66 @@ tasks:
                     right:
                       value:
                         simple: Microsoft Word
-                  - operator: isEqualString
+                - - operator: isNotEqualString
                     left:
                       value:
                         simple: File.Info
                       iscontext: true
                     right:
                       value:
-                        simple: doc
-                  - operator: isEqualString
+                        simple: msg
+                    ignorecase: true
+                - - operator: isNotEqualString
                     left:
                       value:
                         simple: File.Info
                       iscontext: true
                     right:
                       value:
-                        simple: docx
+                        simple: eml
+                    ignorecase: true
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: xls
+                    ignorecase: true
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                  - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: xlsx
+                    ignorecase: true
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                  - operator: notContainsString
+                    left:
+                      value:
+                        simple: File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Excel
+                    ignorecase: true
                 accessor: EntryID
                 transformers:
                 - operator: uniq
@@ -542,10 +585,10 @@ tasks:
     timertriggers: []
   "11":
     id: "11"
-    taskid: e13329ad-2d9a-4f8b-8f72-da87ce4f683b
+    taskid: cf8a2830-ba83-43b2-802a-1b4e3281e834
     type: regular
     task:
-      id: e13329ad-2d9a-4f8b-8f72-da87ce4f683b
+      id: cf8a2830-ba83-43b2-802a-1b4e3281e834
       version: -1
       name: Extract indicators from Word file
       description: Extracts indicators from word files (DOC, DOCX).
@@ -577,22 +620,65 @@ tasks:
               right:
                 value:
                   simple: Microsoft Word
-            - operator: isEqualString
+          - - operator: isNotEqualString
               left:
                 value:
                   simple: File.Info
                 iscontext: true
               right:
                 value:
-                  simple: doc
-            - operator: isEqualString
+                  simple: msg
+              ignorecase: true
+          - - operator: isNotEqualString
               left:
                 value:
                   simple: File.Info
                 iscontext: true
               right:
                 value:
-                  simple: docx
+                  simple: eml
+              ignorecase: true
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+            - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: xls
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+            - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: xlsx
+              ignorecase: true
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+            - operator: notContainsString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Excel
+              ignorecase: true
           accessor: EntryID
           transformers:
           - operator: uniq

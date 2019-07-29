@@ -1,0 +1,1273 @@
+Received: from BN7PR05MB5746.namprd05.prod.outlook.com (2603:10b6:400::37) by
+ BN7PR05MB5745.namprd05.prod.outlook.com with HTTPS via
+ BN3PR05CA0027.NAMPRD05.PROD.OUTLOOK.COM; Sun, 12 May 2019 21:43:19 +0000
+Received: from SN4PR0501CA0120.namprd05.prod.outlook.com
+ (*:*:*:*:*) by BN7PR05MB5746.namprd05.prod.outlook.com
+ (*:*:*:*:*) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1900.9; Sun, 12 May
+ 2019 21:43:18 +0000
+Received: from CY1NAM02FT040.eop-nam02.prod.protection.outlook.com
+ (*:*:*:*:*) by SN4PR0501CA0120.outlook.office365.com
+ (*:*:*:*:*) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1900.8 via Frontend
+ Transport; Sun, 12 May 2019 21:43:17 +0000
+Authentication-Results: spf=fail (sender IP is 1.1.1.1)
+ smtp.mailfrom=amazonses.com; demisto.com; dkim=fail (body hash did not
+ verify) header.d=amazon.com;demisto.com; dmarc=fail action=quarantine
+ header.from=amazon.com;compauth=pass reason=108
+Received-SPF: Fail (protection.outlook.com: domain of amazonses.com does not
+ designate 1.1.1.1 as permitted sender)
+ receiver=protection.outlook.com; client-ip=1.1.1.1;
+ helo=mx0b-00169c01.pphosted.com;
+Received: from mx0b-00169c01.pphosted.com (1.1.1.1) by
+ CY1NAM02FT040.mail.protection.outlook.com (1.1.1.1) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.1856.11 via Frontend Transport; Sun, 12 May 2019 21:43:17 +0000
+Received: from pps.filterd (m0045114.ppops.net [127.0.0.1])
+	by mx0a-00169c01.pphosted.com (1.1.1.1/1.1.1.1) with SMTP id x4CLYXwB030451
+	for <****@demisto.com>; Sun, 12 May 2019 14:43:16 -0700
+Authentication-Results-Original: paloaltonetworks.com;	spf=fail
+ smtp.mailfrom=http://demisto.com;
+	dkim=pass header.d=amazon.com header.s=pog7p5txl4ruqhixze35ey6av7ivmsea;
+	dkim=pass header.d=amazonses.com header.s=6gbrjpgwjskckoa6a5zn6fwqkn67xbtw;
+	dmarc=pass header.from=amazon.com
+Received: from inbound5c.ore.mailhop.org (inbound5c.ore.mailhop.org [1.1.1.1])
+	by mx0a-00169c01.pphosted.com with ESMTP id 2sdtdfcf11-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+	for <****@demisto.com>; Sun, 12 May 2019 14:43:16 -0700
+ARC-Seal: i=1; a=rsa-sha256; t=1557642189; cv=none;
+	d=mailhop.org; s=arc-20180721;
+	b=DHQD7RbhlV7sWJvjBUsnzsNOMIHsweHKP8SW0opVlyQPcSjyitPn9f4kzuubfiUEwQC+d+gNitMgG
+	 sz0eCBrLmv/kIdYjKKdihzF8AqfS0GeAUx91Ll6oPGG6T7/riQJ0CmgTSvsZytOK1E0gr5rxLypMUx
+	 xzj15Sj6TtSHFwm9wFELPcMNjG+VLk0NcBNtPwQqkW2zSEIMjjjJbI69q864/vcL9bY7r92ZZlhwZj
+	 dhX8EqlgzyjxC2a5tR/0bC/p1sAhfQU5qQ9vhXUychhaK2MbF/EL7ehrsMHghWXN8s8PYMGNvb49lQ
+	 dy4oJcAKAamKVmBpe/Hej0czXLMESmg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=mailhop.org; s=arc-20180721;
+	h=list-unsubscribe:content-type:mime-version:subject:message-id:to:reply-to:
+	 from:date:dkim-signature:dkim-signature:from;
+	bh=uMbimPoS7s7rKUH78KgFihAbVVr2yhx/agotWX0kimY=;
+	b=w7EsmrDTwWaOpgyr0oW+tRveymU4u0jzPXjjjAGCHSdH8bFPwZJ0SzdvDP2oh/stVjYiFnLGwgnMN
+	 1Ba0ekrPEPoVT7jgnBbL8L+lfKVtaeXHxz2v8tqVLhO49cV5nIuyMZ4mrGP+FjiU/rau4itnHwL4fg
+	 I0C7u/uT349IFVxqa0vz7k74Y9j0DU94wm4MTtWdGakCIOCbRt5XnqKRswcCP+V0I0SSskwVpZA9fm
+	 9QipvQ0q4ZJ52RDgTK8en6nqdBgaEfuUIeUBHzYwfSHNoo0Bzxi3zd+0WLnbwY8ZCWpUpRynQogzKl
+	 cCJbJFW5E65+EXeC3vUN4Eth2xFjzwg==
+ARC-Authentication-Results: i=1; inbound7.ore.mailhop.org;
+	spf=pass smtp.mailfrom=amazonses.com smtp.remote-ip=1.1.1.1;
+	dkim=pass header.d=amazonses.com header.s=6gbrjpgwjskckoa6a5zn6fwqkn67xbtw header.a=rsa-sha256 header.b=ke8bOVYh;
+	dmarc=pass header.from=amazon.com;
+	arc=none header.oldest-pass=0;
+X-HalonDuo-Scores: {"rpd":"unknown", "sa":0,
+ "sa_scores":{"HTML_IMAGE_RATIO_08":0.001, "HTML_MESSAGE":0.001}}
+Envelope-Sender: http://demisto.com
+X-HalonDuo-ID: 67d4f6c8-747e-11e9-ab8d-ad124c9fd12f
+Received: from a10-127.smtp-out.amazonses.com (unknown [1.1.1.1])
+	by inbound7.ore.mailhop.org (Halon) with ESMTPS
+	id 67d4f6c8-747e-11e9-ab8d-ad124c9fd12f;
+	Sun, 12 May 2019 06:23:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=pog7p5txl4ruqhixze35ey6av7ivmsea; d=amazon.com; t=1557642186;
+	h=Date:From:Reply-To:To:Message-ID:Subject:MIME-Version:Content-Type:List-Unsubscribe;
+	bh=Wyf0Rp4y/qPEfK5HeJHPYAB1D8/4v1uTyOQCmUSedKA=;
+	b=Bqpg1D1CUdf9ytdFA1axeRBGJuQzUqy/NNxqDYcPSXESvNe6292G5F2fgZrw8Xns
+	s24l1UfnCF/YCE55MXvBWwzDgrtakhsFDOrxva/CU5H5jICeOoyNZEr8UyaglzHzmGn
+	ahl/MnTBWJwAkLVUSp0pjaCmc0C5eLwKMyZrtSNc=
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=6gbrjpgwjskckoa6a5zn6fwqkn67xbtw; d=amazonses.com; t=1557642186;
+	h=Date:From:Reply-To:To:Message-ID:Subject:MIME-Version:Content-Type:List-Unsubscribe:Feedback-ID;
+	bh=Wyf0Rp4y/qPEfK5HeJHPYAB1D8/4v1uTyOQCmUSedKA=;
+	b=ke8bOVYhL+XE5Ac2JW1i6fhcssB11p0TQt/TL2fF7FUyYqWpnQrtAmy9//p68J3U
+	iBBP3Qrh5djo0sbcsECnsNpDpXJ2+7Shv0vzxxoUrdfyUz4GfPsIvxwUL6DzBEo17Mr
+	iAHK5We6xBBwYxqMKdJKvIXjMoQnHfnQsDexGv5A=
+X-MSFBL: K8fKBZM2iKCqgIhnBWzXjzh9H6cf/QhqrmE+FHC9JCY=|eyJnIjoiYmctc2pyLTA
+	zIiwiciI6ImFuZHJld0BkZW1pc3RvLmNvbSIsInUiOiIxMTItVFpNLTc2NjozNTI
+	5MTU6MTU2OTI3Ojg2MzYzMzowOjI1OTUzMjo5Ojc4NTc4MToyNTE5MDYwMDIiLCJ
+	iIjoiZHZwLTE5OS0xNS0yMTUtNjQifQ==
+Date: Sun, 12 May 2019 06:23:06 +0000
+From: Amazon Web Services <****@amazon.com>
+Reply-To: ****@amazon.com
+To: ****@demisto.com
+Message-ID: <http://demisto.com>
+Subject: AWS Floor28 - May | AWSome Day, Serverless Workshop & More -
+ Register Now!
+X-PVIQ: mkto-112TZM766-000001-000000-785781
+X-Binding: bg-sjr-03
+X-MarketoID: 112-TZM-766:352915:156927:863633:0:259532:9:785781:251906002
+X-MktArchive: false
+List-Unsubscribe: <mailto:http://demisto.com>
+X-Mailfrom: http://demisto.com
+X-MSYS-API: {"options":{"open_tracking":false,"click_tracking":false}}
+X-AMAZON-MAIL-RELAY-REDIR: bb9b4539191b44348ef966232b7968de
+X-SES-Outgoing: 2019.05.12-1.1.1.1
+Feedback-ID: 1.us-east-1.RV8Dsk7NvPH6aSFSPkfOynRPdT4LmMC2IC5pG2cIn10=:AmazonSES
+X-CLX-Shades: MLX
+X-CLX-Response: 1TFkXGxsaGREKTHoXHx0dEQpZRBdsb2RzckFhX1pjQBEKWFgXY09BYhJdbmJ 4WmkRCnhOF2ZTYVxJY3BrfxtnEQp4SxdjT0FiEl1uYnhaaREKeUwXa0N6cl0SUF5rYRIRCnlDF2 FhQlpwbQFwZEN9EQpZTRdnZnIRCl9ZFxwSHhEKX00XZ2ZyEQpZSRcacRoQGncGGxsecRkeHRodE
+ BgfGhN3BhgaBhoRClleF2xseREKSUYXWktGRUtGXkVET15dRVhBWXVCRVleT04RCkNOF0xzR1hT QnJlWkFJWnwdRntSaV5jQWhpf3tlUnBuXE5HEQpYXBcfBBoEGx0bBxIcTxJPTBxMBRsaBBsaGgQ eEgQcEBseGh8aEQpeWRd/bkBNehEKTVwXHh0eEQpMWhdpa21NTV0RCkxGF29ra2traxEKQk8XYn
+ J9E2UdGHlPW00RCkNaFx8eBBsSHAQYGAQSHhEKQl4XGxEKWUUXGREKRUkXGxEKRWYXGxEKQkYXZ ENQeGtlS0RdSUwRCkJHF29PUFlQcHlNT3gYEQpCXBcbEQpeThcbEQpCSxdmU2FcSWNwa38bZxEK QkkXZlNhXEljcGt/G2cRCkJFF259a2ZuRxxNekdQEQpCThdmU2FcSWNwa38bZxEKQkwXY09BYhJ
+ dbmJ4WmkRCkJsF25pSEFQBUFeWXpIEQpCQBdrREJ/Sx4bQEl+YhEKQlgXa2t5b19wW25+YUsRCl pYFxsaEQpwaBdiYUxnTltoWFlkWxAcExEKcGgXYBIeaU4dTQVkX2IQGhEKcGgXZ3xnXWZPckh/W XwQGRoRCnBoF3pDb2hPXkVFBRxYEBoRCnBoF2NIEl9eQxNmGHNmEBoRCnB/F3pSYXIbGmEdeR9G
+ EBMeEQpwXxdnSXNnHkZzRGZHYxAaEQpwfRdhHmtcHGxnYF9QZhAaEQpwfRdhHmtcHGxnYF9QZhA aEQpwfRdhHmtcHGxnYF9QZhAaEQpwXxdmfH5TXEFCQ0J+SxAaEQpwfRdnTl1nZRxfHV0bXBAaEQ pwXxdnXllbH1xEE0ZoGxAaEQpwfRdgXXAYTkkee2sdHhAaEQpwXxduZm1mZWIYcEFYZhAaEQpwf
+ RdlYXteU2BESVoFSBAaEQpwfRdoYmlBbV5OU09bfBAaEQpwXxdnXBNQe0gaRmJcGhAaEQpwfRdi flpQSG1HfkJiaBAaEQpwXxdtYW9LbgUSGm5rXBAaEQpwfRdhZUAdXhpcQWJEBRAaEQpwXxdvS3B AR11EYE9BbRAaEQpwfRdsbX5kcmIBH09rGBAaEQpwXxdjTUd6RRtse3NYbBAZGhEKcH0XegFQS1
+ 8YZUhpTHIQGhEKcF8XYRJdRnAZYmhlTUkQHBoRCnB9F2YTbWhJExlneEhnEBoRCnB/F21DZWQYZ khNYX8aEB8YEQpwXxdlZGBoZUlNW1oBbxAcGxEKcH0Xblh9GkdpSRxmT0EQExoRCnB9F296bx9J ZhJNbRxyEBIeEQpwfxdhcAFteAFna2ZgXxASHBEKcF8XYG1pbl5oWR1+QH8QEhIRCnB9F2lHT11
+ zSUlYQ0FjEBoRCnBfF2BhY0tlWRNzXV9LEAcbEhEKcH0Xa1ByTUlIa3ISeGYQGhEKcF8XbRNaQm luYW1rYWYQGxseEQpwfRduX3NGZRwTe1JfbRAeEhEKcH0Xa1ByTUlIa3ISeGYQGhEKcH0XbUttA V1FHUMTBVAQHhIRCnBfF2NIZWNEQwVYfUFMEBwaEQpwbBdhcxxGf0VQRWFlGRAdGhEKcEMXYhJh
+ Em5Ia1h9fGQQExoRCm1+FxoRClhNF0sRIA==
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-12_13:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_spam_notspam policy=outbound_spam score=0 priorityscore=577
+ malwarescore=0 suspectscore=54 phishscore=0 bulkscore=100 spamscore=0
+ clxscore=1103 lowpriorityscore=100 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1905120161
+Return-Path:
+ http://demisto.com
+X-MS-Exchange-Organization-ExpirationStartTime: 12 May 2019 21:43:17.5479
+ (UTC)
+X-MS-Exchange-Organization-ExpirationStartTimeReason: OriginalSubmit
+X-MS-Exchange-Organization-ExpirationInterval: 2:00:00:00.0000000
+X-MS-Exchange-Organization-ExpirationIntervalReason: OriginalSubmit
+X-MS-Exchange-Organization-Network-Message-Id:
+ 4af44c27-9a83-4068-8d15-08d6d722d831
+X-EOPAttributedMessage: 0
+X-EOPTenantAttributedMessage: 66b66353-3b76-4e41-9dc3-fee328bd400e:0
+X-MS-Exchange-Organization-MessageDirectionality: Incoming
+X-Forefront-Antispam-Report:
+ CIP:1.1.1.1;IPV:CAL;SCL:-1;CTRY:US;EFV:NLI;SFV:SKN;SFS:;DIR:INB;SFP:;SCL:-1;SRVR:BN7PR05MB5746;H:mx0b-00169c01.pphosted.com;FPR:;SPF:None;LANG:en;
+X-MS-Exchange-Organization-SCL: -1
+X-MS-Exchange-Organization-AuthSource:
+ CY1NAM02FT040.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-Organization-AuthAs: Anonymous
+X-MS-PublicTrafficType: Email
+X-MS-Exchange-Organization-ExpirationInterval: 1:00:00:00.0000000
+X-MS-Exchange-Organization-ExpirationIntervalReason: FlexTransport
+X-MS-Office365-Filtering-Correlation-Id: 4af44c27-9a83-4068-8d15-08d6d722d831
+X-Microsoft-Antispam:
+ BCL:1;PCL:0;RULEID:(2390118)(7020095)(4652040)(5600141)(711020)(4605104)(4710095)(4711036)(1401320)(1421009)(1415054)(71702078);SRVR:BN7PR05MB5746;
+X-MS-TrafficTypeDiagnostic: BN7PR05MB5746:
+X-MS-Exchange-PUrlCount: 44
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2019 21:43:17.3378
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4af44c27-9a83-4068-8d15-08d6d722d831
+X-MS-Exchange-CrossTenant-Id: 66b66353-3b76-4e41-9dc3-fee328bd400e
+X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR05MB5746
+X-MS-Exchange-Transport-EndToEndLatency: 00:00:02.2344816
+X-MS-Exchange-Processed-By-BccFoldering: 15.20.1900.000
+X-Microsoft-Antispam-Mailbox-Delivery:
+	ucf:0;jmr:0;ex:0;auth:0;dest:I;ENG:(750119)(520011016)(944504077)(944701077);
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?nqZtv9X6mAj9a4Hw1p5A66QNAkKGTTNqrzAofP4PI4jg60FGBi2DnhDZpEkY?=
+ =?us-ascii?Q?pKtIaOVbLPnWKSC+0VgXsMd/3jMU2Ve5fv1vKVdvutFGSAq1jDooyWJmTP6I?=
+ =?us-ascii?Q?2/IyleSFLuRroMSqr7V607XKDD60qc2NBhhfFI6xXHOufscmhrRnBMCld/eK?=
+ =?us-ascii?Q?PoOl756ZLGGQlqxVhY5luSxWcXlFpOGIxiB28LJuaVoTIMtZpdxIT4kNlYjB?=
+ =?us-ascii?Q?vmpoCx+2qRK97+dGOGxf6d9WlnvYovwhXMhGtTQtx4MTg99vtRs9H7gk+Cbw?=
+ =?us-ascii?Q?pxj3YlqnRJaMt5gxyeJ5kwugEyMHSlr14ulx/9l/XEOkWJxmS9RcQUw9SMly?=
+ =?us-ascii?Q?VZyqD/gP44rVcdjCmOwZ63eF8ZhTXM/JrPJwHa/IfYxfvYqYhL4Yjyn25gTT?=
+ =?us-ascii?Q?otoI79w+SqkCUXtkUW9475P8OBwT/WnxIgntswsZk1Pe1pwaNhaweTNpaRdR?=
+ =?us-ascii?Q?qGBglqy9CWfQUuxHLXbHTW9Ru6uQxfGwjwJCC2RJcC/haCrbeo94zc0qc+LL?=
+ =?us-ascii?Q?Ma68sBNuArArlxlHWVdHArVrKqJs4QXsvziHkoEPAIxKuX+hvv6QeY5p8cIC?=
+ =?us-ascii?Q?YLTjoIIcN+rCkwGRDaJtRIa4f4pkW2wsvibme4OBvR1ZtDOmq0iOFnB2ryLS?=
+ =?us-ascii?Q?eZxHdfYSwXh/NqKmSwrSFZR04V6NX6+flkK9yzR8Uyw0qRBG6CSVdbR1l0hn?=
+ =?us-ascii?Q?/NkkNeBFXQ4sEXUqVlmZRxj+b/BtSZji6qvYnd8AYObr7g1pn+sLX27BVGjT?=
+ =?us-ascii?Q?ZtdilDHFCY6Ued9laul30L+65Z5+MWs299HCUkkn6/GV6kZItRDz0xgjHWMT?=
+ =?us-ascii?Q?iAk0A8DuEbq4ogkZ6W1y8w6w5byYRj0iPYEbS3Rfh4Cdfe+zyVyYA3jlAnXd?=
+ =?us-ascii?Q?RoMTHuBBeqNXXVJUYGKEEsKxn7LRD45RbN1RRJgRB/LayGBsVjNY/PpdCBKk?=
+ =?us-ascii?Q?LasNT+RoYnXBNBXDnn+sggs/CfSCGB/b/BP6d7RSvacGlXzGp0YNTiBFw+8V?=
+ =?us-ascii?Q?NvIn3n7dYwXsVKMYfBLnOkqr+M2ib5uS3C3rKxw4TQY4ddFwOda1sv13PvkW?=
+ =?us-ascii?Q?yKmEIIWD?=
+Content-type: multipart/alternative;
+	boundary="B_3641205199_686600634"
+
+> This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+--B_3641205199_686600634
+Content-type: text/plain;
+	charset="UTF-8"
+Content-transfer-encoding: quoted-printable
+
+ =20
+ =20
+ =20
+We welcome  you to choose and register for one or more of our upcoming May =
+events at AWS Floor28!
+Space is limited, and attendance is on a first come, first served basis, so=
+ register now  to secure your spot. May Featured Events:=20
+AWSome Day May  20, 09:30  - 17:00
+Serverless Data Processing Workshop=20
+May  23, 09:30  - 13:00
+Migration to AWS Event May  28, 09:30  - 14:30
+
+Open Source  @ AWS Jun  05, 15:00 - 18:30
+
+Click  here to view full events list!
+Key Information:=20
+121 Menachem Begin Street, Azrieli Sarona Tower, 28th floor=20
+Best regards,
+The AWS Israel Marketing Team
+
+ =20
+ =20
+AWS  on Twitter | AWS on Facebook | AWS on Twitch | AWS Blog | AWS Podcast=20
+My  Account | Getting Started | Products | Solutions | Pricing | Partners |=
+ Documentation | Training | Events & Webinars | AWS Activate | Marketplace |=
+ What's New | Blog | Analyst  Reports
+
+View  Online | Forward to a Friend=20
+ =20
+We hope you enjoyed this email. If you'd rather not receive future emails f=
+rom Amazon Web Services, unsubscribe here. Amazon Web Services, Inc. is a su=
+bsidiary of Amazon.com, Inc. Amazon.com is a registered trademark of Amazon.=
+com. This message was produced and distributed by Amazon Web Services, Inc. =
+and its affiliates, 410 Terry Ave. North, Seattle, WA 98109. =C2=A9 2018, Amazon=
+ Web Services, Inc. or its affiliates. All rights reserved. Read our Privacy=
+ Policy.=20
+ =20
+
+
+
+--B_3641205199_686600634
+Content-type: text/html;
+	charset="UTF-8"
+Content-transfer-encoding: quoted-printable
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://demisto.com=
+w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns=3D"http://demisto.comw3.org/1999/xhtml" xmlns:v=3D"urn:schemas-microsoft-c=
+om:vml" xmlns:o=3D"urn:schemas-microsoft-com:office:office">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dutf-8">
+<title>Amazon Web Services</title>
+<link href=3D"http://demisto.com/css?family=3DOpen&#43;Sans:300,400,6=
+00,700,800" rel=3D"stylesheet"><!-- Other Meta Tags -->
+<meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=3D1, minimum=
+-scale=3D1, maximum-scale=3D1">
+<meta name=3D"robots" content=3D"noindex,nofollow">
+<meta http-equiv=3D"X-UA-Compatible" content=3D"IE=3Dedge">
+<link href=3D"http://demisto.com/css?family=3DOpen&#43;Sans:300,400,6=
+00,700" rel=3D"stylesheet"><!-- Marketo Variable Definitions --><!-- Header Va=
+riable Starts --><!-- Header Variable Ends --><!-- banner Variable Starts --=
+><!-- banner Variable Ends --><!-- body_section2plain Variable Starts --><!-=
+- body_section2plain Variable Ends --><!-- body_section2new- Variable Starts=
+ --><!-- body_section2new- Variable Ends --><!-- body_section2text Variable =
+Starts --><!-- body_section2text Variable Ends --><!-- body_section2- Variab=
+le Starts --><!-- body_section2- Variable Ends --><!-- body_section3- Variab=
+le Starts --><!-- body_section3- Variable Starts --><!-- body_section4- Vari=
+able Starts --><!-- body_section4- Variable Starts --><!-- body_section5- Va=
+riable Starts --><!-- body_section5- Variable Starts --><!-- body_section6- =
+Variable Starts --><!-- body_section6- Variable Starts --><!-- body_section7=
+- Variable Starts --><!-- body_section7- Variable Starts --><!-- body_sectio=
+n8- Variable Starts --><!-- body_section8- Variable Starts --><!-- body_sect=
+ion8 Col- Variable Starts --><!-- body_section8 Col - Variable Starts --><!-=
+- body_section9- Variable Starts --><!-- body_section9- Variable Starts --><=
+!--[if gte mso 9]><xml>
+ <o:OfficeDocumentSettings>
+  <o:AllowPNG/>
+  <o:PixelsPerInch>96</o:PixelsPerInch>
+ </o:OfficeDocumentSettings>
+</xml><![endif]--><!--[if mso]>
+<style> body,table tr,table td,a, span,table.MsoNormalTable {  font-family:=
+Arial, Helvetica, sans-serif !important;  }</style>
+<!--<![endif]--><style media=3D"all">
+        /* CLIENT-SPECIFIC STYLES */
+        
+        #outlook a {
+            padding: 0;
+        }
+        /* Force Outlook to provide a "view in browser" message */
+        
+        .ReadMsgBody {
+            width: 100%;
+        }
+        
+        .ExternalClass {
+            width: 100%;
+        }
+        /* Force Hotmail to display emails at full width */
+        
+        .ExternalClass,
+        .ExternalClass p,
+        .ExternalClass span,
+        .ExternalClass font,
+        .ExternalClass td,
+        .ExternalClass div {
+            line-height: 100%;
+        }
+        /* Force Hotmail to display normal line spacing */
+        /* iOS BLUE LINKS */
+        
+        @-ms-viewport {
+            width: device-width;
+        }
+    </style><style media=3D"all">
+        html {
+            -webkit-text-size-adjust: none;
+        }
+        
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        
+        p,
+        .undoreset div p,
+        .undoreset p {
+            margin-top: 18px;
+            margin-bottom: 18px;
+        }
+        
+        a[x-apple-data-detectors] {
+            color: inherit !important;
+            text-decoration: none !important;
+            font-size: inherit !important;
+            font-family: inherit !important;
+            font-weight: inherit !important;
+            line-height: inherit !important;
+        }
+        
+        .textColor {
+            color: #333333 !important;
+            outline: none !important;
+            text-decoration: none !important;
+        }
+        
+        a {
+            outline: none !important;
+            text-decoration: none !important;
+        }
+        
+        .phone-bg {
+            background-size: cover !important;
+        }
+		
+		@media only screen and (max-width: 640px) {
+            .main {
+                width: 100% !important;
+                min-width: 100% !important;
+            }
+            .inner_table {
+                width: 90% !important;
+            }
+            .res {
+                width: 100% !important;
+                display: block !important;
+            }
+            .left_align {
+                text-align: left !important;
+            }
+            .center_align {
+                text-align: center !important;
+                margin: 0 auto;
+            }
+            .full-width {
+                width: 100% !important;
+                height: auto !important;
+            }
+            .phne_height {
+                height: 25px !important;
+            }
+            .hidden {
+                display: none !important;
+            }
+            .padding_top {
+                padding-top: 18px !important;
+            }
+            .padding-btm {
+                padding-bottom: 18px !important;
+            }
+            .iphoneHeight {
+                height: 20px !important;
+            }
+            .iphoneHeight1 {
+                height: 15px !important;
+            }
+            .iphoneHeight0 {
+                height: 0px !important;
+            }
+            .iphoneSpace {
+                height: 25px !important;
+            }
+            .iphoneSpace2 {
+                height: 22px !important;
+            }
+            .noSpace {
+                height: 0px !important;
+            }
+            .padLeft {
+                padding-left: 15px !important;
+            }
+            .floatNone {
+                float: left !important;
+            }
+            .tableWidth {
+                float: none !important;
+                width: 148px !important;
+                margin: 0 auto !important;
+            }
+            .tableWidth1 {
+                width: 120px !important;
+                margin: 0 auto !important;
+                text-align: center !important;
+            }
+        }
+        
+        @media only screen and (max-width: 640px) {
+            *[class].main {
+                width: 100% !important;
+                min-width: 100% !important;
+            }
+            *[class].inner_table {
+                width: 90% !important;
+            }
+            *[class].res {
+                width: 100% !important;
+                display: block !important;
+            }
+            *[class].left_align {
+                text-align: left !important;
+            }
+            *[class].center_align {
+                text-align: center !important;
+                margin: 0 auto;
+            }
+            *[class].full-width {
+                width: 100% !important;
+                height: auto !important;
+            }
+            *[class].phne_height {
+                height: 25px !important;
+            }
+            *[class].hidden {
+                display: none !important;
+            }
+            *[class].padding_top {
+                padding-top: 18px !important;
+            }
+            *[class].padding-btm {
+                padding-bottom: 18px !important;
+            }
+            *[class].iphoneHeight {
+                height: 20px !important;
+            }
+             *[class].iphoneHeight1 {
+                height: 15px !important;
+            }
+            *[class].iphoneHeight0 {
+                height: 0px !important;
+            }
+            *[class].iphoneSpace {
+                height: 25px !important;
+            }
+            *[class].iphoneSpace2 {
+                height: 22px !important;
+            }
+            *[class].noSpace {
+                height: 0px !important;
+            }
+            *[class].padLeft {
+                padding-left: 15px !important;
+            }
+            *[class].floatNone {
+                float: left !important;
+            }
+            *[class].tableWidth {
+                float: none !important;
+                width: 148px !important;
+                margin: 0 auto !important;
+            }
+            *[class].tableWidth1 {
+                width: 120px !important;
+                margin: 0 auto !important;
+                text-align: center !important;
+            }
+        }
+    </style>
+</head>
+<body style=3D"margin-bottom: 0; -webkit-text-size-adjust: 100%; padding-bott=
+om: 0;  margin-top: 0; margin-right: 0; -ms-text-size-adjust: 100%; margin-l=
+eft: 0; padding-top: 0; padding-right: 0; padding-left: 0; width: 100%;">
+<img src=3D"http://***.awscloud.com/trk?t=3D1&amp;mid=3DMTEyLVRaTS03NjY6MzUyOTE=
+1OjE1NjkyNzo4NjM2MzM6MDoyNTk1MzI6OTo3ODU3ODE6MjUxOTA2MDAyOmFuZHJld0BkZW1pc3R=
+vLmNvbQ%3D%3D" width=3D"1" height=3D"1" style=3D"display:none !important;" alt=3D"">=
+<!-- Outer table START -->
+<table border=3D"0" cellpadding=3D"0" cellspacing=3D"0" width=3D"100%" style=3D"-webk=
+it-text-size-adjust: 100%; -ms-text-size-adjust: 100%; mso-table-lspace: 0pt=
+; mso-table-rspace: 0pt;  border-spacing: 0; border-collapse: collapse;margi=
+n:0 auto;">
+<tbody>
+<tr>
+<td class=3D"mktoContainer" id=3D"template-wrapper" style=3D"background-color:#ff=
+ffff;" bgcolor=3D"#ffffff">
+<table class=3D"mktoModule" id=3D"body_section1" cellpadding=3D"0" cellspacing=3D"0=
+" align=3D"center" border=3D"0" width=3D"100%" style=3D"border-collapse: collapse; m=
+argin:0 auto;min-width:100%;">
+<tbody>
+<tr>
+<td>
+<table class=3D"main" cellpadding=3D"0" cellspacing=3D"0" align=3D"center" border=3D"=
+0" width=3D"640" style=3D"border-collapse: collapse; margin:0 auto;width:640px;"=
+>
+<tbody>
+<tr>
+<td bgcolor=3D"#ffffff" style=3D"background-color:#ffffff;">
+<table class=3D"inner_table" cellpadding=3D"0" cellspacing=3D"0" align=3D"center" b=
+order=3D"0" width=3D"600" style=3D"border-collapse: collapse; margin:0 auto;width:=
+600px;">
+<tbody>
+<tr>
+<td height=3D"10" style=3D"line-height:1px;font-size:1px;">&nbsp; </td>
+</tr>
+<tr>
+<td valign=3D"top" style=3D"vertical-align:top;">
+<div class=3D"mktoImg" id=3D"body_sec1_image" mktolockimgsize=3D"true"><a href=3D"h=
+ttps://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__email.awscloud.com_c02c0=
+Y2T0OkZhCtMB0gsx00&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfk=
+rzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrw=
+FWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DxXJDnKgcR0CHVOT2G5_zNi0P0opiHhvgNanKIDLG=
+Kow&amp;e=3D" target=3D"_blank"><img src=3D"http://demisto.com/rs/112-TZM-=
+766/images/Floor28-register-now-events.jpg" width=3D"600" alt=3D"Floor28-newslet=
+ter-banner-topics2.jpg" class=3D"full-width" style=3D""></a>
+</div>
+</td>
+</tr>
+<tr>
+<td height=3D"10" style=3D"line-height:1px;font-size:1px;">&nbsp; </td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class=3D"mktoModule" id=3D"body_section2new" cellpadding=3D"0" cellspacing=
+=3D"0" align=3D"center" border=3D"0" width=3D"100%" style=3D"border-collapse: collapse=
+; margin:0 auto;min-width:100%;">
+<tbody>
+<tr>
+<td>
+<table class=3D"main" cellpadding=3D"0" cellspacing=3D"0" align=3D"center" border=3D"=
+0" width=3D"640" style=3D"border-collapse: collapse; margin:0 auto;width:640px;"=
+>
+<tbody>
+<tr>
+<td bgcolor=3D"#ffffff" style=3D"background-color:#ffffff;">
+<table class=3D"inner_table" cellpadding=3D"0" cellspacing=3D"0" align=3D"center" b=
+order=3D"0" width=3D"600" style=3D"border-collapse: collapse; margin:0 auto;width:=
+600px;">
+<tbody>
+<tr>
+<td height=3D"5" style=3D"line-height:1px;font-size:1px;">&nbsp; </td>
+</tr>
+<tr>
+<td style=3D"font-size: 25px; font-family: Helvetica, Arial, sans-serif; colo=
+r: #333333; line-height:30px; text-align:center" align=3D"center">
+<div class=3D"mktoText" id=3D"body_sec2_titlesec">
+<p style=3D"text-align: center;"><span style=3D"font-size: 16px; font-family: h=
+elvetica, arial, sans-serif;"><b><span style=3D"color: black;"><strong><span s=
+tyle=3D"color: #333333;"><span color=3D"#ff9900" face=3D"Helvetica, sans-serif" st=
+yle=3D"color: #ff9900;">We welcome
+ you to choose and register&nbsp;for one or more of our upcoming May events=
+ at AWS Floor28!<br>
+</span></span></strong></span></b><span style=3D"font-size: 14px;"><b><span s=
+tyle=3D"color: black;"><strong><span style=3D"color: #333333;">Space is limited,=
+ and attendance is on a first come, first served basis,&nbsp;</span><span st=
+yle=3D"color: black;">so register now
+ to secure your spot.</span></strong></span></b></span></span></p>
+<p style=3D"text-align: left;"><span style=3D"font-size: 16px; color: #ff9900; =
+font-family: helvetica, arial, sans-serif;"><b><strong>May Featured Events:&=
+nbsp;</strong></b></span></p>
+<table width=3D"590" height=3D"69" style=3D"height: 154px; border-color: #fcfcfc;=
+ margin-left: auto; margin-right: auto;" border=3D"1">
+<tbody>
+<tr>
+<td style=3D"width: 150px; text-align: center; vertical-align: middle;"><span=
+ style=3D"font-family: helvetica, arial, sans-serif;"><strong style=3D"color: #3=
+33333; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; =
+font-style: normal; font-variant-ligatures: normal; font-variant-caps: norma=
+l; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px;=
+ text-transform: 
+none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-strok=
+e-width: 0px; background-color: #ffffff; text-decoration-style: initial; tex=
+t-decoration-color: initial;"><span style=3D"color: #333333; font-style: norma=
+l; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing=
+: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: =
+none; white-space: 
+normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; backg=
+round-color: #ffffff; text-decoration-style: initial; text-decoration-color:=
+ initial; float: none; font-size: 16px; display: inline !important;"><span s=
+tyle=3D"font-size: 16px;"><a href=3D"http://demisto.comnt.com/v2/url?u=3D=
+https-3A__email.awscloud.com_c02c0Y2T0OkZhCtMB0gsx00&amp;d=3DDwMFaQ&amp;c=3DV9Ig=
+WpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJ=
+LEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DxXJDnK=
+gcR0CHVOT2G5_zNi0P0opiHhvgNanKIDLGKow&amp;e=3D" target=3D"_blank" style=3D"outline=
+: none !important; text-decoration: none !important; font-family: Verdana, A=
+rial, 
+Helvetica, sans-serif; font-size: 11px; font-style: normal; font-variant-li=
+gatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing=
+: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: =
+none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke=
+-width: 0px; background-color: #ffffff;"><img src=3D"http://demisto.comcloud.co=
+m/rs/112-TZM-766/images/Floor28%20-%20icons-02.jpg" width=3D"100" height=3D"100"=
+ constrain=3D"true" imagepreview=3D"false"></a></span></span></strong></span></t=
+d>
+<td style=3D"width: 150px; text-align: center; vertical-align: middle;"><span=
+ style=3D"font-family: helvetica, arial, sans-serif;"><strong><span style=3D"fon=
+t-size: 16px;">AWSome Day</span></strong></span></td>
+<td style=3D"width: 150px; text-align: center; vertical-align: middle;">
+<p><span style=3D"font-size: 14px; font-family: helvetica, arial, sans-serif;=
+"><span style=3D"color: #333333; font-style: normal; font-variant-ligatures: n=
+ormal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; =
+orphans: 2; text-align: center; text-indent: 0px; text-transform: none; whit=
+e-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0p=
+x; 
+background-color: #ffffff; text-decoration-style: initial; text-decoration-=
+color: initial; float: none; display: inline !important;">May
+ 20,&nbsp;09<span style=3D"color: #333333; font-style: normal; font-variant-l=
+igatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacin=
+g: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform:=
+ none; white-space: normal; widows: 
+2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: #ff=
+ffff; text-decoration-style: initial; text-decoration-color: initial; float:=
+ none; display: inline !important;">:30
+ - 17:00</span><br>
+<a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__email.awsclou=
+d.com_R00O2gCZYt00002hTtMxCkc&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1=
+MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchI=
+jj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DuKN6gMU-fNBa54MTA-loUg7kAHaDd=
+Pq3XpMYhNrgl4s&amp;e=3D" target=3D"_blank"><img src=3D"http://demisto.com/=
+rs/112-TZM-766/images/Floor28-Email-05.jpg" width=3D"180" height=3D"36" constrai=
+n=3D"true" imagepreview=3D"false"></a></span></span></p>
+</td>
+</tr>
+<tr>
+<td style=3D"width: 150px; text-align: center; vertical-align: middle;"><span=
+ style=3D"font-family: helvetica, arial, sans-serif;"><strong style=3D"color: #3=
+33333; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11px; =
+font-style: normal; font-variant-ligatures: normal; font-variant-caps: norma=
+l; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px;=
+ text-transform: 
+none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-strok=
+e-width: 0px; background-color: #ffffff; text-decoration-style: initial; tex=
+t-decoration-color: initial;"><span style=3D"color: #333333; font-style: norma=
+l; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing=
+: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: =
+none; white-space: 
+normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; backg=
+round-color: #ffffff; text-decoration-style: initial; text-decoration-color:=
+ initial; float: none; font-size: 16px; display: inline !important;"><span s=
+tyle=3D"font-size: 16px;"><img src=3D"http://demisto.com/rs/112-TZM-766/=
+images/Floor28%20-%20icons-04.jpg" width=3D"100" constrain=3D"true" imagepreview=
+=3D"false"></span></span></strong></span></td>
+<td style=3D"width: 150px; text-align: center; vertical-align: middle;">
+<div><span style=3D"font-family: helvetica, arial, sans-serif;"><strong><span=
+ style=3D"font-size: 16px;">Serverless Data Processing Workshop</span></strong=
+></span>
+</div>
+</td>
+<td style=3D"width: 150px; text-align: center; vertical-align: middle;">
+<p><span style=3D"font-size: 14px; font-family: helvetica, arial, sans-serif;=
+"><span style=3D"color: #333333; font-style: normal; font-variant-ligatures: n=
+ormal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; =
+orphans: 2; text-align: center; text-indent: 0px; text-transform: none; whit=
+e-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0p=
+x; 
+background-color: #ffffff; text-decoration-style: initial; text-decoration-=
+color: initial; float: none; display: inline !important;"><span style=3D"color=
+: #333333; font-style: normal; font-variant-ligatures: normal; font-variant-=
+caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-ali=
+gn: center; text-indent: 0px; text-transform: none; white-space: normal; wid=
+ows: 2; 
+word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: #fffff=
+f; text-decoration-style: initial; text-decoration-color: initial; float: no=
+ne; display: inline !important;"><span style=3D"color: #333333; font-size: 14p=
+x; font-style: normal; font-variant-ligatures: normal; font-variant-caps: no=
+rmal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: cent=
+er; text-indent: 
+0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0p=
+x; -webkit-text-stroke-width: 0px; background-color: #ffffff; text-decoratio=
+n-style: initial; text-decoration-color: initial; float: none; display: inli=
+ne !important;">May
+ 23,&nbsp;09</span><span style=3D"color: #333333; font-style: normal; font-va=
+riant-ligatures: normal; font-variant-caps: normal; font-weight: 400; 
+letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; t=
+ext-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -web=
+kit-text-stroke-width: 0px; background-color: #ffffff; text-decoration-style=
+: initial; text-decoration-color: initial; float: none; display: inline !imp=
+ortant;">:30
+ - 13:00</span><br>
+<a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__email.awsclou=
+d.com_R00O2gCZYt00002hTtMxCkc&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1=
+MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchI=
+jj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DuKN6gMU-fNBa54MTA-loUg7kAHaDd=
+Pq3XpMYhNrgl4s&amp;e=3D" target=3D"_blank"><img src=3D"http://demisto.com/=
+rs/112-TZM-766/images/Floor28-Email-05.jpg" width=3D"180" height=3D"36" constrai=
+n=3D"true" imagepreview=3D"false"></a></span></span></span></p>
+</td>
+</tr>
+<tr>
+<td style=3D"width: 150px; text-align: center; vertical-align: middle;"><stro=
+ng style=3D"color: #333333; font-family: Verdana, Arial, Helvetica, sans-serif=
+; font-size: 11px; font-style: normal; font-variant-ligatures: normal; font-=
+variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: center=
+; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; wo=
+rd-spacing: 0px; 
+-webkit-text-stroke-width: 0px; background-color: #ffffff; text-decoration-=
+style: initial; text-decoration-color: initial;"><span style=3D"color: #333333=
+; font-style: normal; font-variant-ligatures: normal; font-variant-caps: nor=
+mal; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0p=
+x; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; =
+
+-webkit-text-stroke-width: 0px; background-color: #ffffff; text-decoration-=
+style: initial; text-decoration-color: initial; float: none; font-size: 16px=
+; display: inline !important;"><span style=3D"font-size: 16px;"><a href=3D"https=
+://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__email.awscloud.com_c02c0Y2T0=
+OkZhCtMB0gsx00&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVS=
+o&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_=
+DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DxXJDnKgcR0CHVOT2G5_zNi0P0opiHhvgNanKIDLGKow&=
+amp;e=3D" target=3D"_blank" style=3D"outline: none !important; text-decoration: no=
+ne !important; font-family: Verdana, Arial, 
+Helvetica, sans-serif; font-size: 11px; font-style: normal; font-variant-li=
+gatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing=
+: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: =
+none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke=
+-width: 0px; background-color: #ffffff;"><img src=3D"http://demisto.comcloud.co=
+m/rs/112-TZM-766/images/Floor28%20-%20icons-02.jpg" width=3D"100" height=3D"100"=
+ constrain=3D"true" imagepreview=3D"false"></a></span></span></strong></td>
+<td style=3D"width: 150px; text-align: center; vertical-align: middle;"><span=
+ style=3D"font-size: 16px; font-family: helvetica, arial, sans-serif;"><strong=
+>Migration to AWS Event</strong></span></td>
+<td style=3D"width: 150px; text-align: center; vertical-align: middle;">
+<p><span style=3D"font-size: 14px; font-family: helvetica, arial, sans-serif;=
+"><span style=3D"color: #333333; font-size: 14px; font-style: normal; font-var=
+iant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-=
+spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-tran=
+sform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text=
+-stroke-width: 0px; 
+background-color: #ffffff; text-decoration-style: initial; text-decoration-=
+color: initial; float: none; display: inline !important;">May
+ 28,&nbsp;09</span><span style=3D"color: #333333; font-style: normal; font-va=
+riant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter=
+-spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-tra=
+nsform: none; white-space: normal; 
+widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-co=
+lor: #ffffff; text-decoration-style: initial; text-decoration-color: initial=
+; float: none; display: inline !important;">:30
+ - 14:30</span><br>
+<a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__email.awsclou=
+d.com_R00O2gCZYt00002hTtMxCkc&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1=
+MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchI=
+jj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DuKN6gMU-fNBa54MTA-loUg7kAHaDd=
+Pq3XpMYhNrgl4s&amp;e=3D" target=3D"_blank"><img src=3D"http://demisto.com/=
+rs/112-TZM-766/images/Floor28-Email-05.jpg" width=3D"180" height=3D"36" constrai=
+n=3D"true" imagepreview=3D"false"></a><br>
+</span></p>
+</td>
+</tr>
+<tr>
+<td style=3D"width: 150px; text-align: center; vertical-align: middle;"><stro=
+ng style=3D"color: #333333; font-family: Verdana, Arial, Helvetica, sans-serif=
+; font-size: 11px; font-style: normal; font-variant-ligatures: normal; font-=
+variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: center=
+; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; wo=
+rd-spacing: 0px; 
+-webkit-text-stroke-width: 0px; background-color: #ffffff; text-decoration-=
+style: initial; text-decoration-color: initial;"><span style=3D"color: #333333=
+; font-style: normal; font-variant-ligatures: normal; font-variant-caps: nor=
+mal; letter-spacing: normal; orphans: 2; text-align: center; text-indent: 0p=
+x; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; =
+
+-webkit-text-stroke-width: 0px; background-color: #ffffff; text-decoration-=
+style: initial; text-decoration-color: initial; float: none; font-size: 16px=
+; display: inline !important;"><span style=3D"font-size: 16px;"><a href=3D"https=
+://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__email.awscloud.com_c02c0Y2T0=
+OkZhCtMB0gsx00&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVS=
+o&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_=
+DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DxXJDnKgcR0CHVOT2G5_zNi0P0opiHhvgNanKIDLGKow&=
+amp;e=3D" target=3D"_blank" style=3D"outline: none !important; text-decoration: no=
+ne !important; font-family: Verdana, Arial, 
+Helvetica, sans-serif; font-size: 11px; font-style: normal; font-variant-li=
+gatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing=
+: normal; orphans: 2; text-align: center; text-indent: 0px; text-transform: =
+none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke=
+-width: 0px; background-color: #ffffff;"><img src=3D"http://demisto.comcloud.co=
+m/rs/112-TZM-766/images/Floor28%20-%20icons-02.jpg" width=3D"100" height=3D"100"=
+ constrain=3D"true" imagepreview=3D"false"></a></span></span></strong></td>
+<td style=3D"width: 150px; text-align: center; vertical-align: middle;"><span=
+ style=3D"font-size: 16px; font-family: helvetica, arial, sans-serif;"><strong=
+>Open&nbsp;</strong></span><span face=3D"helvetica, arial, sans-serif" style=3D"=
+font-family: helvetica, arial, sans-serif;"><span style=3D"font-size: 16px;"><=
+b>Source
+ @ AWS</b></span></span></td>
+<td style=3D"width: 150px; text-align: center; vertical-align: middle;">
+<p><span style=3D"font-size: 14px; font-family: helvetica, arial, sans-serif;=
+"><span style=3D"color: #333333; font-size: 14px; font-style: normal; font-var=
+iant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-=
+spacing: normal; orphans: 2; text-align: center; text-indent: 0px; text-tran=
+sform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text=
+-stroke-width: 0px; 
+background-color: #ffffff; text-decoration-style: initial; text-decoration-=
+color: initial; float: none; display: inline !important;">Jun
+ 05, 15:00 - 18:30</span><br style=3D"color: #333333; font-family: Verdana, A=
+rial, Helvetica, sans-serif; font-size: 14px; font-style: normal; font-varia=
+nt-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-sp=
+acing: normal; orphans: 2; 
+text-align: center; text-indent: 0px; text-transform: none; white-space: no=
+rmal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; backgrou=
+nd-color: #ffffff; text-decoration-style: initial; text-decoration-color: in=
+itial;">
+<a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__email.awsclou=
+d.com_Ect0Th2DZug0k0YM0x02O0C&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1=
+MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchI=
+jj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3D64zW11yaPL6RqzgzFP33ROoK19xCg=
+HctdH1oIfXhEbU&amp;e=3D" target=3D"_blank" style=3D"font-family: Verdana, Arial, H=
+elvetica, sans-serif; font-size: 14px; 
+font-style: normal; font-variant-ligatures: normal; font-variant-caps: norm=
+al; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: center=
+; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; wo=
+rd-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: #ffffff;"=
+><img src=3D"http://demisto.com/rs/112-TZM-766/images/Floor28-Email-05=
+.jpg" width=3D"180" height=3D"36" constrain=3D"true" imagepreview=3D"false"></a></sp=
+an></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><span style=3D"font-family: helvetica, arial, sans-serif;"><a href=3D"https:=
+//urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__email.awscloud.com_R00O2gCZYt=
+00002hTtMxCkc&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo=
+&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_D=
+vaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DuKN6gMU-fNBa54MTA-loUg7kAHaDdPq3XpMYhNrgl4s&a=
+mp;e=3D" target=3D"_blank">Click
+ here to view full events list!</a></span><br>
+</p>
+<table width=3D"596" height=3D"31" style=3D"color: #333333; font-family: Helvetic=
+a, Arial, sans-serif; font-size: 16px; font-style: normal; font-variant-liga=
+tures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: =
+normal; orphans: 2; text-indent: 0px; text-transform: none; white-space: nor=
+mal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-deco=
+ration-style: 
+initial; text-decoration-color: initial; height: 259px; margin-left: auto; =
+margin-right: auto;">
+<tbody>
+<tr>
+<td colspan=3D"3" style=3D"background-color: #252f3e; text-align: center;"><spa=
+n style=3D"font-family: helvetica, arial, sans-serif;"><strong><span style=3D"co=
+lor: #ffffff; font-size: 20px;">Key Information:</span></strong><strong><spa=
+n style=3D"color: #ffffff; font-size: 20px;"></span></strong></span></td>
+</tr>
+<tr>
+<td style=3D"width: 200px; text-align: center; vertical-align: middle;"><span=
+ style=3D"font-family: helvetica, arial, sans-serif;"><a href=3D"http://demisto.com=
+nse.proofpoint.com/v2/url?u=3Dhttps-3A__email.awscloud.com_z0Yg0tO00h2ZkvxCT2E=
+cM00&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUO=
+Z17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAV=
+rOMQtwuNcpuFP-4&amp;s=3D1MozKOqYdX_-ScQbCn1XC9a1xYNmhG4skdwIbw_L380&amp;e=3D" ta=
+rget=3D"_blank"><img src=3D"http://demisto.com/rs/112-TZM-766/images/Flo=
+or28%20Email-04.jpg" width=3D"100" height=3D"100" constrain=3D"true" imagepreview=3D=
+"false"></a></span></td>
+<td style=3D"width: 200px; text-align: center; vertical-align: middle;" colsp=
+an=3D"2">
+<span style=3D"font-size: 16px; font-family: helvetica, arial, sans-serif;">1=
+21 Menachem Begin Street, Azrieli Sarona Tower,&nbsp;28th floor</span></td>
+</tr>
+<tr>
+<td style=3D"text-align: center; vertical-align: top;" colspan=3D"3">
+<p style=3D"margin-top: 18px; margin-bottom: 18px;"><span style=3D"font-family:=
+ helvetica, arial, sans-serif;"><strong><span style=3D"font-size: 14px;"></spa=
+n></strong><a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__ema=
+il.awscloud.com_z0Yg0tO00h2ZkvxCT2EcM00&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83Uy=
+HGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE=
+&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3D1MozKOqYdX_-ScQbCn1=
+XC9a1xYNmhG4skdwIbw_L380&amp;e=3D" target=3D"_blank"><img src=3D"http://demisto.com=
+cloud.com/rs/112-TZM-766/images/Azrieli Sarona Map.PNG" alt=3D"" width=3D"590" h=
+eight=3D"175" constrain=3D"true" imagepreview=3D"false" border=3D"" style=3D"display: =
+block; margin-left: auto; margin-right: auto;"></a></span></p>
+</td>
+</tr>
+</tbody>
+</table>
+<div style=3D"text-align: left;">
+<p style=3D"color: #000000; font-family: Helvetica, Arial, sans-serif; font-s=
+ize: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-=
+caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-ali=
+gn: -webkit-left; text-indent: 0px; text-transform: none; white-space: norma=
+l; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-=
+color: #ffffff; 
+text-decoration-style: initial; text-decoration-color: initial;">
+<span style=3D"font-size: 16px; font-family: helvetica, arial, sans-serif;">B=
+est regards,<br>
+The AWS Israel Marketing Team</span></p>
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td height=3D"5" style=3D"line-height:1px;font-size:1px;">&nbsp; </td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<table class=3D"mktoModule" id=3D"body_section9" cellpadding=3D"0" cellspacing=3D"0=
+" align=3D"center" border=3D"0" width=3D"100%" style=3D"border-collapse: collapse; m=
+argin:0 auto;min-width:100%;">
+<tbody>
+<tr>
+<td>
+<table class=3D"main" cellpadding=3D"0" cellspacing=3D"0" align=3D"center" border=3D"=
+0" width=3D"640" style=3D"border-collapse: collapse; margin:0 auto;width:640px;"=
+>
+<tbody>
+<tr>
+<td bgcolor=3D"#ffffff" style=3D"background-color:#ffffff;">
+<table class=3D"inner_table" cellpadding=3D"0" cellspacing=3D"0" align=3D"center" b=
+order=3D"0" width=3D"600" style=3D"border-collapse: collapse; margin:0 auto;width:=
+600px;">
+<tbody>
+<tr>
+<td height=3D"10" style=3D"line-height:1px;font-size:1px;">&nbsp; </td>
+</tr>
+<tr>
+<td style=3D"font-family: Helvetica, Arial, Sans-serif; font-size: 10px; line=
+-height:14px; color: #333333;" align=3D"center">
+<div class=3D"mktoText" id=3D"Footer_Top_bar">
+<div class=3D"mktEditable" id=3D"Social-Media">
+<table width=3D"100%" border=3D"0" cellspacing=3D"0" cellpadding=3D"10" align=3D"cent=
+er" style=3D"max-width: 600px;" class=3D"responsive-table">
+<tbody>
+<tr>
+<td align=3D"center" style=3D"font-family: Helvetica, Arial, Sans-serif; font-s=
+ize: 10px; line-height: 14px; color: #333333; border-top-color: #d7d7d7; bor=
+der-top-style: solid; border-top-width: 1px; padding-top: 10px;">
+<a style=3D"color: #007eb9; text-decoration: none;" href=3D"http://demisto.com=
+proofpoint.com/v2/url?u=3Dhttps-3A__email.awscloud.com_s0wxhOC0gZkF0TcY2200t0M=
+&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17Q=
+yTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQ=
+twuNcpuFP-4&amp;s=3Dl-dj9SidJFS4twyGJiMnsqnZaC9Hy1e1qX0FTNIeP1M&amp;e=3D">AWS
+ on Twitter</a> | <a style=3D"color: #007eb9; text-decoration: none;" href=3D"h=
+ttps://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__email.awscloud.com_wZgMk=
+2tTO00c02CGh0Y0x0x&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfk=
+rzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrw=
+FWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DVm1sh8051hPtUm5dbjXbLWEPVzW8YgN6LnENpp0n=
+SvI&amp;e=3D">
+AWS on Facebook </a>| <a style=3D"color: #007eb9; text-decoration: none;" hre=
+f=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__email.awscloud.com_j=
+YHZ0C0OTh02gc2kMty0x00&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8=
+PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLlo=
+prrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DnCpq-dxBiO_y8yoNUguIKOKbm_K640TntwyU=
+aV_aIUY&amp;e=3D">
+AWS on Twitch </a>| <a style=3D"color: #007eb9; text-decoration: none;" href=3D=
+"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__email.awscloud.com_s0z=
+xhOC0gZkI0TcY2200t0M&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PT=
+fkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLlopr=
+rwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DUC7fmY2wBgFStZZNPgI7gSRwymbSzUrjhuY987=
+3puag&amp;e=3D">
+AWS Blog </a>| <a style=3D"color: #007eb9; text-decoration: none;" href=3D"http=
+s://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__email.awscloud.com_r20A0M0x=
+cZJOgkTC20hY0t0&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzV=
+So&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa=
+_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DA2czu8t0eo1blJG4vOqb1iqLEL8N7b-T-a-I25NfILY=
+&amp;e=3D">
+AWS Podcast</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td style=3D"font-family: Helvetica,Arial,sans-serif; font-size: 9px; line-he=
+ight: 14px; color: rgb(51, 51, 51);  padding-top:15px;" align=3D"center">
+<div class=3D"mktoText" id=3D"Footer_Top_bar1">
+<table width=3D"100%" cellpadding=3D"0" cellspacing=3D"0" border=3D"0">
+<tbody>
+<tr>
+<td style=3D"padding: 10px 0px 10px 0px; border-top: 1px solid #e8e8e8;">
+<table align=3D"center" width=3D"100%" cellpadding=3D"0" cellspacing=3D"0" border=3D"=
+0" style=3D"border-collapse: collapse;">
+<tbody>
+<tr>
+<td align=3D"center">
+<table align=3D"center" width=3D"100%" cellpadding=3D"0" cellspacing=3D"0" border=3D"=
+0" style=3D"border-collapse: collapse;">
+<tbody>
+<tr>
+<td align=3D"center" style=3D"font-family: Helvetica, Arial, Sans-serif; font-s=
+ize: 9px; color: #999999; line-height: 16px;">
+<a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__email.awsclou=
+d.com_dc_yuZkfPEXXFT65tdReNucEvTRm1nqq5Eg9ByfCCxPZLBhFWAGCfvufj6dhVwTzEtOIYQ=
+T6KZebtKsuFAXqr-5FkGfVPjdMwTtx5-5Fpmf-2DBolc-5F4aTz00KYqzh3T8FBZafNjAG-5FJ0-=
+5FHpoVJJp2zaXbvCD-2DKWntWMQrTl9DQplqIGh2IqVNqNVwgp9Lw5mmm4VcwSHamCM63Lz2dIz5=
+QrLyV0F1DmbbrpcabblH7qVCGsuG7R0K2e1UNtDPrvCYjmhjZT-2DbYtyYJ6ALy-2DU1oNRK6U-2=
+DFw-3D-3D_JZ0OTY0BCM0kKxgct200h20&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW=
+3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=
+=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DRY7p3IYgVS2n-IF6aYLRvrjrx=
+uviO5gjuRQz4-YsJ1A&amp;e=3D" style=3D"color: #007eb9; text-decoration: none;">My
+ Account </a>| <a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A=
+__email.awscloud.com_dc_KwqiTCOQ16Q1JCi3MdelD3ZZGcncVANDEUTkhckMhmjKLpc5Celu=
+LOBeryeJSliZOd7HSaDnjFzd0Abmoc1XBrLSxuxnTt3JbegdQLT26UxJ0566PjFE7Y4mxyKl2kDG=
+mIQkaBy9xwIcCMowmpOremkgG2DKmgEbxjb91yrYwOYSrb-2DXi42HWSdcfzjep4X-5F2zQCf8sq=
+l1OMkVwg899ZUnOU0Oe-5F9JT8NIBfaLqxSNsEkhuQLju6sJwTM4xwvWkSoIbDc818rEeU-2DS3v=
+GlhVn7FOPfzRwpLw1hYxgnsqFdc-3D_JZ0OTY0BCM0kKxgct200h20&amp;d=3DDwMFaQ&amp;c=3DV9=
+IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRsz=
+lJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DI3PE=
+xCACjVa4Od_5a3ZCZkQ9TcQfPAWVQAf-Z5bnHvM&amp;e=3D" style=3D"color: #007eb9; text-=
+decoration: none;">
+Getting Started</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dh=
+ttps-3A__email.awscloud.com_dc_ajD-5FBapU74vzOhWVQvr7p4cqVisGqB1O6HX4o5TDTFP=
+HjYjB0mnTCzeqU2ae-5FUKuhaEYSlYO3aXs8wM7-2DOfOdUgvW-5FJ1xF2g4Tp-2DVwyR8kjq0D2=
+b7ZWCTIjLKbOohlVn-2DR4V7niUUUzcokTr5gyAjSZfcBOm6cyyl6Z3CebaPbyNcJgtqmPUai0jB=
+kR276PUGXFdhTwtrNZX3eK6jeQ0jGZXXk8sV64Zo9oLzEpJFAdSDTKHWi-2D9Hc0giJcsPZrZt-5=
+FRXvhJkGaDn7FfnRRm29Q-3D-3D_JZ0OTY0BCM0kKxgct200h20&amp;d=3DDwMFaQ&amp;c=3DV9IgW=
+pI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJL=
+EZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DavkeTUp=
+e3Cd1tGVbskkCIFyE6_jMN0YUYQguzSErFyY&amp;e=3D" style=3D"color: #007eb9; text-dec=
+oration: none;">
+Products</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A=
+__email.awscloud.com_dc_ajD-5FBapU74vzOhWVQvr7p8U1m0pThWPS8HDkzJoucnUuXHXiDe=
+7Ph7gqGCnX3LZQ-2D-5FHE-2DR8sw32tvzo8nP3ug8h9q5lE-5FYelPQx1XtbshcYr17NZmLkVUu=
+PE6OnC7palacPArGU1-2D4gpSRV28wMO8fqPlbV7LC7-2DQg864NUVuugG8sNuORp6GRyp-2DEOR=
+NZ5MZlB9jnwXumwbnTxuEo2BUk5ILQS5WKdt1Ai5Qg2uMJsoWklb0GagkT5VRK-2D5fbClmCdEEv=
+8SfRlOL2PY77UYnw-3D-3D_JZ0OTY0BCM0kKxgct200h20&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5Pv=
+zTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAy=
+I3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3D8aIXfclQqJES=
+v69bBTU42xyaSIyxOAWkLb0zNkW-w8c&amp;e=3D" style=3D"color: #007eb9; text-decorati=
+on: none;">
+Solutions</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3=
+A__email.awscloud.com_dc_ajD-5FBapU74vzOhWVQvr7p2cy1ELLlkvByqWei9bfR-2D-2Dho=
+jGlhPzUN78r-5FZch2HtbZ3Ei-5FbRLqmLthz8gHQN-2DFdcJWZw7dyTMpH57ov-5FhWQ5sDWMYo=
+BQPTFH0UScaqygLZg84gongn6m9oJR3v5x0O6S7sJ67UW2GVC4pcx-2DRUBmOTMzELOaIQ7Zj1uh=
+V-2Dn-5FKmkpPd6Pp8tmjK3Z7TYlu7UREB0nhSFvNSeDIyhurA-2D-5Fu5MRl-5FZEKPeR-5Fj8q=
+tstRrMniCRGPEFIyuOEGieE1K-2Dw-3D-3D_JZ0OTY0BCM0kKxgct200h20&amp;d=3DDwMFaQ&amp=
+;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M=
+8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=
+=3DWSU0IN5n7h6RHLS-a_yeUGysa8CaXT8N3OoGY9cL2mc&amp;e=3D" style=3D"color: #007eb9; =
+text-decoration: none;">
+Pricing</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A_=
+_email.awscloud.com_dc_ajD-5FBapU74vzOhWVQvr7pwZEstDV9Ps9416YONcLSEF8r-2DAaB=
+oFaCUYu1ZF75He0WAfnisjtOjqeLe3XQHCUOO-2DgC7l7hI6iKJyXjJEkrFnP329NsxwqHHWBeUN=
+oAWdOsIz1CrswQRF8QuR0I-2DXNALkNO6SfZZHDuRB9vmclsD2qYlimzIq3X-5F4Aarnp3yodCXL=
+wmbgf-2DbmF3rB-2DjZ3iQsSORv8t4DkeksB-5FyEmyOk-5FHVFYHuzkCy1XkGFOg0ZifV2N4wVu=
+PWHbRea7QFlRESw-3D-3D_JZ0OTY0BCM0kKxgct200h20&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5Pvz=
+Tw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI=
+3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3Dg1VbB-5CqqUGC=
+Lj29TwHRus5KczcL5K0o7-YVphC8zs&amp;e=3D" style=3D"color: 
+#007eb9; text-decoration: none;">
+Partners</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A=
+__email.awscloud.com_dc_ajD-5FBapU74vzOhWVQvr7p-2DZQ749iALJ6Yd3d1oPtC01N1IC-=
+5Fo2OvptCjYrzUTP1po01fJ-5Ffh0V7xQxTUh1G9tp-5FEODSmS-2DeTxiy3h1czpfkeQY8afv-5=
+FtLPqjBHalPFiu7mIycWdUTY-5F77JGYoLGvLo4EgariPbzlF25E73Hg5CvPGDr3OsSv82VXPI-2=
+DsH-5F0s1P9bqy7DQi4z6GGVCb-5FYyTrfjwGq5DQ9uBSK0YhGIal08nmNIBLtIID1AgthDJpEMV=
+nFSu34UbvLlZjCJoXKrKGj8P-5FqtEdJwKRrVDTKAL8-3D_JZ0OTY0BCM0kKxgct200h20&amp;d=
+=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvo=
+S-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcp=
+uFP-4&amp;s=3DaQTimBKwWfcptgP_fz67aBRF9CDRv5R7KmAExBmBJAE&amp;e=3D" style=3D"color=
+: #007eb9; text-decoration: none;">
+Documentation</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dhtt=
+ps-3A__email.awscloud.com_dc_ajD-5FBapU74vzOhWVQvr7p-5FqWKeonTop1TVJlHau9PEC=
+VqCWxK-5FyFPuI6uoEMmeaC55T-2DTKK2eG1zUq5IiMz-5F7xocCVWOWMikEF58UczY-5Fwgs3zB=
+RDU2HePLxiJy91AxeiAK0WaqQ1PLSRdVLtg7p6uTTTLTM3dms62bPXhSGyGrEpH7c4YCCTkXth1z=
+9MP-5FqfdJI5Gzuxnl-5Fc5DP1Y8xcpF9XbQcXD7OsbmnXChbhr7n-5FDq2M1AebQUwjXdcRPOYV=
+SXAn-2DjHFv01ateOAFXxdg-3D-3D_JZ0OTY0BCM0kKxgct200h20&amp;d=3DDwMFaQ&amp;c=3DV9I=
+gWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszl=
+JLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3D_6zEe=
+-2lIVV3a43ZsKA9G59ggBSxt2l953qNBatRrQs&amp;e=3D" style=3D"color: #007eb9; text-d=
+ecoration: none;">
+Training</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A=
+__email.awscloud.com_dc_ajD-5FBapU74vzOhWVQvr7p9MwfMxNMOCe-5F0VHXzfN8dN-2DPg=
+8LCpQSQaN0TBrjXosT8IVHM7g9SjZ9JhEtgldhBSAen8j2eHgaifL2tQePg1thvoqbl9L0QgJwqC=
+P5hI5a-5F4Qf0UT94eqh188kW1nWRSforYbLIrwlwWDw63D6F-5Fd2XSaGOE7xWxmYztB47RTGFJ=
+NuYJIVAILGSLch4qtHBOF3mJeXLy-5FeUV1V9mO2svG8vaOuJzFRH0-2DCZn9mFOMXyaPQEqYVqy=
+Ktt2RXWmmgkqhTyCM2RB5-5FTwnPMvhKVig-3D_JZ0OTY0BCM0kKxgct200h20&amp;d=3DDwMFaQ&=
+amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD=
+37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&am=
+p;s=3DuPt0rYpvBpnnDR6HaLfZY3uCcmYzucdDLzGt9t8DBzA&amp;e=3D" style=3D"color: #007eb=
+9; text-decoration: none;">
+Events &amp; Webinars</a> | <a href=3D"http://demisto.comnt.com/v2/u=
+rl?u=3Dhttps-3A__email.awscloud.com_dc_ajD-5FBapU74vzOhWVQvr7p-2D2g1ZV1YttvPmp=
+Z-5F2arul57mxDH2hDP7-2DPmcfGWWgd-2DZx2YFBeQpRqmwrRCmPE-5F1d8j8qJJn8a0aBOEwju=
+IHWuoaAW0vaxJcMo6CS2ASY23SS2E7nVMThCXwBQZn3UsHCmXVxghTbjbm0eZ4e-2DMFL7FvkzUm=
+erZEV8zHk9M637yM2byXpHbj4yGRMx8oJ2sukIsJvSG3U9gX-2Ds4ap9Hcfea4MZ7Mz-5FM9Mp9P=
+9OWtQFRGnkbi7Q5FlIExXQLnmDnHQ-3D-3D_JZ0OTY0BCM0kKxgct200h20&amp;d=3DDwMFaQ&amp=
+;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M=
+8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=
+=3DjDAE8hgSF-YgOZeD7M_bSfb822HtpPKdTRSXsjNkQB8&amp;e=3D" style=3D"color: #007eb9; =
+text-decoration: none;" target=3D"_blank">
+AWS Activate</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttp=
+s-3A__email.awscloud.com_dc_KwqiTCOQ16Q1JCi3MdelD78in-5F-5FVMI-5FzdbVDMzZ3kS=
+vR93Srg3KACAeaH-2DfeV6n8fFZFwLCyL52zEa-5Fl-2DHxV0HgsarlWT1jePuqBHNBNoSZgWMK-=
+5FL4tqHsXeDAhrWU7z-5F8gsYlcKsFH-5FiSt0AP13d0VUNk4qKsf0ildupDk-2DBPBIgcEYFpx8=
+ciVAWUPS82Fu-5FxRrFAHMI18iq4xhaiFtD6a7M-5FFd-5Fh6w8dFDY-2D0NbzjD2i1wnaRLJIDw=
+0nFFLJCZyTQGpwhY9c7Zk1GjSE71gjDoGxEYTekrX1-5FtLRDG15U-3D_JZ0OTY0BCM0kKxgct20=
+0h20&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUO=
+Z17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAV=
+rOMQtwuNcpuFP-4&amp;s=3DwtNA8caFXHjVFom0giU3QkeyrIZeoj9HUwiUutGarfc&amp;e=3D" st=
+yle=3D"color: #007eb9; text-decoration: none;">
+Marketplace</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps=
+-3A__email.awscloud.com_dc_ajD-5FBapU74vzOhWVQvr7p7og2A-5FqEWVUdkv18t9fey9FR=
+pCN-5F3oiMil77N9r0aFdyNs08ZSUGPK8NNLg-5FbyDp5hCYOVrqEvDdE3RAG9CiMUvT-2DETiJM=
+VG5v47cOFUjDDhr16yUhgrcK1343rBGTcKa1BAk9-2Dtmv6kz7zqd8AqBs8IB8jdKhvIFX-2DjMS=
+GYJzcKd5B470U-2DXPq7lrzkkLyQHu67zx1LChitoMIybADjIiQKkIVTNB-5FKBtke5MMyLpTAVM=
+pv8-2Dsu4pGEoqsMdFIkA-3D-3D_JZ0OTY0BCM0kKxgct200h20&amp;d=3DDwMFaQ&amp;c=3DV9IgW=
+pI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJL=
+EZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DBitMDRF=
+mmDYSZCCoBCG1Pp9TdvGi2Qob2NzqBbzL24s&amp;e=3D" style=3D"color: 
+#007eb9; text-decoration: none;">
+What's&nbsp;New</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dh=
+ttps-3A__email.awscloud.com_dc_ajD-5FBapU74vzOhWVQvr7p0486BTljVMiJxb-2DdUE36=
+Fa71K9s92Yg6Y5tTGnJhLaJTOVRTKSfm-5F-5FBr08WkySuwMzsgKxC-2DbGtB3mRFo-5FckvRt3=
+vVswXLeGHCvsA6xlRIwQgX8x9LuU1mfcczyEW5XFrAOGhpvAf1RMTtvdGn9OrbKTEuFpCTIQHJ-5=
+FaJZa-5FBYgzh2ZZEdsU-5FgV-2DIbJNy1w49wH2y4LaVHLUKjHvRKBlI8c4eWXOiyS0acJhB-2D=
+Fielu1pNj-2DRhnt-2DNckyapXAavuA-3D-3D_JZ0OTY0BCM0kKxgct200h20&amp;d=3DDwMFaQ&a=
+mp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD3=
+7M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp=
+;s=3DKjWWoGRvFah4QGpdblzf073h-eY9XyD77rYddwhPCUk&amp;e=3D" style=3D"color: #007eb9=
+; text-decoration: none;">
+Blog</a>&nbsp;<span style=3D"color: #999999; font-family: Helvetica, Arial, s=
+ans-serif; font-size: 9px; font-style: normal; 
+font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400=
+; letter-spacing: normal; orphans: 2; text-align: -webkit-center; text-inden=
+t: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: =
+0px; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-de=
+coration-color: initial; display: inline !important; float: none;">|<span>&n=
+bsp;<a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__email.awsc=
+loud.com_dc_KwqiTCOQ16Q1JCi3MdelD5aQqce63OVL6baXF6dCre2fFfS1oodd2-5F7Kq1Lg-5=
+FWJRi8IOWMc6LUBIdAnqXU3Q57DzPoIXPrvykEcSl8H3zlBnPNYgHVrzSSQ6jaOBn0ijN38W-2DA=
+Eat1aQHMeZJIdV-5FyXrPPDNyiJOjlUqwBsBSx-2DfkaRICoGbRbqWRmLIRMgkWoTsvvKwoKQ4x8=
+XJSXr1Paa-5FxmNnUMnNfE8o90-2DEnbw9QBezKmGpfK6Bqn4qKDJcFk2h8XtKJBEZQS5xdaeAxu=
+OgQpI1oVqY3xZqekC9qNy2uZAd80OBX4Kq5dp5gKWARs8xxl8SzIjQx4e-2DNG3stQ-3D-3D_JZ0=
+OTY0BCM0kKxgct200h20&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PT=
+fkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLlopr=
+rwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3Dvhfnc65OU_NIol05GNhBy-ekWADFMJmRmY8wH7=
+QsPH8&amp;e=3D" target=3D"_blank" style=3D"color: #007eb9; text-decoration: none;"=
+>Analyst
+ Reports</a></span></span><br style=3D"font-family: Helvetica, Arial, sans-se=
+rif; font-size: 9px; font-style: normal; 
+font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400=
+; letter-spacing: normal; orphans: 2; text-align: -webkit-center; text-inden=
+t: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: =
+0px; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-de=
+coration-color: initial;">
+<br>
+<span style=3D"font-size: 11px;"><strong><a href=3D"http://demisto.com=
+nt.com/v2/url?u=3Dhttps-3A__pages.awscloud.com_index.php_email_emailWebview-3F=
+mkt-5Ftok-3DeyJpIjoiT0RBeVpUazJNemMyTkROaSIsInQiOiJzVzkydktjY25EcWxpWjZETnQ1=
+RzVsREI3TTlmOFFXb0pwS1hzcGtJSDBLTGZyVFdmcGpSTG1mLzdyaXgzQmswUTlubVdSQXpybklN=
+T2dOTDhncmpqUERWbStGNU9LR3o3RUVUbkJyMnN3WXhqdTZ4MzFSTXBtcGVmSXNqUkVPM1NneUp6=
+Yi9GTFdIL3c0Ni9ZTGV3SWc9PSJ9&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1M=
+FWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIj=
+j0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DfL0axVTMifMI_cd_bn9Eu6001lE893=
+WikW3njQTI6eY&amp;e=3D" style=3D"color: #007eb9; text-decoration: none; font-siz=
+e: 11px;">View
+ Online</a> | <a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A_=
+_email.awscloud.com_v_s0GxhOC0gZkP0TcY2200t0M&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5Pvz=
+Tw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI=
+3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DacriFG6IPk6d0=
+FTLm5-03oVE294GFk_msm-nFUMqmXU&amp;e=3D" style=3D"color: #146eb4; text-decoratio=
+n: none; font-size: 11px;">
+Forward&nbsp;to&nbsp;a&nbsp;Friend</a></strong></span></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</td>
+</tr>
+<tr>
+<td height=3D"15" style=3D"line-height:1px;font-size:1px;">&nbsp; </td>
+</tr>
+<tr>
+<td style=3D"font-size: 12px; line-height: 18px; font-family: Helvetica, Aria=
+l, sans-serif; color:#666666;" align=3D"center">
+<div class=3D"mktoText" id=3D"Footer_Top_bar3">
+<div class=3D"mktEditable" id=3D"Footer">
+<table width=3D"100%" border=3D"0" cellspacing=3D"0" cellpadding=3D"0" align=3D"cente=
+r" style=3D"max-width: 600px;" class=3D"responsive-table">
+<tbody>
+<tr>
+<td align=3D"center" style=3D"font-size: 12px; line-height: 18px; font-family: =
+Helvetica, Arial, sans-serif; color: #666666;">
+<dl><dt style=3D"color: #888888; font-size: 10px; text-align: center;">We hop=
+e you enjoyed this email. If you'd rather not receive future emails from Ama=
+zon Web Services,
+<a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__email.awsclou=
+d.com_dc_sRhgdM26bquWWERQj-5FH99lCavgYp1xy4-5F-2D5c9n1WxRAg-2DIit3iVTUYZUZlQ=
+mzz1BTdI04NvsSqvrTM6rSnQGNE7u0izR2mDymghKXNuyYsucnJtwtBaa95VSRX-2DbxtC1fSBIJ=
+hBSASzQTWX-2DoL2kJeX2eT5Y01QUY-2D26nuZMUXAbWVOH1cKjHbP7fgVueU3I3vvaMNjPfEnHq=
+-2DGWwGVXvjHbzKMOZleRZVXPNXYfpvhnwthSUDvk64ZhfLQt5CntvM-2D7lX9wM5ys5j2JDxb0c=
+OcVWdpdN-2D2lAhFA6I-2DeSB55Mbua3t6GaHFxkVlFZq84GI7MqVEXTrHu1gx6gl3qNw-3D-3D_=
+JZ0OTY0BCM0kKxgct200h20&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J=
+8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchIjj0LLl=
+oprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DcH2qpXpDJb2ebALb43NA5dIjk2bbMVLgbHK=
+SM_PsDY8&amp;e=3D" style=3D"-ms-text-size-adjust: 100%; -webkit-text-size-adjust=
+: 100%; color: #007eb9; font-size: 10px; text-decoration: none;">
+unsubscribe here</a>. </dt><dt style=3D"color: #888888; font-size: 10px; text=
+-align: center;">Amazon Web Services, Inc. is a subsidiary of Amazon.com, In=
+c. Amazon.com is a registered trademark of Amazon.com.
+</dt><dt style=3D"color: #888888; font-size: 10px; text-align: center;">This =
+message was produced and distributed by Amazon Web Services, Inc. and its af=
+filiates, 410 Terry Ave. North, Seattle, WA 98109.
+</dt><dt style=3D"color: #888888; font-size: 10px; text-align: center;">=C2=A9 20=
+18, Amazon Web Services, Inc. or its affiliates. All rights reserved. Read o=
+ur
+<a href=3D"http://demisto.comnt.com/v2/url?u=3Dhttps-3A__email.awsclou=
+d.com_x0T00c0x0CChOkZ0Lt22gMY&amp;d=3DDwMFaQ&amp;c=3DV9IgWpI5PvzTw83UyHGVSoW3Uc1=
+MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszlJLEZpAyI3901tE&amp;m=3DchI=
+jj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3DI4Ar-k_zgzCPDerC3NLM2o_Z1pIm2=
+AuHz33aguwfwDg&amp;e=3D" style=3D"-ms-text-size-adjust: 100%; -webkit-text-size-=
+adjust: 100%; color: #007eb9; font-size: 10px; text-decoration: none;">
+Privacy Policy</a>. </dt></dl>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</td>
+</tr>
+<tr>
+<td height=3D"10" style=3D"line-height:1px;font-size:1px;">&nbsp; </td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<!-- Outer table End --><a href=3D"http://demisto.comnt.com/v2/url?u=
+=3Dhttps-3A__email.awscloud.com_iMxT0kZC2DO00t0hcgY0M02&amp;d=3DDwMFaQ&amp;c=3DV9I=
+gWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=3DUOZ17QyTCGvoS-ikzSWD37M8NRszl=
+JLEZpAyI3901tE&amp;m=3DchIjj0LLloprrwFWa_DvaGiZgDAVrOMQtwuNcpuFP-4&amp;s=3Dict4V=
+fpgOCAWUZ-_uoWluOuGYsbHZCbu6WhZtdJwFwA&amp;e=3D"></a>
+<p></p>
+</body>
+</html>
+
+
+--B_3641205199_686600634--
+

@@ -1,0 +1,57 @@
+commonfields:
+  id: Ipstack
+  version: -1
+name: Ipstack
+display: ipstack
+category: Data Enrichment & Threat Intelligence
+description: "One of the leading IP to geolocation \nAPIs and global IP database services."
+configuration:
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+script:
+  script: '-'
+  type: python
+  commands:
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP address to query.
+    outputs:
+    - contextPath: IP.Address
+      description: IP address.
+      type: string
+    - contextPath: IP.Geo.Location
+      description: Latitude and longitude of the IP address.
+      type: string
+    - contextPath: IP.Geo.Country
+      description: Country of origin of the IP address.
+      type: string
+    - contextPath: Ipstack.IP.address
+      description: IP address.
+      type: string
+    - contextPath: Ipstack.IP.type
+      description: IP type (ipv4 or ipv6).
+      type: string
+    - contextPath: Ipstack.IP.continent_name
+      description: Continent of the IP address.
+      type: string
+    - contextPath: Ipstack.IP.latitude
+      description: Latitude of the IP address.
+      type: string
+    - contextPath: Ipstack.IP.longitude
+      description: Longitude of the IP address.
+      type: string
+    description: Queries an IP address in ipstack.
+  runonce: false
+tests:
+  - Ipstack_Test

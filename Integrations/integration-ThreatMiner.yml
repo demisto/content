@@ -666,6 +666,7 @@ script:
 
 
     try:
+        delete_proxy_if_asked()
         demisto_command = demisto.command()
         if demisto_command == 'test-module':
             report = get_ip_whois_rawdata('8.8.8.8')
@@ -680,8 +681,6 @@ script:
             max_array_size = -1
         else:
             max_array_size = int(demisto.params().get('limit_results', MAX_RETURNED_ARRAY_SIZE))
-
-        delete_proxy_if_asked()
 
         if demisto_command == 'domain':
             domain_command(max_array_size)

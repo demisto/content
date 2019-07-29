@@ -1,0 +1,66 @@
+args:
+- auto: PREDEFINED
+  default: false
+  description: Type of ID.
+  isArray: false
+  name: id_type
+  predefined:
+  - public_id
+  - record_id
+  required: true
+  secret: false
+- default: false
+  description: Public ID or record ID.
+  isArray: false
+  name: id_value
+  required: true
+  secret: false
+comment: This script is an example script of how to retrieve an incident from Cherwell.
+  The script wraps the cherwell-get-business-object command of the cherwell integration.
+  When writing your own script to get a business object, follow the instructions found
+  in the configuration section of the script, but do not change the execution section.
+commonfields:
+  id: CherwellGetIncident
+  version: -1
+enabled: false
+name: CherwellGetIncident
+outputs:
+- contextPath: Cherwell.BusinessObjects.RecordId
+  description: Recoed ID
+  type: String
+- contextPath: Cherwell.BusinessObjects.PublicId
+  description: Public ID
+  type: String
+- contextPath: Cherwell.BusinessObjects.Description
+  description: Incident description
+  type: String
+- contextPath: Cherwell.BusinessObjects.Priority
+  description: Incident ptiority
+  type: Number
+- contextPath: Cherwell.BusinessObjects.OwnedBy
+  description: Incident owned by field
+  type: String
+- contextPath: Cherwell.BusinessObjects.Service
+  description: Service needed for the incident
+  type: String
+- contextPath: Cherwell.BusinessObjects.CustomerDisplayName
+  description: 'Incident reporting customer '
+  type: String
+- contextPath: Cherwell.BusinessObjects.CreatedDateTime
+  description: Created date time
+  type: Date
+- contextPath: Cherwell.BusinessObjects.TotalTasks
+  description: Total tasks for this incident
+  type: Number
+script: '-'
+system: false
+timeout: '0'
+type: python
+tags: [Cherwell]
+dependson:
+  must:
+  - Cherwell|||cherwell-get-business-object
+dockerimage: demisto/python3:3.7.2.214
+subtype: python3
+tests:
+  - Cherwell Example Scripts - test

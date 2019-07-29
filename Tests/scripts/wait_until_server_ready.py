@@ -3,6 +3,7 @@ import sys
 import json
 import argparse
 from time import sleep
+import datetime
 
 import demisto
 
@@ -16,12 +17,16 @@ SLEEP_TIME = 45
 def get_username_password():
     parser = argparse.ArgumentParser(description='Utility for batch action on incidents')
     parser.add_argument('-c', '--confPath', help='The path for the secret conf file', required=True)
+    parser.add_argument("--non-ami", help="Do NOT run with AMI setting", action='store_true')
 
     options = parser.parse_args()
     conf_path = options.confPath
 
     with open(conf_path, 'r') as conf_file:
         conf = json.load(conf_file)
+
+    if options.non_ami:
+        return conf['username'], conf['username']
 
     return conf['username'], conf['userPassword']
 
@@ -41,7 +46,7 @@ def main():
                     c = demisto.DemistoClient(None, "https://{}".format(ami_instance_ip), username, password)
                     res = c.Login()
                     if res.status_code == 200:
-                        print "{} is ready for use".format(ami_instance_name)
+                        print "[{}] {} is ready for use".format(datetime.datetime.now(), ami_instance_name)
                         ready_ami_list.append(ami_instance_name)
                     elif i % 30 == 0:  # printing the message every 30 seconds
                         print "{} is not ready yet - waiting for it to start".format(ami_instance_name)

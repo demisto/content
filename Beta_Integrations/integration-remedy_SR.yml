@@ -1,0 +1,584 @@
+commonfields:
+  id: remedy_sr
+  version: -1
+name: remedy_sr
+display: Remedy SR
+category: Case Management
+image: data:image/png;base64,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
+description: |-
+  The BMC Service Request Management application enables an IT department and other business departments to easily define available services, publish those services in a service catalog, and automate fulfillment of those services for the user community, enabling users to help themselves.
+  This integration uses SOAP API and supports SRM 9.0 version.
+configuration:
+- display: Server (e.g http://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: xml_ns (e.g http://<name>.com/tts/servicerequest/v1_6)
+  name: xml_ns
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: username
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Password
+  name: password
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |-
+    import datetime
+    from datetime import datetime
+    import os
+    import json
+    import hashlib
+    import base64
+    import random
+    import requests
+
+    if not demisto.params().get('proxy', False):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    VERIFY_CERTIFICATE = not demisto.params().get('insecure', False)
+    URL = demisto.params()['server']
+    XML_NS = demisto.params()['xml_ns']
+    USERNAME = demisto.params()['username']
+    PASSWORD = demisto.params()['password']
+
+    HEADERS = {
+        'Content-Type': 'text/xml',
+        'SOAPAction': ''
+    }
+
+    GET_TICKET_BODY = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="{xml_ns}">
+               <soapenv:Header>
+               <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+               <wsse:UsernameToken wsu:Id=\"\">
+               <wsse:Username>sams</wsse:Username>
+               <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest">{password_digest}</wsse:Password>
+               <wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">{base64_binary}</wsse:Nonce>
+               <wsu:Created>{req_time}</wsu:Created>
+               </wsse:UsernameToken>
+               </wsse:Security>
+               </soapenv:Header>
+               <soapenv:Body>
+                  <v1:get>
+                     <!--Optional:-->
+                     <v1:GetServiceRequestRequest>
+                        <Header>
+                           <Requester>?</Requester>
+                           <Submitter>
+                              <Type>Remedy</Type>
+                              <Value>sams</Value>
+                           </Submitter>
+                           <TimeStamp>
+                              <Date>{date}</Date>
+                              <Time>{time}</Time>
+                              <TimeZone>UTC</TimeZone>
+                           </TimeStamp>
+                           <TransactionId>1</TransactionId>
+                        </Header>
+                        <Body>
+                           <!--Optional:-->
+                           <ResponseOptions>
+                              <ShowAssignment>?</ShowAssignment>
+                              <ShowAttributeList>?</ShowAttributeList>
+                              <ShowCategorization>?</ShowCategorization>
+                              <ShowWorklogList>?</ShowWorklogList>
+                           </ResponseOptions>
+                           <!--Optional:-->
+                           <ServiceRequestId>{service_request_id}</ServiceRequestId>
+                        </Body>
+                     </v1:GetServiceRequestRequest>
+                  </v1:get>
+               </soapenv:Body>
+            </soapenv:Envelope>"""
+
+    CREATE_TICKET_BODY = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="{xml_ns}">
+           <soapenv:Header>
+           <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+           <wsse:UsernameToken wsu:Id=\"\">
+           <wsse:Username>sams</wsse:Username>
+           <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest">{password_digest}</wsse:Password>
+           <wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">{base64_binary}</wsse:Nonce>
+           <wsu:Created>{req_time}</wsu:Created>
+           </wsse:UsernameToken>
+           </wsse:Security>
+           </soapenv:Header>
+           <soapenv:Body>
+              <v1:create>
+              <!--Optional:-->
+                 <v1:CreateServiceRequestRequest>
+                    <Header>
+                       <Requester>?</Requester>
+                       <Submitter>
+                          <Type>Remedy</Type>
+                          <Value>!svcautomationdev</Value>
+                       </Submitter>
+                       <TimeStamp>
+                          <Date>{date}</Date>
+                          <Time>{time}</Time>
+                          <TimeZone>UTC</TimeZone>
+                       </TimeStamp>
+                       <TransactionId>1</TransactionId>
+                    </Header>
+                    <Body>
+                       <!--Zero or more repetitions:-->
+
+                       <!--Zero or more repetitions:-->
+                       <AttributeList>
+                          <Label/>
+                          <Value/>
+                          <Type/>
+                       </AttributeList>
+                       <!--Optional:-->
+                       <CauseCode/>
+                       <!--Optional:-->
+                       <Details>{details}</Details>
+                       <MasterTicket>True</MasterTicket>
+                       <!--Optional:-->
+                       <NextAction>test</NextAction>
+                       <!--Optional:-->
+                       <PendingReason>New</PendingReason>
+                       <!--Optional:-->
+                       <ProblemCode>47103</ProblemCode>
+                       <!--Optional:-->
+                       <Requester>
+                       <!--Optional:-->
+                          <RequesterNTId>{requester_ntid}</RequesterNTId>
+                          <!--Optional:-->
+                          <RequesterPERNR>{requester_pernr}</RequesterPERNR>
+                       </Requester>
+                       <!--Optional:-->
+                       <RequesterContactInformation>
+                       <!--Optional:-->
+                          <ContactInformation>
+                             <!--Optional:-->
+                             <ContactEmail>{contact_email}</ContactEmail>
+                             <!--Optional:-->
+                             <ContactName>{contact_name}</ContactName>
+                             <!--Optional:-->
+                             <ContactPhone>{contact_phone}</ContactPhone>
+                          </ContactInformation>
+                          <!--Optional:-->
+                          <RequesterEmail>{requester_email}</RequesterEmail>
+                          <!--Optional:-->
+                          <RequesterLocation/>
+                          <!--Optional:-->
+                          <RequesterName>{requester_name}</RequesterName>
+                          <!--Optional:-->
+                          <RequesterPhone>{requester_phone}</RequesterPhone>
+                          <!--Optional:-->
+                          <RequesterWorkCity>{requester_work_city}</RequesterWorkCity>
+                          <!--Optional:-->
+                          <RequesterWorkLocation>{requester_work_location}</RequesterWorkLocation>
+                          <!--Optional:-->
+                          <RequesterWorkStreet>{requester_work_street}</RequesterWorkStreet>
+                       </RequesterContactInformation>
+                       <!--Optional:-->
+                       <SolutionCode/>
+                       <Source>Web</Source>
+                       <SourceReference>Demisto</SourceReference>
+                       <!--Optional:-->
+                       <Status>Pending</Status>
+                       <!--Zero or more repetitions:-->
+                       <WorklogList>
+                          <!--Optional:-->
+                          <Details>test</Details>
+                          <!--Optional:-->
+                          <Subject>test</Subject>
+                       </WorklogList>
+                    </Body>
+                 </v1:CreateServiceRequestRequest>
+              </v1:create>
+           </soapenv:Body>
+        </soapenv:Envelope>"""
+
+
+    def http_request(url, body = ''):
+        ''' Makes an API call with the given arguments '''
+        response = requests.post(URL, data = body, headers = HEADERS, verify = VERIFY_CERTIFICATE)
+
+        if response.status_code < 200 or response.status_code >= 300:
+            if response.status_code == 404:
+                return_error('Request Failed. with status: 404. Cannot find the requested resource. Check your Server URL')
+            elif response.status_code == 500:
+                jres = json.loads(xml2json(response.content))
+                return_error('Request Failed. with status: ' + str(response.status_code) + '. Reason is: ' + str(jres['Envelope']['Body']['Fault']['faultstring']))
+            else:
+                return_error('Request Failed. with status: ' + str(response.status_code) + '. Reason is: ' + str(response.reason))
+
+        jres = json.loads(xml2json(response.content))
+
+        if 'Envelope' in jres:
+            if 'Body' in jres['Envelope']:
+                if 'Fault' in jres['Envelope']['Body']:
+                    return_error('Request Failed. Reason is: ' + jres['Envelope']['Body']['Fault']['faultstring'])
+
+        return jres
+
+
+    def prettify_get_ticket(jres):
+        ticket = jres['Envelope']['Body']['getResponse']['return']['Body']
+
+        if not ticket:
+            return_error(jres['Envelope']['Body']['getResponse']['return']['Header'])
+
+        pretty_ticket = {
+            'ServiceRequestId': ticket['ServiceRequestId'],
+            'ServiceRequestStatus': ticket['ServiceRequestStatus'],
+            'Priority': ticket['Priority']
+        }
+        if 'Created' in ticket:
+            if 'When' in ticket['Created']:
+                pretty_ticket['Date'] = ticket['Created']['When']['Date']
+                pretty_ticket['Time'] = ticket['Created']['When']['Time']
+
+        if 'Details' in ticket:
+            pretty_ticket['Details'] = ticket['Details']
+        if 'SourceReference' in ticket:
+            pretty_ticket['SourceReference'] = ticket['SourceReference']
+
+        if 'RequesterContactInformation' in ticket:
+
+            if 'RequesterEmail' in ticket['RequesterContactInformation']:
+                pretty_ticket['RequesterEmail'] = ticket['RequesterContactInformation']['RequesterEmail']
+            if 'RequesterName' in ticket['RequesterContactInformation']:
+                pretty_ticket['RequesterName'] = ticket['RequesterContactInformation']['RequesterName']
+            if 'RequesterPhone' in ticket['RequesterContactInformation']:
+                pretty_ticket['RequesterPhone'] = ticket['RequesterContactInformation']['RequesterPhone']
+            if 'RequesterWorkCity' in ticket['RequesterContactInformation']:
+                pretty_ticket['RequesterWorkCity'] = ticket['RequesterContactInformation']['RequesterWorkCity']
+            if 'RequesterWorkLocation' in ticket['RequesterContactInformation']:
+                pretty_ticket['RequesterWorkLocation'] = ticket['RequesterContactInformation']['RequesterWorkLocation']
+            if 'RequesterWorkStreet' in ticket['RequesterContactInformation']:
+                pretty_ticket['RequesterWorkStreet'] = ticket['RequesterContactInformation']['RequesterWorkStreet']
+
+            if 'ContactInformation' in ticket['RequesterContactInformation']:
+                if 'ContactEmail' in ticket['RequesterContactInformation']['ContactInformation']:
+                    pretty_ticket['ContactEmail'] = ticket['RequesterContactInformation']['ContactInformation']['ContactEmail']
+                if 'ContactPhone' in ticket['RequesterContactInformation']['ContactInformation']:
+                    pretty_ticket['ContactPhone'] = ticket['RequesterContactInformation']['ContactInformation']['ContactPhone']
+                if 'ContactName' in ticket['RequesterContactInformation']['ContactInformation']:
+                    pretty_ticket['ContactName'] = ticket['RequesterContactInformation']['ContactInformation']['ContactName']
+
+        return pretty_ticket
+
+
+    @logger
+    def remedy_get_ticket(service_request_id):
+        now = datetime.utcnow()
+        req_time = now.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
+        date = now.strftime('%Y-%m-%d')
+        time = now.strftime('%H:%M:%S')
+
+        nonce = os.urandom(16)
+        base64_binary = base64.b64encode(nonce).decode("ascii")
+        # Password_Digest = Base64 (SHA-1 (nonce + createtime + password))
+        hash_object = hashlib.sha1(nonce + req_time.encode("utf-8") + PASSWORD.encode("utf-8"))
+        digest_string = hash_object.digest()
+        password_digest = base64.b64encode(digest_string).decode("ascii")
+
+        body = GET_TICKET_BODY.format(xml_ns = XML_NS, password_digest = password_digest, base64_binary = base64_binary,
+                                    req_time = str(req_time), date = date, time = time,
+                                    service_request_id = service_request_id)
+        response = http_request(URL, body)
+
+        return response
+
+
+    def remedy_get_ticket_command():
+        service_request_id = demisto.args()['service_request_id']
+        response = remedy_get_ticket(service_request_id)
+        pretty_ticket = prettify_get_ticket(response)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': response,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Ticket:', pretty_ticket, ['ServiceRequestId', 'Priority', 'ServiceRequestStatus', 'RequesterEmail', 'RequesterName', 'RequesterPhone']),
+            'EntryContext': {
+                  "Remedy.Ticket(val.ServiceRequestId == obj.ServiceRequestId)": pretty_ticket
+            }
+        })
+
+
+    def prettify_create_ticket(jres, requester_phone, requester_name, requester_email):
+        ticket = jres['Envelope']['Body']['createResponse']['return']['Body']
+
+        if not ticket:
+            return_error(jres['Envelope']['Body']['createResponse']['return']['Header'])
+
+        pretty_ticket = {'ServiceRequestId': ticket['ServiceRequestId']}
+        pretty_ticket['RequesterPhone'] = requester_phone
+        pretty_ticket['RequesterName'] = requester_name
+        pretty_ticket['RequesterEmail'] = requester_email
+
+        return pretty_ticket
+
+
+    @logger
+    def remedy_create_ticket(details, requester_ntid, requester_email, requester_name,
+                            requester_phone, requester_work_city, requester_work_location,
+                            requester_work_street, requester_pernr = '?',
+                            contact_email = '?', contact_name = '?', contact_phone = '?'):
+        now = datetime.utcnow()
+        req_time = now.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
+        date = now.strftime('%Y-%m-%d')
+        time = now.strftime('%H:%M:%S')
+
+        nonce = os.urandom(16)
+        base64_binary = base64.b64encode(nonce).decode("ascii")
+        # Password_Digest = Base64 (SHA-1 (nonce + createtime + password))
+        hash_object = hashlib.sha1(nonce + req_time.encode("utf-8") + PASSWORD.encode("utf-8"))
+        digest_string = hash_object.digest()
+        password_digest = base64.b64encode(digest_string).decode("ascii")
+
+        body = CREATE_TICKET_BODY.format(xml_ns = XML_NS, password_digest = password_digest, base64_binary = base64_binary,
+                                    req_time = str(req_time), date = date, time = time, details = details,
+                                    requester_ntid = requester_ntid, requester_email = requester_email,
+                                    requester_name = requester_name, requester_phone = requester_phone,
+                                    requester_work_city = requester_work_city, requester_work_location = requester_work_location,
+                                    requester_work_street = requester_work_street, requester_pernr = requester_pernr,
+                                    contact_email = contact_email, contact_name = contact_name, contact_phone = contact_phone)
+        response = http_request(URL, body)
+
+        return response
+
+
+    def remedy_create_ticket_command():
+        args = demisto.args()
+        details = args['details']
+        requester_ntid = args['requester_ntid']
+        requester_pernr = args['requester_pernr'] if 'requester_pernr' in args else None
+        contact_email = args['contact_email'] if 'contact_email' in args else None
+        contact_name = args['contact_name'] if 'contact_name' in args else None
+        contact_phone = args['contact_phone'] if 'contact_phone' in args else None
+        requester_email = args['requester_email']
+        requester_name = args['requester_name']
+        requester_phone = args['requester_phone']
+        requester_work_city = args['requester_work_city']
+        requester_work_location = args['requester_work_location']
+        requester_work_street = args['requester_work_street']
+
+        response = remedy_create_ticket(details, requester_ntid, requester_email, requester_name,
+                                        requester_phone, requester_work_city, requester_work_location,
+                                        requester_work_street, requester_pernr,
+                                        contact_email, contact_name, contact_phone)
+
+        pretty_ticket = prettify_create_ticket(response, requester_phone, requester_name, requester_email)
+
+        ec_create = {
+            'ServiceRequestId': response['Envelope']['Body']['createResponse']['return']['Body']['ServiceRequestId'],
+            'Details': details,
+            'RequesterNTID': requester_ntid,
+            'RequesterPERNR': requester_pernr,
+            'RequesterEmail': requester_email,
+            'RequesterName': requester_name,
+            'RequesterPhone': requester_phone,
+            'RequesterWorkCity': requester_work_city,
+            'RequesterWorkLocation': requester_work_location,
+            'RequesterWorkStreet': requester_work_street,
+            'ContactEmail': contact_email,
+            'ContactName': contact_name,
+            'ContactPhone': contact_phone
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': response,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Ticket:', pretty_ticket, ['ServiceRequestId', 'RequesterEmail', 'RequesterName', 'RequesterPhone']),
+            'EntryContext': {
+                  "Remedy.Ticket(val.ServiceRequestId == obj.ServiceRequestId)": ec_create
+            }
+        })
+
+    def remedy_update_ticket_command():
+        demisto.log('TODO')
+
+
+    ''' EXECUTION CODE '''
+    LOG('command is %s' % (demisto.command(),))
+    try:
+        if demisto.command() == 'test-module':
+            remedy_get_ticket('SR000552078')
+            demisto.results('ok')
+
+        elif demisto.command() == 'remedy-get-ticket':
+            remedy_get_ticket_command()
+
+        elif demisto.command() == 'remedy-create-ticket':
+            remedy_create_ticket_command()
+
+        elif demisto.command() == 'remedy-create-ticket':
+            remedy_update_ticket_command()
+
+    except Exception as e:
+        return_error(str(e.message))
+  type: python
+  commands:
+  - name: remedy-get-ticket
+    arguments:
+    - name: service_request_id
+      required: true
+      description: Service request ID
+    outputs:
+    - contextPath: Remedy.Ticket.RequesterEmail
+      description: Email of requester
+      type: string
+    - contextPath: Remedy.Ticket.RequesterName
+      description: Name of requester
+      type: string
+    - contextPath: Remedy.Ticket.RequesterPhone
+      description: Phone of requester
+      type: string
+    - contextPath: Remedy.Ticket.RequesterNTID
+      description: NTID of requester
+      type: string
+    - contextPath: Remedy.Ticket.RequesterWorkLocation
+      description: Work location of requester
+      type: string
+    - contextPath: Remedy.Ticket.RequesterWorkCity
+      description: Work city of requester
+      type: string
+    - contextPath: Remedy.Ticket.RequesterWorkStreet
+      description: Work street of requester
+      type: string
+    - contextPath: Remedy.Ticket.Details
+      description: Ticket details
+      type: string
+    - contextPath: Remedy.Ticket.Priority
+      description: Ticket priority
+      type: string
+    - contextPath: Remedy.Ticket.ServiceRequestId
+      description: Ticket Service request ID
+      type: string
+    - contextPath: Remedy.Ticket.Details
+      description: Ticket Details
+      type: string
+    - contextPath: Remedy.Ticket.SourceReference
+      description: Source reference of the ticket
+      type: string
+    - contextPath: Remedy.Ticket.Date
+      description: Date the ticket was created
+      type: string
+    - contextPath: Remedy.Ticket.Time
+      description: Time the ticket was created
+      type: string
+    - contextPath: Remedy.Ticket.ContactEmail
+      description: Contact Email
+      type: string
+    - contextPath: Remedy.Ticket.ContactName
+      description: Contact Name
+      type: string
+    - contextPath: Remedy.Ticket.ContactPhone
+      description: Contact Phone
+      type: string
+    - contextPath: Remedy.Ticket.RequesterPERNR
+      description: Requester PERNR
+      type: string
+    description: Get ticket details
+  - name: remedy-create-ticket
+    arguments:
+    - name: details
+      required: true
+      description: Ticket details
+    - name: requester_ntid
+      required: true
+      description: Requester NTID
+    - name: requester_pernr
+      description: Requester PERNR
+    - name: contact_email
+      description: Contact Email
+    - name: contact_name
+      description: Contact Name
+    - name: contact_phone
+      description: Contact Phone
+    - name: requester_email
+      required: true
+      description: Email of User
+    - name: requester_name
+      required: true
+      description: Requester First/Last Name
+    - name: requester_phone
+      required: true
+      description: User Phone
+    - name: requester_work_city
+      required: true
+      description: Requester City
+    - name: requester_work_location
+      required: true
+      description: Requester Office
+    - name: requester_work_street
+      required: true
+      description: Requester Street
+    outputs:
+    - contextPath: Remedy.Ticket.RequesterEmail
+      description: Email of requester
+      type: string
+    - contextPath: Remedy.Ticket.RequesterName
+      description: Name of requester
+      type: string
+    - contextPath: Remedy.Ticket.RequesterPhone
+      description: Phone of requester
+      type: string
+    - contextPath: Remedy.Ticket.RequesterNTID
+      description: NTID of requester
+      type: string
+    - contextPath: Remedy.Ticket.RequesterWorkLocation
+      description: Work location of requester
+      type: string
+    - contextPath: Remedy.Ticket.RequesterWorkCity
+      description: Work city of requester
+      type: string
+    - contextPath: Remedy.Ticket.RequesterWorkStreet
+      description: Work street of requester
+      type: string
+    - contextPath: Remedy.Ticket.Details
+      description: Ticket details
+      type: string
+    - contextPath: Remedy.Ticket.Priority
+      description: Ticket priority
+      type: string
+    - contextPath: Remedy.Ticket.ServiceRequestId
+      description: Ticket Service request ID
+      type: string
+    - contextPath: Remedy.Ticket.RequesterPERNR
+      description: Requester PERNR
+      type: string
+    - contextPath: Remedy.Ticket.ContactEmail
+      description: Contact Email
+      type: string
+    - contextPath: Remedy.Ticket.ContactName
+      description: Contact Name
+      type: string
+    - contextPath: Remedy.Ticket.ContactPhone
+      description: Contact Phone
+      type: string
+    description: Create a ticket
+  - name: remedy-update-ticket
+    arguments: []
+    description: Update a ticket
+  runonce: false
+tests:
+  - No Test

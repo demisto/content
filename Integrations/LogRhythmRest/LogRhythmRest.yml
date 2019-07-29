@@ -1,0 +1,675 @@
+category: Analytics & SIEM
+commonfields:
+  id: LogRhythmRest
+  version: -1
+configuration:
+- display: Hostname, IP address, or server URL.
+  name: url
+  required: true
+  type: 0
+- display: API Token
+  name: token
+  required: true
+  type: 4
+- defaultvalue: 'False'
+  display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'False'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Search API cluster ID.
+  name: cluster-id
+  required: false
+  type: 0
+description: LogRhythm security intelligence.
+display: LogRhythmRest
+name: LogRhythmRest
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Filter log messages by this argument.
+      isArray: false
+      name: keyword
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Number of logs to return.
+      isArray: false
+      name: page-size
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Custom
+      description: If time_frame is "Custom", specify the start time for the time
+        range.
+      isArray: false
+      name: time-frame
+      predefined:
+      - Today
+      - Last2Days
+      - LastWeek
+      - LastMonth
+      - Custom
+      required: false
+      secret: false
+    - default: false
+      description: 'Start date for the data query, for example: "2018-04-20". Only
+        use this argument if the time-frame argument is "Custom".'
+      isArray: false
+      name: start-date
+      required: false
+      secret: false
+    - default: false
+      description: 'End date for the data query, for example: "2018-04-20". Only use
+        this argument if the time-frame argument is "Custom".'
+      isArray: false
+      name: end-date
+      required: false
+      secret: false
+    deprecated: false
+    description: Executes a query for logs that match query parameters.
+    execution: false
+    name: lr-execute-query
+    outputs:
+    - contextPath: Logrhythm.Log.Channel
+      description: Channel
+      type: string
+    - contextPath: Logrhythm.Log.Computer
+      description: Computer
+      type: string
+    - contextPath: Logrhythm.Log.EventData
+      description: Event data
+      type: string
+    - contextPath: Logrhythm.Log.EventID
+      description: Event ID
+      type: string
+    - contextPath: Logrhythm.Log.Keywords
+      description: Keywords
+      type: string
+    - contextPath: Logrhythm.Log.Level
+      description: Level
+      type: string
+    - contextPath: Logrhythm.Log.Opcode
+      description: Opcode
+      type: string
+    - contextPath: Logrhythm.Log.Task
+      description: Task
+      type: string
+  - arguments:
+    - default: false
+      description: The entity name.
+      isArray: false
+      name: entity-name
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Number of hosts to return.
+      isArray: false
+      name: count
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of hosts for a given entity, or an empty list if
+      none is found.
+    execution: false
+    name: lr-get-hosts-by-entity
+    outputs:
+    - contextPath: Logrhythm.Host.EntityId
+      description: The entity ID.
+      type: String
+    - contextPath: Logrhythm.Host.EntityName
+      description: The entity name.
+      type: String
+    - contextPath: Logrhythm.Host.OS
+      description: The host OS.
+      type: String
+    - contextPath: Logrhythm.Host.ThreatLevel
+      description: The host threat level.
+      type: String
+    - contextPath: Logrhythm.Host.UseEventlogCredentials
+      description: Use event log credentials
+      type: String
+    - contextPath: Logrhythm.Host.Name
+      description: The name of the host.
+      type: String
+    - contextPath: Logrhythm.Host.DateUpdated
+      description: The last update date of the host.
+      type: String
+    - contextPath: Logrhythm.Host.HostZone
+      description: The host zone.
+      type: String
+    - contextPath: Logrhythm.Host.RiskLevel
+      description: The risk level.
+      type: String
+    - contextPath: Logrhythm.Host.Location
+      description: The host location.
+      type: String
+    - contextPath: Logrhythm.Host.Status
+      description: The host status.
+      type: String
+    - contextPath: Logrhythm.Host.ID
+      description: The unique ID of the host object.
+      type: String
+    - contextPath: Logrhythm.Host.OSType
+      description: The type of the host OS.
+      type: String
+  - arguments:
+    - default: false
+      description: The entity ID.
+      isArray: false
+      name: entity-id
+      required: true
+      secret: false
+    - default: false
+      description: The entity name.
+      isArray: false
+      name: entity-name
+      required: true
+      secret: false
+    - default: false
+      description: The LogRhythm host name.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      defaultValue: None
+      description: The short description.
+      isArray: false
+      name: short-description
+      required: false
+      secret: false
+    - default: false
+      defaultValue: None
+      description: The long description.
+      isArray: false
+      name: long-description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: The host risk level.
+      description: The short description.
+      isArray: false
+      name: risk-level
+      predefined:
+      - None
+      - Low-Low
+      - Low-Medium
+      - Low-High
+      - Medium-Low
+      - Medium-Medium
+      - Medium-High
+      - High-Low
+      - High-Medium
+      - High-High
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: None
+      description: The host threat level.
+      isArray: false
+      name: threat-level
+      predefined:
+      - None
+      - Low-Low
+      - Low-Medium
+      - Low-High
+      - Medium-Low
+      - Medium-Medium
+      - Medium-High
+      - High-Low
+      - High-Medium
+      - High-High
+      required: false
+      secret: false
+    - default: false
+      defaultValue: None
+      description: Comments for the host threat level.
+      isArray: false
+      name: threat-level-comments
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The host status.
+      isArray: false
+      name: host-status
+      predefined:
+      - New
+      - Retired
+      - Active
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The host zone.
+      isArray: false
+      name: host-zone
+      predefined:
+      - Unknown
+      - Internal
+      - DMZ
+      - External
+      required: true
+      secret: false
+    - default: false
+      description: The host OS.
+      isArray: false
+      name: os
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Use eventlog credentials.
+      isArray: false
+      name: use-eventlog-credentials
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Unknown
+      description: The host OS.
+      isArray: false
+      name: os-type
+      predefined:
+      - Unknown
+      - Other
+      - WindowsNT4
+      - Windows2000Professional
+      - Windows2000Server
+      - Windows2003Standard
+      - Windows2003Enterprise
+      - Windows95
+      - WindowsXP
+      - WindowsVista
+      - Linux
+      - Solaris
+      - AIX
+      - HPUX
+      - Windows
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a new host to an entity.
+    execution: false
+    name: lr-add-host
+    outputs:
+    - contextPath: Logrhythm.Host.EntityId
+      description: The entity ID.
+      type: string
+    - contextPath: Logrhythm.Host.EntityName
+      description: The entity name.
+      type: string
+    - contextPath: Logrhythm.Host.OS
+      description: The host OS.
+      type: string
+    - contextPath: Logrhythm.Host.ThreatLevel
+      description: The host threat level.
+      type: string
+    - contextPath: Logrhythm.Host.UseEventlogCredentials
+      description: Use event log credentials
+      type: string
+    - contextPath: Logrhythm.Host.Name
+      description: The name of the host.
+      type: string
+    - contextPath: Logrhythm.Host.DateUpdated
+      description: The last update date of the host.
+      type: string
+    - contextPath: Logrhythm.Host.HostZone
+      description: The host zone.
+      type: string
+    - contextPath: Logrhythm.Host.RiskLevel
+      description: The risk level.
+      type: string
+    - contextPath: Logrhythm.Host.Location
+      description: The host location.
+      type: string
+    - contextPath: Logrhythm.Host.Status
+      description: The host status.
+      type: string
+    - contextPath: Logrhythm.Host.ID
+      description: The unique ID of the host object.
+      type: string
+    - contextPath: Logrhythm.Host.OSType
+      description: The type of the host OS.
+      type: string
+  - arguments:
+    - default: false
+      description: The unique ID of the host.
+      isArray: false
+      name: host-id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The enumeration status of the host.
+      isArray: false
+      name: status
+      predefined:
+      - Retired
+      - Active
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates an host status.
+    execution: false
+    name: lr-update-host-status
+    outputs:
+    - contextPath: Logrhythm.Host.EntityId
+      description: The entity ID.
+      type: string
+    - contextPath: Logrhythm.Host.EntityName
+      description: The entity name.
+      type: string
+    - contextPath: Logrhythm.Host.OS
+      description: The host OS.
+      type: string
+    - contextPath: Logrhythm.Host.ThreatLevel
+      description: The host threat level.
+      type: string
+    - contextPath: Logrhythm.Host.UseEventlogCredentials
+      description: Use event log credentials
+      type: string
+    - contextPath: Logrhythm.Host.Name
+      description: The name of the host.
+      type: string
+    - contextPath: Logrhythm.Host.DateUpdated
+      description: The last update date of the host.
+      type: string
+    - contextPath: Logrhythm.Host.HostZone
+      description: The host zone.
+      type: string
+    - contextPath: Logrhythm.Host.RiskLevel
+      description: The risk level.
+      type: string
+    - contextPath: Logrhythm.Host.Location
+      description: The host location.
+      type: string
+    - contextPath: Logrhythm.Host.Status
+      description: The host status.
+      type: string
+    - contextPath: Logrhythm.Host.ID
+      description: The unique ID of the host object.
+      type: string
+    - contextPath: Logrhythm.Host.OSType
+      description: The type of the host OS.
+      type: string
+  - arguments:
+    - default: false
+      description: The LogRhythm person ID.
+      isArray: false
+      name: person-id
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: Number of persons to return. Default is 30.
+      isArray: false
+      name: count
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of persons.
+    execution: false
+    name: lr-get-persons
+    outputs:
+    - contextPath: Logrhythm.Person.DateUpdated
+      description: Date that the person was updated.
+      type: String
+    - contextPath: Logrhythm.Person.FirstName
+      description: First name.
+      type: String
+    - contextPath: Logrhythm.Person.LastName
+      description: Last name.
+      type: String
+    - contextPath: Logrhythm.Person.HostStatus
+      description: Host status.
+      type: string
+    - contextPath: Logrhythm.Person.ID
+      description: Person ID.
+      type: String
+    - contextPath: Logrhythm.Person.IsAPIPerson
+      description: Whether the API is a person.
+      type: Boolean
+    - contextPath: Logrhythm.Person.UserID
+      description: User ID.
+      type: String
+    - contextPath: Logrhythm.Person.UserLogin
+      description: User login.
+      type: String
+  - arguments:
+    - default: false
+      description: The LogRhythm network ID.
+      isArray: false
+      name: network-id
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: Number of networks to return.
+      isArray: false
+      name: count
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of networks.
+    execution: false
+    name: lr-get-networks
+    outputs:
+    - contextPath: Logrhythm.Network.BIP
+      description: Began IP address.
+      type: String
+    - contextPath: Logrhythm.Network.ThreatLevel
+      description: Threat level.
+      type: String
+    - contextPath: Logrhythm.Network.Name
+      description: Network name.
+      type: String
+    - contextPath: Logrhythm.Network.EIP
+      description: End IP address.
+      type: String
+    - contextPath: Logrhythm.Network.DateUpdated
+      description: Date updated.
+      type: String
+    - contextPath: Logrhythm.Network.EntityName
+      description: Entity name.
+      type: String
+    - contextPath: Logrhythm.Network.HostZone
+      description: Host zone.
+      type: String
+    - contextPath: Logrhythm.Network.RiskLevel
+      description: Risk level.
+      type: String
+    - contextPath: Logrhythm.Network.Location
+      description: Network location.
+      type: String
+    - contextPath: Logrhythm.Network.HostStatus
+      description: Host status.
+      type: String
+    - contextPath: Logrhythm.Network.ID
+      description: Network ID.
+      type: String
+    - contextPath: Logrhythm.Network.EntityId
+      description: Entity ID.
+      type: String
+  - arguments:
+    - default: false
+      description: The LogRhythm host ID.
+      isArray: false
+      name: host-id
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: Number of hosts to return. Default is 30.
+      isArray: false
+      name: count
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of hosts.
+    execution: false
+    name: lr-get-hosts
+    outputs:
+    - contextPath: Logrhythm.Host.EntityId
+      description: The entity ID.
+      type: String
+    - contextPath: Logrhythm.Host.EntityName
+      description: The entity name.
+      type: String
+    - contextPath: Logrhythm.Host.OS
+      description: The host OS.
+      type: String
+    - contextPath: Logrhythm.Host.ThreatLevel
+      description: The host threat level.
+      type: String
+    - contextPath: Logrhythm.Host.UseEventlogCredentials
+      description: Use event log credentials.
+      type: String
+    - contextPath: Logrhythm.Host.Name
+      description: The name of the host.
+      type: String
+    - contextPath: Logrhythm.Host.DateUpdated
+      description: Date that the host was last updated.
+      type: String
+    - contextPath: Logrhythm.Host.HostZone
+      description: The host zone.
+      type: String
+    - contextPath: Logrhythm.Host.RiskLevel
+      description: The risk level.
+      type: String
+    - contextPath: Logrhythm.Host.Location
+      description: The host location.
+      type: String
+    - contextPath: Logrhythm.Host.Status
+      description: The host status.
+      type: String
+    - contextPath: Logrhythm.Host.ID
+      description: The unique ID of the host object.
+      type: String
+    - contextPath: Logrhythm.Host.OSType
+      description: Host OS type.
+      type: String
+  - arguments:
+    - default: false
+      description: The alarm ID.
+      isArray: false
+      name: alarm-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns data for an alarm.
+    execution: false
+    name: lr-get-alarm-data
+    outputs:
+    - contextPath: Logrhythm.Alarm.Status
+      description: The alarm status.
+      type: String
+    - contextPath: Logrhythm.Alarm.EventID
+      description: The alarm event ID.
+      type: String
+    - contextPath: Logrhythm.Alarm.LastDxTimeStamp
+      description: The timestamp when the drilldown returned new results
+        from the Data Indexer.
+      type: String
+    - contextPath: Logrhythm.Alarm.DateInserted
+      description: The alarm date inserted.
+      type: String
+    - contextPath: Logrhythm.Alarm.AIERuleName
+      description: The alarm AI engine (AIE) rule.
+      type: String
+    - contextPath: Logrhythm.Alarm.Priority
+      description: The alarm priority.
+      type: String
+    - contextPath: Logrhythm.Alarm.AIERuleID
+      description: The alarm AI engine (AIE) rule ID.
+      type: String
+    - contextPath: Logrhythm.Alarm.ID
+      description: The alarm ID.
+      type: String
+    - contextPath: Logrhythm.Alarm.NotificationSent
+      description: Whether an alarm notification was sent.
+      type: Boolean
+    - contextPath: Logrhythm.Alarm.AlarmGuid
+      description: The alarm GUID.
+      type: String
+    - contextPath: Logrhythm.Alarm.RetryCount
+      description: The alarm retry count.
+      type: String
+    - contextPath: Logrhythm.Alarm.NormalMessageDate
+      description: The alarm message date.
+      type: String
+    - contextPath: Logrhythm.Alarm.WebConsoleIds
+      description: The alarm web console IDs.
+      type: String
+    - contextPath: Logrhythm.Alarm.Summary.PIFType
+      description: Alarm Primary Inspection Field (the original name for "Summary
+        Field").
+      type: String
+    - contextPath: Logrhythm.Alarm.Summary.DrillDownSummaryLogs
+      description: Drill down summary logs.
+      type: String
+  - arguments:
+    - default: false
+      description: The alarm ID.
+      isArray: false
+      name: alarm-id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Number of events to return. Default is 10.
+      isArray: false
+      name: count
+      required: false
+      secret: false
+    - default: false
+      description: A CSV list of fields (outputs) to return to the context.
+        If empty, all fields are returned.
+      isArray: false
+      name: fields
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: Returns the log message from the event.
+      isArray: false
+      name: get-log-message
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of events, by alarm ID.
+    execution: false
+    name: lr-get-alarm-events
+    outputs:
+    - contextPath: Logrhythm.Alarm.Event
+      description: Alarm event information.
+      type: String
+    - contextPath: Logrhythm.Alarm.ID
+      description: The alarm ID.
+      type: String
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+tests:
+- LogRhythm REST test

@@ -1,0 +1,306 @@
+commonfields:
+  id: urlscan.io
+  version: -1
+name: urlscan.io
+display: urlscan.io
+category: Data Enrichment & Threat Intelligence
+description: Urlscan.io reputation
+defaultEnabled: false
+configuration:
+- display: API Key (needed only for submitting URLs for scanning)
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: URL Threshold. Minimum number of positive results from urlscan.io to consider
+    the URL malicious.
+  name: url_threshold
+  defaultvalue: "1"
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: urlscan-search
+    arguments:
+    - name: searchParameter
+      required: true
+      default: true
+      description: Enter a parameter to search as a string (IP, File name, sha256,
+        url, domain)
+    - name: limit
+      description: Limits the returned results
+      defaultValue: "20"
+    outputs:
+    - contextPath: URLScan.URL
+      description: URL found
+      type: string
+    - contextPath: URLScan.Domain
+      description: Domain of the url scanned
+      type: string
+    - contextPath: URLScan.ASN
+      description: ASN of the URL scanned
+      type: string
+    - contextPath: URLScan.IP
+      description: IP of the url scanned
+      type: string
+    - contextPath: URLScan.ScanID
+      description: Scan ID for the URL scanned
+      type: string
+    - contextPath: URLScan.ScanDate
+      description: Latest scan date for the URL
+      type: string
+    - contextPath: URLScan.Hash
+      description: SHA256 of file scanned
+      type: string
+    - contextPath: URLScan.FileName
+      description: Filename of the file scanned
+      type: string
+    - contextPath: URLScan.FileSize
+      description: File size of the file scanned
+      type: number
+    - contextPath: URLScan.FileType
+      description: File type of the file scanned
+      type: string
+    description: Search for an indicator that is related to former urlscan.io scans.
+  - name: urlscan-submit
+    deprecated: true
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: Url to scan
+    - name: timeout
+      description: How many seconds to wait for the scan id result
+      defaultValue: "60"
+    - name: public
+      auto: PREDEFINED
+      predefined:
+      - public
+      - private
+      description: Will the submission be public or private
+      defaultValue: public
+    - name: limit
+      description: Limits the returned list of Certificates, IP's and ASN's
+      defaultValue: "20"
+    outputs:
+    - contextPath: URL.Data
+      description: URL submitted
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+      type: string
+    - contextPath: URLScan.RelatedIPs
+      description: Related IPs found for the URL scanned
+      type: string
+    - contextPath: URLScan.RelatedASNs
+      description: Related ASNs found for the URL scanned
+      type: string
+    - contextPath: URLScan.Countries
+      description: Associated countries for the URL scanned
+      type: string
+    - contextPath: URLScan.RelatedHash
+      description: Related hashes found for the URL scanned
+      type: string
+    - contextPath: URLScan.Subdomains
+      description: Associated subdomains for the url scanned
+      type: string
+    - contextPath: URLScan.ASN
+      description: ASN of the URL scanned
+      type: string
+    - contextPath: URLScan.Data
+      description: URL of the file found
+      type: string
+    - contextPath: URLScan.Malicious.Vendor
+      description: Vendor reporting the malicious indicator for the file
+      type: string
+    - contextPath: URLScan.Malicious.Description
+      description: Description of the malicious indicator
+      type: string
+    - contextPath: URLScan.File.Hash
+      description: SHA256 of file found
+      type: string
+    - contextPath: URLScan.File.FileName
+      description: File name of file found
+      type: string
+    - contextPath: URLScan.File.FileType
+      description: File type of the file found
+      type: string
+    - contextPath: URLScan.File.Hostname
+      description: URL where the file was found
+      type: string
+    - contextPath: URLScan.Certificates
+      description: Certificates found for the URL scanned
+      type: string
+    - contextPath: DBotScore.Score
+      description: Score retrieved for Dbot
+      type: number
+    - contextPath: DBotScore.Type
+      description: Type of indicator tested for
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor who provided DBot Score
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: Indicator URLScan tested for
+      type: string
+    - contextPath: URLScan.RedirectedURLs
+      description: Redirected URLs from the URL scanned
+      type: string
+    - contextPath: URLScan.EffectiveURL
+      description: Effective URL of the original URL
+      type: string
+    description: 'Deprecated: replaced with url command'
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      description: Url to scan
+    - name: timeout
+      description: How many seconds to wait for the scan id result
+      defaultValue: "60"
+    - name: public
+      auto: PREDEFINED
+      predefined:
+      - public
+      - private
+      description: Will the submission be public or private
+      defaultValue: public
+    - name: limit
+      description: Limits the results in the war room
+      defaultValue: "20"
+    - name: wait
+      description: Wait time between tries if we reach the API rate limit in seconds
+      defaultValue: "5"
+    - name: retries
+      description: Number of retries for API rate limit
+      defaultValue: "0"
+    outputs:
+    - contextPath: URL.Data
+      description: URL submitted
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+      type: string
+    - contextPath: URLScan.RelatedIPs
+      description: Related IPs found for the URL scanned
+      type: string
+    - contextPath: URLScan.RelatedASNs
+      description: Related ASNs found for the URL scanned
+      type: string
+    - contextPath: URLScan.Countries
+      description: Associated countries for the URL scanned
+      type: string
+    - contextPath: URLScan.RelatedHash
+      description: Related hashes found for the URL scanned
+      type: string
+    - contextPath: URLScan.Subdomains
+      description: Associated subdomains for the url scanned
+      type: string
+    - contextPath: URLScan.ASN
+      description: ASN of the URL scanned
+      type: string
+    - contextPath: URLScan.Data
+      description: URL of the file found
+      type: string
+    - contextPath: URLScan.Malicious.Vendor
+      description: Vendor reporting the malicious indicator for the file
+      type: string
+    - contextPath: URLScan.Malicious.Description
+      description: Description of the malicious indicator
+      type: string
+    - contextPath: URLScan.File.Hash
+      description: SHA256 of file found
+      type: string
+    - contextPath: URLScan.File.FileName
+      description: File name of file found
+      type: string
+    - contextPath: URLScan.File.FileType
+      description: File type of the file found
+      type: string
+    - contextPath: URLScan.File.Hostname
+      description: URL where the file was found
+      type: string
+    - contextPath: URLScan.Certificates
+      description: Certificates found for the URL scanned
+      type: string
+    - contextPath: DBotScore.Score
+      description: Score retrieved for Dbot
+      type: string
+    - contextPath: DBotScore.Type
+      description: Type of indicator tested for
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor who provided DBot Score
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: Indicator URLScan tested for
+      type: string
+    - contextPath: URLScan.RedirectedURLs
+      description: Redirected URLs from the URL scanned
+      type: string
+    - contextPath: URLScan.EffectiveURL
+      description: Effective URL of the original URL
+      type: string
+    description: Submit a url to scan
+  - name: urlscan-get-http-transaction-list
+    deprecated: true
+    arguments:
+    - name: uuid
+      required: true
+      description: The uuid of the URL to search the transaction list for.
+    - name: limit
+      description: Limits the results in the war room(Maximum limit allowed is 100)
+      defaultValue: "20"
+    - name: url
+      required: true
+      description: The URL to search the transaction list for.
+    outputs:
+    - contextPath: URLScan.URL
+      description: The URL address that was examined.
+      type: string
+    - contextPath: URLScan.httpTransaction
+      description: A link to the http transaction made during the search on the given
+        URL.
+      type: string
+    description: Get http transaction list for a given url. (This command should be used only apart from
+      urlscan-get-http-transactions script)
+  - name: urlscan-submit-url-command
+    deprecated: true
+    arguments:
+    - name: url
+      required: true
+      description: The URL sought after.
+    description: Submit a URL to get its uuid.
+  - name: urlscan-poll-uri
+    deprecated: true
+    arguments:
+    - name: uri
+      required: true
+      description: The uri of the sought after result.
+    description: Poll the UrlScan service regarding the results for a given uri.
+  - name: urlscan-get-result-page
+    deprecated: true
+    arguments:
+    - name: uuid
+      required: true
+      description: The uuid of the URL you want to search
+    description: Get the results page for the given UUID
+  runonce: false

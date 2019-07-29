@@ -1,0 +1,334 @@
+id: PAN OS EDL Management - Test
+version: -1
+name: PAN OS EDL Management - Test
+description: non scale testing of pan-os edl integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 635c219d-8ff2-4336-8fa8-2ab315c71975
+    type: start
+    task:
+      id: 635c219d-8ff2-4336-8fa8-2ab315c71975
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: cbed884c-5cc2-442d-88d5-26cd52a39a7b
+    type: regular
+    task:
+      id: cbed884c-5cc2-442d-88d5-26cd52a39a7b
+      version: -1
+      name: pan-os-edl-update
+      description: Updates the instance context with the list name and items given
+        and then Override external file path with internal list
+      script: '|||pan-os-edl-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "10"
+    scriptarguments:
+      add_or_remove:
+        simple: add
+      file_path:
+        simple: test_playbook_list4.txt
+      list_items:
+        simple: '["koko.com","jojo.com"]'
+      list_name:
+        simple: test_playbook_list4
+      verbose:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 5a8d58d2-c409-4a83-8832-1b41b77722a4
+    type: regular
+    task:
+      id: 5a8d58d2-c409-4a83-8832-1b41b77722a4
+      version: -1
+      name: pan-os-edl-dump-internal-list to incident context
+      description: Dump instance context to either incident context or file
+      script: '|||pan-os-edl-dump-internal-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      destination:
+        simple: incident_context
+      list_name:
+        simple: test_playbook_list4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: da1dfc91-0df1-497d-829c-ad90c99b15d3
+    type: condition
+    task:
+      id: da1dfc91-0df1-497d-829c-ad90c99b15d3
+      version: -1
+      name: test internal list commands
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: PANOSEDL.ListItems
+            iscontext: true
+          right:
+            value:
+              simple: koko.com
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 253322a9-7582-4b5e-8a50-af588631191c
+    type: regular
+    task:
+      id: 253322a9-7582-4b5e-8a50-af588631191c
+      version: -1
+      name: pan-os-edl-print-internal-list
+      description: Display internal list data in the war-room
+      script: '|||pan-os-edl-print-internal-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      list_name:
+        simple: test_playbook_list4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: d8b5e849-ed2e-4329-8b10-af78df9c8391
+    type: regular
+    task:
+      id: d8b5e849-ed2e-4329-8b10-af78df9c8391
+      version: -1
+      name: pan-os-edl-search-external-file
+      description: Search a string on external file
+      script: '|||pan-os-edl-search-external-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      file_path:
+        simple: test_playbook_list4.txt
+      search_string:
+        simple: jojo.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: f0f27051-2474-40eb-84d1-0cf01f09aeb6
+    type: regular
+    task:
+      id: f0f27051-2474-40eb-84d1-0cf01f09aeb6
+      version: -1
+      name: pan-os-edl-get-external-file
+      description: Display external file content in the war-room
+      script: '|||pan-os-edl-get-external-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      file_path:
+        simple: test_playbook_list4.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 57699a99-0b15-4a90-8958-27c3f0b44469
+    type: title
+    task:
+      id: 57699a99-0b15-4a90-8958-27c3f0b44469
+      version: -1
+      name: Done
+      description: Delete external file
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 695b8c0f-09bc-4941-8387-e0d3448aa95b
+    type: regular
+    task:
+      id: 695b8c0f-09bc-4941-8387-e0d3448aa95b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 8ab76f66-da71-4fe5-8221-3c9846894117
+    type: regular
+    task:
+      id: 8ab76f66-da71-4fe5-8221-3c9846894117
+      version: -1
+      name: pan-os-edl-dump-internal-list to file
+      description: Dumps (copies) instance context to either the incident context
+        or a file.
+      script: '|||pan-os-edl-dump-internal-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      destination:
+        simple: file
+      list_name:
+        simple: test_playbook_list4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

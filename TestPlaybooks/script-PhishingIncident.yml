@@ -11,10 +11,10 @@ script: |-
 
   incidents = {
       'name' : args['malicious_location'],
-      'labels' : [
+      'labels' : json.dumps([
           {'Email/from': 'test@demistodev.com'},
           {'Email/to' : 'admin@demistodev.com'},
-      ],
+      ]),
       'rawJSON' : json.dumps({
           'Type' : 'Phish',
           'Subject' : 'Phishing test playbook',

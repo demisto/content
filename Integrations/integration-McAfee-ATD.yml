@@ -749,7 +749,12 @@ script:
             files=files
         )
         if res.status_code < 200 or res.status_code >= 300:
-            return_error('Request Failed with status: ' + str(res.status_code) + '. Reason is: ' + str(res.reason))
+            if res.status_code == 401:
+                return_error('Request Failed with status: 401 Unauthorized - Invalid Username or Password')
+            elif res.status_code == 415:
+               return_error('Request Failed with status: 415 - Invalid accept header or content type header')
+            else:
+                return_error('Request Failed with status: ' + str(res.status_code) + '. Reason is: ' + str(res.reason))
         result = res.content
 
         if not uri.startswith('php/showreport.php?'):
