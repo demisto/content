@@ -191,7 +191,7 @@ def test_eml_contains_msg(mocker):
     assert results[0]['EntryContext']['Email'][0]['Depth'] == 0
 
     assert 'Attacker+email+.msg' in results[0]['EntryContext']['Email'][0]['Attachments']
-    assert results[0]['EntryContext']['Email'][1]["Subject"] == 'Attacker email '
+    assert results[0]['EntryContext']['Email'][1]["Subject"] == 'Attacker email'
     assert results[0]['EntryContext']['Email'][1]['Depth'] == 1
 
 
@@ -395,6 +395,8 @@ def test_eml_contains_base64_encoded_eml(mocker, email_file):
 
 def test_msg_headers_map():
     email_data, ignore = handle_msg('test_data/utf_subject.msg', 'utf_subject.msg')
+    assert '?utf-8' not in email_data['Subject']
+    assert 'TESTING' in email_data['Subject']
     assert 'This is a test email.' in email_data['Text']
     assert 'mobi777@gmail.com' in email_data['From']
     assert 47 == len(email_data['HeadersMap'])

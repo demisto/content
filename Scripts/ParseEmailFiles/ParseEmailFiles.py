@@ -3366,7 +3366,7 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
         'To': msg_dict['To'],
         'CC': msg_dict['CC'],
         'From': msg_dict['From'],
-        'Subject': msg_dict['Subject'],
+        'Subject': headers_map['Subject'],
         'HTML': msg_dict['HTML'],
         'Text': msg_dict['Text'],
         'Headers': headers,
