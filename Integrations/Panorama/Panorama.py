@@ -1811,7 +1811,7 @@ def panorama_get_url_category_command():
     """
     urls = argToList(demisto.args()['url'])
 
-    categories_dict = {}
+    categories_dict: Dict[str, list] = {}
     for url in urls:
         category = panorama_get_url_category(url)
         if category in categories_dict:
