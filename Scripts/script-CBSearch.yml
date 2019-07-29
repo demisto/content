@@ -62,22 +62,20 @@ tags:
 - carbon-black
 - endpoint
 - enhancement
-comment: Search Carbon Black for process & binary information
+comment: Use the CBSearch script to search Carbon Black for process and binary information.
 enabled: true
 args:
 - name: type
-  description: '"processes" or "binary" according to the type of search you want to
-    run'
+  description: 'The search type. Can be "processes" or "binary".
 - name: query
   default: true
-  description: Query to be run - in Carbon Black syntax
+  description: The query to run, in Carbon Black syntax.
 - name: rows
-  description: Number of rows to return. If omitted, default is as stated in the Carbon
-    Black API documentation, currently 10.
+  description: Number of rows to return. If omitted, the default follows the default specified in the Carbon
+    Black API documentation. The default is currently 10.
 - name: start
-  description: 'Start at this row #. Allows pagination through large response. If
-    omitted, default is as stated in the Carbon Black API documentation, currently
-    0.'
+  description: 'The row at which to start the response. Allows pagination through large response. If omitted, the default follows the default specified in the Carbon
+    Black API documentation. The default is currently 0.'
 scripttarget: 0
 dependson:
   must: []
