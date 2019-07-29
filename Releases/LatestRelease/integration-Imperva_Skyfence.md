@@ -1,1 +1,1 @@
-Documentation changes
+Improved descriptions and integration documentation.
