@@ -2,61 +2,89 @@ version: 2
 jobs:
   build:
     docker:
-      - image: devdemisto/content-build:1.0.0.159 # disable-secrets-detection
+      - image: devdemisto/content-build-2and3:2.0.0.877  # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.3.0"
-      GIT_SHA1: "6c42492a4b4c92e56e5e73412698c7284b555a84" # guardrails-disable-line disable-secrets-detection
+      CONTENT_VERSION: "19.7.2"
+      SERVER_VERSION: "5.0.0"
+      GIT_SHA1: "b127a27e348b2f5cc53129da93ca153ce51572c4" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: Prepare Environment
+          when: always
           command: |
               echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
-              echo 'export PATH="/home/circleci/.local/bin:${PATH}"' >> $BASH_ENV
+              echo 'export PATH="/home/circleci/.pyenv/shims:/home/circleci/.local/bin:/home/circleci/.pyenv/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
               echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
+              echo "=== sourcing $BASH_ENV ==="
               source $BASH_ENV
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
               chmod +x ./Tests/scripts/*
               chmod +x ./Tests/lastest_server_build_scripts/*
-              sudo pip install mock
+              pyenv versions
+              python --version
+              python3 --version
+              echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME"
       - add_ssh_keys:
           fingerprints:
               - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
               - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
       - run:
-          name: Infrastucture testing
-          command: |
-            pytest ./Tests/scripts/hook_validations/tests/ -v
-            pytest ./Tests/scripts/infrastructure_tests/ -v
-      - run:
           name: Create ID Set
+          when: always
           command: |
             python ./Tests/scripts/update_id_set.py -r
       - run:
-          name: Validate Files and Yaml
+          name: Infrastucture testing
+          when: always
           command: |
-              ./Tests/scripts/pyflake.sh
-              python ./Tests/scripts/validate_files.py -c true
+            pytest ./Tests/scripts/hook_validations/tests/ -v
+            pytest ./Tests/scripts/infrastructure_tests/ -v
+            pytest ./Tests/scripts/test_configure_tests.py -v
+      - run:
+          name: Validate Files and Yaml
+          when: always
+          command: |
+              # Run flake8 on all excluding Integraions and Scripts (they will be handled in linting)
+              ./Tests/scripts/pyflake.sh *.py
+              find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations  \) | xargs ./Tests/scripts/pyflake.sh
+
+              [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD=false || CHECK_BACKWARD=true
+              python ./Tests/scripts/validate_files.py -c true -b $CHECK_BACKWARD
       - run:
           name: Configure Test Filter
+          when: always
           command: |
               [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
               python ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
       - run:
+          name: Spell Checks
+          command: |
+            python ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
+      - run:
           name: Build Content Descriptor
-          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM $GIT_SHA1 $CONTENT_VERSION
+          when: always
+          command: python release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION $GITHUB_TOKEN
       - run:
           name: Common Server Documentation
+          when: always
           command: ./Documentation/commonServerDocs.sh
       - run:
           name: Create Content Artifacts
+          when: always
           command: python content_creator.py $CIRCLE_ARTIFACTS
       - store_artifacts:
           path: artifacts
           destination: artifacts
       - run:
+          name: Run Unit Testing and Lint
+          when: always
+          command: SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
+      - run:
           name: Download Artifacts
+          when: always
           command: |
             if ./Tests/scripts/is_ami.sh ;
               then
@@ -67,6 +95,7 @@ jobs:
             fi
       - run:
           name: Download Configuration
+          when: always
           command: |
             if ./Tests/scripts/is_ami.sh ;
               then
@@ -77,17 +106,28 @@ jobs:
             fi
       - run:
           name: Create Instance
+          when: always
           command: |
+            pip install --upgrade awscli
+            pip install ansible ansible-runner rsa paramiko boto3 requests
+
             if ./Tests/scripts/is_ami.sh ;
               then
-                [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-                python ./Tests/scripts/create_instances.py -n $IS_NIGHTLY
+                if [ -n "${NIGHTLY}" ] ;
+                  then
+                    export IFRA_ENV_TYPE=Content-GA
+
+                  else
+                    export IFRA_ENV_TYPE=Content-Env
+                fi
+                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType $IFRA_ENV_TYPE
 
               else
-                ./Tests/lastest_server_build_scripts/create_instance.sh instance.json
+                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild
             fi
       - run:
           name: Setup Instance
+          when: always
           command: |
             if ./Tests/scripts/is_ami.sh ;
               then
@@ -96,7 +136,7 @@ jobs:
 
               else
                 ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
-                ./Tests/lastest_server_build_scripts/wait_until_server_ready.sh
+                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) --non-ami
             fi
       - run:
           name: Run Tests - Latest GA
@@ -150,6 +190,11 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: ./Tests/scripts/slack_notifier.sh
+          when: always
+      - run:
+          name: Validate Docker Images
+          shell: /bin/bash
+          command: ./Tests/scripts/validate_docker_images.sh
           when: always
       - run:
           name: Instance Test

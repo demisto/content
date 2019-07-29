@@ -1,0 +1,486 @@
+category: Network Security
+commonfields:
+  id: Forescout
+  version: -1
+configuration:
+- display: |-
+    The network address of the Forescout Enterprise Manager or
+    standalone Appliance, e.g., 'https://10.0.0.8'. #disable-secrets-detection
+  name: url
+  required: true
+  type: 0
+- display: Web API Username (see Detailed Instructions (?))
+  name: web_api_credentials
+  required: false
+  type: 9
+- display: Data Exchange (DEX) Username (see Detailed Instructions (?))
+  name: dex_credentials
+  required: false
+  type: 9
+- display: Data Exchange (DEX) Account (see Detailed Instructions (?))
+  name: dex_account
+  required: false
+  type: 0
+- defaultvalue: 'true'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Unified device visibility and control platform for IT and OT Security.
+display: Forescout
+name: Forescout
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Filter hosts by those selected by policies or policy sub-rules.
+        Policies and/or rules should be specified by their IDs. To find policy and
+        rule IDs by which you can filter, run the 'forescout-get-policies'
+        command. If multiple policy and/or rule IDs are entered, only hosts that are
+        selected by all of the policies and/or rules specifed will be returned. Multiple
+        policy or rule IDs should be separated by a comma.
+      isArray: true
+      name: rule_ids
+      required: false
+      secret: false
+    - default: false
+      description: Filter hosts based on host field values. Enter fields with their
+        associated values in the following format, '{field_1}={val_1}&{field_2}={val_2}
+        … &{field_n}={val_n}' where '{field_1}' through '{field_n}' are replaced by
+        actual field names and '{val_1}' through '{val_n}' are replaced by the desired
+        matching values. Note that a list field may be specified with the values separated
+        by commas. Only hosts whose properties match all the specified values will
+        be returned. For a list of potential host fields that may be specified, try
+        executing the 'forescout-get-hostfields' command. A composite property may
+        also be specified. If entered in the format where all the field-value pairs
+        are in a single set of square brackets, for example, '{composite_prop}=[{field_1},{val_1},..,{field_n},{val_n}]'
+        then only hosts for which the specified composite property's fields all match
+        the values entered will be returned. If entered in the format, '{composite_prop}=[{field_1},{val}_1],..,[{field_n},{val_n}]'
+        where each field-value pair is enclosed in its own set of brackets, then hosts
+        for which the composite property contains any of the field-values specified
+        will be returned. Note that for composite properties, sub-fields should be
+        entered as their internal representation in Forescout. To find internal representation
+        for a composite property's sub-fields try executing 'forescout-get-host' command
+        with the host specified in the 'identifier' argument and the name of the composite
+        property entered in the 'fields'  argument of the command.
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of active endpoints.
+    execution: false
+    name: forescout-get-hosts
+    outputs:
+    - contextPath: Forescout.Host.ID
+      description: Forescout ID for the host.
+      type: Number
+    - contextPath: Forescout.Host.IPAddress
+      description: IP address of the host.
+      type: String
+    - contextPath: Forescout.Host.MACAddress
+      description: MAC address of the host.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: IP address of the host.
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: MAC address of the host.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: name
+      description: Each host field has three searchable parts, the 'name', 'label',
+        and 'description'. By default only the 'name' will be searched. If you want
+        to expand the search to include the description, you would enter 'name,description' for this argument.
+      isArray: true
+      name: search_in
+      predefined:
+      - name
+      - description
+      - label
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'false'
+      description: Determines whether to match the case of the entered search term.
+      isArray: false
+      name: case_sensitive
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'False'
+      description: Determines whether the search term is matched against the entirety
+        of the potential host field instead of just seeing whether the host field
+        contains the search term.
+      isArray: false
+      name: match_exactly
+      predefined:
+      - 'False'
+      - 'True'
+      required: false
+      secret: false
+    - default: false
+      description: The term by which to filter host fields. By default, the search will
+        be case insensitive and checked to see if a host field contains the search
+        term unless otherwise specified in the 'case_sensitive' and 'match_exactly'
+        arguments respectively.
+      isArray: false
+      name: search_term
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: all_types
+      description: Limit the search to host fields whose values are of a certain type.
+        For example, to limit the search to host properties whose values are either
+        boolean, ip, or a date, enter 'boolean,ip,date'.
+      isArray: true
+      name: host_field_type
+      predefined:
+      - string
+      - boolean
+      - appliance
+      - port
+      - service
+      - list_change
+      - change
+      - ip
+      - composite
+      - ipv6
+      - session
+      - date
+      - integer
+      - tree_path
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves an index of Forescout host fields that match the specified
+      criteria.
+    execution: false
+    name: forescout-get-host-fields
+    outputs:
+    - contextPath: Forescout.HostField
+      description: List index of host properties.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: List of host properties to include in the output for the targeted
+        endpoint. If a specified host property is not found, the property is omitted
+        from the outputs. For a list of potential host properties that can be specified,
+        run the 'forescout-get-host-fields' command. Requested fields should
+        be comma separated.
+      isArray: true
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: IP (ipv4) of the endpoint. To get the Endpoint identifiers - IPs,
+        MAC addresses, and object IDs, run the `forescout-get-hosts` command.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: MAC address of the endpoint. To get the Endpoint identifiers - IPs,
+        MAC addresses, and object IDs, run the `forescout-get-hosts` command.
+      isArray: false
+      name: mac
+      required: false
+      secret: false
+    - default: false
+      description: Forescout ID of the endpoint. To get the Endpoint identifiers - IPs,
+        MAC addresses, and object IDs, run the `forescout-get-hosts` command.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves details of specified host.
+    execution: false
+    name: forescout-get-host
+    outputs:
+    - contextPath: Forescout.Host.MatchedFingerprint
+      description: An endpoint might match multiple profiles. This property indicates
+        all the classification profiles that this endpoint matches.
+      type: Unknown
+    - contextPath: Forescout.Host.EngineSeenPacket
+      description: Indicates the host was seen by CounterACT.
+      type: String
+    - contextPath: Forescout.Host.Online
+      description: Host is online.
+      type: String
+    - contextPath: Forescout.Host.PrimClassification
+      description: Indicates the most specific endpoint function detected. If CounterACT
+        detects multiple endpoint functions, the property is resolved as the most
+        specific value that is common to all the detected functions. If there is no
+        common value, the property is resolved as 'Multiple Suggestions'.
+      type: String
+    - contextPath: Forescout.Host.MacVendorString
+      description: Indicates a value associated with the NIC Vendor.
+      type: String
+    - contextPath: Forescout.Host.SambaOpenPort
+      description: NetBIOS ports that are open.
+      type: String
+    - contextPath: Forescout.Host.UserDefFp
+      description: Indicates the operating system of the endpoint, as determined by
+        classification tools.
+      type: String
+    - contextPath: Forescout.Host.Vendor
+      description: Network Device Vendor, Type, and Model.
+      type: String
+    - contextPath: Forescout.Host.AgentVersion
+      description: Indicates the SecureConnector version installed on a Windows host.
+      type: String
+    - contextPath: Forescout.Host.Fingerprint
+      description: Passive OS detection based on Syn packets.
+      type: String
+    - contextPath: Forescout.Host.AccessIP
+      description: Indicates the last IP that was investigated for this host.
+      type: String
+    - contextPath: Forescout.Host.VendorClassification
+      description: Indicates the most specific vendor and model detected.
+      type: String
+    - contextPath: Forescout.Host.ManageAgent
+      description: Indicates if the host is running SecureConnector.
+      type: String
+    - contextPath: Forescout.Host.Onsite
+      description: Indicates that a host is connected to the organizational network.
+      type: String
+    - contextPath: Forescout.Host.MacPrefix32
+      description: MAC prefix.
+      type: String
+    - contextPath: Forescout.Host.VaNetfunc
+      description: Reported CDP VoIP device description for VA netfunc.
+      type: String
+    - contextPath: Forescout.Host.NmapDefFp7
+      description: Nmap-OS Fingerprint (Ver. 7.01).
+      type: String
+    - contextPath: Forescout.Host.NmapDefFp5
+      description: Nmap-OS Fingerprint (Ver. 5.3).
+      type: String
+    - contextPath: Forescout.Host.AgentInstallMode
+      description: Indicates the SecureConnector deployment mode installed on the
+        host.
+      type: String
+    - contextPath: Forescout.Host.NmapFp7
+      description: Nmap-OS Class(Ver. 7.01) (Obsolete).
+      type: String
+    - contextPath: Forescout.Host.ClType
+      description: Indicates how CounterACT determines the Network Function property
+        of the endpoint.
+      type: String
+    - contextPath: Forescout.Host.ClRule
+      description: Indicates the rule responsible for classifying the host.
+      type: String
+    - contextPath: Forescout.Host.AgentVisibleMode
+      description: Indicates the SecureConnector visible mode installed on the host.
+      type: String
+    - contextPath: Forescout.Host.OSClassification
+      description: Operating system.
+      type: String
+    - contextPath: Forescout.Host.ClassificationSourceOS
+      description: Indicates how the OS classification property was
+        determined for this endpoint.
+      type: String
+    - contextPath: Forescout.Host.LastNbtReportTime
+      description: Last time the NBT name was reported.
+      type: String
+    - contextPath: Forescout.Host.Misc
+      description: Miscellaneous.
+      type: String
+    - contextPath: Forescout.Host.ClassificationSourceFunc
+      description: Indicates how the Function classification property was determined
+        for this endpoint.
+      type: String
+    - contextPath: Forescout.Host.NmapNetfunc7
+      description: Nmap-Network Function (Ver. 7.01).
+      type: String
+    - contextPath: Forescout.Host.MAC
+      description: ARP spoofing (Obsolete).
+      type: Unknown
+    - contextPath: Forescout.Host.OpenPort
+      description: Open ports.
+      type: Unknown
+    - contextPath: Forescout.Host.GstSignedInStat
+      description: Logged in status.
+      type: String
+    - contextPath: Forescout.Host.DhcpClass
+      description: The device class, according to the DHCP fingerprint.
+      type: String
+    - contextPath: Forescout.Host.ADM
+      description: Admission events.
+      type: String
+    - contextPath: Forescout.Host.DhcpReqFingerprint
+      description: The host DHCP request fingerprint.
+      type: String
+    - contextPath: Forescout.Host.DhcpOptFingerprint
+      description: The host DHCP options fingerprint.
+      type: String
+    - contextPath: Forescout.Host.Ipv4ReportTime
+      description: Indicates the last time that IPv4 reported to the infrastructure.
+      type: String
+    - contextPath: Forescout.Host.DhcpOS
+      description: The device OS, according to the DHCP fingerprint.
+      type: String
+    - contextPath: Forescout.Host.DhcpHostname
+      description: The device host name, as advertised by DHCP.
+      type: String
+    - contextPath: Forescout.Host.IPAddress
+      description: Host IP address.
+      type: String
+    - contextPath: Forescout.Host.MACAddress
+      description: Host MAC address.
+      type: String
+    - contextPath: Forescout.Host.ID
+      description: Forescout ID number for the host.
+      type: Number
+    - contextPath: Endpoint.IPAddress
+      description: IP Address of the host.
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: MAC address of the host.
+      type: String
+    - contextPath: Endpoint.DHCPServer
+      description: Endpoint DHCP server.
+      type: String
+    - contextPath: Endpoint.Hostname
+      description: Hostname of the endpoint.
+      type: String
+    - contextPath: Endpoint.OS
+      description: Endpoint OS.
+      type: String
+    - contextPath: Endpoint.Model
+      description: Vendor and model of the endpoint.
+      type: String
+    - contextPath: Endpoint.Domain
+      description: Domain of the endpoint.
+      type: String
+  - deprecated: false
+    description: |-
+      Retrieves a list of all policies defined in the Forescout platform and
+      their sub-rules.
+    execution: false
+    name: forescout-get-policies
+    outputs:
+    - contextPath: Forescout.Policy.ID
+      description: Forescout ID for the policy.
+      type: String
+    - contextPath: Forescout.Policy.Name
+      description: Forescout name of the policy.
+      type: String
+    - contextPath: Forescout.Policy.Description
+      description: Description of the policy.
+      type: String
+    - contextPath: Forescout.Policy.Rule
+      description: List of rules that make up the policy.
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: update
+      description: The type of update to perform on a host field.
+      isArray: false
+      name: update_type
+      predefined:
+      - update
+      - delete
+      required: false
+      secret: false
+    - default: false
+      description: The IP address of the target host. Required if 'updated_type' is
+        "update" or "delete".
+      isArray: false
+      name: host_ip
+      required: true
+      secret: false
+    - default: false
+      description: Enter the the name of the field to update. Composite fields should
+        be updated using the 'fields_json' command argument.
+      isArray: false
+      name: field
+      required: false
+      secret: false
+    - default: false
+      description: Value to be assigned to the field specified in the 'field' argument.
+        If the value is a list of items, then items should be separated using a comma.
+      isArray: true
+      name: value
+      required: false
+      secret: false
+    - default: false
+      description: 'One may perform multiple field-value assignments using this command
+        argument. The argument should be entered in valid JSON format. This argument
+        is useful for setting composite fields although other fields may be entered
+        as well. For example, ''{"Example_Composite": [{"Shape": "Triangle", "Color":
+        "Beige"}, {"Shape": "Square", "Color": "Violet"}], "String_Field": "Example"}''
+        where ''Example_Composite'' is the name of the Composite field in Forescout
+        and ''Shape'' and ''Color'' are sub fields. In the example, ''String_Field''
+        is a regular host field of type string whose value will be assigned ''Example''.
+        If the composite field was defined in Forescout as an aggregate property then
+        additional records will be appended, otherwise they will be overwritten. '
+      isArray: false
+      name: fields_json
+      required: false
+      secret: false
+    deprecated: false
+    description: Update a host's field. If a List field or Composite field
+      has not been defined in Forescout to 'Aggregate new values from each update'
+      then performing an update operation on a field will overwrite previous data
+      written to that field.
+    execution: false
+    name: forescout-update-host-fields
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: add_list_values
+      description: The type of update to perform on a Forescout list.
+      isArray: false
+      name: update_type
+      predefined:
+      - add_list_values
+      - delete_list_values
+      - delete_all_list_values
+      required: false
+      secret: false
+    - default: false
+      description: Names of lists defined in the Forescout platform that you wish
+        to update. If the 'update_type' is set to 'delete_all_list_values' then it
+        is unnecessary to fill in the 'values' command argument. Multiple list names
+        should be separated by a comma. To find names of lists that may be updated,
+        navigate to *Tools* > *Options* > *Lists* in the Forescout platform.
+      isArray: true
+      name: list_names
+      required: true
+      secret: false
+    - default: false
+      description: The values to add or delete from the lists entered in the 'list_names'
+        command argument. Multiple values should separated by a comma. Note that the
+        values entered here will be updated for all of the lists entered in the 'list_names'
+        command argument.
+      isArray: true
+      name: values
+      required: false
+      secret: false
+    deprecated: false
+    description: Update Forescout lists.
+    execution: false
+    name: forescout-update-lists
+  dockerimage: demisto/python3:3.7.3.221
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+- Forescout-Test

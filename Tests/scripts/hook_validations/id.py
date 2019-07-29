@@ -154,7 +154,7 @@ class IDSetValidator(object):
                 instance_to_version = instance[instance_id].get('toversion', '99.99.99')
                 instance_from_version = instance[instance_id].get('fromversion', '0.0.0')
                 if obj_id == instance_id:
-                    if section != obj_type:
+                    if section != obj_type and LooseVersion(obj_fromversion) < LooseVersion(instance_to_version):
                         is_duplicated = True
                         break
 
@@ -163,7 +163,8 @@ class IDSetValidator(object):
                             is_duplicated = True
                             break
 
-                    elif LooseVersion(obj_fromversion) <= LooseVersion(instance_to_version):
+                    elif (LooseVersion(obj_fromversion) <= LooseVersion(instance_to_version)
+                          and (LooseVersion(obj_toversion) >= LooseVersion(instance_from_version))):
                         is_duplicated = True
                         break
 
@@ -184,6 +185,7 @@ class IDSetValidator(object):
             bool. Whether the ID of the given file already exist in the system or not.
         """
         is_used = False
+        is_json_file = False
         if self.is_circle:
             if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 obj_type = self.TEST_PLAYBOOK_SECTION
@@ -218,6 +220,10 @@ class IDSetValidator(object):
                 obj_type = self.SCRIPTS_SECTION
                 obj_id = get_script_or_integration_id(yml_path)
 
-            is_used = self.is_id_duplicated(obj_id, obj_data, obj_type)
+            else:  # In case of a json file
+                is_json_file = True
+
+            if not is_json_file:
+                is_used = self.is_id_duplicated(obj_id, obj_data, obj_type)
 
         return is_used

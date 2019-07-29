@@ -16,7 +16,9 @@ BETA_INTEGRATIONS_DIR = "Beta_Integrations"
 # file types regexes
 PIPFILE_REGEX = r".*\Pipfile"
 TEST_DATA_REGEX = r".*test_data.*"
+DOCS_REGEX = r".*docs.*"
 IMAGE_REGEX = r".*\.png"
+DESCRIPTION_REGEX = r".*\.md"
 CONF_REGEX = "Tests/conf.json"
 SCRIPT_TYPE_REGEX = ".*script-.*.yml"
 SCRIPT_PY_REGEX = r"{}.*\.py$".format(SCRIPTS_DIR)
@@ -32,6 +34,7 @@ PLAYBOOK_REGEX = r"(?!Test){}.*playbook-.*\.yml$".format(PLAYBOOKS_DIR)
 TEST_PLAYBOOK_REGEX = r"{}.*playbook-.*\.yml$".format(TEST_PLAYBOOKS_DIR)
 TEST_NOT_PLAYBOOK_REGEX = r"{}.(?!playbook).*-.*\.yml$".format(TEST_PLAYBOOKS_DIR)
 
+
 WIDGETS_REGEX = r"{}.*widget-.*\.json$".format(WIDGETS_DIR)
 DASHBOARD_REGEX = r"{}.*dashboard-.*\.json$".format(DASHBOARDS_DIR)
 CONNECTIONS_REGEX = r"{}.*canvas-context-connections.*\.json$".format(CONNECTIONS_DIR)
@@ -40,19 +43,48 @@ LAYOUT_REGEX = r"{}.*layout-.*\.json$".format(LAYOUTS_DIR)
 INCIDENT_FIELDS_REGEX = r"{}.*incidentfields.*\.json$".format(INCIDENT_FIELDS_DIR)
 INCIDENT_FIELD_REGEX = r"{}.*incidentfield-.*\.json$".format(INCIDENT_FIELDS_DIR)
 MISC_REGEX = r"{}.*reputations.*\.json$".format(MISC_DIR)
+REPUTATION_REGEX = r"{}.*reputation-.*\.json$".format(MISC_DIR)
 REPORT_REGEX = r"{}.*report-.*\.json$".format(REPORTS_DIR)
+MISC_REPUTATIONS_REGEX = r"{}.reputations.json$".format(MISC_DIR)
 
 BETA_SCRIPT_REGEX = r"{}.*script-.*\.yml$".format(BETA_INTEGRATIONS_DIR)
 BETA_PLAYBOOK_REGEX = r"{}.*playbook-.*\.yml$".format(BETA_INTEGRATIONS_DIR)
 BETA_INTEGRATION_REGEX = r"{}.*integration-.*\.yml$".format(BETA_INTEGRATIONS_DIR)
 
-CHECKED_TYPES_REGEXES = [INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX, INTEGRATION_YML_REGEX,
+CHECKED_TYPES_REGEXES = [PLAYBOOK_REGEX, INTEGRATION_YML_REGEX,
                          WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX, CLASSIFIER_REGEX, SCRIPT_YML_REGEX,
-                         LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, INCIDENT_FIELD_REGEX, MISC_REGEX, REPORT_REGEX]
+                         LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, INCIDENT_FIELD_REGEX, MISC_REGEX, REPORT_REGEX,
+                         REPUTATION_REGEX]
 
 PACKAGE_SUPPORTING_DIRECTORIES = [INTEGRATIONS_DIR, SCRIPTS_DIR]
 
-KNOWN_FILE_STATUSES = ['a', 'm', 'd'] + ['r{:03}'.format(i) for i in range(101)]
+OLD_YML_FORMAT_FILE = [INTEGRATION_REGEX, SCRIPT_REGEX]
+
+DIR_LIST = [
+    INTEGRATIONS_DIR,
+    SCRIPTS_DIR,
+    PLAYBOOKS_DIR,
+    TEST_PLAYBOOKS_DIR,
+    REPORTS_DIR,
+    DASHBOARDS_DIR,
+    WIDGETS_DIR,
+    INCIDENT_FIELDS_DIR,
+    LAYOUTS_DIR,
+    CLASSIFIERS_DIR,
+    MISC_DIR,
+    CONNECTIONS_DIR,
+    BETA_INTEGRATIONS_DIR
+]
+
+SPELLCHECK_FILE_TYPES = [
+    INTEGRATION_REGEX,
+    INTEGRATION_YML_REGEX,
+    PLAYBOOK_REGEX,
+    SCRIPT_REGEX,
+    SCRIPT_YML_REGEX
+]
+
+KNOWN_FILE_STATUSES = ['a', 'm', 'd', 'r'] + ['r{:03}'.format(i) for i in range(101)]
 
 CODE_FILES_REGEX = [INTEGRATION_JS_REGEX, INTEGRATION_PY_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX]
 
@@ -62,3 +94,20 @@ TYPE_TO_EXTENSION = {
     'python': '.py',
     'javascript': '.js'
 }
+
+FILE_TYPES_FOR_TESTING = [
+    '.py',
+    '.js',
+    '.yml'
+]
+
+# Run all test signal
+RUN_ALL_TESTS_FORMAT = "Run all tests"
+FILTER_CONF = "./Tests/filter_file.txt"
+
+
+class PB_Status:
+    NOT_SUPPORTED_VERSION = 'Not supported version'
+    COMPLETED = 'completed'
+    FAILED = 'failed'
+    IN_PROGRESS = 'inprogress'

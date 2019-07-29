@@ -39,7 +39,7 @@ tags:
 - enhancement
 - wildfire
 - sandbox
-comment: Use WildFire file analysis and parse result
+comment: Deprecated. Use the "wildfire-report" command instead.
 system: true
 args:
 - name: md5
@@ -52,3 +52,5 @@ dependson:
   must:
   - wildfire-report
 timeout: 0s
+tests:
+- No tests

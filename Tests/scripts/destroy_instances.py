@@ -1,23 +1,47 @@
 import sys
-
-from Tests.test_utils import run_command
+import os
+import json
+import subprocess
+from Tests.test_utils import print_warning, print_error
+import Tests.scripts.awsinstancetool.aws_functions as aws_functions
 
 
 def main():
     circle_aritfact = sys.argv[1]
-    with open('./Tests/instance_ips.txt', 'r') as instance_file:
-        instance_ips = instance_file.readlines()
-        instance_ips = [line.strip('\n').split(":") for line in instance_ips]
 
-    with open('./Tests/instance_ids.txt', 'r') as instance_file:
-        instance_ids = instance_file.readlines()
-        instance_ids = [line.strip('\n').split(":") for line in instance_ids]
+    with open('./env_results.json', 'r') as json_file:
+        env_results = json.load(json_file)
 
-    for ami_instance_name, ami_instance_ip in instance_ips:
-        for ami_instance_name_second, ami_instance_id in instance_ids:
-            if ami_instance_name == ami_instance_name_second:
-                run_command("./Tests/scripts/destroy_instances.sh {} {} {}".format(circle_aritfact, ami_instance_id,
-                                                                                   ami_instance_ip), is_silenced=False)
+    for env in env_results:
+        if not os.path.isfile("./Tests/is_build_failed_{}.txt".format(env["Role"].replace(' ', ''))):
+            ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
+                         '"sudo chmod -R 755 /var/log/demisto"'
+            scp_string = 'scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ' \
+                         '{}@{}:/var/log/demisto/server.log {} || echo "WARN: Failed downloading server.log"'
+
+            try:
+                subprocess.check_output(
+                    ssh_string.format(env["SSHuser"], env["InstanceDNS"]), shell=True)
+
+            except subprocess.CalledProcessError as exc:
+                print(exc.output)
+
+            try:
+                subprocess.check_output(
+                    scp_string.format(
+                        env["SSHuser"],
+                        env["InstanceDNS"],
+                        "{}/server_{}.log".format(circle_aritfact, env["Role"].replace(' ', ''))),
+                    shell=True)
+
+            except subprocess.CalledProcessError as exc:
+                print(exc.output)
+
+            rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
+            if aws_functions.isError(rminstance):
+                print_error(rminstance)
+        else:
+            print_warning("Tests failed on {} ,keeping instance alive".format(env["Role"]))
 
 
 if __name__ == "__main__":

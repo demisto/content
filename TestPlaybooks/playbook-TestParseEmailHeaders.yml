@@ -1,0 +1,410 @@
+id: TestParseEmailHeaders
+version: -1
+name: TestParseEmailHeaders
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bacbcb43-8045-4612-8c01-748580664a76
+    type: start
+    task:
+      id: bacbcb43-8045-4612-8c01-748580664a76
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 72b466ef-e2ea-419f-8f22-48cdcf203279
+    type: regular
+    task:
+      id: 72b466ef-e2ea-419f-8f22-48cdcf203279
+      version: -1
+      name: Download EML file
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: EmailWithNonAsciiSubject.eml
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password:
+        simple: '{ENCRYPTED}73CUHPcGaqWCBzx1eWdWPnTNZJtJ/1cx4/Bn+nC8OCydev0AcnyHOUv8MRHlhZNu+d2rsWGIBWI8vJV8hgjskA=='
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/EmailWithNonAsciiSubject.eml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 10941233-eea6-4e27-8fca-71546d698650
+    type: regular
+    task:
+      id: 10941233-eea6-4e27-8fca-71546d698650
+      version: -1
+      name: ParseEmailHeaders
+      scriptName: ParseEmailHeaders
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      entryId:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: eml
+          accessor: EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 597063dd-bcf3-4d81-8f55-9d15484986f4
+    type: condition
+    task:
+      id: 597063dd-bcf3-4d81-8f55-9d15484986f4
+      version: -1
+      name: Validate Headers outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Email.Headers.From
+            iscontext: true
+          right:
+            value:
+              simple: Shai Yaakovi <Yaakovi@demisto.com>
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Email.Headers.Subject
+            iscontext: true
+          right:
+            value:
+              simple: cãcao is not taçóánd taco is not à çãcao
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: Email.Headers.Received
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+          right:
+            value:
+              simple: DM6PR11MB2842.namprd11.prod.outlook.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 6012b9c8-88fb-4bd3-836c-5ac7fb8118bd
+    type: regular
+    task:
+      id: 6012b9c8-88fb-4bd3-836c-5ac7fb8118bd
+      version: -1
+      name: Download MSG file
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: utf_subject.msg
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password:
+        simple: '{ENCRYPTED}TjxAu8YVJac7qSpZfpgc4fDDavutkY4vYzTmyAwC1yRbXA+65KXrufr4Nt5++PjNMUywmua3oLOsqyRYKiFgWA=='
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/raw/master/Scripts/ParseEmailFiles/test_data/utf_subject.msg
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 858f097b-e6a2-499b-863b-5c38427b4a4a
+    type: regular
+    task:
+      id: 858f097b-e6a2-499b-863b-5c38427b4a4a
+      version: -1
+      name: ParseEmailHeaders - last entry id
+      scriptName: ParseEmailHeaders
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      entryId:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: msg
+          accessor: EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: f315b72b-72f9-4d2e-8ec2-1572c85f2221
+    type: condition
+    task:
+      id: f315b72b-72f9-4d2e-8ec2-1572c85f2221
+      version: -1
+      name: Validate outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: Email.Headers
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Email.Headers.Message-ID
+                      iscontext: true
+                    right:
+                      value:
+                        simple: <5c530c1b.1c69fb81.bd826.0eff@mx.google.com>
+                accessor: Received
+            iscontext: true
+          right:
+            value:
+              simple: DM6PR11MB2810.namprd11.prod.outlook.com
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Email.Headers
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Email.Headers.Message-ID
+                      iscontext: true
+                    right:
+                      value:
+                        simple: <5c530c1b.1c69fb81.bd826.0eff@mx.google.com>
+                accessor: Subject
+            iscontext: true
+          right:
+            value:
+              simple: '[TESTING] =?utf-8?q?=F0=9F=94=92_=E2=9C=94_Votre_colis_est_disponible_chez_votre_co?=
+                =?utf-8?q?mmer=C3=A7ant_Pickup_!?='
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Email.Headers
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Email.Headers.Message-ID
+                      iscontext: true
+                    right:
+                      value:
+                        simple: <5c530c1b.1c69fb81.bd826.0eff@mx.google.com>
+                accessor: X-MS-TrafficTypeDiagnostic
+            iscontext: true
+          right:
+            value:
+              simple: 'DM6PR11MB2810:'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 6c0cb32a-5f91-4713-8400-23f85bb0b042
+    type: regular
+    task:
+      id: 6c0cb32a-5f91-4713-8400-23f85bb0b042
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 3b9d03bd-c002-4c70-8665-c6676d5c35f2
+    type: title
+    task:
+      id: 3b9d03bd-c002-4c70-8665-c6676d5c35f2
+      version: -1
+      name: Test Done - Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

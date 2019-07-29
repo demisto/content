@@ -293,4 +293,3 @@ runonce: false
 runas: DBotWeakRole
 tests:
   - TestParseCSV
-releaseNotes: "Added non utf-8 codec support."

@@ -1,15 +1,15 @@
 commonfields:
   id: 9364c36f-b1d6-4233-88c2-75008b106c31
-  version: 29
+  version: -1
 name: vmray_getResults
 script: |-
   import json
   dArgs = {}
   dArgs["sample_id"] = demisto.args()["sample_id"]
-  res_jobs = demisto.executeCommand("get_job_sample", dArgs)
+  res_jobs = demisto.executeCommand("get_job_sample", dArgs)[0]['Contents']['data']
   if not res_jobs:
     demisto.results("Hurray no jobs found, maybe the analysis is completed. Let's see!")
-    my_data = demisto.executeCommand("get_results", dArgs)
+    my_data = demisto.executeCommand("get_results", dArgs)[0]['Contents']['data']
 
     parent_id = demisto.parentEntry()["id"]
     if my_data:
@@ -18,11 +18,11 @@ script: |-
         tmp_data["vti-score"] = []
         tmp_data["analysis-id"] = []
         for entry in my_data:
-            tmp_data["vti-score"].append(demisto.get(entry, "Contents.analysis_vti_score"))
-            tmp_data["analysis-id"].append(demisto.get(entry, "Contents.analysis_id"))
+            tmp_data["vti-score"].append(entry['analysis_id'])
+            tmp_data["analysis-id"].append(entry['analysis_vti_score'])
             if tmp_data:
-                res += '\nAnalysed-ID: ' + str(demisto.get(entry, 'Contents.analysis_id'))
-                res += '\nVTI-Score:   ' + str(demisto.get(entry, 'Contents.analysis_vti_score'))
+                res += '\nAnalysed-ID: ' + str(entry['analysis_id'])
+                res += '\nVTI-Score:   ' + str(entry['analysis_vti_score'])
             else:
                 res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
                             "Contents": "Could not extract result list from response: " + json.dumps(entry["Contents"])})
@@ -31,7 +31,7 @@ script: |-
         demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': res})
 type: python
 tags: []
-comment: Helper script to get the results of an analysed file
+comment: Deprecated, use "Detonate File - VMRay playbook instead"
 enabled: true
 args:
 - name: sample_id
@@ -43,3 +43,6 @@ dependson:
   must:
   - VMRay|||get_job_sample
 timeout: 0s
+deprecated: true
+tests:
+- No tests

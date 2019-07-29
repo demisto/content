@@ -1,0 +1,594 @@
+id: Email Address Enrichment - Generic v2.1
+version: -1
+fromversion: 4.1.0
+name: Email Address Enrichment - Generic v2.1
+description: |-
+  Enrich email addresses.
+  - Get information from Active Directory for internal addresses
+  - Get the domain-squatting reputation for external addresses
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 10b003be-68f2-4e57-8f11-d0475f1aac42
+    type: start
+    task:
+      id: 10b003be-68f2-4e57-8f11-d0475f1aac42
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 01ab9a35-e60e-4331-826d-48194fb5a771
+    type: title
+    task:
+      id: 01ab9a35-e60e-4331-826d-48194fb5a771
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      details: {}
+      fromclosedate: {}
+      fromdate: {}
+      fromduedate: {}
+      id: {}
+      level: {}
+      name: {}
+      notstatus: {}
+      owner: {}
+      page: {}
+      query:
+        simple: entry.contents:${Account.Username}
+      reason: {}
+      size: {}
+      sort: {}
+      status: {}
+      toclosedate: {}
+      todate: {}
+      toduedate: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: db8113cf-a721-49a6-83dd-152e83c7d962
+    type: condition
+    task:
+      id: db8113cf-a721-49a6-83dd-152e83c7d962
+      version: -1
+      name: Are there email addresses to check?
+      description: Determines whether the playbook's input contains at least one email
+        address.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.Email
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 17c82691-cc28-445a-8aea-129217f589d6
+    type: regular
+    task:
+      id: 17c82691-cc28-445a-8aea-129217f589d6
+      version: -1
+      name: Classify email addresses as internal or external
+      description: Adds a NetworkType attribute to all email addresses. The NetworkType
+        attribute determines whether the email address is an internal or external
+        email address, according to the domains that were passed as arguments to this
+        playbook.
+      scriptName: IsEmailAddressInternal
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+      - "14"
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.InternalDomains
+          transformers:
+          - operator: uniq
+      email:
+        complex:
+          root: inputs.Email
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: e82515ea-9f9a-4273-8182-e6a84b24e4d6
+    type: title
+    task:
+      id: e82515ea-9f9a-4273-8182-e6a84b24e4d6
+      version: -1
+      name: Internal
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 672.5,
+          "y": 785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: d501d6f3-d086-40fa-8c28-052fc32787fb
+    type: title
+    task:
+      id: d501d6f3-d086-40fa-8c28-052fc32787fb
+      version: -1
+      name: External
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100.5,
+          "y": 785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 266c8054-586a-4b62-811b-d13147f12e54
+    type: regular
+    task:
+      id: 266c8054-586a-4b62-811b-d13147f12e54
+      version: -1
+      name: Get email address info from Active Directory
+      description: Uses Active Directory to get user information for internal email
+        addresses.
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      attributes: {}
+      custom-field-data: {}
+      custom-field-type: {}
+      dn: {}
+      email:
+        complex:
+          root: Account
+          accessor: Email
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: Internal
+              field:
+                value:
+                  simple: NetworkType
+              getField:
+                value:
+                  simple: Address
+          - operator: uniq
+      limit: {}
+      name: {}
+      user-account-control-out: {}
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 672.5,
+          "y": 1195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 2d740d11-a326-4913-83f1-8df803c0a3eb
+    type: condition
+    task:
+      id: 2d740d11-a326-4913-83f1-8df803c0a3eb
+      version: -1
+      name: Are there any external email addresses?
+      description: Checks whether there is at least one email address with a NetworkType attribute set to "Internal".
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "11"
+    scriptarguments:
+      value:
+        complex:
+          root: Account
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Account.Email.NetworkType
+                iscontext: true
+              right:
+                value:
+                  simple: External
+              ignorecase: true
+          accessor: Email
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100.5,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: e521733d-b152-4a1f-8050-e7658405a187
+    type: condition
+    task:
+      id: e521733d-b152-4a1f-8050-e7658405a187
+      version: -1
+      name: Are there internal email addresses?
+      description: Checks whether there are email addresses with a NetworkType attribute
+        value of "Internal".
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "10"
+    scriptarguments:
+      value:
+        complex:
+          root: Account
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Account.Email.NetworkType
+                iscontext: true
+              right:
+                value:
+                  simple: Internal
+              ignorecase: true
+          accessor: Email
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 672.5,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 7d4c6562-651c-487d-834e-f3921527c76e
+    type: regular
+    task:
+      id: 7d4c6562-651c-487d-834e-f3921527c76e
+      version: -1
+      name: Check email addresses for domain-squatting
+      description: Checks if an email address's domain is trying to squat other domains
+        using Levenshtein distance algorithm.
+      scriptName: EmailDomainSquattingReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.Domain
+          transformers:
+          - operator: uniq
+      email:
+        complex:
+          root: Account
+          accessor: Email
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: External
+              field:
+                value:
+                  simple: NetworkType
+              getField:
+                value:
+                  simple: Address
+          - operator: uniq
+      threshold: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100.5,
+          "y": 1195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 71e0fb34-e1c8-4606-8462-1f83a0a2cb56
+    type: condition
+    task:
+      id: 71e0fb34-e1c8-4606-8462-1f83a0a2cb56
+      version: -1
+      name: Is Active Directory Query v2 enabled?
+      description: Checks if there's an active instance of the Active Directory Query
+        v2 integration enabled.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "12"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: Active Directory Query v2
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+          accessor: brand
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 672.5,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 1f1a6cd8-5aaa-4b0a-8147-e91dc6beec49
+    type: condition
+    task:
+      id: 1f1a6cd8-5aaa-4b0a-8147-e91dc6beec49
+      version: -1
+      name: Is there a domain list input?
+      description: Checks if there is at least one domain to check for domain-squatting.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "15"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.Domain
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100.5,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 3ecf1917-78f6-4350-84bb-704fdaa1bf05
+    type: title
+    task:
+      id: 3ecf1917-78f6-4350-84bb-704fdaa1bf05
+      version: -1
+      name: No Email Addresses
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -380,
+          "y": 785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_11_yes": 0.64,
+      "13_4_#default#": 0.16,
+      "14_10_yes": 0.65,
+      "14_4_#default#": 0.17,
+      "17_4_#default#": 0.23,
+      "18_4_#default#": 0.23,
+      "5_20_#default#": 0.35
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1405,
+        "width": 1432.5,
+        "x": -380,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: InternalDomains
+  value:
+    complex:
+      root: inputs.InternalDomains
+      transformers:
+      - operator: uniq
+  required: false
+  description: A CSV list of internal domains. The list will be used to determine
+    whether an email address is internal or external.
+- key: Email
+  value:
+    complex:
+      root: Account
+      accessor: Email.Address
+      transformers:
+      - operator: uniq
+  required: false
+  description: The email addresses to enrich.
+- key: Domain
+  value:
+    complex:
+      root: inputs.Domain
+      transformers:
+      - operator: uniq
+  required: false
+  description: The domains associated with the incident. These domains will be checked
+    for domain-squatting.
+outputs:
+- contextPath: Account
+  description: The Account object.
+  type: unknown
+- contextPath: Account.Email.NetworkType
+  description: The email account NetworkType (Internal/External).
+  type: string
+- contextPath: Account.Email.Distance.Domain
+  description: The compared domain.
+  type: string
+- contextPath: Account.Email.Distance.Value
+  description: 'The distance between the email domain and the compared domain. '
+  type: number
+- contextPath: DBotScore
+  description: The DBotScore object.
+  type: unknown
+tests:
+  - Email Address Enrichment - Generic v2.1 - Test

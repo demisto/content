@@ -1,8 +1,11 @@
 import os
 import yaml
-from requests import get
+import requests
 
-from Tests.test_utils import print_error, get_json
+from Tests.test_utils import print_error, get_yaml
+
+# disable insecure warnings
+requests.packages.urllib3.disable_warnings()
 
 
 class IntegrationValidator(object):
@@ -22,17 +25,18 @@ class IntegrationValidator(object):
 
         self.file_path = file_path
         if check_git:
-            self.current_integration = get_json(file_path)
+            self.current_integration = get_yaml(file_path)
             # The replace in the end is for Windows support
             if old_file_path:
                 git_hub_path = os.path.join(self.CONTENT_GIT_HUB_LINK, old_file_path).replace("\\", "/")
-                file_content = get(git_hub_path).content
-                self.old_integration = yaml.load(file_content)
+                file_content = requests.get(git_hub_path, verify=False).content
+                self.old_integration = yaml.safe_load(file_content)
             else:
                 try:
                     file_path_from_master = os.path.join(self.CONTENT_GIT_HUB_LINK, file_path).replace("\\", "/")
-                    self.old_integration = yaml.load(get(file_path_from_master).content)
-                except Exception:
+                    self.old_integration = yaml.safe_load(requests.get(file_path_from_master, verify=False).content)
+                except Exception as e:
+                    print(str(e))
                     print_error("Could not find the old integration please make sure that you did not break "
                                 "backward compatibility")
                     self.old_integration = None
@@ -60,7 +64,7 @@ class IntegrationValidator(object):
         commands = self.current_integration.get('script', {}).get('commands', [])
         for command in commands:
             arg_list = []
-            for arg in command['arguments']:
+            for arg in command.get('arguments', []):
                 if arg in arg_list:
                     self._is_valid = False
                     print_error("The argument '{}' of the command '{}' is duplicated in the integration '{}', "
@@ -106,7 +110,7 @@ class IntegrationValidator(object):
         commands = integration_json.get('script', {}).get('commands', [])
         for command in commands:
             command_to_args[command['name']] = {}
-            for arg in command['arguments']:
+            for arg in command.get('arguments', []):
                 command_to_args[command['name']][arg['name']] = arg.get('required', False)
 
         return command_to_args
@@ -174,6 +178,9 @@ class IntegrationValidator(object):
         commands = integration_json.get('script', {}).get('commands', [])
         for command in commands:
             context_list = []
+            if not command.get('outputs', []):
+                continue
+
             for output in command.get('outputs', []):
                 context_list.append(output['contextPath'])
 

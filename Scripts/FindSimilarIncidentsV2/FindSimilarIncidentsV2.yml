@@ -1,0 +1,150 @@
+args:
+- default: false
+  description: Identical incident keys. Comma separated value
+  isArray: false
+  name: similarIncidentKeys
+  required: false
+  secret: false
+  deprecated: true
+- default: false
+  description: 'Similar label keys. Comma separated value. It''s also possible to
+    let X different words between labels, within the following way: label_name:X,
+    where X is the number of words. X can also be ''*'' for contains. For example:
+    the value "Email/subject:*" will consider  email subject similar, if one is substring
+    of the other.'
+  isArray: false
+  name: similarLabelsKeys
+  required: false
+  secret: false
+- default: false
+  description: Similar context keys. Comma separated value. It's also possible to
+    let X different words between values (see labels description).
+  isArray: false
+  name: similarContextKeys
+  required: false
+  secret: false
+- default: false
+  description: Similar custom fields keys. Comma separated value. It's also possible
+    to let X different words between values (see labels description).
+  isArray: false
+  name: similarCustomFields
+  required: false
+  secret: false
+  deprecated: true
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'yes'
+  description: Ignore close incidents as duplicate candidates.
+  isArray: false
+  name: ignoreClosedIncidents
+  predefined:
+  - 'yes'
+  - 'no'
+  required: false
+  secret: false
+- default: false
+  defaultValue: '1000'
+  description: Maximum number of incidents to query.
+  isArray: false
+  name: maxNumberOfIncidents
+  required: false
+  secret: false
+- default: false
+  defaultValue: '72'
+  description: Query incidents in the last X hours (support float value)
+  isArray: false
+  name: hoursBack
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: created
+  description: Filter incidents by this time field.
+  isArray: false
+  name: timeField
+  predefined:
+  - occurred
+  - created
+  - modified
+  required: false
+  secret: false
+- default: false
+  defaultValue: '10'
+  description: Maximum number of results to display.
+  isArray: false
+  name: maxResults
+  required: false
+  secret: false
+- default: false
+  description: Similar incident fields keys. Comma separated value. It's also possible
+    to let X different words between values (see labels description).
+  isArray: false
+  name: similarIncidentFields
+  required: false
+  secret: false
+- default: false
+  description: Use this query condition when fetching duplicate incidents.
+  isArray: false
+  name: filterQuery
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: AND
+  description: Apply "OR" \ "AND" condition between incident fields. This will apply
+    only for fields with "exact match".
+  isArray: false
+  name: incidentFieldsAppliedCondition
+  predefined:
+  - AND
+  - OR
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'yes'
+  description: 'If the incident does not have specific key, skip it. WARNING: notice
+    that if there is no fields existing in the incident, random incidents might be
+    return as results due to empty condition.'
+  isArray: false
+  name: skipMissingValues
+  predefined:
+  - 'yes'
+  - 'no'
+  required: false
+  secret: false
+comment: |-
+  Find similar incidents by common incident keys, labels, custom fields or context keys.
+  It's highly recommended to use incident keys if possible (e.g. "type" for same incident type).
+  It's also recommended to avoid using context keys if possible (for example, if the value also appear in label key, use label) for better performance.
+commonfields:
+  id: FindSimilarIncidents
+  version: -1
+enabled: true
+name: FindSimilarIncidents
+outputs:
+- contextPath: similarIncident.rawId
+  description: Similar incident ID.
+  type: string
+- contextPath: isSimilarIncidentFound
+  description: Is similar incident found? (true\false)
+  type: boolean
+- contextPath: similarIncident
+  description: Similar incident.
+  type: unknown
+- contextPath: similarIncident.name
+  description: Similar incident name.
+  type: string
+script: '-'
+system: false
+tags:
+- dedup
+- duplicate
+- incidents
+timeout: 300ns
+type: python
+dockerimage: demisto/dateutil
+runonce: false
+tests:
+- No test
+fromversion: 4.5.0

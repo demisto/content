@@ -6,13 +6,15 @@ fromversion: 4.1.0
 script: |-
   import pdfx
   from pdfminer.psparser import PSEOF
+  from pdfminer.pdfdocument import PDFEncryptionError
+  import traceback
   import sys
   reload(sys)
   sys.setdefaultencoding("utf-8")
 
   entry_id = demisto.args()["entryID"]
 
-  def mark_suspicious():
+  def mark_suspicious(suspicious_reason):
       """Missing EOF, file may be corrupted or suspicious file"""
 
       dbot = {
@@ -24,12 +26,10 @@ script: |-
               "Score": 2
           }
       }
-      demisto.results({
-          "EntryContext": dbot,
-          "Type": entryTypes["error"],
-          "ContentsFormat": formats["text"],
-          "Contents": "Missing EOF, file may be corrupted or suspicious file in id: {}".format(entry_id),
-          })
+
+      human_readable = "{}, file marked as suspicious for entry id: {}".format(suspicious_reason, entry_id)
+
+      return_outputs(human_readable, dbot, {})
 
 
   #File entity
@@ -54,7 +54,17 @@ script: |-
           try:
               pdf = pdfx.PDFx(path)
           except PSEOF:
-              mark_suspicious()
+              mark_suspicious('Missing EOF')
+              sys.exit(0)
+          except PDFEncryptionError:
+              mark_suspicious('Possibly encrypted file')
+              sys.exit(0)
+          except TypeError:
+              tb = traceback.format_exc()
+              if 'pdf = pdfx.PDFx(args.pdf)' in tb and "out_str = in_str.decode(enc['encoding'])" in tb:
+                  mark_suspicious("The script failed to read the PDF file. This might happen if your PDF file contains only an image")
+              else:
+                  mark_suspicious("The script failed read PDF file due to an unknown issue")
               sys.exit(0)
 
           if not pdf:
@@ -171,4 +181,5 @@ runonce: false
 dockerimage: demisto/pdfx
 runas: DBotWeakRole
 tests:
-  - Extract Indicators From File - test
+- Extract Indicators From File - test
+deprecated: true

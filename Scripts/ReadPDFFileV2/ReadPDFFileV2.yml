@@ -1,0 +1,133 @@
+args:
+- default: true
+  description: War Room entryID of the file to read.
+  isArray: false
+  name: entryID
+  required: true
+  secret: false
+- default: false
+  description: Password for the file, if encrypted.
+  isArray: false
+  name: userPassword
+  required: false
+  secret: false
+- default: false
+  defaultValue: '20'
+  description: Maximum number of images to extract from the PDF file.
+  isArray: false
+  name: maxImages
+  required: false
+  secret: false
+comment: Load a PDF file's content and metadata into context.
+commonfields:
+  id: ReadPDFFileV2
+  version: -1
+enabled: true
+name: ReadPDFFileV2
+outputs:
+- contextPath: URL.Data
+  description: A list of URLs that were extracted from the PDF file.
+  type: String
+- contextPath: File.Text
+  description: The text that was extracted from the PDF file.
+  type: String
+- contextPath: File.Producer
+  description: The producer of the PDF file.
+  type: String
+- contextPath: File.Title
+  description: The title of the PDF file.
+  type: String
+- contextPath: File.Author
+  description: The author of the PDF file.
+  type: String
+- contextPath: File.ModDate
+  description: The ModDate of the PDF file.
+  type: Date
+- contextPath: File.CreationDate
+  description: The CreationDate of the PDF file.
+  type: Date
+- contextPath: File.Pages
+  description: Number of pages in the PDF file.
+  type: String
+- contextPath: File.Size
+  description: The file size in bytes.
+  type: Number
+- contextPath: File.Form
+  description: PDF form type.
+  type: String
+- contextPath: File.Encrypted
+  description: Is the file is encrypted.
+  type: String
+- contextPath: File.FileSize
+  description: The file size in bytes.
+  type: String
+- contextPath: File.SHA1
+  description: SHA1 hash of the file.
+  type: String
+- contextPath: File.PageRot
+  description: Page rotation of the PDF file.
+  type: String
+- contextPath: File.Optimized
+  description: Has the page has been optimzed.
+  type: String
+- contextPath: File.SHA256
+  description: SHA256 hash of the file.
+  type: String
+- contextPath: File.PDFVersion
+  description: The PDF version.
+  type: String
+- contextPath: File.Name
+  description: The name of the PDF file.
+  type: String
+- contextPath: File.Creator
+  description: The creator of the PDF file.
+  type: String
+- contextPath: File.Tagged
+  description: Does the file have tagged meta-information.
+  type: String
+- contextPath: File.SSDeep
+  description: SSDeep hash of the file.
+  type: String
+- contextPath: File.EntryID
+  description: The Entry ID of the file.
+  type: String
+- contextPath: File.JavaScript
+  description: Is the file in JavaScript.
+  type: String
+- contextPath: File.Info
+  description: Additional information about the file.
+  type: String
+- contextPath: File.PageSize
+  description: The PDF file page size.
+  type: String
+- contextPath: File.Type
+  description: The file type.
+  type: String
+- contextPath: File.Suspects
+  description: Indicating the presence of tag suspects.
+  type: String
+- contextPath: File.MD5
+  description: MD5 hash of the file.
+  type: String
+- contextPath: File.UserProperties
+  description: Indicating the presence of structure elements that contain user properties
+    attributes.
+  type: String
+- contextPath: File.Extension
+  description: The file's extension.
+  type: String
+script: '-'
+system: false
+tags:
+- Utility
+- ingestion
+timeout: '0'
+type: python
+dockerimage: demisto/readpdf:1.0.0.299
+subtype: python3
+runas: DBotWeakRole
+runonce: false
+tests:
+- Extract Indicators From File - test
+- ReadPDFFileV2-Test
+fromversion: 4.1.0

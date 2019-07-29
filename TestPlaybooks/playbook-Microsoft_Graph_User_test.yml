@@ -1,0 +1,491 @@
+id: Microsoft Graph - Test
+version: -1
+name: Microsoft Graph - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 92650d23-ccc0-4751-869f-221b3f6ede61
+    type: start
+    task:
+      id: 92650d23-ccc0-4751-869f-221b3f6ede61
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 4be42011-eea1-4203-8021-b82246c8a698
+    type: regular
+    task:
+      id: 4be42011-eea1-4203-8021-b82246c8a698
+      version: -1
+      name: Create test user
+      description: Creates a new user.
+      script: '|||msgraph-user-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      account_enabled: {}
+      display_name:
+        simple: Graph Test - DELETE
+      mail_nickname:
+        simple: graph
+      on_premises_immutable_id: {}
+      other_properties:
+        simple: jobTitle=Test,city=Tel Aviv
+      password:
+        simple: Aa123456
+      user_principal_name:
+        simple: graph@demistodev.onmicrosoft.com
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: bc7abcda-80b5-49c0-80e6-28eb6a27ba9e
+    type: regular
+    task:
+      id: bc7abcda-80b5-49c0-80e6-28eb6a27ba9e
+      version: -1
+      name: Get User
+      description: Retrieve the properties and relationships of user object. [link](https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0)
+      script: '|||msgraph-user-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      properties: {}
+      user:
+        simple: ${MSGraphUser.UserPrincipalName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: f3f61e01-d5b7-4b9c-84b0-0a3b40364440
+    type: regular
+    task:
+      id: f3f61e01-d5b7-4b9c-84b0-0a3b40364440
+      version: -1
+      name: Update user phone number
+      description: Update the properties of a user object.
+      script: '|||msgraph-user-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      updated_fields:
+        simple: mobilePhone=050505050
+      user:
+        simple: ${MSGraphUser.UserPrincipalName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 0e5d845f-1cd1-4614-8646-23477bab990d
+    type: regular
+    task:
+      id: 0e5d845f-1cd1-4614-8646-23477bab990d
+      version: -1
+      name: Get Delta (mobilePhone)
+      description: Get newly created, updated, or deleted users without having to
+        perform a full read of the entire user collection.
+      script: '|||msgraph-user-get-delta'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      properties:
+        simple: mobilePhone
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 602a4dd5-0ada-4be4-800a-e31b991c757e
+    type: regular
+    task:
+      id: 602a4dd5-0ada-4be4-800a-e31b991c757e
+      version: -1
+      name: Block user
+      description: Terminate users session from all Office 365 and prevents it from
+        siginin in
+      script: '|||msgraph-user-terminate-session'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      user:
+        simple: oren@demistodev.onmicrosoft.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: fde6ec66-bda3-4773-86c8-977abfebc00e
+    type: regular
+    task:
+      id: fde6ec66-bda3-4773-86c8-977abfebc00e
+      version: -1
+      name: Sleep for 30 seconds
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 9bd71149-2f35-480e-8f8e-0f7855a80b28
+    type: regular
+    task:
+      id: 9bd71149-2f35-480e-8f8e-0f7855a80b28
+      version: -1
+      name: Unblock User
+      description: Unblock a user.
+      script: '|||msgraph-user-unblock'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      user:
+        simple: oren@demistodev.onmicrosoft.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 7f75e82f-e39f-480d-8ee8-f07dca29e684
+    type: regular
+    task:
+      id: 7f75e82f-e39f-480d-8ee8-f07dca29e684
+      version: -1
+      name: Delete user
+      description: Deletes an exsiting user.
+      script: '|||msgraph-user-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      user:
+        simple: graph@demistodev.onmicrosoft.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 61bd9d72-9808-4314-8bd5-9c2018877967
+    type: title
+    task:
+      id: 61bd9d72-9808-4314-8bd5-9c2018877967
+      version: -1
+      name: Done!
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: dce27583-52ed-4350-8b11-b774d6b2df19
+    type: regular
+    task:
+      id: dce27583-52ed-4350-8b11-b774d6b2df19
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: b63962b6-7499-40f2-8506-5fb7188169cc
+    type: condition
+    task:
+      id: b63962b6-7499-40f2-8506-5fb7188169cc
+      version: -1
+      name: If failed - try delete and creating again
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "12"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 58b7c879-848c-46f3-856a-f1805d785f77
+    type: regular
+    task:
+      id: 58b7c879-848c-46f3-856a-f1805d785f77
+      version: -1
+      name: Delete the duplicated user
+      description: Deletes an exsiting user.
+      script: '|||msgraph-user-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      user:
+        simple: graph@demistodev.onmicrosoft.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: f80a140b-dfc6-4064-8dba-243d3808bb83
+    type: regular
+    task:
+      id: f80a140b-dfc6-4064-8dba-243d3808bb83
+      version: -1
+      name: Create test user again
+      description: Creates a new user.
+      script: '|||msgraph-user-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      account_enabled: {}
+      display_name:
+        simple: Graph Test - DELETE
+      mail_nickname:
+        simple: graph
+      on_premises_immutable_id: {}
+      other_properties:
+        simple: jobTitle=Test,city=Tel Aviv
+      password:
+        simple: Aa123456
+      user_principal_name:
+        simple: graph@demistodev.onmicrosoft.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: c1094d50-6bd3-4fc6-8d2d-0f78ea281adc
+    type: regular
+    task:
+      id: c1094d50-6bd3-4fc6-8d2d-0f78ea281adc
+      version: -1
+      name: List Users
+      description: Retrieve a list of user objects.
+      script: '|||msgraph-user-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      properties:
+        simple: id,userPrincipalName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_2_no": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2485,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

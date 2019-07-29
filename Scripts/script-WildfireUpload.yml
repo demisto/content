@@ -27,9 +27,7 @@ type: javascript
 tags:
 - wildfire
 - sandbox
-comment: |-
-  Upload file to WildFire for analysis.
-  Example usage: !WildfireUpload upload=2@3
+comment: Deprecated. Use the "wildfire-upload" command instead.
 system: true
 args:
 - name: upload
@@ -41,3 +39,5 @@ dependson:
   must:
   - wildfire-upload
 timeout: 0s
+tests:
+- No tests

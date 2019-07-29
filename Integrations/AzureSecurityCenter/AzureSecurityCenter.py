@@ -1111,7 +1111,7 @@ def list_jit_command(args):
                 if isinstance(ID, str):
                     vm_name = ID.split("/")[-1]
                 else:
-                    vm_name = None
+                    vm_name = None  # type: ignore
                 vm_ports = [str(port.get("number")) for port in rule.get("ports")]
                 rules_summary_array.append(
                     "({}: {})".format(vm_name, ", ".join(vm_ports))
@@ -1223,7 +1223,7 @@ def get_jit_command(args):
     properties = policy.get("properties")
     virtual_machines = properties.get("virtualMachines")
     if isinstance(properties, dict) and virtual_machines:
-        for rule in properties.get("virtualMachines"):
+        for rule in virtual_machines:
             rules_table_output.append(
                 {
                     "VmID": rule.get("id"),
@@ -1247,7 +1247,7 @@ def get_jit_command(args):
         # Requests table
         requests_table_output = list()
 
-        for requestData in properties.get("requests"):
+        for requestData in properties.get("requests", []):
             vms = list()
             for vm in requestData.get("virtualMachines"):
                 vm_name = vm["id"].split("/")[-1]
