@@ -160,6 +160,12 @@ script:
       name: channelName
       required: false
       secret: false
+    - default: false
+      description: The slack channel topic
+      isArray: false
+      name: channelTopic
+      required: false
+      secret: false
     deprecated: false
     description: Mirror the investigation in slack
     execution: false
@@ -316,10 +322,28 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Send a file to a slack user, channel or group. If none are specified,
-      the file is sent to the mirrored investigation channel (if it exists).
+    description: Send a file to a slack user or channel. If none are specified, the
+      file is sent to the mirrored investigation channel (if it exists).
     execution: false
     name: slack-send-file
+  - arguments:
+    - default: false
+      description: The channel name. If none is specified, the topic of the mirrored
+        investigation channel is set (if it exists).
+      isArray: false
+      name: channel
+      required: false
+      secret: false
+    - default: true
+      description: The channel topic
+      isArray: false
+      name: topic
+      required: true
+      secret: false
+    deprecated: false
+    description: Set a topic for a slack channel
+    execution: false
+    name: slack-set-channel-topic
   dockerimage: demisto/slack:1.0.0.814
   isfetch: false
   longRunning: true
