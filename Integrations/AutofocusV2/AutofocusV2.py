@@ -182,7 +182,11 @@ def parse_response(resp, err_operation):
     # Errors returned from AutoFocus
     except requests.exceptions.HTTPError:
         err_msg = f'{err_operation}: {res_json.get("message")}'
-        return return_error(err_msg)
+        if res_json.get("message").find('Requested sample not found') != -1:
+            demisto.results(err_msg)
+            sys.exit(0)
+        else:
+            return return_error(err_msg)
     # Unexpected errors (where no json object was received)
     except Exception as err:
         err_msg = f'{err_operation}: {err}'
@@ -573,7 +577,9 @@ def samples_search_results_command():
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': results,
-        'EntryContext': {'AutoFocus.SamplesResults(val.ID == obj.ID)': results},
+        'EntryContext': {'AutoFocus.SamplesResults(val.ID == obj.ID)': results,
+                         'AutoFocus.SamplesSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
+                                                                                   'AFCookie': af_cookie}},
         'HumanReadable': md
     })
 
@@ -587,7 +593,9 @@ def sessions_search_results_command():
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': results,
-        'EntryContext': {'AutoFocus.SessionsResults(val.ID == obj.ID)': results},
+        'EntryContext': {'AutoFocus.SessionsResults(val.ID == obj.ID)': results,
+                         'AutoFocus.SessionsSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
+                                                                                    'AFCookie': af_cookie}},
         'HumanReadable': md
     })
 
@@ -668,7 +676,9 @@ def top_tags_results_command():
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': results,
-        'EntryContext': {'AutoFocus.TopTagsResults(val.PublicTagName == obj.PublicTagName)': context},
+        'EntryContext': {'AutoFocus.TopTagsResults(val.PublicTagName == obj.PublicTagName)': context,
+                         'AutoFocus.SessionsSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
+                                                                                    'AFCookie': af_cookie}},
         'HumanReadable': md
     })
 
