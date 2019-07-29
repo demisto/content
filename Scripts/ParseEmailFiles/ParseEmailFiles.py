@@ -3332,6 +3332,7 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
         if is_valid_header_to_parse(header):
             if not header[0] == ' ' and not header[0] == '\t':
                 if header_value != 'initial header':
+                    header_value = convert_to_unicode(header_value)
                     headers.append(
                         {
                             'name': header_key,

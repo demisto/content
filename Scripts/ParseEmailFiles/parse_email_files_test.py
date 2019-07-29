@@ -1,4 +1,4 @@
-from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold
+from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg
 from CommonServerPython import entryTypes
 import demistomock as demisto
 import pytest
@@ -391,3 +391,18 @@ def test_eml_contains_base64_encoded_eml(mocker, email_file):
 
     assert results[0]['EntryContext']['Email'][1]["Subject"] == 'test - inner attachment eml'
     assert results[0]['EntryContext']['Email'][1]['Depth'] == 1
+
+
+def test_msg_headers_map():
+    email_data, ignore = handle_msg('test_data/utf_subject.msg', 'utf_subject.msg')
+    assert 'This is a test email.' in email_data['Text']
+    assert 'mobi777@gmail.com' in email_data['From']
+    assert 47 == len(email_data['HeadersMap'])
+    assert isinstance(email_data['HeadersMap']['Received'], list)
+    assert 8 == len(email_data['HeadersMap']['Received'])
+    assert '1; DM6PR11MB2810; 31:tCNnPn/K8BROQtLwu3Qs1Fz2TjDW+b7RiyfdRvmvCG+dGRQ08+3CN4i8QpLn2o4' \
+           in email_data['HeadersMap']['X-Microsoft-Exchange-Diagnostics'][2]
+    assert '2eWTrUmQCI=; 20:7yMOvCHfrNUNaJIus4SbwkpcSids8EscckQZzX/oGEwux6FJcH42uCQd9tNH8gmDkvPw' \
+           in email_data['HeadersMap']['X-Microsoft-Exchange-Diagnostics'][2]
+    assert 'text/plain' in email_data['Format']
+
