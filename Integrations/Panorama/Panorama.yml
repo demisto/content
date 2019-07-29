@@ -1394,7 +1394,7 @@ script:
       - address-group
       - application
       - url-category
-      - ' edl'
+      - edl
       required: true
       secret: false
     - default: false
@@ -1406,7 +1406,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: both
-      description: Direction to block (relevant only for "ip", "address-group" block),
+      description: Direction to block (relevant only for "ip", "address-group", "edl" block),
         default is "both"
       isArray: false
       name: direction
