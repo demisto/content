@@ -94,6 +94,14 @@ def create_addr_string(list_of_addr_data_dicts):
     return addr_string
 
 
+def convert_arg_to_int(arg_str, arg_name_str):
+    try:
+        arg_int = int(arg_str)
+    except Exception as e:
+        return_error("Error: {0} must have an integer value.")
+    return arg_int
+
+
 def str_to_bool(str_representing_bool):
     return str_representing_bool and str_representing_bool.lower() == 'true'
 
@@ -427,6 +435,60 @@ def create_firewall_service_request(service_name, tcp_range, udp_range):
 
     response = http_request('POST', uri_suffix, {}, json.dumps(payload))
     return response
+
+
+
+def ban_ip(ip_addresses_array, time_to_expire):
+    uri_suffix = 'monitor/user/banned/add_users/'
+
+    payload = {
+        'ip_addresses': ip_addresses_array
+    }
+    if time_to_expire:
+        time_to_expire_int = convert_arg_to_int(time_to_expire, "expiry")
+        payload["expiry"] = time_to_expire_int
+    response = http_request('POST', uri_suffix, {}, json.dumps(payload))
+    return response
+
+
+
+def ban_ip_command():
+    ip_addresses_string = demisto.args()["ip_addresses"]
+    ip_addresses_array = ip_addresses_string.split(",")
+    time_to_expire  = demisto.args().get("expiry")
+    response = ban_ip(ip_addresses_array, time_to_expire)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': 'IPs {0} banned successfully'.format(ip_addresses_string)
+    })
+
+
+
+def unban_ip(ip_addresses_array):
+    uri_suffix = 'monitor/user/banned/clear_users/'
+
+    payload = {
+        'ip_addresses': ip_addresses_array
+    }
+    response = http_request('POST', uri_suffix, {}, json.dumps(payload))
+    return response
+
+
+def unban_ip_command():
+    ip_addresses_string = demisto.args()["ip_addresses"]
+    ip_addresses_array = ip_addresses_string.split(",")
+    response = unban_ip(ip_addresses_array)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': 'IPs {0} un-banned successfully'.format(ip_addresses_string)
+    })
+
 
 
 def get_policy_command():
