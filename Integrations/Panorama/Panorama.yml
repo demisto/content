@@ -1394,6 +1394,7 @@ script:
       - address-group
       - application
       - url-category
+      - ' edl'
       required: true
       secret: false
     - default: false
@@ -2002,7 +2003,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Rules location. Can be "pre-rulebase" or "post-rulebase". Mandatory for Panorama instances.
+      description: Rules location. Can be "pre-rulebase" or "post-rulebase". Mandatory
+        for Panorama instances.
       isArray: false
       name: pre_post
       predefined:
