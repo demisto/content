@@ -611,6 +611,8 @@ def main():
                 sleep(8)
 
     else:  # Run tests in Server build configuration
+        server_numeric_version = '99.99.98'  # assume latest
+        print("Using server version: {} (assuming latest for non-ami)".format(server_numeric_version))
         with open('./Tests/instance_ips.txt', 'r') as instance_file:
             instance_ips = instance_file.readlines()
             instance_ip = [line.strip('\n').split(":")[1] for line in instance_ips][0]
