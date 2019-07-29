@@ -1794,7 +1794,7 @@ def panorama_get_url_category(url):
 
 def populate_url_filter_category_from_context(url_category_hr):
     url_filter_category = demisto.dt(demisto.context(),
-                                     'Panorama.URLFilter(val.Category === "{0}")'.format(url_category_hr['Category']))
+                                     f'Panorama.URLFilter(val.Category === "{}")'.format(url_category_hr['Category']))
 
     if not url_filter_category:
         url_filter_category = {
@@ -1814,25 +1814,31 @@ def panorama_get_url_category_command():
     """
     Get the url category from Palo Alto URL Filtering
     """
-    url = demisto.args()['url']
+    urls = argToList(demisto.args()['url'])
 
-    category = panorama_get_url_category(url)
+    categories_dict = {}
+    for url in urls:
+        category = panorama_get_url_category(url)
+        if category in categories_dict:
+            categories_dict[category].append(url)
+        else:
+            categories_dict[category] = [url]
 
-    url_category_hr = {
-        'URL': url,
-        'Category': category
-    }
+    # url_category_hr = [for key, val in categories_dict.iterItems()
+    #     'URL': url,
+    #     'Category': category
+    # }
 
-    url_category_output = populate_url_filter_category_from_context(url_category_hr)
+    url_category_context = populate_url_filter_category_from_context(categories_dict)
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': category,
+        'Contents': categories_dict,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('URL Filtering:', url_category_hr, ['URL', 'Category'], removeNull=True),
         'EntryContext': {
-            "Panorama.URLFilter(val.Category === obj.Category)": url_category_output
+            "Panorama.URLFilter(val.Category === obj.Category)": url_category_context
         }
     })
 
