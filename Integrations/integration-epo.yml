@@ -561,16 +561,24 @@ script:
 
         var result;
         result = callEpo('system.move', pArgs);
+
         if (result === true) {
             result = 'System ' + args.names + ' moved successfully to GroupId ' + args.parentGroupId;
+            return {
+                Type: entryTypes.note,
+                Contents: result,
+                ContentsFormat: formats.text,
+                HumanReadable: result
+            };
+        } else {
+            result = 'System ' + args.names + ' failed to move to GroupId ' + args.parentGroupId;
+            return {
+                Type: entryTypes.error,
+                Contents: result,
+                ContentsFormat: formats.text,
+                HumanReadable: result
+              };
         }
-
-        return {
-            Type: entryTypes.note,
-            Contents: result,
-            ContentsFormat: formats.text,
-            HumanReadable: result,
-        };
     }
 
     function parseCommandArgs(command, commandArgs) {
