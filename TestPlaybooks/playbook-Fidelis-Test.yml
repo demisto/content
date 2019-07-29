@@ -102,10 +102,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 4fa6b17f-54ca-4d9a-84ac-e7fa9102e3de
+    taskid: ce05f87b-3a61-4cb6-8c8e-46f5ca75c0bf
     type: regular
     task:
-      id: 4fa6b17f-54ca-4d9a-84ac-e7fa9102e3de
+      id: ce05f87b-3a61-4cb6-8c8e-46f5ca75c0bf
       version: -1
       name: Get Alarms - custom time frame
       script: '|||fidelis-list-alerts'
@@ -123,7 +123,8 @@ tasks:
       start_time:
         simple: 2019-01-09T07:50:48Z
       threat_score: {}
-      time_frame: {}
+      time_frame:
+        simple: Custom
       type: {}
     separatecontext: false
     view: |-
