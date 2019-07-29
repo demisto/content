@@ -292,7 +292,7 @@ script:
                     MD5: r[i].md5,
                     SHA1: r[i].sha1,
                     SHA256: r[i].sha256,
-                    Positives: r[i].positives,
+                    PositiveDetections: r[i].positives,
                     DetectionEngines: Object.keys(r[i].scans).length,
                     Malicious: {Vendor: 'VirusTotal', Detections: r[i].positives, TotalEngines: r[i].total}
                 });
@@ -321,7 +321,7 @@ script:
                             SHA1: r[i].sha1,
                             MD5: r[i].md5,
                             VirusTotal: scans_ec,
-                            Positives: r[i].positives,
+                            PositiveDetections: r[i].positives,
                             DetectionEngines: Object.keys(r[i].scans).length
                         };
                     }
@@ -334,7 +334,7 @@ script:
                             Scans: scansTable,
                             ScanID: r[i].scan_id
                         },
-                        Positives: r[i].positives,
+                        PositiveDetections: r[i].positives,
                         DetectionEngines: Object.keys(r[i].scans).length
                     };
                     ec[outputPaths.file] = scans_ec;
@@ -352,7 +352,7 @@ script:
                             SHA1: r[i].sha1,
                             MD5: r[i].md5,
                             VirusTotal: scans_ec,
-                            Positives: r[i].positives,
+                            PositiveDetections: r[i].positives,
                             DetectionEngines: Object.keys(r[i].scans).length
                         };
                     }
@@ -364,7 +364,7 @@ script:
                         VirusTotal: {
                             ScanID: r[i].scan_id
                         },
-                        Positives: r[i].positives,
+                        PositiveDetections: r[i].positives,
                         DetectionEngines: Object.keys(r[i].scans).length
                     };
                     ec[outputPaths.file] = scans_ec;
