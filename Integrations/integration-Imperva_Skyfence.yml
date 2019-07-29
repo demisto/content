@@ -22,7 +22,7 @@ detaileddescription: |-
   
  Important/:/ The Client Secret is displayed only during the initial use. Make sure you copy the Client Secret for further reference.
 configuration:
-- display: Server URL (e.g., 123.168.01.222)
+- display: Server URL (e.g., 123.168.01.222)  # disable-secrets-detection
   name: url
   defaultvalue: ""
   type: 0
