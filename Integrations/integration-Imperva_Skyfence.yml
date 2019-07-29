@@ -165,8 +165,8 @@ script:
     - name: action
       required: true
       description: Enroll/Revoke endpoint status. Can be "enroll" or "revoke".
-    description: Updates the status (enroll or revoke) of an endpoint. You can run this command on an endpoint with any status, but the most common use
-    case is endpoints with a status of pending.
+    description: 'Updates the status (enroll or revoke) of an endpoint. You can run this command on an endpoint with any status, but the most common use
+    case is endpoints with a status of pending.'
     execution: true
 tests:
   - No tests
