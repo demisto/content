@@ -3174,6 +3174,19 @@ def parse_email_headers(header, raw=False):
     return parsed_headers
 
 
+def get_msg_mail_format(msg_dict):
+    try:
+        return msg_dict['Headers'].split('Content-type:')[1].split(';')[0]
+    except ValueError:
+        return ''
+    except IndexError:
+        return ''
+
+
+def is_valid_header_to_parse(header):
+    return len(header) > 0 and not header == ' ' and 'From nobody' not in header
+
+
 ########################################################################################################################
 ENCODINGS_TYPES = set(['utf-8', 'iso8859-1'])
 REGEX_EMAIL = r"\b[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+\b"
@@ -3223,7 +3236,6 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
         md += u"* {0}:\t{1}\n".format('Body/HTML', email_data['HTML'] or "")
 
     md += u"* {0}:\t{1}\n".format('Attachments', email_data['Attachments'] or "")
-    md += u"\n\n" + tableToMarkdown("Headers", email_data['Headers']).decode("utf-8", "ignore")
     md += u"\n\n" + tableToMarkdown("HeadersMap", email_data['HeadersMap']).decode("utf-8", "ignore")
     return md
 
@@ -3309,13 +3321,7 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
         raise Exception("Could not parse msg file!")
 
     msg_dict = msg.as_dict(max_depth)
-
-    try:
-        format_string = msg_dict['Headers'].split('Content-type:')[1].split(';')[0]
-    except ValueError:
-        format_string = ''
-    except IndexError:
-        format_string = ''
+    format_string = get_msg_mail_format(msg_dict)
 
     headers = []
     headers_map = dict()  # type: dict
@@ -3323,7 +3329,7 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
     header_value = 'initial header'
 
     for header in msg_dict['Headers'].split('\n'):
-        if len(header) > 0 and not header == ' ' and 'From nobody' not in header:
+        if is_valid_header_to_parse(header):
             if not header[0] == ' ' and not header[0] == '\t':
                 if header_value != 'initial header':
                     headers.append(
@@ -3345,9 +3351,10 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
                     else:
                         headers_map[header_key] = header_value
 
-                splitted = header.split(' ')
-                header_key = splitted[0][:-1]
-                header_value = ' '.join(splitted[1:])
+                header_words = header.split(' ')
+
+                header_key = header_words[0][:-1]
+                header_value = ' '.join(header_words[1:])
                 header_value = header_value[:-1] if header_value[-1:] == ' ' \
                     else header_value
 
