@@ -1345,8 +1345,8 @@
             "integrations": "Active Directory Query v2"
         },
         {
-            "integrations": "Phishme Intelligence",
-            "playbookID": "Test - PhishMe Intelligence",
+            "integrations": "Cofense Intelligence",
+            "playbookID": "Test - Cofense Intelligence",
             "timeout": 500
         },
         {
@@ -1836,7 +1836,6 @@
         "RSA Archer": "Nightly - Checking",
         "McAfee NSM": "Nightly - Checking",
         "Forcepoint": "Nightly - Checking",
-        "Phishme Intelligence": "Proxy has a non empty default value, will require fixing and merging",
         "palo_alto_firewall": "Need to check test module",
         "Signal Sciences WAF": "error with certificate",
         "google": "'unsecure' parameter not working",
