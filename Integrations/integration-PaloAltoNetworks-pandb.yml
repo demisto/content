@@ -1,0 +1,464 @@
+commonfields:
+  id: Palo Alto Networks - PANDB category
+  version: -1
+name: Palo Alto Networks - PANDB category
+display: Palo Alto Networks - PANDB category
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: URL category according to PAN DB
+detaileddescription: |-
+  The integration uses the FW XML API.
+  To obtain an API Key, run the following REST command and copy the key:
+  https://[FWIP]/api/?type=keygen&user=[user]&password=[password]
+
+  For more information, visit the [Palo Alto Networks documentation](https://www.paloaltonetworks.com/documentation).
+configuration:
+- display: Server URL (e.g., https://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Port (e.g 443)
+  name: port
+  defaultvalue: "443"
+  type: 0
+  required: false
+- display: API Key
+  name: key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |2-
+
+    ''' IMPORTS '''
+    from datetime import datetime
+    import requests
+    import json
+    import uuid
+    from typing import Dict, List, Any, Optional
+
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    if not demisto.params().get('port'):
+        return_error('Set a port for the instance')
+
+    URL = demisto.params()['server'].rstrip('/:') + ':' + demisto.params().get('port') + '/api/'
+    API_KEY = str(demisto.params().get('key'))
+    USE_SSL = not demisto.params().get('insecure')
+    VSYS = 'vsys1'
+
+    KB_ARTICLE = 'https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Cm5hCAC'
+
+    PAN_OS_ERROR_DICT = {
+        '1': 'Unknown command - The specific config or operational command is not recognized.',
+        '2': 'Internal errors - Check with technical support when seeing these errors.',
+        '3': 'Internal errors - Check with technical support when seeing these errors.',
+        '4': 'Internal errors - Check with technical support when seeing these errors.',
+        '5': 'Internal errors - Check with technical support when seeing these errors.',
+        '6': 'Bad Xpath -The xpath specified in one or more attributes of the command is invalid.'
+             'Check the API browser for proper xpath values.',
+        '7': 'Object not present - Object specified by the xpath is not present. For example,'
+             'entry[@name=value] where no object with name value is present.',
+        '8': 'Object not unique - For commands that operate on a single object, the specified object is not unique.',
+        '10': 'Reference count not zero - Object cannot be deleted as there are other objects that refer to it.'
+              'For example, address object still in use in policy.',
+        '11': 'Internal error - Check with technical support when seeing these errors.',
+        '12': 'Invalid object - Xpath or element values provided are not complete.',
+        '14': 'Operation not possible - Operation is allowed but not possible in this case.'
+              'For example, moving a rule up one position when it is already at the top.',
+        '15': 'Operation denied - Operation is allowed. For example, Admin not allowed to delete own account,'
+              'Running a command that is not allowed on a passive device.',
+        '16': 'Unauthorized -The API role does not have access rights to run this query.',
+        '17': 'Invalid command -Invalid command or parameters.',
+        '18': 'Malformed command - The XML is malformed.',
+        # 19,20: success
+        '21': 'Internal error - Check with technical support when seeing these errors.',
+        '22': 'Session timed out - The session for this query timed out.'
+    }
+
+    ''' HELPERS '''
+
+
+    def http_request(uri: str, method: str, headers: Dict = {},
+                     body: Dict = {}, params: Dict = {}, files=None) -> Any:
+        """
+        Makes an API call with the given arguments
+        """
+        result = requests.request(
+            method,
+            uri,
+            headers=headers,
+            data=body,
+            verify=USE_SSL,
+            params=params,
+            files=files
+        )
+
+        if result.status_code < 200 or result.status_code >= 300:
+            return_error('Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
+
+        # if pcap download
+        if params.get('type') == 'export':
+            return result
+
+        json_result = json.loads(xml2json(result.text))
+
+        # handle non success
+        if json_result['response']['@status'] != 'success':
+            if 'msg' in json_result['response'] and 'line' in json_result['response']['msg']:
+                # catch non existing object error and display a meaningful message
+                if json_result['response']['msg']['line'] == 'No such node':
+                    return_error(
+                        'Object was not found, verify that the name is correct and that the instance was committed.')
+
+                # catch non valid jobID errors and display a meaningful message
+                elif isinstance(json_result['response']['msg']['line'], str) and \
+                        json_result['response']['msg']['line'].find('job') != -1 and \
+                        (json_result['response']['msg']['line'].find('not found') != -1
+                         or json_result['response']['msg']['line'].find('No such query job')) != -1:
+                    return_error('Invalid Job ID error: ' + json_result['response']['msg']['line'])
+
+                # catch already at the top/bottom error for rules and return this as an entry.note
+                elif str(json_result['response']['msg']['line']).find('already at the') != -1:
+                    demisto.results('Rule ' + str(json_result['response']['msg']['line']))
+                    sys.exit(0)
+
+                # catch already registered ip tags and return this as an entry.note
+                elif str(json_result['response']['msg']['line']).find('already exists, ignore') != -1:
+                    if isinstance(json_result['response']['msg']['line']['uid-response']['payload']['register']['entry'],
+                                  list):
+                        ips = [o['@ip'] for o in
+                               json_result['response']['msg']['line']['uid-response']['payload']['register']['entry']]
+                    else:
+                        ips = json_result['response']['msg']['line']['uid-response']['payload']['register']['entry']['@ip']
+                    demisto.results(
+                        'IP ' + str(ips) + ' already exist in the tag. All submitted IPs were not registered to the tag')
+                    sys.exit(0)
+
+            if '@code' in json_result['response']:
+                return_error(
+                    'Request Failed.\nStatus code: ' + str(json_result['response']['@code']) + '\nWith message: ' + str(
+                        json_result['response']['msg']['line']))
+            else:
+                return_error('Request Failed.\n' + str(json_result['response']))
+
+        # handle @code
+        if 'response' in json_result and '@code' in json_result['response']:
+            if json_result['response']['@code'] in PAN_OS_ERROR_DICT:
+                return_error('Request Failed.\n' + PAN_OS_ERROR_DICT[json_result['response']['@code']])
+            if json_result['response']['@code'] not in ['19', '20']:
+                # error code non exist in dict and not of success
+                if 'msg' in json_result['response']:
+                    return_error(
+                        'Request Failed.\nStatus code: ' + str(json_result['response']['@code']) + '\nWith message: ' + str(
+                            json_result['response']['msg']))
+                else:
+                    return_error('Request Failed.\n' + str(json_result['response']))
+
+        return json_result
+
+
+    def add_argument_list(arg: Any, field_name: str, member: Optional[bool]) -> str:
+        member_stringify_list = ''
+        if arg:
+            for item in arg:
+                member_stringify_list += '<member>' + item + '</member>'
+            if field_name == 'member':
+                return member_stringify_list
+            elif member:
+                return '<' + field_name + '>' + member_stringify_list + '</' + field_name + '>'
+            else:
+                return '<' + field_name + '>' + arg + '</' + field_name + '>'
+        else:
+            return ''
+
+
+    def add_argument(arg: Optional[str], field_name: str, member: bool) -> str:
+        if arg:
+            if member:
+                return '<' + field_name + '><member>' + arg + '</member></' + field_name + '>'
+            else:
+                return '<' + field_name + '>' + arg + '</' + field_name + '>'
+        else:
+            return ''
+
+
+    def add_argument_open(arg: Optional[str], field_name: str, member: bool) -> str:
+        if arg:
+            if member:
+                return '<' + field_name + '><member>' + arg + '</member></' + field_name + '>'
+            else:
+                return '<' + field_name + '>' + arg + '</' + field_name + '>'
+        else:
+            if member:
+                return '<' + field_name + '><member>any</member></' + field_name + '>'
+            else:
+                return '<' + field_name + '>any</' + field_name + '>'
+
+
+    def add_argument_yes_no(arg: Optional[str], field_name: str, option: bool = False) -> str:
+        if arg and arg == 'No':
+            result = '<' + field_name + '>' + 'no' + '</' + field_name + '>'
+        else:
+            result = '<' + field_name + '>' + ('yes' if arg else 'no') + '</' + field_name + '>'
+
+        if option:
+            result = '<option>' + result + '</option>'
+
+        return result
+
+
+    def add_argument_target(arg: Optional[str], field_name: str) -> str:
+        if arg:
+            return '<' + field_name + '>' + '<devices>' + '<entry name=\"' + arg + '\"/>' + '</devices>' + '</' + field_name + '>'
+        else:
+            return ''
+
+
+    def prepare_security_rule_params(api_action: str = None, rulename: str = None, source: str = None,
+                                     destination: str = None, negate_source: str = None, negate_destination: str = None,
+                                     action: str = None, service: str = None, disable: str = None, application: str = None,
+                                     source_user: str = None, category: str = None, from_: str = None, to: str = None,
+                                     description: str = None, target: str = None, log_forwarding: str = None,
+                                     disable_server_response_inspection: str = None) -> Dict:
+        rulename = rulename if rulename else ('demisto-' + (str(uuid.uuid4()))[:8])
+        params = {
+            'type': 'config',
+            'action': api_action,
+            'key': API_KEY,
+            'element': add_argument_open(action, 'action', False)
+            + add_argument_target(target, 'target')
+            + add_argument_open(description, 'description', False)
+            + add_argument_open(source, 'source', True)
+            + add_argument_open(destination, 'destination', True)
+            + add_argument_open(application, 'application', True)
+            + add_argument_open(category, 'category', True)
+            + add_argument_open(source_user, 'source-user', True)
+            + add_argument_open(from_, 'from', True)  # default from will always be any
+            + add_argument_open(to, 'to', True)  # default to will always be any
+            + add_argument_open(service, 'service', True)
+            + add_argument_yes_no(negate_source, 'negate-source')
+            + add_argument_yes_no(negate_destination, 'negate-destination')
+            + add_argument_yes_no(disable, 'disabled')
+            + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
+            + add_argument(log_forwarding, 'log-setting', False)
+        }
+        params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
+
+        return params
+
+
+    ''' FUNCTIONS'''
+
+    def get_dbot_score(url, category):
+        """
+        DBOT reputation scores are
+        0 - unknown
+        1 - good
+        2 - suspicious
+        3 - bad
+        """
+        dbot_score = 1
+
+        if ((category == 'phishing') or (category == 'command-and-control') or (category == 'malware')):
+            dbot_score = 3
+        elif ((category == 'high-risk') or (category == 'hacking') or (category == 'proxy-avoidance-and-anonymizers')):
+            dbot_score = 2
+        elif (category == 'unknown'):
+            dbot_score = 0
+
+        return dbot_score
+
+
+    def integration_test():
+        """
+        test module
+        """
+        params = {
+            'type': 'op',
+            'cmd': '<show><system><info></info></system></show>',
+            'key': API_KEY
+        }
+
+        http_request(
+            URL,
+            'GET',
+            params=params
+        )
+
+        demisto.results('ok')
+
+
+    @logger
+    def get_url_category(url):
+        params = {
+            'action': 'show',
+            'type': 'op',
+            'key': API_KEY,
+            'cmd': '<test><url>' + url + '</url></test>'
+        }
+        result = http_request(
+            URL,
+            'POST',
+            params=params,
+        )
+
+        s = result['response']['result'].splitlines()[1]
+        return s.split(' ')[1]
+
+
+    def populate_url_filter_category_from_context(url_category_hr):
+        url_filter_category = demisto.dt(demisto.context(),
+                                         'URLFilter(val.Category === "{0}")'.format(url_category_hr['Category']))
+
+        if not url_filter_category:
+            url_filter_category = {
+                'Category': url_category_hr['Category'],
+                'URL': []
+            }
+
+        if type(url_filter_category) is dict:
+            url_filter_category = [url_filter_category]
+
+        url_filter_category[0]['URL'] += [url_category_hr['URL']]
+
+        return url_filter_category
+
+
+    def get_url_category_pandb():
+        """
+        URL Category as a standalone pandb command
+        """
+        url = demisto.args()['url']
+
+        category = get_url_category(url)
+
+        url_category_hr = {
+            'URL': url,
+            'Category': category
+        }
+
+        url_category_output = populate_url_filter_category_from_context(url_category_hr)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': category,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('PANDB [category](' + KB_ARTICLE + ')', url_category_hr, ['URL', 'Category'], removeNull=True),
+            'EntryContext': {
+                "URLFilter(val.Category === obj.Category)": url_category_output
+            }
+        })
+
+    def get_url_category_global():
+        """
+        URL Category as global URL category reputation
+        """
+        url = demisto.args()['url']
+
+        category = get_url_category(url)
+
+        url_category_hr = {
+            'URL': url,
+            'Category': category
+        }
+
+        url_category_output = populate_url_filter_category_from_context(url_category_hr)
+
+        dbot_scores = []
+        dbot_scores.append({
+            "Score"     : get_dbot_score(url, category),
+            "Vendor"    : "PANDB",
+            "Indicator" : url,
+            "Type"      : "url"
+        })
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': category,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': '## PANDB [category](' + KB_ARTICLE + ') for ' + url + '\n' + '**' + category +'**',
+            'EntryContext': {
+                'URLFilter(val.Category === obj.Category)': url_category_output,
+                'DBotScore' : createContext(dbot_scores, removeNull=True)
+            }
+        })
+
+
+    def main():
+        LOG('command is %s' % (demisto.command(),))
+
+        try:
+            # Remove proxy if not set to true in params
+            handle_proxy()
+
+            if demisto.command() == 'test-module':
+                integration_test()
+
+            elif demisto.command() == 'pandb':
+                get_url_category_pandb()
+
+            elif demisto.command() == 'url':
+                get_url_category_global()
+
+        except Exception as ex:
+            return_error(str(ex))
+
+        finally:
+            LOG.print_log()
+
+
+    if __name__ == "__builtin__" or __name__ == "builtins":
+        main()
+  type: python
+  commands:
+  - name: pandb
+    arguments:
+    - name: url
+      required: true
+      description: Get a URL category from PAN FW API call on PANDB
+    outputs:
+    - contextPath: URLFilter.URL
+      description: URL
+      type: string
+    - contextPath: URLFilter.Category
+      description: URL category
+      type: string
+    - {}
+    description: Get a URL category from PAN FW API call on PANDB
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      description: URL to verify
+    outputs:
+    - contextPath: URLFilter.URL
+      description: URL
+      type: string
+    - contextPath: URLFilter.Category
+      description: URL category
+      type: string
+    - contextPath: DBotScore.Score
+      description: PANDB Score
+    - contextPath: DBotScore.Vendor
+      description: PANDB
+    - contextPath: DBotScore.Indicator
+      description: Evaluated URL
+    - contextPath: DBotScore.Type
+      description: Type is always URL
+  dockerimage: demisto/python3:3.7.3.221
+  runonce: false
