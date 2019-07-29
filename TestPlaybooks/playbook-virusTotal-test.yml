@@ -330,10 +330,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 0ebcb512-8f70-4a45-8588-1408d0eff565
-    type: regular
+    taskid: a5df85ea-6492-4791-8119-864825c410e8
+    type: condition
     task:
-      id: 0ebcb512-8f70-4a45-8588-1408d0eff565
+      id: a5df85ea-6492-4791-8119-864825c410e8
       version: -1
       name: VerifyContext
       description: |-
@@ -342,20 +342,40 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "10"
-    scriptarguments:
-      expectedValue:
-        simple: 7657fcb7d772448a6d8504e4b20168b8
-      fields: {}
-      path:
-        simple: File.MD5
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+          right:
+            value:
+              simple: 7657fcb7d772448a6d8504e4b20168b8
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: File.DetectionEngines
+            iscontext: true
+          right:
+            value:
+              simple: "69"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.PositiveDetections
+            iscontext: true
+          right:
+            value:
+              simple: "65"
     view: |-
       {
         "position": {
@@ -972,10 +992,10 @@ tasks:
     ignoreworker: false
   "34":
     id: "34"
-    taskid: ffe41224-3b24-4ec5-8128-f9eb90aecf76
-    type: regular
+    taskid: 095d8874-9111-458a-8318-6827350373a3
+    type: condition
     task:
-      id: ffe41224-3b24-4ec5-8128-f9eb90aecf76
+      id: 095d8874-9111-458a-8318-6827350373a3
       version: -1
       name: VerifyContext
       description: |-
@@ -984,20 +1004,40 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "35"
-    scriptarguments:
-      expectedValue:
-        simple: http://coffeedoesgood.com
-      fields: {}
-      path:
-        simple: DBotScore.Indicator
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: http://coffeedoesgood.com
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: URL.DetectionEngines
+            iscontext: true
+          right:
+            value:
+              simple: "70"
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: URL.PositiveDetections
+            iscontext: true
+          right:
+            value:
+              simple: "4"
     view: |-
       {
         "position": {
