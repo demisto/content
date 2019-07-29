@@ -33,8 +33,8 @@ configuration:
   name: vsys
   required: false
   type: 0
-description: Manage Palo Alto Networks Firewall and Panorama. Make sure you read
-  the Detailed Instructions section.
+description: Manage Palo Alto Networks Firewall and Panorama. Make sure you read the
+  Detailed Instructions section.
 display: Palo Alto Networks PAN-OS
 name: Panorama
 script:
@@ -62,8 +62,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Category parameter, for example, when exporting a configuration file use
-        "category=configuration".
+      description: Category parameter, for example, when exporting a configuration
+        file use "category=configuration".
       isArray: false
       name: category
       required: false
@@ -1999,12 +1999,57 @@ script:
     - contextPath: Panorama.TrafficLogs.Logs.ToZone
       description: To zone of the traffic log.
       type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Rules location. Can be "pre-rulebase" or "post-rulebase". Mandatory for Panorama instances.
+      isArray: false
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of predefined Security Rules.
+    execution: false
+    name: panorama-list-rules
+    outputs:
+    - contextPath: Panorama.SecurityRule.Name
+      description: Rule name.
+      type: String
+    - contextPath: Panorama.SecurityRule.Action
+      description: Action for the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Location
+      description: Rule location.
+      type: String
+    - contextPath: Panorama.SecurityRule.Category
+      description: Rule category.
+      type: String
+    - contextPath: Panorama.SecurityRule.Application
+      description: Application for the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Destination
+      description: Destination address.
+      type: String
+    - contextPath: Panorama.SecurityRule.From
+      description: Rule from.
+      type: String
+    - contextPath: Panorama.SecurityRule.Service
+      description: Service for the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.To
+      description: Rule to.
+      type: String
+    - contextPath: Panorama.SecurityRule.Source
+      description: Source address.
+      type: String
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false
   script: '-'
   type: python
-  subtype: python3
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
