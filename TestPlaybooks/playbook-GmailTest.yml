@@ -166,7 +166,7 @@ tasks:
       - "21"
     scriptarguments:
       email:
-        simple: JohnS@demistodev.com
+        simple: JohnS1@demistodev.com
       family-name:
         simple: Smith
       first-name:
@@ -360,7 +360,11 @@ tasks:
                   simple: Gmail.Attachments
                 iscontext: true
           transformers:
-          - operator: GetFirstObject
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
           - operator: getField
             args:
               field:
@@ -443,7 +447,11 @@ tasks:
               field:
                 value:
                   simple: ID
-          - operator: GetFirstObject
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
       user-id:
         simple: admin@demistodev.com
     separatecontext: false
