@@ -199,10 +199,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: d8a0671a-54de-4967-8f23-cc11eda876f8
+    taskid: 8f0a405e-ce0d-46b1-824d-6c40bc41ed1b
     type: regular
     task:
-      id: d8a0671a-54de-4967-8f23-cc11eda876f8
+      id: 8f0a405e-ce0d-46b1-824d-6c40bc41ed1b
       version: -1
       name: Get Specific Alert
       script: '|||fidelis-get-alert'
@@ -214,7 +214,11 @@ tasks:
       - "7"
     scriptarguments:
       alert_id:
-        simple: "2"
+        complex:
+          root: Fidelis
+          accessor: Alert.ID
+          transformers:
+          - operator: GetFirstObject
     separatecontext: false
     view: |-
       {
@@ -285,10 +289,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 12c86bdb-ef5e-4927-853b-726e0a4dd481
+    taskid: 822bd57e-01c8-4ba5-8fbb-9d0c85fd85ee
     type: regular
     task:
-      id: 12c86bdb-ef5e-4927-853b-726e0a4dd481
+      id: 822bd57e-01c8-4ba5-8fbb-9d0c85fd85ee
       version: -1
       name: Get Alert report
       script: '|||fidelis-get-alert-report'
@@ -300,7 +304,11 @@ tasks:
       - "10"
     scriptarguments:
       alert_id:
-        simple: "2"
+        complex:
+          root: Fidelis
+          accessor: Alert.ID
+          transformers:
+          - operator: GetFirstObject
     separatecontext: false
     view: |-
       {
@@ -314,10 +322,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 1b781c36-3c5d-4bc3-8da7-a4b6e8f4e2f4
+    taskid: 928c8519-b99b-4ac4-83e6-2f900bc6403b
     type: regular
     task:
-      id: 1b781c36-3c5d-4bc3-8da7-a4b6e8f4e2f4
+      id: 928c8519-b99b-4ac4-83e6-2f900bc6403b
       version: -1
       name: Get Malware Data
       script: '|||fidelis-get-malware-data'
@@ -329,7 +337,11 @@ tasks:
       - "8"
     scriptarguments:
       alert_id:
-        simple: "2"
+        complex:
+          root: Fidelis
+          accessor: Alert.ID
+          transformers:
+          - operator: GetFirstObject
     separatecontext: false
     view: |-
       {
@@ -582,10 +594,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 6c36ae84-e7ee-41b4-84d1-121e47511485
+    taskid: f43b5d24-bad9-4d6a-8012-742012c1eda6
     type: condition
     task:
-      id: 6c36ae84-e7ee-41b4-84d1-121e47511485
+      id: f43b5d24-bad9-4d6a-8012-742012c1eda6
       version: -1
       name: Check file
       type: condition
@@ -601,7 +613,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: InfoFile.EntryID
+              simple: File.EntryID
             iscontext: true
     view: |-
       {
@@ -645,10 +657,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: fda289ef-a4a8-43dd-89e4-3c2ec0ee1657
+    taskid: 419b1cfe-24f7-426c-83f5-ea72b992b7b2
     type: condition
     task:
-      id: fda289ef-a4a8-43dd-89e4-3c2ec0ee1657
+      id: 419b1cfe-24f7-426c-83f5-ea72b992b7b2
       version: -1
       name: Check file
       type: condition
@@ -664,7 +676,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: InfoFile.EntryID
+              simple: File.EntryID
             iscontext: true
     view: |-
       {
