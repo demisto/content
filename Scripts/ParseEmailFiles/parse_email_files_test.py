@@ -405,4 +405,3 @@ def test_msg_headers_map():
     assert '2eWTrUmQCI=; 20:7yMOvCHfrNUNaJIus4SbwkpcSids8EscckQZzX/oGEwux6FJcH42uCQd9tNH8gmDkvPw' \
            in email_data['HeadersMap']['X-Microsoft-Exchange-Diagnostics'][2]
     assert 'text/plain' in email_data['Format']
-
