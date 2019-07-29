@@ -356,8 +356,8 @@ def build_model_data(name, is_public, tlp, tags, intelligence, description):
     """
         Builds data dictionary that is used in Threat Model creation/update request.
     """
-    data = {k: v for (k, v) in (('name', name), ('is_public', is_public), ('tlp', tlp), ('description', description))
-            if v}
+    data = {k: v for (k, v) in (('name', name), ('is_public', is_public), ('tlp', tlp),
+                                ('body', description)) if v}
     if tags:
         data['tags'] = tags if isinstance(tags, list) else [t.strip() for t in tags.split(',')]
     if intelligence:
