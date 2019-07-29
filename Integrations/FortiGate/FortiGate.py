@@ -4,7 +4,6 @@ from CommonServerPython import *
 
 import json
 import requests
-from typing import *
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
