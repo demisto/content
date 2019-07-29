@@ -1605,7 +1605,8 @@ def test_send_request_with_notification_channel(mocker):
     def conversations_list(**kwargs):
         return {'channels': json.loads(CONVERSATIONS)}
 
-    mocker.patch.object(demisto, 'args', return_value={'channel': 'incidentNotificationChannel', 'severity': '4', 'message': '!!!',
+    mocker.patch.object(demisto, 'args', return_value={'channel': 'incidentNotificationChannel',
+                                                       'severity': '4', 'message': '!!!',
                                                        'messageType': 'incidentOpened'})
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
     mocker.patch.object(demisto, 'setIntegrationContext')
