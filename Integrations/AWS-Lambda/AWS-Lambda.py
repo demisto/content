@@ -290,15 +290,16 @@ def invoke(args):
     response = client.invoke(**kwargs)
     data = ({
         'FunctionName': args.get('functionName'),
-        'FunctionError': response['FunctionError'],
         'Region': obj['_user_provided_options']['region_name'],
     })
     if 'LogResult' in response:
-        data[0].update({'LogResult': base64.b64decode(response['LogResult'])})  # type:ignore
+        data.update({'LogResult': base64.b64decode(response['LogResult'])})  # type:ignore
     if 'Payload' in response:
-        data[0].update({'Payload': json.dumps(response['Payload'])})  # type:ignore
+        data.update({'Payload': response['Payload'].read().decode("utf-8")})  # type:ignore
     if 'ExecutedVersion' in response:
-        data[0].update({'ExecutedVersion': response['ExecutedVersion']})  # type:ignore
+        data.update({'ExecutedVersion': response['ExecutedVersion']})  # type:ignore
+    if 'FunctionError' in response:
+        data.update({'FunctionError': response['FunctionError']})
 
     ec = {'AWS.Lambda.InvokedFunctions': data}
     human_readable = tableToMarkdown('AWS Lambda Invoked Functions', data)

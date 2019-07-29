@@ -71,6 +71,32 @@ script:
       name: qualifier
       required: false
       secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
     deprecated: false
     description: Returns the configuration information of the Lambda function and
       a presigned URL link to the .zip file you uploaded with CreateFunction so you
@@ -176,7 +202,34 @@ script:
     - contextPath: AWS.Lambda.Functions.Concurrency.ReservedConcurrentExecutions
       description: The number of concurrent executions reserved for this function.
       type: string
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: The AWS Region, if not specified the default region will be used
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: Returns a list of your Lambda functions. For each function, the response
       includes the function configuration information. You must use GetFunction to
       retrieve the code for your function.
@@ -279,6 +332,32 @@ script:
       name: functionVersion
       required: false
       secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
     deprecated: false
     description: Returns list of aliases created for a Lambda function. For each alias,
       the response includes information such as the alias ARN, description, alias
@@ -362,6 +441,32 @@ script:
       name: qualifier
       required: false
       secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
     deprecated: false
     description: Invokes a Lambda function. Specify just a function name to invoke
       the latest version of the function. To invoke a published version, use the Qualifier
@@ -400,7 +505,34 @@ script:
     - contextPath: AWS.Lambda.InvokedFunctions.Region
       description: The AWS Region.
       type: string
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: The AWS Region, if not specified the default region will be used
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
     description: Retrieves details about your account's limits and usage in an AWS
       Region.
     execution: false
