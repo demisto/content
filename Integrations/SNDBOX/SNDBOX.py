@@ -160,7 +160,7 @@ def analysis_to_entry(title, info):
 
 def poll_analysis_id(analysis_id):
     result = info_request(analysis_id)
-    max_polls = MAX_POLLS / 10 if MAX_POLLS > 0 else MAX_POLLS  # type:ignore
+    max_polls = MAX_POLLS / 10 if MAX_POLLS > 0 else MAX_POLLS  # type:ignore  # pylint: disable=E0602
 
     while (max_polls >= 0) and extract_status(result['status']) != 'finished':
         if extract_status(result['status']) != 'pending':
