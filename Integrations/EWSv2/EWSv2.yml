@@ -168,6 +168,9 @@ script:
     - contextPath: EWS.Items.ItemAttachments.ItemAttachments.attachmentSHA256
       description: SHA256 of the attached emails inside of the attached email.
       type: string
+    - contextPath: EWS.Items.ItemAttachments.isRead
+      description: The read status of the attachment.
+      type: String
   - arguments:
     - default: false
       description: The ID of the email message to get the attachments.
@@ -473,6 +476,9 @@ script:
     - contextPath: EWS.Items.ItemAttachments.attachmentName
       description: Attachment name for item attachment.
       type: unknown
+    - contextPath: EWS.Items.isRead
+      description: The read status of the email.
+      type: String
   - arguments:
     - default: false
       description: The mailbox to get the contacts from.
@@ -769,6 +775,9 @@ script:
     - contextPath: EWS.Items.ItemAttachments.attachmentName
       description: Attachment name for item attachment.
       type: unknown
+    - contextPath: EWS.Items.isRead
+      description: The read status of email.
+      type: String
   - arguments:
     - default: false
       description: The item ids. List or comma-separated value are supported.
@@ -838,6 +847,9 @@ script:
     - contextPath: EWS.Items.ItemAttachments.attachmentName
       description: Attachment name for item attachment.
       type: unknown
+    - contextPath: EWS.Items.isRead
+      description: The read status of the email.
+      type: String
   - arguments:
     - default: false
       description: The item id to move.
@@ -1062,7 +1074,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The mailbox to apply the command on.
+      description: The mailbox to apply the command on. If no mailbox specified, the
+        command will be applied on default mailbox.
       isArray: false
       name: target-mailbox
       required: false
