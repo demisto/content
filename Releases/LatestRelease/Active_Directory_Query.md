@@ -1,1 +1,1 @@
-- Support for custom SSL certs via docker env variable: SSL_CERT_FILE. 
+Added support for custom SSL certificates, by using the Docker environment variable: SSL_CERT_FILE. 
