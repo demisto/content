@@ -1,10 +1,10 @@
 commonfields:
   id: CBSearch
-  version: 1
+  version: -1
 name: CBSearch
 script: |-
   //Script to query carbon black servers:
-  //type must be either 'process' or 'binary'
+  //type must be either 'processes' or 'binary'
   //can provide query & number of rows to return
   function formatresults(rows, columns) {
       var table = [];
@@ -32,13 +32,13 @@ script: |-
       return table;
   }
   var output = [];
-  var searchType = args.type ? args.type : 'process';
-  if ((searchType !== 'process') && (searchType !== 'binary')) {
-      output.push({ContentsFormat: formats.text, Type: entryTypes.error, Contents: "Error! type must be 'process' or 'binary"});
+  var searchType = args.type ? args.type : 'processes';
+  if ((searchType !== 'processes') && (searchType !== 'binary')) {
+      output.push({ContentsFormat: formats.text, Type: entryTypes.error, Contents: "Error! type must be 'processes' or 'binary"});
   } else {
       var res = [];
       var columns = [];
-      if (searchType === 'process') {
+      if (searchType === 'processes') {
           columns = ["hostname", "username", "process_pid", "path", "process_md5", "start", "os_type", "parent_pid", "sensor_id"];
       } else {
           columns = ["md5", "observed_filename", "original_filename", "is_executable_image", "endpoint", "signed", "os_type"];
@@ -49,7 +49,10 @@ script: |-
       };
       if(args.query)
           myArgs.query = args.query;
-      res = executeCommand('cb-' + searchType, myArgs);
+          if(searchType == 'binary')
+              res = executeCommand('cb-' + searchType, myArgs);
+          else
+              res = executeCommand('cb-get-' + searchType, myArgs);
       var table = formatresults(res[0].Contents.results, columns);
       output.push({ContentsFormat: formats.table, Type: entryTypes.note, Contents: table});
   }
@@ -60,10 +63,10 @@ tags:
 - endpoint
 - enhancement
 comment: Search Carbon Black for process & binary information
-system: true
+enabled: true
 args:
 - name: type
-  description: '"process" or "binary" according to the type of search you want to
+  description: '"processes" or "binary" according to the type of search you want to
     run'
 - name: query
   default: true
@@ -74,11 +77,11 @@ args:
 - name: start
   description: 'Start at this row #. Allows pagination through large response. If
     omitted, default is as stated in the Carbon Black API documentation, currently
-    0. '
+    0.'
 scripttarget: 0
 dependson:
   must: []
   should:
-  - cb-process
+  - cb-get-processes
   - cb-binary
-timeout: 0s
+runonce: false

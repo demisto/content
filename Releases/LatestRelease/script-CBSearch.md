@@ -1,0 +1,1 @@
+Fixed get-processes command in the script
