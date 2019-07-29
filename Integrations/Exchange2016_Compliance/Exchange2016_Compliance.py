@@ -357,7 +357,6 @@ def purge_compliance_search(search_name):
                               stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = output.communicate(input=PASSWORD.encode())
     delete_ps_file(ps_path)
-
     return return_error(stderr) if stderr else get_cs_status(search_name, 'Purging')
 
 
