@@ -764,7 +764,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
         new_dict = {}
         fields_list = ['datetime_created', 'datetime_received', 'datetime_sent', 'sender',
                        'has_attachments', 'importance', 'message_id', 'last_modified_time',
-                       'size', 'subject', 'text_body', 'headers', 'body', 'folder_path']
+                       'size', 'subject', 'text_body', 'headers', 'body', 'folder_path', 'is_read']
 
         # Docker BC
         if exchangelib.__version__ == "1.12.0":
@@ -801,7 +801,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
     return raw_dict
 
 
-def parse_incident_from_item(item):
+def parse_incident_from_item(item, is_fetch):
     incident = {}
     labels = []
 
@@ -916,7 +916,7 @@ def parse_incident_from_item(item):
     if item.conversation_id:
         labels.append({'type': 'Email/ConversionID', 'value': item.conversation_id.id})
 
-    if MARK_AS_READ:
+    if MARK_AS_READ and is_fetch:
         item.is_read = True
         item.save()
 
@@ -939,7 +939,7 @@ def fetch_emails_as_incidents(account_email, folder_name):
         for item in last_emails:
             if item.message_id:
                 ids.append(item.message_id)
-                incident = parse_incident_from_item(item)
+                incident = parse_incident_from_item(item, True)
                 incidents.append(incident)
 
         new_last_run = {
@@ -1393,7 +1393,7 @@ def get_items(item_ids, target_mailbox=None):
 
     items = get_items_from_mailbox(account, item_ids)
     items = [x for x in items if isinstance(x, Message)]
-    items_as_incidents = map(lambda x: parse_incident_from_item(x), items)
+    items_as_incidents = map(lambda x: parse_incident_from_item(x, False), items)
     items_to_context = map(lambda x: parse_item_as_dict(x, account.primary_smtp_address, True, True), items)
 
     return {
@@ -1563,23 +1563,21 @@ def get_autodiscovery_config():
 def mark_item_as_read(item_ids, operation='read', target_mailbox=None):
     marked_items = []
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
-    if type(item_ids) != list:
-        item_ids = item_ids.split(",")
-
+    item_ids = argToList(item_ids)
     items = get_items_from_mailbox(account, item_ids)
     items = [x for x in items if isinstance(x, Message)]
 
     for item in items:
-        item.is_read = True if operation == 'read' else False
+        item.is_read = (operation == 'read')
         item.save()
 
         marked_items.append({
             ITEM_ID: item.item_id,
             MESSAGE_ID: item.message_id,
-            ACTION: 'marked-as-%s' % operation
+            ACTION: 'marked-as-{}'.format(operation)
         })
 
-    return get_entry_for_object('Marked items (%s marked operation)' % operation,
+    return get_entry_for_object('Marked items ({} marked operation)'.format(operation),
                                 CONTEXT_UPDATE_EWS_ITEM,
                                 marked_items)
 
