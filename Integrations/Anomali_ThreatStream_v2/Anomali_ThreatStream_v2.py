@@ -649,7 +649,7 @@ def update_model(model, model_id, name=None, is_public="false", tlp=None, tags=N
         Updates a ThreatStream model with parameters. In case one or more optional parameters are
         defined, the previous data is overridden.
     """
-    data = build_model_data(name, is_public, tlp, tags, intelligence, description)
+    data = build_model_data(model, name, is_public, tlp, tags, intelligence, description)
     http_request("PATCH", F"v1/{model}/{model_id}/", data=json.dumps(data), params=CREDENTIALS)
     get_iocs_by_model(model, model_id, limit="50")
 
