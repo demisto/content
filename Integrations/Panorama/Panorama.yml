@@ -1386,7 +1386,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Object type to block in the policy rule
+      description: Object type to block in the policy rule. Can be "ip", "address-group", "edl", or "custom-url-category".
       isArray: false
       name: object_type
       predefined:
@@ -1394,6 +1394,7 @@ script:
       - address-group
       - application
       - url-category
+      - edl
       required: true
       secret: false
     - default: false
@@ -1405,8 +1406,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: both
-      description: Direction to block (relevant only for "ip", "address-group" block),
-        default is "both"
+      description: Direction to block. Can be "to", "from", or "both". Default is "both". This argument is not applicable to the "custom-url-category" object_type.
       isArray: false
       name: direction
       predefined:
@@ -2002,7 +2002,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Rules location. Can be "pre-rulebase" or "post-rulebase". Mandatory for Panorama instances.
+      description: Rules location. Can be "pre-rulebase" or "post-rulebase". Mandatory
+        for Panorama instances.
       isArray: false
       name: pre_post
       predefined:
