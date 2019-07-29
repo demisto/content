@@ -8,9 +8,9 @@ import re
 import requests
 import argparse
 
-from Tests.scripts.constants import PACKAGE_SUPPORTING_DIRECTORIES
+from Tests.scripts.constants import PACKAGE_SUPPORTING_DIRECTORIES, CONTENT_RELEASE_TAG_REGEX
 from Tests.test_utils import print_error, print_warning, \
-    run_command, server_version_compare, get_release_notes_file_path
+    run_command, server_version_compare, get_release_notes_file_path, get_latest_release_notes_text
 from Tests.scripts.validate_files import FilesValidator
 
 contentLibPath = "./"
@@ -97,18 +97,7 @@ class Content(object):
         """
         rn_path = get_release_notes_file_path(file_path)
 
-        if not os.path.isfile(rn_path):
-            # releaseNotes were not provided
-            return None
-
-        with open(rn_path) as f:
-            rn = f.read()
-
-        if not rn:
-            # empty releaseNotes is not supported
-            return None
-
-        return rn.strip()
+        return get_latest_release_notes_text(rn_path)
 
     @abc.abstractmethod
     def added_release_notes(self, file_path, data):
@@ -635,8 +624,9 @@ def filter_packagify_changes(modified_files, added_files, removed_files, tag):
 
 
 def get_last_release_version():
+    regex = re.compile(CONTENT_RELEASE_TAG_REGEX)
     tags = run_command('git tag').split('\n')
-    tags = [tag for tag in tags if re.match(r'\d+\.\d+\.\d+', tag) is not None]
+    tags = [tag for tag in tags if regex.match(tag) is not None]
     tags.sort(cmp=server_version_compare, reverse=True)
     return tags[0]
 

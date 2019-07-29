@@ -6,7 +6,7 @@ import json
 import argparse
 from subprocess import Popen, PIPE
 
-from Tests.scripts.constants import CHECKED_TYPES_REGEXES
+from Tests.scripts.constants import CHECKED_TYPES_REGEXES, CONTENT_RELEASE_TAG_REGEX, RELEASE_NOTES_REGEX
 
 
 class LOG_COLORS:
@@ -142,7 +142,32 @@ def str2bool(v):
 
 def get_release_notes_file_path(file_path):
     file_name = os.path.basename(file_path)
-    return os.path.join('Releases', 'LatestRelease', os.path.splitext(file_name)[0] + '.md')
+    dir_name = os.path.dirname(file_path)
+    return os.path.join(dir_name, os.path.splitext(file_name)[0] + '_changelog.md')
+
+
+def get_latest_release_notes_text(rn_path):
+    if not os.path.isfile(rn_path):
+        # releaseNotes were not provided
+        return None
+
+    with open(rn_path) as f:
+        rn = f.read().strip()
+
+    if not rn:
+        # empty releaseNotes is not supported
+        return None
+
+    if re.match(CONTENT_RELEASE_TAG_REGEX, rn):
+        # in case rn already starts with a release tag - they considered invalid
+        return None
+
+    new_rn = re.findall(RELEASE_NOTES_REGEX, rn)
+    if new_rn:
+        # get release notes up to release header
+        return new_rn[0]
+    else:
+        return rn
 
 
 def checked_type(file_path, compared_regexes=CHECKED_TYPES_REGEXES):
