@@ -42,7 +42,6 @@ def http_request(method, url_suffix, params=None, data=None, files=None, is_json
         files=files,
         verify=not INSECURE,
     )
-    # print(res.request.url)
     # Handle error responses gracefully
     if res.status_code not in {200, 201}:
         if res.status_code == 500:
@@ -716,7 +715,7 @@ def download_malware_file():
     demisto.results(fileResult(
         decoded_file_name + '.zip',
         results,
-        file_type=entryTypes['entryInfoFile']))
+        file_type=entryTypes['file']))
 
 
 def download_pcap_request(alert_id):
@@ -747,7 +746,7 @@ def download_pcap_file():
     demisto.results(fileResult(
         'Alert ID_' + alert_id + '.pcap',
         results,
-        file_type=entryTypes['entryInfoFile']))
+        file_type=entryTypes['file']))
 
 
 def test_integration():
