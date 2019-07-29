@@ -115,7 +115,7 @@ def get_user_by_name(user_to_search: str, integration_context: dict) -> dict:
 
 
 def find_mirror_by_investigation() -> dict:
-    mirror = {}
+    mirror: dict = {}
     investigation = demisto.investigation()
     if investigation:
         integration_context = demisto.getIntegrationContext()
@@ -986,7 +986,7 @@ def slack_set_channel_topic():
     if not channel:
         mirror = find_mirror_by_investigation()
         if mirror:
-            channel_id = mirror.get('channel_id')
+            channel_id = mirror.get('channel_id', '')
             # We need to update the topic in the mirror
             integration_context = demisto.getIntegrationContext()
             mirrors = json.loads(integration_context['mirrors'])
