@@ -1794,15 +1794,17 @@ def panorama_get_url_category(url):
 
 def populate_url_filter_category_from_context(category):
     url_filter_category = demisto.dt(demisto.context(), f'Panorama.URLFilter(val.Category === "{category}")')
+    context_urls = url_filter_category.get("URL", None)
+
     if not url_filter_category:
         return []
-    elif isinstance(url_filter_category, list):
+    elif type(url_filter_category) is list:
         return url_filter_category[0].get("URL")
     else:  # url_filter_category is a dict
-        if isinstance(url_filter_category.get("URL"), str):
-            return [url_filter_category.get("URL")]
+        if type(context_urls) is str:
+            return [context_urls]
         else:
-            return url_filter_category.get("URL")
+            return context_urls
 
 
 def panorama_get_url_category_command():
