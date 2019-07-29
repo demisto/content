@@ -90,8 +90,12 @@ def copy_dir_json(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
     scan_files = glob.glob(os.path.join(dir_name, '*.json'))
     for path in scan_files:
         dpath = os.path.basename(path)
+        # this part is a workaround because server doesn't support indicatorfield-*.json naming
         if dir_name == 'IndicatorFields':
-            dpath = dpath.replace('incidentfield-', 'incidentfield-indicatorfield-')
+            new_path = dpath.replace('incidentfield-', 'incidentfield-indicatorfield-')
+            if os.path.isfile(new_path):
+                raise NameError('Failed while trying to create {}. File already exists.'.format(new_path))
+            dpath = new_path
         shutil.copyfile(path, os.path.join(bundle_post, dpath))
         shutil.copyfile(path, os.path.join(bundle_pre, dpath))
         shutil.copyfile(path, os.path.join(bundle_test, dpath))
