@@ -23,7 +23,7 @@ USE_SSL = not demisto.params().get('insecure', False)
 def http_cmd(url_suffix, data=None, files=None, parse_json=True):
     data = {} if data is None else data
 
-    url_params = {}
+    url_params = {}  # type:dict
 
     use_public_api = demisto.params().get('public_api_key', False)
     api_key = demisto.params().get('api_key', False)
@@ -35,32 +35,32 @@ def http_cmd(url_suffix, data=None, files=None, parse_json=True):
     LOG('running request with url=%s\n\tdata=%s\n\tfiles=%s' % (BASE_URL + url_suffix,
                                                                 data, files,))
 
-    res = {}
+    res = {}  # type:dict
     if files:
-        res = requests.post(BASE_URL + url_suffix,
+        res = requests.post(BASE_URL + url_suffix,  # type:ignore
                             verify=USE_SSL,
                             params=url_params,
                             data=data,
                             files=files
                             )
     else:
-        res = requests.get(BASE_URL + url_suffix,
+        res = requests.get(BASE_URL + url_suffix,  # type:ignore
                            verify=USE_SSL,
                            params=url_params
                            )
 
-    if res.status_code == 401:
+    if res.status_code == 401:  # type:ignore
         raise Exception('API Key is incorrect')
 
-    if res.status_code >= 400:
-        LOG('result is: %s' % (res.json(),))
-        error_msg = res.json()['errors'][0]['msg']
-        raise Exception('Your request failed with the following error: %s.\n%s' % (res.reason, error_msg,))
+    if res.status_code >= 400:  # type:ignore
+        LOG('result is: %s' % (res.json(),))  # type:ignore
+        error_msg = res.json()['errors'][0]['msg']  # type:ignore
+        raise Exception('Your request failed with the following error: %s.\n%s' % (res.reason, error_msg,))  # type:ignore
 
     if parse_json:
-        return res.json()
+        return res.json()  # type:ignore
     else:
-        return res.content
+        return res.content  # type:ignore
 
 
 def extract_status(sndbox_status):
@@ -155,7 +155,7 @@ def analysis_to_entry(title, info):
 
 def poll_analysis_id(analysis_id):
     result = info_request(analysis_id)
-    max_polls = MAX_POLLS / 10 if MAX_POLLS > 0 else MAX_POLLS
+    max_polls = MAX_POLLS / 10 if MAX_POLLS > 0 else MAX_POLLS  # type:ignore  # pylint: disable=E0602
 
     while (max_polls >= 0) and extract_status(result['status']) != 'finished':
         if extract_status(result['status']) != 'pending':
@@ -211,7 +211,7 @@ def analyse_sample():
 
 
 def analyse_sample_file_request(file_entry, should_wait):
-    data = {}
+    data = {}  # type:dict
 
     shutil.copy(demisto.getFilePath(file_entry)['path'],
                 demisto.getFilePath(file_entry)['name'])
