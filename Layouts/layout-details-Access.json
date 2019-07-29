@@ -1,5 +1,6 @@
 {
 	"typeId": "Access",
+	"fromVersion": "4.1.0",
 	"kind": "details",
 	"layout": {
 		"id": "Access",
@@ -111,7 +112,14 @@
 						"id": "",
 						"version": 0,
 						"modified": "0001-01-01T00:00:00Z",
-						"fieldId": "incident_dbotsource",
+						"fieldId": "incident_sourcebrand",
+						"isVisible": true
+					},
+					{
+						"id": "",
+						"version": 0,
+						"modified": "0001-01-01T00:00:00Z",
+						"fieldId": "incident_sourceinstance",
 						"isVisible": true
 					},
 					{

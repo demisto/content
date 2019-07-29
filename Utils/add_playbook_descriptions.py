@@ -10,7 +10,7 @@ def add_descriptions(file_path, output_path):
         # if line has `type: start` or `type: title` or `type: end`
         # we want to create empty description (description: "") inside its task field with correct indentation
         if (line.find('type: start') > -1 or line.find('type: title') > -1 or line.find('type: end'))\
-                and lines[i + 1].find('task:') > -1:
+                and lines[i + 1 if i + 1 < len(lines) else i].find('task:') > -1:
             inside_task_line = lines[i + 2]
             indentation = len(inside_task_line) - len(inside_task_line.lstrip(' '))
 

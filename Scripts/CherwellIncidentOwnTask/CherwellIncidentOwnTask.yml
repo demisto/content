@@ -1,0 +1,34 @@
+args:
+- default: false
+  description: Incident record ID.
+  isArray: false
+  name: incident_record_id
+  required: true
+  secret: false
+- default: false
+  description: Task record ID.
+  isArray: false
+  name: task_record_id
+  required: true
+  secret: false
+comment: This script is an example script of how to link an incident to a task in
+  Cherwell. The script wraps the cherwell-link-business-object command of the cherwell
+  integration. When writing your own script to link business objects, follow the instructions
+  found in the configuration section of the script, but do not change the execution section.
+commonfields:
+  id: CherwellIncidentOwnTask
+  version: -1
+enabled: false
+name: CherwellIncidentOwnTask
+dockerimage: demisto/python3:3.7.2.214
+subtype: python3
+script: '-'
+system: false
+timeout: '0'
+type: python
+tags: [Cherwell]
+dependson:
+  must:
+  - Cherwell|||cherwell-link-business-objects
+tests:
+  - Cherwell Example Scripts - test

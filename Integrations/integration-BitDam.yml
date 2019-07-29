@@ -295,6 +295,5 @@ script:
       type: string
     description: Get verdict for a scanned file
   runonce: false
-releaseNotes: "-"
 tests:
   - Detonate File - BitDam Test

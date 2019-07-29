@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b79f5886-9be1-4654-8dbe-70e848ec98a6
+    taskid: da85dd34-c60b-49f1-8464-0731764289b6
     type: start
     task:
-      id: b79f5886-9be1-4654-8dbe-70e848ec98a6
+      id: da85dd34-c60b-49f1-8464-0731764289b6
       version: -1
       name: ""
       iscommand: false
@@ -25,12 +25,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: f363e319-8198-4437-8a16-a49dc2debc6c
+    taskid: e01e58a1-1bc0-424a-88a8-95ea1f48248c
     type: regular
     task:
-      id: f363e319-8198-4437-8a16-a49dc2debc6c
+      id: e01e58a1-1bc0-424a-88a8-95ea1f48248c
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -54,12 +56,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: e43b6306-b986-44f0-8fb9-2d2ff75cb53a
+    taskid: e0cff5b4-cc6b-4f8c-8551-f8bd72689d48
     type: regular
     task:
-      id: e43b6306-b986-44f0-8fb9-2d2ff75cb53a
+      id: e0cff5b4-cc6b-4f8c-8551-f8bd72689d48
       version: -1
       name: http
       description: Sends http request. Returns the response as json.
@@ -95,12 +99,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: 4e90d035-4b3f-4bad-8cc9-7358f800d775
+    taskid: 4c389915-ed10-4ff7-8935-41aec26dda02
     type: regular
     task:
-      id: 4e90d035-4b3f-4bad-8cc9-7358f800d775
+      id: 4c389915-ed10-4ff7-8935-41aec26dda02
       version: -1
       name: ParseEmailFiles
       description: Parse an email from an eml or msg file and populate all relevant
@@ -151,12 +157,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: f9662dc6-a77b-4b55-8dd9-39ebd7bcbade
-    type: regular
+    taskid: 61922105-0031-4ac1-80c0-85bcb9e4fc09
+    type: condition
     task:
-      id: f9662dc6-a77b-4b55-8dd9-39ebd7bcbade
+      id: 61922105-0031-4ac1-80c0-85bcb9e4fc09
       version: -1
       name: VerifyContext - To
       description: |-
@@ -165,17 +173,24 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
-    scriptarguments:
-      expectedValue:
-        simple: shachar@demisto.com, yaakovi@demisto.com
-      fields: {}
-      path:
-        simple: Email.To
+    nexttasks:
+      "yes":
+      - "12"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Email.To
+            iscontext: true
+          right:
+            value:
+              simple: shachar@demisto.com, yaakovi@demisto.com
     view: |-
       {
         "position": {
@@ -184,12 +199,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: a9de755b-3555-4fcb-838d-e6b73793a5b2
-    type: regular
+    taskid: 47eac82f-cd7d-46d7-86a0-d9dc4597242c
+    type: condition
     task:
-      id: a9de755b-3555-4fcb-838d-e6b73793a5b2
+      id: 47eac82f-cd7d-46d7-86a0-d9dc4597242c
       version: -1
       name: VerifyContext - Subject
       description: |-
@@ -198,17 +215,24 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
-    scriptarguments:
-      expectedValue:
-        simple: ParseEmail test email
-      fields: {}
-      path:
-        simple: Email.Subject
+    nexttasks:
+      "yes":
+      - "12"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Email.Subject
+            iscontext: true
+          right:
+            value:
+              simple: ParseEmail test email
     view: |-
       {
         "position": {
@@ -217,12 +241,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
-    taskid: 002cb083-3e33-4b49-8d4c-543f9bd27a83
+    taskid: 671be5b8-78b3-41b4-8f4f-320fc4636142
     type: condition
     task:
-      id: 002cb083-3e33-4b49-8d4c-543f9bd27a83
+      id: 671be5b8-78b3-41b4-8f4f-320fc4636142
       version: -1
       name: AreValuesEqual - verify pdf attachment
       description: Check whether the values provided in arguments are equal. If either
@@ -261,12 +287,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
-    taskid: b83af118-a4b9-4d06-8d07-605433515286
+    taskid: f8bc4774-85d5-4fc0-8591-3c5bb08291cb
     type: title
     task:
-      id: b83af118-a4b9-4d06-8d07-605433515286
+      id: f8bc4774-85d5-4fc0-8591-3c5bb08291cb
       version: -1
       name: Validate Non-Unicode parsing
       type: title
@@ -285,12 +313,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
-    taskid: f25d6873-b1c0-4ed6-8765-e11192c2bebd
+    taskid: 95e2575e-15d7-485c-861c-aae010fd66e9
     type: condition
     task:
-      id: f25d6873-b1c0-4ed6-8765-e11192c2bebd
+      id: 95e2575e-15d7-485c-861c-aae010fd66e9
       version: -1
       name: AreValuesEqual - verify docx attachment
       description: Check whether the values provided in arguments are equal. If either
@@ -329,12 +359,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: f0266c84-ee00-40d4-8708-b96a6cb146f1
-    type: regular
+    taskid: f1233388-a26f-4aee-843a-af17a7294dc3
+    type: condition
     task:
-      id: f0266c84-ee00-40d4-8708-b96a6cb146f1
+      id: f1233388-a26f-4aee-843a-af17a7294dc3
       version: -1
       name: VerifyContext - From
       description: |-
@@ -343,17 +375,24 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
-    scriptarguments:
-      expectedValue:
-        simple: shachar@demisto.com
-      fields: {}
-      path:
-        simple: Email.From
+    nexttasks:
+      "yes":
+      - "12"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Email.From
+            iscontext: true
+          right:
+            value:
+              simple: shachar@demisto.com
     view: |-
       {
         "position": {
@@ -362,12 +401,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
-    taskid: 6b488ece-4fc6-4564-875f-f66941d8350c
+    taskid: a98a8bc6-2669-4ecb-82b6-0f77be1402ae
     type: regular
     task:
-      id: 6b488ece-4fc6-4564-875f-f66941d8350c
+      id: a98a8bc6-2669-4ecb-82b6-0f77be1402ae
       version: -1
       name: Non Unicode Subject
       scriptName: http
@@ -402,12 +443,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
-    taskid: 2a8e2a49-d105-40b1-8577-9c6d64a46e0d
+    taskid: fb6eb6fa-8329-4df9-87b7-908cd44463aa
     type: regular
     task:
-      id: 2a8e2a49-d105-40b1-8577-9c6d64a46e0d
+      id: fb6eb6fa-8329-4df9-87b7-908cd44463aa
       version: -1
       name: Non Unicode Attachment Name
       scriptName: http
@@ -442,12 +485,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
-    taskid: ff9146b3-3316-43ba-84f4-db7886a9356a
+    taskid: 5ff2ec18-4d88-4f91-87a0-dafa6e23a463
     type: regular
     task:
-      id: ff9146b3-3316-43ba-84f4-db7886a9356a
+      id: 5ff2ec18-4d88-4f91-87a0-dafa6e23a463
       version: -1
       name: ParseEmailFiles
       description: Parse an email from an eml or msg file and populate all relevant
@@ -491,12 +536,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "18":
     id: "18"
-    taskid: 2231c8f8-459f-4c96-8509-9f0ce2c94207
+    taskid: 12777162-fb27-40d0-89ed-bb4eb19494a9
     type: regular
     task:
-      id: 2231c8f8-459f-4c96-8509-9f0ce2c94207
+      id: 12777162-fb27-40d0-89ed-bb4eb19494a9
       version: -1
       name: ParseEmailFiles
       description: Parse an email from an eml or msg file and populate all relevant
@@ -540,6 +587,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},

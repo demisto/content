@@ -428,4 +428,3 @@ outputs:
   type: number
 tests:
 - VxStream Test
-- detonate_file_-_generic_test

@@ -15,7 +15,7 @@ PASSWORD = demisto.params().get('credentials').get('password')
 URL = demisto.params()['url']
 SERVER = URL[:-1] if (URL and URL.endswith('/')) else URL
 USE_SSL = not demisto.params().get('insecure', False)
-HEADERS = {}
+HEADERS = {}  # type: Dict[str, str]
 IP_THRESHOLD = demisto.params().get('ip_threshold').lower()
 URL_THRESHOLD = demisto.params().get('url_threshold').lower()
 FILE_THRESHOLD = demisto.params().get('file_threshold').lower()
@@ -30,7 +30,7 @@ if not demisto.params().get('proxy'):
     PROXIES = {
         'http': None,
         'https': None
-    }
+    }  # type: Dict[str, Optional[str]]
 else:
     PROXIES = {
         'http': os.environ['http_proxy'] or os.environ['HTTP_PROXY'],
@@ -214,7 +214,7 @@ def ip_command():
 
     context = {
         'DBotScore': dbot_output
-    }
+    }  # type: dict
 
     if observables:
         human_readable_title = 'EclecticIQ IP reputation - {}'.format(ip)
@@ -297,7 +297,7 @@ def url_command():
 
     context = {
         'DBotScore': dbot_output
-    }
+    }  # type: dict
 
     if observables:
         human_readable_title = 'EclecticIQ URL reputation - {}'.format(url)
@@ -382,7 +382,7 @@ def file_command():
 
     context = {
         'DBotScore': dbot_output
-    }
+    }  # type: dict
 
     if observables:
         human_readable_title = 'EclecticIQ File reputation - {}'.format(file)
@@ -465,7 +465,7 @@ def email_command():
 
     context = {
         'DBotScore': dbot_output
-    }
+    }  # type: dict
 
     if observables:
         human_readable_title = 'EclecticIQ Email reputation - {}'.format(email)
@@ -548,7 +548,7 @@ def domain_command():
 
     context = {
         'DBotScore': dbot_output
-    }
+    }  # type: dict
 
     if observables:
         human_readable_title = 'EclecticIQ Domain reputation - {}'.format(domain)
@@ -626,7 +626,7 @@ def get_observable_related_entity_command():
 
     entities = response.get('data')
 
-    for entity in entities:
+    for entity in entities:  # type: ignore
 
         entity_data = entity.get('data', {})
         test_mechanisms = entity_data.get('test_mechanisms', {})

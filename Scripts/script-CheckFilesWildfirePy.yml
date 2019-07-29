@@ -1,6 +1,6 @@
 commonfields:
   id: CheckFilesWildfirePy
-  version: 1
+  version: -1
 name: CheckFilesWildfirePy
 script: |-
   import time
@@ -46,8 +46,7 @@ tags:
 - server
 - threat-intel
 - wildfire
-comment: Get reputation for attachments using WildFire and if the file is not known
-  upload it to WildFire, wait 15 min and get reputation again
+comment: Deprecated, use "WildFire - Detonate File" playbook instead
 system: true
 args:
 - name: fileNames
@@ -55,8 +54,11 @@ args:
   description: If provided, checks only files whose names are in the list. The names
     should be comma-separated.
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - wildfire-upload
   - wildfire-report
 timeout: 0s
+tests:
+- No tests

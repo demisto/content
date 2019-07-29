@@ -343,7 +343,7 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: SHA1,Parent,Name,User,CreationTime,OwnerMachine,Malicious,ImageFile,MD5,CommandLine
+        simple: Name,User,CreationTime,OwnerMachine
       path:
         simple: Process
     separatecontext: false

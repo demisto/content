@@ -59,12 +59,16 @@ For instructions about adding/modifying playbooks and scripts please see our [co
 
 Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/), or at [info@demisto.com](mailto:info@demisto.com)
 
+## Release Notes
+For information about content release notes conventions, refer to our [release notes documentation](https://github.com/demisto/content/blob/master/docs/release_notes/README.md).
+
 ## Git configuration
 Copy the pre-commit hook from .hooks to .git/hooks. Run the following command from the repository root:
 
 ```sh
 cp .hooks/* .git/hooks
 ```
+
 
 # Documentation Directory
 
@@ -84,3 +88,4 @@ cp .hooks/* .git/hooks
 | [Fetching Credentials](https://github.com/demisto/content/blob/master/docs/fetching_credentials/README.md) | How to Fetch Credentials |
 | [Integration Documentation](https://github.com/demisto/content/blob/master/docs/integration_documentation/README.MD) | How to generate documentation for an integration |
 | [YAML File](https://github.com/demisto/content/blob/master/docs/yaml-file-integration/README.MD) | Explanation of the Demisto YAML structure |
+| [Integration Parameter Types](https://github.com/demisto/content/blob/master/docs/parameter_types/README.md) | Description of the various integration parameter types |

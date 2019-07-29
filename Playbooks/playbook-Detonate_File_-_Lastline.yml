@@ -32,12 +32,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 3a6ac4c3-7fc4-4af3-87e7-ae5c78160d11
+    taskid: 36e16e34-4b51-4c85-8779-59527ffe8bd9
     type: playbook
     task:
-      id: 3a6ac4c3-7fc4-4af3-87e7-ae5c78160d11
+      id: 36e16e34-4b51-4c85-8779-59527ffe8bd9
       version: -1
       name: GenericPolling
       description: |-
@@ -54,7 +55,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "16"
     scriptarguments:
       Ids:
         complex:
@@ -66,7 +67,7 @@ tasks:
       PollingCommandArgName:
         simple: uuid
       PollingCommandName:
-        simple: lastline-get-report
+        simple: lastline-check-status
       Timeout:
         complex:
           root: inputs.Timeout
@@ -86,19 +87,20 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: d372022a-88a0-4312-8ee7-6f0ebe64533e
+    taskid: 0ce1a739-c653-4186-8767-1f18d0383462
     type: regular
     task:
-      id: d372022a-88a0-4312-8ee7-6f0ebe64533e
+      id: 0ce1a739-c653-4186-8767-1f18d0383462
       version: -1
       name: Lastline Get Report
-      description: Retrieve the report from Lastline.
-      script: Lastline|||lastline-get-report
+      description: Get analysis report
+      script: '|||lastline-get-report'
       type: regular
       iscommand: true
-      brand: Lastline
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
@@ -113,11 +115,12 @@ tasks:
       {
         "position": {
           "x": 397.5,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: 6185e7bf-d4ea-428f-84f3-8f69c900e8e8
@@ -135,19 +138,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: 5c234487-81fd-4b4f-8ae1-0b8fd37b942c
+    taskid: d3ca12aa-6550-4c88-81eb-e2a97b5c51b5
     type: condition
     task:
-      id: 5c234487-81fd-4b4f-8ae1-0b8fd37b942c
+      id: d3ca12aa-6550-4c88-81eb-e2a97b5c51b5
       version: -1
-      name: Is LastLine sandbox enabled?
+      name: Is Lastline sandbox enabled?
       description: |
         Verify that there is a valid instance of Lastline enabled.
       type: condition
@@ -195,6 +199,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
     taskid: fea8caab-2280-4b3a-81ca-0477bc5d1854
@@ -261,6 +266,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
     taskid: 880a4474-6ff0-4426-83c3-38bbf36f090e
@@ -294,6 +300,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
     taskid: 823f4f10-b0d8-4c6b-8bc0-b7ec01897534
@@ -329,6 +336,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
     taskid: cec4ac98-aed7-4400-824b-2244a72dcc1a
@@ -375,6 +383,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
     taskid: 224d3a13-cd7a-405a-8241-4624625ab3d1
@@ -435,12 +444,45 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 457087e7-a34c-4635-86ed-0aff1ddd2c13
+    type: regular
+    task:
+      id: 457087e7-a34c-4635-86ed-0aff1ddd2c13
+      version: -1
+      name: Lastline Check Status
+      description: Check submissions status
+      script: '|||lastline-check-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      uuid:
+        complex:
+          root: Lastline
+          accessor: Submission.UUID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1610,
+        "height": 1785,
         "width": 840,
         "x": 50,
         "y": 50
@@ -568,5 +610,17 @@ outputs:
 - contextPath: Lastline.Submission.YaraSignatures.internal
   description: True if the signature is only for internal usage
   type: boolean
+- contextPath: File
+  description: File object
+  type: unknown
+- contextPath: File.Malicious
+  description: File Malicious object
+  type: unknown
+- contextPath: DBotScore
+  description: DBot score object
+  type: unknown
+- contextPath: Lastline.Submission
+  description: Lastline submission object
+  type: unknown
 tests:
-- Lastline - testplaybook
+  - Detonate File - Generic Test
