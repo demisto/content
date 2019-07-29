@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Panorama2
+  id: Panorama
   version: -1
 fromversion: 3.0.0
 configuration:
@@ -35,8 +35,8 @@ configuration:
   type: 0
 description: Manage Palo Alto Networks Firewall and Panorama. Make sure you read the
   Detailed Instructions section.
-display: Palo Alto Networks PAN-OS2
-name: Panorama2
+display: Palo Alto Networks PAN-OS
+name: Panorama
 script:
   commands:
   - arguments:

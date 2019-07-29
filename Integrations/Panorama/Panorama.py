@@ -1792,22 +1792,17 @@ def panorama_get_url_category(url):
     return s.split(' ')[1]
 
 
-def populate_url_filter_category_from_context(url_category_hr):
-    url_filter_category = demisto.dt(demisto.context(),
-                                     f'Panorama.URLFilter(val.Category === "{}")'.format(url_category_hr['Category']))
-
+def populate_url_filter_category_from_context(category):
+    url_filter_category = demisto.dt(demisto.context(), f'Panorama.URLFilter(val.Category === "{category}")')
     if not url_filter_category:
-        url_filter_category = {
-            'Category': url_category_hr['Category'],
-            'URL': []
-        }
-
-    if type(url_filter_category) is dict:
-        url_filter_category = [url_filter_category]
-
-    url_filter_category[0]['URL'] += [url_category_hr['URL']]
-
-    return url_filter_category
+        return []
+    elif isinstance(url_filter_category, dict):
+        if isinstance(url_filter_category["URL"], str):
+            return [url_filter_category["URL"]]
+        else:
+            return url_filter_category["URL"]
+    else:  # url_filter_category is a list of only 1 item
+        return url_filter_category[0]["URL"]
 
 
 def panorama_get_url_category_command():
@@ -1823,22 +1818,24 @@ def panorama_get_url_category_command():
             categories_dict[category].append(url)
         else:
             categories_dict[category] = [url]
+        context_urls = populate_url_filter_category_from_context(category)
+        categories_dict[category] = list((set(categories_dict[category])).union(set(context_urls)))
 
-    # url_category_hr = [for key, val in categories_dict.iterItems()
-    #     'URL': url,
-    #     'Category': category
-    # }
-
-    url_category_context = populate_url_filter_category_from_context(categories_dict)
+    url_category_output = []
+    for key, value in categories_dict.items():
+        url_category_output.append({
+            'Category': key,
+            'URL': value
+        })
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': categories_dict,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('URL Filtering:', url_category_hr, ['URL', 'Category'], removeNull=True),
+        'HumanReadable': tableToMarkdown('URL Filtering:', url_category_output, ['URL', 'Category'], removeNull=True),
         'EntryContext': {
-            "Panorama.URLFilter(val.Category === obj.Category)": url_category_context
+            "Panorama.URLFilter(val.Category === obj.Category)": url_category_output
         }
     })
 
