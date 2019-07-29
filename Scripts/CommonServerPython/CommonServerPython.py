@@ -1852,9 +1852,12 @@ class DebugLogger(object):
 
 
 _requestsLogger = None
-# use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
-if hasattr(demisto, 'is_debug') and demisto.is_debug:
-    demistoHandler = DemistoHandler()
-    demistoFormatter = logging.Formatter(fmt='%(asctime)s - %(message)s', datefmt=None)
-    demistoHandler.setFormatter(demistoFormatter)
-    _requestsLogger = DebugLogger(demistoHandler)
+try:
+    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
+    if hasattr(demisto, 'is_debug') and demisto.is_debug:
+        demistoHandler = DemistoHandler()
+        demistoFormatter = logging.Formatter(fmt='%(asctime)s - %(message)s', datefmt=None)
+        demistoHandler.setFormatter(demistoFormatter)
+        _requestsLogger = DebugLogger(demistoHandler)
+except NameError:
+    pass
