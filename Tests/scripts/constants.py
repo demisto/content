@@ -113,5 +113,5 @@ class PB_Status:
     IN_PROGRESS = 'inprogress'
 
 # Release notes regexes
-CONTENT_RELEASE_TAG_REGEX = r'^\d{2}\.\d{2}\.\d'
+CONTENT_RELEASE_TAG_REGEX = r'^\d{2}\.\d{1,2}\.\d'
 RELEASE_NOTES_REGEX = r'([\s\S]+?)\d{2}\.\d{1,2}\.\d'
