@@ -1,1 +1,1 @@
-Fixed get-processes command in the script
+Improved wording in the ***get-processes*** command.
