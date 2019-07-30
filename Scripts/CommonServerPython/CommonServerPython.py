@@ -1835,11 +1835,11 @@ class DebugLogger(object):
     Wrapper to initiate logging at logging.DEBUG level.
     Is used when `debug-mode=True`.
     """
-    def __init__(self, handler):
+    def __init__(self, handler=None):
         self.root_logger = logging.getLogger()
         self.prev_log_level = self.root_logger.getEffectiveLevel()
         self.root_logger.setLevel(logging.DEBUG)
-        self.handler = handler if handler else None
+        self.handler = handler
         if self.handler:
             self.root_logger.addHandler(self.handler)
 
