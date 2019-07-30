@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 import json
 import re
 import tempfile
@@ -97,7 +96,7 @@ def get_score(description):
     Returns:
         str: `IMPACT` field
     """
-    if description and isinstance(description, (str, basestring, unicode)):
+    if description and isinstance(description, (str, unicode)):
         regex = re.compile("(IMPACT:)(Low|Medium|High)")
         groups = regex.match(description)
         score = groups.group(2) if groups else None
@@ -185,7 +184,7 @@ def extract_indicators(data):
         dict: containing all indicators data
 
     """
-    regex = re.compile("(\w.*?) = '(.*?)'")
+    regex = re.compile("(\\w.*?) = '(.*?)'")
 
     patterns_dict = {
         "file:hashes": "File",
@@ -202,7 +201,7 @@ def extract_indicators(data):
         "Domain": list(),
         "Email": list(),
         "URL": list(),
-    }
+    }  # type: dict
     # Check if is it's
     if isinstance(data, dict) and data.get("objects"):
         # Create objects
@@ -219,15 +218,16 @@ def extract_indicators(data):
                             patterns_lists[value].append(term[1])
         else:
             pattern = objects.get("pattern")
-            groups = regex.findall(pattern)
-            for key, value in patterns_dict.items():
-                for term in groups:
-                    if len(term) == 2 and key in term[0]:
-                        patterns_lists[value].append(term[1])
+            if pattern:
+                groups = regex.findall(pattern)
+                for key, value in patterns_dict.items():
+                    for term in groups:
+                        if len(term) == 2 and key in term[0]:
+                            patterns_lists[value].append(term[1])
 
         # Make all the values unique
-        for k, v in patterns_lists.items():
-            patterns_dict[k] = list(set(v))
+        for key, value in patterns_lists.items():
+            patterns_dict[key] = list(set(value))
         return patterns_lists
     else:
         return_error("No STIX2 object could be parsed")
@@ -275,64 +275,65 @@ def create_new_ioc(data, i, timestamp, pkg_id, ind_id):
 # SCRIPT START
 
 # IF STIX2 FILE
-txt = demisto.args().get("iocXml").encode("utf-8")
-stx = convert_to_json(txt)
-if stx:
-    stix2_to_demisto(stx)
-else:
-    with tempfile.NamedTemporaryFile() as temp:
-        temp.write(demisto.args()["iocXml"].encode("utf-8"))
-        temp.flush()
-        stix_package = STIXPackage.from_xml(temp.name)
-    data = []
-    i = 0
+if __name__ == '__main__':
+    txt = demisto.args().get("iocXml").encode("utf-8")
+    stx = convert_to_json(txt)
+    if stx:
+        stix2_to_demisto(stx)
+    else:
+        with tempfile.NamedTemporaryFile() as temp:
+            temp.write(demisto.args()["iocXml"].encode("utf-8"))
+            temp.flush()
+            stix_package = STIXPackage.from_xml(temp.name)
+        data = list()  # type: list
+        i = 0
 
-    stix_id = stix_package.id_
-    if stix_package.indicators:
-        for ind in stix_package.indicators:
-            ind_id = ind.id_
-            for obs in ind.observables:
-                if hasattr(obs.object_.properties, "hashes"):
-                    # File object
-                    for digest in obs.object_.properties.hashes:
-                        if hasattr(digest, "simple_hash_value"):
-                            if isinstance(digest.simple_hash_value.value, list):
-                                for hash in digest.simple_hash_value.value:
-                                    create_new_ioc(
-                                        data, i, ind.timestamp, stix_id, ind_id
-                                    )
+        stix_id = stix_package.id_
+        if stix_package.indicators:
+            for ind in stix_package.indicators:
+                ind_id = ind.id_
+                for obs in ind.observables:
+                    if hasattr(obs.object_.properties, "hashes"):
+                        # File object
+                        for digest in obs.object_.properties.hashes:
+                            if hasattr(digest, "simple_hash_value"):
+                                if isinstance(digest.simple_hash_value.value, list):
+                                    for hash in digest.simple_hash_value.value:
+                                        create_new_ioc(
+                                            data, i, ind.timestamp, stix_id, ind_id
+                                        )
+                                        data[i]["indicator_type"] = "File"
+                                        data[i]["value"] = hash
+                                        i = i + 1
+                                else:
+                                    create_new_ioc(data, i, ind.timestamp, stix_id, ind_id)
                                     data[i]["indicator_type"] = "File"
-                                    data[i]["value"] = hash
+                                    data[i][
+                                        "value"
+                                    ] = digest.simple_hash_value.value.strip()
                                     i = i + 1
-                            else:
+                    elif hasattr(obs.object_.properties, "category"):
+                        # Address object
+                        category = obs.object_.properties.category
+                        if category.startswith("ip"):
+                            for ip in obs.object_.properties.address_value.values:
                                 create_new_ioc(data, i, ind.timestamp, stix_id, ind_id)
-                                data[i]["indicator_type"] = "File"
-                                data[i][
-                                    "value"
-                                ] = digest.simple_hash_value.value.strip()
+                                data[i]["indicator_type"] = "IP"
+                                data[i]["value"] = ip
                                 i = i + 1
-                elif hasattr(obs.object_.properties, "category"):
-                    # Address object
-                    category = obs.object_.properties.category
-                    if category.startswith("ip"):
-                        for ip in obs.object_.properties.address_value.values:
-                            create_new_ioc(data, i, ind.timestamp, stix_id, ind_id)
-                            data[i]["indicator_type"] = "IP"
-                            data[i]["value"] = ip
-                            i = i + 1
-                elif hasattr(obs.object_.properties, "type_"):
-                    if obs.object_.properties.type_ == "URL":
-                        # URI object
-                        create_new_ioc(data, i, ind.timestamp, stix_id, ind_id)
-                        data[i]["indicator_type"] = "URL"
-                        data[i]["value"] = obs.object_.properties.value.value
-                        i = i + 1
-                    elif hasattr(obs.object_.properties.value, "values"):
-                        for url in obs.object_.properties.value.values:
+                    elif hasattr(obs.object_.properties, "type_"):
+                        if obs.object_.properties.type_ == "URL":
                             # URI object
                             create_new_ioc(data, i, ind.timestamp, stix_id, ind_id)
                             data[i]["indicator_type"] = "URL"
-                            data[i]["value"] = url
+                            data[i]["value"] = obs.object_.properties.value.value
                             i = i + 1
-    json_data = json.dumps(data)
-    demisto.results(json_data)
+                        elif hasattr(obs.object_.properties.value, "values"):
+                            for url in obs.object_.properties.value.values:
+                                # URI object
+                                create_new_ioc(data, i, ind.timestamp, stix_id, ind_id)
+                                data[i]["indicator_type"] = "URL"
+                                data[i]["value"] = url
+                                i = i + 1
+        json_data = json.dumps(data)
+        demisto.results(json_data)
