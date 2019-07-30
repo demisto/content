@@ -1381,7 +1381,7 @@ def return_error(message, error='', outputs=None):
     sys.exit(0)
 
 
-def return_warning(message, exit=True, warning='', outputs=None, ignore_auto_extract=False):
+def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_extract=False):
     """
         Returns error entry with given message and exits the script
 
