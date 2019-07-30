@@ -1859,5 +1859,7 @@ try:
         demisto_formatter = logging.Formatter(fmt='%(asctime)s - %(message)s', datefmt=None)
         demisto_handler.setFormatter(demisto_formatter)
         _requests_logger = DebugLogger(demisto_handler)
-except NameError:
+except Exception:
+    # Should fail silently so that if there is a problem with the logger it will
+    # not affect the execution of commands and playbooks
     pass
