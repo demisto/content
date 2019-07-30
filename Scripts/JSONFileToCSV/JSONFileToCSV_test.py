@@ -1,6 +1,5 @@
 import os
 import filecmp
-import pytest
 import demistomock as demisto
 
 from CommonServerPython import entryTypes
@@ -54,7 +53,7 @@ def test_main(mocker):
     return_error_mock = mocker.patch('JSONFileToCSV.return_error')
     try:
         main('mock', 'sanity_out.csv', ',')
-    except:
+    except:  # noqa: E722
         pass
     assert return_error_mock.call_count == 1
     # call_args is tuple (args list, kwargs). we only need the first one
