@@ -5,7 +5,7 @@ import demistomock as demisto
 from CommonServerPython import entryTypes
 
 
-TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), 'test_data')
+TEST_DATA_DIR = 'test_data'
 
 
 def getFilePath_mock(entry_id):
