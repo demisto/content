@@ -1,7 +1,7 @@
 commonfields:
   id: CBSearch
   version: -1
-name: CBSearch (Deprecated)
+name: CBSearch
 script: |-
   //Script to query carbon black servers:
   //type must be either 'process' or 'binary'
@@ -59,7 +59,7 @@ tags:
 - carbon-black
 - endpoint
 - enhancement
-comment: Search Carbon Black for process & binary information
+comment: Deprecated, use the cb-binary command and cb-get-processes command, instead.
 system: true
 args:
 - name: type
@@ -83,3 +83,5 @@ dependson:
   - cb-binary
 timeout: 0s
 deprecated: true
+tests:
+  - No tests
