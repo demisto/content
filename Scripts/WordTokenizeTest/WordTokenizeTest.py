@@ -39,7 +39,7 @@ def tokenize_text(text):
     elif TOKENIZE_TYPE == 'punkt':
         word_tokens = nltk.wordpunct_tokenize(text)
     else:
-        raise Exception("Unsupported tokenize type: %s" % tokenize_type)
+        raise Exception("Unsupported tokenize type: %s" % TOKENIZE_TYPE)
     if HASH_SEED:
         word_tokens = map(str, map(lambda x: hash_djb2(x, int(HASH_SEED)), word_tokens))
     return (' '.join(word_tokens)).encode(TEXT_ENCODE).strip()
