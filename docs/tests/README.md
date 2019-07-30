@@ -82,7 +82,7 @@ If your integration requires a configuration in order to be executed, add the fo
 {
   "name": "carbonblack-v2",
   "params": {
-    "serverurl": "https://example:30035/",
+    "serverurl": "https://example.com:30035/",
     "apitoken": "exampleapikey",
     "insecure": true,
     "proxy": false
