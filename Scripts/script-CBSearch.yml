@@ -1,7 +1,7 @@
 commonfields:
   id: CBSearch
-  version: 1
-name: CBSearch
+  version: -1
+name: CBSearch (Deprecated)
 script: |-
   //Script to query carbon black servers:
   //type must be either 'process' or 'binary'
@@ -82,3 +82,4 @@ dependson:
   - cb-process
   - cb-binary
 timeout: 0s
+deprecated: true
