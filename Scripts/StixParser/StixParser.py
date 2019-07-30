@@ -217,8 +217,8 @@ def extract_indicators(data):
                         if len(term) == 2 and key in term[0]:
                             patterns_lists[value].append(term[1])
         else:
-            pattern = objects.get("pattern")
-            if pattern:
+            if isinstance(objects, dict):
+                pattern = objects.get("pattern")
                 groups = regex.findall(pattern)
                 for key, value in patterns_dict.items():
                     for term in groups:
@@ -227,7 +227,7 @@ def extract_indicators(data):
 
         # Make all the values unique
         for key, value in patterns_lists.items():
-            patterns_dict[key] = list(set(value))
+            patterns_dict[key] = list(set(value))  # type: ignore
         return patterns_lists
     else:
         return_error("No STIX2 object could be parsed")
