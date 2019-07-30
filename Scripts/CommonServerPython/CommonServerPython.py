@@ -1409,7 +1409,7 @@ def return_warning(message, exit=True, warning='', outputs=None, ignore_auto_ext
     LOG.print_log()
 
     demisto.results({
-        'Type': entryTypes['error'],
+        'Type': 11,
         'ContentsFormat': formats['text'],
         'IgnoreAutoExtract': ignore_auto_extract,
         'Contents': str(message),
