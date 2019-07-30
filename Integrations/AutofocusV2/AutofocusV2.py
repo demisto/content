@@ -348,7 +348,8 @@ def parse_coverage_sub_categories(coverage_data):
     for sub_category_name, sub_category_data in coverage_data.items():
         if sub_category_name in SAMPLE_ANALYSIS_COVERAGE_KEYS:
             new_sub_category_data = get_data_from_coverage_sub_category(sub_category_name, sub_category_data)
-            new_sub_category_name = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get('display_name')  # type: ignore
+            new_sub_category_name = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get(
+                'display_name')  # type: ignore
             new_coverage[new_sub_category_name] = new_sub_category_data
     return {'coverage': new_coverage}
 
@@ -686,8 +687,8 @@ def top_tags_results_command():
         'ContentsFormat': formats['text'],
         'Contents': results,
         'EntryContext': {'AutoFocus.TopTagsResults(val.PublicTagName == obj.PublicTagName)': context,
-                         'AutoFocus.SessionsSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
-                                                                                    'AFCookie': af_cookie}},
+                         'AutoFocus.TopTagsSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
+                                                                                   'AFCookie': af_cookie}},
         'HumanReadable': md
     })
 
