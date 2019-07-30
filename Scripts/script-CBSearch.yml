@@ -64,7 +64,7 @@ system: true
 args:
 - name: type
   description: '"process" or "binary" according to the type of search you want to
-    run'
+    run.'
 - name: query
   default: true
   description: Query to be run - in Carbon Black syntax
