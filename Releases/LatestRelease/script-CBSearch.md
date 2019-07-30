@@ -1,1 +1,1 @@
-Deprecated Script
+Description updated.
