@@ -1,0 +1,27 @@
+args:
+- default: true
+  description: IP address(es) to find (comma-separated)
+  isArray: false
+  name: ip
+  required: true
+  secret: false
+comment: Search Carbon Black for connection to specified IP address(es).
+commonfields:
+  id: CBFindIP
+  version: -1
+enabled: true
+name: CBFindIP
+system: false
+tags:
+- carbon-black
+- endpoint
+- enhancement
+timeout: '0'
+script: ''
+type: python
+runas: DBotWeakRole
+runonce: false
+dependson:
+  must: []
+tests:
+  - No tests
