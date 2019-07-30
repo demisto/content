@@ -47,7 +47,6 @@ def test_main(mocker):
     assert results[0]['Type'] == entryTypes['file']
     assert results[0]['File'] == 'sanity_out.csv'
     assert results[0]['FileID'] == 'out.csv'
-    assert filecmp.cmp(csv_path, expected_path)
 
     mocker.patch.object(demisto, 'getFilePath', side_effect=getFilePath_mock)
     return_error_mock = mocker.patch('JSONFileToCSV.return_error')
