@@ -1830,12 +1830,6 @@ class DebugLogger(object):
     """
         Wrapper to initiate logging at logging.DEBUG level.
         Is used when `debug-mode=True`.
-
-        :type handler: ``DemistoHandler`` or ``None``
-        :param handler: The logging handler to add to the root logger
-
-        :return: No data returned
-        :rtype: ``None``
     """
     def __init__(self, handler=None):
         self.root_logger = logging.getLogger()
