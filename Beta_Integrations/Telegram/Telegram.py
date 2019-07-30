@@ -24,10 +24,9 @@ def http_request(method, url_suffix, params=None, data=None):
         verify=False,
         params=params,
         data=data,
-        headers=HEADERS
     )
     if result.status_code not in {200}:
-        return_error('Error in API call to Telegram Integration [%d] - %s' % (res.status_code, res.reason))
+        return_error('Error in API call to Telegram Integration [%d] - %s' % (result.status_code, result.reason))
 
     return result.json()
 
@@ -61,7 +60,9 @@ def test_module():
     if contents['ok']:
         demisto.results("ok")
     else:
-        demisto.results(contents['error_code'], contents['description'])
+        error_code = contents['error_code']
+        description = contents['description']
+        demisto.results(f'{error_code} {description}')
 
 
 def telegram_send_message():
@@ -72,12 +73,12 @@ def telegram_send_message():
     if user_id is None:
         username = demisto.args().get('username')
         if username is not None:
-            user_id = str(get_userID(username))
+            user_id = str(get_user_id(username))
 
     if user_id is None:
         return_error(f'username {username} does not exists, please use list_user command')
     message = demisto.args().get('message')
-    contents = http_request('GET', "sendMessage?chat_id=" + user_id + "&amp&text=" + urllib.quote(message))
+    contents = http_request('GET', "sendMessage?chat_id=" + user_id + "&amp&text=" + urllib(message))
 
     demisto.results({
         'Type': entryTypes['note'],
