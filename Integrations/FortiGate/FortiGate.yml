@@ -437,6 +437,38 @@ script:
       description: Was address group deleted
       type: boolean
     description: Delete an address group from FortiGate firewall
+  - name: fortigate-ban-ip
+    arguments:
+    - name: ip_addresses
+      required: true
+      description: List of IP Addresses to ban, comma separated. IPv4 and IPv6 addresses
+        are allowed.
+    - name: expiry
+      description: Time until expiry in seconds. 0 for indefinite ban.
+    description: Immediately add one or more users to the banned list.
+  - name: fortigate-unban-ip
+    arguments:
+    - name: ip_addresses
+      required: true
+      description: List of banned user IPs to clear, comma separated. IPv4 and IPv6
+        addresses are allowed.
+    description: Immediately clear a list of specific banned users by IP.
+  - name: fortigate-get-banned-ips
+    arguments: []
+    outputs:
+    - contextPath: Fortigate.BannedIP.IP
+      description: The IP address.
+      type: string
+    - contextPath: Fortigate.BannedIP.Created
+      description: When this IP was added to the banned list.
+      type: string
+    - contextPath: Fortigate.BannedIP.Expires
+      description: When this IP will be expired from the banned list.
+      type: string
+    - contextPath: Fortigate.BannedIP.Source
+      description: Source of the ban.
+      type: string
+    description: Return a list of all banned users by IP.
   runonce: false
 tests:
 - Fortigate Test
