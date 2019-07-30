@@ -10,6 +10,7 @@ def json_to_csv(data, delimiter):
     si = io.BytesIO()
     cw = csv.writer(si, delimiter=delimiter)
     csv_headers = list(data[0].keys())
+    csv_headers.sort()
     cw.writerow(csv_headers)
 
     for d in data:
@@ -23,24 +24,19 @@ def main(entry_id, out_filename, delimiter):
     if isinstance(entry_id, list):
         entry_id = entry_id[0]
 
-    res = demisto.executeCommand('getFilePath', {'id': entry_id})
+    file_info = {}  # type: dict
+    try:
+        file_info = demisto.getFilePath(entry_id)
+    except Exception as e:
+        return_error('Failed to get the file path for entry: {} the error message was {}'.format(entry_id, str(e)))
 
-    # Check to see if valid file entry id was provided as input
-    if res[0]['Type'] == entryTypes['error']:
-        return_error('Failed to get the file path for entry: {} the error message was {}'.format(
-            entry_id,
-            res[0]['Contents'])
-        )
-
-    file_path = res[0]['Contents']['path']
+    file_path = file_info['path']
 
     # open file and read data
     with open(file_path, 'r') as f:
-        data = f.read()
+        dict_list = json.load(f)
 
-    dictlist = json.loads(data)
-
-    csv_out = json_to_csv(dictlist, delimiter)
+    csv_out = json_to_csv(dict_list, delimiter)
 
     # output cvs as a file to war-room
     demisto.results(fileResult(out_filename, csv_out.encode("utf-8")))
