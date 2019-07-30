@@ -171,17 +171,6 @@ def parse_resource_ids(resource_id):
     return resource_ids
 
 
-def create_entry(title, data, ec):
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': data,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, data) if data else 'No result were found',
-        'EntryContext': ec
-    }
-
-
 '''MAIN FUNCTIONS'''
 
 
@@ -209,7 +198,11 @@ def describe_certificate(args):
         'Region': obj['_user_provided_options']['region_name'],
     })
 
-    raw = json.loads(json.dumps(response['Certificate'], cls=DatetimeEncoder))
+    try:
+        raw = json.loads(json.dumps(response['Certificate'], cls=DatetimeEncoder))
+    except ValueError as e:
+        return_error('Could not decode/encode the raw response - {err_msg}'.format(err_msg=e))
+
     if raw:
         raw.update({'Region': obj['_user_provided_options']['region_name']})
     ec = {'AWS.ACM.Certificates(val.CertificateArn === obj.CertificateArn)': raw}
