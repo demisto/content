@@ -1381,6 +1381,44 @@ def return_error(message, error='', outputs=None):
     sys.exit(0)
 
 
+def return_warning(message, exit=True, warning='', outputs=None, ignore_auto_extract=False):
+    """
+        Returns error entry with given message and exits the script
+
+        :type message: ``str``
+        :param message: The message to return in the entry (required)
+
+        :type exit: ``bool``
+        :param exit: Determines if the program will terminate after the command. Default is False.
+
+        :type warning: ``str``
+        :param warning: The raw warning message to log (optional)
+
+        :type outputs: ``dict or None``
+        :param outputs: the outputs that will be returned to playbook/investigation context (optional)
+
+        :type ignore_auto_extract: ``bool``
+        :param ignore_auto_extract: Determines if the war-room entry will be auto enriched. Default is false.
+
+        :return: Error entry object
+        :rtype: ``dict``
+    """
+    LOG(message)
+    if warning:
+        LOG(warning)
+    LOG.print_log()
+
+    demisto.results({
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'IgnoreAutoExtract': ignore_auto_extract,
+        'Contents': str(message),
+        "EntryContext": outputs
+    })
+    if exit:
+        sys.exit(0)
+
+
 def camelize(src, delim=' '):
     """
         Convert all keys of a dictionary (or list of dictionaries) to CamelCase (with capital first letter)
