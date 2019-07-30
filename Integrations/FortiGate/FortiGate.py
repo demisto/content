@@ -97,8 +97,8 @@ def create_addr_string(list_of_addr_data_dicts):
 def convert_arg_to_int(arg_str, arg_name_str):
     try:
         arg_int = int(arg_str)
-    except Exception as e:
-        return_error("Error: {0} must have an integer value.")
+    except Exception:
+        return_error("Error: {0} must have an integer value.".format(arg_name_str))
     return arg_int
 
 
@@ -467,7 +467,6 @@ def create_firewall_service_request(service_name, tcp_range, udp_range):
     return response
 
 
-
 def ban_ip(ip_addresses_array, time_to_expire):
     uri_suffix = 'monitor/user/banned/add_users/'
 
@@ -481,11 +480,10 @@ def ban_ip(ip_addresses_array, time_to_expire):
     return response
 
 
-
 def ban_ip_command():
     ip_addresses_string = demisto.args()["ip_addresses"]
     ip_addresses_array = ip_addresses_string.split(",")
-    time_to_expire  = demisto.args().get("expiry")
+    time_to_expire = demisto.args().get("expiry")
     response = ban_ip(ip_addresses_array, time_to_expire)
     demisto.results({
         'Type': entryTypes['note'],
@@ -494,7 +492,6 @@ def ban_ip_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': 'IPs {0} banned successfully'.format(ip_addresses_string)
     })
-
 
 
 def unban_ip(ip_addresses_array):
@@ -532,10 +529,10 @@ def get_banned_ips_command():
     entry_context = create_banned_ips_entry_context(ips_data_array)
     human_readable = create_banned_ips_human_readable(entry_context, response)
     return_outputs(
-        raw_response = response,
-        readable_output = human_readable,
-        outputs = {
-            'Fortigate.BannedIP(val.IP===obj.IP)' : entry_context
+        raw_response=response,
+        readable_output=human_readable,
+        outputs={
+            'Fortigate.BannedIP(val.IP===obj.IP)': entry_context
         }
     )
 
