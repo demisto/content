@@ -4,7 +4,6 @@ from CommonServerPython import *
 
 import json
 import requests
-import urllib
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -78,7 +77,7 @@ def telegram_send_message():
     if user_id is None:
         return_error(f'username {username} does not exists, please use list_user command')
     message = demisto.args().get('message')
-    contents = http_request('GET', "sendMessage?chat_id=" + user_id + "&amp&text=" + urllib(message))
+    contents = http_request('GET', "sendMessage?chat_id=" + user_id + "&amp&text=" + message)
 
     demisto.results({
         'Type': entryTypes['note'],
