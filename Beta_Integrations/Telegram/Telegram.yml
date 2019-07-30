@@ -1,6 +1,6 @@
-category: Authentication
+category: Messaging
 commonfields:
-  id: Telegram
+  id: Telegram_Beta
   version: -1
 configuration:
 - display: API Token
@@ -8,8 +8,8 @@ configuration:
   required: true
   type: 4
 description: Telegram integration
-display: Telegram
-name: Telegram
+display: Telegram (Beta)
+name: Telegram_Beta
 script:
   commands:
   - arguments:

@@ -22,7 +22,7 @@ def http_request(method, url_suffix, params=None, data=None):
         BASE_URL + url_suffix,
         verify=False,
         params=params,
-        data=data,
+        data=data
     )
     if result.status_code not in {200}:
         return_error('Error in API call to Telegram Integration [%d] - %s' % (result.status_code, result.reason))
@@ -129,7 +129,7 @@ def get_user_id(username):
 
 
 def main():
-    LOG('command is %s' % (demisto.command(),))
+    LOG(f'command is {demisto.command()}')
 
     try:
         # Remove proxy if not set to true in params
@@ -137,7 +137,6 @@ def main():
 
         if demisto.command() == 'test-module':
             test_module()
-            demisto.results('ok')
         elif demisto.command() == 'send-message':
             telegram_send_message()
         elif demisto.command() == 'list-users':
@@ -145,9 +144,6 @@ def main():
 
     except Exception as ex:
         return_error(str(ex))
-
-    finally:
-        LOG.print_log()
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":
