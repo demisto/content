@@ -59,7 +59,7 @@ tags:
 - carbon-black
 - endpoint
 - enhancement
-comment: Search Carbon Black for process & binary information
+comment: Deprecated, use the cb-binary command and cb-get-processes command, instead.
 system: true
 args:
 - name: type
