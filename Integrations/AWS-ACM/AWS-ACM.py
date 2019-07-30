@@ -1,18 +1,32 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 '''IMPORTS'''
 import re
 import boto3
-import datetime
 import json
+from datetime import datetime, date
+from botocore.config import Config
+from botocore.parsers import ResponseParserError
 
 '''GLOBAL VARIABLES'''
-AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
-AWS_roleArn = demisto.params()['roleArn']
-AWS_roleSessionName = demisto.params()['roleSessionName']
-AWS_roleSessionDuration = demisto.params()['sessionDuration']
-AWS_rolePolicy = None
+AWS_DEFAULT_REGION = demisto.params().get('defaultRegion')
+AWS_ROLE_ARN = demisto.params().get('roleArn')
+AWS_ROLE_SESSION_NAME = demisto.params().get('roleSessionName')
+AWS_ROLE_SESSION_DURATION = demisto.params().get('sessionDuration')
+AWS_ROLE_POLICY = None
+AWS_ACCESS_KEY_ID = demisto.params().get('access_key')
+AWS_SECRET_ACCESS_KEY = demisto.params().get('secret_key')
+VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
+proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
+config = Config(
+    connect_timeout=1,
+    retries=dict(
+        max_attempts=5
+    ),
+    proxies=proxies
+)
 
 
 def aws_session(service='acm', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None,
@@ -23,46 +37,88 @@ def aws_session(service='acm', region=None, roleArn=None, roleSessionName=None, 
             'RoleArn': roleArn,
             'RoleSessionName': roleSessionName,
         })
-    elif AWS_roleArn and AWS_roleSessionName is not None:
+    elif AWS_ROLE_ARN and AWS_ROLE_SESSION_NAME is not None:
         kwargs.update({
-            'RoleArn': AWS_roleArn,
-            'RoleSessionName': AWS_roleSessionName,
+            'RoleArn': AWS_ROLE_ARN,
+            'RoleSessionName': AWS_ROLE_SESSION_NAME,
         })
 
     if roleSessionDuration is not None:
         kwargs.update({'DurationSeconds': int(roleSessionDuration)})
-    elif AWS_roleSessionDuration is not None:
-        kwargs.update({'DurationSeconds': int(AWS_roleSessionDuration)})
+    elif AWS_ROLE_SESSION_DURATION is not None:
+        kwargs.update({'DurationSeconds': int(AWS_ROLE_SESSION_DURATION)})
 
     if rolePolicy is not None:
         kwargs.update({'Policy': rolePolicy})
-    elif AWS_rolePolicy is not None:
-        kwargs.update({'Policy': AWS_rolePolicy})
+    elif AWS_ROLE_POLICY is not None:
+        kwargs.update({'Policy': AWS_ROLE_POLICY})
+    if kwargs and AWS_ACCESS_KEY_ID is None:
 
-    if kwargs:
-        sts_client = boto3.client('sts')
+        if AWS_ACCESS_KEY_ID is None:
+            sts_client = boto3.client('sts')
+            sts_response = sts_client.assume_role(**kwargs)
+            if region is not None:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=region,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken'],
+                    verify=VERIFY_CERTIFICATE,
+                    config=config
+                )
+            else:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=AWS_DEFAULT_REGION,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken'],
+                    verify=VERIFY_CERTIFICATE,
+                    config=config
+                )
+    elif AWS_ACCESS_KEY_ID and AWS_ROLE_ARN:
+        sts_client = boto3.client(
+            service_name='sts',
+            aws_access_key_id=AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+            verify=VERIFY_CERTIFICATE,
+            config=config
+        )
+        kwargs.update({
+            'RoleArn': AWS_ROLE_ARN,
+            'RoleSessionName': AWS_ROLE_SESSION_NAME,
+        })
         sts_response = sts_client.assume_role(**kwargs)
+        client = boto3.client(
+            service_name=service,
+            region_name=AWS_DEFAULT_REGION,
+            aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+            aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+            aws_session_token=sts_response['Credentials']['SessionToken'],
+            verify=VERIFY_CERTIFICATE,
+            config=config
+        )
+    else:
         if region is not None:
             client = boto3.client(
                 service_name=service,
                 region_name=region,
-                aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                aws_session_token=sts_response['Credentials']['SessionToken']
+                aws_access_key_id=AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                verify=VERIFY_CERTIFICATE,
+                config=config
             )
         else:
             client = boto3.client(
                 service_name=service,
                 region_name=AWS_DEFAULT_REGION,
-                aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                aws_session_token=sts_response['Credentials']['SessionToken']
+                aws_access_key_id=AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                verify=VERIFY_CERTIFICATE,
+                config=config
             )
-    else:
-        if region is not None:
-            client = boto3.client(service_name=service, region_name=region)
-        else:
-            client = boto3.client(service_name=service, region_name=AWS_DEFAULT_REGION)
+
     return client
 
 
@@ -99,12 +155,9 @@ def parse_subnet_mappings(subnets_str):
 
 
 class DatetimeEncoder(json.JSONEncoder):
+    # pylint: disable=method-hidden
     def default(self, obj):
-        if isinstance(obj, datetime.datetime):
-            return obj.strftime('%Y-%m-%dT%H:%M:%S')
-        elif isinstance(obj, datetime.date):
-            return obj.strftime('%Y-%m-%d')
-        elif isinstance(obj, datetime):
+        if isinstance(obj, datetime):
             return obj.strftime('%Y-%m-%dT%H:%M:%S')
         elif isinstance(obj, date):
             return obj.strftime('%Y-%m-%d')
@@ -160,7 +213,8 @@ def describe_certificate(args):
     if raw:
         raw.update({'Region': obj['_user_provided_options']['region_name']})
     ec = {'AWS.ACM.Certificates(val.CertificateArn === obj.CertificateArn)': raw}
-    demisto.results(create_entry('AWS ACM Certificates', data, ec))
+    human_readable = tableToMarkdown('AWS ACM Certificates', data)
+    return_outputs(human_readable, ec)
 
 
 def list_certificates(args):
@@ -195,7 +249,8 @@ def list_certificates(args):
         })
 
     ec = {'AWS.ACM.Certificates(val.CertificateArn === obj.CertificateArn)': data}
-    demisto.results(create_entry('AWS ACM Certificates', data, ec))
+    human_readable = tableToMarkdown('AWS ACM Certificates', data)
+    return_outputs(human_readable, ec)
 
 
 def add_tags_to_certificate(args):
@@ -248,7 +303,8 @@ def list_tags_for_certificate(args):
         })
 
     ec = {'AWS.ACM.Certificates(val.CertificateArn === obj.CertificateArn).Tags': data}
-    demisto.results(create_entry('AWS ACM Certificate Tags', data, ec))
+    human_readable = tableToMarkdown('AWS ACM Certificate Tags', data)
+    return_outputs(human_readable, ec)
 
 
 def get_certificate(args):
@@ -267,9 +323,9 @@ def get_certificate(args):
         'Certificate': response['Certificate'],
         'CertificateChain': response['CertificateChain']
     })
-
     ec = {'AWS.ACM.Certificates(val.CertificateArn === obj.CertificateArn)': data}
-    demisto.results(create_entry('AWS ACM Certificate', data, ec))
+    human_readable = tableToMarkdown('AWS ACM Certificate', data)
+    return_outputs(human_readable, ec)
 
 
 def test_function():
@@ -295,7 +351,12 @@ try:
         list_tags_for_certificate(demisto.args())
     if demisto.command() == 'aws-acm-get-certificate':
         get_certificate(demisto.args())
+except ResponseParserError as e:
+    return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
+        error=type(e)))
+    LOG(e.message)
+
 except Exception as e:
-    LOG(e)
-    LOG.print_log(False)
-    return_error(e.message)
+    LOG(str(e))
+    return_error('Error has occurred in the AWS ACM Integration: {code}\n {message}'.format(
+        code=type(e), message=str(e)))
