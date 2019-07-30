@@ -8,7 +8,7 @@ import json
 def main():
     instance_ips = []
     instance_ids = []
-
+    instance_ids_nonami = []
     id_to_ip = {}
     with open('./env_results.json', 'r') as json_file:
         env_results = json.load(json_file)
@@ -17,12 +17,16 @@ def main():
         id_to_ip.update({env["InstanceID"]: env["InstanceDNS"]})
         instance_ips.append(env["Role"] + ":" + env["InstanceDNS"])
         instance_ids.append(env["Role"] + ":" + env["InstanceID"])
+        instance_ids_nonami.append(env["InstanceID"])
         with open('./Tests/images_data.txt', 'a') as instance_file:
             instance_file.write('{} Image info is: {} {} {}\n'.format(env["Role"], env["AmiId"], env["AmiName"],
                                                                       env["AmiCreation"]))
 
     with open('./Tests/instance_ids.txt', 'w') as instance_file:
         instance_file.write('\n'.join(instance_ids))
+
+    with open('instance_ids', 'w') as instance_file:
+        instance_file.write('\n'.join(instance_ids_nonami))
 
     print("Waiting 90 Seconds for SSH to start\n")
     sleep(90)
