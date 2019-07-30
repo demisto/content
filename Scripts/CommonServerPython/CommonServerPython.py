@@ -1813,16 +1813,12 @@ def get_demisto_version():
 
 class DemistoHandler(logging.Handler):
     """
-    Handler to route logging messages to demisto.debug
+        Handler to route logging messages to demisto.debug
     """
     def __init__(self):
         logging.Handler.__init__(self)
 
     def emit(self, record):
-        """
-        Emit a record.
-        If a formatter is specified, it is used to format the record.
-        """
         msg = self.format(record)
         try:
             demisto.debug(msg)
@@ -1832,8 +1828,14 @@ class DemistoHandler(logging.Handler):
 
 class DebugLogger(object):
     """
-    Wrapper to initiate logging at logging.DEBUG level.
-    Is used when `debug-mode=True`.
+        Wrapper to initiate logging at logging.DEBUG level.
+        Is used when `debug-mode=True`.
+
+        :type handler: ``DemistoHandler`` or ``None``
+        :param handler: The logging handler to add to the root logger
+
+        :return: No data returned
+        :rtype: ``None``
     """
     def __init__(self, handler=None):
         self.root_logger = logging.getLogger()
