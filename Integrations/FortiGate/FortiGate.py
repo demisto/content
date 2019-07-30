@@ -102,6 +102,36 @@ def convert_arg_to_int(arg_str, arg_name_str):
     return arg_int
 
 
+def prettify_date(date_string):
+    date_string = date_string[:-5]  # remove the .000z at the end
+    date_parts = date_string.split("T")
+    date_str_prettified = "{0} {1}".format(date_parts[0], date_parts[1])
+    return date_str_prettified
+
+
+def create_banned_ips_entry_context(ips_data_array):
+    ips_contexts_array = []
+    for ip_data in ips_data_array:
+        current_ip_context = {
+            "IP": ip_data.get("ip_address"),
+            "Source": ip_data.get("source")
+        }
+        if ip_data.get("expires"):
+            expiration_in_ms = 1000 * int(ip_data.get("expires"))
+            current_ip_context["Expires"] = prettify_date(timestamp_to_datestring(expiration_in_ms))
+        if ip_data.get("created"):
+            creation_in_ms = 1000 * int(ip_data.get("created"))
+            current_ip_context["Created"] = prettify_date(timestamp_to_datestring(creation_in_ms))
+        ips_contexts_array.append(current_ip_context)
+    return ips_contexts_array
+
+
+def create_banned_ips_human_readable(entry_context, response):
+    banned_ip_headers = ["IP", "Created", "Expires", "Source"]
+    human_readable = tableToMarkdown("Banned IP Addresses", entry_context, banned_ip_headers)
+    return human_readable
+
+
 def str_to_bool(str_representing_bool):
     return str_representing_bool and str_representing_bool.lower() == 'true'
 
@@ -489,6 +519,25 @@ def unban_ip_command():
         'HumanReadable': 'IPs {0} un-banned successfully'.format(ip_addresses_string)
     })
 
+
+def get_banned_ips():
+    uri_suffix = 'monitor/user/banned/select/'
+    response = http_request('GET', uri_suffix)
+    return response
+
+
+def get_banned_ips_command():
+    response = get_banned_ips()
+    ips_data_array = response.get("results")
+    entry_context = create_banned_ips_entry_context(ips_data_array)
+    human_readable = create_banned_ips_human_readable(entry_context, response)
+    return_outputs(
+        raw_response = response,
+        readable_output = human_readable,
+        outputs = {
+            'Fortigate.BannedIP(val.IP===obj.IP)' : entry_context
+        }
+    )
 
 
 def get_policy_command():
