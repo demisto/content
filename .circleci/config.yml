@@ -1,18 +1,13 @@
 version: 2
-experimental:
-  notify:
-    branches:
-      only:
-        - master
 jobs:
   build:
     docker:
       - image: devdemisto/content-build-2and3:2.0.0.877  # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.7.0"
+      CONTENT_VERSION: "19.7.2"
       SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "acafc2290bf4e4fa59e0b143a64c154fcdb0b546" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "b127a27e348b2f5cc53129da93ca153ce51572c4" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
@@ -113,13 +108,22 @@ jobs:
           name: Create Instance
           when: always
           command: |
+            pip install --upgrade awscli
+            pip install ansible ansible-runner rsa paramiko boto3 requests
+
             if ./Tests/scripts/is_ami.sh ;
               then
-                [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-                python ./Tests/scripts/create_instances.py -n $IS_NIGHTLY -b $CIRCLE_BRANCH
+                if [ -n "${NIGHTLY}" ] ;
+                  then
+                    export IFRA_ENV_TYPE=Content-GA
+
+                  else
+                    export IFRA_ENV_TYPE=Content-Env
+                fi
+                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType $IFRA_ENV_TYPE
 
               else
-                ./Tests/lastest_server_build_scripts/create_instance.sh instance.json
+                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild
             fi
       - run:
           name: Setup Instance
