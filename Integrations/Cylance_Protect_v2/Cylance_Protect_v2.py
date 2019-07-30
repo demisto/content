@@ -7,6 +7,8 @@ import re
 import zipfile
 from StringIO import StringIO
 from datetime import datetime, timedelta
+# disable insecure warnings
+requests.packages.urllib3.disable_warnings()
 
 # CONSTANTS
 TOKEN_TIMEOUT = 300  # 5 minutes
@@ -46,19 +48,13 @@ def load_server_url():
     return url
 
 
-# remove proxy if not set to true in params
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-
 # GLOBALS
 APP_ID = demisto.params()['app_id']
 APP_SECRET = demisto.params()['app_secret']
 TID = demisto.params()['tid']
 SERVER_URL = load_server_url()
 FILE_THRESHOLD = demisto.params()['file_threshold']
+USE_SSL = not demisto.params().get('unsecure', False)
 
 
 # HELPERS
@@ -79,7 +75,7 @@ def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=Fals
     Makes an API call to the server URL with the supplied uri, method, headers, body and params
     """
     url = '%s/%s' % (SERVER_URL, uri)
-    res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params)
+    res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=USE_SSL)
     if res.status_code < 200 or res.status_code >= 300:
         if res.status_code == 409 and str(res.content).find('already an entry for this threat') != -1:
             raise Warning(res.content)
@@ -918,7 +914,7 @@ def get_list_entry_by_hash(sha256=None, list_type_id=None):
 
 def get_indicators_report():
     url = 'https://protect.cylance.com/Reports/ThreatDataReportV1/indicators/' + demisto.args()['token']
-    res = requests.request('GET', url)
+    res = requests.request('GET', url, verify=USE_SSL)
     filename = 'Indicators_Report.csv'
     demisto.results(fileResult(filename, res.content))
 
@@ -957,7 +953,7 @@ def download_threat():
     sha256 = demisto.args()['sha256']
     threat_url = download_threat_request(sha256)
 
-    threat_file = requests.get(threat_url, allow_redirects=True)
+    threat_file = requests.get(threat_url, allow_redirects=True, verify=USE_SSL)
     if threat_file.status_code == 200:
         if demisto.args()['unzip'] == "yes":
             file_archive = StringIO(threat_file.content)
@@ -1347,6 +1343,7 @@ def fetch_incidents():
 # EXECUTION
 LOG('command is %s' % (demisto.command(),))
 try:
+    handle_proxy()
     if demisto.command() == 'test-module':
         test()
 
