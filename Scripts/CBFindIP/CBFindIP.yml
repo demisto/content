@@ -11,17 +11,44 @@ commonfields:
   version: -1
 enabled: true
 name: CBFindIP
+outputs:
+- contextPath: Process.Path
+  description: Process Path
+  type: String
+- contextPath: Process.PID
+  description: Process PID
+  type: Number
+- contextPath: Process.MD5
+  description: Process MD5
+  type: String
+- contextPath: Process.Hostname
+  description: Process Hostname
+  type: String
+- contextPath: Process.Name
+  description: Process Name
+  type: String
+- contextPath: Process.CbSegmentID
+  description: Cb "segment" where this process instance is stored. Required to fetch
+    further info on a process.
+  type: String
+- contextPath: Process.CbID
+  description: Cb unique ID for this process instance - required (together with CbSegmentID)
+    to fetch further info on a process.
+  type: String
+- contextPath: Process.Endpoint
+  description: The endpoint of the process
+  type: String
+script: '-'
 system: false
 tags:
 - carbon-black
 - endpoint
 - enhancement
 timeout: '0'
-script: ''
 type: python
 runas: DBotWeakRole
 runonce: false
 dependson:
   must: []
 tests:
-  - No tests
+  - CBFindIP - Test
