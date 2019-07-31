@@ -104,9 +104,8 @@ def convert_arg_to_int(arg_str, arg_name_str):
 
 def prettify_date(date_string):
     date_string = date_string[:-5]  # remove the .000z at the end
-    date_parts = date_string.split("T")
-    date_str_prettified = "{0} {1}".format(date_parts[0], date_parts[1])
-    return date_str_prettified
+    date_prettified = date_string.replace("T", " ")
+    return date_prettified
 
 
 def create_banned_ips_entry_context(ips_data_array):
@@ -126,7 +125,7 @@ def create_banned_ips_entry_context(ips_data_array):
     return ips_contexts_array
 
 
-def create_banned_ips_human_readable(entry_context, response):
+def create_banned_ips_human_readable(entry_context):
     banned_ip_headers = ["IP", "Created", "Expires", "Source"]
     human_readable = tableToMarkdown("Banned IP Addresses", entry_context, banned_ip_headers)
     return human_readable
@@ -471,19 +470,22 @@ def ban_ip(ip_addresses_array, time_to_expire):
     uri_suffix = 'monitor/user/banned/add_users/'
 
     payload = {
-        'ip_addresses': ip_addresses_array
+        'ip_addresses': ip_addresses_array,
+        'expiry': time_to_expire
     }
-    if time_to_expire:
-        time_to_expire_int = convert_arg_to_int(time_to_expire, "expiry")
-        payload["expiry"] = time_to_expire_int
+
     response = http_request('POST', uri_suffix, {}, json.dumps(payload))
     return response
 
 
 def ban_ip_command():
     ip_addresses_string = demisto.args()["ip_addresses"]
-    ip_addresses_array = ip_addresses_string.split(",")
+    ip_addresses_array = argToList(ip_addresses_string)
     time_to_expire = demisto.args().get("expiry")
+    if time_to_expire:
+        time_to_expire = convert_arg_to_int(time_to_expire, "expiry")
+    else:
+        time_to_expire = 0
     response = ban_ip(ip_addresses_array, time_to_expire)
     demisto.results({
         'Type': entryTypes['note'],
@@ -506,7 +508,7 @@ def unban_ip(ip_addresses_array):
 
 def unban_ip_command():
     ip_addresses_string = demisto.args()["ip_addresses"]
-    ip_addresses_array = ip_addresses_string.split(",")
+    ip_addresses_array = argToList(ip_addresses_string)
     response = unban_ip(ip_addresses_array)
     demisto.results({
         'Type': entryTypes['note'],
@@ -1122,6 +1124,12 @@ try:
         create_address_group_command()
     elif demisto.command() == 'fortigate-delete-address-group':
         delete_address_group_command()
+    elif demisto.command() == 'fortigate-ban-ip':
+        ban_ip_command()
+    elif demisto.command() == 'fortigate-unban-ip':
+        unban_ip_command()
+    elif demisto.command() == 'fortigate-get-banned-ips':
+        get_banned_ips_command()
 
 except Exception, e:
     LOG(e.message)

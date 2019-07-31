@@ -443,6 +443,7 @@ script:
       required: true
       description: List of IP Addresses to ban, comma separated. IPv4 and IPv6 addresses
         are allowed.
+      isArray: true
     - name: expiry
       description: Time until expiry in seconds. 0 for indefinite ban.
     description: Immediately add one or more users to the banned list.
@@ -452,6 +453,7 @@ script:
       required: true
       description: List of banned user IPs to clear, comma separated. IPv4 and IPv6
         addresses are allowed.
+      isArray: true
     description: Immediately clear a list of specific banned users by IP.
   - name: fortigate-get-banned-ips
     arguments: []
