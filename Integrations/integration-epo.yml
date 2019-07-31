@@ -826,14 +826,14 @@ script:
       description: Number of processors.
       type: number
     - contextPath: McAfee.ePO.Endpoint.Memory
-      description: 'Endpoint memory. '
+      description: Endpoint memory.
       type: number
     description: Finds computers within a specified group in the ePO tree.
   - name: epo-command
     arguments: []
-    description: 'Executes the ePO command. Receives the mandatory 'command' argument, and other
-      optional arguments. Run the 'epo-help' command to get a list of available commands. You can also specify the 'headers' argument to filter table headers.
-      Example/:/ '!epo-command command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName' ''
+    description: Executes the ePO command. Receives the mandatory ''command'' argument, and other
+      optional arguments. Run the ''epo-help'' command to get a list of available commands. You can also specify the ''headers'' argument to filter table headers.
+      Example/:/ !epo-command command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName
   - name: epo-advanced-command
     arguments:
     - name: command
@@ -842,10 +842,10 @@ script:
     - name: commandArgs
       required: true
       description: CSV list of key value pairs as additional arguments to pass, for example, "argName1:argValue1,argName2:argValue2".
-    description: 'Executes the ePO command. Run the ''epo-help'' command to get a list of available
-      commands. For example:  !epo-advanced-command command="clienttask.find" commandArgs="searchText:On-demand".
-      You can also specify the ''headers'' argument to filter table headers, for example: ''!epo-command
-      command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName''. '
+    description: Executes the ePO command. Run the ''epo-help'' command to get a list of available
+      commands. For example:  !epo-advanced-command command=clienttask.find commandArgs=searchText:On-demand.
+      You can also specify the ''headers'' argument to filter table headers, for example: !epo-command
+      command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName.
   - name: epo-wakeup-agent
     arguments:
     - name: names
