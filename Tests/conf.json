@@ -1761,6 +1761,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "ArcSight ESM v2": "License expired (issue #18328)",
         "AlienVault USM Anywhere": "License expired (issue #18273)",
         "Tufin": "Calls to instance return 502 error. @itay reached out (issue 16441)",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
