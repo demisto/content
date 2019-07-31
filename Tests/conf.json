@@ -1350,8 +1350,8 @@
             "integrations": "Active Directory Query v2"
         },
         {
-            "integrations": "Phishme Intelligence",
-            "playbookID": "Test - PhishMe Intelligence",
+            "integrations": "Cofense Intelligence",
+            "playbookID": "Test - Cofense Intelligence",
             "timeout": 500
         },
         {
@@ -1766,6 +1766,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "AlienVault USM Anywhere": "License expired (issue #18273)",
         "Tufin": "Calls to instance return 502 error. @itay reached out (issue 16441)",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "MimecastV2": "Several issues with instance",
@@ -1799,6 +1800,9 @@
         "Tenable.io": "Unstable instance (issue 16115)",
 
       "_comment": "~~~ OTHER ~~~",
+        "Pwned": "Changes in API - may require integration rewrite (issue #18102)",
+        "SumoLogic": "Shelly working on fixing it",
+        "Windows Defender Advanced Threat Protection": "Avidan working on fixing it",
         "iDefense": "DevOps investigation",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
@@ -1830,14 +1834,10 @@
         "Pwned": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
         "Google BigQuery": "Integration has no proxy checkbox",
-        "Symantec Advanced Threat Protection": "Checking",
         "ReversingLabs A1000": "Checking",
         "Check Point": "Checking",
-        "WhatsMyBrowser": "Checking",
-        "jira": "Checking",
         "okta": "Test Module failing, suspect it requires SSL",
         "Awake Security": "Checking",
-        "Cylance Protect v2": "Checking",
         "ArcSight ESM v2": "Checking",
         "Phish.AI": "Checking",
         "Intezer": "Nightly - Checking",
@@ -1846,7 +1846,6 @@
         "RSA Archer": "Nightly - Checking",
         "McAfee NSM": "Nightly - Checking",
         "Forcepoint": "Nightly - Checking",
-        "Phishme Intelligence": "Proxy has a non empty default value, will require fixing and merging",
         "palo_alto_firewall": "Need to check test module",
         "Signal Sciences WAF": "error with certificate",
         "google": "'unsecure' parameter not working",
@@ -1856,10 +1855,8 @@
         "Cybereason": "Insecure has a non empty default value, will require fixing and merging",
         "Anomali ThreatStream": "'proxy' parameter not working",
         "Palo Alto Networks Cortex": "SDK",
-        "Netcraft": "SSL failure",
         "AWS - EC2": "SSL Validation fails for STS",
         "Recorded Future": "might be dynamic test",
-        "Cylance Protect": "Test module issue",
         "AlphaSOC Wisdom": "Test module issue",
         "Microsoft Graph": "Test direct access to oproxy",
         "MicrosoftGraphMail": "Test direct access to oproxy",
