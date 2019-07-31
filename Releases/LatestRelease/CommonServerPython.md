@@ -1,1 +1,2 @@
-Python 3 compatibility fixes. Improved LOG encoding support.
+Adding is_mac command
+

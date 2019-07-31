@@ -573,7 +573,7 @@ def test_module():
         demisto.results('ok')
 
 
-def fetch_incidents(query, id_offset=None, fetch_by_created=None, **_):
+def fetch_incidents(query, id_offset=0, fetch_by_created=None, **_):
     last_run = demisto.getLastRun()
     demisto.debug(f"last_run: {last_run}" if last_run else 'last_run is empty')
     id_offset = last_run.get("idOffset") if (last_run and last_run.get("idOffset")) else id_offset
@@ -584,8 +584,13 @@ def fetch_incidents(query, id_offset=None, fetch_by_created=None, **_):
     if fetch_by_created:
         query = f'{query} AND created>-1m'
     res = run_query(query, '', max_results)
+    curr_id = id_offset
     for ticket in res.get('issues'):
-        id_offset = max(id_offset, ticket.get("id"))
+        ticket_id = int(ticket.get("id"))
+        if ticket_id == curr_id:
+            continue
+
+        id_offset = max(int(id_offset), ticket_id)
         incidents.append(create_incident_from_ticket(ticket))
 
     demisto.setLastRun({"idOffset": id_offset})
