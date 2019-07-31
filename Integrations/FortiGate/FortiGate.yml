@@ -439,20 +439,20 @@ script:
     description: Delete an address group from FortiGate firewall
   - name: fortigate-ban-ip
     arguments:
-    - name: ip_addresses
+    - name: ip_address
       required: true
       description: List of IP Addresses to ban, comma separated. IPv4 and IPv6 addresses
-        are allowed.
+        are allowed. For example, "1.1.1.1,6.7.8.9".
       isArray: true
     - name: expiry
       description: Time until expiry in seconds. 0 for indefinite ban.
     description: Immediately add one or more users to the banned list.
   - name: fortigate-unban-ip
     arguments:
-    - name: ip_addresses
+    - name: ip_address
       required: true
       description: List of banned user IPs to clear, comma separated. IPv4 and IPv6
-        addresses are allowed.
+        addresses are allowed. For example, "1.1.1.1,6.7.8.9".
       isArray: true
     description: Immediately clear a list of specific banned users by IP.
   - name: fortigate-get-banned-ips

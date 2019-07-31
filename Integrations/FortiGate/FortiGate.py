@@ -97,12 +97,16 @@ def create_addr_string(list_of_addr_data_dicts):
 def convert_arg_to_int(arg_str, arg_name_str):
     try:
         arg_int = int(arg_str)
-    except Exception:
+    except ValueError:
         return_error("Error: {0} must have an integer value.".format(arg_name_str))
     return arg_int
 
 
 def prettify_date(date_string):
+    """
+    This function receives a string representing a date, for example 2018-07-28T10:47:55.000Z.
+    It returns the same date in a readable format - for example, 2018-07-28 10:47:55.
+    """
     date_string = date_string[:-5]  # remove the .000z at the end
     date_prettified = date_string.replace("T", " ")
     return date_prettified
@@ -116,10 +120,10 @@ def create_banned_ips_entry_context(ips_data_array):
             "Source": ip_data.get("source")
         }
         if ip_data.get("expires"):
-            expiration_in_ms = 1000 * int(ip_data.get("expires"))
+            expiration_in_ms = 1000 * int(ip_data.get("expires", 0))
             current_ip_context["Expires"] = prettify_date(timestamp_to_datestring(expiration_in_ms))
         if ip_data.get("created"):
-            creation_in_ms = 1000 * int(ip_data.get("created"))
+            creation_in_ms = 1000 * int(ip_data.get("created", 0))
             current_ip_context["Created"] = prettify_date(timestamp_to_datestring(creation_in_ms))
         ips_contexts_array.append(current_ip_context)
     return ips_contexts_array
@@ -466,7 +470,7 @@ def create_firewall_service_request(service_name, tcp_range, udp_range):
     return response
 
 
-def ban_ip(ip_addresses_array, time_to_expire):
+def ban_ip(ip_addresses_array, time_to_expire=0):
     uri_suffix = 'monitor/user/banned/add_users/'
 
     payload = {
@@ -474,17 +478,18 @@ def ban_ip(ip_addresses_array, time_to_expire):
         'expiry': time_to_expire
     }
 
-    response = http_request('POST', uri_suffix, {}, json.dumps(payload))
+    response = http_request('POST', uri_suffix, data=json.dumps(payload))
     return response
 
 
 def ban_ip_command():
-    ip_addresses_string = demisto.args()["ip_addresses"]
+    ip_addresses_string = demisto.args()["ip_address"]
     ip_addresses_array = argToList(ip_addresses_string)
     time_to_expire = demisto.args().get("expiry")
     if time_to_expire:
         time_to_expire = convert_arg_to_int(time_to_expire, "expiry")
     else:
+        # The default time to expiration is 0, which means infinite time (It will remain banned).
         time_to_expire = 0
     response = ban_ip(ip_addresses_array, time_to_expire)
     demisto.results({
@@ -502,12 +507,12 @@ def unban_ip(ip_addresses_array):
     payload = {
         'ip_addresses': ip_addresses_array
     }
-    response = http_request('POST', uri_suffix, {}, json.dumps(payload))
+    response = http_request('POST', uri_suffix, data=json.dumps(payload))
     return response
 
 
 def unban_ip_command():
-    ip_addresses_string = demisto.args()["ip_addresses"]
+    ip_addresses_string = demisto.args()["ip_address"]
     ip_addresses_array = argToList(ip_addresses_string)
     response = unban_ip(ip_addresses_array)
     demisto.results({
