@@ -1503,27 +1503,27 @@ async def test_check_entitlement(mocker):
 
     assert result1_args[0] == 'e093ba05-3f3c-402e-81a7-149db969be5d'  # incident ID
     assert result1_args[1] == '4404dae8-2d45-46bd-85fa-64779c12abe8'  # GUID
-    assert result1_args[2] == ''  # task id
-    assert result1_args[3] == 'test@demisto.com'  # email
-    assert result1_args[4] == 'hi test@demisto.com  goodbye'  # content
+    assert result1_args[2] == 'test@demisto.com'  # email
+    assert result1_args[3] == 'hi test@demisto.com  goodbye'  # content
+    assert result1_args[4] == ''  # task id
 
     assert result2_args[0] == '22'
     assert result2_args[1] == '4404dae8-2d45-46bd-85fa-64779c12abe8'
-    assert result2_args[2] == ''
-    assert result2_args[3] == 'test@demisto.com'
-    assert result2_args[4] == 'hi test@demisto.com  goodbye'
+    assert result2_args[2] == 'test@demisto.com'
+    assert result2_args[3] == 'hi test@demisto.com  goodbye'
+    assert result2_args[4] == ''
 
     assert result3_args[0] == 'e093ba05-3f3c-402e-81a7-149db969be5d'
     assert result3_args[1] == '4404dae8-2d45-46bd-85fa-64779c12abe8'
-    assert result3_args[2] == '4'
-    assert result3_args[3] == 'test@demisto.com'
-    assert result3_args[4] == 'hi test@demisto.com  goodbye'
+    assert result3_args[2] == 'test@demisto.com'
+    assert result3_args[3] == 'hi test@demisto.com  goodbye'
+    assert result3_args[4] == '4'
 
     assert result4_args[0] == '22'
     assert result4_args[1] == '4404dae8-2d45-46bd-85fa-64779c12abe8'
-    assert result4_args[2] == '43'
-    assert result4_args[3] == 'test@demisto.com'
-    assert result4_args[4] == 'hi test@demisto.com  goodbye'
+    assert result4_args[2] == 'test@demisto.com'
+    assert result4_args[3] == 'hi test@demisto.com  goodbye'
+    assert result4_args[4] == '43'
 
 
 def test_send_request(mocker):
