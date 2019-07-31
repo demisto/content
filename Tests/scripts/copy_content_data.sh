@@ -9,10 +9,11 @@ USER="ec2-user"
 echo "[`date`] ${PUBLIC_IP}: add instance to known hosts"
 ssh-keyscan -H ${PUBLIC_IP} >> ~/.ssh/known_hosts
 
+echo "test1"
 # Poll until ssh starts
 echo "Start polling for ssh on host: ${PUBLIC_IP}"
 COUNT=1
-until ssh ${USER}@${PUBLIC_IP} 'echo hello'; do
+until ssh -t ${USER}@${PUBLIC_IP} sudo 'echo hello'; do
     sleep 3
     COUNT=$(( COUNT + 1 ))
     if (( COUNT >= 30 )); then
@@ -20,7 +21,7 @@ until ssh ${USER}@${PUBLIC_IP} 'echo hello'; do
         break;
     fi;
 done
-
+echo "test2"
 # copy content files
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/content'
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/TestPlaybooks'
