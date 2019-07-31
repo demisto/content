@@ -106,7 +106,7 @@ tasks:
         simple: valid_emails
       value:
         simple: '"support@threatx.com", "someuser@contoso.com", "5c530c1b.1c69fb81.bd826.0eff@mx.google.com",
-          "woo@demisto.com", "this.is@email.format", "وي,ذريوي,ذرينو@gmail.com"'
+          "woo@demisto.com", "this.is@email.format"'
     separatecontext: false
     view: |-
       {
@@ -207,14 +207,6 @@ tasks:
           right:
             value:
               simple: someuser@contoso.com
-      - - operator: isEqualString
-          left:
-            value:
-              simple: ${Account.Email.Address}
-            iscontext: true
-          right:
-            value:
-              simple: وي,ذريوي,ذرينو@gmail.com
     view: |-
       {
         "position": {
@@ -430,7 +422,7 @@ tasks:
       key:
         simple: valid_domains
       value:
-        simple: '"www.demisto.com", "www.google.com", "xn--fiq80yua78t.tw"'
+        simple: '"www.demisto.com", "www.google.com", "bücher.de"'
     separatecontext: false
     view: |-
       {
@@ -516,7 +508,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: xn--fiq80yua78t.tw
+              simple: bücher.de
     view: |-
       {
         "position": {
@@ -715,7 +707,7 @@ tasks:
       key:
         simple: valid_urls
       value:
-        simple: '"http://ru.wikipedia.org/wiki/Елизавета_I", "http://bücher.de", "https://golang.org/pkg/regexp/syntax/"'
+        simple: '"http://ru.wikipedia.org/wiki/Елизавета_I", "https://golang.org/pkg/regexp/syntax/"'
     separatecontext: false
     view: |-
       {
@@ -784,14 +776,6 @@ tasks:
           right:
             value:
               simple: http://ru.wikipedia.org/wiki/Елизавета_I
-      - - operator: isEqualString
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: http://bücher.de
       - - operator: isEqualString
           left:
             value:
