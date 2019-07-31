@@ -261,19 +261,22 @@ def edl_update_from_external_file(list_name: str, file_path: str, type_: str):
     list_data = dict_of_lists.get(list_name, None)
     file_data = edl_get_external_file(file_path)
 
-    set_internal = set(list_data)
-    set_external = set(file_data.split('\n'))
-    set_external.discard('')
-
-    if type_ == 'merge':
-        unified = set_internal.union(set_external)
-        list_data_new = list(unified)
-    else:  # type_ == 'override'
-        list_data_new = list(set_external)
-
-    dict_of_lists.update({list_name: list_data_new})
-
-    return list_data_new
+    if list_data:
+        set_internal = set(list_data)
+        set_external = set(file_data.split('\n'))
+        set_external.discard('')
+        if type_ == 'merge':
+            unified = set_internal.union(set_external)
+            list_data_new = list(unified)
+        else:  # type_ == 'override'
+            list_data_new = list(set_external)
+        dict_of_lists.update({list_name: list_data_new})
+        demisto.setIntegrationContext(dict_of_lists)
+        return list_data_new
+    else:
+        dict_of_lists.update({list_name: file_data})
+        demisto.setIntegrationContext(dict_of_lists)
+        return file_data
 
 
 def edl_update_from_external_file_command():
@@ -489,6 +492,40 @@ def edl_compare_command():
     })
 
 
+def edl_get_external_file_metadata_command():
+    file_path = demisto.args().get('file_path')
+    if DOCUMENT_ROOT:
+        file_path = os.path.join(DOCUMENT_ROOT, file_path)
+
+    result = ssh_execute(f'stat {file_path}')
+
+    file_size = int(result.split("Size: ", 1)[1].split(" ", 1)[0])
+    file_name = file_path.split("/")[-1]
+    if len(file_name) < 0:
+        file_name = file_path
+    last_modified_parts = result.split("Change: ", 1)[1].split(" ", 2)[0:2]
+    last_modified = ' '.join(last_modified_parts)
+
+    number_of_lines = int(ssh_execute(f'wc -l < {file_path}')) + 1
+
+    metadata_outputs = {
+        'FileName': file_name,
+        'Size': file_size,
+        'LastModified': last_modified,
+        'NumberOfLines': number_of_lines
+    }
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': result,
+        'ContentsFormat': formats['text'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('File metadata:', metadata_outputs,
+                                         ['FileName', 'Size', 'NumberOfLines', 'LastModified'], removeNull=True),
+        'EntryContext': {"PANOSEDL(val.FileName == obj.FileName)": metadata_outputs}
+    })
+
+
 ''' EXECUTION '''
 
 
@@ -528,6 +565,9 @@ def main():
 
         elif demisto.command() == 'pan-os-edl-compare':
             edl_compare_command()
+
+        elif demisto.command() == 'pan-os-edl-get-external-file-metadata':
+            edl_get_external_file_metadata_command()
 
         else:
             return_error('Unrecognized command: ' + demisto.command())

@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 635c219d-8ff2-4336-8fa8-2ab315c71975
+    taskid: 49467be0-c856-4650-89f3-786b1abfa8ed
     type: start
     task:
-      id: 635c219d-8ff2-4336-8fa8-2ab315c71975
+      id: 49467be0-c856-4650-89f3-786b1abfa8ed
       version: -1
       name: ""
       iscommand: false
@@ -30,10 +30,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: cbed884c-5cc2-442d-88d5-26cd52a39a7b
+    taskid: 361fc3ee-2093-41ee-8421-548e4a76c584
     type: regular
     task:
-      id: cbed884c-5cc2-442d-88d5-26cd52a39a7b
+      id: 361fc3ee-2093-41ee-8421-548e4a76c584
       version: -1
       name: pan-os-edl-update
       description: Updates the instance context with the list name and items given
@@ -70,10 +70,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 5a8d58d2-c409-4a83-8832-1b41b77722a4
+    taskid: c7bc97d7-d056-42e3-8f8f-ae99de0628e5
     type: regular
     task:
-      id: 5a8d58d2-c409-4a83-8832-1b41b77722a4
+      id: c7bc97d7-d056-42e3-8f8f-ae99de0628e5
       version: -1
       name: pan-os-edl-dump-internal-list to incident context
       description: Dump instance context to either incident context or file
@@ -102,10 +102,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: da1dfc91-0df1-497d-829c-ad90c99b15d3
+    taskid: c9ad0acd-e6d9-41b0-8fb3-fdfaf726b7f7
     type: condition
     task:
-      id: da1dfc91-0df1-497d-829c-ad90c99b15d3
+      id: c9ad0acd-e6d9-41b0-8fb3-fdfaf726b7f7
       version: -1
       name: test internal list commands
       type: condition
@@ -138,10 +138,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 253322a9-7582-4b5e-8a50-af588631191c
+    taskid: 4ff43909-41f5-492e-88b3-52dfa30fd895
     type: regular
     task:
-      id: 253322a9-7582-4b5e-8a50-af588631191c
+      id: 4ff43909-41f5-492e-88b3-52dfa30fd895
       version: -1
       name: pan-os-edl-print-internal-list
       description: Display internal list data in the war-room
@@ -168,10 +168,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: d8b5e849-ed2e-4329-8b10-af78df9c8391
+    taskid: 763fb656-6ef3-4b90-83e1-978bb512a3aa
     type: regular
     task:
-      id: d8b5e849-ed2e-4329-8b10-af78df9c8391
+      id: 763fb656-6ef3-4b90-83e1-978bb512a3aa
       version: -1
       name: pan-os-edl-search-external-file
       description: Search a string on external file
@@ -200,10 +200,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: f0f27051-2474-40eb-84d1-0cf01f09aeb6
+    taskid: ced737a7-0f32-48bb-8141-4836ebf8ca93
     type: regular
     task:
-      id: f0f27051-2474-40eb-84d1-0cf01f09aeb6
+      id: ced737a7-0f32-48bb-8141-4836ebf8ca93
       version: -1
       name: pan-os-edl-get-external-file
       description: Display external file content in the war-room
@@ -213,7 +213,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "11"
     scriptarguments:
       file_path:
         simple: test_playbook_list4.txt
@@ -230,10 +230,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 57699a99-0b15-4a90-8958-27c3f0b44469
+    taskid: 6582f7e3-ef2f-4a36-80b7-644b6ef9428e
     type: title
     task:
-      id: 57699a99-0b15-4a90-8958-27c3f0b44469
+      id: 6582f7e3-ef2f-4a36-80b7-644b6ef9428e
       version: -1
       name: Done
       description: Delete external file
@@ -245,7 +245,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1420
+          "y": 1770
         }
       }
     note: false
@@ -253,10 +253,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 695b8c0f-09bc-4941-8387-e0d3448aa95b
+    taskid: e09cab8c-5c8d-485b-8a76-5a0d24458f09
     type: regular
     task:
-      id: 695b8c0f-09bc-4941-8387-e0d3448aa95b
+      id: e09cab8c-5c8d-485b-8a76-5a0d24458f09
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -287,10 +287,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 8ab76f66-da71-4fe5-8221-3c9846894117
+    taskid: da7cb9ab-0947-4339-8beb-b38079721bc2
     type: regular
     task:
-      id: 8ab76f66-da71-4fe5-8221-3c9846894117
+      id: da7cb9ab-0947-4339-8beb-b38079721bc2
       version: -1
       name: pan-os-edl-dump-internal-list to file
       description: Dumps (copies) instance context to either the incident context
@@ -318,12 +318,80 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 1bcbc41f-da7d-4a78-8ea7-fde354e8e525
+    type: regular
+    task:
+      id: 1bcbc41f-da7d-4a78-8ea7-fde354e8e525
+      version: -1
+      name: pan-os-edl-get-external-file-metadata
+      description: Gets external file metadata.
+      script: '|||pan-os-edl-get-external-file-metadata'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      file_path:
+        simple: test_playbook_list4.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 45ddeef2-45cb-4692-8258-908a68d55bd6
+    type: condition
+    task:
+      id: 45ddeef2-45cb-4692-8258-908a68d55bd6
+      version: -1
+      name: Test pan-os-edl-get-external-file-metadata
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PANOSEDL
+                accessor: FileName
+            iscontext: true
+          right:
+            value:
+              simple: test_playbook_list4.txt
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 1785,
         "width": 810,
         "x": 50,
         "y": 50
