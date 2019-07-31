@@ -121,7 +121,7 @@ def find_mirror_by_investigation() -> dict:
         integration_context = demisto.getIntegrationContext()
         if integration_context.get('mirrors'):
             mirrors = json.loads(integration_context['mirrors'])
-            investigation_filter = list(filter(lambda m: investigation.get('id') in m['investigation_ids'],
+            investigation_filter = list(filter(lambda m: investigation.get('id') == m['investigation_id'],
                                                mirrors))
             if investigation_filter:
                 mirror = investigation_filter[0]
@@ -248,21 +248,40 @@ def mirror_investigation():
             slack_users.append(slack_user)
 
     users_to_invite = list(map(lambda u: u.get('id'), slack_users))
-    investigation_filter = list(filter(lambda m: investigation_id in m['investigation_ids'], mirrors))
-    channel_filter = list(filter(lambda m: m['channel_name'] == channel_name, mirrors))
-    mirror_name = 'incident-{}'.format(investigation_id)
+    current_mirror = list(filter(lambda m: m['investigation_id'] == investigation_id, mirrors))
+    channel_filter: list = []
+    if channel_name:
+        channel_filter = list(filter(lambda m: m['channel_name'] == channel_name, mirrors))
 
-    if investigation_filter:
-        # Investigation already mirrored, we will update the type/direction/auto close
-        mirror = mirrors.pop(mirrors.index(investigation_filter[0]))
-        if mirror_to and mirror['mirror_to'] != mirror_to:
-            return_error('Cannot change the Slack channel type from Demisto.')
+    if not current_mirror:
+        channel_name = channel_name or 'incident-{}'.format(investigation_id)
 
-        if channel_name and channel_name != mirror['channel_name']:
-            return_error('Cannot change the Slack channel name from Demisto.')
+        if not channel_filter:
+            if mirror_to == 'channel':
+                conversation = CHANNEL_CLIENT.channels_create(name=channel_name).get('channel', {})
+            else:
+                conversation = CHANNEL_CLIENT.groups_create(name=channel_name).get('group', {})
+
+            conversation_name = conversation.get('name')
+            conversation_id = conversation.get('id')
+            conversations.append(conversation)
         else:
-            channel_name = mirror['channel_name']
+            mirrored_channel = channel_filter[0]
+            conversation_id = mirrored_channel['channel_id']
+            conversation_name = mirrored_channel['channel_name']
 
+        mirror = {
+            'channel_id': conversation_id,
+            'channel_name': conversation_name,
+            'investigation_id': investigation.get('id'),
+            'mirror_type': mirror_type,
+            'mirror_direction': mirror_direction,
+            'mirror_to': mirror_to,
+            'auto_close': bool(strtobool(auto_close)),
+            'mirrored': False
+        }
+    else:
+        mirror = mirrors.pop(mirrors.index(current_mirror[0]))
         conversation_id = mirror['channel_id']
         if mirror_type:
             mirror['mirror_type'] = mirror_type
@@ -270,74 +289,57 @@ def mirror_investigation():
             mirror['auto_close'] = bool(strtobool(auto_close))
         if mirror_direction:
             mirror['mirror_direction'] = mirror_direction
-
-        success_message = 'Successfully updated the mirrored channel {}'.format(channel_name)
-        mirror['mirrored'] = False
-    elif channel_filter:
-        # Channel already exists, we'll add the investigation to the mirror
-        mirror = mirrors.pop(mirrors.index(channel_filter[0]))
-        conversation_id = mirror['channel_id']
-        curr_mirror_names = ', '.join(mirror['mirror_names'])
-        mirror['investigation_ids'].append(investigation_id)
-        mirror['mirror_names'].append(mirror_name)
-
-        if not channel_topic:
-            curr_channel_topic = mirror['channel_topic']
-            if not curr_channel_topic or curr_channel_topic == curr_mirror_names:
-                channel_topic = ', '.join(mirror['mirror_names'])
-
+        if mirror_to and mirror['mirror_to'] != mirror_to:
+            return_error('Cannot change the Slack channel type from Demisto.')
+        if channel_name:
+            return_error('Cannot change the Slack channel name from Demisto.')
         if channel_topic:
-            CHANNEL_CLIENT.conversations_setTopic(channel=conversation_id, topic=channel_topic)
-            mirror['channel_topic'] = channel_topic
-
-        success_message = 'Successfully mirrored to existing channel {}'.format(channel_name)
+            return_error('Cannot change the Slack channel topic from Demisto.')
+        conversation_name = mirror['channel_name']
         mirror['mirrored'] = False
+
+    set_topic = False
+    if channel_topic:
+        set_topic = True
     else:
-        # New mirror
-        if not channel_name:
-            channel_name = mirror_name
-        if not channel_topic:
-            channel_topic = mirror_name
-
-        if mirror_to == 'channel':
-            conversation = CHANNEL_CLIENT.channels_create(name=channel_name).get('channel', {})
-            conversation_id = conversation.get('id')
+        mirror_name = 'incident-{}'.format(investigation_id)
+        channel_filter = list(filter(lambda m: m['channel_name'] == conversation_name, mirrors))
+        if 'channel_topic' in mirror:
+            channel_topic = mirror['channel_topic']
+        elif channel_filter:
+            channel_mirror = channel_filter[0]
+            channel_topic = channel_mirror['channel_topic']
         else:
-            conversation = CHANNEL_CLIENT.groups_create(name=channel_name).get('group', {})
-            conversation_id = conversation.get('id')
-        if channel_topic:
-            CHANNEL_CLIENT.conversations_setTopic(channel=conversation_id, topic=channel_topic)
-        conversations.append(conversation)
-        mirror = {
-            'channel_id': conversation_id,
-            'channel_name': conversation.get('name'),
-            'channel_topic': channel_topic,
-            'mirror_names': [mirror_name],
-            'investigation_ids': [investigation.get('id')],
-            'mirror_type': mirror_type,
-            'mirror_direction': mirror_direction,
-            'mirror_to': mirror_to,
-            'auto_close': bool(strtobool(auto_close)),
-            'mirrored': False
-        }
+            channel_topic = ''
+        mirrored_investigations_ids = list(map(lambda m: 'incident-{}'
+                                               .format(m['investigation_id']), channel_filter))
+        if not channel_topic or channel_topic.find('incident-') != -1:
+            new_topic = ', '.join(mirrored_investigations_ids + [mirror_name])
+            if channel_topic != new_topic:
+                channel_topic = new_topic
+                set_topic = True
 
-        success_message = 'Successfully mirrored to a new channel {}'.format(channel_name)
+    if set_topic:
+        CHANNEL_CLIENT.conversations_setTopic(channel=conversation_id, topic=channel_topic)
+    mirror['channel_topic'] = channel_topic
+
+    if mirror_type != 'none':
+        if integration_context.get('bot_id'):
+            bot_id = integration_context['bot_id']
+        else:
+            bot_id = get_bot_id()
+        users_to_invite += [bot_id]
+        invite_users_to_conversation(conversation_id, users_to_invite)
+
+        integration_context['bot_id'] = bot_id
 
     mirrors.append(mirror)
-
-    if integration_context.get('bot_id'):
-        bot_id = integration_context['bot_id']
-    else:
-        bot_id = get_bot_id()
-    users_to_invite += [bot_id]
-    invite_users_to_conversation(conversation_id, users_to_invite)
-
-    integration_context['bot_id'] = bot_id
     integration_context['mirrors'] = json.dumps(mirrors)
     integration_context['conversations'] = json.dumps(conversations)
 
     demisto.setIntegrationContext(integration_context)
-    demisto.results(success_message)
+
+    demisto.results('Investigation mirrored successfully, channel: {}'.format(conversation_name))
 
 
 def long_running_loop():
@@ -364,21 +366,20 @@ def check_for_mirrors():
         mirrors = json.loads(integration_context['mirrors'])
         for mirror in mirrors:
             if not mirror['mirrored']:
+                demisto.info('Mirroring: {}'.format(mirror['investigation_id']))
                 mirror = mirrors.pop(mirrors.index(mirror))
                 if mirror['mirror_to'] and mirror['mirror_direction'] and mirror['mirror_type']:
-                    for investigation_id in mirror['investigation_ids']:
-                        demisto.info('Mirroring: {}'.format(investigation_id))
-                        mirror_type = mirror['mirror_type']
-                        auto_close = mirror['auto_close']
-                        direction = mirror['mirror_direction']
-                        if isinstance(auto_close, str):
-                            auto_close = bool(strtobool(auto_close))
-                        demisto.mirrorInvestigation(investigation_id, '{}:{}'
-                                                    .format(mirror_type, direction), auto_close)
+                    investigation_id = mirror['investigation_id']
+                    mirror_type = mirror['mirror_type']
+                    auto_close = mirror['auto_close']
+                    direction = mirror['mirror_direction']
+                    if isinstance(auto_close, str):
+                        auto_close = bool(strtobool(auto_close))
+                    demisto.mirrorInvestigation(investigation_id, '{}:{}'.format(mirror_type, direction), auto_close)
                     mirror['mirrored'] = True
                     mirrors.append(mirror)
                 else:
-                    demisto.info('Could not mirror {}'.format(str(mirror['investigation_ids'])))
+                    demisto.info('Could not mirror {}'.format(mirror['investigation_id']))
                 integration_context['mirrors'] = json.dumps(mirrors)
                 demisto.setIntegrationContext(integration_context)
 
@@ -435,28 +436,14 @@ async def start_listening():
     await slack_loop()
 
 
-async def handle_dm(user_id: str, text: str, client: slack.WebClient):
+async def handle_dm(user: dict, text: str, client: slack.WebClient):
     """
     Handles a direct message sent to the bot
-    :param user_id: The user who sent the message
+    :param user: The user who sent the message
     :param text: The message text
     :param client: The Slack client
     :return: Text to return to the user
     """
-    integration_context = demisto.getIntegrationContext()
-
-    user: dict = {}
-    users: list = []
-    if integration_context.get('users'):
-        users = json.loads(integration_context['users'])
-        user_filter = list(filter(lambda u: u['id'] == user_id, users))
-        if user_filter:
-            user = user_filter[0]
-    if not user:
-        user = (await client.users_info(user=user_id)).get('user', {})
-        users.append(user)
-        integration_context['users'] = json.dumps(users)
-        demisto.setIntegrationContext(integration_context)
 
     message: str = text.lower()
     if message.find('incident') != -1 and (message.find('create') != -1
@@ -581,11 +568,16 @@ async def listen(**payload):
         if subtype == 'bot_message' or message_bot_id:
             return
 
+        integration_context = demisto.getIntegrationContext()
+
+        user = await get_user_by_id_async(client, integration_context, user_id)
+
         if channel and channel[0] == 'D':
             # DM
             await handle_dm(user_id, text, client)
+        elif await check_and_handle_entitlement(text, user):
+            await client.chat_postMessage(channel=channel, text='Response received by: {}'.format(user.get('name')))
         else:
-            integration_context = demisto.getIntegrationContext()
             if not integration_context or 'mirrors' not in integration_context:
                 return
 
@@ -595,66 +587,71 @@ async def listen(**payload):
             if not mirror_filter:
                 return
 
-            mirror: dict = mirrors.pop(mirrors.index(mirror_filter[0]))
-
-            if mirror['mirror_direction'] == 'FromDemisto':
-                return
-            if mirror['mirror_type'] == 'none':
-                return
-
-            if not mirror['mirrored']:
-                # In case the investigation is not mirrored yet, wait 5 seconds for the cycle
-                await asyncio.sleep(5)
-                if not mirror['mirrored']:
-                    await handle_listen_error('Investigation {} not mirrored'.format(str(mirror['mirror_names'])))
+            for mirror in mirror_filter:
+                if mirror['mirror_direction'] == 'FromDemisto' or mirror['mirror_type'] == 'none':
                     return
 
-            investigation_ids = mirror['investigation_ids']
-            await handle_text(client, integration_context, investigation_ids, text, user_id)
+                if not mirror['mirrored']:
+                    # In case the investigation is not mirrored yet
+                    mirror = mirrors.pop(mirrors.index(mirror))
+                    if mirror['mirror_to'] and mirror['mirror_direction'] and mirror['mirror_type']:
+                        investigation_id = mirror['investigation_id']
+                        mirror_type = mirror['mirror_type']
+                        auto_close = mirror['auto_close']
+                        direction = mirror['mirror_direction']
+                        if isinstance(auto_close, str):
+                            auto_close = bool(strtobool(auto_close))
+                            demisto.info('Mirroring: {}'.format(investigation_id))
+                        demisto.mirrorInvestigation(investigation_id, '{}:{}'.format(mirror_type, direction),
+                                                    auto_close)
+                        mirror['mirrored'] = True
+                        mirrors.append(mirror)
+                        integration_context['mirrors'] = json.dumps(mirrors)
+                        demisto.setIntegrationContext(integration_context)
 
-            demisto.setIntegrationContext(integration_context)
+                investigation_id = mirror['investigation_id']
+                await handle_text(client, investigation_id, text, user)
         # Reset module health
         demisto.updateModuleHealth("")
     except Exception as e:
         await handle_listen_error('Error occurred while listening to Slack: {}'.format(str(e)))
 
 
-async def handle_text(client: slack.WebClient, integration_context: dict,
-                      investigation_ids: list, text: str, user_id: str):
+async def get_user_by_id_async(client, integration_context, user_id):
+    user: dict = {}
+    users: list = []
+    if integration_context.get('users'):
+        users = json.loads(integration_context['users'])
+        user_filter = list(filter(lambda u: u['id'] == user_id, users))
+        if user_filter:
+            user = user_filter[0]
+    if not user:
+        user = (await client.users_info(user=user_id)).get('user', {})
+        users.append(user)
+        integration_context['users'] = json.dumps(users)
+        demisto.setIntegrationContext(integration_context)
+    return user
+
+
+async def handle_text(client: slack.WebClient, investigation_id: str, text: str, user: dict):
     """
     Handles text received in the Slack workspace (not DM)
     :param client: The Slack client
-    :param integration_context: The integration context
-    :param investigation_ids: The mirrored investigation IDs
+    :param investigation_id: The mirrored investigation ID
     :param text: The received text
-    :param user_id: The ID of the sender
+    :param user: The sender
     """
 
     if text:
-        user: dict = {}
-        users: list = []
-        if integration_context.get('users'):
-            users = json.loads(integration_context['users'])
-            user_filter = list(filter(lambda u: u['id'] == user_id, users))
-            if user_filter:
-                user = user_filter[0]
-        if not user:
-            user = (await client.users_info(user=user_id)).get('user', {})
-            users.append(user)
-            integration_context['users'] = json.dumps(users)
-
-        is_entitlement = await check_entitlement(text, user)
-        if not is_entitlement:
-            for investigation_id in investigation_ids:
-                demisto.addEntry(id=investigation_id,
-                                 entry=await clean_message(text, client),
-                                 username=user.get('name', ''),
-                                 email=user.get('profile', {}).get('email', ''),
-                                 footer=MESSAGE_FOOTER
-                                 )
+        demisto.addEntry(id=investigation_id,
+                         entry=await clean_message(text, client),
+                         username=user.get('name', ''),
+                         email=user.get('profile', {}).get('email', ''),
+                         footer=MESSAGE_FOOTER
+                         )
 
 
-async def check_entitlement(text: str, user: dict) -> bool:
+async def check_and_handle_entitlement(text: str, user: dict) -> bool:
     entitlement_match = re.search(ENTITLEMENT_REGEX, text)
     if entitlement_match:
         entitlement = entitlement_match.group()
@@ -666,6 +663,7 @@ async def check_entitlement(text: str, user: dict) -> bool:
         if len(id_and_task) > 1:
             task_id = id_and_task[1]
         content = text.replace(entitlement, '', 1)
+        demisto.info('content: ' + content)
         demisto.handleEntitlementForUser(incident_id, guid, task_id, user.get('profile', {}).get('email'), content)
 
         return True
@@ -711,7 +709,7 @@ def slack_send():
     message_type = demisto.args().get('messageType', '')  # From server
     original_message = demisto.args().get('originalMessage', '')  # From server
     entry = demisto.args().get('entry')
-    ignore_add_url = demisto.args().get('ignoreAddURL', False)
+    ignore_add_url = demisto.args().get('ignoreAddURL', False) or demisto.args().get('IgnoreAddURL', False)
     thread_id = demisto.args().get('threadID', '')
     severity = demisto.args().get('severity')  # From server
 
@@ -726,12 +724,14 @@ def slack_send():
         try:
             severity = int(severity)
         except Exception:
+            severity = None
             pass
 
     if channel == INCIDENT_NOTIFICATION_CHANNEL or (not channel and message_type == INCIDENT_OPENED):
         channel = DEDICATED_CHANNEL
 
-    if channel == DEDICATED_CHANNEL and severity < SEVERITY_THRESHOLD:
+    if channel == DEDICATED_CHANNEL and ((severity is not None and severity < SEVERITY_THRESHOLD)
+                                         or not NOTIFY_INCIDENTS):
         channel = None
 
     if not (to or group or channel):
@@ -817,7 +817,7 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
                     if entry:
                         link += '/' + entry
                     message += '\n{} {}'.format('View it on:', link)
-            else:
+            elif not ignore_add_url:
                 link = server_links.get('server', '')
                 if link:
                     message += '\n{} {}'.format('View it on:', link + '#/home')
@@ -936,25 +936,22 @@ def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignor
         if not destinations:
             destination_name = channel or group
             conversation_filter = list(filter(lambda c: c.get('name') == destination_name, conversations))
-            mirror_filter: list = []
-            if mirrors:
-                mirror_filter = list(filter(lambda m: destination_name in m['mirror_names'], mirrors))
             if conversation_filter:
-                # Channel is in cache
                 conversation = conversation_filter[0]
                 conversation_id = conversation.get('id')
-            elif mirror_filter:
-                # Channel is mirrored and has a custom name
-                mirror = mirror_filter[0]
-                conversation_id = mirror['channel_id']
             else:
-                # Unknown channel name
-                conversation = get_conversation_by_name(destination_name)
-                if not conversation:
-                    return_error('Could not find the Slack conversation {}'.format(destination_name))
-                conversation_id = conversation.get('id')
-                conversations.append(conversation)
-                integration_context['conversations'] = json.dumps(conversations)
+                mirrored_channel_filter = list(filter(lambda m: 'incident-{}'
+                                                      .format(m['investigation_id']) == destination_name, mirrors))
+                if mirrored_channel_filter:
+                    channel_mirror = mirrored_channel_filter[0]
+                    conversation_id = channel_mirror['channel_id']
+                else:
+                    conversation = get_conversation_by_name(destination_name)
+                    if not conversation:
+                        return_error('Could not find the Slack conversation {}'.format(destination_name))
+                    conversations.append(conversation)
+                    integration_context['conversations'] = json.dumps(conversations)
+                    conversation_id = conversation.get('id')
 
             if conversation_id:
                 destinations.append(conversation_id)
@@ -1020,7 +1017,7 @@ def close_channel():
         return_error('No mirrors found for this incident.')
 
     mirrors = json.loads(integration_context['mirrors'])
-    mirror = list(filter(lambda m: investigation.get('id') in m['investigation_ids'], mirrors))
+    mirror = list(filter(lambda m: investigation.get('id') == m['investigation_id'], mirrors))
     if not mirror:
         return_error('Could not find the mirrored Slack conversation.')
 
@@ -1028,6 +1025,11 @@ def close_channel():
     conversation_id = mirror['channel_id']
 
     CHANNEL_CLIENT.conversations_archive(channel=conversation_id)
+
+    # Check for other mirrors on the archived channel
+    channel_mirrors = list(filter(lambda m: conversation_id == m['channel_id'], mirrors))
+    for mirror in channel_mirrors:
+        mirrors.remove(mirror)
 
     integration_context['mirrors'] = json.dumps(mirrors)
     demisto.setIntegrationContext(integration_context)
