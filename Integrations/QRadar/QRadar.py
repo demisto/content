@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 import os
 import json
 import requests
+import traceback
 from requests.exceptions import HTTPError
 from copy import deepcopy
 
@@ -210,7 +211,7 @@ def send_request(method, url, headers=AUTH_HEADERS, params=None):
             err_msg = err_msg + 'Error: {0}.\n'.format(err_json['http_response'])
         if 'code' in err_json:
             err_msg = err_msg + 'QRadar Error Code: {0}'.format(err_json['code'])
-        return_error(err_msg)
+        raise Exception(err_msg)
     return res.json()
 
 
@@ -467,7 +468,8 @@ def fetch_incidents():
     raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL), _filter=fetch_query)
     if len(raw_offenses) >= OFFENSES_PER_CALL:
         last_offense_pos = find_last_page_pos(fetch_query)
-        raw_offenses = get_offenses(_range='{0}-{1}'.format(last_offense_pos - OFFENSES_PER_CALL + 1, last_offense_pos))
+        raw_offenses = get_offenses(_range='{0}-{1}'.format(last_offense_pos - OFFENSES_PER_CALL + 1, last_offense_pos),
+                                    _filter=fetch_query)
     raw_offenses = unicode_to_str_recur(raw_offenses)
     incidents = []
     enrich_offense_res_with_source_and_destination_address(raw_offenses)
@@ -1007,11 +1009,10 @@ def get_domains_by_id_command():
 # Command selector
 try:
     LOG('Command being called is {command}'.format(command=demisto.command()))
-    if demisto.command() == 'fetch-incidents':
-        demisto.incidents(fetch_incidents())
-
     if demisto.command() == 'test-module':
         demisto.results(test_module())
+    elif demisto.command() == 'fetch-incidents':
+        demisto.incidents(fetch_incidents())
     elif demisto.command() in ['qradar-offenses', 'qr-offenses']:
         demisto.results(get_offenses_command())
     elif demisto.command() == 'qradar-offense-by-id':
@@ -1049,5 +1050,12 @@ try:
     elif demisto.command() == 'qradar-get-domain-by-id':
         demisto.results(get_domains_by_id_command())
 except Exception as e:
-    return_error('Error has occurred in the QRadar Integration: {error}\n {message}'.format(error=type(e),
-                                                                                            message=e.message))
+    message = e.message if hasattr(e, 'message') else ''
+    error = 'Error has occurred in the QRadar Integration: {error}\n {message}'.format(error=type(e), message=message)
+    LOG(traceback.format_exc())
+    if demisto.command() == 'fetch-incidents':
+        LOG(error)
+        LOG.print_log()
+        raise Exception(error)
+    else:
+        return_error(error)
