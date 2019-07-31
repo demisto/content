@@ -1,0 +1,114 @@
+commonfields:
+  id: McAfee Threat Intelligence Exchange
+  version: -1
+name: McAfee Threat Intelligence Exchange
+display: McAfee Threat Intelligence Exchange
+category: Data Enrichment & Threat Intelligence
+description: Connect to TIE using its DXL client
+configuration:
+- display: Broker CA certificates content (see `brokercerts.crt` in instructions)
+  name: broker_ca_bundle
+  defaultvalue: ""
+  type: 12
+  required: true
+- display: Client certificates content (see `client.crt` in instructions)
+  name: cert_file
+  defaultvalue: ""
+  type: 12
+  required: true
+- display: Client private key path (e.g. /usr/config/client.key)
+  name: private_key
+  defaultvalue: ""
+  type: 14
+  required: true
+- display: Brokers urls (comma separated list in the form of - [ssl://]<hostname>[:port])
+    - get hostname & port from `brokerlist.properties` file in instructions. Note
+    that the broker should be reachable from demisto server
+  name: broker_urls
+  defaultvalue: ""
+  type: 0
+  required: true
+script:
+  script: ''
+  type: python
+  commands:
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: '  Hash of the file to query. Supports MD5 SHA1 & SHA256'
+    outputs:
+    - contextPath: File.MD5
+      description: file's hash MD5 (if supplied)
+    - contextPath: File.SHA1
+      description: file's hash SHA1 (if supplied)
+    - contextPath: File.SHA256
+      description: file's hash MD5 (if supplied)
+    - contextPath: File.TrustLevel
+      description: File lowest trust level
+    - contextPath: File.Vendor
+      description: File lowest trust level's vendor
+    - contextPath: DBotScore.Score
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Vendor
+      description: The actual score
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Indicator
+      description: The given file's hash
+    important:
+    - contextPath: File(val.Malicious)
+      description: Malicious Files
+      related: ""
+    description: Retrieves the reputations for the specified hash ( Supports MD5 SHA1
+      & SHA256)
+  - name: tie-set-file-reputation
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: '  Hash of the file to set. Supports MD5 SHA1 & SHA256'
+    - name: trust_level
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - NOT_SET
+      - KNOWN_MALICIOUS
+      - MOST_LIKELY_MALICIOUS
+      - MIGHT_BE_MALICIOUS
+      - UNKNOWN
+      - MIGHT_BE_TRUSTED
+      - MOST_LIKELY_TRUSTED
+      - KNOWN_TRUSTED
+      - KNOWN_TRUSTED_INSTALLER
+      description: The new trust level for the file
+    - name: filename
+      description: A file name to associate with the file
+    - name: comment
+      description: A comment to associate with the file
+    description: Sets the “Enterprise” reputation (trust level) of a specified file.
+      NOTE - invoking this method must have permissions - 'How-to' in instance instruction)
+  - name: tie-file-references
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: '  Hash of the file to search on. Supports MD5 SHA1 & SHA256'
+    outputs:
+    - contextPath: File.MD5
+      description: file's hash MD5 (if supplied)
+    - contextPath: File.SHA1
+      description: file's hash SHA1 (if supplied)
+    - contextPath: File.SHA256
+      description: file's hash SHA256 (if supplied)
+    - contextPath: File.References.AgentGuid
+      description: The GUID of the system that referenced the file
+    - contextPath: File.References.Date
+      description: The time the system first referenced the file
+    description: Retrieves the set of systems which have referenced (typically executed)
+      the specified file
+  dockerimage: demisto/dxl
+  runonce: false
+tests:
+- McAfee-TIE Test
