@@ -160,6 +160,9 @@ script:
     - contextPath: AutoFocus.SamplesResults.TagGroups
       description: Groups of relevant tags.
       type: String
+    - contextPath: AutoFocus.SamplesSearch.Status
+      description: Search status ("in progress" or "complete").
+      type: String
     description: Returns results of a previous samples search.
   - name: autofocus-sessions-search-results
     arguments:
@@ -193,6 +196,9 @@ script:
       type: String
     - contextPath: AutoFocus.SessionsResults.Tags
       description: Relevant tags.
+      type: String
+    - contextPath: AutoFocus.SessionsSearch.Status
+      description: Search status ("in progress" or "complete").
       type: String
     description: Returns results of a previous sessions search.
   - name: autofocus-get-session-details
@@ -398,6 +404,9 @@ script:
     - contextPath: AutoFocus.TopTagsResults.Lasthit
       description: Tag last encounter date.
       type: Date
+    - contextPath: AutoFocus.TopTagsSearch.Status
+      description: Search status ("in progress" or "complete").
+      type: String
     description: Get the results of a previous top tags search
   dockerimage: demisto/python3:3.7.2.214
   runonce: false
