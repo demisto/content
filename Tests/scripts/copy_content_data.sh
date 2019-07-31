@@ -13,7 +13,7 @@ echo "test1"
 # Poll until ssh starts
 echo "Start polling for ssh on host: ${PUBLIC_IP}"
 COUNT=1
-until ssh -t ${USER}@${PUBLIC_IP} sudo 'echo hello'; do
+until ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${USER}@${PUBLIC_IP} 'echo hello'; do
     sleep 3
     COUNT=$(( COUNT + 1 ))
     if (( COUNT >= 30 )); then
