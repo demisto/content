@@ -247,21 +247,21 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets external file metadata.
+    description: Gets metadata for an external file.
     execution: false
     name: pan-os-edl-get-external-file-metadata
     outputs:
     - contextPath: PANOSEDL.FileName
-      description: External File name
+      description: Name of the external file.
       type: String
     - contextPath: PANOSEDL.Size
-      description: File size
+      description: File size.
       type: Number
     - contextPath: PANOSEDL.NumberOfLines
-      description: Number of lines
+      description: Number of lines.
       type: Number
     - contextPath: PANOSEDL.LastModified
-      description: Last modified date of the file
+      description: Date that the file was last modified.
       type: String
   dockerimage: demisto/openssh:1.0.0.305
   isfetch: false
