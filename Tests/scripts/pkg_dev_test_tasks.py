@@ -210,11 +210,13 @@ def docker_image_create(docker_base_image, requirements):
     return target_image
 
 
-def docker_run(project_dir, docker_image, no_test, no_lint, keep_container):
+def docker_run(project_dir, docker_image, no_test, no_lint, keep_container, use_root=False):
     workdir = '/devwork'  # this is setup in CONTAINER_SETUP_SCRIPT
     pylint_files = get_lint_files(project_dir)
-    run_params = ['docker', 'create', '-u', '{}:4000'.format(os.getuid()), '-w', workdir,
+    run_params = ['docker', 'create', '-w', workdir,
                   '-e', 'PYLINT_FILES={}'.format(pylint_files)]
+    if not use_root:
+        run_params.extend(['-u', '{}:4000'.format(os.getuid())])
     if no_test:
         run_params.extend(['-e', 'PYTEST_SKIP=1'])
     if no_lint:
@@ -270,6 +272,7 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
     parser.add_argument("--no-mypy", help="Do NOT run mypy static type checking", action='store_true')
     parser.add_argument("--no-flake8", help="Do NOT run flake8 linter", action='store_true')
     parser.add_argument("--no-test", help="Do NOT test (skip pytest)", action='store_true')
+    parser.add_argument("-r", "--root", help="Run pytest container with root user", action='store_true')
     parser.add_argument("-k", "--keep-container", help="Keep the test container", action='store_true')
     parser.add_argument("-v", "--verbose", help="Verbose output", action='store_true')
 
@@ -307,7 +310,7 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
             if not args.no_test or not args.no_pylint:
                 requirements = get_dev_requirements(py_num)
                 docker_image_created = docker_image_create(docker, requirements)
-                docker_run(project_dir, docker_image_created, args.no_test, args.no_pylint, args.keep_container)
+                docker_run(project_dir, docker_image_created, args.no_test, args.no_pylint, args.keep_container, args.root)
         except subprocess.CalledProcessError as ex:
             sys.stderr.write("[FAILED {}] Error: {}\n".format(project_dir, str(ex)))
             return 2
