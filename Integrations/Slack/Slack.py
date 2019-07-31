@@ -569,12 +569,10 @@ async def listen(**payload):
             return
 
         integration_context = demisto.getIntegrationContext()
-
         user = await get_user_by_id_async(client, integration_context, user_id)
-
         if channel and channel[0] == 'D':
             # DM
-            await handle_dm(user_id, text, client)
+            await handle_dm(user, text, client)
         elif await check_and_handle_entitlement(text, user):
             await client.chat_postMessage(channel=channel, text='Response received by: {}'.format(user.get('name')))
         else:
@@ -663,8 +661,7 @@ async def check_and_handle_entitlement(text: str, user: dict) -> bool:
         if len(id_and_task) > 1:
             task_id = id_and_task[1]
         content = text.replace(entitlement, '', 1)
-        demisto.info('content: ' + content)
-        demisto.handleEntitlementForUser(incident_id, guid, task_id, user.get('profile', {}).get('email'), content)
+        demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'), content, task_id)
 
         return True
 
@@ -817,7 +814,7 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
                     if entry:
                         link += '/' + entry
                     message += '\n{} {}'.format('View it on:', link)
-            elif not ignore_add_url:
+            else:
                 link = server_links.get('server', '')
                 if link:
                     message += '\n{} {}'.format('View it on:', link + '#/home')
