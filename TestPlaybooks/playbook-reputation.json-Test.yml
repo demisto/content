@@ -492,7 +492,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: www.demisto.com
+              simple: demisto.com
       - - operator: containsString
           left:
             value:
@@ -500,7 +500,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: www.google.com
+              simple: google.com
     view: |-
       {
         "position": {
@@ -760,7 +760,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsString
           left:
             value:
               simple: ${URL.Data}
@@ -768,7 +768,7 @@ tasks:
           right:
             value:
               simple: http://ru.wikipedia.org/wiki/Елизавета_I
-      - - operator: isEqualString
+      - - operator: containsString
           left:
             value:
               simple: ${URL.Data}
@@ -776,7 +776,7 @@ tasks:
           right:
             value:
               simple: https://golang.org/pkg/regexp/syntax/
-      - - operator: isEqualString
+      - - operator: containsString
           left:
             value:
               simple: ${URL.Data}
