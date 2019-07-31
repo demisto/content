@@ -1,8 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-res = []
-t = []
+res: list = []
+t: list = []
 found = []
 ips = argToList(demisto.args()['ip'])
 for ip in ips:
