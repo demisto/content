@@ -9,6 +9,18 @@ USER="ec2-user"
 echo "[`date`] ${PUBLIC_IP}: add instance to known hosts"
 ssh-keyscan -H ${PUBLIC_IP} >> ~/.ssh/known_hosts
 
+# Poll until ssh starts
+echo "Start polling for ssh on host: ${PUBLIC_IP}"
+COUNT=1
+until ssh ${USER}@${PUBLIC_IP} 'echo hello'; do
+    sleep 3
+    COUNT=$(( COUNT + 1 ))
+    if (( COUNT >= 30 )); then
+        echo "Failed to connect to host: ${PUBLIC_IP}"
+        break;
+    fi;
+done
+
 # copy content files
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/content'
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/TestPlaybooks'
