@@ -1,4 +1,5 @@
 """Run content installation on the AMI instances"""
+from time import sleep
 from threading import Thread
 from Tests.test_utils import run_command, run_threads_list
 import json
@@ -27,6 +28,8 @@ def main():
     with open('instance_ids', 'w') as instance_file:
         instance_file.write('\n'.join(instance_ids_nonami))
 
+    print("Waiting 60 Seconds for SSH to start\n")
+    sleep(60)
     threads_list = []
     for instance_ip in id_to_ip.values():
         t = Thread(target=run_command,
