@@ -422,7 +422,7 @@ tasks:
       key:
         simple: valid_domains
       value:
-        simple: '"www.demisto.com", "www.google.com", "bücher.de"'
+        simple: '"www.demisto.com", "www.google.com"'
     separatecontext: false
     view: |-
       {
@@ -501,14 +501,6 @@ tasks:
           right:
             value:
               simple: www.google.com
-      - - operator: isEqualString
-          left:
-            value:
-              simple: ${Domain.Name}
-            iscontext: true
-          right:
-            value:
-              simple: bücher.de
     view: |-
       {
         "position": {
@@ -707,7 +699,7 @@ tasks:
       key:
         simple: valid_urls
       value:
-        simple: '"http://ru.wikipedia.org/wiki/Елизавета_I", "https://golang.org/pkg/regexp/syntax/"'
+        simple: '"http://ru.wikipedia.org/wiki/Елизавета_I", "https://golang.org/pkg/regexp/syntax/", "www.bücher.de"'
     separatecontext: false
     view: |-
       {
@@ -779,11 +771,19 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: '{URL.Data}'
+              simple: ${URL.Data}
             iscontext: true
           right:
             value:
               simple: https://golang.org/pkg/regexp/syntax/
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: www.bücher.de
     view: |-
       {
         "position": {
