@@ -351,7 +351,7 @@
             "playbookID": "minemeld_test"
         },
         {
-            "integrations": "SentinelOne V2",
+            "integrations": "SentinelOne Beta",
             "playbookID": "SentinelOne Beta Test"
         },
         {
@@ -1703,6 +1703,7 @@
         }
     ],
     "skipped_tests": {
+        "rsa_packets_and_logs_test": "A command searches for a session ID which doesn't exist on our local server - asked RSA to help (issue #18332)",
         "reputations.json Test": "Reverting the fqdn indicator due to glichtman request, will handled next release(end july 19)",
         "Cybereason Test": "Integration instance being disabled in the middle of test playbook (issue 17394)",
         "LogRhythmRest": "Unstable environment Adi is checking",
@@ -1761,6 +1762,8 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "ArcSight ESM v2": "License expired (issue #18328)",
+        "AlienVault USM Anywhere": "License expired (issue #18273)",
         "Tufin": "Calls to instance return 502 error. @itay reached out (issue 16441)",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "MimecastV2": "Several issues with instance",
@@ -1794,6 +1797,9 @@
         "Tenable.io": "Unstable instance (issue 16115)",
 
       "_comment": "~~~ OTHER ~~~",
+        "Pwned": "Changes in API - may require integration rewrite (issue #18102)",
+        "SumoLogic": "Shelly working on fixing it",
+        "Windows Defender Advanced Threat Protection": "Avidan working on fixing it",
         "iDefense": "DevOps investigation",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
