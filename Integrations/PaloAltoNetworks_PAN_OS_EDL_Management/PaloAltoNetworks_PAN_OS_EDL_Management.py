@@ -274,8 +274,6 @@ def edl_update_from_external_file(list_name: str, file_path: str, type_: str):
         demisto.setIntegrationContext(dict_of_lists)
         return list_data_new
     else:
-        demisto.log(str(file_data))
-        demisto.log(str(list_name))
         dict_of_lists.update({list_name: file_data})
         demisto.setIntegrationContext(dict_of_lists)
         return file_data
