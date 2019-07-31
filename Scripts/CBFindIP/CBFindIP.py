@@ -17,5 +17,4 @@ if t:
     demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': e['HumanReadable'],
                      'EntryContext': e['EntryContext']})
 else:
-    demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['note'], 'Contents': 'No results.'})
-demisto.results(res)
+    return_error(e['Contents'])
