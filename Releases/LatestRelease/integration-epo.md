@@ -1,1 +1,1 @@
-Add epo-move-system command
+Added the ***epo-move-system*** command.
