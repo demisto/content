@@ -1,6 +1,7 @@
 id: reputations.json Test
 version: -1
 name: reputations.json Test
+toversion: "4.5.0"
 description: Test . our Reputions,json regexes in misc folder
 starttaskid: "0"
 tasks:
