@@ -1,0 +1,176 @@
+commonfields:
+  id: SplunkPy
+  version: -1
+name: SplunkPy
+display: SplunkPy
+category: Analytics & SIEM
+description: Run queries on Splunk servers
+configuration:
+- display: Host - ip (x.x.x.x)
+  name: host
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: authentication
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: ""
+  name: port
+  defaultvalue: "8089"
+  type: 0
+  required: true
+- display: Fetch notable events ES query
+  name: fetchQuery
+  defaultvalue: search index=notable | eval rule_name=if(isnull(rule_name),source,rule_name)
+    | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency`
+    | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description)
+    | eval security_domain=if(isnull(security_domain),source,security_domain)
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: 'Proxy - in format: 127.0.0.1:8080'
+  name: proxy
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Timezone of Splunk server in minutes e.g. for gmt +3 set +180 (set only
+    if different than Demisto server), relevent for fetch notable events only
+  name: timezone
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Parse Raw of notable events
+  name: parseNotableEventsRaw
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: 'Extract Fields - comma separated fields that will be parsed out of _raw
+    notable events '
+  name: extractFields
+  defaultvalue: ""
+  type: 12
+  required: false
+- display: Use Splunk Clock Time For Fetch
+  name: useSplunkTime
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
+  name: unsecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: splunk-results
+    arguments:
+    - name: sid
+      required: true
+      default: true
+      description: search id
+    description: fetch splunk search results, can be used in conjunction with splunk-job-create
+  - name: splunk-search
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: The splunk search language string to execute, example :"index=*
+        | head 3"
+    - name: earliest_time
+      description: 'Specifies the earliest time in the time range to search. The time
+        string can be a UTC time (with fractional seconds), a relative time specifier
+        (to now), or a formatted time string. Default is 1 week ago, in this format
+        "-7d", also possible to do time as: 2014-06-19T12:00:00.000-07:00"'
+    - name: latest_time
+      description: Specifies the latest time in the time range to search. The time
+        string can be a UTC time (with fractional seconds), a relative time specifier
+        (to now), or a formatted time string, example "2014-06-19T12:00:00.000-07:00"
+        or "-3d" (for time 3 days before now)
+    - name: event_limit
+      description: Limit the amount of events to return, Default is 100, put 0 for
+        unlimited
+    outputs:
+    - contextPath: Splunk.Result
+      description: The splunk search result, json array where each item is a splunk
+        event
+    description: Search Splunk for events
+  - name: splunk-submit-event
+    arguments:
+    - name: index
+      required: true
+      description: Splunk index to push data to, run splunk-get-indexes to get all
+        indexes
+    - name: data
+      required: true
+      default: true
+      description: The new event data to push, can be any string
+    - name: sourcetype
+      required: true
+      description: Event sourcetype
+    - name: host
+      required: true
+      description: Event host, can be 'Local' or '120.0.0.1' for example
+    description: Create new event in splunk
+  - name: splunk-get-indexes
+    arguments: []
+    description: Print all Splunk index names
+  - name: splunk-notable-event-edit
+    arguments:
+    - name: eventIDs
+      required: true
+      description: 'The notable events event_id, comma separated for a list '
+    - name: owner
+      description: Splunk user to assign to notable event
+    - name: comment
+      required: true
+      description: Comment to add to notable event
+    - name: urgency
+      auto: PREDEFINED
+      predefined:
+      - critical
+      - high
+      - medium
+      - low
+      - informational
+      description: Notable Event urgency
+    - name: status
+      description: Notable event status- 0 for Unassigned,1 for Assigned, 2 for In
+        Progress, 3 for pending, 4 for Resolved, 5 for Closed
+    description: Update an existing Notable event in Splunk ES
+    execution: true
+  - name: splunk-job-create
+    arguments:
+    - name: query
+      required: true
+      description: The splunk search language string to execute, example :"index=*
+        | head 3"
+    outputs:
+    - contextPath: Splunk.Job
+      description: The created job SID
+    description: 'Create new search job in Splunk '
+  - name: splunk-parse-raw
+    arguments:
+    - name: raw
+      default: true
+      description: The Raw data of splunk event, in string format
+      defaultValue: ${Splunk.Result._raw}
+    outputs:
+    - contextPath: Splunk.Raw.Parsed
+      description: The raw event data parsed
+      type: unknown
+    description: Parse the Raw part of the event
+  dockerimage: demisto/splunksdk:1.0
+  isfetch: true
