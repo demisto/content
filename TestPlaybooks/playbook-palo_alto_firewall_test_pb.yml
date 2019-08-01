@@ -760,7 +760,7 @@ tasks:
       - "49"
     scriptarguments:
       url:
-        simple: poker.com
+        simple: poker.com,888.com,abortion.com,777.com
     separatecontext: false
     view: |-
       {

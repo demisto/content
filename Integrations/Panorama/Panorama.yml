@@ -844,7 +844,7 @@ script:
   - arguments:
     - default: false
       description: URL to check
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
