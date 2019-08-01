@@ -1187,9 +1187,9 @@ script:
   - arguments:
     - default: false
       description: The Ids of the agents to connect to the network. Mulitple Ids need
-        to be seperated by comma
+        to be seperated by comma. Get the IDs from list-agents command (e.g 678376446927294202,657738871640371668)
       isArray: false
-      name: agents_id
+      name: agent_id
       required: true
       secret: false
     deprecated: false
@@ -1206,9 +1206,10 @@ script:
   - arguments:
     - default: false
       description: The Ids of the agents to disconnect from the network. Mulitple
-        Ids need to be seperated by comma
+        Ids need to be seperated by comma. Get the IDs from list-agents command (e.g
+        678376446927294202,657738871640371668)
       isArray: false
-      name: agents_id
+      name: agent_id
       required: true
       secret: false
     deprecated: false
@@ -1216,9 +1217,9 @@ script:
     execution: false
     name: sentinelone-disconnect-agent
     outputs:
-    - contextPath: SentinelOne.Agent.AgentsAffected
-      description: The number of the affected agents
-      type: Number
+    - contextPath: SentinelOne.Agent.NetworkStatus
+      description: Agent network status.
+      type: String
     - contextPath: SentinelOne.Agent.ID
       description: The Ids of the affected agents
       type: String

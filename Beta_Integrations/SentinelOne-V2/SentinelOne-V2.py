@@ -1397,7 +1397,7 @@ def connect_agent_to_network():
     contents = []
 
     # Get arguments
-    agents_id = demisto.args().get('agents_id')
+    agents_id = demisto.args().get('agent_id')
 
     # Make request and get raw response
     agents = connect_to_network_request(agents_id)
@@ -1405,19 +1405,20 @@ def connect_agent_to_network():
 
     # Parse response into context & content entries
     if agents_affected > 0:
-        contents.append({
-            'AgentsAffected': agents_affected,
-            'ID': agents_id,
-        })
-
+        network_status = get_agent_request(agents_id)
+        contents = {
+            'NetworkStatus': network_status.get('networkStatus'),
+            'ID': agents_id
+        }
     context = {
         'SentinelOne.Agent(val.ID && val.ID === obj.ID)': contents
     }
 
     return_outputs(
-        tableToMarkdown('Total of ' + str(agents_affected) + ' agents were affected', contents, removeNull=True),
+        'The agents were connected successfully',
         context,
-        agents)
+        agents
+    )
 
 
 def disconnect_from_network_request(agents_id):
@@ -1445,7 +1446,7 @@ def disconnect_agent_from_network():
     contents = []
 
     # Get arguments
-    agents_id = demisto.args().get('agents_id')
+    agents_id = demisto.args().get('agent_id')
 
     # Make request and get raw response
     agents = connect_to_network_request(agents_id)
@@ -1453,19 +1454,21 @@ def disconnect_agent_from_network():
 
     # Parse response into context & content entries
     if agents_affected > 0:
-        contents.append({
-            'AgentsAffected': agents_affected,
-            'ID': agents_id,
-        })
+        network_status = get_agent_request(agents_id)
+        contents = {
+            'NetworkStatus': network_status.get('networkStatus'),
+            'ID': agents_id
+        }
 
     context = {
         'SentinelOne.Agent(val.ID && val.ID === obj.ID)': contents
     }
 
     return_outputs(
-        tableToMarkdown('Total of ' + str(agents_affected) + ' agents were affected', contents, removeNull=True),
+        'The agents were disconnected successfully',
         context,
-        agents)
+        agents
+    )
 
 
 def fetch_incidents():
