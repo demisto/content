@@ -1197,6 +1197,9 @@ def get_threat_summary_request(site_ids, group_ids):
     return {}
 
 
+# Agents Commands
+
+
 def list_agents_command():
     """
     List all agents matching the input filter
@@ -1369,6 +1372,102 @@ def get_agent_request(agent_id):
     return {}
 
 
+def connect_to_network_request(agents_id):
+    endpoint_url = 'agents/actions/connect'
+
+    payload = {
+        "filter": {
+            "ids": agents_id
+        }
+    }
+
+    response = http_request('POST', endpoint_url, data=json.dumps(payload))
+    if response.get('errors'):
+        return_error(response.get('errors'))
+    if 'data' in response:
+        return response
+    return {}
+
+
+def connect_agent_to_network():
+    """
+    Sends a "connect to network" command to all agents matching the input filter.
+    """
+    # Init main vars
+    contents = []
+
+    # Get arguments
+    agents_id = demisto.args().get('agents_id')
+
+    # Make request and get raw response
+    agents = connect_to_network_request(agents_id)
+    agents_affected = agents.get('data').get('affected')
+
+    # Parse response into context & content entries
+    if agents_affected > 0:
+        contents.append({
+            'AgentsAffected': agents_affected,
+            'ID': agents_id,
+        })
+
+    context = {
+        'SentinelOne.Agent(val.ID && val.ID === obj.ID)': contents
+    }
+
+    return_outputs(
+        tableToMarkdown('Total of ' + str(agents_affected) + ' agents were affected', contents, removeNull=True),
+        context,
+        agents)
+
+
+def disconnect_from_network_request(agents_id):
+    endpoint_url = 'agents/actions/disconnect'
+
+    payload = {
+        "filter": {
+            "ids": agents_id
+        }
+    }
+
+    response = http_request('POST', endpoint_url, data=json.dumps(payload))
+    if response.get('errors'):
+        return_error(response.get('errors'))
+    if 'data' in response:
+        return response
+    return {}
+
+
+def disconnect_agent_from_network():
+    """
+    Sends a "disconnect from network" command to all agents matching the input filter.
+    """
+    # Init main vars
+    contents = []
+
+    # Get arguments
+    agents_id = demisto.args().get('agents_id')
+
+    # Make request and get raw response
+    agents = connect_to_network_request(agents_id)
+    agents_affected = agents.get('data').get('affected')
+
+    # Parse response into context & content entries
+    if agents_affected > 0:
+        contents.append({
+            'AgentsAffected': agents_affected,
+            'ID': agents_id,
+        })
+
+    context = {
+        'SentinelOne.Agent(val.ID && val.ID === obj.ID)': contents
+    }
+
+    return_outputs(
+        tableToMarkdown('Total of ' + str(agents_affected) + ' agents were affected', contents, removeNull=True),
+        context,
+        agents)
+
+
 def fetch_incidents():
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
@@ -1453,6 +1552,10 @@ try:
         delete_group()
     elif demisto.command() == 'sentinelone-agent-processes':
         get_agent_processes()
+    elif demisto.command() == 'sentinelone-connect-agent':
+        connect_agent_to_network()
+    elif demisto.command() == 'sentinelone-disconnect-agent':
+        disconnect_agent_from_network()
 
 
 except Exception as e:
