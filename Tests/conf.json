@@ -832,6 +832,10 @@
             "playbookID": "listExecutedCommands-Test"
         },
         {
+            "integrations": "AWS - Lambda",
+            "playbookID": "AWS-Lambda-Test (Read-Only)"
+        },
+        {
             "integrations": "Service Manager",
             "playbookID": "TestHPServiceManager",
             "timeout": 400
@@ -1856,6 +1860,7 @@
         "Anomali ThreatStream": "'proxy' parameter not working",
         "Palo Alto Networks Cortex": "SDK",
         "AWS - EC2": "SSL Validation fails for STS",
+        "AWS - Lambda": "AWS not accepting self-signed certs",
         "Recorded Future": "might be dynamic test",
         "AlphaSOC Wisdom": "Test module issue",
         "Microsoft Graph": "Test direct access to oproxy",
