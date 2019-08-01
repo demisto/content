@@ -1376,8 +1376,8 @@ def connect_to_network_request(agents_id):
     endpoint_url = 'agents/actions/connect'
 
     payload = {
-        "filter": {
-            "ids": agents_id
+        'filter': {
+            'ids': agents_id
         }
     }
 
@@ -1393,15 +1393,12 @@ def connect_agent_to_network():
     """
     Sends a "connect to network" command to all agents matching the input filter.
     """
-    # Init main vars
-    contents = []
-
     # Get arguments
     agents_id = demisto.args().get('agent_id')
 
     # Make request and get raw response
     agents = connect_to_network_request(agents_id)
-    agents_affected = agents.get('data').get('affected')
+    agents_affected = agents.get('data', {}).get('affected')
 
     # Parse response into context & content entries
     if agents_affected > 0:
@@ -1410,12 +1407,15 @@ def connect_agent_to_network():
             'NetworkStatus': network_status.get('networkStatus'),
             'ID': agents_id
         }
+    else:
+        demisto.results('The agent(s) was not affected')
+
     context = {
         'SentinelOne.Agent(val.ID && val.ID === obj.ID)': contents
     }
 
     return_outputs(
-        'The agents were connected successfully',
+        f'{agents_affected} agent(s) successfully connected to the network.',
         context,
         agents
     )
@@ -1425,8 +1425,8 @@ def disconnect_from_network_request(agents_id):
     endpoint_url = 'agents/actions/disconnect'
 
     payload = {
-        "filter": {
-            "ids": agents_id
+        'filter': {
+            'ids': agents_id
         }
     }
 
@@ -1442,15 +1442,12 @@ def disconnect_agent_from_network():
     """
     Sends a "disconnect from network" command to all agents matching the input filter.
     """
-    # Init main vars
-    contents = []
-
     # Get arguments
     agents_id = demisto.args().get('agent_id')
 
     # Make request and get raw response
     agents = connect_to_network_request(agents_id)
-    agents_affected = agents.get('data').get('affected')
+    agents_affected = agents.get('data', {}).get('affected')
 
     # Parse response into context & content entries
     if agents_affected > 0:
@@ -1459,13 +1456,15 @@ def disconnect_agent_from_network():
             'NetworkStatus': network_status.get('networkStatus'),
             'ID': agents_id
         }
+    else:
+        demisto.results('The agent(s) was not affected')
 
     context = {
         'SentinelOne.Agent(val.ID && val.ID === obj.ID)': contents
     }
 
     return_outputs(
-        'The agents were disconnected successfully',
+        f'{agents_affected} agent(s) successfully disconnected from the network.',
         context,
         agents
     )
