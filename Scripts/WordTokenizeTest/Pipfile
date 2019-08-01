@@ -11,12 +11,7 @@ requests-mock = "*"
 flake8 = "*"
 
 [packages]
-fasttext = "*"
-nltk = "==3.3"
-numpy = "==1.15.1"
-pybind11 = "==2.2.3"
-six = "==1.11.0"
-virtualenv = "==15.0.3"
+nltk = "*"
 
 [requires]
-python_version = "2.7"
+python_version = "3.7"

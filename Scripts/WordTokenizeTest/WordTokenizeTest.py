@@ -2,7 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 import nltk
 import re
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
+from html import unescape
 html_parser = HTMLParser()
 
 CLEAN_HTML = (demisto.args().get('cleanHtml', 'yes') == 'yes')
@@ -27,7 +28,7 @@ def clean_html(text):
     cleaned = text
     for pattern in REMOVE_HTML_PATTERNS:
         cleaned = pattern.sub(" ", cleaned)
-    return html_parser.unescape(cleaned).strip()
+    return unescape(cleaned).strip()
 
 
 def tokenize_text(text):
@@ -42,7 +43,7 @@ def tokenize_text(text):
         raise Exception("Unsupported tokenize type: %s" % TOKENIZE_TYPE)
     if HASH_SEED:
         word_tokens = map(str, map(lambda x: hash_djb2(x, int(HASH_SEED)), word_tokens))
-    return (' '.join(word_tokens)).encode(TEXT_ENCODE).strip()
+    return (' '.join(word_tokens)).strip()
 
 
 def remove_line_breaks(text):
@@ -57,7 +58,7 @@ def main():
 
     if type(text) is not list:
         text = [text]
-    result = map(remove_line_breaks, map(tokenize_text, map(clean_html, text)))
+    result = list(map(remove_line_breaks, map(tokenize_text, map(clean_html, text))))
 
     if len(result) == 1:
         result = result[0]
