@@ -311,14 +311,12 @@ def get_certificate(args):
     kwargs = {'CertificateArn': args.get('certificateArn')}
     response = client.get_certificate(**kwargs)
 
-    data = ({
-        'CertificateArn': args.get('certificateArn'),
-        'Certificate': response['Certificate'],
-        'CertificateChain': response['CertificateChain']
-    })
-    ec = {'AWS.ACM.Certificates(val.CertificateArn === obj.CertificateArn)': data}
-    human_readable = tableToMarkdown('AWS ACM Certificate', data)
-    return_outputs(human_readable, ec)
+    if 'Certificate' in response:
+        fileResult('Certificate.pem', response['Certificate'])
+    if 'CertificateChain' in response:
+        fileResult('CertificateChain.pem', response['CertificateChain'])
+
+    demisto.results('### Certificate files for ARN: {arn}'.format(arn=args.get('certificateArn')))
 
 
 def test_function():
