@@ -210,11 +210,8 @@ script:
         parsed = response.get('package_spec')
         sensor_var = getSensorVariable(parsed)
         res = parsed[0]
-        par_def_json = json.loads(res['parameter_definition'])
-        par = par_def_json['parameters'][0]
         res['sensor_variable'] = sensor_var
         parameters = parameterTableBuilder(res, 'Package Arguments Details', 'package')
-        res.update(par)
         final_result = create_entry(
             'Tanium Package',
             res,
@@ -1143,4 +1140,3 @@ script:
       type: string
     description: Get detailed information about a given action.
   dockerimage: demisto/pytan
-releaseNotes: Added default parameters in package information 
