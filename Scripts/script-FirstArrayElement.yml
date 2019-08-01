@@ -1,0 +1,29 @@
+commonfields:
+  id: FirstArrayElement
+  version: -1
+name: FirstArrayElement
+script: |-
+  VALUE = demisto.args()['value']
+
+  if type(VALUE) is list and len(VALUE) > 0:
+      VALUE = VALUE[0]
+
+  demisto.results(VALUE)
+type: python
+tags:
+- general
+- transformer
+- entirelist
+comment: Returns the first element of an array.  If not passed an array, it returns
+  the original value.
+enabled: true
+args:
+- name: value
+  required: true
+  default: true
+  description: An array to get the last value of.
+  isArray: true
+scripttarget: 0
+runonce: false
+dockerimage: demisto/python3:3.7.4.977
+runas: DBotWeakRole
