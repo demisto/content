@@ -290,13 +290,19 @@ def get_account(account_email, access_type=ACCESS_TYPE):
 
 # LOGGING
 log_stream = None
+log_handler = None
 
 
 def start_logging():
     global log_stream
+    global log_handler
     if log_stream is None:
         log_stream = StringIO()
-        logging.basicConfig(stream=log_stream, level=logging.DEBUG)
+        log_handler = logging.StreamHandler(stream=log_stream)
+        log_handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
+        logger = logging.getLogger()
+        logger.addHandler(log_handler)
+        logger.setLevel(logging.DEBUG)
 
 
 # Exchange 2010 Fixes
@@ -1723,6 +1729,13 @@ def main():
             demisto.results(
                 {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple})
         demisto.error("%s: %s" % (e.__class__.__name__, error_message))
+    finally:
+        if log_stream:
+            try:
+                logging.getLogger().removeHandler(log_handler)  # type: ignore
+                log_stream.close()
+            except Exception as ex:
+                demisto.error("EWS: unexpected exception when trying to remove log handler: {}".format(ex))
 
 
 # python2 uses __builtin__ python3 uses builtins
