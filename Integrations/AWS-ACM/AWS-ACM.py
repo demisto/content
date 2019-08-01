@@ -186,17 +186,19 @@ def describe_certificate(args):
     response = client.describe_certificate(CertificateArn=args.get('certificateArn'))
     cert = response['Certificate']
     data = ({
-        'CertificateArn': cert['CertificateArn'],
-        'DomainName': cert['DomainName'],
-        'Serial': cert['Serial'],
-        'Subject': cert['Subject'],
-        'Issuer': cert['Issuer'],
-        'Status': cert['Status'],
-        'KeyAlgorithm': cert['KeyAlgorithm'],
-        'SignatureAlgorithm': cert['SignatureAlgorithm'],
-        'Type': cert['Type'],
+        'CertificateArn': cert.get('CertificateArn'),
+        'DomainName': cert.get('DomainName'),
+        'Subject': cert.get('Subject'),
+        'Issuer': cert.get('Issuer'),
+        'Status': cert.get('Status'),
+        'KeyAlgorithm': cert.get('KeyAlgorithm'),
+        'SignatureAlgorithm': cert.get('SignatureAlgorithm'),
+        'Type': cert.get('Type'),
         'Region': obj['_user_provided_options']['region_name'],
     })
+
+    if 'Serial' in cert:
+        data.append({'Serial': cert['Serial']})
 
     try:
         raw = json.loads(json.dumps(response['Certificate'], cls=DatetimeEncoder))
