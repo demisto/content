@@ -96,7 +96,7 @@ def get_score(description):
     Returns:
         str: `IMPACT` field
     """
-    if description and isinstance(description, (str, unicode)):
+    if description and isinstance(description, str):
         regex = re.compile("(IMPACT:)(Low|Medium|High)")
         groups = regex.match(description)
         score = groups.group(2) if groups else None
@@ -184,6 +184,21 @@ def extract_indicators(data):
         dict: containing all indicators data
 
     """
+    def get_indicators(indicator):
+        """Gets a STIX entry and building the list
+
+        Args:
+            indicator (dict): STIX-formatted entry
+        """
+        pattern = indicator.get("pattern")
+        if pattern:
+            groups = regex.findall(pattern)
+            if groups:
+                for key, value in patterns_dict.items():
+                    for term in groups:
+                        if len(term) == 2 and key in term[0]:
+                            patterns_lists[value].append(term[1])
+
     regex = re.compile("(\\w.*?) = '(.*?)'")
 
     patterns_dict = {
@@ -210,24 +225,14 @@ def extract_indicators(data):
         # Use regex to extract indicators
         if isinstance(objects, list):
             for obj in objects:
-                pattern = obj.get("pattern")
-                groups = regex.findall(pattern)
-                for key, value in patterns_dict.items():
-                    for term in groups:
-                        if len(term) == 2 and key in term[0]:
-                            patterns_lists[value].append(term[1])
-        else:
-            if isinstance(objects, dict):
-                pattern = objects.get("pattern")
-                groups = regex.findall(pattern)
-                for key, value in patterns_dict.items():
-                    for term in groups:
-                        if len(term) == 2 and key in term[0]:
-                            patterns_lists[value].append(term[1])
+                get_indicators(obj)
+        elif isinstance(objects, dict):
+            get_indicators(objects)
 
         # Make all the values unique
         for key, value in patterns_lists.items():
             patterns_dict[key] = list(set(value))  # type: ignore
+
         return patterns_lists
     else:
         return_error("No STIX2 object could be parsed")
