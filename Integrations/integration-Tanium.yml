@@ -218,7 +218,7 @@ script:
         final_result = create_entry(
             'Tanium Package',
             res,
-            {'Tanium.Packages(val.id && val.id == obj.id)' : filter_list([res], ['name','id','display_name','command','command_timeout','deleted_flag','files', 'parameters', 'sensor_variable', 'defaultValue'])},
+            {'Tanium.Packages(val.id && val.id == obj.id)' : filter_list([res], ['name','id','display_name','command','command_timeout','deleted_flag','files', 'parameters', 'sensor_variable'])},
             ['id', 'name', 'creation_time', 'command', 'last_modified_by']
         )
         final_result['HumanReadable'] += parameters
