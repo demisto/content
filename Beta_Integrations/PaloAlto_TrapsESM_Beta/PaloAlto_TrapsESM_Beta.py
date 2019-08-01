@@ -238,11 +238,6 @@ def traps_esm_override_hash_verdict():
                               headers=headers, cookies=cookies, data=payload, verify=USE_SSL)
 
     demisto.results(result.content)
-    # res = result.json()
-    # if res['Succeed'] == True:
-    #     demisto.results('Hash verdict successfully updated.')
-    # else:
-    #     return_error('Hash verdict was not updated.')
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -254,8 +249,6 @@ try:
         auth_cookie = get_auth_cookie()
         if auth_cookie:
             demisto.results('ok')
-        else:
-            demisto.results('definitely not okay')
     elif demisto.command() == 'traps-esm-hash-detail':
         traps_esm_hash_detail()
     elif demisto.command() == 'traps-esm-override-hash-verdict':
