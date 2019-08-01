@@ -198,7 +198,7 @@ def describe_certificate(args):
     })
 
     if 'Serial' in cert:
-        data.append({'Serial': cert['Serial']})
+        data.update({'Serial': cert['Serial']})
 
     try:
         raw = json.loads(json.dumps(response['Certificate'], cls=DatetimeEncoder))
