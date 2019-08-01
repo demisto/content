@@ -774,7 +774,7 @@ tasks:
       key:
         simple: valid_urls
       value:
-        simple: '"http://ru.wikipedia.org/wiki/Елизавета_I", "https://golang.org/pkg/regexp/syntax/",
+        simple: '"www.ru.wikipedia.org/wiki/Елизавета_I", "www.golang.org/pkg/regexp/syntax/",
           "www.bücher.de"'
     separatecontext: false
     view: |-
