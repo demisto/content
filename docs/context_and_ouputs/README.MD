@@ -87,7 +87,7 @@ demisto.results({
 ```
 
 ## DT (Demisto Transform Language)
-In the above example, we observe the entry context using ```(val.Address==obj.Address)```. This works to *tie together* related entry context objects. In this instance, we are using the value of the Address key as the unique identifier to search through the existing context and link related objects. This prevents data from being overwritten as well as further enriches an existing entry with more information. Learn more about linking context [here](https://github.com/demisto/etc/wiki/Demisto-Code-Conventions#linking-context).
+In the above example, we observe the entry context using ```(val.Address==obj.Address)```. This works to *tie together* related entry context objects. In this instance, we are using the value of the Address key as the unique identifier to search through the existing context and link related objects. This prevents data from being overwritten as well as further enriches an existing entry with more information. Learn more about linking context [here](https://github.com/demisto/content/blob/master/docs/code_conventions/README.MD#linking-context).
 
 
 ## Adding Context to an Integration
