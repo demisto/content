@@ -15,7 +15,8 @@ configuration:
   name: incidentNotificationChannel
   required: true
   type: 0
-- display: Send notifications about incidents to the dedicated channel
+- defaultvalue: 'true'
+  display: Send notifications about incidents to the dedicated channel
   name: notify_incidents
   required: false
   type: 8

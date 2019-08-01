@@ -205,12 +205,28 @@ MIRRORS = '''
 '''
 
 
+def get_integration_context():
+    return INTEGRATION_CONTEXT
+
+
+def set_integration_context(integration_context):
+    global INTEGRATION_CONTEXT
+    INTEGRATION_CONTEXT = integration_context
+
+
 RETURN_ERROR_TARGET = 'Slack.return_error'
 
 
 @pytest.fixture(autouse=True)
 def setup():
     from Slack import init_globals
+
+    set_integration_context({
+        'mirrors': MIRRORS,
+        'users': USERS,
+        'conversations': CONVERSATIONS,
+        'bot_id': 'W12345678'
+    })
 
     init_globals()
 
@@ -221,14 +237,6 @@ async def test_get_slack_name(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     async def users_info(user):
         if user != 'alexios':
             return {'user': json.loads(USERS)[0]}
@@ -238,7 +246,7 @@ async def test_get_slack_name(mocker):
         if channel != 'lulz':
             return {'channel': json.loads(CONVERSATIONS)[0]}
 
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext')
     mocker.patch.object(slack.WebClient, 'users_info', side_effect=users_info)
     mocker.patch.object(slack.WebClient, 'conversations_info', side_effect=conversations_info)
@@ -288,22 +296,14 @@ async def test_clean_message(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     async def users_info(user):
         return {'user': json.loads(USERS)[0]}
 
     async def conversations_info(channel):
         return {'channel': json.loads(CONVERSATIONS)[0]}
 
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(slack.WebClient, 'users_info', side_effect=users_info)
     mocker.patch.object(slack.WebClient, 'conversations_info', side_effect=conversations_info)
 
@@ -328,14 +328,6 @@ def test_get_user_by_name(mocker):
     from Slack import get_user_by_name
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     def users_list(**kwargs):
         users = {'members': json.loads(USERS)}
         new_user = {
@@ -349,8 +341,8 @@ def test_get_user_by_name(mocker):
         users['members'].append(new_user)
         return users
 
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
 
     # Assert
@@ -373,6 +365,13 @@ def test_get_user_by_name(mocker):
     assert user['id'] == 'U012B3CUI'
     assert slack.WebClient.users_list.call_count == 1
 
+    set_integration_context({
+        'mirrors': MIRRORS,
+        'users': USERS,
+        'conversations': CONVERSATIONS,
+        'bot_id': 'W12345678'
+    })
+
     # User email doesn't exist in integration context
     email = 'perikles@acropoli.com'
     user = get_user_by_name(email, demisto.getIntegrationContext())
@@ -390,14 +389,6 @@ def test_get_user_by_name_paging(mocker):
     from Slack import get_user_by_name
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     def users_list(**kwargs):
         if len(kwargs) == 1:
             return {'members': json.loads(USERS), 'response_metadata': {
@@ -411,8 +402,8 @@ def test_get_user_by_name_paging(mocker):
                 'next_cursor': ''
             }}
 
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
 
     # Arrange
@@ -435,21 +426,13 @@ def test_mirror_investigation_new_mirror(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     def users_list(**kwargs):
         return {'members': json.loads(USERS)}
 
     mocker.patch.object(demisto, 'args', return_value={})
     mocker.patch.object(demisto, 'investigation', return_value={'id': '999', 'users': ['spengler', 'alexios']})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
     mocker.patch.object(slack.WebClient, 'channels_create', return_value={'channel': {
@@ -507,21 +490,13 @@ def test_mirror_investigation_new_mirror_with_name(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     def users_list(**kwargs):
         return {'members': json.loads(USERS)}
 
     mocker.patch.object(demisto, 'args', return_value={'channelName': 'coolname'})
     mocker.patch.object(demisto, 'investigation', return_value={'id': '999', 'users': ['spengler', 'alexios']})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
     mocker.patch.object(slack.WebClient, 'channels_create', return_value={'channel': {
@@ -579,21 +554,13 @@ def test_mirror_investigation_new_mirror_with_topic(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     def users_list(**kwargs):
         return {'members': json.loads(USERS)}
 
     mocker.patch.object(demisto, 'args', return_value={'channelName': 'coolname', 'channelTopic': 'cooltopic'})
     mocker.patch.object(demisto, 'investigation', return_value={'id': '999', 'users': ['spengler', 'alexios']})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
     mocker.patch.object(slack.WebClient, 'channels_create', return_value={'channel': {
@@ -654,14 +621,6 @@ def test_mirror_investigation_existing_mirror_error_type(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     def users_list(**kwargs):
         return {'members': json.loads(USERS)}
 
@@ -669,8 +628,8 @@ def test_mirror_investigation_existing_mirror_error_type(mocker):
                                                        'direction': 'FromDemisto', 'mirrorTo': 'channel'})
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
     mocker.patch.object(demisto, 'investigation', return_value={'id': '681', 'users': ['spengler']})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
     mocker.patch.object(slack.WebClient, 'channels_create')
@@ -699,22 +658,14 @@ def test_mirror_investigation_existing_mirror_error_name(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     def users_list(**kwargs):
         return {'members': json.loads(USERS)}
 
     mocker.patch.object(demisto, 'args', return_value={'channelName': 'eyy'})
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
     mocker.patch.object(demisto, 'investigation', return_value={'id': '681', 'users': ['spengler']})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
     mocker.patch.object(slack.WebClient, 'channels_create')
@@ -743,23 +694,15 @@ def test_mirror_investigation_existing_investigation(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     def users_list(**kwargs):
         return {'members': json.loads(USERS)}
 
     mocker.patch.object(demisto, 'args', return_value={'type': 'chat', 'autoclose': 'false',
                                                        'direction': 'FromDemisto', 'mirrorTo': 'group'})
     mocker.patch.object(demisto, 'investigation', return_value={'id': '681', 'users': ['spengler']})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
     mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
     mocker.patch.object(slack.WebClient, 'channels_create')
     mocker.patch.object(slack.WebClient, 'groups_create')
@@ -806,22 +749,14 @@ def test_mirror_investigation_existing_channel(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     def users_list(**kwargs):
         return {'members': json.loads(USERS)}
 
     mocker.patch.object(demisto, 'args', return_value={'channelName': 'group3', 'type': 'chat', 'autoclose': 'false',
                                                        'direction': 'FromDemisto', 'mirrorTo': 'group'})
     mocker.patch.object(demisto, 'investigation', return_value={'id': '999', 'users': ['spengler']})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
     mocker.patch.object(slack.WebClient, 'channels_create')
@@ -869,34 +804,33 @@ def test_mirror_investigation_existing_channel_remove_mirror(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        mirrors = json.loads(MIRRORS)
-        mirrors.append({
-            'channel_id': 'GKB19PA3V',
-            'channel_name': 'group2',
-            'channel_topic': 'cooltopic',
-            'investigation_id': '999',
-            'mirror_type': 'all',
-            'mirror_direction': 'both',
-            'mirror_to': 'group',
-            'auto_close': True,
-            'mirrored': True
-        })
+    mirrors = json.loads(MIRRORS)
+    mirrors.append({
+        'channel_id': 'GKB19PA3V',
+        'channel_name': 'group2',
+        'channel_topic': 'cooltopic',
+        'investigation_id': '999',
+        'mirror_type': 'all',
+        'mirror_direction': 'both',
+        'mirror_to': 'group',
+        'auto_close': True,
+        'mirrored': True
+    })
 
-        return {
-            'mirrors': json.dumps(mirrors),
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
+    set_integration_context({
+        'mirrors': json.dumps(mirrors),
+        'users': USERS,
+        'conversations': CONVERSATIONS,
+        'bot_id': 'W12345678'
+    })
 
     def users_list(**kwargs):
         return {'members': json.loads(USERS)}
 
     mocker.patch.object(demisto, 'investigation', return_value={'id': '999', 'users': ['spengler']})
     mocker.patch.object(demisto, 'args', return_value={'type': 'none'})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
     mocker.patch.object(slack.WebClient, 'channels_create')
@@ -944,22 +878,14 @@ def test_mirror_investigation_existing_channel_with_topic(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     def users_list(**kwargs):
         return {'members': json.loads(USERS)}
 
     mocker.patch.object(demisto, 'args', return_value={'channelName': 'group2', 'type': 'chat', 'autoclose': 'false',
                                                        'direction': 'FromDemisto', 'mirrorTo': 'group'})
     mocker.patch.object(demisto, 'investigation', return_value={'id': '999', 'users': ['spengler']})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
     mocker.patch.object(slack.WebClient, 'channels_create')
@@ -1006,25 +932,24 @@ def test_check_for_mirrors(mocker):
     from Slack import check_for_mirrors
 
     # Set
-    def getIntegrationContext():
-        mirrors = json.loads(MIRRORS)
-        mirrors.append({
-            'channel_id': 'new_group',
-            'channel_name': 'channel',
-            'investigation_id': '999',
-            'mirror_type': 'all',
-            'mirror_direction': 'both',
-            'mirror_to': 'group',
-            'auto_close': True,
-            'mirrored': False
-        })
+    mirrors = json.loads(MIRRORS)
+    mirrors.append({
+        'channel_id': 'new_group',
+        'channel_name': 'channel',
+        'investigation_id': '999',
+        'mirror_type': 'all',
+        'mirror_direction': 'both',
+        'mirror_to': 'group',
+        'auto_close': True,
+        'mirrored': False
+    })
 
-        return {
-            'mirrors': json.dumps(mirrors),
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
+    set_integration_context({
+        'mirrors': json.dumps(mirrors),
+        'users': USERS,
+        'conversations': CONVERSATIONS,
+        'bot_id': 'W12345678'
+    })
 
     new_mirror = {
         'channel_id': 'new_group',
@@ -1037,8 +962,8 @@ def test_check_for_mirrors(mocker):
         'mirrored': True
     }
 
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'mirrorInvestigation')
 
     # Arrange
@@ -1103,14 +1028,6 @@ async def test_handle_dm_create_demisto_user(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     @asyncio.coroutine
     def fake_translate(demisto_user, message):
         return "sup"
@@ -1127,7 +1044,7 @@ async def test_handle_dm_create_demisto_user(mocker):
             }
         }
 
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'findUser', return_value={'id': 'demisto_id'})
     mocker.patch.object(slack.WebClient, 'im_open', side_effect=fake_im)
     mocker.patch.object(slack.WebClient, 'chat_postMessage', side_effect=fake_message)
@@ -1158,14 +1075,6 @@ async def test_handle_dm_nondemisto_user_shouldnt_create(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     @asyncio.coroutine
     def fake_translate(demisto_user, message):
         return "sup"
@@ -1182,7 +1091,7 @@ async def test_handle_dm_nondemisto_user_shouldnt_create(mocker):
             }
         }
 
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'findUser', return_value=None)
     mocker.patch.object(Slack, 'translate_create', side_effect=fake_translate)
     mocker.patch.object(slack.WebClient, 'chat_postMessage', side_effect=fake_message)
@@ -1206,14 +1115,6 @@ async def test_handle_dm_nondemisto_user_should_create(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     @asyncio.coroutine
     def fake_translate(demisto_user, message):
         return "sup"
@@ -1230,7 +1131,7 @@ async def test_handle_dm_nondemisto_user_should_create(mocker):
             }
         }
 
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'findUser', return_value=None)
     mocker.patch.object(Slack, 'translate_create', side_effect=fake_translate)
     mocker.patch.object(slack.WebClient, 'im_open', side_effect=fake_im)
@@ -1253,14 +1154,6 @@ async def test_handle_dm_non_create_nonexisting_user(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     @asyncio.coroutine
     def fake_message(channel, text):
         return 'sup'
@@ -1273,7 +1166,7 @@ async def test_handle_dm_non_create_nonexisting_user(mocker):
             }
         }
 
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'findUser', return_value=None)
     mocker.patch.object(demisto, 'directMessage', return_value=None)
     mocker.patch.object(slack.WebClient, 'im_open', side_effect=fake_im)
@@ -1359,19 +1252,11 @@ async def test_get_user_by_id_async_user_exists(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     async def users_info(user):
         return {'user': json.loads(USERS)[0]}
 
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(slack.WebClient, 'users_info', side_effect=users_info)
 
     user_id = 'U012A3CDE'
@@ -1391,18 +1276,11 @@ async def test_get_user_by_id_async_user_doesnt_exist(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     async def users_info(user):
         return {'user': json.loads(USERS)[0]}
 
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext')
     mocker.patch.object(slack.WebClient, 'users_info', side_effect=users_info)
 
@@ -1424,19 +1302,12 @@ async def test_handle_text(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     @asyncio.coroutine
     def fake_clean(text, client):
         return 'מה הולך'
 
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'addEntry')
     mocker.patch.object(Slack, 'clean_message', side_effect=fake_clean)
 
@@ -1531,22 +1402,14 @@ def test_send_request(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     def users_list(**kwargs):
         return {'members': json.loads(USERS)}
 
     def conversations_list(**kwargs):
         return {'channels': json.loads(CONVERSATIONS)}
 
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
     mocker.patch.object(slack.WebClient, 'conversations_list', side_effect=conversations_list)
     mocker.patch.object(slack.WebClient, 'im_open', return_value={'channel': {'id': 'im_channel'}})
@@ -1587,21 +1450,14 @@ def test_send_request_different_name(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     def users_list(**kwargs):
         return {'members': json.loads(USERS)}
 
     def conversations_list(**kwargs):
         return {'channels': json.loads(CONVERSATIONS)}
 
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext')
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
     mocker.patch.object(slack.WebClient, 'conversations_list', side_effect=conversations_list)
@@ -1637,14 +1493,6 @@ def test_send_request_with_severity(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     def users_list(**kwargs):
         return {'members': json.loads(USERS)}
 
@@ -1653,8 +1501,8 @@ def test_send_request_with_severity(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={'severity': '3', 'message': '!!!',
                                                        'messageType': 'incidentOpened'})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
     mocker.patch.object(slack.WebClient, 'conversations_list', side_effect=conversations_list)
@@ -1692,14 +1540,6 @@ def test_send_request_with_notification_channel(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     def users_list(**kwargs):
         return {'members': json.loads(USERS)}
 
@@ -1709,8 +1549,8 @@ def test_send_request_with_notification_channel(mocker):
     mocker.patch.object(demisto, 'args', return_value={'channel': 'incidentNotificationChannel',
                                                        'severity': '4', 'message': '!!!',
                                                        'messageType': 'incidentOpened'})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
     mocker.patch.object(slack.WebClient, 'conversations_list', side_effect=conversations_list)
@@ -1748,14 +1588,6 @@ def test_send_request_with_severity_user_doesnt_exist(mocker, capfd):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     def users_list(**kwargs):
         return {'members': json.loads(USERS)}
 
@@ -1764,7 +1596,8 @@ def test_send_request_with_severity_user_doesnt_exist(mocker, capfd):
 
     mocker.patch.object(demisto, 'args', return_value={'severity': '3', 'message': '!!!',
                                                        'messageType': 'incidentOpened', 'to': 'alexios'})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext')
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
@@ -1799,22 +1632,14 @@ def test_send_request_no_user(mocker, capfd):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     def users_list(**kwargs):
         return {'members': json.loads(USERS)}
 
     def conversations_list(**kwargs):
         return {'channels': json.loads(CONVERSATIONS)}
 
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
     mocker.patch.object(slack.WebClient, 'conversations_list', side_effect=conversations_list)
@@ -1848,14 +1673,6 @@ def test_send_request_no_severity(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     def users_list(**kwargs):
         return {'members': json.loads(USERS)}
 
@@ -1864,8 +1681,8 @@ def test_send_request_no_severity(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={'severity': '2', 'message': '!!!',
                                                        'messageType': 'incidentOpened'})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
@@ -1897,14 +1714,6 @@ def test_send_request_zero_severity(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     def users_list(**kwargs):
         return {'members': json.loads(USERS)}
 
@@ -1913,8 +1722,8 @@ def test_send_request_zero_severity(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={'severity': '0', 'message': '!!!',
                                                        'messageType': 'incidentOpened'})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'results')
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
@@ -1941,18 +1750,10 @@ def test_send_message(mocker):
     import Slack
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     link = 'https://www.eizelulz.com:8443/#/WarRoom/727'
     mocker.patch.object(demisto, 'investigation', return_value={'type': 1})
     mocker.patch.object(demisto, 'demistoUrls', return_value={'warRoom': link})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(Slack, 'send_message_to_destinations')
     mocker.patch.object(Slack, 'invite_users_to_conversation')
 
@@ -1974,18 +1775,11 @@ def test_send_message_retry(mocker):
     from slack.errors import SlackApiError
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     link = 'https://www.eizelulz.com:8443/#/WarRoom/727'
     mocker.patch.object(demisto, 'investigation', return_value={'type': 1})
     mocker.patch.object(demisto, 'demistoUrls', return_value={'warRoom': link})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(Slack, 'invite_users_to_conversation')
 
     # Arrange
@@ -2008,15 +1802,7 @@ def test_send_file_retry(mocker):
     from slack.errors import SlackApiError
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(Slack, 'invite_users_to_conversation')
 
     # Arrange
@@ -2038,19 +1824,11 @@ def test_close_channel_should_delete_mirror(mocker):
     from Slack import close_channel
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     mirrors = json.loads(MIRRORS)
     mirrors.pop(0)
 
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'investigation', return_value={'id': '681'})
     mocker.patch.object(slack.WebClient, 'conversations_archive')
 
@@ -2070,20 +1848,12 @@ def test_close_channel_should_delete_mirrors(mocker):
     from Slack import close_channel
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     mirrors = json.loads(MIRRORS)
     mirrors.pop(1)
     mirrors.pop(1)
 
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'investigation', return_value={'id': '684'})
     mocker.patch.object(slack.WebClient, 'conversations_archive')
 
@@ -2138,18 +1908,10 @@ def test_send_file_no_args_investigation(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     mocker.patch.object(demisto, 'args', return_value={})
     mocker.patch.object(demisto, 'investigation', return_value={'id': '681'})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'path', 'name': 'name'})
     mocker.patch('builtins.open', mock_open(read_data="data"))
     mocker.patch.object(demisto, 'results')
@@ -2178,18 +1940,10 @@ def test_send_file_no_args_no_investigation(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     mocker.patch.object(demisto, 'args', return_value={})
     mocker.patch.object(demisto, 'investigation', return_value={'id': '999'})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(Slack, 'slack_send_request', return_value='cool')
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
 
@@ -2209,18 +1963,10 @@ def test_set_topic(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     mocker.patch.object(demisto, 'args', return_value={'channel': 'general', 'topic': 'ey'})
     mocker.patch.object(demisto, 'investigation', return_value={'id': '681'})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(Slack, 'get_conversation_by_name', return_value={'id': 'C012AB3CD'})
     mocker.patch.object(slack.WebClient, 'conversations_setTopic')
     mocker.patch.object(demisto, 'results')
@@ -2244,14 +1990,6 @@ def test_set_topic_no_args_investigation(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     new_mirror = {
         'channel_id': 'GKQ86DVPH',
         'channel_name': 'incident-681',
@@ -2266,8 +2004,8 @@ def test_set_topic_no_args_investigation(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={'topic': 'ey'})
     mocker.patch.object(demisto, 'investigation', return_value={'id': '681'})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(Slack, 'get_conversation_by_name', return_value={'id': 'C012AB3CD'})
     mocker.patch.object(slack.WebClient, 'conversations_setTopic')
     mocker.patch.object(demisto, 'results')
@@ -2297,18 +2035,10 @@ def test_send_topic_no_args_no_investigation(mocker):
 
     # Set
 
-    def getIntegrationContext():
-        return {
-            'mirrors': MIRRORS,
-            'users': USERS,
-            'conversations': CONVERSATIONS,
-            'bot_id': 'W12345678'
-        }
-
     mocker.patch.object(demisto, 'args', return_value={'topic': 'ey'})
     mocker.patch.object(demisto, 'investigation', return_value={'id': '9999'})
-    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=getIntegrationContext)
-    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(Slack, 'get_conversation_by_name', return_value={'id': 'C012AB3CD'})
     mocker.patch.object(slack.WebClient, 'conversations_setTopic')
     mocker.patch.object(demisto, 'results')
