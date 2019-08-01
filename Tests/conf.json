@@ -1128,6 +1128,10 @@
             "playbookID": "AlphaSOC-Wisdom-Test"
         },
         {
+            "integrations": "carbonblack-v2",
+            "playbookID": "CBFindIP - Test"
+        },
+        {
             "integrations": "Jask",
             "playbookID": "Jask_Test",
             "fromversion": "4.1.0"
