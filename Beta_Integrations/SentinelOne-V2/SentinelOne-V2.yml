@@ -39,7 +39,8 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '5'
-  display: Minimum risk score for importing incidents (0-10), where 0 is low risk and 10 is high risk
+  display: Minimum risk score for importing incidents (0-10), where 0 is low risk
+    and 10 is high risk
   name: fetch_threat_rank
   required: false
   type: 0
@@ -57,7 +58,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'CSV list of scan statuses by which to filter the results, for example: "started,aborted".'
+      description: 'CSV list of scan statuses by which to filter the results, for
+        example: "started,aborted".'
       isArray: false
       name: scan_status
       predefined:
@@ -86,7 +88,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Minimum number of threats for an agent.'
+      description: Minimum number of threats for an agent.
       isArray: false
       name: min_active_threats
       required: false
@@ -144,7 +146,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Exclusion item type. Can be "file_type", "path", "white_hash", "certificate", or "browser".
+      description: Exclusion item type. Can be "file_type", "path", "white_hash",
+        "certificate", or "browser".
       isArray: false
       name: exclusion_type
       predefined:
@@ -163,8 +166,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: OS type. Can be "windows", "windows_legacy", "macos", or "linux". OS
-        type is required for hash exclusions.
+      description: OS type. Can be "windows", "windows_legacy", "macos", or "linux".
+        OS type is required for hash exclusions.
       isArray: false
       name: os_type
       predefined:
@@ -200,7 +203,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: CSV list of group IDs by which to filter. Can be "site_ids" or "group_ids".
+      description: CSV list of group IDs by which to filter. Can be "site_ids" or
+        "group_ids".
       isArray: true
       name: group_ids
       required: false
@@ -228,7 +232,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'CSV list of OS types by which to filter, for example: "windows, linux".'
+      description: 'CSV list of OS types by which to filter, for example: "windows,
+        linux".'
       isArray: true
       name: os_types
       predefined:
@@ -240,7 +245,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Exclusion type. Can be "file_type", "path", "white_hash", "certificate", "browser".'
+      description: Exclusion type. Can be "file_type", "path", "white_hash", "certificate",
+        "browser".
       isArray: false
       name: exclusion_type
       predefined:
@@ -291,7 +297,8 @@ script:
       description: User name of the user that added the item.
       type: string
     - contextPath: SentinelOne.Exclusions.Mode
-      description: 'CSV list of modes by which to filter (ath exclusions only), for example: "suppress".'
+      description: 'CSV list of modes by which to filter (ath exclusions only), for
+        example: "suppress".'
       type: string
   - arguments:
     - default: false
@@ -326,7 +333,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'CSV list of mitigation statuses. Can be "mitigated", "active", "blocked", "suspicious", "pending", or "suspicious_resolved".'
+      description: CSV list of mitigation statuses. Can be "mitigated", "active",
+        "blocked", "suspicious", "pending", or "suspicious_resolved".
       isArray: true
       name: mitigation_status
       predefined:
@@ -376,7 +384,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Threat display name. Can be a partial display name, not an exact match.
+      description: Threat display name. Can be a partial display name, not an exact
+        match.
       isArray: false
       name: display_name
       required: false
@@ -389,8 +398,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Full free-text search for fields. Can be "content_hash", "file_display_name",
-        "file_path", "computer_name", or "uuid".'
+      description: Full free-text search for fields. Can be "content_hash", "file_display_name",
+        "file_path", "computer_name", or "uuid".
       isArray: false
       name: query
       required: false
@@ -403,7 +412,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: ' CSV list of threat classifications to search, for example: "Malware", "Network", "Benign".'
+      description: ' CSV list of threat classifications to search, for example: "Malware",
+        "Network", "Benign".'
       isArray: false
       name: classifications
       predefined:
@@ -509,7 +519,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Mitigation action. Can be "kill", "quarantine", "un-quarantine", "remediate", or "rollback-remediation".'
+      description: Mitigation action. Can be "kill", "quarantine", "un-quarantine",
+        "remediate", or "rollback-remediation".
       isArray: false
       name: action
       predefined:
@@ -527,8 +538,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Applies a mitigation action to a group of threats that match the specified input
-      filter.
+    description: Applies a mitigation action to a group of threats that match the
+      specified input filter.
     execution: false
     name: sentinelone-mitigate-threat
     outputs:
@@ -631,7 +642,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Site type. Can be "Trial", "Paid", "POC", "DEV", or "NFR".'
+      description: Site type. Can be "Trial", "Paid", "POC", "DEV", or "NFR".
       isArray: false
       name: site_type
       predefined:
@@ -644,7 +655,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Returns sites that support the specified features. Can be "firewall-control", "device-control", or "ioc".'
+      description: Returns sites that support the specified features. Can be "firewall-control",
+        "device-control", or "ioc".
       isArray: false
       name: features
       predefined:
@@ -655,7 +667,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Site state. Can be "active", "deleted", or "expired".'
+      description: Site state. Can be "active", "deleted", or "expired".
       isArray: false
       name: state
       predefined:
@@ -666,7 +678,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The suite of product features active for this site. Can be "Core" or "Complete".'
+      description: The suite of product features active for this site. Can be "Core"
+        or "Complete".
       isArray: false
       name: suite
       predefined:
@@ -874,7 +887,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Include internal activities hidden from display, for example: "False".'
+      description: 'Include internal activities hidden from display, for example:
+        "False".'
       isArray: false
       name: include_hidden
       predefined:
@@ -889,26 +903,28 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Return activities created before this timestamp, for example: "2018-02-27T04:49:26.257525Z".'
+      description: 'Return activities created before this timestamp, for example:
+        "2018-02-27T04:49:26.257525Z".'
       isArray: false
       name: created_before
       required: false
       secret: false
     - default: false
-      description: 'CSV list of threat IDs for which to return activities, for example: "225494730938493804,225494730938493915".'
+      description: 'CSV list of threat IDs for which to return activities, for example:
+        "225494730938493804,225494730938493915".'
       isArray: true
       name: threats_ids
       required: false
       secret: false
     - default: false
-      description: 'CSV of activity codes to return, for example:
-        "52,53,71,72".'
+      description: 'CSV of activity codes to return, for example: "52,53,71,72".'
       isArray: true
       name: activity_types
       required: false
       secret: false
     - default: false
-      description: 'CSV list of user IDs for users that invoked the activity (if applicable), for example: "225494730938493804,225494730938493915".'
+      description: 'CSV list of user IDs for users that invoked the activity (if applicable),
+        for example: "225494730938493804,225494730938493915".'
       isArray: true
       name: user_ids
       required: false
@@ -934,7 +950,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Maximum number of items to return (1-100).'
+      description: Maximum number of items to return (1-100).
       isArray: false
       name: limit
       required: false
@@ -960,8 +976,8 @@ script:
       description: Secondary description.
       type: String
     - contextPath: SentinelOne.Activity.OsFamily
-      description: Agent's OS type (if applicable). Can be "linux", "macos", "windows", or
-        "windows_legacy".
+      description: Agent's OS type (if applicable). Can be "linux", "macos", "windows",
+        or "windows_legacy".
       type: String
     - contextPath: SentinelOne.Activity.ActivityType
       description: Activity type.
@@ -1044,8 +1060,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The rank sets the priority of a dynamic group over others, for example,
-        "1", which is the highest priority.'
+      description: The rank sets the priority of a dynamic group over others, for
+        example, "1", which is the highest priority.
       isArray: false
       name: rank
       required: false
@@ -1087,15 +1103,15 @@ script:
       description: Number of agents in the group.
       type: Number
     - contextPath: SentinelOne.Group.filterId
-      description: If the group is dynamic, the group ID of the filter that is used to associate
-        agents.
+      description: If the group is dynamic, the group ID of the filter that is used
+        to associate agents.
       type: String
     - contextPath: SentinelOne.Group.isDefault
       description: Whether the groups is the default group of the site.
       type: Boolean
     - contextPath: SentinelOne.Group.inherits
-      description: Whether the policy is inherited from a site. "False" if the group has
-        its own edited policy.
+      description: Whether the policy is inherited from a site. "False" if the group
+        has its own edited policy.
       type: Boolean
     - contextPath: SentinelOne.Group.type
       description: Group type. Can be static or dynamic
@@ -1140,7 +1156,7 @@ script:
     name: sentinelone-delete-group
   - arguments:
     - default: false
-      description: 'The ID of the agent from which to retrieve the processes.'
+      description: The ID of the agent from which to retrieve the processes.
       isArray: false
       name: agents_ids
       required: true
@@ -1160,13 +1176,51 @@ script:
       description: The process ID.
       type: Number
     - contextPath: SentinelOne.Agent.processName
-      description: 'The name of the process.'
+      description: The name of the process.
       type: String
     - contextPath: SentinelOne.Agent.cpuUsage
       description: CPU usage (%).
       type: Number
     - contextPath: SentinelOne.Agent.executablePath
       description: Executable path.
+      type: String
+  - arguments:
+    - default: false
+      description: The Ids of the agents to connect to the network. Mulitple Ids need
+        to be seperated by comma
+      isArray: false
+      name: agents_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Connect agents to network
+    execution: false
+    name: sentinelone-connect-agent
+    outputs:
+    - contextPath: SentinelOne.Agent.AgentsAffected
+      description: The number of the affected agents
+      type: Number
+    - contextPath: SentinelOne.Agent.ID
+      description: The Ids of the affected agents
+      type: String
+  - arguments:
+    - default: false
+      description: The Ids of the agents to disconnect from the network. Mulitple
+        Ids need to be seperated by comma
+      isArray: false
+      name: agents_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Disconnect agents from network
+    execution: false
+    name: sentinelone-disconnect-agent
+    outputs:
+    - contextPath: SentinelOne.Agent.AgentsAffected
+      description: The number of the affected agents
+      type: Number
+    - contextPath: SentinelOne.Agent.ID
+      description: The Ids of the affected agents
       type: String
   dockerimage: demisto/python3:3.7.3.286
   isfetch: true
