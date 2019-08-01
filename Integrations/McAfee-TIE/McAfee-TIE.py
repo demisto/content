@@ -250,8 +250,6 @@ def file_references(hash):
             'EntryContext': ec
         }
 
-        return res
-
 
 def set_file_reputation(hash, trust_level, filename, comment):
     config = get_client_config()
