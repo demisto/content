@@ -56,4 +56,4 @@ timeout: '0'
 type: python
 runonce: false
 tests: [Ping Test Playbook]
-toversion: 4.5.0
+toversion: 4.5.9
