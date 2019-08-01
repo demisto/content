@@ -1,11 +1,11 @@
 args:
 - default: true
-  description: IP address(es) to find (comma-separated)
+  description: CSV list of IP addresses to identify.
   isArray: false
   name: ip
   required: true
   secret: false
-comment: Search Carbon Black for connection to specified IP address(es).
+comment: Search Carbon Black for connection to specified IP addresses.
 commonfields:
   id: CBFindIP
   version: -1
@@ -13,30 +13,30 @@ enabled: true
 name: CBFindIP
 outputs:
 - contextPath: Process.Path
-  description: Process Path
+  description: Process path.
   type: String
 - contextPath: Process.PID
-  description: Process PID
+  description: Process PID.
   type: Number
 - contextPath: Process.MD5
-  description: Process MD5
+  description: Process MD5 hash.
   type: String
 - contextPath: Process.Hostname
-  description: Process Hostname
+  description: Process hostname.
   type: String
 - contextPath: Process.Name
-  description: Process Name
+  description: Process name.
   type: String
 - contextPath: Process.CbSegmentID
-  description: Cb "segment" where this process instance is stored. Required to fetch
-    further info on a process.
+  description: Carbon Black "segment" where this process instance is stored. Required to fetch
+    additional information for a process.
   type: String
 - contextPath: Process.CbID
-  description: Cb unique ID for this process instance - required (together with CbSegmentID)
-    to fetch further info on a process.
+  description: Carbon Black unique ID for this process instance. Required (together with CbSegmentID)
+    to fetch additional information for a process.
   type: String
 - contextPath: Process.Endpoint
-  description: The endpoint of the process
+  description: The endpoint of the process.
   type: String
 script: '-'
 system: false
