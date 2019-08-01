@@ -1,1 +1,1 @@
-- 
+- fixed bug when unknown stix pattern presents the script crushed
