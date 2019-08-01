@@ -3559,7 +3559,8 @@ def main():
             # if there are attached files then we will return array of all the emails
             output = email_data if len(attached_emails) == 0 else [email_data] + attached_emails
 
-        elif 'ascii text' in file_type_lower or 'unicode text' in file_type_lower:
+        elif ('ascii text' in file_type_lower or 'unicode text' in file_type_lower
+              or ('data' == file_type_lower and file_name and file_name.lower().endswith('.eml'))):
             try:
                 # Try to open the email as-is
                 with open(file_path, 'rb') as f:
