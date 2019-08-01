@@ -8,6 +8,6 @@ Use the Whois integration to get enriched data for domains.
   * **socks5h**: SOCKS version 5 protocol with remote DNS resolving.
   * **socks5**: SOCKS version 5 protocol with local DNS resolving.
   * **socks4a**: SOCKS version 4 with remote DNS resolving.
-  * **socks4**: SOCKS version 4 with remote local DNS resolving.
+  * **socks4**: SOCKS version 4 with local DNS resolving.
   * **http**: HTTP proxy with support for CONNECT method on port 43 (default Whois port). Note that most HTTP proxies block the CONNECT method to non-HTTP/HTTPS standard ports (such as the default Whois port 43).
 
