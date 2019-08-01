@@ -55,4 +55,5 @@ script:
   runonce: false
   script: ''
   type: python
+  beta: true
   dockerimage: demisto/btfl-soup:1.0.0.925
