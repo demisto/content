@@ -86,8 +86,6 @@ tasks:
       roleArn: {}
       roleSessionDuration: {}
       roleSessionName: {}
-      using:
-        simple: AWS_-_ACM_test_169b5adb-3ef1-4298-96d1-c3be973ac488
     separatecontext: false
     view: |-
       {
