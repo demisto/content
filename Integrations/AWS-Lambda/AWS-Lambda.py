@@ -301,7 +301,7 @@ def invoke(args):
     if 'FunctionError' in response:
         data.update({'FunctionError': response['FunctionError']})
 
-    ec = {'AWS.Lambda.InvokedFunctions': data}
+    ec = {'AWS.Lambda.InvokedFunctions(val.FunctionName === obj.FunctionName)': data}
     human_readable = tableToMarkdown('AWS Lambda Invoked Functions', data)
     return_outputs(human_readable, ec)
 
