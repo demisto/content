@@ -483,11 +483,11 @@ def ban_ip(ip_addresses_array, time_to_expire=0):
 
 
 def ban_ip_command():
-    ip_addresses_string = demisto.args()["ip_address"]
+    ip_addresses_string = demisto.args()['ip_address']
     ip_addresses_array = argToList(ip_addresses_string)
-    time_to_expire = demisto.args().get("expiry")
+    time_to_expire = demisto.args().get('expiry')
     if time_to_expire:
-        time_to_expire = convert_arg_to_int(time_to_expire, "expiry")
+        time_to_expire = convert_arg_to_int(time_to_expire, 'expiry')
     else:
         # The default time to expiration is 0, which means infinite time (It will remain banned).
         time_to_expire = 0
@@ -512,7 +512,7 @@ def unban_ip(ip_addresses_array):
 
 
 def unban_ip_command():
-    ip_addresses_string = demisto.args()["ip_address"]
+    ip_addresses_string = demisto.args()['ip_address']
     ip_addresses_array = argToList(ip_addresses_string)
     response = unban_ip(ip_addresses_array)
     demisto.results({
@@ -532,9 +532,9 @@ def get_banned_ips():
 
 def get_banned_ips_command():
     response = get_banned_ips()
-    ips_data_array = response.get("results")
+    ips_data_array = response.get('results')
     entry_context = create_banned_ips_entry_context(ips_data_array)
-    human_readable = create_banned_ips_human_readable(entry_context, response)
+    human_readable = create_banned_ips_human_readable(entry_context)
     return_outputs(
         raw_response=response,
         readable_output=human_readable,
