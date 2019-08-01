@@ -6,6 +6,14 @@ display: AWS - ACM
 category: IT Services
 description: Amazon Web Services Certificate Manager Service (acm)
 configuration:
+- display: Role Arn
+  name: roleArn
+  required: false
+  type: 0
+- display: Role Session Name
+  name: roleSessionName
+  required: false
+  type: 0
 - display: AWS Default Region
   name: defaultRegion
   options:
@@ -27,21 +35,26 @@ configuration:
   - eu-west-3
   required: false
   type: 15
-- display: Role Arn
-  name: roleArn
-  defaultvalue: ""
-  type: 0
-  required: false
-- display: Role Session Name
-  name: roleSessionName
-  defaultvalue: ""
-  type: 0
-  required: false
 - display: Role Session Duration
   name: sessionDuration
-  defaultvalue: ""
-  type: 0
   required: false
+  type: 0
+- display: Access Key
+  name: access_key
+  required: false
+  type: 0
+- display: Secret Key
+  name: secret_key
+  required: false
+  type: 4
+- display: Trust any cert (Not Secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
 script:
   script: ''
   type: python
@@ -268,8 +281,30 @@ script:
       - EC_secp521r1
       description: Specify one or more algorithms that can be used to generate key
         pairs.
-    - name: region
-      description: The AWS Region, if not specified the default region will be used.
+    - auto: PREDEFINED
+      default: false
+      description: The AWS Region, if not specified the default region will be used
+      isArray: false
+      name: region
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+      required: false
+      secret: false
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -300,8 +335,30 @@ script:
     - name: tags
       required: true
       description: The key-value pair that defines the tag. The tag value is optional.
-    - name: region
-      description: The AWS Region, if not specified the default region will be used.
+    - auto: PREDEFINED
+      default: false
+      description: The AWS Region, if not specified the default region will be used
+      isArray: false
+      name: region
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+      required: false
+      secret: false
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -321,8 +378,30 @@ script:
     - name: tags
       required: true
       description: The key-value pair that defines the tag to remove.
-    - name: region
-      description: The AWS Region, if not specified the default region will be used.
+    - auto: PREDEFINED
+      default: false
+      description: The AWS Region, if not specified the default region will be used
+      isArray: false
+      name: region
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+      required: false
+      secret: false
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -338,8 +417,30 @@ script:
     - name: certificateArn
       required: true
       description: The ARN of the ACM certificate for which you want to list the tags.
-    - name: region
-      description: The AWS Region, if not specified the default region will be used.
+    - auto: PREDEFINED
+      default: false
+      description: The AWS Region, if not specified the default region will be used
+      isArray: false
+      name: region
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+      required: false
+      secret: false
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -362,8 +463,30 @@ script:
     - name: certificateArn
       required: true
       description: The ARN of the certificate.
-    - name: region
-      description: The AWS Region, if not specified the default region will be used.
+    - auto: PREDEFINED
+      default: false
+      description: The AWS Region, if not specified the default region will be used
+      isArray: false
+      name: region
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
+      required: false
+      secret: false
     - name: roleArn
       description: The Amazon Resource Name (ARN) of the role to assume.
     - name: roleSessionName
@@ -389,5 +512,6 @@ script:
       OpenSSL.
   dockerimage: demisto/boto3py3:1.0.0.1030
   runonce: false
+  subtype: python3
 tests:
   - ACM-Test
