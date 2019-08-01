@@ -71,10 +71,28 @@ script:
       name: qualifier
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The AWS Region, if not specified the default region will be used
       isArray: false
       name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
       required: false
       secret: false
     - default: false
@@ -204,9 +222,27 @@ script:
       type: string
   - arguments:
     - default: false
+      auto: PREDEFINED
       description: The AWS Region, if not specified the default region will be used
       isArray: false
       name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
       required: false
       secret: false
     - default: false
@@ -333,9 +369,27 @@ script:
       required: false
       secret: false
     - default: false
+      auto: PREDEFINED
       description: The AWS Region, if not specified the default region will be used
       isArray: false
       name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
       required: false
       secret: false
     - default: false
@@ -442,9 +496,27 @@ script:
       required: false
       secret: false
     - default: false
+      auto: PREDEFINED
       description: The AWS Region, if not specified the default region will be used
       isArray: false
       name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
       required: false
       secret: false
     - default: false
@@ -509,7 +581,25 @@ script:
     - default: false
       description: The AWS Region, if not specified the default region will be used
       isArray: false
+      auto: PREDEFINED
       name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
       required: false
       secret: false
     - default: false
@@ -568,6 +658,7 @@ script:
   dockerimage: demisto/boto3py3:1.0.0.1030
   isfetch: false
   runonce: false
+  subtype: python3
   script: ''
   type: python
 tests:
