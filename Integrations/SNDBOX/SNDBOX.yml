@@ -256,6 +256,7 @@ script:
         - contextPath: DBotScore.Malicious.SHA1
           description: The SHA1 of the file
           type: string
+      deprecated: true
       description: Submit a sample for analysis.
     - name: sndbox-download-sample
       arguments:
