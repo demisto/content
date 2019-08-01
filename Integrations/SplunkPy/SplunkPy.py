@@ -38,7 +38,7 @@ def get_current_splunk_time(splunk_service):
 
 
 def rawToDict(raw):
-    result = {}
+    result = {}  # type: Dict[str, str]
     raw = raw.strip("}")
     raw = raw.strip("{")
     key_val_arr = raw.split(",")
@@ -142,7 +142,7 @@ def severity_to_level(severity):
 
 
 def notable_to_incident(event):
-    incident = {}
+    incident = {}  # type: Dict[str,Any]
     rule_title = ''
     rule_name = ''
     if demisto.get(event, 'rule_title'):
@@ -194,10 +194,10 @@ def request(url, message, **kwargs):
     except urllib2.HTTPError, response:
         pass  # Propagate HTTP errors via the returned response message
     return {
-        'status': response.code,
-        'reason': response.msg,
-        'headers': response.info().dict,
-        'body': StringIO(response.read())
+        'status': response.code,  # type: ignore
+        'reason': response.msg,  # type: ignore
+        'headers': response.info().dict,  # type: ignore
+        'body': StringIO(response.read())  # type: ignore
     }
 
 
@@ -213,7 +213,7 @@ if proxy:
             password=demisto.params()['authentication']['password'],
             verify=VERIFY_CERTIFICATE)
     except urllib2.URLError as e:
-        if e.reason.errno == 1 and sys.version_info < (2, 6, 3):
+        if e.reason.errno == 1 and sys.version_info < (2, 6, 3):  # type: ignore
             pass
         else:
             raise
@@ -225,6 +225,10 @@ else:
         password=demisto.params()['authentication']['password'],
         verify=VERIFY_CERTIFICATE)
 
+if service is None:
+    demisto.error("Could not connect to SplunkPy")
+    sys.exit(0)
+
 # The command demisto.command() holds the command sent from the user.
 if demisto.command() == 'test-module':
     # for app in service.apps:
@@ -235,7 +239,7 @@ if demisto.command() == 'test-module':
 if demisto.command() == 'splunk-search':
     t = datetime.utcnow() - timedelta(days=7)
     time = t.strftime(SPLUNK_TIME_FORMAT)
-    kwargs_oneshot = {"earliest_time": time}
+    kwargs_oneshot = {"earliest_time": time}  # type: Dict[str,Any]
     if demisto.get(demisto.args(), 'earliest_time'):
         kwargs_oneshot['earliest_time'] = demisto.args()['earliest_time']
     if demisto.get(demisto.args(), 'latest_time'):
@@ -251,7 +255,7 @@ if demisto.command() == 'splunk-search':
 
     reader = results.ResultsReader(oneshotsearch_results)
     res = []
-    dbot_scores = []
+    dbot_scores = []  # type: List[Dict[str,Any]]
     for item in reader:
         if isinstance(item, results.Message):
             if "Error in" in item.message:
