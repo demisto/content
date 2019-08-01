@@ -48,7 +48,7 @@ timeout: '0'
 type: python
 runas: DBotWeakRole
 runonce: false
+tests:
+- CBFindIP - Test
 dependson:
   must: []
-tests:
-  - CBFindIP - Test
