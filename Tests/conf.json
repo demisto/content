@@ -1703,6 +1703,8 @@
         }
     ],
     "skipped_tests": {
+        "CreatePhishingClassifierMLTest": "Test is unstable and fails with no reason from time to time (issue ##18349)",
+        "Autoextract - Test": "See issue #18343 for further information",
         "rsa_packets_and_logs_test": "A command searches for a session ID which doesn't exist on our local server - asked RSA to help (issue #18332)",
         "reputations.json Test": "Reverting the fqdn indicator due to glichtman request, will handled next release(end july 19)",
         "Cybereason Test": "Integration instance being disabled in the middle of test playbook (issue 17394)",
