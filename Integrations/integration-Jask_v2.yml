@@ -1,0 +1,1539 @@
+commonfields:
+  id: Jask v2
+  version: -1
+name: Jask v2
+display: Jask v2
+category: Analytics & SIEM
+image: data:image/png;base64,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
+description: Freeing the analyst with autonomous decisions
+detaileddescription: |-
+  Integration currently defaults to v1 of the Jask API
+
+  Add in your Jask URL:
+  - https://[CUSTOMER].portal.jask.ai/api
+
+  You can retrieve your personal API key from the following URL under the "Profile" tab:
+  - https://[CUSTOMER].portal.jask.ai/config
+
+  Fetching Insights:
+  Defaults to fetching Insights from the current day (Today), or if you want to go back further you can change the fetch days to the number of days you want to go back.  If you have lots of Insights make sure to change the Fetch Limit as well.
+configuration:
+- display: Jask URL
+  name: URL
+  defaultvalue: https://[CUSTOMER].portal.jask.ai/api
+  type: 0
+  required: true
+- display: Jask API Key
+  name: apiKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Jask API Version
+  name: apiVersion
+  defaultvalue: v1
+  type: 0
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Override default fetch query
+  name: fetchQuery
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Limit the maximum incidents amount per fetch
+  name: fetchLimit
+  defaultvalue: "100"
+  type: 0
+  required: false
+- display: Number of Days back to fetch Incidents For.  Default is Today (0)
+  name: fetchDays
+  defaultvalue: "0"
+  type: 0
+  required: false
+script:
+  script: |-
+    import requests
+    import json
+    from datetime import datetime, timedelta, date
+
+    if not demisto.getParam('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    ''' PARAMS '''
+    # get params and build url
+    SERVERURL = demisto.getParam('URL')
+    APIVERSION = demisto.getParam('apiVersion')
+    APIKEY = demisto.getParam('apiKey')
+    if SERVERURL[-1] != '/':
+        SERVERURL += '/'
+    URL = SERVERURL + APIVERSION + '/'
+    FETCH_LIMIT = int(demisto.params().get('fetchLimit', 100))
+    FETCH_DAYS = int(demisto.params().get('fetchDays', 0))
+    QUERY = {}
+
+    # global vars
+    # entity headers to make things pretty
+    entity_headers = ['Id', 'Name', 'FirstSeen', 'LastSeen', 'IsWhiteListed', 'Username', 'Groups', 'EmployeeId',
+                      'Department', 'IpAddress', 'Hostname', 'OperatingSystem', 'macAddress', 'ActivityScore', 'Tags']
+
+
+    ''' HELPER FUNCTIONS '''
+
+    def jask_return_error(data):
+        """
+        Return the api error as result and exit
+        """
+        error_md = tableToMarkdown("Jask API Error:", data, ['error_id', 'code', 'message'])
+        demisto.results({
+            'Type': entryTypes['error'],
+            'HumanReadable': error_md,
+            'ContentsFormat': formats['json'],
+            'Contents': data
+        })
+        sys.exit(0)
+
+
+    def jask_api_request(method, path, query=None, data=None):
+        """
+        Send the request to Jask api and return the JSON response
+        """
+        headers = {'X-API-Key': APIKEY}
+        r = requests.request(method, URL + path, params=query, headers=headers, data=data)
+        if r.status_code != requests.codes.ok:
+            return_error('Error in API call to Jask service - %s' % (r.text))
+        if not r.text:
+            return {}
+        return r.json()
+
+
+    def translate_severity(severity):
+        """
+        Translate from Jask insight severity to Demisto severity
+        """
+        if severity <= 4:
+            return severity
+        return 4
+
+
+    def to_readable(o, fields, translated):
+        """
+        Convert object properties to nice title readable
+        """
+        res = {}
+        for f in fields:
+            if o.get(f):
+                if translated.get(f):
+                    res[translated.get(f)] = o.get(f)
+                else:
+                    temp_f = "{}{}".format(f[0].upper(), f[1:])
+                    res[temp_f.replace('_', '')] = o.get(f)
+        return res
+
+
+    def artifact_to_readable(artifactJSON):
+        """
+        Convert artifact response JSON to nicely formatted object
+        """
+        artifact = to_readable(artifactJSON, ['name', 'value', 'recordStream', 'recordUid'], {})
+        artifact['SignalId'] = artifactJSON['signal'].get('id', 'n/a')
+        artifact['SignalName'] = artifactJSON['signal'].get('name', 'n/a')
+        artifact['SignalTime'] = artifactJSON['signal'].get('timestamp', 'n/a')
+        return artifact
+
+
+    def comment_to_readable(commentJSON):
+        """
+        Convert comment response JSON to nicely formatted object
+        """
+        comment = to_readable(commentJSON, ['timestamp', 'body', 'id'], {})
+        comment['UserName'] = commentJSON['author'].get('username', 'n/a')
+        return comment
+
+
+    def entity_to_readable(entityJSON):
+        """
+        Convert entity response JSON to nicely formatted object
+        """
+        entity = to_readable(entityJSON,
+                             ['id', 'name', 'username', 'macAddress', 'hostname', 'firstSeen', 'lastSeen', 'employeeId',
+                              'department', 'os', 'isWhitelisted', 'groups', 'activityScore', 'tags'],
+                             {'os': 'OperatingSystem', 'macAddress': 'macAddress', 'isWhitelisted': 'IsWhiteListed'})
+        if 'ip' in entityJSON.keys():
+            entity['IpAddress'] = entityJSON['ip'].get('address', 'n/a')
+        return entity
+
+
+    def entity_headers_to_pretty(entitykeys, headers):
+        """
+        return list of headers in the entity so we can pretty print
+        """
+        pretty_headers = []
+        for h in headers:
+            if h in entitykeys:
+                pretty_headers.append(h)
+        return pretty_headers
+
+
+    def signal_to_readable(signalJSON):
+        """
+        Convert signal response JSON to nicely formatted object
+        """
+        signal = to_readable(signalJSON, ['id', 'name', 'description', 'stage', 'severity', 'timestamp', 'recordCount'], {})
+        signal['RecordTypes'] = ','.join(signalJSON.get('recordTypes'))
+        if 'entity' in signalJSON.keys():
+            if 'ip' in signalJSON['entity'].keys():
+                signal['EntityIpAddress'] = signalJSON['entity']['ip'].get('address', 'n/a')
+            else:
+                signal['EntityIpAddress'] = 'n/a'
+            signal['Entity'] = signalJSON['entity'].get('name', 'n/a')
+        return signal
+
+
+    def insight_to_readable(insightJSON):
+        """
+        Convert insight response JSON to nicely formatted object
+        """
+        insight = to_readable(insightJSON, ['id', 'name', 'assignedTo', 'description', 'lastUpdated', 'lastUpdatedBy', 'teamAssignedTo'], {})
+        insight['Status'] = insightJSON['status']['displayName']
+        if insightJSON.get('timestamp'):
+            insight['InsightTime'] = insightJSON.get('timestamp')
+        if 'entity' in insightJSON.keys():
+            if 'ip' in insightJSON['entity'].keys():
+                insight['EntityIpAddress'] = insightJSON['entity']['ip'].get('address', 'n/a')
+            else:
+                insight['EntityIpAddress'] = 'n/a'
+            insight['Entity'] = insightJSON['entity'].get('name', 'n/a')
+        return insight
+
+
+    def convert_string_date_to_date(dstr):
+        """
+        Convert a given string with YYYY-MM-DD format
+        """
+        try:
+            d = datetime.strftime(datetime.strptime(dstr, "%Y-%m-%d"), "%Y-%m-%d")
+        except ValueError:
+            return_error("Invalid format for date {}, needs to match YYYY-MM-DD".format(dstr))
+        return d
+
+
+    def translate_time_query(relative_time, time_field):
+        """
+        Convert the created or lastSeen argument to querystring
+        """
+        now = datetime.now()
+        if not relative_time or relative_time == 'All time':
+            return ''
+        if relative_time == 'Last week':
+            end = date.today().strftime("%Y-%m-%d")
+            start = datetime.strftime((now - timedelta(days=7)), "%Y-%m-%d")
+            return '{}:{}..{}'.format(time_field, start, end)
+        if relative_time == 'Last 48 hours':
+            end = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+            start = datetime.strftime((now - timedelta(hours=48)), "%Y-%m-%dT%H:%M:%S")
+            return '{}:{}..{}'.format(time_field, start, end)
+        if relative_time == 'Last 24 hours':
+            end = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+            start = datetime.strftime((now - timedelta(hours=24)), "%Y-%m-%dT%H:%M:%S")
+            return '{}:{}..{}'.format(time_field, start, end)
+
+
+    def add_list_to_q(q, translate):
+        """
+        Add arguments in the translate dictionary to querystring
+        """
+        for v in translate:
+            arg_list = argToList(demisto.getArg(translate[v]))
+            if len(arg_list) == 1:
+                q += " {}:{}".format(v, arg_list[0])
+            elif len(arg_list) > 1:
+                q += " {}:{}".format(v, ','.join(arg_list))
+        return q
+
+
+    def add_status_to_q(q, status):
+        """
+        Convert the status value for the query string
+        """
+        if status != 'not closed':
+            q += " status:{}".format(status)
+            return q
+
+        return q + " -status:closed"
+
+    def add_time_to_q(q, time_field, relative_time=None, time_from=None, time_to=None):
+        """
+        Add the time filter to the query string for created or lastSeen
+        time_field_types = ['created', 'lastSeen']
+        Defaults to All time if no fields specified
+        """
+        if relative_time:
+            if time_from or time_to:
+                return_error('You cannot specify absolute times [time-to, time-from] ' +
+                    'with relative time [{}]'.format(time_field))
+            else:
+                if translate_time_query(relative_time, time_field) != '':
+                    q += translate_time_query(relative_time, time_field)
+        elif time_from and time_to:
+            q += " {}:{}..{}".format(time_field, convert_string_date_to_date(time_from), convert_string_date_to_date(time_to))
+        elif time_from or time_to:
+            return_error('You must specify both absolute times [time-to, time-from] ' +
+                'or relative time [{}]'.format(time_field))
+
+        return q
+
+
+    def get_insight_from_context(context):
+        """
+        Looks for an Insight in the Jask.Insight context key, so we can update status, or add comments
+        If there are more then one, print the list of Insights to be helpful.
+        """
+        if type(context) == dict:
+             return context.get('Id')
+        else:
+            error_md = tableToMarkdown("Too many Insights on this Incident, please supply Insight ID to command instead:",
+                                       context, ['Id', 'Name'])
+            demisto.results({
+                'Type': entryTypes['error'],
+                'HumanReadable': error_md,
+                'ContentsFormat': formats['json'],
+                'Contents': context
+            })
+            sys.exit(0)
+
+
+    ''' COMMAND FUNCTIONS '''
+    def get_insight_details_command():
+        """
+        Get insight details, basically print everything about the insight to war room
+        """
+        # get the insight details from the jask api, and start building our results
+        insight_id = demisto.getArg('insight-id')
+        path = "insights/{}".format(insight_id)
+        resp_json = jask_api_request('GET', path)
+
+        # error check
+        if len(resp_json['errors']) > 0:
+            jask_return_error(resp_json['errors'])
+
+        insight_resp = resp_json['data'] or "none"
+
+        # check if insight exists
+        if insight_resp == "none":
+            demisto.results("Insight {} doesn't exist...".format(insight_id))
+            sys.exit(0)
+
+        entry = insight_to_readable(insight_resp)
+
+        # return the insight overall details to war room
+        details_md = tableToMarkdown("Insight Details: {}".format(entry.get('Id')), [entry],
+                                     ['Name', 'Description', 'Status', 'InsightTime', 'EntityName', 'EntityIpAddress',
+                                      'AssignedTo', 'LastUpdated', 'LastUpdatedBy', 'Id'])
+        insight_link = URL.replace('/api/v1/', '/insight/') + insight_id
+        insight_md_link = "[" + insight_link + "](" + insight_link + ")"
+        combined_details_md = insight_md_link + '\n\n' + details_md
+        demisto.results({
+            'Type': entryTypes['note'],
+            'HumanReadable': combined_details_md,
+            'Contents': entry,
+            'ContentsFormat': formats['json']
+        })
+
+        # return the insights main entity details to war room
+        entity = entity_to_readable(insight_resp.get('entity'))
+        pretty_entity_headers = entity_headers_to_pretty(entity.keys(), entity_headers)
+        entity_md = tableToMarkdown("Insight {} - Main Entity Details:".format(entry.get('Id')), entity,
+                                    pretty_entity_headers)
+        entity_link = URL.replace('/api/v1/', '/entity/') + entity.get('Id')
+        entity_md_link = "[" + entity_link + "](" + entity_link + ")"
+        combined_entity_md = entity_md_link + '\n\n' + entity_md
+        demisto.results({
+            'Type': entryTypes['note'],
+            'HumanReadable': combined_entity_md,
+            'Contents': entity,
+            'ContentsFormat': formats['json']
+        })
+        entry['EntityDetails'] = entity
+
+        # return the insights signals to the war room
+        signal_list_json = insight_resp.get('signals') or []
+        signal_list = []
+        for signal_item in signal_list_json:
+            result_signal = signal_to_readable(signal_item)
+            signal_list.append(result_signal)
+
+        signals_md = tableToMarkdown("Signals List for Insight {}:".format(entry.get('Id')), signal_list,
+                                     ['Name', 'Stage', 'Description', 'Severity', 'Timestamp', 'RecordTypes', 'Id'])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'HumanReadable': signals_md,
+            'Contents': signal_list,
+            'ContentsFormat': formats['json']
+        })
+        entry['SignalList'] = signal_list
+
+        # return the insights related entities to the war room
+        re_list_json = insight_resp.get('relatedEntities') or []
+        re_list = []
+        for re_item in re_list_json:
+            result_re = entity_to_readable(re_item)
+            re_list.append(result_re)
+
+        re_md = tableToMarkdown("Related Entity List for Insight {}:".format(entry.get('Id')), re_list,
+                                ['Name', 'Id'])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'HumanReadable': re_md,
+            'Contents': re_list,
+            'ContentsFormat': formats['json']
+        })
+        entry['RelatedEntities'] = re_list
+
+        # return the insights artifacts to the war room
+        artifact_list_json = insight_resp.get('artifacts') or []
+        artifact_list = []
+        for artifact_item in artifact_list_json:
+            result_artifact = artifact_to_readable(artifact_item)
+            artifact_list.append(result_artifact)
+
+        artifact_md = tableToMarkdown("Artifact List for Insight {}:".format(entry.get('Id')), artifact_list,
+                                      ['Name', 'Value', 'SignalName', 'SignalTime', 'SignalId', 'RecordStream'])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'HumanReadable': artifact_md,
+            'Contents': artifact_list,
+            'ContentsFormat': formats['json']
+        })
+        entry['ArtifactList'] = artifact_list
+
+        # Return one big entry with everything
+        final_entry = {'Jask.Insight(val.Id === obj.Id)': entry}
+        link = URL.replace('/api/v1/', '/insight/') + insight_id
+        md_link = "[" + link + "](" + link + ")"
+        combined_md = '## Full Insight Details: ' + md_link + '\n\n' + details_md + '\n\n' + entity_md + '\n\n' + signals_md + '\n\n' + re_md + '\n\n' + artifact_md + '\n\n\n\n'
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': final_entry,
+            'HumanReadable': combined_md,
+            'Contents': entry,
+            'ContentsFormat': formats['json']
+        })
+
+
+    def get_insight_comments_command():
+        """
+        Get comments for insight
+        """
+        if demisto.getArg('insight-id'):
+            insight_id = demisto.getArg('insight-id')
+        elif demisto.get(demisto.context(), 'Jask.Insight'):
+            insight_id = get_insight_from_context(demisto.get(demisto.context(), 'Jask.Insight'))
+        else:
+            return_error("Must specify an Insight ID")
+        path = "insights/{}/comments".format(insight_id)
+        resp_json = jask_api_request('GET', path)
+
+        # error check
+        if len(resp_json['errors']) > 0:
+            jask_return_error(resp_json['errors'])
+
+        comments = resp_json['data'].get('comments')
+        if len(comments) == 0:
+            demisto.results("No comments on Insight {}".format(insight_id))
+            sys.exit(0)
+
+        comment_list = []
+        for comment in comments:
+            result_comment = comment_to_readable(comment)
+            result_comment['InsightId'] = insight_id
+            comment_list.append(result_comment)
+
+        ec = {'Jask.InsightCommentList(val.InsightId == obj.Id)': comment_list}
+        comment_md = tableToMarkdown('Insight Comments:', comment_list, ['Timestamp', 'UserName', 'Body', 'Id'])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': ec,
+            'HumanReadable': comment_md,
+            'Contents': comment_list,
+            'ContentsFormat': formats['json']
+        })
+
+
+    def get_signal_details_command():
+        """
+        Get signal details
+        """
+        signal_id = demisto.getArg('signal-id')
+        path = "signals/{}".format(signal_id)
+        resp_json = jask_api_request('GET', path)
+
+        # error check
+        if len(resp_json['errors']) > 0:
+            jask_return_error(resp_json['errors'])
+
+        signal = signal_to_readable(resp_json['data'])
+
+        signal_md = tableToMarkdown('Signal Details - {}:'.format(signal_id), signal,
+                                    ['Id', 'Name', 'Stage', 'Description', 'Severity', 'Entity', 'RecordCount', 'RecordTypes', 'Timestamp'])
+        signal_link = URL.replace('/api/v1/', '/signal/') + signal_id
+        signal_md_link = "[" + signal_link + "](" + signal_link + ")"
+        combined_signal_md = signal_md_link + '\n\n' + signal_md
+        ec = {'Jask.Signal(val.Id === obj.Id)': signal}
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': ec,
+            'HumanReadable': combined_signal_md,
+            'Contents': signal,
+            'ContentsFormat': formats['json']
+        })
+
+
+    def get_entity_details_command():
+        """
+        Get entity details
+        """
+        entity_id = demisto.getArg('entity-id')
+        path = "entities/{}".format(entity_id)
+        resp_json = jask_api_request('GET', path)
+
+        # error check
+        if len(resp_json['errors']) > 0:
+            jask_return_error(resp_json['errors'])
+
+        entity = entity_to_readable(resp_json['data'])
+        pretty_entity_headers = entity_headers_to_pretty(entity.keys(), entity_headers)
+        entity_md = tableToMarkdown('Entity Details for {}:'.format(entity.get('Name')), entity, pretty_entity_headers)
+        entity_link = URL.replace('/api/v1/', '/entity/') + entity.get('Id')
+        entity_md_link = "[" + entity_link + "](" + entity_link + ")"
+        combined_entity_md = entity_md_link + '\n\n' + entity_md
+        ec = {'Jask.Entity(val.Id === obj.Id)': entity}
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': ec,
+            'HumanReadable': combined_entity_md,
+            'Contents': entity,
+            'ContentsFormat': formats['json']
+        })
+
+
+    def get_related_entities_command():
+        """
+        Get related entities
+        """
+        entity_id = demisto.getArg('entity-id')
+        path = "entities/{}".format(entity_id)
+        resp_json = jask_api_request('GET', path)
+
+        # error check
+        if len(resp_json['errors']) > 0:
+            jask_return_error(resp_json['errors'])
+
+        # return the related entities for the entity to the war room
+        re_list_json = resp_json['data'].get('relatedEntities') or []
+        re_list = []
+        for re_item in re_list_json:
+            readable = entity_to_readable(re_item)
+            re_list.append(readable)
+
+        re_md = tableToMarkdown("Related Entity List for Entity {}:".format(resp_json['data'].get('name'), entity_id), re_list,
+                                ['Name', 'Id', 'IsWhiteListed', 'ActivityScore', 'Tags'])
+        ec = {'Jask.RelatedEntityList(val.Id === obj.Id)': re_list}
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': ec,
+            'HumanReadable': re_md,
+            'Contents': re_list,
+            'ContentsFormat': formats['json']
+        })
+
+
+    def get_whitelisted_entities_command():
+        """
+        Get whitelisted entities
+        """
+        q = 'whitelisted:"true"&sorts=-activityScore'
+        query = QUERY.copy()
+        query['q'] = q
+        query['offset'] = demisto.getArg('offset') or 0
+        query['limit'] = demisto.getArg('limit') or 100
+        resp_json = jask_api_request('GET', "entities", query)
+
+        # error check
+        if len(resp_json['errors']) > 0:
+            jask_return_error(resp_json['errors'])
+
+        whitelist_json = resp_json['data']['objects'] or []
+        wl_list = []
+        for wl_item in whitelist_json:
+            readable = entity_to_readable(wl_item)
+            wl_list.append(readable)
+
+        wl_md = tableToMarkdown("Jask WhiteListed Entities, Total ({}):".format(resp_json['data'].get('total'), 'n/a'), wl_list,
+                                ['Name', 'ActivityScore', 'Tags', 'Id'])
+        ec = {'Jask.WhiteListed.EntityList(val.Id === obj.Id)': wl_list}
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': ec,
+            'HumanReadable': wl_md,
+            'Contents': wl_list,
+            'ContentsFormat': formats['json']
+        })
+
+
+    def search_insights_command():
+        """
+        Search insights using available filters
+        status
+        created
+        assignee
+        entity.ip
+        entity.hostname
+        entity.username
+        entity.type
+        severity
+        """
+        q = add_time_to_q('', "created", demisto.getArg('created'), demisto.getArg('time-from'), demisto.getArg('time-to'))
+        q = add_list_to_q(q,
+                           {'assignee': 'assignee',
+                            'entity.ip': 'ip',
+                            'entity.hostname': 'hostname',
+                            'entity.username': 'username',
+                            'entity.type': 'entityType',
+                            'severity': 'severity'})
+        q = add_status_to_q(q, demisto.getArg('status'))
+        query = QUERY.copy()
+        query['q'] = q + '&sorts={}'.format(demisto.getArg('sort'))
+        query['offset'] = demisto.getArg('offset')
+        query['limit'] = demisto.getArg('limit')
+        resp_json = jask_api_request('GET', 'insights', query)
+
+        # error check
+        if len(resp_json['errors']) > 0:
+            jask_return_error(resp_json['errors'])
+
+        insights = []
+        for insight in resp_json['data']['objects']:
+            readable = insight_to_readable(insight)
+            insights.append(readable)
+
+        insights_md = tableToMarkdown("{} Insight Search Results for Query:{}".format(len(insights), query['q']), insights,
+                                     ['Id', 'Name', 'Description', 'Status', 'InsightTime', 'EntityName', 'EntityIpAddress',
+                                      'AssignedTo', 'LastUpdated', 'LastUpdatedBy'])
+        ec = {'Jask.Insight(val.Id === obj.Id)': insights}
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': insights,
+            'EntryContext': ec,
+            'HumanReadable': insights_md
+        })
+
+
+    def search_signals_command():
+        """
+        Search signals using available filters
+        stage
+        contentType
+        name
+        created
+        severity
+        entity.ip
+        entity.hostname
+        entity.username
+        entity.type
+        """
+        q = add_time_to_q('', "created", demisto.getArg('created'), demisto.getArg('time-from'), demisto.getArg('time-to'))
+        q = add_list_to_q(q, {'entity.ip': 'ip',
+                               'entity.hostname': 'hostname',
+                               'entity.username': 'username',
+                               'entity.type': 'entityType',
+                               'contentType': 'contentType',
+                               'stage': 'stage'})
+        query = QUERY.copy()
+        query['q'] = q
+        query['q'] = q + '&sorts={}'.format(demisto.getArg('sort'))
+        query['offset'] = demisto.getArg('offset')
+        query['limit'] = demisto.getArg('limit')
+        resp_json = jask_api_request('GET', 'signals', query)
+
+        # error check
+        if len(resp_json['errors']) > 0:
+            jask_return_error(resp_json['errors'])
+
+        signals = []
+        for signal in resp_json['data']['objects']:
+            readable = signal_to_readable(signal)
+            signals.append(readable)
+
+        signal_md = tableToMarkdown("{} Signal Search Results for Query:{}".format(len(signals), query['q']), signals,
+                                    ['Id', 'Name', 'Stage', 'Description', 'Severity', 'Entity', 'RecordCount',
+                                     'RecordTypes', 'Timestamp'])
+        ec = {'Jask.Signal(val.Id === object.Id)': signals}
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': signals,
+            'EntryContext': ec,
+            'HumanReadable': signal_md
+        })
+
+
+    def search_entities_command():
+        """
+        Search entities using the available filters
+        ip
+        hostname
+        username
+        whitelisted
+        type
+        activityScore
+        lastSeen
+        """
+        q = add_time_to_q('', "lastSeen", demisto.getArg('last-seen'), demisto.getArg('time-from'), demisto.getArg('time-to'))
+        q = add_list_to_q(q, {'ip': 'ip',
+                               'hostname': 'hostname',
+                               'username': 'username',
+                               'type': 'entityType',
+                               'whitelisted': 'whitelisted',
+                               'stage': 'stage',
+                               'activityScore': 'activityScore'})
+        query = QUERY.copy()
+        query['q'] = q
+        query['q'] = q + '&sorts={}'.format(demisto.getArg('sort'))
+        query['offset'] = demisto.getArg('offset')
+        query['limit'] = demisto.getArg('limit')
+        resp_json = jask_api_request('GET', 'entities', query)
+
+        # error check
+        if len(resp_json['errors']) > 0:
+            jask_return_error(resp_json['errors'])
+
+        entities = []
+        for entity in resp_json['data']['objects']:
+            readable = entity_to_readable(entity)
+            if 'IsWhiteListed' not in readable.keys():
+                readable['IsWhiteListed'] = False
+            entities.append(readable)
+
+        entity_md = tableToMarkdown("{} Entity Search Results for Query:{}".format(len(entities), query['q']), entities,
+                                    ['Id', 'Name', 'ActivityScore', 'LastSeen', 'Tags', 'IsWhiteListed'])
+        ec = {'Jask.Entity(val.Id === obj.Id)': entities}
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': entities,
+            'EntryContext': ec,
+            'HumanReadable': entity_md
+        })
+
+    def get_users_command():
+        """
+        Get the list of users from Jask
+        """
+        email = demisto.getArg('email')
+        resp_json = jask_api_request('GET', 'users')
+
+        # error check
+        if len(resp_json['errors']) > 0:
+            jask_return_error(resp_json['errors'])
+
+        jask_users = []
+        for u in resp_json['data']['objects']:
+            readable_user = to_readable(u, ['name', 'active', 'username', 'email', 'teams', 'mfaEnabled', 'apiKeyEnabled',
+                                       'lastLogin'], {})
+            if email:
+                if str(email).lower() == str(readable_user.get('Email')).lower():
+                    jask_users.append(readable_user)
+            else:
+                jask_users.append(readable_user)
+
+        user_md = tableToMarkdown("Jask User Details", jask_users, ['Name', 'Active', 'Username', 'Email','Teams', 'MfaEnabled',
+                                                               'ApiKeyEnabled', 'LastLogin'])
+        ec = {'Jask.Users(val.Email === obj.Email)': jask_users}
+        demisto.results({
+            'Type': entryTypes['note'],
+            'EntryContext': ec,
+            'HumanReadable': user_md,
+            'Contents': jask_users,
+            'ContentsFormat': formats['json']
+        })
+
+
+    def update_insight_status_command():
+        """
+        Update the status of an Insight to New, In Progress, or Closed
+        """
+        if demisto.getArg('insight-id'):
+            insight_id = demisto.getArg('insight-id')
+        elif demisto.get(demisto.context(), 'Jask.Insight'):
+            insight_id = get_insight_from_context(demisto.get(demisto.context(), 'Jask.Insight'))
+        else:
+            return_error("Must specify an Insight ID")
+
+        status = demisto.getArg('status')
+        path = "insights/{}/status".format(insight_id)
+        body = {}
+        body['status'] = status
+        resp_json = jask_api_request('PUT', path, data=json.dumps(body))
+
+        # error check
+        if len(resp_json['errors']) > 0:
+            jask_return_error(resp_json['errors'])
+
+        insight = insight_to_readable(resp_json['data'])
+
+        insights_md = tableToMarkdown("Insight {} Status Updated to {}".format(insight_id, insight['Status']),
+                                      insight,
+                                      ['Id', 'Name', 'Status'])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': insight,
+            'HumanReadable': insights_md
+        })
+
+
+    def add_comment_to_insight_command():
+        """
+        Add a comment to a given Insight
+        """
+        if demisto.getArg('insight-id'):
+            insight_id = demisto.getArg('insight-id')
+        elif demisto.get(demisto.context(), 'Jask.Insight'):
+            insight_id = get_insight_from_context(demisto.get(demisto.context(), 'Jask.Insight'))
+        else:
+            return_error("Must specify an Insight ID")
+
+        comment = demisto.getArg('comment')
+        path = "insights/{}/comments".format(insight_id)
+        body = {}
+        body['body'] = comment
+        resp_json = jask_api_request('POST', path, data=json.dumps(body))
+
+        # error check
+        if len(resp_json['errors']) > 0:
+            jask_return_error(resp_json['errors'])
+
+        comment = comment_to_readable(resp_json['data'])
+        comment_md = tableToMarkdown('Comment added to Insight {}'.format(insight_id), comment, ['Timestamp', 'UserName', 'Body', 'Id'])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'HumanReadable': comment_md,
+            'Contents': comment,
+            'ContentsFormat': formats['json']
+        })
+
+
+    ''' FETCH INCIDENTS '''
+
+    def fetch_incidents():
+        """
+        Retrieve new incidents periodically based on pre-defined instance parameters
+        We use the seen list to determine if it's new or not.
+        """
+        now = datetime.now()
+
+        if FETCH_DAYS > 0:
+            fetch_from = date.today() - timedelta(days=FETCH_DAYS)
+            fetch_from = fetch_from.strftime("%Y-%m-%d")
+        else:
+            fetch_from = date.today().strftime("%Y-%m-%d")
+
+        last_run_object = demisto.getLastRun()
+        if 'seen_insights' in last_run_object.keys():
+            seen = last_run_object['seen_insights']
+            # demisto.info("We have a last run object, previous last_run: {}".format(last_run))
+        else:
+            seen = []
+            # demisto.info("No last run object, creating new last_run: {}".format(last_run))
+
+        # periodically cleanup the seen list, because if you have more than 2000 a day... you got issues.
+        if len(seen) > 2000:
+            seen = []
+
+        # go get some insights!
+        # override the query is a specific fetch query in jask query lang is provided
+        if demisto.getParam('fetchQuery'):
+            q = demisto.getParam('fetchQuery')
+        else:
+            q = '-status:"closed" created:>={}&sort=-timestamp'.format(fetch_from)
+
+        query = QUERY.copy()
+        query['q'] = q
+        query['offset'] = 0
+        query['limit'] = FETCH_LIMIT
+        resp_json = jask_api_request('GET', 'insights', query)
+
+        # determine if we've seen them before, and open new incidents if we haven't
+        incidents = []
+        for insight in resp_json['data']['objects']:
+            current_fetch = insight.get('id')
+            if current_fetch not in seen:
+                incidents.append({
+                    'name': insight.get('name', 'No name') + ' - ' + insight.get('id'),
+                    'occurred': insight.get('timestamp') + 'Z',
+                    'details': insight.get('description'),
+                    'severity': 2,
+                    'rawJSON': json.dumps(insight)
+                })
+                seen.append(current_fetch)
+
+        # set last run with our seen list and create incidents
+        demisto.setLastRun({'time': datetime.strftime(now, "%Y-%m-%dT%H:%M:%S"),
+                            'seen_insights': seen})
+        demisto.incidents(incidents)
+        demisto.info("Jask Fetch Log: Fetched - {}, New - {}, Query - {}, Seen List: {}".format(len(resp_json['data']['objects']), len(incidents), q, seen))
+
+
+    ''' EXECUTION '''
+    LOG('command is %s' % (demisto.command(), ))
+
+    try:
+        if demisto.command() == 'test-module':
+            # validate the apiKey by querying the jask users/current api
+            user = jask_api_request('GET', 'users/current')
+            if user['data']['apiKey'] == APIKEY:
+                demisto.results('ok')
+            else:
+                return_error(user)
+        elif demisto.command() == 'jask-get-insight-details':
+            get_insight_details_command()
+        elif demisto.command() == 'jask-get-insight-comments':
+            get_insight_comments_command()
+        elif demisto.command() == 'jask-get-signal-details':
+            get_signal_details_command()
+        elif demisto.command() == 'jask-get-entity-details':
+            get_entity_details_command()
+        elif demisto.command() == 'jask-get-related-entities':
+            get_related_entities_command()
+        elif demisto.command() == 'jask-get-whitelisted-entities':
+            get_whitelisted_entities_command()
+        elif demisto.command() == 'jask-search-insights':
+            search_insights_command()
+        elif demisto.command() == 'jask-search-entities':
+            search_entities_command()
+        elif demisto.command() == 'jask-search-signals':
+            search_signals_command()
+        elif demisto.command() == 'jask-update-insight-status':
+            update_insight_status_command()
+        elif demisto.command() == 'jask-add-comment-to-insight':
+            add_comment_to_insight_command()
+        elif demisto.command() == 'jask-get-users':
+            get_users_command()
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+        else:
+            return_error('Unrecognized command: ' + demisto.command())
+    except Exception, e:
+        return_error(e.message)
+  type: python
+  commands:
+  - name: jask-get-insight-details
+    arguments:
+    - name: insight-id
+      required: true
+      default: true
+      description: The insight to retrieve details for
+    outputs:
+    - contextPath: Jask.Insight.Id
+      description: The Insight ID
+      type: string
+    - contextPath: Jask.Insight.Name
+      description: The Insight name
+      type: string
+    - contextPath: Jask.Insight.Status
+      description: The status of the Insight
+      type: string
+    - contextPath: Jask.Insight.Entity
+      description: The main entity related to the Insight
+      type: string
+    - contextPath: Jask.Insight.AssignedTo
+      description: Who the Insight was assigned to
+      type: string
+    - contextPath: Jask.Insight.Description
+      description: The Insight description
+      type: string
+    - contextPath: Jask.Insight.EntityIpAddress
+      description: The IP address for the main entity of the Insight
+      type: string
+    - contextPath: Jask.Insight.LastUpdated
+      description: The time the Insight was last updated
+      type: date
+    - contextPath: Jask.Insight.LastUpdatedBy
+      description: The last person to update the Insight
+      type: string
+    - contextPath: Jask.Insight.Severity
+      description: 'The severity of the Insight '
+      type: number
+    - contextPath: Jask.Insight.InsightTime
+      description: The time of the Insight
+      type: date
+    - contextPath: Jask.Insight.RelatedEntityList.Id
+      description: The ID of the related entity
+      type: string
+    - contextPath: Jask.Insight.RelatedEntityList.EntityType
+      description: The type of the related entity
+      type: string
+    - contextPath: Jask.Insight.RelatedEntityList.Hostname
+      description: The hostname of the related entity
+      type: string
+    - contextPath: Jask.Insight.SignalList.Id
+      description: The ID of the signal
+      type: string
+    - contextPath: Jask.Insight.SignalList.Name
+      description: The name of the signal
+      type: string
+    - contextPath: Jask.Insight.SignalList.Description
+      description: The description of the signal
+      type: string
+    - contextPath: Jask.Insight.SignalList.Stage
+      description: The attack stage of the signal
+      type: string
+    - contextPath: Jask.Insight.SignalList.Severity
+      description: The severity of the signal
+      type: number
+    - contextPath: Jask.Insight.SignalList.Timestamp
+      description: The time of the signal
+      type: number
+    - contextPath: Jask.Insight.SignalList.RecordTypes
+      description: The type of records associated with the signal
+      type: number
+    - contextPath: Jask.Insight.EntityDetails.Name
+      description: Name of the main entity
+      type: Unknown
+    - contextPath: Jask.Insight.EntityDetails.Id
+      description: The Jask ID of the main entity
+      type: Unknown
+    - contextPath: Jask.Insight.ArtifactList.Name
+      description: Name of the artifact
+      type: Unknown
+    - contextPath: Jask.Insight.ArtifactList.Value
+      description: The value from the artifact
+      type: Unknown
+    - contextPath: Jask.Insight.ArtifactList.SignalId
+      description: Signal ID associated with the artifact
+      type: Unknown
+    - contextPath: Jask.Insight.ArtifactList.SignalName
+      description: Name of the Signal associated with the artifact
+      type: Unknown
+    - contextPath: Jask.Insight.ArtifactList.RecordStream
+      description: Type of record associated with the artifact
+      type: Unknown
+    - contextPath: Jask.Insight.RelatedEntities.Id
+      description: Jask ID of the entity
+      type: Unknown
+    - contextPath: Jask.Insight.RelatedEntities.Name
+      description: Name of the entity
+      type: Unknown
+    - contextPath: Jask.Insight.RelatedEntities.Username
+      description: Entity Username
+      type: Unknown
+    - contextPath: Jask.Insight.RelatedEntities.macAddress
+      description: Entity MacAddress
+      type: Unknown
+    - contextPath: Jask.Insight.RelatedEntities.Hostname
+      description: Entity Hostname
+      type: Unknown
+    - contextPath: Jask.Insight.RelatedEntities.IpAddress
+      description: Entity IP Address
+      type: Unknown
+    description: Get Insight details for a specific Insight ID. Insight details command
+      references SmartAlerts, which are the highest level abstractions in JASK SIEM
+      consisting of multiple signals, and records and relating to one or more assets.
+  - name: jask-get-insight-comments
+    arguments:
+    - name: insight-id
+      default: true
+      description: 'The insight ID for which to retrieve comments. '
+    outputs:
+    - contextPath: Jask.InsightCommentList.Id
+      description: ID of comment
+      type: string
+    - contextPath: Jask.InsightCommentList.InsightId
+      description: ID of insight
+      type: string
+    - contextPath: Jask.InsightCommentList.UserName
+      description: Author of comment
+      type: string
+    - contextPath: Jask.InsightCommentList.Body
+      description: The comment body
+      type: string
+    - contextPath: Jask.InsightCommentList.Timestamp
+      description: The time of the comment
+      type: date
+    description: Get comments for a specific Insight ID. (Users can post and update
+      comments on the JASK SIEM portal for any Insight ID.)
+  - name: jask-get-signal-details
+    arguments:
+    - name: signal-id
+      required: true
+      default: true
+      description: The signal to retrieve details for
+    outputs:
+    - contextPath: Jask.Signal.Id
+      description: The signal ID
+      type: string
+    - contextPath: Jask.Signal.Name
+      description: The signal name
+      type: string
+    - contextPath: Jask.Signal.Stage
+      description: The signal attack stage
+      type: string
+    - contextPath: Jask.Signal.Description
+      description: The signal description
+      type: string
+    - contextPath: Jask.Signal.Severity
+      description: The signal severity
+      type: number
+    - contextPath: Jask.Signal.Entity
+      description: The entity associated with the signal
+      type: string
+    - contextPath: Jask.Signal.Timestamp
+      description: The time of the signal
+      type: date
+    - contextPath: Jask.Signal.RecordType
+      description: The record types associated with the signal
+      type: string
+    - contextPath: Jask.Signal.RecordCount
+      description: The count of records associated with the signal
+      type: number
+    - contextPath: Jask.Signal.EntityIpAddress
+      description: The ip address of the entity associated with the signal
+      type: string
+    description: Get Signal details for a specific Signal ID. Signal details command
+      references signals in JASK which are created when records exhibit suspicious
+      properties and mate with patterns or other detection logic.
+  - name: jask-get-entity-details
+    arguments:
+    - name: entity-id
+      required: true
+      default: true
+      description: The entity to retrieve details for
+    outputs:
+    - contextPath: Jask.Entity.Id
+      description: The entity ID
+      type: string
+    - contextPath: Jask.Entity.Name
+      description: The entity name
+      type: string
+    - contextPath: Jask.Entity.IpAddress
+      description: The IP address of the entity
+      type: string
+    - contextPath: Jask.Entity.FirstSeen
+      description: When the entity was first seen
+      type: date
+    - contextPath: Jask.Entity.LastSeen
+      description: The time the entity was last seen
+      type: date
+    - contextPath: Jask.Entity.Username
+      description: The username of the entity
+      type: string
+    - contextPath: Jask.Entity.EmployeeId
+      description: The employee Id of the entity
+      type: string
+    - contextPath: Jask.Entity.Department
+      description: The department of the entity
+      type: number
+    - contextPath: Jask.Entity.IsWhiteListed
+      description: Whether or not the entity is whitelisted
+      type: boolean
+    - contextPath: Jask.Entity.Hostname
+      description: Hostname of the entity
+      type: Unknown
+    - contextPath: Jask.Entity.OperatingSystem
+      description: Operating system of the entity
+      type: Unknown
+    - contextPath: Jask.Entity.macAddress
+      description: macAddress of the entity
+      type: Unknown
+    - contextPath: Jask.Entity.ActivityScore
+      description: Activity score of the entity
+      type: Unknown
+    - contextPath: Jask.Entity.Tags
+      description: Tags on the entity
+      type: Unknown
+    description: Get entity details for a specific entity ID
+  - name: jask-get-related-entities
+    arguments:
+    - name: entity-id
+      required: true
+      default: true
+      description: 'The entity ID for which the related entities are retrieved. '
+    outputs:
+    - contextPath: Jask.RelatedEntityList.Id
+      description: The entity ID
+      type: string
+    - contextPath: Jask.RelatedEntityList.Name
+      description: The entity name
+      type: string
+    - contextPath: Jask.RelatedEntityList.IsWhiteListed
+      description: Whether or not the entity is whitelisted
+      type: boolean
+    - contextPath: Jask.RelatedEntityList.ActivityScore
+      description: The activity score of the related entity
+      type: number
+    description: Get entities related to a specific entity ID.
+  - name: jask-get-whitelisted-entities
+    arguments:
+    - name: limit
+      description: Number of whitelisted entries to return, defaults to 100
+    - name: offset
+      description: Offset to start the fetch from, useful if there are more than 100
+        whitelisted entries
+    outputs:
+    - contextPath: Jask.Whitelisted.EntityList.Id
+      description: Id of the whitelisted entity
+      type: string
+    - contextPath: Jask.Whitelisted.EntityList.Name
+      description: Name of the whitelisted entity
+      type: string
+    - contextPath: Jask.Whitelisted.EntityList.ActivityScore
+      description: Activity score of the entity
+      type: string
+    - contextPath: Jask.Whitelisted.EntityList.Tags
+      description: Tags on the whitelisted entity
+      type: string
+    description: Get the whitelisted entities.
+  - name: jask-search-insights
+    arguments:
+    - name: created
+      auto: PREDEFINED
+      predefined:
+      - All time
+      - Last week
+      - Last 48 hours
+      - Last 24 hours
+      description: When the insight was last seen. Defaults to 'All time' if no time
+        arguments are specified.
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - not closed
+      - new
+      - inprogress
+      - closed
+      description: 'comma separated list of values from the options: new, inprogress,
+        closed'
+      defaultValue: not closed
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - HIGH
+      - MEDIUM
+      - LOW
+      description: comma separated list of values
+    - name: assignee
+      description: The Jask user assigned to the Insight
+    - name: ip
+      description: The entity ip address
+    - name: hostname
+      description: The entity hostname
+    - name: username
+      description: The entity username
+    - name: time-from
+      description: The start time for the search in the following string format -  YYYY-MM-DD
+    - name: time-to
+      description: The end time for the search in the following string format -  YYYY-MM-DD
+    - name: offset
+      description: The page offset for the results
+      defaultValue: "0"
+    - name: limit
+      description: How many results to retrieve
+      defaultValue: "100"
+    - name: sort
+      auto: PREDEFINED
+      predefined:
+      - -timestamp
+      - timestamp
+      - -severity
+      - severity
+      - assignee
+      description: How to sort the results, defaults to timestamp descending (-timestamp)
+      defaultValue: -timestamp
+    - name: entityType
+      auto: PREDEFINED
+      predefined:
+      - ip
+      - hostname
+      - username
+      - mac
+      description: The type of entity - ip, hostname, username, macAddress
+    outputs:
+    - contextPath: Jask.Insight.Id
+      description: The ID of the insight
+      type: string
+    - contextPath: Jask.Insight.Name
+      description: The name of the insight
+      type: string
+    - contextPath: Jask.Insight.EntityName
+      description: The name of the Entity
+      type: string
+    - contextPath: Jask.Insight.AssignedTo
+      description: 'Who the insight was assigned to '
+      type: string
+    - contextPath: Jask.Insight.Description
+      description: The description of the insight
+      type: string
+    - contextPath: Jask.Insight.EntityIpAddress
+      description: The IP address of the insight
+      type: string
+    - contextPath: Jask.Insight.LastUpdated
+      description: 'When the insight was last updated. '
+      type: date
+    - contextPath: Jask.Insight.LastUpdatedBy
+      description: Who the insight was last updated by
+      type: string
+    - contextPath: Jask.Insight.Severity
+      description: The severity of the insight
+      type: number
+    - contextPath: Jask.Insight.InsightTime
+      description: The time of the insight
+      type: date
+    - contextPath: Jask.Insight.Status
+      description: The status of the insight
+      type: string
+    description: Search insights using the given filters.
+  - name: jask-search-signals
+    arguments:
+    - name: created
+      auto: PREDEFINED
+      predefined:
+      - All time
+      - Last week
+      - Last 48 hours
+      - Last 24 hours
+      description: When the signal was created. Defaults to 'All time' if no time
+        arguments are specified.
+    - name: contentType
+      auto: PREDEFINED
+      predefined:
+      - threatintel
+      - rule
+      - anomaly
+      - default
+      description: 'comma separated list of values from options: threatintel, rule,
+        anomaly'
+    - name: stage
+      auto: PREDEFINED
+      predefined:
+      - Unknown/Other
+      - Threat Intelligence
+      - Initial Access
+      - Execution
+      - Persistence
+      - Privilege Escalation
+      - Defense Evasion
+      - Credential Access
+      - Discovery
+      - Lateral Movement
+      - Collection
+      - Command and Control
+      - Exfiltration
+      description: 'comma separated list of values form options: Unknown/Other, Threat
+        Intelligence, Initial Access, Execution, Persistence, Privilege Escalation,
+        Defense Evasion, Credential Access, Discovery, Lateral Movement, Collection,
+        Command and Control, Exfiltration'
+    - name: offset
+      description: The page offset for the results
+      defaultValue: "0"
+    - name: limit
+      description: The maximum number of signals retrieved
+      defaultValue: "100"
+    - name: sort
+      auto: PREDEFINED
+      predefined:
+      - -timestamp
+      - timestamp
+      - -severity
+      - severity
+      - -recordCount
+      - recordCount
+      - stage
+      - contentType
+      description: How to sort the signal results, defaults to timestamp descending
+        (-timestamp)
+      defaultValue: -timestamp
+    - name: time-from
+      description: The start time for the search in the following string format -  YYYY-MM-DD
+    - name: time-to
+      description: The end time for the search in the following string format -  YYYY-MM-DD
+    - name: ip
+      description: The entity ip address
+    - name: hostname
+      description: The entity hostname
+    - name: username
+      description: The entity username
+    - name: entityType
+      auto: PREDEFINED
+      predefined:
+      - ip
+      - hostname
+      - username
+      - mac
+      description: The type of entity - ip, hostname, username, macAddress
+    outputs:
+    - contextPath: Jask.Signal.Id
+      description: The ID of the signal
+      type: string
+    - contextPath: Jask.Signal.Name
+      description: The name of the signal
+      type: string
+    - contextPath: Jask.Signal.Stage
+      description: The attack stage of the signal
+      type: string
+    - contextPath: Jask.Signal.Description
+      description: The description of the signal
+      type: string
+    - contextPath: Jask.Signal.Severity
+      description: The severity of the signal
+      type: number
+    - contextPath: Jask.Signal.Entity
+      description: The entity associated with the signal
+      type: string
+    - contextPath: Jask.Signal.Timestamp
+      description: The time of the signal
+      type: date
+    description: Search signals using the given filters.
+  - name: jask-search-entities
+    arguments:
+    - name: last-seen
+      auto: PREDEFINED
+      predefined:
+      - All time
+      - Last week
+      - Last 48 hours
+      - Last 24 hours
+      description: When the entity was last seen. Defaults to 'All time' if no time
+        arguments are specified.
+    - name: entityType
+      auto: PREDEFINED
+      predefined:
+      - ip
+      - hostname
+      - username
+      - mac
+      description: 'comma separated list of values from the options: username, hostname,
+        ip'
+    - name: offset
+      description: The page offset for the results
+      defaultValue: "0"
+    - name: limit
+      description: How many results to retrieve
+      defaultValue: "100"
+    - name: sort
+      auto: PREDEFINED
+      predefined:
+      - -activityScore
+      - activityScore
+      description: What to sort by, defaults to activityScore descending (-activityScore)
+      defaultValue: -activityScore
+    - name: time-from
+      description: The start time for the search in the following string format -  YYYY-MM-DD
+    - name: time-to
+      description: The end time for the search in the following string format -  YYYY-MM-DD
+    - name: ip
+      description: The entity ip address
+    - name: hostname
+      description: The entity hostname
+    - name: username
+      description: The entity username
+    - name: whitelisted
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: "Whether the entity is whitelisted or not\t"
+    - name: activityScore
+      auto: PREDEFINED
+      predefined:
+      - ""
+      description: The activity score of the asset, between 0 - 20
+    outputs:
+    - contextPath: Jask.Entity.Id
+      description: The ID of the entity
+      type: string
+    - contextPath: Jask.Entity.Name
+      description: The name of the entity
+      type: string
+    - contextPath: Jask.Entity.FirstSeen
+      description: When the entity was first seen
+      type: date
+    - contextPath: Jask.Entity.LastSeen
+      description: When the entity was last seen
+      type: date
+    - contextPath: Jask.Entity.ActivityScore
+      description: The activity score on the entity
+      type: number
+    - contextPath: Jask.Entity.IsWhiteListed
+      description: Whether or not the entity is whitelisted
+      type: boolean
+    description: Search entities using the given filters.
+  - name: jask-get-users
+    arguments:
+    - name: email
+      description: 'The email of the jask user to get details for. '
+    outputs:
+    - contextPath: Jask.Users.Name
+      description: Name of the Jask user
+      type: Unknown
+    - contextPath: Jask.Users.Active
+      description: Status of the Jask user
+      type: Unknown
+    - contextPath: Jask.Users.Username
+      description: Username of the Jask user
+      type: Unknown
+    - contextPath: Jask.Users.Email
+      description: Email of the Jask user
+      type: Unknown
+    - contextPath: Jask.Users.Teams
+      description: 'Teams the user is a member of. '
+      type: Unknown
+    - contextPath: Jask.Users.MfaEnabled
+      description: Whether the Jask user has MFA enabled
+      type: Unknown
+    - contextPath: Jask.Users.ApiKeyEnabled
+      description: Whether the Jask user has an API key enabled
+      type: Unknown
+    description: Retrieve the list of users from Jask, or the details for a specific
+      user.
+  - name: jask-update-insight-status
+    arguments:
+    - name: insight-id
+      auto: PREDEFINED
+      predefined:
+      - ""
+      description: The insight id
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - new
+      - inprogress
+      - closed
+      description: The status of the insight - New, In Progress, Closed
+    description: Updates the status of a provided Insight
+  - name: jask-add-comment-to-insight
+    arguments:
+    - name: insight-id
+      description: 'The Insight ID to add the comment to. '
+    - name: comment
+      description: The comment body to be added, make sure to put it in "quotes"
+    description: Adds a comment to the Insight
+  isfetch: true
+  runonce: false
