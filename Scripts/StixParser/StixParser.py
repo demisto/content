@@ -7,6 +7,17 @@ from datetime import datetime
 
 from stix.core import STIXPackage
 
+""" GLOBAL PARAMS """
+PATTERNS_DICT = {
+    "file:hashes": "File",
+    "ipv6-addr": "IP",
+    "ipv4-addr:": "IP",
+    "url:": "URL",
+    "domain-name:": "Domain",
+    "email:": "Email",
+    "email-message": "Email"
+}
+
 """ HELPER FUNCTIONS"""
 
 
@@ -174,6 +185,53 @@ def build_entry(stx_obj, indicators):
     return None
 
 
+def get_indicators(indicators):
+    """Gets a STIX entry and building the list
+
+    Args:
+        indicators (dict or list): STIX-formatted entry
+
+    Returns:
+        dict: in the format of:
+            {
+                "File": [],
+                "IP": [],
+                "Domain": [],
+                "URL": []
+            }
+    """
+
+    def indicators_parser(indicator):
+        pattern = indicator.get("pattern")
+        if pattern:
+            groups = regex.findall(pattern)
+            if groups:
+                for key, value in PATTERNS_DICT.items():
+                    for term in groups:
+                        '''
+                        term should be list with 2 argument catched with the regex
+                        [`pattern`, `indicator`]
+                        '''
+                        if len(term) == 2 and key in term[0]:
+                            patterns_lists[value].append(term[1])
+
+    regex = re.compile("(\\w.*?) = '(.*?)'")
+    patterns_lists = {
+        "File": list(),
+        "IP": list(),
+        "Domain": list(),
+        "Email": list(),
+        "URL": list(),
+    }  # type: dict
+
+    if isinstance(indicators, list):
+        for indicator in indicators:
+            indicators_parser(indicator)
+    else:
+        indicators_parser(indicators)
+    return patterns_lists
+
+
 def extract_indicators(data):
     """Gets dict of STIX2.0 object (one in a time)
 
@@ -184,54 +242,18 @@ def extract_indicators(data):
         dict: containing all indicators data
 
     """
-    def get_indicators(indicator):
-        """Gets a STIX entry and building the list
 
-        Args:
-            indicator (dict): STIX-formatted entry
-        """
-        pattern = indicator.get("pattern")
-        if pattern:
-            groups = regex.findall(pattern)
-            if groups:
-                for key, value in patterns_dict.items():
-                    for term in groups:
-                        if len(term) == 2 and key in term[0]:
-                            patterns_lists[value].append(term[1])
-
-    regex = re.compile("(\\w.*?) = '(.*?)'")
-
-    patterns_dict = {
-        "file:hashes": "File",
-        "ipv6-addr": "IP",
-        "ipv4-addr:": "IP",
-        "url:": "URL",
-        "domain-name:": "Domain",
-        "email:": "Email",
-    }
-
-    patterns_lists = {
-        "File": list(),
-        "IP": list(),
-        "Domain": list(),
-        "Email": list(),
-        "URL": list(),
-    }  # type: dict
-    # Check if is it's
-    if isinstance(data, dict) and data.get("objects"):
+    # Check if is `objects` keyword exists
+    if isinstance(data, dict) and "objects" in data:
         # Create objects
         objects = data.get("objects")
 
         # Use regex to extract indicators
-        if isinstance(objects, list):
-            for obj in objects:
-                get_indicators(obj)
-        elif isinstance(objects, dict):
-            get_indicators(objects)
+        patterns_lists = get_indicators(objects)
 
         # Make all the values unique
         for key, value in patterns_lists.items():
-            patterns_dict[key] = list(set(value))  # type: ignore
+            PATTERNS_DICT[key] = list(set(value))  # type: ignore
 
         return patterns_lists
     else:

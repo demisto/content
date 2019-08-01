@@ -9,6 +9,29 @@ def mock_demisto(mocker):
     mocker.patch.object(demisto, 'results')
 
 
+def test_get_indicators():
+    from StixParser import get_indicators
+
+    # Test list
+    with open("./TestData/little_stix2.json") as f:
+        stix_input = json.load(f)
+
+    with open("./TestData/little_stix2_results.json") as f:
+        expected_output = json.load(f)
+    output_dict = get_indicators(stix_input)
+
+    if not (output_dict == expected_output):
+        pytest.fail("Output from Demisto didn't match the expected output")
+
+    # Test dict
+    output = get_indicators(stix_input[0])
+    output_url = output.get("URL")
+    expected_url = expected_output.get("URL")
+    if output_url != expected_url:
+        pytest.fail("Output from Demisto didn't match the expected output\n"
+                    "Expected: {} \n Got: {}".format(expected_url, output_url))
+
+
 def test_stix2_to_demisto(mocker):
     from StixParser import stix2_to_demisto
     mock_demisto(mocker)
