@@ -38,7 +38,8 @@
       "enhancementScriptNames": [
         "IPReputation"
       ],
-      "fromVersion": "3.1.0"
+      "fromVersion": "3.1.0",
+      "toVersion": "4.5.0"
     },
     {
       "id": "ipRepEscaped",
@@ -53,7 +54,8 @@
         "SplunkPySearch"
       ],
       "formatScript": "UnEscapeIPs",
-      "fromVersion": "3.5.1"
+      "fromVersion": "3.5.1",
+      "toVersion": "4.5.0"
     },
     {
       "id": "emailRep",
@@ -65,7 +67,8 @@
       "contextPath": "Account.Email(val.Address && val.Address === obj.Address)",
       "enhancementScriptNames": [
         "EmailReputation"
-      ]
+      ],
+      "toVersion": "4.5.0"
     },
     {
       "id": "urlRep",
@@ -107,7 +110,8 @@
       "formatScript": "UnEscapeURLs",
       "contextPath": "URL(val.Data && val.Data === obj.Data)",
       "contextValue": "Data",
-      "fromVersion": "3.5.1"
+      "fromVersion": "3.5.1",
+      "toVersion": "4.5.0"
     },
     {
       "id": "registryRep",
@@ -160,7 +164,8 @@
       "details": "Domain",
       "enhancementScriptNames": [
         "DomainReputation"
-      ]
+      ],
+      "toVersion": "4.5.0"
     },
     {
       "id": "domainRep2",

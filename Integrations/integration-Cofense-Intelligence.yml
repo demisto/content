@@ -1,0 +1,602 @@
+commonfields:
+  id: Cofense Intelligence
+  version: -1
+name: Cofense Intelligence
+display: Cofense Intelligence
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: |-
+  Use the Cofense Intelligence integration to check the reputation of URLs, IP addresses, file hashes, and email addresses.
+detaileddescription: |-
+  How to get the API key:
+  1. Log in to your PhishMe account.
+  2. Navigate to **Settings > API Tokens**.
+  3. Click **Add a new api token**.
+configuration:
+- display: Server URL (e.g., https://www.threathq.com/apiv1)
+  name: url
+  defaultvalue: https://www.threathq.com/apiv1
+  type: 0
+  required: true
+- display: API username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: URL Threshold (None, Minor, Moderate, or Major). Minimum severity to consider
+    the URL malicious
+  name: urlThreshold
+  defaultvalue: Major
+  type: 0
+  required: false
+- display: File Threshold (None, Minor, Moderate, or Major). Minimum severity to consider
+    the file malicious
+  name: fileThreshold
+  defaultvalue: Major
+  type: 0
+  required: false
+- display: IP Threshold (None, Minor, Moderate, or Major). Minimum severity to consider
+    the IP malicious
+  name: ipThreshold
+  defaultvalue: Major
+  type: 0
+  required: false
+- display: Email Threshold (None, Minor, Moderate, or Major). Minimum severity to consider
+    the email malicious
+  name: emailThreshold
+  defaultvalue: Major
+  type: 0
+  required: false
+script:
+  script: |2-
+     var auth = 'Basic ' + Base64.encode(params.credentials.identifier + ':' + params.credentials.password);
+        var sendRequest = function(method,api,urlargs) {
+            var url = params.url;
+            if (url[url.length - 1] === '/') {
+                url = url.substring(0, url.length - 1);
+            }
+            var requestUrl = url + '/' + api + encodeToURLQuery(urlargs);
+            var res = http(
+                requestUrl,
+                {
+                    Method: method,
+                    Headers: {
+                        'Authorization': [auth]
+                    }
+                },
+                params.insecure,
+                params.proxy
+            );
+            if ((res.StatusCode < 200 || res.StatusCode >= 300) && res.success === false) {
+                throw 'Cofense Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+            }
+            try{
+                return JSON.parse(res.Body);
+            }
+            catch(exc){
+                throw "Cofense Error: JSON parse error\n" + res;
+            }
+        };
+        var addMD = function(threat) {
+            var md = "";
+            md += '### Threat ID: ' + threat.id + '\n';
+            if (threat.label !== undefined) {
+                md += "Name of the campaign: **" + threat.label + "**\n";
+            }
+            if (threat.blockSet[0].ipDetail !== undefined) {
+                md += "ASN: **" + threat.blockSet[0].ipDetail.asn + " " + threat.blockSet[0].ipDetail.asnOrganization+"**\n";
+            }
+            if (threat.blockSet[0].ipDetail !== undefined) {
+                md += "Country: **" + threat.blockSet[0].ipDetail.countryName + "**\n";
+            }
+            if (threat.executiveSummary !== undefined) {
+                md += "#### Executive Summary: \n";
+            }
+            if (threat.executiveSummary !== undefined) {
+                md += threat.executiveSummary + "\n";
+            }
+            md += "#### Threat Types:\n";
+            for (var j = 0; j < threat.malwareFamilySet.length; j++){
+                md += "* " + threat.malwareFamilySet[j].description + "\n";
+            }
+            md += '##### Last published: ' + new Date(threat.lastPublished) +'\n';
+            return md;
+        };
+        // Returns {severityScore: 'The severity score found', md: 'The markdown for the threat', indicatorFound: 'set to true if indicator was found in threat'}
+        var checkThreat = function(threat, threshold, indicator) {
+            var severityLevel = 0;
+            var md = '';
+            var threshold_score = calcScore(threshold);
+            if (threshold_score === -1) {
+                throw "Cofense error: Invalid threshold value: " + threshold + ". Valid values are: None, Minor, Moderate or Major.";
+            }
+            res = {}
+            for (var i = 0; i < threat.blockSet.length; i++){
+                if (threat.blockSet[i]['impact']) {
+                    var threat_score = calcScore(threat.blockSet[i]['impact']);
+                    var adjusted_score = threshold_score <= threat_score ? 3 : threat_score;
+                    // if the queried indicator has a severity level, we'll take it
+                    if (threat.blockSet[i]['data'] === indicator) {
+                        severityLevel = adjusted_score;
+                        res.indicatorFound = true;
+                        break;
+                    }
+                    severityLevel = Math.max(severityLevel, adjusted_score);
+                }
+            }
+            var threatLevel = calcVerdict(severityLevel);
+            md += 'Verdict: ' + threatLevel +'\n';
+            md += addMD(threat);
+            res.severityScore = severityLevel;
+            res.md = md;
+            return res;
+        }
+        var searchUrl = function(url) {
+            var tmpargs = {};
+            tmpargs.urlSearch = url;
+            var res = sendRequest("POST","threat/search",tmpargs);
+            var threats = res.data.threats;
+            var ec = {};
+            var md = "## Cofense URL Reputation for: "+url+"\n";
+            var dbotScore = 0;
+            var threatArray = [];
+            var threshold = params.urlThreshold;
+            var indicatorFnd = false;
+            if (threats.length && threats.length !== 0) {
+                ec[outputPaths.url] = {
+                    Data: url
+                };
+                for (var k = 0; k < threats.length; k++) {
+                    threatAnalysis = checkThreat(threats[k], threshold, url);
+                    threatArray[k] = threats[k].id;
+                    md += threatAnalysis['md'];
+                    if (threatAnalysis.indicatorFound) {
+                        indicatorFnd = true;
+                        dbotScore = threatAnalysis['severityScore'];
+                    } else if (!indicatorFnd) {
+                        dbotScore = Math.max(dbotScore, threatAnalysis['severityScore']);
+                    }
+                }
+                ec[outputPaths.url]['Cofense'] = {};
+                ec[outputPaths.url].Cofense['ThreatIDs'] = threatArray;
+                ec["Cofense." + outputPaths.url] = {
+                    Data: url,
+                    ThreatIDs: threatArray
+                };
+                if (dbotScore === 3) {
+                    ec[outputPaths.url].Malicious = {
+                        Vendor: 'Cofense',
+                        Description: 'Match found in Cofense database'
+                    };
+                    ec["Cofense." + outputPaths.url].Malicious = ec[outputPaths.url].Malicious;
+                }
+            } else {
+                md += "No information found for this url";
+            }
+            ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'Cofense', Score: dbotScore};
+            return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+        };
+        var extractedString = function(str,limit) {
+            var tmpargs = {};
+            tmpargs.extractedString = str;
+            var res = sendRequest("POST","threat/search",tmpargs);
+            var threats = res.data.threats;
+            var countThreats = 0;
+            var md = "## Cofense Search Reputation for: "+str+"\n";
+            var mdBody = "";
+            var ec = {};
+            if (threats.length !== 0) {
+                if(limit === undefined){
+                    limit = 10;
+                }
+                for(var i = 0; i < threats.length && (countThreats<limit); i++){
+                    if (threats[i].hasReport === true){
+                        countThreats += 1;
+                        mdBody += addMD(threats[i]);
+                    }
+                }
+                md += "There are " + countThreats + " threats regarding your string search.\n";
+                md += "### Details from the last campaign\n";
+                md += mdBody;
+                ec = {"Cofense" : {}};
+                ec.Cofense = {"String": str, "NumOfThreats": countThreats};
+            } else {
+                md += "There are no results for this search\n";
+                ec = {"Cofense" : {}};
+                ec.Cofense = {"String": str, "NumOfThreats": 0};
+            }
+            return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+        };
+        var checkEmail = function(sender_name) {
+            var tmpargs = {};
+            tmpargs.watchListEmail = sender_name;
+            var res = sendRequest("POST","threat/search",tmpargs);
+            var threats = res.data.threats;
+            var ec = {};
+            var md = "## Cofense email Reputation for: " + sender_name + "\n";
+            var dbotScore = 0;
+            var threatArray = [];
+            var threshold = params.emailThreshold;
+            var indicatorFnd = false;
+            var contextEmailKey = 'Email(val.Data && val.Data === obj.Data)';
+            if (threats.length && threats.length !== 0) {
+                ec[contextEmailKey] = {
+                    'Data': sender_name
+                };
+                ec[outputPaths.email] = {
+                    'Address': sender_name
+                };
+                for (var k = 0; k < threats.length; k++) {
+                    threatAnalysis = checkThreat(threats[k], threshold, sender_name);
+                    threatArray[k] = threats[k].id;
+                    md += threatAnalysis['md'];
+                    if (threatAnalysis.indicatorFound) {
+                        indicatorFnd = true;
+                        dbotScore = threatAnalysis['severityScore'];
+                    } else if (!indicatorFnd) {
+                        dbotScore = Math.max(dbotScore, threatAnalysis['severityScore']);
+                    }
+                }
+                ec[contextEmailKey]['Cofense'] = {};
+                ec[contextEmailKey].Cofense['ThreatIDs'] = threatArray;
+                ec['Cofense.' + contextEmailKey] = {
+                    Data: sender_name,
+                    ThreatIDs: threatArray
+                };
+                if (dbotScore === 3) {
+                    ec[outputPaths.email].Malicious = {
+                        Vendor: 'Cofense',
+                        Description: 'Match found in Cofense database'
+                    };
+                    ec["Cofense." + contextEmailKey].Malicious = ec[outputPaths.email].Malicious;
+                }
+            } else {
+                md += "No infomation found for this email";
+            }
+            ec.DBotScore = {Indicator: sender_name, Type: 'email', Vendor: 'Cofense', Score: dbotScore};
+            return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+        };
+        var checkMD5 = function(str) {
+            var tmpargs = {};
+            tmpargs.allMD5 = str;
+            var res = sendRequest("POST","threat/search",tmpargs);
+            var threats = res.data.threats;
+            var ec = {};
+            var md = "## Cofense Hash Reputation for: "+str+"\n";
+            var dbotScore = 0;
+            var threatArray = [];
+            var threshold = params.fileThreshold;
+            var indicatorFnd = false;
+            var threshold_score = calcScore(threshold);
+            if (threshold_score === -1) {
+                throw "Cofense error: Invalid threshold value: " + threshold + ". Valid values are: None, Minor, Moderate or Major.";
+            }
+            if (threats.length !== 0) {
+                ec[outputPaths.file] = {
+                    MD5: str
+                };
+                for (var k = 0; k < threats.length; k++) {
+                    var severityLevel = 0;
+                    for (var i = 0; i < threats[k].blockSet.length; i++){
+                        if (threats[k].blockSet[i]['impact']) {
+                            var threat_score = calcScore(threats[k].blockSet[i]['impact']);
+                            var adjusted_score = threshold_score <= threat_score ? 3 : threat_score;
+                            // if the queried indicator has a severity level, we'll take it
+                            if (threats[k].executableSet[i] && threats[k].executableSet[i]['md5Hex'] === str) {
+                                severityLevel = adjusted_score;
+                                dbotScore = severityLevel;
+                                indicatorFnd = true;
+                                break;
+                            }
+                            severityLevel = Math.max(severityLevel, adjusted_score);
+                        }
+                    }
+                    var threatLevel = calcVerdict(severityLevel);
+                    md += 'Verdict: ' + threatLevel +'\n';
+                    md += addMD(threats[k]);
+                    threatArray[k] = threats[k].id;
+                    if (!indicatorFnd) {
+                        dbotScore = Math.max(dbotScore, severityLevel);
+                    }
+                }
+                ec[outputPaths.file]['Cofense'] = {};
+                ec[outputPaths.file]['ThreatIDs'] = threatArray;
+                ec['Cofense.' + outputPaths.file] = {
+                        MD5: str,
+                        ThreatIDs: threatArray
+                };
+                if (dbotScore === 3) {
+                    ec[outputPaths.file].Malicious = {
+                        Vendor: 'Cofense',
+                        Description: 'Match found in Cofense database'
+                    };
+                    ec["Cofense." + outputPaths.file].Malicious = ec[outputPaths.file].Malicious;
+                }
+            } else {
+                md += "No information found for this hash";
+            }
+            ec.DBotScore = {Indicator: str, Type: 'file', Vendor: 'Cofense', Score: dbotScore};
+            return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+        }
+        var checkIP = function(ip) {
+            var tmpargs = {};
+            tmpargs.ip = ip;
+            var res = sendRequest("POST","threat/search",tmpargs);
+            var threats = res.data.threats;
+            var ec = {};
+            var md = "## Cofense IP Reputation for: "+ip+"\n";
+            var dbotScore = 0;
+            var threatArray = [];
+            var threshold = params.ipThreshold;
+            var indicatorFnd = false;
+            var threshold_score = calcScore(threshold);
+            if (threshold_score === -1) {
+                throw "Cofense error: Invalid threshold value: " + threshold + ". Valid values are: None, Minor, Moderate or Major.";
+            }
+            if (threats.length && threats.length !== 0) {
+                ec[outputPaths.ip] = {
+                    Data: ip
+                };
+                for (var k = 0; k < threats.length; k++) {
+                    var severityLevel = 0;
+                    for (var i = 0; i < threats[k].blockSet.length; i++){
+                        if (threats[k].blockSet[i].data === ip && threats[k].blockSet[i].ipDetail) {
+                            ec[outputPaths.ip].ASN = threats[k].blockSet[i].ipDetail.asn;
+                            ec[outputPaths.ip].GEO = {
+                                "Location": (threats[k].blockSet[i].ipDetail.latitude + ', ' + threats[k].blockSet[i].ipDetail.longitude),
+                                "Country": threats[k].blockSet[i].ipDetail.countryIsoCode
+                            };
+                        }
+                        if (threats[k].blockSet[i]['impact']) {
+                            var threat_score = calcScore(threats[k].blockSet[i]['impact']);
+                            var adjusted_score = threshold_score <= threat_score ? 3 : threat_score;
+                            // if the queried indicator has a severity level, we'll take it
+                            if (threats[k].blockSet[i]['ipDetail'] && threats[k].blockSet[i]['ipDetail']['ip']===ip) {
+                                severityLevel = adjusted_score;
+                                dbotScore = severityLevel;
+                                indicatorFnd = true;
+                                break;
+                            }
+                            severityLevel = Math.max(severityLevel, adjusted_score);
+                        }
+                    }
+                    var threatLevel = calcVerdict(severityLevel);
+                    md += 'Verdict: ' + threatLevel +'\n';
+                    md += addMD(threats[k]);
+                    threatArray[k] = threats[k].id;
+                    if (!indicatorFnd) {
+                        dbotScore = Math.max(dbotScore, severityLevel);
+                    }
+                }
+                ec[outputPaths.ip]['Cofense'] = {};
+                ec[outputPaths.ip].Cofense['ThreatIDs'] = threatArray;
+                ec["Cofense." + outputPaths.ip] = {
+                    Data: ip,
+                    ThreatIDs: threatArray
+                };
+                if (dbotScore === 3) {
+                    ec[outputPaths.ip].Malicious = {
+                        Vendor: 'Cofense',
+                        Description: 'Match found in Cofense database'
+                    };
+                    ec["Cofense." + outputPaths.ip].Malicious = ec[outputPaths.ip].Malicious;
+                }
+            } else {
+                md += "No information found for this ip";
+            }
+            ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'Cofense', Score: dbotScore};
+            return ( {'ContentsFormat': formats.json, 'Type': entryTypes.note, 'Contents': res, "HumanReadable": md, "EntryContext": ec} );
+        }
+        var calcVerdict = function (dbotScore) {
+            switch (dbotScore){
+                case 0:
+                    return 'Unknown';
+                case 2:
+                    return 'Suspicious';
+                case 3:
+                    return 'Bad';
+            }
+        }
+        var calcScore = function (severityLevel) {
+            switch (severityLevel){
+                case 'None':
+                    return 0;
+                case 'Minor':
+                    return 2;
+                case 'Moderate':
+                    return 2;
+                case 'Major':
+                    return 3;
+                default:
+                    return -1;
+            }
+        }
+        function addDays(theDate, days) {
+            return theDate.getTime() - days*24*60*60*1000;
+        }
+        var updates = function(){
+            var newDate = addDays(new Date(), 50);
+            var tmpargs = {};
+            tmpargs.timestamp = newDate;
+            var res = sendRequest("POST","threat/updates", tmpargs);
+            var ec = {};
+            var md = "";
+            return res;
+        }
+        switch (command) {
+            // This is the call made when pressing the integration test button.
+            case 'test-module':
+                res = updates();
+                if (res.success === true){
+                    return 'ok';
+                }else {
+                    return JSON.stringify(res);
+                }
+            case "url":
+                return searchUrl(args.url);
+            case "cofense-search":
+                return extractedString(args.str, args.limit);
+            case "email":
+                return checkEmail(args.email)
+            case "file":
+                return checkMD5(args.file);
+            case "ip":
+                return checkIP(args.ip);
+            default:
+        }
+  type: javascript
+  commands:
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: URL to check.
+    outputs:
+    - contextPath: URL.Data
+      description: Bad URLs.
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason that the vendor made the decision.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: Indicator type.
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+    - contextPath: Cofense.URL.Data
+      description: Bad URLs.
+    - contextPath: Cofense.URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+    - contextPath: Cofense.URL.Malicious.Description
+      description: For malicious URLs, the reason that the vendor made the decision.
+    - contextPath: Cofense.URL.Cofense.ThreatIDs
+      description: The thread IDs retrieved by the vendor.
+    description: Checks the reputation of a URL.
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: A CSV list of file hashes to check (MD5, SHA1, or SHA256).
+    outputs:
+    - contextPath: File.MD5
+      description: File MD5
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason that the vendor made the decision.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: Indicator type.
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      description: The actual score
+    - contextPath: Cofense.File.MD5
+      description: MD5 hash of the file.
+    - contextPath: Cofense.File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+    - contextPath: Cofense.File.Malicious.Description
+      description: For malicious files, the reason that the vendor made the decision.
+    - contextPath: Cofense.File.ThreatIDs
+      description: The thread IDs retrieved by the vendor.
+    description: Checks the reputation of a file hash.
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP address to check.
+    outputs:
+    - contextPath: IP.Data
+      description: Bad IP Address found
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason that the vendor made the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+    - contextPath: DBotScore.Type
+      description: Indicator type
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    - contextPath: Cofense.IP.Data
+      description: Bad IP Address found
+    - contextPath: Cofense.IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: Cofense.IP.Malicious.Description
+      description: For malicious IPs, the reason that the vendor made the decision
+    - contextPath: Cofense.IP.Cofense.ThreatIDs
+      description: The thread ids retrieved by the vendor.
+    - contextPath: IP.ASN
+      description: Autonomous System name for the IP.
+    - contextPath: IP.GEO.Location
+      description: Location in format latitude, longitude.
+    - contextPath: IP.GEO.Country
+      description: Country of the IP.
+    description: Checks the reputation of an IP address.
+  - name: email
+    arguments:
+    - name: email
+      required: true
+      default: true
+      description: Sender email address to check.
+    outputs:
+    - contextPath: Email.Data
+      description: Sender address to check.
+    - contextPath: Account.Email.Address
+      description: Sender email address to check.
+    - contextPath: Account.Email.Malicious.Vendor
+      description: For malicious emails, the vendor that made the decision.
+    - contextPath: Account.Email.Malicious.Description
+      description: For malicious emails, the reason that the vendor made the decision.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: Indicator type.
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+    - contextPath: Cofense.Email.Data
+      description: Sender address to check.
+    - contextPath: Cofense.Email.Malicious.Vendor
+      description: For malicious emails, the vendor that made the decision.
+    - contextPath: Cofense.Email.Malicious.Description
+      description: For malicious URLs, the reason that the vendor made the decision.
+    - contextPath: Cofense.Email.Cofense.ThreatIDs
+      description: The thread ids retrieved by the vendor.
+    description: Checks the reputation of an email address.
+  - name: cofense-search
+    arguments:
+    - name: str
+      required: true
+      default: true
+      description: String to search.
+    - name: limit
+      description: Maximum number of strings to search. Default is 10.
+      defaultValue: "10"
+    outputs:
+    - contextPath: Cofense.NumOfThreats
+      description: Number of threats.
+    - contextPath: Cofense.String
+      description: String that was searched.
+    description: Searches for extracted strings identified within malware campaigns.
+  runonce: false

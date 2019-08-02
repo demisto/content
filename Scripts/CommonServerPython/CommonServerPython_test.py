@@ -429,10 +429,13 @@ def test_get_error_need_raise_error_on_non_error_input():
             "Contents": "this is not an error"
         }
     ]
-    with pytest.raises(ValueError) as exception:
+    try:
         get_error(execute_command_results)
+    except ValueError as exception:
+        assert "execute_command_result has no error entry. before using get_error use is_error" in str(exception)
+        return
 
-    assert "execute_command_result has no error entry. before using get_error use is_error" in str(exception)
+    assert False
 
 
 @pytest.mark.parametrize('data,data_expected', [
@@ -469,3 +472,13 @@ def test_logger():
     LOG(u'€')
     LOG(Exception(u'€'))
     LOG(SpecialErr(12))
+
+
+def test_is_mac_address():
+    from CommonServerPython import is_mac_address
+
+    mac_address_false = 'AA:BB:CC:00:11'
+    mac_address_true = 'AA:BB:CC:00:11:22'
+
+    assert(is_mac_address(mac_address_false) is False)
+    assert(is_mac_address(mac_address_true))
