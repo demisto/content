@@ -21,4 +21,4 @@ Pygments = "==2.3.1"
 PyJWT = "==1.7.1"
 
 [requires]
-python_version = "2.7"
+python_version = "3.7"
