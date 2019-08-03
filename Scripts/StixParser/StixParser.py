@@ -209,7 +209,7 @@ def get_indicators(indicators):
     }  # type: dict
 
     # Will hold values for package {"KEY": <STIX OBJECT>}
-    entries_dict = dict()  # type dict
+    entries_dict = dict()  # type: dict
 
     if isinstance(indicators, list):
         for indicator in indicators:
