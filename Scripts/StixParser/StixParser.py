@@ -287,10 +287,7 @@ def create_new_ioc(data, i, timestamp, pkg_id, ind_id):
         data[i]["timestamp"] = timestamp.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
 
-# SCRIPT START
-
-# IF STIX2 FILE
-if __name__ in ('__builtin__', 'builtins'):
+def main():
     txt = demisto.args().get("iocXml").encode("utf-8")
     stx = convert_to_json(txt)
     if stx:
@@ -352,3 +349,10 @@ if __name__ in ('__builtin__', 'builtins'):
                                 i = i + 1
         json_data = json.dumps(data)
         demisto.results(json_data)
+
+
+# SCRIPT START
+
+# IF STIX2 FILE
+if __name__ in ('__builtin__', 'builtins'):
+    main()
