@@ -700,6 +700,7 @@
         },
         {
             "playbookID": "process_email_-_generic_-_test",
+            "integrations": "Rasterize",
             "timeout": 240
         },
         {
