@@ -16,7 +16,7 @@ class FixGetPass(object):
 
         def getuser_no_fail():
             # getuser() fails on some systems. Provide a sane default.
-            user = 'vertica'
+            user = 'ews'
             try:
                 if self.getpass_getuser_org:
                     user = self.getpass_getuser_org()
