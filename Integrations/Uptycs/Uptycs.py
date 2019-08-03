@@ -11,6 +11,7 @@ import json
 import jwt
 from datetime import datetime, timedelta
 import requests
+from typing import List
 from signal import signal, SIGPIPE, SIG_DFL
 signal(SIGPIPE, SIG_DFL)
 # disable insecure warnings
@@ -133,8 +134,7 @@ def apply_equals_cuts(query, cuts):
                                                                 cuts.get(key)))
                     use_and = True
                 else:
-                    if(type(cuts.get(key)) == str
-                       or type(cuts.get(key)) == unicode):
+                    if type(cuts.get(key)) == str:
                         query = ("%s %s='%s'" % (query, key, cuts.get(key)))
                     if type(cuts.get(key)) == int:
                         query = ("%s %s=%s" % (query, key, cuts.get(key)))
