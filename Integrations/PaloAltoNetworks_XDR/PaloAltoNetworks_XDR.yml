@@ -79,14 +79,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filters returned incidents that were created on or after the specified
-        date/time range, for example, 1 month, 2 days, 1 hour, and so on.
       isArray: false
       name: since_creation_time
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
+      description: Filters returned incidents that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.
+    - default: false
+      isArray: false
+      name: since_modification_time
+      required: false
+      secret: false
+      description: Filters returned incidents that were modified on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.
+      auto: PREDEFINED
+    - default: false
       description: Sorts returned incidents by the date/time that the incident was
         last modified ("asc" - ascending, "desc" - descending).
       isArray: false

@@ -374,6 +374,12 @@ def main():
     xdr_network_artifacts_field = demisto.args().get('xdr_network_artifacts')
     verbose = demisto.args().get('verbose') == 'true'
 
+    xdr_incident_markdown_field = demisto.args().get('xdr_incident_markdown_field')  # deprecated
+    if xdr_incident_markdown_field:
+        # deprecated field
+        raise ValueError('Deprecated xdr_incident_markdown_field argument, instead use xdr_alerts, xdr_file_artifacts, '
+                         'xdr_network_artifacts. For more information follow Demisto documentation.')
+
     previous_scheduled_task_id = demisto.get(demisto.context(), 'XDRSyncScriptTaskID')
     if first_run and previous_scheduled_task_id:
         if verbose:

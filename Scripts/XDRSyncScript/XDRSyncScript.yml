@@ -124,6 +124,7 @@ args:
   name: xdr_incident_markdown_field
   required: true
   secret: false
+  deprecated: true
 - auto: PREDEFINED
   default: false
   defaultValue: 'true'
