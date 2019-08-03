@@ -16,17 +16,17 @@ def test_get_indicators():
     with open("./TestData/little_stix2.json") as f:
         stix_input = json.load(f)
 
+    output_dict, stix_objects = get_indicators(stix_input)
     with open("./TestData/little_stix2_results.json") as f:
         expected_output = json.load(f)
-    output_dict = get_indicators(stix_input)
 
-    if not (output_dict == expected_output):
+    if not (output_dict == expected_output[0] and stix_objects == expected_output[1]):
         pytest.fail("Output from Demisto didn't match the expected output")
 
     # Test dict
-    output = get_indicators(stix_input[0])
+    output, _ = get_indicators(stix_input[0])
     output_url = output.get("URL")
-    expected_url = expected_output.get("URL")
+    expected_url = expected_output[0].get("URL")
     if output_url != expected_url:
         pytest.fail("Output from Demisto didn't match the expected output\n"
                     "Expected: {} \n Got: {}".format(expected_url, output_url))
@@ -38,7 +38,6 @@ def test_stix2_to_demisto(mocker):
     with open("./TestData/stix2.json") as f:
         js = json.load(f)
     stix2_to_demisto(js)
-
     try:
         d_results = demisto.results.call_args[0][0]
         d_results = json.loads(d_results)

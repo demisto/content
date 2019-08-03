@@ -128,61 +128,44 @@ def dscore(score):
     return 0
 
 
-def build_entry(stx_obj, indicators):
+def build_entry(indicators_dict, stix_indicators_dict, pkg_id):
     """Extracting all pattern from stix object
     function will take care of one bundle only.
     Args:
-        indicators: (dict) output
-        stx_obj: json stix2 format
+        pkg_id (str):
+        stix_indicators_dict (dict):
+        indicators_dict (dict):
+
     """
-    if "objects" in stx_obj:
-        results_list = list()
-        pkg_id = stx_obj.get("id")
-        objects = stx_obj.get("objects")
-        if isinstance(objects, list):
-            for obj in objects:
-                if isinstance(obj, dict):
-                    # Creating parameters
-                    ind_id = obj.get("id")
-                    source = obj.get("source")
-                    # times
-                    timestamp = obj.get("created")
+    results_list = list()
+    for key, indicators_list in indicators_dict.items():
+        for indicator in indicators_list:
+            obj = stix_indicators_dict.get(indicator)
+            if isinstance(obj, dict):
+                # Creating parameters
+                ind_id = obj.get("id")
+                source = obj.get("source")
+                # times
+                timestamp = obj.get("created")
 
-                    score = (
-                        dscore(obj.get("score"))
-                        if "score" in obj
-                        else get_score(obj.get("description"))
-                    )
+                score = (
+                    dscore(obj.get("score"))
+                    if "score" in obj
+                    else get_score(obj.get("description"))
+                )
 
-                    for k, v in indicators.items():
-                        if isinstance(v, list):
-                            for indicator in v:
-                                if indicator:
-                                    result = create_indicator_entry(
-                                        indicator_type=k,
-                                        value=indicator,
-                                        pkg_id=pkg_id,
-                                        ind_id=ind_id,
-                                        timestamp=timestamp,
-                                        source=source,
-                                        score=score,
-                                    )
-                                    if result:
-                                        results_list.append(result)
-                        elif v:
-                            result = create_indicator_entry(
-                                indicator_type=k,
-                                value=v,
-                                pkg_id=pkg_id,
-                                ind_id=ind_id,
-                                timestamp=timestamp,
-                                source=source,
-                                score=score,
-                            )
-                            if result:
-                                results_list.append(result)
-        return results_list
-    return None
+                result = create_indicator_entry(
+                    indicator_type=key,
+                    value=indicator,
+                    pkg_id=pkg_id,
+                    ind_id=ind_id,
+                    timestamp=timestamp,
+                    source=source,
+                    score=score,
+                )
+                if result:
+                    results_list.append(result)
+    return results_list
 
 
 def get_indicators(indicators):
@@ -214,6 +197,7 @@ def get_indicators(indicators):
                         '''
                         if len(term) == 2 and key in term[0]:
                             patterns_lists[value].append(term[1])
+                            entries_dict[term[1]] = indicator
 
     regex = re.compile("(\\w.*?) = '(.*?)'")
     patterns_lists = {
@@ -224,12 +208,15 @@ def get_indicators(indicators):
         "URL": list(),
     }  # type: dict
 
+    # Will hold values for package {"KEY": <STIX OBJECT>}
+    entries_dict = dict()
+
     if isinstance(indicators, list):
         for indicator in indicators:
             indicators_parser(indicator)
     else:
         indicators_parser(indicators)
-    return patterns_lists
+    return patterns_lists, entries_dict
 
 
 def extract_indicators(data):
@@ -239,7 +226,9 @@ def extract_indicators(data):
         data: (dict) of STIX2 object. can be
 
     Returns:
-        dict: containing all indicators data
+        (dict, dict):
+            First dict contains indicator types to indicator value
+            Second dict contains indicators value to STIX object defining them
 
     """
 
@@ -249,13 +238,13 @@ def extract_indicators(data):
         objects = data.get("objects")
 
         # Use regex to extract indicators
-        patterns_lists = get_indicators(objects)
+        patterns_lists, entries_dict = get_indicators(objects)
 
         # Make all the values unique
         for key, value in patterns_lists.items():
-            PATTERNS_DICT[key] = list(set(value))  # type: ignore
+            patterns_lists[key] = list(set(value))  # type: ignore
 
-        return patterns_lists
+        return patterns_lists, entries_dict
     else:
         return_error("No STIX2 object could be parsed")
 
@@ -268,22 +257,21 @@ def stix2_to_demisto(stx_obj):
     """
     data = list()
     if isinstance(stx_obj, dict):
-        indicators = extract_indicators(stx_obj)
-        entry = build_entry(stx_obj, indicators)
+        indicators, indicators_dict = extract_indicators(stx_obj)
+        entry = build_entry(indicators, indicators_dict, stx_obj.get("id"))
         if isinstance(entry, list):
             data.extend(entry)
         else:
             data.append(entry)
     elif isinstance(stx_obj, list):
         for obj in stx_obj:
-            indicators = extract_indicators(obj)
-            entry = build_entry(stx_obj, indicators)
+            indicators, indicators_dict = extract_indicators(obj)
+            entry = build_entry(obj, indicators, obj.get("id"))
             if entry:
                 if isinstance(entry, list):
                     data.extend(entry)
                 else:
                     data.append(entry)
-
     dumped = json.dumps(data)
     demisto.results(dumped)
 
