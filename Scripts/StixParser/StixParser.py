@@ -184,8 +184,8 @@ def get_indicators(indicators):
             }
     """
 
-    def indicators_parser(indicator):
-        pattern = indicator.get("pattern")
+    def indicators_parser(stix_indicator):
+        pattern = stix_indicator.get("pattern")
         if pattern:
             groups = regex.findall(pattern)
             if groups:
@@ -197,7 +197,7 @@ def get_indicators(indicators):
                         '''
                         if len(term) == 2 and key in term[0]:
                             patterns_lists[value].append(term[1])
-                            entries_dict[term[1]] = indicator
+                            entries_dict[term[1]] = stix_indicator
 
     regex = re.compile("(\\w.*?) = '(.*?)'")
     patterns_lists = {

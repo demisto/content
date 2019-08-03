@@ -86,10 +86,8 @@ class TestSTIX2ToDemisto:
                     if result == result_demisto:
                         result_counter += 1
 
-        assert result_counter == results_length, "Results from expected file are {}" \
-                                                 " but got {} results from script.".format(
-            results_length, result_counter
-        )
+        assert result_counter == results_length, "Results from expected file are {} but got {} " \
+                                                 "results from script.".format(results_length, result_counter)
 
     def test_stix2_to_json_empty_case(self, mocker):
         from StixParser import stix2_to_demisto
