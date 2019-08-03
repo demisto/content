@@ -196,7 +196,8 @@ def get_latest_incident_from_xdr(incident_id):
     # get the latest incident from xdr
     latest_incident_in_xdr_result = demisto.executeCommand("xdr-get-incident-extra-data", {"incident_id": incident_id})
     if is_error(latest_incident_in_xdr_result):
-        raise ValueError("Failed to execute xdr-get-incident-extra-data command. Error: {}".format(get_error(latest_incident_in_xdr_result)))
+        raise ValueError("Failed to execute xdr-get-incident-extra-data command. Error: {}".format(
+            get_error(latest_incident_in_xdr_result)))
 
     latest_incident_in_xdr = latest_incident_in_xdr_result[0]["Contents"].get("incident")
     # no need to pass the whole incident with extra data - it will be too big json to pass

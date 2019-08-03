@@ -444,41 +444,5 @@ def test_compare_incident_in_demisto_when_the_severity_is_unknown():
                                                                           incident_id,
                                                                           fields_mapping)
 
-    assert is_modified == False
+    assert is_modified is False
     assert {} == update_args
-
-
-def test_compare_incident_latest_xdr_incident_with_older_xdr_in_context____when_manual_severity_changed():
-    """
-    Given
-    - incident from xdr - latest
-    - incident from xdr - older
-    - fields_mapping:
-        severity: severity
-
-    When
-    - in
-
-    Then
-    - ensure compare returns is_modified=True
-    - ensure compare returns update_args contains severity=medium
-
-    """
-    fields_mapping = {
-        "severity": "severity"
-    }
-
-    incident_in_xdr_latest = copy.deepcopy(INCIDENT_FROM_XDR)
-    incident_in_xdr_latest["severity"] = "medium"
-    incident_in_xdr_latest["modification_time"] += 100
-
-    incident_from_xdr_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
-
-    is_modified, update_args = compare_incident_in_xdr_vs_previous_xdr_in_context(incident_in_xdr_latest,
-                                                                                  incident_from_xdr_in_context,
-                                                                                  fields_mapping)
-
-    assert is_modified
-    assert {
-        "severity": "medium",
-    } == update_args
