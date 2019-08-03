@@ -58,6 +58,7 @@ tasks:
           or mail') >= 0 || (val.Type.toLowerCase().indexOf('composite document file
           v2 document') >= 0 && val.Extension.toLowerCase() == 'msg') || 
           (val.Extension.toLowerCase() == 'eml' && val.Type.toLowerCase() == 'data') ||
+          val.Type.toLowerCase().indexOf('multipart/signed') >= 0 ||
           (val.Extension.toLowerCase()
           == 'eml' && val.Type.toLowerCase().indexOf('text') >= 0)).EntryID}
     reputationcalc: 1
@@ -134,6 +135,7 @@ tasks:
           or mail') >= 0 || (val.Type.toLowerCase().indexOf('composite document file
           v2 document') >= 0 && val.Extension.toLowerCase() == 'msg') || 
           (val.Extension.toLowerCase() == 'eml' && val.Type.toLowerCase() == 'data') ||
+          val.Type.toLowerCase().indexOf('multipart/signed') >= 0 ||
           (val.Extension.toLowerCase()
           == 'eml' && val.Type.toLowerCase().indexOf('text') >= 0)).EntryID}
     reputationcalc: 2
