@@ -1397,7 +1397,7 @@ def connect_agent_to_network():
 
     # Make request and get raw response
     agents = connect_to_network_request(agents_id)
-    agents_affected = agents.get('data', {}).get('affected')
+    agents_affected = agents.get('data', {}).get('affected', 0)
 
     # Parse response into context & content entries
     if agents_affected > 0:
@@ -1407,7 +1407,7 @@ def connect_agent_to_network():
             'ID': agents_id
         }
     else:
-        demisto.results('No agents were connected to the network.')
+        return_error('No agents were connected to the network.')
 
     context = {
         'SentinelOne.Agent(val.ID && val.ID === obj.ID)': contents
@@ -1432,9 +1432,8 @@ def disconnect_from_network_request(agents_id):
     response = http_request('POST', endpoint_url, data=json.dumps(payload))
     if response.get('errors'):
         return_error(response.get('errors'))
-    if 'data' in response:
+    else:
         return response
-    return {}
 
 
 def disconnect_agent_from_network():
@@ -1446,7 +1445,7 @@ def disconnect_agent_from_network():
 
     # Make request and get raw response
     agents = connect_to_network_request(agents_id)
-    agents_affected = agents.get('data', {}).get('affected')
+    agents_affected = agents.get('data', {}).get('affected', 0)
 
     # Parse response into context & content entries
     if agents_affected > 0:
@@ -1456,7 +1455,7 @@ def disconnect_agent_from_network():
             'ID': agents_id
         }
     else:
-        demisto.results('No agents were disconnected from the network.')
+        return_error('No agents were disconnected from the network.')
 
     context = {
         'SentinelOne.Agent(val.ID && val.ID === obj.ID)': contents
@@ -1485,7 +1484,7 @@ def broadcast_message_request(message, is_active=None, group_id=None, agent_id=N
 
     payload = {
         'data': {
-            "message": message
+            'message': message
         },
         'filter': filters
     }
@@ -1493,9 +1492,8 @@ def broadcast_message_request(message, is_active=None, group_id=None, agent_id=N
 
     if response.get('errors'):
         return_error(response.get('errors'))
-    if 'data' in response:
+    else:
         return response
-    return {}
 
 
 def broadcast_message():
@@ -1511,11 +1509,11 @@ def broadcast_message():
     broadcast_message = broadcast_message_request(message, is_active=is_active, group_id=group_id, agent_id=agent_id,
                                                   domain=domain)
 
-    agents_affected = broadcast_message.get('data', {}).get('affected')
+    agents_affected = broadcast_message.get('data', {}).get('affected', 0)
     if agents_affected > 0:
-        demisto.results('The message was successfully delivered to the agent(s) ')
+        demisto.results('The message was successfully delivered to the agent(s)')
     else:
-        demisto.results('The message was not delivered')
+        return_error('No messages were sent. Verify that the inputs are correct.')
 
 
 def fetch_incidents():

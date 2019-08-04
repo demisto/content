@@ -1197,9 +1197,9 @@ script:
     execution: false
     name: sentinelone-connect-agent
     outputs:
-    - contextPath: SentinelOne.Agent.AgentsAffected
-      description: The number of the affected agents
-      type: Number
+    - contextPath: SentinelOne.Agent.NetworkStatus
+      description: Agent network status.
+      type: String
     - contextPath: SentinelOne.Agent.ID
       description: The Ids of the affected agents
       type: String
@@ -1240,19 +1240,21 @@ script:
       required: false
       secret: false
     - default: false
-      description: List of Group IDs to filter by
+      description: List of Group IDs to filter by. Get the group Ids from get-groups
+        command. For multiple Ids, use comma seperated (e.g 475482421375116388,475482421375116387)
       isArray: false
       name: group_id
       required: false
       secret: false
     - default: false
-      description: A list of Agent IDs
+      description: A list of Agent IDs. Get the agent Ids from list-agent command.
+        For multiple Ids, use comma seperated (e.g 475482421375116388,475482421375116387)
       isArray: false
       name: agent_id
       required: false
       secret: false
     - default: false
-      description: Included network domains
+      description: 'Included network domains. '
       isArray: false
       name: domain
       required: false
