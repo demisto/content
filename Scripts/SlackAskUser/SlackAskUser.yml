@@ -47,8 +47,7 @@ args:
   - 'false'
   required: false
   secret: false
-comment: Ask a user a question on Slack and expect a response. The response can also
-  close a task (might be conditional) in a playbook.
+comment: This script is deprecated. Please use SlackAsk instead.
 commonfields:
   id: SlackAskUser
   version: -1
