@@ -144,7 +144,7 @@
         "hostname"
       ],
       "modified": "2019-05-26T16:15:44.000Z",
-      "pattern": "[domain-name:value = '8.8.8.8']",
+      "pattern": "[domain-name:value = 'ip-8-8-8-8']",
       "score": "Not Specified",
       "source": "",
       "type": "indicator",

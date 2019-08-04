@@ -15,7 +15,8 @@ PATTERNS_DICT = {
     "url:": "URL",
     "domain-name:": "Domain",
     "email:": "Email",
-    "email-message": "Email"
+    "email-message": "Email",
+    "win-registry-key:key": "Registry Path Reputation"
 }
 
 """ HELPER FUNCTIONS"""
@@ -131,7 +132,7 @@ def get_score(description):
     return 0
 
 
-def dscore(score):
+def dbot_score(score):
     if score == "High":
         return 3
     if score == "Medium":
@@ -165,7 +166,7 @@ def build_entry(indicators_dict, stix_indicators_dict, pkg_id):
                 timestamp = obj.get("created")
 
                 score = (
-                    dscore(obj.get("score"))
+                    dbot_score(obj.get("score"))
                     if "score" in obj
                     else get_score(obj.get("description"))
                 )
@@ -185,22 +186,33 @@ def build_entry(indicators_dict, stix_indicators_dict, pkg_id):
 
 
 def get_indicators(indicators):
+    # type: (list or dict) -> (dict, dict)
     """Gets a STIX entry and building the list
 
     Args:
         indicators (dict or list): STIX-formatted entry
 
     Returns:
-        dict: in the format of:
+        (dict, dict): in the format of:
+        (
             {
                 "File": [],
                 "IP": [],
                 "Domain": [],
                 "URL": []
+            },
+            {
+                "<key>": "<stix entry>"
             }
+            )
     """
 
     def indicators_parser(stix_indicator):
+        # type: (dict) -> None
+        """
+        Args:
+            stix_indicator (dict):
+        """
         pattern = stix_indicator.get("pattern")
         if pattern:
             groups = regex.findall(pattern)
@@ -208,12 +220,12 @@ def get_indicators(indicators):
                 for key, value in PATTERNS_DICT.items():
                     for term in groups:
                         '''
-                        term should be list with 2 argument catched with the regex
+                        term should be list with 2 argument parsed with regex
                         [`pattern`, `indicator`]
                         '''
                         if len(term) == 2 and key in term[0]:
                             new_indicator = term[1]
-                            if value == "IP":
+                            if value in ("IP", "URL", "Domain"):
                                 new_indicator = ip_parser(new_indicator)
                             patterns_lists[value].append(new_indicator)
                             entries_dict[new_indicator] = stix_indicator
@@ -225,6 +237,9 @@ def get_indicators(indicators):
         "Domain": list(),
         "Email": list(),
         "URL": list(),
+        # TODO implement below
+        "Registry Path Reputation": list(),
+        "CVE CVSS Score": list()
     }  # type: dict
 
     # Will hold values for package {"KEY": <STIX OBJECT>}

@@ -1,16 +1,20 @@
 [
   {
+    "CVE CVSS Score": [],
     "File": [],
     "IP": [],
     "Domain": [],
     "Email": [
       "user@example.com"
     ],
+    "Registry Path Reputation": [],
     "URL": [
       "http://johnson.com"
     ]
   },
   {
+    "CVE CVSS Score": [],
+    "Registry Path Reputation": [],
     "http://johnson.com": {
       "created": "2019-05-26T16:18:32.000Z",
       "id": "indicator--893eac0c-3232-4219-91bb-97f9a6b0de6c",
