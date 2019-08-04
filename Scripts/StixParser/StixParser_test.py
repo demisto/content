@@ -50,8 +50,8 @@ class TestGetIndicators:
         stix_input = stix_input.get("objects")
 
         output_dict, stix_objects = get_indicators(stix_input)
-        assert output_dict == expected_output[0]
-        assert stix_objects.get("8.8.8.8").get("pattern") == "[domain-name:value = 'ip-8-8-8-8']"
+        assert output_dict == expected_output[0], err
+        assert stix_objects.get("8.8.8.8").get("pattern") == "[domain-name:value = 'ip-8-8-8-8']", err
 
     def test_get_indicators_dict(self):
         from StixParser import get_indicators
