@@ -1,1 +1,1 @@
-In line 251 - dropped the '.' in the end of the word 'Reputation'
+Improved implementation of the ***threatstream-email-reputation*** command, which now returns context, as expected.
