@@ -1,3 +1,5 @@
+import socket
+
 import demistomock as demisto
 # Common functions script
 # =======================
@@ -1322,7 +1324,8 @@ def is_ip_valid(s, accept_v6_ips=False):
        :type s: ``str``
        :param s: The string to be checked (required)
        :type accept_v6_ips: ``bool``
-       :param accept_v6_ips: A boolean determining whether the function should accept v6 IP addresses
+       :param accept_v6_ips: A boolean determining whether the
+       function should accept IPv6 addresses
 
        :return: True if the given string represents a valid IP address, False otherwise
        :rtype: ``bool``
