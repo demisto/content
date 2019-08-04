@@ -570,7 +570,7 @@
             "playbookID": "TestDedupIncidentsByName"
         },
         {
-            "integrations": "McAfee_Advanced_Threat_Defense",
+            "integrations": "McAfee Advanced Threat Defense",
             "playbookID": "Test Playbook McAfee ATD",
             "timeout": 700
         },
