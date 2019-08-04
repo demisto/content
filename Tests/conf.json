@@ -1779,6 +1779,8 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "SCADAfence CNM": "Once in a while SCADAfence CNM integration fails to create an instance, throwing a '502 bad gateway' error (issue #18376)",
+        "Cortex XDR - IR": "Instance seems to have problems - returning 500 internal server error (issue #18377)",
         "ArcSight ESM v2": "License expired (issue #18328)",
         "AlienVault USM Anywhere": "License expired (issue #18273)",
         "Tufin": "Calls to instance return 502 error. @itay reached out (issue 16441)",
