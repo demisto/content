@@ -33,7 +33,9 @@ def ip_parser(ip):
     Returns:
         str: parsed ip indicator
     """
-    return ip.lower().replace("ip-", "").replace("-", ".")
+    if ip.startswith("ip-"):
+        return ip.lower().replace("ip-", "").replace("-", ".")
+    return ip
 
 
 def convert_to_json(string):
