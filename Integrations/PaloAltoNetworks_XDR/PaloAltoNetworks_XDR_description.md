@@ -1,7 +1,7 @@
 1) API Key:
 - Go to Settings
 - Click the **+New Key** button in the top right corner
-- Generate a key from type **Advanced**
+- Generate a key of type **Advanced**
 - Copy + Paste the key
 - Copy the Key ID from the ID column
 2) URL:
