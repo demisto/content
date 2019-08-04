@@ -1,2 +1,4 @@
-Bug Fix - failed listing address groups, addresses where only 1 object was present.
-Support investigating traffic logs use-case using the commands: 'panorama-query-traffic-logs', 'panorama-check-traffic-logs-status', 'panorama-get-traffic-logs'
+Handle URL Filtering licensing error gracefully
+Handle trying to edit a non committed Custom URL category error carefully
+Add panorama-list-rules command
+Add edl argument for panorama-custom-block command

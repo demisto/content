@@ -1,0 +1,251 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: URLhaus
+  version: -1
+configuration:
+- defaultvalue: https://urlhaus-api.abuse.ch/v1/
+  display: Server URL (e.g. https://192.168.0.1)
+  name: url
+  required: false
+  type: 0
+- display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: '1'
+  display: Blacklists appearances threshold
+  name: threshold
+  required: false
+  type: 0
+- display: Compromised (is malicious)
+  name: compromised_is_malicious
+  required: false
+  type: 8
+description: URLhaus has the goal of sharing malicious URLs that are being used for
+  malware distribution.
+display: URLhaus
+name: URLhaus
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: URL to query.
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves URL information from URLhaus.
+    execution: false
+    name: url
+    outputs:
+    - contextPath: URL.Data
+      description: The URL.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: Vendor that reported the URL as malicious.
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: Description of the malicious URL.
+      type: string
+    - contextPath: URLhaus.URL.ID
+      description: Unique identifier of the URLhaus database entry.
+      type: string
+    - contextPath: URLhaus.URL.Status
+      description: The current status of the URL.
+      type: string
+    - contextPath: URLhaus.URL.Host
+      description: The extracted host of the malware URL (IP address or domain name/FQDN).
+      type: string
+    - contextPath: URLhaus.URL.DateAdded
+      description: Date the URL was added to URLhaus.
+      type: date
+    - contextPath: URLhaus.URL.Threat
+      description: The threat corresponding to this malware URL.
+      type: string
+    - contextPath: URLhaus.URL.Blacklist.Name
+      description: Name of the blacklist.
+      type: String
+    - contextPath: URLhaus.URL.Tags
+      description: A list of tags associated with the queried malware URL.
+      type: string
+    - contextPath: URLhaus.URL.Payload.Name
+      description: Payload file name.
+      type: String
+    - contextPath: URLhaus.URL.Payload.Type
+      description: Payload file type.
+      type: String
+    - contextPath: URLhaus.URL.Payload.MD5
+      description: MD5 hash of the HTTP response body (payload).
+      type: String
+    - contextPath: URLhaus.URL.Payload.VT.Result
+      description: VirusTotal results for the payload.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: Indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: URLhaus.URL.Blacklist.Status
+      description: Status of the URL in the blacklist.
+      type: String
+    - contextPath: URLhaus.URL.Payload.VT.Link
+      description: Link to the VirusTotal report.
+      type: String
+  - arguments:
+    - default: false
+      description: Domain to query.
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves domain information from URLhaus.
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: Domain.Name
+      description: The domain name, for example, google.com.
+      type: String
+    - contextPath: DBotScore.Type
+      description: Indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: URLhaus.Domain.FirstSeen
+      description: Date that the IP was seen for the first time (UTC).
+      type: Date
+    - contextPath: URLhaus.Domain.Blacklist.Name
+      description: The status of the domain in different blacklists.
+      type: String
+    - contextPath: URLhaus.Domain.URL
+      description: URLs observed on this domain.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: Vendor that reported the domain as malicious.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: Description of the malicious domain.
+      type: String
+    - contextPath: URLhaus.Domain.Blacklist.Status
+      description: Status of the URL in the blacklist.
+      type: String
+  - arguments:
+    - default: false
+      description: MD5 hash or SHA256 hash of the file to query.
+      isArray: false
+      name: file
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves file information from URLhaus.
+    execution: false
+    name: file
+    outputs:
+    - contextPath: File.Size
+      description: File size (in bytes).
+      type: Number
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: String
+    - contextPath: URLhaus.File.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: URLhaus.File.SHA256
+      description: SHA256 hash of the file.
+      type: String
+    - contextPath: URLhaus.File.Type
+      description: 'File type guessed by URLhaus, for example: .exe, .doc.'
+      type: String
+    - contextPath: URLhaus.File.Size
+      description: File size (in bytes).
+      type: Number
+    - contextPath: URLhaus.File.Signature
+      description: Malware family.
+      type: String
+    - contextPath: URLhaus.File.FirstSeen
+      description: Date and time (UTC) that URLhaus first saw this file (payload).
+      type: Date
+    - contextPath: URLhaus.File.LastSeen
+      description: Date and time (UTC) that URLhaus last saw this file (payload).
+      type: Date
+    - contextPath: URLhaus.File.DownloadLink
+      description: Location (URL) where you can download a copy of this file.
+      type: String
+    - contextPath: URLhaus.File.VirusTotal.Percent
+      description: 'AV detection (percentage), for example: 24.14.'
+      type: Number
+    - contextPath: URLhaus.File.VirusTotal.Link
+      description: Link to the VirusTotal report.
+      type: String
+    - contextPath: URLhaus.File.URL
+      description: A list of malware URLs associated with this payload (max. 100).
+      type: Unknown
+  - arguments:
+    - default: false
+      description: SHA256 hash of the file to download.
+      isArray: false
+      name: file
+      required: true
+      secret: false
+    deprecated: false
+    description: Downloads a malware sample from URLhaus.
+    execution: true
+    name: urlhaus-download-sample
+    outputs:
+    - contextPath: File.Size
+      description: File size.
+      type: number
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: string
+    - contextPath: File.Name
+      description: File name.
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file.
+      type: string
+    - contextPath: File.EntryID
+      description: File entry ID.
+      type: string
+    - contextPath: File.Info
+      description: File information.
+      type: string
+    - contextPath: File.Type
+      description: File type.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: string
+    - contextPath: File.Extension
+      description: File extension.
+      type: string
+  dockerimage: demisto/python3:3.7.3.286
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python

@@ -1280,6 +1280,23 @@ def get_hash_type(hash_file):
         return 'Unknown'
 
 
+def is_mac_address(mac):
+    """
+    Test for valid mac address
+
+    :type mac: ``str``
+    :param mac: MAC address in the form of AA:BB:CC:00:11:22
+
+    :return: True/False
+    :rtype: ``bool``
+    """
+
+    if re.search(r'([0-9A-F]{2}[:]){5}([0-9A-F]){2}', mac.upper()) is not None:
+        return True
+    else:
+        return False
+
+
 def is_ip_valid(s):
     """
        Checks if the given string represents a valid IPv4 address
@@ -1335,7 +1352,7 @@ def return_outputs(readable_output, outputs, raw_response=None):
     demisto.results(return_entry)
 
 
-def return_error(message, error=''):
+def return_error(message, error='', outputs=None):
     """
         Returns error entry with given message and exits the script
 
@@ -1344,6 +1361,9 @@ def return_error(message, error=''):
 
         :type error: ``str``
         :param error: The raw error message to log (optional)
+
+        :type outputs: ``dict or None``
+        :param outputs: the outputs that will be returned to playbook/investigation context (optional)
 
         :return: Error entry object
         :rtype: ``dict``
@@ -1355,7 +1375,8 @@ def return_error(message, error=''):
     demisto.results({
         'Type': entryTypes['error'],
         'ContentsFormat': formats['text'],
-        'Contents': str(message)
+        'Contents': str(message),
+        "EntryContext": outputs
     })
     sys.exit(0)
 
@@ -1548,7 +1569,7 @@ def string_to_context_key(string):
         raise Exception('The key is not a string: {}'.format(string))
 
 
-def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0):
+def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0, utc=True):
     """
       Parses date_range string to a tuple date strings (start, end). Input must be in format 'number date_range_unit')
       Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
@@ -1580,8 +1601,13 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
     if not isinstance(timezone, (int, float)):
         return_error('Invalid timezone "{}" - must be a number (of type int or float).'.format(timezone))
 
-    end_time = datetime.now() + timedelta(hours=timezone)
-    start_time = datetime.now() + timedelta(hours=timezone)
+    if utc:
+        end_time = datetime.now() + timedelta(hours=timezone)
+        start_time = datetime.now() + timedelta(hours=timezone)
+    else:
+        end_time = datetime.utcnow() + timedelta(hours=timezone)
+        start_time = datetime.utcnow() + timedelta(hours=timezone)
+
     unit = range_split[1]
     if 'minute' in unit:
         start_time = end_time - timedelta(minutes=number)
