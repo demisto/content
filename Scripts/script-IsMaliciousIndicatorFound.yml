@@ -15,37 +15,37 @@ script: |-
 
   var filesIndicators = [];
   for (var indicatorObject in files) {
-      if (typeof hashes[indicatorObject] !== "undefined" && filesIndicators.indexOf(files[indicatorObject].Indicator) === -1) {
-          filesIndicators.push(files[indicatorObject].Indicator);
+      if (files[indicatorObject] && files[indicatorObject].Indicator && filesIndicators.indexOf(files[indicatorsObject].Indicator) === -1) {
+          filesIndicators.push(files[indicatorsObject].Indicator);
       }
   }
   var hashesIndicators = [];
   for (var indicatorObject in hashes) {
-      if (typeof(hashes[indicatorObject]) !== "undefined" && hashesIndicators.indexOf(hashes[indicatorObject].Indicator) === -1) {
-          hashesIndicators.push(hashes.indicatorObject.Indicator);
+      if (hashes[indicatorObject] && hashes[indicatorObject].Indicator && hashesIndicators.indexOf(hashes[indicatorsObject].Indicator) === -1) {
+          hashesIndicators.push(hashes.indicatorsObject.Indicator);
       }
   }
   var ipsIndicators = [];
   for (var indicatorObject in ips) {
-      if (ips[indicatorObject] && ipsIndicators.indexOf(ips[indicatorObject].Indicator) === -1) {
-          ipsIndicators.push(ips[indicatorObject].Indicator);
+      if (ips[indicatorObject] && ips[indicatorObject].Indicator && ipsIndicators.indexOf(ips[indicatorsObject].Indicator) === -1) {
+          ipsIndicators.push(ips[indicatorsObject].Indicator);
       }
   }
   var urlsIndicators = [];
   for (var indicatorObject in urls) {
-      if (urls[indicatorObject] && urlsIndicators.indexOf(urls[indicatorObject].Indicator) === -1) {
+      if (urls[indicatorObject] && urls[indicatorObject].Indicator && urlsIndicators.indexOf(urls[indicatorObject].Indicator) === -1) {
           urlsIndicators.push(urls[indicatorObject].Indicator);
       }
   }
   var domainsIndicators = [];
   for (var indicatorObject in urls) {
-      if (domains[indicatorObject] && domainsIndicators.indexOf(domains[indicatorObject].Indicator) === -1) {
+      if (domains[indicatorObject] && domains[indicatorObject].Indicator && domainsIndicators.indexOf(domains[indicatorObject].Indicator) === -1) {
           domainsIndicators.push(domains[indicatorObject].Indicator);
       }
   }
   var emailsIndicators = [];
   for (var indicatorObject in emails) {
-      if (emails[indicatorObject] && emailsIndicators.indexOf(emails[indicatorObject].Indicator) === -1) {
+      if (emails[indicatorObject] && emails[indicatorObject].Indicator && emailsIndicators.indexOf(emails[indicatorObject].Indicator) === -1) {
           emailsIndicators.push(emails[indicatorObject].Indicator);
       }
   }
