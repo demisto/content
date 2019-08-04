@@ -128,9 +128,6 @@ def find_mirror_by_investigation() -> dict:
     return mirror
 
 
-''' MIRRORING '''
-
-
 def set_to_latest_integration_context(key: str, value, wait: bool = False):
     if wait:
         time.sleep(5)
@@ -140,6 +137,9 @@ def set_to_latest_integration_context(key: str, value, wait: bool = False):
     integration_context[key] = json.dumps(value)
 
     demisto.setIntegrationContext(integration_context)
+
+
+''' MIRRORING '''
 
 
 async def get_slack_name(slack_id: str, client) -> str:
@@ -1088,6 +1088,7 @@ def main():
         command_func = commands[demisto.command()]
         command_func()
     except Exception as e:
+        LOG(e)
         return_error(str(e))
 
 
