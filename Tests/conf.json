@@ -1850,7 +1850,6 @@
         "Anomali ThreatStream": "'proxy' parameter not working",
         "Palo Alto Networks Cortex": "SDK",
         "AWS - EC2": "SSL Validation fails for STS",
-        "AWS - ACM": "Does not support self signed certs",
         "Recorded Future": "might be dynamic test",
         "AlphaSOC Wisdom": "Test module issue",
         "Microsoft Graph": "Test direct access to oproxy",
