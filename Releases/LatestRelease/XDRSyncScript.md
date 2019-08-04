@@ -1,3 +1,3 @@
-- added verbose argument
-- all the arguments will have default incident field names
-- stop the previous scheduled task if playbook was re-executed
+- Added the *verbose* argument.
+- All arguments have default incident field names.
+- When a playbook is re-run, the previous scheduled task is terminated.
