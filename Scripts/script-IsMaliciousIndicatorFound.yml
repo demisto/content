@@ -15,20 +15,20 @@ script: |-
 
   var filesIndicators = [];
   for (var indicatorObject in files) {
-      if (files[indicatorObject] && filesIndicators.indexOf(files[indicatorsObject].Indicator) === -1) {
-          filesIndicators.push(files[indicatorsObject].Indicator);
+      if (typeof hashes[indicatorObject] !== "undefined" && filesIndicators.indexOf(files[indicatorObject].Indicator) === -1) {
+          filesIndicators.push(files[indicatorObject].Indicator);
       }
   }
   var hashesIndicators = [];
   for (var indicatorObject in hashes) {
-      if (hashes[indicatorObject] && hashesIndicators.indexOf(hashes[indicatorsObject].Indicator) === -1) {
-          hashesIndicators.push(hashes.indicatorsObject.Indicator);
+      if (typeof(hashes[indicatorObject]) !== "undefined" && hashesIndicators.indexOf(hashes[indicatorObject].Indicator) === -1) {
+          hashesIndicators.push(hashes.indicatorObject.Indicator);
       }
   }
   var ipsIndicators = [];
   for (var indicatorObject in ips) {
-      if (ips[indicatorObject] && ipsIndicators.indexOf(ips[indicatorsObject].Indicator) === -1) {
-          ipsIndicators.push(ips[indicatorsObject].Indicator);
+      if (ips[indicatorObject] && ipsIndicators.indexOf(ips[indicatorObject].Indicator) === -1) {
+          ipsIndicators.push(ips[indicatorObject].Indicator);
       }
   }
   var urlsIndicators = [];
