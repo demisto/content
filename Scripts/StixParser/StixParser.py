@@ -275,7 +275,7 @@ def create_new_ioc(data, i, timestamp, pkg_id, ind_id):
 # SCRIPT START
 
 # IF STIX2 FILE
-if __name__ == '__main__':
+if __name__ in ('__builtin__', 'builtins'):
     txt = demisto.args().get("iocXml").encode("utf-8")
     stx = convert_to_json(txt)
     if stx:
