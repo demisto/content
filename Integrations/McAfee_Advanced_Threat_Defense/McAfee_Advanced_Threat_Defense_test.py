@@ -15,7 +15,7 @@ def set_params(mocker):
 
 
 def test_prettify_current_user_res():
-    from McAfee-ATD import prettify_current_user_res
+    from McAfee_Advanced_Threat_Defense import prettify_current_user_res
     expected_user_dict = dict({
         'APIVersion': "1.0", 'IsAdmin': "True", 'SessionId': "42", 'UserId': 101})
     prettify_user_res = prettify_current_user_res(
@@ -24,7 +24,7 @@ def test_prettify_current_user_res():
 
 
 def test_prettify_task_status_by_taskId_res():
-    from McAfee-ATD import prettify_task_status_by_taskId_res
+    from McAfee_Advanced_Threat_Defense import prettify_task_status_by_taskId_res
     expected_rtask_status = dict({
         'taskId': "41", 'jobId': "42", 'status': "finished", 'filename': "my_name", 'MD5': "my_md5", 'submitTime': "010101"})
     prettify_task_status_res = prettify_task_status_by_taskId_res(
