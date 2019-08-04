@@ -1297,26 +1297,49 @@ def is_mac_address(mac):
         return False
 
 
-def is_ip_valid(s):
+def is_ipv6_valid(address):
     """
-       Checks if the given string represents a valid IPv4 address
+    Checks if the given string represents a valid IPv6 address
+
+    :type address: str
+    :param address: The string to be checked
+
+    :return: True if the given string represents a valid IPv6 address, False otherwise
+    :rtype: ``bool``
+    """
+    try:
+        socket.inet_pton(socket.AF_INET6, address)
+    except socket.error:  # not a valid address
+        return False
+    return True
+
+
+def is_ip_valid(s, accept_v6_ips=False):
+    """
+       Checks if the given string represents a valid IP address.
+       By default, will only return 'True' for IPv4 addresses.
 
        :type s: ``str``
        :param s: The string to be checked (required)
+       :type accept_v6_ips: ``bool``
+       :param accept_v6_ips: A boolean determining whether the function should accept v6 IP addresses
 
        :return: True if the given string represents a valid IP address, False otherwise
        :rtype: ``bool``
     """
     a = s.split('.')
-    if len(a) != 4:
+    if len(a) != 4 and not accept_v6_ips:
         return False
-    for x in a:
-        if not x.isdigit():
-            return False
-        i = int(x)
-        if i < 0 or i > 255:
-            return False
-    return True
+    elif len(a) != 4 and accept_v6_ips:
+        return is_ipv6_valid(s)
+    else:
+        for x in a:
+            if not x.isdigit():
+                return False
+            i = int(x)
+            if i < 0 or i > 255:
+                return False
+        return True
 
 
 def return_outputs(readable_output, outputs, raw_response=None):
