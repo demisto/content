@@ -1,6 +1,6 @@
-id: SentinelOne Beta Test
+id: SentinelOne V2 - test
 version: -1
-name: SentinelOne Beta Test
+name: SentinelOne V2 - test
 starttaskid: "0"
 tasks:
   "0":

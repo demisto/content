@@ -1265,4 +1265,4 @@ script:
   script: '-'
   type: python
 tests:
-- SentinelOne Beta Test
+- SentinelOne V2 - test
