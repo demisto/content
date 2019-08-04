@@ -1,0 +1,1 @@
+Bug fix: Filter empty domains
