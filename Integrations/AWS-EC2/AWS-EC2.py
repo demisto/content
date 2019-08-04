@@ -1527,19 +1527,19 @@ def authorize_security_group_ingress_command(args):
             'CidrIp': args.get('IpRangesCidrIp'),
             'Description': args.get('IpRangesDesc', None)
         }]
-        IpPermissions_dict.update({'IpRanges': IpRanges})
+        IpPermissions_dict.update({'IpRanges': IpRanges})  # type: ignore
     if args.get('Ipv6RangesCidrIp') is not None:
         Ipv6Ranges = [{
             'CidrIp': args.get('Ipv6RangesCidrIp'),
             'Description': args.get('Ipv6RangesDesc', None)
         }]
-        IpPermissions_dict.update({'Ipv6Ranges': Ipv6Ranges})
+        IpPermissions_dict.update({'Ipv6Ranges': Ipv6Ranges})  # type: ignore
     if args.get('PrefixListId') is not None:
         PrefixListIds = [{
             'PrefixListId': args.get('PrefixListId'),
             'Description': args.get('PrefixListIdDesc', None)
         }]
-        IpPermissions_dict.update({'PrefixListIds': PrefixListIds})
+        IpPermissions_dict.update({'PrefixListIds': PrefixListIds})  # type: ignore
 
     if args.get('UserIdGroupPairsDescription') is not None:
         UserIdGroupPairs_dict.update({'Description': args.get('UserIdGroupPairsDescription')})
@@ -1571,7 +1571,7 @@ def authorize_security_group_ingress_command(args):
 
     if UserIdGroupPairs_dict is not None:
         UserIdGroupPairs.append(UserIdGroupPairs_dict)
-        IpPermissions_dict.update({'UserIdGroupPairs': UserIdGroupPairs})
+        IpPermissions_dict.update({'UserIdGroupPairs': UserIdGroupPairs})  # type: ignore
 
     if IpPermissions_dict is not None:
         IpPermissions.append(IpPermissions_dict)
