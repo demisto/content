@@ -16,7 +16,8 @@ PATTERNS_DICT = {
     "domain-name:": "Domain",
     "email:": "Email",
     "email-message": "Email",
-    "win-registry-key:key": "Registry Path Reputation"
+    "win-registry-key:key": "Registry Path Reputation",
+    "windows-registry-key:key": "Registry Path Reputation"
 }
 
 """ HELPER FUNCTIONS"""
@@ -186,7 +187,6 @@ def build_entry(indicators_dict, stix_indicators_dict, pkg_id):
 
 
 def get_indicators(indicators):
-    # type: (list or dict) -> (dict, dict)
     """Gets a STIX entry and building the list
 
     Args:
@@ -229,6 +229,12 @@ def get_indicators(indicators):
                                 new_indicator = ip_parser(new_indicator)
                             patterns_lists[value].append(new_indicator)
                             entries_dict[new_indicator] = stix_indicator
+        # Handle CVE
+        elif stix_indicator.get("description") == "cve cvss score":
+            new_indicator = stix_indicator.get("name")
+            if new_indicator:
+                patterns_lists["CVE CVSS Score"].append(new_indicator)
+                entries_dict[new_indicator] = stix_indicator
 
     regex = re.compile("(\\w.*?) = '(.*?)'")
     patterns_lists = {

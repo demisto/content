@@ -21,8 +21,8 @@
     "URL": [
       "http://johnson.com"
     ],
-    "Registry Path Reputation": [],
-    "CVE CVSS Score": []
+    "Registry Path Reputation": ["HKEY_LOCAL_MACHINE\\\\SOFTWARE\\\\RKey"],
+    "CVE CVSS Score": ["CVE-2019-7312"]
   },
   {
     "http://johnson.com": {
