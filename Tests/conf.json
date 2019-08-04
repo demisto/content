@@ -355,7 +355,7 @@
             "playbookID": "minemeld_test"
         },
         {
-            "integrations": "SentinelOne V2",
+            "integrations": "SentinelOne Beta",
             "playbookID": "SentinelOne Beta Test"
         },
         {
@@ -834,6 +834,10 @@
         },
         {
             "playbookID": "listExecutedCommands-Test"
+        },
+        {
+            "integrations": "AWS - Lambda",
+            "playbookID": "AWS-Lambda-Test (Read-Only)"
         },
         {
             "integrations": "Service Manager",
@@ -1707,6 +1711,11 @@
         }
     ],
     "skipped_tests": {
+        "search_endpoints_by_hash_-_tie_-_test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
+        "McAfee-TIE Test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
+        "CreatePhishingClassifierMLTest": "Test is unstable and fails with no reason from time to time (issue ##18349)",
+        "Autoextract - Test": "See issue #18343 for further information",
+        "rsa_packets_and_logs_test": "A command searches for a session ID which doesn't exist on our local server - asked RSA to help (issue #18332)",
         "reputations.json Test": "Reverting the fqdn indicator due to glichtman request, will handled next release(end july 19)",
         "Cybereason Test": "Integration instance being disabled in the middle of test playbook (issue 17394)",
         "LogRhythmRest": "Unstable environment Adi is checking",
@@ -1765,6 +1774,8 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "ArcSight ESM v2": "License expired (issue #18328)",
+        "AlienVault USM Anywhere": "License expired (issue #18273)",
         "Tufin": "Calls to instance return 502 error. @itay reached out (issue 16441)",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "MimecastV2": "Several issues with instance",
@@ -1790,6 +1801,7 @@
         "Cisco Spark": "No instance",
         "Minerva Labs Anti-Evasion Platform": "No instance",
         "Phish.AI": "Unauthorized. will be re-branded soon as Cofense",
+        "QRadar": "No license (issue 17794)",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -1798,6 +1810,8 @@
         "Tenable.io": "Unstable instance (issue 16115)",
 
       "_comment": "~~~ OTHER ~~~",
+        "Pwned": "Changes in API - may require integration rewrite (issue #18102)",
+        "SumoLogic": "Shelly working on fixing it",
         "iDefense": "DevOps investigation",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
@@ -1850,6 +1864,7 @@
         "Anomali ThreatStream": "'proxy' parameter not working",
         "Palo Alto Networks Cortex": "SDK",
         "AWS - EC2": "SSL Validation fails for STS",
+        "AWS - Lambda": "AWS not accepting self-signed certs",
         "Recorded Future": "might be dynamic test",
         "AlphaSOC Wisdom": "Test module issue",
         "Microsoft Graph": "Test direct access to oproxy",

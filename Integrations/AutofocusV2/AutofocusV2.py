@@ -686,8 +686,8 @@ def top_tags_results_command():
         'ContentsFormat': formats['text'],
         'Contents': results,
         'EntryContext': {'AutoFocus.TopTagsResults(val.PublicTagName == obj.PublicTagName)': context,
-                         'AutoFocus.SessionsSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
-                                                                                    'AFCookie': af_cookie}},
+                         'AutoFocus.TopTagsSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
+                                                                                   'AFCookie': af_cookie}},
         'HumanReadable': md
     })
 
