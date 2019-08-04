@@ -1223,6 +1223,44 @@ script:
     - contextPath: SentinelOne.Agent.ID
       description: The Ids of the affected agents
       type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: message
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Include only active agents(true,false)
+      isArray: false
+      name: active_agent
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: List of Group IDs to filter by
+      isArray: false
+      name: group_id
+      required: false
+      secret: false
+    - default: false
+      description: A list of Agent IDs
+      isArray: false
+      name: agent_id
+      required: false
+      secret: false
+    - default: false
+      description: Included network domains
+      isArray: false
+      name: domain
+      required: false
+      secret: false
+    deprecated: false
+    description: Broadcasts a message to all agents matching the input filter.
+    execution: false
+    name: sentinelone-broadcast-message
   dockerimage: demisto/python3:3.7.3.286
   isfetch: true
   runonce: false
