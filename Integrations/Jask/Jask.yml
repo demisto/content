@@ -1,0 +1,652 @@
+category: Analytics & SIEM
+commonfields:
+  id: Jask
+  version: -1
+configuration:
+- display: Server URL
+  name: URL
+  required: true
+  type: 0
+- display: Username
+  name: Username
+  required: true
+  type: 0
+- display: API Key
+  name: APIKey
+  required: true
+  type: 4
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Override default fetch query
+  name: fetchQuery
+  required: false
+  type: 0
+- defaultvalue: '100'
+  display: Limit the maximum incidents amount per fetch
+  name: fetchLimit
+  required: false
+  type: 0
+description: Freeing the analyst with autonomous decisions
+display: Jask
+name: Jask
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: The insight to retrieve details for
+      isArray: false
+      name: insight-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get Insight details for a specific Insight ID. Insight details command
+      references SmartAlerts, which are the highest level abstractions in JASK SIEM
+      consisting of multiple signals, and records and relating to one or more assets.
+    execution: false
+    name: jask-get-insight-details
+    outputs:
+    - contextPath: Jask.Insight.Id
+      description: The insight ID
+      type: string
+    - contextPath: Jask.Insight.Name
+      description: The insight name
+      type: string
+    - contextPath: Jask.Insight.Action
+      description: The insight action
+      type: string
+    - contextPath: Jask.Insight.Entity
+      description: The main entity related to the insight
+      type: string
+    - contextPath: Jask.Insight.AssignedTo
+      description: Who the insight was assigned to
+      type: string
+    - contextPath: Jask.Insight.Description
+      description: The insight description
+      type: string
+    - contextPath: Jask.Insight.IpAddress
+      description: The IP address of the insight
+      type: string
+    - contextPath: Jask.Insight.LastUpdated
+      description: The time the insight was last updated
+      type: date
+    - contextPath: Jask.Insight.LastUpdatedBy
+      description: The last person to update the insight
+      type: string
+    - contextPath: Jask.Insight.Severity
+      description: 'The severity of the insight '
+      type: number
+    - contextPath: Jask.Insight.InsightTime
+      description: The time of the insight
+      type: date
+    - contextPath: Jask.Insight.WorkflowStatus
+      description: The status of the insight
+      type: string
+    - contextPath: Jask.Insight.RelatedEntityList.Id
+      description: The ID of the related entity
+      type: string
+    - contextPath: Jask.Insight.RelatedEntityList.EntityType
+      description: The type of the related entity
+      type: string
+    - contextPath: Jask.Insight.RelatedEntityList.Hostname
+      description: The hostname of the related entity
+      type: string
+    - contextPath: Jask.Insight.SignalList.Id
+      description: The ID of the signal
+      type: string
+    - contextPath: Jask.Insight.SignalList.Name
+      description: The name of the signal
+      type: string
+    - contextPath: Jask.Insight.SignalList.Category
+      description: The category of the signal
+      type: string
+    - contextPath: Jask.Insight.SignalList.SourceType
+      description: The source of the signal
+      type: string
+    - contextPath: Jask.Insight.SignalListMetadata.Patterns.Count
+      description: The number of signals of the category pattern
+      type: number
+    - contextPath: Jask.Insight.SignalListMetadata.Anomalies.Count
+      description: The number of signals of the category anomaly
+      type: number
+    - contextPath: Jask.Insight.SignalListMetadata.ThreatIntel.Count
+      description: The number of signals of the category threat intelligence
+      type: number
+    - contextPath: Jask.Insight.RelatedEntityList.IpAddress
+      description: IP address of related entity
+      type: string
+    - contextPath: Jask.Insight.RelatedEntityList.IsWhitelisted
+      description: Whether or not the entity is whitelisted
+      type: boolean
+    - contextPath: Jask.Insight.RelatedEntityList.RiskScore
+      description: The risk score of the related entity
+      type: number
+    - contextPath: Jask.Insight.RelatedEntityList.Source
+      description: The source of the related entity
+      type: string
+  - arguments:
+    - default: true
+      description: 'The insight ID for which to retrieve comments. '
+      isArray: false
+      name: insight-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get comments for a specific Insight ID. (Users can post and update
+      comments on the JASK SIEM portal for any Insight ID.)
+    execution: false
+    name: jask-get-insight-comments
+    outputs:
+    - contextPath: Jask.InsightCommentList.id
+      description: ID of comment
+      type: string
+    - contextPath: Jask.InsightCommentList.InsightId
+      description: ID of insight
+      type: string
+    - contextPath: Jask.InsightCommentList.Author
+      description: Author of comment
+      type: string
+    - contextPath: Jask.InsightCommentList.Body
+      description: The comment body
+      type: string
+    - contextPath: Jask.InsightCommentList.LastUpdated
+      description: The date the comment was last updated
+      type: date
+    - contextPath: Jask.InsightCommentList.Timestamp
+      description: The time of the comment
+      type: date
+  - arguments:
+    - default: true
+      description: The signal to retrieve details for
+      isArray: false
+      name: signal-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get Signal details for a specific Signal ID. Signal details command
+      references signals in JASK which are created when records exhibit suspicious
+      properties and mate with patterns or other detection logic.
+    execution: false
+    name: jask-get-signal-details
+    outputs:
+    - contextPath: Jask.Signal.Id
+      description: The signal ID
+      type: string
+    - contextPath: Jask.Signal.Name
+      description: The signal name
+      type: string
+    - contextPath: Jask.Signal.Category
+      description: The signal category
+      type: string
+    - contextPath: Jask.Signal.Description
+      description: The signal description
+      type: string
+    - contextPath: Jask.Signal.Score
+      description: The signal score
+      type: number
+    - contextPath: Jask.Signal.SourceType
+      description: The source type of the signal
+      type: string
+    - contextPath: Jask.Signal.Timestamp
+      description: The time of the signal
+      type: date
+    - contextPath: Jask.Signal.Metadata.RecordType
+      description: The record type
+      type: string
+    - contextPath: Jask.Signal.Metadata.RecordCount
+      description: the associated count of each record type
+      type: number
+    - contextPath: Jask.SignalThreatIndicators.IndicatorType
+      description: The type of threat indicator
+      type: string
+    - contextPath: Jask.Signal.ThreatIndicators.Value
+      description: The value of the threat indicator
+      type: string
+  - arguments:
+    - default: true
+      description: The entity to retrieve details for
+      isArray: false
+      name: entity-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get entity details for a specific entity ID
+    execution: false
+    name: jask-get-entity-details
+    outputs:
+    - contextPath: Jask.Entity.Id
+      description: The entity ID
+      type: string
+    - contextPath: Jask.Entity.Name
+      description: The entity name
+      type: string
+    - contextPath: Jask.Entity.IpAddress
+      description: The IP address of the entity
+      type: string
+    - contextPath: Jask.Entity.FirstSeen
+      description: When the entity was first seen
+      type: date
+    - contextPath: Jask.Entity.LastSeen
+      description: The time the entity was last seen
+      type: date
+    - contextPath: Jask.Entity.Source
+      description: The source of the entity
+      type: string
+    - contextPath: Jask.Entity.AssetType
+      description: The asset type
+      type: string
+    - contextPath: Jask.Entity.PrimaryAssetType
+      description: The primary asset type
+      type: string
+    - contextPath: Jask.Entity.HostName
+      description: The hostname
+      type: string
+    - contextPath: Jask.Entity.RiskScore
+      description: The risk score
+      type: number
+    - contextPath: Jask.Entity.IsWhiteListed
+      description: Whether or not the entity is whitelisted
+      type: boolean
+  - arguments:
+    - default: true
+      description: 'The entity ID for which the related entities are retrieved. '
+      isArray: false
+      name: entity-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get entities related to a specific entity ID.
+    execution: false
+    name: jask-get-related-entities
+    outputs:
+    - contextPath: Jask.RelatedEntityList.Id
+      description: The entity ID
+      type: string
+    - contextPath: Jask.RelatedEntityList.Name
+      description: The entity name
+      type: string
+    - contextPath: Jask.RelatedEntityList.Email
+      description: The entity email
+      type: string
+    - contextPath: Jask.RelatedEntityList.Source
+      description: The entity source
+      type: string
+    - contextPath: Jask.RelatedEntityList.UserName
+      description: The username of the related entity
+      type: string
+    - contextPath: Jask.RelatedEntityList.HostName
+      description: The hostname of the entity
+      type: string
+    - contextPath: Jask.RelatedEntityList.Active
+      description: Whether or not the entity is active
+      type: boolean
+    - contextPath: Jask.RelatedEntityList.Admin
+      description: The entity admin
+      type: string
+    - contextPath: Jask.RelatedEntityList.AssetType
+      description: The asset type
+      type: string
+    - contextPath: Jask.RelatedEntityList.CreatedTimestamp
+      description: The time of creation
+      type: date
+    - contextPath: Jask.RelatedEntityList.FirstSeen
+      description: The time the entity was first seen
+      type: date
+    - contextPath: Jask.RelatedEntityList.GivenName
+      description: The name given to the entity
+      type: string
+    - contextPath: Jask.RelatedEntityList.IsWhiteListed
+      description: Whether or not the entity is whitelisted
+      type: boolean
+    - contextPath: Jask.RelatedEntityList.LastSeen
+      description: The time the entity was last seen
+      type: date
+    - contextPath: Jask.RelatedEntityList.LastName
+      description: 'The last name '
+      type: string
+    - contextPath: Jask.RelatedEntityList.RiskScore
+      description: The risk score of the entity
+      type: number
+  - deprecated: false
+    description: Get the whitelisted entities.
+    execution: false
+    name: jask-get-whitelisted-entities
+    outputs:
+    - contextPath: Jask.Whitelisted.EntityList.Id
+      description: Id of the whitelisted entity
+      type: string
+    - contextPath: Jask.Whitelisted.EntityList.Name
+      description: Name of the whitelisted entity
+      type: string
+    - contextPath: Jask.Whitelisted.EntityList.UserName
+      description: Username of the whitelisted entity
+      type: string
+    - contextPath: Jask.Whitelisted.EntityList.ModelId
+      description: The modelID of the whitelisted entity
+      type: string
+    - contextPath: Jask.Whitelisted.EntityList.Timestamp
+      description: The time of the whitelisted entity
+      type: date
+    - contextPath: Jask.Whitelisted.EntityList.Metadata.TotalCount
+      description: The number of whitelisted entities
+      type: number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: When the insight was last seen. Defaults to 'All time' if no time
+        arguments are specified.
+      isArray: false
+      name: last-seen
+      predefined:
+      - All time
+      - Last week
+      - Last 48 hours
+      - Last 24 hours
+      required: false
+      secret: false
+    - default: false
+      description: comma separated list of values between 1-5 inclusive
+      isArray: false
+      name: rating
+      required: false
+      secret: false
+    - default: false
+      defaultValue: new,inprogress
+      description: 'comma separated list of values from the options: new, inprogress,
+        closed'
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
+      description: comma separated list of values
+      isArray: false
+      name: assigned-team
+      required: false
+      secret: false
+    - default: false
+      description: comma separated list of values
+      isArray: false
+      name: assigned-user
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The page offset for the results
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: How many results to retrieve
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: timestamp:desc
+      description: What to sort the results by
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: The start time for the search in the following string format -  MM/DD/YYYY
+      isArray: false
+      name: time-from
+      required: false
+      secret: false
+    - default: false
+      description: The end time for the search in the following string format -  MM/DD/YYYY
+      isArray: false
+      name: time-to
+      required: false
+      secret: false
+    deprecated: false
+    description: Search insights using the given filters.
+    execution: false
+    name: jask-search-insights
+    outputs:
+    - contextPath: Jask.Insight.Id
+      description: The ID of the insight
+      type: string
+    - contextPath: Jask.Insight.Name
+      description: The name of the insight
+      type: string
+    - contextPath: Jask.Insight.Action
+      description: The action to take on the insight
+      type: string
+    - contextPath: Jask.Insight.AssignedTo
+      description: 'Who the insight was assigned to '
+      type: string
+    - contextPath: Jask.Insight.Description
+      description: The description of the insight
+      type: string
+    - contextPath: Jask.Insight.IpAddress
+      description: The IP address of the insight
+      type: string
+    - contextPath: Jask.Insight.LastUpdated
+      description: 'When the insight was last updated. '
+      type: date
+    - contextPath: Jask.Insight.LastUpdatedBy
+      description: Who the insight was last updated by
+      type: string
+    - contextPath: Jask.Insight.Severity
+      description: The severity of the insight
+      type: number
+    - contextPath: Jask.Insight.InsightTime
+      description: The time of the insight
+      type: date
+    - contextPath: Jask.WorkflowStatus
+      description: The status of the insight
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: When the insight was last seen. Defaults to 'All time' if no time
+        arguments are specified.
+      isArray: false
+      name: last-seen
+      predefined:
+      - All time
+      - Last week
+      - Last 48 hours
+      - Last 24 hours
+      required: false
+      secret: false
+    - default: false
+      description: 'comma separated list of values from options: threatintel, rule,
+        anomaly'
+      isArray: false
+      name: source
+      required: false
+      secret: false
+    - default: false
+      description: 'comma separated list of values form options: Attack Stage, C2,
+        Defense Evasion,  Discovery, Exfiltration, Exploitation, External Recon, Internal
+        Recon, Lateral Movement, Threat Intelligence, Traffic Anomaly'
+      isArray: false
+      name: category
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The page offset for the results
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The maximum number of signals retrieved
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: score:desc
+      description: How to sort the results
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: The start time for the search in the following string format -  MM/DD/YYYY
+      isArray: false
+      name: time-from
+      required: false
+      secret: false
+    - default: false
+      description: The end time for the search in the following string format -  MM/DD/YYYY
+      isArray: false
+      name: time-to
+      required: false
+      secret: false
+    deprecated: false
+    description: Search signals using the given filters.
+    execution: false
+    name: jask-search-signals
+    outputs:
+    - contextPath: Jask.Signal.Id
+      description: The ID of the signal
+      type: string
+    - contextPath: Jask.Signal.Name
+      description: The name of the signal
+      type: string
+    - contextPath: Jask.Signal.Category
+      description: The category of the signal
+      type: string
+    - contextPath: Jask.Signal.Description
+      description: The description of the signal
+      type: string
+    - contextPath: Jask.Signal.Score
+      description: The score of the signal
+      type: number
+    - contextPath: Jask.Signal.SourceType
+      description: The source type of the signal
+      type: string
+    - contextPath: Jask.Signal.Timestamp
+      description: The time of the signal
+      type: date
+    - contextPath: Jask.Signal.ThreatIndicators.IndicatorType
+      description: The type of threat indicator
+      type: string
+    - contextPath: Jask.Signal.ThreatIndicators.Value
+      description: The value of the threat indicator
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: When the insight was last seen. Defaults to 'All time' if no time
+        arguments are specified.
+      isArray: false
+      name: last-seen
+      predefined:
+      - All time
+      - Last week
+      - Last 48 hours
+      - Last 24 hours
+      required: false
+      secret: false
+    - default: false
+      description: 'comma separated list of values from the options: username, hostname,
+        ip'
+      isArray: false
+      name: entity-type
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The page offset for the results
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: How many results to retrieve
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: risk_score:desc
+      description: What to sort by
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: The start time for the search in the following string format -  MM/DD/YYYY
+      isArray: false
+      name: time-from
+      required: false
+      secret: false
+    - default: false
+      description: The end time for the search in the following string format -  MM/DD/YYYY
+      isArray: false
+      name: time-to
+      required: false
+      secret: false
+    deprecated: false
+    description: Search entities using the given filters.
+    execution: false
+    name: jask-search-entities
+    outputs:
+    - contextPath: Jask.Entity.Id
+      description: The ID of the entity
+      type: string
+    - contextPath: Jask.Entity.Name
+      description: The name of the entity
+      type: string
+    - contextPath: Jask.Entity.FirstSeen
+      description: When the entity was first seen
+      type: date
+    - contextPath: Jask.Entity.LastSeen
+      description: When the entity was last seen
+      type: date
+    - contextPath: Jask.Entity.Source
+      description: The source of the entity
+      type: string
+    - contextPath: Jask.Entity.EntityType
+      description: The type of the entity
+      type: string
+    - contextPath: Jask.Entity.PrimaryEntityType
+      description: The primary entity type
+      type: string
+    - contextPath: Jask.Entity.HostName
+      description: 'The hostname '
+      type: string
+    - contextPath: Jask.Entity.RiskScore
+      description: The risk score of the entity
+      type: number
+    - contextPath: Jask.Entity.IsWhiteListed
+      description: Whether or not the entity is whitelisted
+      type: boolean
+    - contextPath: Jask.Entity.Groups
+      description: The groups of the entity
+      type: string
+    - contextPath: Jask.Entity.Ip.Address
+      description: The IP address of the entity
+      type: string
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+tests:
+- No test

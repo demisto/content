@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3c7460f1-23f9-41ad-8079-21256bc2aa4b
+    taskid: 34b3687a-c2ff-44ef-8c0b-8e7ce506f533
     type: start
     task:
-      id: 3c7460f1-23f9-41ad-8079-21256bc2aa4b
+      id: 34b3687a-c2ff-44ef-8c0b-8e7ce506f533
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 9ffa4ff2-fa24-4010-8829-c078c5164198
+    taskid: 69792646-65fd-436e-8545-f0ec4b0a0c3a
     type: regular
     task:
-      id: 9ffa4ff2-fa24-4010-8829-c078c5164198
+      id: 69792646-65fd-436e-8545-f0ec4b0a0c3a
       version: -1
       name: autofocus-search-samples
       description: 'Search for samples. To view results run autofocus-samples-search-results
@@ -69,10 +69,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: b31aefeb-1ac5-4684-81eb-130f9d81c3d5
+    taskid: dcf2d97a-a25b-4468-825f-66fc8ab93573
     type: regular
     task:
-      id: b31aefeb-1ac5-4684-81eb-130f9d81c3d5
+      id: dcf2d97a-a25b-4468-825f-66fc8ab93573
       version: -1
       name: autofocus-search-sessions
       description: 'Search for sessions. To view results run autofocus-sessions-search-results
@@ -107,10 +107,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: c65d07e4-1b37-4fad-8d32-adacd8061ecf
+    taskid: 163e4521-f5d7-4e8f-820b-f6fe3487c67f
     type: condition
     task:
-      id: c65d07e4-1b37-4fad-8d32-adacd8061ecf
+      id: 163e4521-f5d7-4e8f-820b-f6fe3487c67f
       version: -1
       name: Verify context
       type: condition
@@ -145,10 +145,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: a1786819-b8de-4ebf-8f62-ebff344be6cc
+    taskid: 66cbffa1-d5ab-498c-8c1f-072926c7ef83
     type: condition
     task:
-      id: a1786819-b8de-4ebf-8f62-ebff344be6cc
+      id: 66cbffa1-d5ab-498c-8c1f-072926c7ef83
       version: -1
       name: Verify context
       type: condition
@@ -183,10 +183,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 38d51010-e7fe-4076-8ba3-d69b6cc7f455
+    taskid: d9e24b69-7551-4d64-81c2-8160a9eac410
     type: regular
     task:
-      id: 38d51010-e7fe-4076-8ba3-d69b6cc7f455
+      id: d9e24b69-7551-4d64-81c2-8160a9eac410
       version: -1
       name: autofocus-samples-search-results
       description: Get results of a previous samples search
@@ -213,10 +213,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: e4c65f03-d3ab-46ca-815d-93efe8f578bf
+    taskid: 249ad525-3762-4865-84a7-daed04f70f26
     type: regular
     task:
-      id: e4c65f03-d3ab-46ca-815d-93efe8f578bf
+      id: 249ad525-3762-4865-84a7-daed04f70f26
       version: -1
       name: autofocus-sessions-search-results
       description: Get results of a previous sessions search
@@ -243,10 +243,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: a850a89b-7d9d-400e-83fc-dca5985fd4e8
+    taskid: 4a79a648-e386-4e7e-8549-325a0305c1c9
     type: condition
     task:
-      id: a850a89b-7d9d-400e-83fc-dca5985fd4e8
+      id: 4a79a648-e386-4e7e-8549-325a0305c1c9
       version: -1
       name: Verify context
       type: condition
@@ -289,6 +289,14 @@ tasks:
             value:
               simple: AutoFocus.SamplesResults.Region
             iscontext: true
+      - - operator: inList
+          left:
+            value:
+              simple: AutoFocus.SamplesSearch.Status
+            iscontext: true
+          right:
+            value:
+              simple: in progress,complete
     view: |-
       {
         "position": {
@@ -301,10 +309,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: b1ad13ea-23b0-4649-8833-d0b1bf017c53
+    taskid: 300aedd7-c486-4bc7-80b8-f5275acebd9b
     type: condition
     task:
-      id: b1ad13ea-23b0-4649-8833-d0b1bf017c53
+      id: 300aedd7-c486-4bc7-80b8-f5275acebd9b
       version: -1
       name: Verify context
       type: condition
@@ -347,6 +355,14 @@ tasks:
             value:
               simple: AutoFocus.SessionsResults.Seen
             iscontext: true
+      - - operator: inList
+          left:
+            value:
+              simple: AutoFocus.SessionsSearch.Status
+            iscontext: true
+          right:
+            value:
+              simple: in progress,complete
     view: |-
       {
         "position": {
@@ -359,10 +375,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 0bb3411d-5259-4c4b-8ede-76d8f7fad700
+    taskid: 462154ec-45fe-4085-87fb-adb065db1c66
     type: regular
     task:
-      id: 0bb3411d-5259-4c4b-8ede-76d8f7fad700
+      id: 462154ec-45fe-4085-87fb-adb065db1c66
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -394,10 +410,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 3e21e0c9-2005-4a78-86e4-acb8c3100fd9
+    taskid: e3b8ba25-3ed9-4ae6-8e7e-6c9813aa82e6
     type: regular
     task:
-      id: 3e21e0c9-2005-4a78-86e4-acb8c3100fd9
+      id: e3b8ba25-3ed9-4ae6-8e7e-6c9813aa82e6
       version: -1
       name: autofocus-sample-analysis
       description: |-
@@ -432,10 +448,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 99ababa3-45a8-477b-89c3-4d7954fdef21
+    taskid: 3ffef267-a964-4bf9-8fcb-c913907744a0
     type: regular
     task:
-      id: 99ababa3-45a8-477b-89c3-4d7954fdef21
+      id: 3ffef267-a964-4bf9-8fcb-c913907744a0
       version: -1
       name: autofocus-get-session-details
       description: Get session details by session ID
@@ -470,10 +486,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: e0132297-fb9f-479a-8465-43612a9f2e45
+    taskid: b99fe8d2-6cd6-4adc-8311-89453dcaf9f4
     type: condition
     task:
-      id: e0132297-fb9f-479a-8465-43612a9f2e45
+      id: b99fe8d2-6cd6-4adc-8311-89453dcaf9f4
       version: -1
       name: Verify context
       type: condition
@@ -528,10 +544,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 37d27e6e-946b-4563-8baa-fd24ae4c337c
+    taskid: 005fc680-2529-4a3d-8b1c-73c7e5632cb0
     type: condition
     task:
-      id: 37d27e6e-946b-4563-8baa-fd24ae4c337c
+      id: 005fc680-2529-4a3d-8b1c-73c7e5632cb0
       version: -1
       name: Verify context
       type: condition
@@ -591,10 +607,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 7ad108e1-8839-4097-855d-ead5ef102273
+    taskid: 7732c835-7066-49b5-8898-416b0e07e27d
     type: regular
     task:
-      id: 7ad108e1-8839-4097-855d-ead5ef102273
+      id: 7732c835-7066-49b5-8898-416b0e07e27d
       version: -1
       name: autofocus-top-tags-search
       description: Perform a search to Identify the most popular tags
@@ -629,10 +645,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 015c15ec-4941-4e77-8a5c-bbf2c3bb964f
+    taskid: 5675f6d3-8a84-4ac2-87cd-c916359e38f5
     type: regular
     task:
-      id: 015c15ec-4941-4e77-8a5c-bbf2c3bb964f
+      id: 5675f6d3-8a84-4ac2-87cd-c916359e38f5
       version: -1
       name: autofocus-top-tags-results
       description: Get the results of a previous top tags search
@@ -659,10 +675,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: e595283f-8e3e-4f00-8b50-9ca9d972434e
+    taskid: 973fcf53-2019-42c7-8316-9358fef2e36e
     type: regular
     task:
-      id: e595283f-8e3e-4f00-8b50-9ca9d972434e
+      id: 973fcf53-2019-42c7-8316-9358fef2e36e
       version: -1
       name: autofocus-tag-details
       description: Get details on a given tag
@@ -697,10 +713,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: d287090c-59bc-4c52-8bc4-fd9e208c0d9b
+    taskid: 915bd015-bb1d-4fb5-844b-f720ffa085c3
     type: condition
     task:
-      id: d287090c-59bc-4c52-8bc4-fd9e208c0d9b
+      id: 915bd015-bb1d-4fb5-844b-f720ffa085c3
       version: -1
       name: Verify context
       type: condition
@@ -735,10 +751,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 9115a649-1404-4f6c-8bbd-6c631e43d5b1
+    taskid: 26ebc4ac-1072-445c-85cd-3e4e14cd5c4d
     type: condition
     task:
-      id: 9115a649-1404-4f6c-8bbd-6c631e43d5b1
+      id: 26ebc4ac-1072-445c-85cd-3e4e14cd5c4d
       version: -1
       name: Verify context
       type: condition
@@ -783,10 +799,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: ea1b957d-6c64-49b6-83a7-aaa6b6dcaae3
+    taskid: 489cd799-70f9-4fe7-892d-3a760410ce4d
     type: condition
     task:
-      id: ea1b957d-6c64-49b6-83a7-aaa6b6dcaae3
+      id: 489cd799-70f9-4fe7-892d-3a760410ce4d
       version: -1
       name: Verify context
       type: condition
@@ -856,10 +872,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 6a6ca220-ec0e-4386-82aa-7a5a4f4c5b62
+    taskid: 37fc6e8c-9bb0-452b-86ae-c962a2076cc9
     type: title
     task:
-      id: 6a6ca220-ec0e-4386-82aa-7a5a4f4c5b62
+      id: 37fc6e8c-9bb0-452b-86ae-c962a2076cc9
       version: -1
       name: DONE
       type: title
@@ -878,10 +894,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: 88ee6d60-7125-4137-8ce7-72a023d8ba52
+    taskid: a34daeea-b042-481c-8f3b-42c536c3ca3b
     type: regular
     task:
-      id: 88ee6d60-7125-4137-8ce7-72a023d8ba52
+      id: a34daeea-b042-481c-8f3b-42c536c3ca3b
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -908,10 +924,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: e39aa077-67f0-4b35-8539-2975ebcd6223
+    taskid: 61a8556b-dc45-400e-8a1f-c311f88477f8
     type: regular
     task:
-      id: e39aa077-67f0-4b35-8539-2975ebcd6223
+      id: 61a8556b-dc45-400e-8a1f-c311f88477f8
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -938,10 +954,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: d6482cb5-8279-4960-84e2-5faa3e8a3fac
+    taskid: 7e8fbce8-268e-4ace-8a91-4beaeec3c9c4
     type: regular
     task:
-      id: d6482cb5-8279-4960-84e2-5faa3e8a3fac
+      id: 7e8fbce8-268e-4ace-8a91-4beaeec3c9c4
       version: -1
       name: Sleep
       description: Sleep for X seconds

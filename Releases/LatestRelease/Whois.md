@@ -1,3 +1,1 @@
-Updated error logic to warnings by default.
-Added better handlling for unsupported domains.
-Changed output path to support Demistos standards. 
+- Socks and HTTP Connect proxy support.
