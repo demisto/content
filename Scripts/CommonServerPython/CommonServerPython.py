@@ -1383,22 +1383,22 @@ def return_error(message, error='', outputs=None):
 
 def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_extract=False):
     """
-        Returns error entry with given message and exits the script
+        Returns an error entry with the specified message, and exits the script.
 
         :type message: ``str``
-        :param message: The message to return in the entry (required)
+        :param message: The message to return in the entry (required).
 
         :type exit: ``bool``
-        :param exit: Determines if the program will terminate after the command. Default is False.
+        :param exit: Determines if the program will terminate after the command is executed. Default is False.
 
         :type warning: ``str``
-        :param warning: The raw warning message to log (optional)
+        :param warning: The warning message (raw) to log (optional).
 
         :type outputs: ``dict or None``
-        :param outputs: the outputs that will be returned to playbook/investigation context (optional)
+        :param outputs: The outputs that will be returned to playbook/investigation context (optional).
 
         :type ignore_auto_extract: ``bool``
-        :param ignore_auto_extract: Determines if the war-room entry will be auto enriched. Default is false.
+        :param ignore_auto_extract: Determines if the War Room entry will be auto-enriched. Default is false.
 
         :return: Warning entry object
         :rtype: ``dict``
