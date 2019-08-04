@@ -270,3 +270,5 @@ view: |-
       }
     }
   }
+tests:
+  - no test - manual task
