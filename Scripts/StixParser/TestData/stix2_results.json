@@ -89,7 +89,7 @@
   },
   {
     "indicator_type": "Domain",
-    "value": "ip-192-127-5-1",
+    "value": "8.8.8.8",
     "CustomFields": {
       "indicatorId": "indicator--620f36bc-ab89-484d-8ff0-51dbd4cfe4b9",
       "stixPackageId": "bundle--6ab84b67-f7a2-47b4-b7cd-097231cb7031"

@@ -21,6 +21,19 @@ PATTERNS_DICT = {
 """ HELPER FUNCTIONS"""
 
 
+def ip_parser(ip):
+    """IP can be in the form of `ip-x-x-x-x`.
+    function will return it to `x.x.x.x` format
+
+    Args:
+        ip (str): ip to parse
+
+    Returns:
+        str: parsed ip indicator
+    """
+    return ip.lower().replace("ip-", "").replace("-", ".")
+
+
 def convert_to_json(string):
     """Will try to convert given string to json.
 
@@ -199,8 +212,11 @@ def get_indicators(indicators):
                         [`pattern`, `indicator`]
                         '''
                         if len(term) == 2 and key in term[0]:
-                            patterns_lists[value].append(term[1])
-                            entries_dict[term[1]] = stix_indicator
+                            new_indicator = term[1]
+                            if value == "IP":
+                                new_indicator = ip_parser(new_indicator)
+                            patterns_lists[value].append(new_indicator)
+                            entries_dict[new_indicator] = stix_indicator
 
     regex = re.compile("(\\w.*?) = '(.*?)'")
     patterns_lists = {

@@ -94,3 +94,20 @@ class TestSTIX2ToDemisto:
         # Empty case
         res = _get_results_from_demisto([], stix2_to_demisto, mocker)
         assert res, "Sent empty JSON but got a response"
+
+
+class TestHelperFunctions:
+    def test_ip_parser(self):
+        from StixParser import ip_parser
+        ip = "IP-1-2-3-4"
+        expected_ip = "1.2.3.4"
+        result = ip_parser(ip)
+        assert result == expected_ip, "Expected ip [{}] but got [{}]".format(expected_ip, result)
+
+    def test_ip_parser_not_ip(self):
+        from StixParser import ip_parser
+        not_ip = "trololololo"
+        expected_value = not_ip
+        result = ip_parser(expected_value)
+        assert result == expected_value, "Expected value [{}] but got [{}]".format(expected_value, result)
+
