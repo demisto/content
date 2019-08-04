@@ -102,7 +102,7 @@ def http_request(uri, method, headers={}, body={}, params={}, files={}):
         except json.JSONDecodeError:
             LOG('result is: %s' % result)
             return_error('Response Parsing failed')
-        if 'success' in result:
+        if 'success' in result: # type: ignore
             if result['success'] == 'false':  # type: ignore
                 return_error('ATD Api call to ' + uri + ' failed. Reason is: ' + str(res.reason))
     return result
