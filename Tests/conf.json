@@ -352,7 +352,7 @@
         },
         {
             "integrations": "SentinelOne V2",
-            "playbookID": "SentinelOne Beta Test"
+            "playbookID": "SentinelOne V2 - test"
         },
         {
             "integrations": "InfoArmor VigilanteATI",
