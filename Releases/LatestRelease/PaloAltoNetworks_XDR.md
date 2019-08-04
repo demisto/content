@@ -1,1 +1,1 @@
-Added detailed description how to generate API KEY and copy the integration URL
+Added instructions in the integration instance Detailed Description section how to generate an API Key, API Key ID, and how to copy the integration URL.
