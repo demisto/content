@@ -90,6 +90,9 @@
             "playbookID": "RegPathReputationBasicLists_test"
         },
         {
+            "playbookID": "EmailDomainSquattingReputation-Test"
+        },
+        {
             "playbookID": "RandomStringGenerateTest"
         },
         {
