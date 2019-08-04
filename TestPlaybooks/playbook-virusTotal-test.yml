@@ -367,7 +367,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "69"
+              simple: "71"
       - - operator: isEqualString
           left:
             value:
@@ -375,7 +375,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "65"
+              simple: "67"
     view: |-
       {
         "position": {
