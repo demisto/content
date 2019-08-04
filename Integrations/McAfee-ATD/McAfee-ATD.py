@@ -8,17 +8,10 @@ import json
 import re
 import base64
 import time
-import os
 from typing import Dict
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
-if not demisto.params().get("proxy", False):
-    del os.environ["HTTP_PROXY"]
-    del os.environ["HTTPS_PROXY"]
-    del os.environ["http_proxy"]
-    del os.environ["https_proxy"]
 
 ''' PREREQUISITES '''
 
@@ -102,7 +95,7 @@ def http_request(uri, method, headers={}, body={}, params={}, files={}):
         except json.JSONDecodeError:
             LOG('result is: %s' % result)
             return_error('Response Parsing failed')
-        if 'success' in result:  # type: ignore
+        if b'success' in result:
             if result['success'] == 'false':  # type: ignore
                 return_error('ATD Api call to ' + uri + ' failed. Reason is: ' + str(res.reason))
     return result
@@ -703,7 +696,10 @@ def main():
     LOG('command is %s' % (demisto.command(),))
     global API_HEADERS
     API_HEADERS = get_headers()
+
     try:
+        # Remove proxy if not set to true in params
+        handle_proxy()
 
         if demisto.command() == 'test-module':
             test_get_session()
