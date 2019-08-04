@@ -4,26 +4,25 @@ commonfields:
 name: McAfee Threat Intelligence Exchange
 display: McAfee Threat Intelligence Exchange
 category: Data Enrichment & Threat Intelligence
-description: Connect to TIE using its DXL client
+description: Connect to McAfee TIE using the McAfee DXL client.
 configuration:
-- display: Broker CA certificates content (see `brokercerts.crt` in instructions)
+- display: Broker CA certificates content (see `brokercerts.crt` in Integration Tips)
   name: broker_ca_bundle
   defaultvalue: ""
   type: 12
   required: true
-- display: Client certificates content (see `client.crt` in instructions)
+- display: Client certificates content (see `client.crt` in Integration Tips)
   name: cert_file
   defaultvalue: ""
   type: 12
   required: true
-- display: Client private key path (e.g. /usr/config/client.key)
+- display: Client private key path (e.g., /usr/config/client.key)
   name: private_key
   defaultvalue: ""
   type: 14
   required: true
-- display: Brokers urls (comma separated list in the form of - [ssl://]<hostname>[:port])
-    - get hostname & port from `brokerlist.properties` file in instructions. Note
-    that the broker should be reachable from demisto server
+- display: 'A CSV list of broker URLs in the format:  [ssl://]<hostname>[:port])
+    Get the hostname and port from the `brokerlist.properties` file (in instructions). The broker should be reachable from Demisto server.'
   name: broker_urls
   defaultvalue: ""
   type: 0
@@ -40,35 +39,34 @@ script:
       description: '  Hash of the file to query. Supports MD5 SHA1 & SHA256'
     outputs:
     - contextPath: File.MD5
-      description: file's hash MD5 (if supplied)
+      description: MD5 hash of the file (if supplied).
     - contextPath: File.SHA1
-      description: file's hash SHA1 (if supplied)
+      description: SHA1 hash of the file (if supplied).
     - contextPath: File.SHA256
-      description: file's hash MD5 (if supplied)
+      description: MD5 hash of the file (if supplied).
     - contextPath: File.TrustLevel
-      description: File lowest trust level
+      description: File lowest trust level.
     - contextPath: File.Vendor
-      description: File lowest trust level's vendor
+      description: Vendor of the file lowest trust level.
     - contextPath: DBotScore.Score
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
     - contextPath: DBotScore.Vendor
-      description: The actual score
+      description: The actual score.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: Indicator type.
     - contextPath: DBotScore.Indicator
-      description: The given file's hash
+      description: The hash of the file.
     important:
     - contextPath: File(val.Malicious)
       description: Malicious Files
       related: ""
-    description: Retrieves the reputations for the specified hash ( Supports MD5 SHA1
-      & SHA256)
+    description: Retrieves the reputations for the specified hash. Can be "MD5", "SHA1", or "SHA256".
   - name: tie-set-file-reputation
     arguments:
     - name: file
       required: true
       default: true
-      description: '  Hash of the file to set. Supports MD5 SHA1 & SHA256'
+      description: 'Hash of the file for which to set the reputation. Can be "MD5", "SHA1", or "SHA256".'
     - name: trust_level
       required: true
       auto: PREDEFINED
@@ -82,32 +80,32 @@ script:
       - MOST_LIKELY_TRUSTED
       - KNOWN_TRUSTED
       - KNOWN_TRUSTED_INSTALLER
-      description: The new trust level for the file
+      description: The new trust level for the file.
     - name: filename
-      description: A file name to associate with the file
+      description: A file name to associate with the file.
     - name: comment
-      description: A comment to associate with the file
+      description: A comment to associate with the file.
     description: Sets the “Enterprise” reputation (trust level) of a specified file.
-      NOTE - invoking this method must have permissions - 'How-to' in instance instruction)
+     Permissions are required to invoke this method. See the 'How-to' in instance instruction.
   - name: tie-file-references
     arguments:
     - name: file
       required: true
       default: true
-      description: '  Hash of the file to search on. Supports MD5 SHA1 & SHA256'
+      description: '  Hash of the file for which to search. Can be "MD5", "SHA1", or "SHA256".'
     outputs:
     - contextPath: File.MD5
-      description: file's hash MD5 (if supplied)
+      description: MD5 hash of the file (if supplied).
     - contextPath: File.SHA1
-      description: file's hash SHA1 (if supplied)
+      description: SHA1 hash of the file (if supplied).
     - contextPath: File.SHA256
-      description: file's hash SHA256 (if supplied)
+      description: SHA256 hash of the file (if supplied).
     - contextPath: File.References.AgentGuid
-      description: The GUID of the system that referenced the file
+      description: The GUID of the system that referenced the file.
     - contextPath: File.References.Date
-      description: The time the system first referenced the file
+      description: The time the system first referenced the file.
     description: Retrieves the set of systems which have referenced (typically executed)
-      the specified file
+      the specified file.
   dockerimage: demisto/dxl
   runonce: false
 tests:
