@@ -1186,34 +1186,31 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The Ids of the agents to connect to the network. Mulitple Ids need
-        to be seperated by comma. Get the IDs from list-agents command (e.g 678376446927294202,657738871640371668)
+      description: A CSV list of agent IDs to connect to the network. Run the list-agents command to get a list of agent IDs.
       isArray: false
       name: agent_id
       required: true
       secret: false
     deprecated: false
-    description: Connect agents to network
+    description: Connects agents to network.
     execution: false
     name: sentinelone-connect-agent
     outputs:
-    - contextPath: SentinelOne.Agent.NetworkStatus
-      description: Agent network status.
-      type: String
+    - contextPath: SentinelOne.Agent.AgentsAffected
+      description: The number of affected agents.
+      type: Number
     - contextPath: SentinelOne.Agent.ID
-      description: The Ids of the affected agents
+      description: The IDs of the affected agents.
       type: String
   - arguments:
     - default: false
-      description: The Ids of the agents to disconnect from the network. Mulitple
-        Ids need to be seperated by comma. Get the IDs from list-agents command (e.g
-        678376446927294202,657738871640371668)
+      description: A CSV list of agent IDs to disconnect from the network. Run the list-agents command to get a list of agent IDs.
       isArray: false
       name: agent_id
       required: true
       secret: false
     deprecated: false
-    description: Disconnect agents from network
+    description: Disconnects agents from network.
     execution: false
     name: sentinelone-disconnect-agent
     outputs:
@@ -1221,7 +1218,7 @@ script:
       description: Agent network status.
       type: String
     - contextPath: SentinelOne.Agent.ID
-      description: The Ids of the affected agents
+      description: The IDs of the affected agents.
       type: String
   - arguments:
     - default: false
@@ -1231,7 +1228,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Include only active agents(true,false)
+      description: Whether to only include active agents. Default is "false".
       isArray: false
       name: active_agent
       predefined:
@@ -1240,27 +1237,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: List of Group IDs to filter by. Get the group Ids from get-groups
-        command. For multiple Ids, use comma seperated (e.g 475482421375116388,475482421375116387)
+      description: List of Group IDs by which to filter the results.
       isArray: false
       name: group_id
       required: false
       secret: false
     - default: false
-      description: A list of Agent IDs. Get the agent Ids from list-agent command.
-        For multiple Ids, use comma seperated (e.g 475482421375116388,475482421375116387)
+      description: A list of Agent IDs by which to filter the results.
       isArray: false
       name: agent_id
       required: false
       secret: false
     - default: false
-      description: 'Included network domains. '
+      description: Included network domains.
       isArray: false
       name: domain
       required: false
       secret: false
     deprecated: false
-    description: Broadcasts a message to all agents matching the input filter.
+    description: Broadcasts a message to all agents that match the input filters.
     execution: false
     name: sentinelone-broadcast-message
   dockerimage: demisto/python3:3.7.3.286
