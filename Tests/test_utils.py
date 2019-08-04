@@ -165,7 +165,7 @@ def get_latest_release_notes_text(rn_path):
     new_rn = re.findall(RELEASE_NOTES_REGEX, rn)
     if new_rn:
         # get release notes up to release header
-        return new_rn[0]
+        return new_rn[0].strip()
     else:
         return rn
 
