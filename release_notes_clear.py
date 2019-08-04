@@ -1,19 +1,14 @@
-# remove all releaseNotes from files in: Itegrations, Playbooks, Reports and Scripts.
-# Note: using yaml will destroy the file structures so filtering as regular text-file.\
-# Note2: file must be run from root directory with 4 sub-directories: Integration, Playbook, Reports, Scripts
-# Usage: python release_notes_clear.py
 import os
-import glob
-import sys
 import yaml
 import json
-import re
+import argparse
 
+from Tests.scripts.validate_files import FilesValidator
 from Tests.test_utils import server_version_compare
-from Tests.test_utils import print_error
+from Tests.test_utils import run_command, get_release_notes_file_path
 
 
-def yml_remove_releaseNote_record(file_path, current_server_version):
+def yml_should_skip_clearing(file_path, current_server_version):
     """
     locate and remove release notes from a yaml file.
     :param file_path: path of the file
@@ -21,8 +16,6 @@ def yml_remove_releaseNote_record(file_path, current_server_version):
     :return: True if file was changed, otherwise False.
     """
     with open(file_path, 'r') as f:
-        yml_text = f.read()
-        f.seek(0)
         yml_data = yaml.safe_load(f)
 
     v = yml_data.get('fromversion') or yml_data.get('fromVersion')
@@ -33,18 +26,10 @@ def yml_remove_releaseNote_record(file_path, current_server_version):
         ))
         return False
 
-    rn = yml_data.get('releaseNotes')
-    if rn:
-        yml_text = re.sub(r'\n?releaseNotes: [\'"]?{}[\'"]?'.format(re.escape(rn).replace(r'\ ', r'\s+')), '', yml_text)
-        with open(file_path, 'w') as f:
-            f.write(yml_text)
-
-        return True
-
-    return False
+    return True
 
 
-def json_remove_releaseNote_record(file_path, current_server_version):
+def json_should_skip_clearing(file_path, current_server_version):
     """
     locate and remove release notes from a json file.
     :param file_path: path of the file
@@ -52,8 +37,6 @@ def json_remove_releaseNote_record(file_path, current_server_version):
     :return: True if file was changed, otherwise False.
     """
     with open(file_path, 'r') as f:
-        json_text = f.read()
-        f.seek(0)
         json_data = json.load(f)
 
     v = json_data.get('fromversion') or json_data.get('fromVersion')
@@ -64,66 +47,48 @@ def json_remove_releaseNote_record(file_path, current_server_version):
         ))
         return False
 
-    rn = json_data.get('releaseNotes')
-    if rn:
-        # try to remove with preceding comma
-        json_text = re.sub(r'\s*"releaseNotes"\s*:\s*"{}",'.format(re.escape(rn)), '', json_text)
-        # try to remove with leading comma (last value in json)
-        json_text = re.sub(r',\s*"releaseNotes"\s*:\s*"{}"'.format(re.escape(rn)), '', json_text)
-        with open(file_path, 'w') as f:
-            f.write(json_text)
-
-        return True
-
-    return False
+    return True
 
 
-FILE_EXTRACTER_DICT = {
-    '*.yml': yml_remove_releaseNote_record,
-    '*.json': json_remove_releaseNote_record,
+FILE_TYPE_DICT = {
+    '.yml': yml_should_skip_clearing,
+    '.json': json_should_skip_clearing,
 }
 
 
-def remove_releaseNotes_folder(folder_path, files_extension,
-                               current_server_version="0.0.0"):
+def should_skip_clearing(file_path, current_server_version="0.0.0"):
     """
     scan folder and remove all references to release notes
-    :param folder_path: path of the folder
-    :param files_extension: type of file to look for (json or yml)
+    :param file_path: path of the yml/json file
     :param current_server_version: current server version
     """
-    scan_files = glob.glob(os.path.join(folder_path, files_extension))
-    # support packages (subdirectories)
-    scan_files += glob.glob(os.path.join(folder_path, '*', files_extension))
-
-    count = 0
-    for path in scan_files:
-        if FILE_EXTRACTER_DICT[files_extension](path, current_server_version):
-            count += 1
-
-    print('--> Changed {} out of {} files'.format(count, len(scan_files)))
+    extension = os.path.splitext(file_path)[1]
+    return FILE_TYPE_DICT[extension](file_path, current_server_version)
 
 
-def main(argv):
-    if len(argv) < 2:
-        print_error("<Server version>")
-        sys.exit(1)
+def main():
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument('version', help='Release version')
+    arg_parser.add_argument('git_sha1', help='commit sha1 to compare changes with')
+    arg_parser.add_argument('server_version', help='Server version')
+    args = arg_parser.parse_args()
 
-    root_dir = argv[0]
-    current_server_version = argv[1]
+    # get changed yaml/json files (filter only relevant changed files)
+    fv = FilesValidator()
+    change_log = run_command('git diff --name-status {}'.format(args.git_sha1))
+    modified_files, added_files, _, _ = fv.get_modified_files(change_log)
 
-    yml_folders_to_scan = ['Integrations', 'Playbooks', 'Scripts', 'TestPlaybooks']  # yml
-    json_folders_to_scan = ['Reports', 'Misc', 'Dashboards', 'Widgets',
-                            'Classifiers', 'Layouts', 'IncidentFields']  # json
-
-    for folder in yml_folders_to_scan:
-        print('Scanning directory: "{}"'.format(folder))
-        remove_releaseNotes_folder(os.path.join(root_dir, folder), '*.yml', current_server_version)
-
-    for folder in json_folders_to_scan:
-        print('Scanning directory: "{}"'.format(folder))
-        remove_releaseNotes_folder(os.path.join(root_dir, folder), '*.json', current_server_version)
+    for file_path in modified_files.union(added_files):
+        if should_skip_clearing(file_path, args.server_version):
+            continue
+        rn_path = get_release_notes_file_path(file_path)
+        if os.path.isfile(rn_path):
+            # if file exist, mark the current notes as release relevant
+            with open(rn_path, 'r+') as rn_file:
+                text = rn_file.read()
+                rn_file.seek(0)
+                rn_file.write('{}\n{}'.format(args.version, text))
 
 
 if __name__ == '__main__':
-    main([os.path.dirname(__file__)] + sys.argv[1:])
+    main()
