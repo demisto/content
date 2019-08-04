@@ -8,10 +8,17 @@ import json
 import re
 import base64
 import time
+import os
 from typing import Dict
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
+
+if not demisto.params().get("proxy", False):
+    del os.environ["HTTP_PROXY"]
+    del os.environ["HTTPS_PROXY"]
+    del os.environ["http_proxy"]
+    del os.environ["https_proxy"]
 
 ''' PREREQUISITES '''
 
@@ -698,6 +705,7 @@ def main():
     API_HEADERS = get_headers()
 
     try:
+        # Remove proxy if not set to true in params
         handle_proxy()
 
         if demisto.command() == 'test-module':

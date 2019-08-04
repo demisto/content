@@ -678,7 +678,7 @@ script:
   runonce: false
   script: '-'
   type: python
-image: ''
+  subtype: python3
 tests:
 - Test Playbook McAfee ATD
 fromversion: 3.5.0
