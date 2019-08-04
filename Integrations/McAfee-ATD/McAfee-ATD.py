@@ -8,17 +8,10 @@ import json
 import re
 import base64
 import time
-import os
 from typing import Dict
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
-if not demisto.params().get("proxy", False):
-    del os.environ["HTTP_PROXY"]
-    del os.environ["HTTPS_PROXY"]
-    del os.environ["http_proxy"]
-    del os.environ["https_proxy"]
 
 ''' PREREQUISITES '''
 
@@ -391,7 +384,7 @@ def file_upload_raw(body, file_entry_id, filename_to_upload):
             files=file_up,
         )
 
-    if (not res['success']):
+    if not res['success']:
         return_error('Failed to upload sample due to: ' + res['errorMessage'])
     return res
 
@@ -636,17 +629,17 @@ def job_or_taskId():
     return uri_suffix
 
 
-def detonate(submit_type, sample, timeout, report_type, threshold, fileName):
-    result = file_upload(submit_type, sample, fileName)
-    taskId = result['taskId']
+def detonate(submit_type, sample, timeout, report_type, threshold, file_name):
+    result = file_upload(submit_type, sample, file_name)
+    task_id = result['taskId']
     upload_data = result['resultObj']['results'][0]
 
     timeout = int(timeout)
     while 0 < timeout:
-        status = str(check_task_status_by_taskId([taskId])['status'])
+        status = str(check_task_status_by_taskId([task_id])['status'])
         if status == 'Completed':
-            uri_suffix = 'iTaskId=' + str(taskId)
-            return_report(uri_suffix, taskId, report_type, upload_data, status, threshold)
+            uri_suffix = 'iTaskId=' + str(task_id)
+            return_report(uri_suffix, task_id, report_type, upload_data, status, threshold)
             sys.exit(0)
         time.sleep(1)
         timeout -= 1
@@ -656,12 +649,12 @@ def detonate(submit_type, sample, timeout, report_type, threshold, fileName):
                  " and if 'completed' execute '!atd-get-report'.")
 
 
-def return_report(uri_suffix, taskId, report_type, upload_data, status, threshold):
-    current_status = check_task_status_by_taskId([taskId])['status']
+def return_report(uri_suffix, task_id, report_type, upload_data, status, threshold):
+    current_status = check_task_status_by_taskId([task_id])['status']
     if current_status != 'Completed':
         demisto.results('Please wait in order to download the report, the sample is still being analyzed.')
     else:
-        res = get_report(uri_suffix, taskId, report_type, upload_data, status, threshold)
+        res = get_report(uri_suffix, task_id, report_type, upload_data, status, threshold)
 
         if report_type == 'json':
             demisto.results({
