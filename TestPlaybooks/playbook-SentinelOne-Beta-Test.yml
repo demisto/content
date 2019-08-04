@@ -46,6 +46,7 @@ tasks:
       - "3"
       - "4"
       - "7"
+      - "12"
     scriptarguments:
       all:
         simple: "yes"
@@ -220,6 +221,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
     scriptarguments:
       agents_ids:
         simple: "657613730168123595"
@@ -326,14 +330,102 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 89b1439b-2013-48b9-8b26-a5a26083cef2
+    type: regular
+    task:
+      id: 89b1439b-2013-48b9-8b26-a5a26083cef2
+      version: -1
+      name: Disconnect agent to network
+      description: Disconnect agents from network
+      script: '|||sentinelone-disconnect-agent'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      agent_id:
+        simple: ${SentinelOne.Agent.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 9e0b73ea-5a24-4376-85d6-bdd22257eb55
+    type: regular
+    task:
+      id: 9e0b73ea-5a24-4376-85d6-bdd22257eb55
+      version: -1
+      name: Connect agent to network
+      description: Connect agents to network
+      script: '|||sentinelone-connect-agent'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      agent_id:
+        simple: ${SentinelOne.Agent.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 7120aa0b-62c3-4c8a-81c9-37cb6335700f
+    type: regular
+    task:
+      id: 7120aa0b-62c3-4c8a-81c9-37cb6335700f
+      version: -1
+      name: Broadcast Message
+      description: Broadcasts a message to all agents matching the input filter.
+      script: '|||sentinelone-broadcast-message'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      active_agent: {}
+      agent_id: {}
+      domain: {}
+      group_id: {}
+      message:
+        simple: Hey There, just checking
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 785,
-        "width": 1740,
-        "x": -10,
+        "height": 1125,
+        "width": 2200,
+        "x": -470,
         "y": 50
       }
     }
