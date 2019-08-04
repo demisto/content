@@ -1331,10 +1331,10 @@ def is_ip_valid(s, accept_v6_ips=False):
        :rtype: ``bool``
     """
     a = s.split('.')
-    if len(a) != 4 and not accept_v6_ips:
+    if accept_v6_ips and is_ipv6_valid(s):
+        return True
+    elif len(a) != 4:
         return False
-    elif len(a) != 4 and accept_v6_ips:
-        return is_ipv6_valid(s)
     else:
         for x in a:
             if not x.isdigit():
