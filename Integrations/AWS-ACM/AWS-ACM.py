@@ -66,6 +66,7 @@ def aws_session(service='acm', region=None, roleArn=None, roleSessionName=None, 
                     aws_session_token=sts_response['Credentials']['SessionToken'],
                     # verify=VERIFY_CERTIFICATE,
                     config=config,
+                    verify=False,
                     use_ssl=False
                 )
             else:
@@ -77,6 +78,7 @@ def aws_session(service='acm', region=None, roleArn=None, roleSessionName=None, 
                     aws_session_token=sts_response['Credentials']['SessionToken'],
                     # verify=VERIFY_CERTIFICATE,
                     config=config,
+                    verify=False,
                     use_ssl=False
                 )
     elif AWS_ACCESS_KEY_ID and AWS_ROLE_ARN:
@@ -86,6 +88,7 @@ def aws_session(service='acm', region=None, roleArn=None, roleSessionName=None, 
             aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
             # verify=VERIFY_CERTIFICATE,
             config=config,
+            verify=False,
             use_ssl=False
         )
         kwargs.update({
@@ -101,6 +104,7 @@ def aws_session(service='acm', region=None, roleArn=None, roleSessionName=None, 
             aws_session_token=sts_response['Credentials']['SessionToken'],
             # verify=VERIFY_CERTIFICATE,
             config=config,
+            verify=False,
             use_ssl=False
         )
     else:
@@ -112,6 +116,7 @@ def aws_session(service='acm', region=None, roleArn=None, roleSessionName=None, 
                 aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
                 # verify=VERIFY_CERTIFICATE,
                 config=config,
+                verify=False,
                 use_ssl=False
             )
         else:
