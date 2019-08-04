@@ -8,17 +8,10 @@ import json
 import re
 import base64
 import time
-import os
 from typing import Dict
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
-if not demisto.params().get("proxy", False):
-    del os.environ["HTTP_PROXY"]
-    del os.environ["HTTPS_PROXY"]
-    del os.environ["http_proxy"]
-    del os.environ["https_proxy"]
 
 ''' PREREQUISITES '''
 
@@ -41,7 +34,7 @@ BASE_URL = load_server_url()
 LOGIN_HEADERS = {
     'Accept': 'application/vnd.ve.v1.0+json',
     'Content-Type': 'application/json',
-    'VE-SDK-API': base64.b64encode(USERNAME + ':' + PASSWORD)
+    'VE-SDK-API': base64.b64encode(str.encode(USERNAME + ':' + PASSWORD))
 }
 HEARTBEAT_HEADERS = {
     'Accept': 'application/vnd.ve.v1.0+json',
@@ -67,7 +60,7 @@ def get_headers():
     sess = get_session_credentials()
     return {
         'Accept': 'application/vnd.ve.v1.0+json',
-        'VE-SDK-API': base64.b64encode(sess['session'] + ':' + sess['userId'])
+        'VE-SDK-API': base64.b64encode(str.encode(sess['session'] + ':' + sess['userId']))
     }
 
 
@@ -703,7 +696,9 @@ def main():
     LOG('command is %s' % (demisto.command(),))
     global API_HEADERS
     API_HEADERS = get_headers()
+
     try:
+        handle_proxy()
 
         if demisto.command() == 'test-module':
             test_get_session()
