@@ -42,7 +42,6 @@ def http_request(method, url_suffix, params={}, data=None):
         data=data,
         headers=HEADERS
     )
-
     if res.status_code not in {200}:
         try:
             errors = ''
@@ -1197,6 +1196,9 @@ def get_threat_summary_request(site_ids, group_ids):
     return {}
 
 
+# Agents Commands
+
+
 def list_agents_command():
     """
     List all agents matching the input filter
@@ -1369,6 +1371,151 @@ def get_agent_request(agent_id):
     return {}
 
 
+def connect_to_network_request(agents_id):
+    endpoint_url = 'agents/actions/connect'
+
+    payload = {
+        'filter': {
+            'ids': agents_id
+        }
+    }
+
+    response = http_request('POST', endpoint_url, data=json.dumps(payload))
+    if response.get('errors'):
+        return_error(response.get('errors'))
+    if 'data' in response:
+        return response
+    return {}
+
+
+def connect_agent_to_network():
+    """
+    Sends a "connect to network" command to all agents matching the input filter.
+    """
+    # Get arguments
+    agents_id = demisto.args().get('agent_id')
+
+    # Make request and get raw response
+    agents = connect_to_network_request(agents_id)
+    agents_affected = agents.get('data', {}).get('affected', 0)
+
+    # Parse response into context & content entries
+    if agents_affected > 0:
+        network_status = get_agent_request(agents_id)
+        contents = {
+            'NetworkStatus': network_status.get('networkStatus'),
+            'ID': agents_id
+        }
+    else:
+        return_error('No agents were connected to the network.')
+
+    context = {
+        'SentinelOne.Agent(val.ID && val.ID === obj.ID)': contents
+    }
+
+    return_outputs(
+        f'{agents_affected} agent(s) successfully connected to the network.',
+        context,
+        agents
+    )
+
+
+def disconnect_from_network_request(agents_id):
+    endpoint_url = 'agents/actions/disconnect'
+
+    payload = {
+        'filter': {
+            'ids': agents_id
+        }
+    }
+
+    response = http_request('POST', endpoint_url, data=json.dumps(payload))
+    if response.get('errors'):
+        return_error(response.get('errors'))
+    else:
+        return response
+
+
+def disconnect_agent_from_network():
+    """
+    Sends a "disconnect from network" command to all agents matching the input filter.
+    """
+    # Get arguments
+    agents_id = demisto.args().get('agent_id')
+
+    # Make request and get raw response
+    agents = connect_to_network_request(agents_id)
+    agents_affected = agents.get('data', {}).get('affected', 0)
+
+    # Parse response into context & content entries
+    if agents_affected > 0:
+        network_status = get_agent_request(agents_id)
+        contents = {
+            'NetworkStatus': network_status.get('networkStatus'),
+            'ID': agents_id
+        }
+    else:
+        return_error('No agents were disconnected from the network.')
+
+    context = {
+        'SentinelOne.Agent(val.ID && val.ID === obj.ID)': contents
+    }
+
+    return_outputs(
+        f'{agents_affected} agent(s) successfully disconnected from the network.',
+        context,
+        agents
+    )
+
+
+def broadcast_message_request(message, is_active=None, group_id=None, agent_id=None, domain=None):
+
+    filters = {}
+    endpoint_url = 'agents/actions/broadcast'
+
+    if is_active:
+        filters['isActive'] = is_active
+    if group_id:
+        filters['groupIds'] = group_id
+    if agent_id:
+        filters['ids'] = agent_id
+    if domain:
+        filters['domains'] = domain
+
+    payload = {
+        'data': {
+            'message': message
+        },
+        'filter': filters
+    }
+    response = http_request('POST', endpoint_url, data=json.dumps(payload))
+
+    if response.get('errors'):
+        return_error(response.get('errors'))
+    else:
+        return response
+
+
+def broadcast_message():
+    """
+    Broadcasts a message to all agents matching the input filter.
+    """
+    message = demisto.args().get('message')
+    is_active = bool(demisto.args().get('active_agent'))
+    group_id = demisto.args().get('group_id')
+    agent_id = demisto.args().get('agent_id')
+    domain = demisto.args().get('domain')
+
+    broadcast_message = broadcast_message_request(message, is_active=is_active, group_id=group_id, agent_id=agent_id,
+                                                  domain=domain)
+
+    agents_affected = broadcast_message.get('data', {}).get('affected', 0)
+    if agents_affected > 0:
+        demisto.results('The message was successfully delivered to the agent(s)')
+    else:
+        return_error('No messages were sent. Verify that the inputs are correct.')
+
+
 def fetch_incidents():
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
@@ -1453,6 +1600,12 @@ try:
         delete_group()
     elif demisto.command() == 'sentinelone-agent-processes':
         get_agent_processes()
+    elif demisto.command() == 'sentinelone-connect-agent':
+        connect_agent_to_network()
+    elif demisto.command() == 'sentinelone-disconnect-agent':
+        disconnect_agent_from_network()
+    elif demisto.command() == 'sentinelone-broadcast-message':
+        broadcast_message()
 
 
 except Exception as e:
