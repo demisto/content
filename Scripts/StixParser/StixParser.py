@@ -136,6 +136,9 @@ def build_entry(indicators_dict, stix_indicators_dict, pkg_id):
         stix_indicators_dict (dict):
         indicators_dict (dict):
 
+    Returns:
+        list: Results output
+
     """
     results_list = list()
     for key, indicators_list in indicators_dict.items():
@@ -161,7 +164,7 @@ def build_entry(indicators_dict, stix_indicators_dict, pkg_id):
                     ind_id=ind_id,
                     timestamp=timestamp,
                     source=source,
-                    score=score,
+                    score=score
                 )
                 if result:
                     results_list.append(result)
