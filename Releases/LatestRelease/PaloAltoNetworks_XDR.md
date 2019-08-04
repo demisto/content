@@ -1,0 +1,1 @@
+Added detailed description how to generate API KEY and copy the integration URL
