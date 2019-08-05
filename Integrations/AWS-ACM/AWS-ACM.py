@@ -55,7 +55,7 @@ def aws_session(service='acm', region=None, roleArn=None, roleSessionName=None, 
     if kwargs and AWS_ACCESS_KEY_ID is None:
 
         if AWS_ACCESS_KEY_ID is None:
-            sts_client = boto3.client('sts')
+            sts_client = boto3.client('sts', config=config, verify=False)
             sts_response = sts_client.assume_role(**kwargs)
             if region is not None:
                 client = boto3.client(
@@ -66,8 +66,7 @@ def aws_session(service='acm', region=None, roleArn=None, roleSessionName=None, 
                     aws_session_token=sts_response['Credentials']['SessionToken'],
                     # verify=VERIFY_CERTIFICATE,
                     config=config,
-                    verify=False,
-                    use_ssl=False
+                    verify=False
                 )
             else:
                 client = boto3.client(
@@ -78,8 +77,7 @@ def aws_session(service='acm', region=None, roleArn=None, roleSessionName=None, 
                     aws_session_token=sts_response['Credentials']['SessionToken'],
                     # verify=VERIFY_CERTIFICATE,
                     config=config,
-                    verify=False,
-                    use_ssl=False
+                    verify=False
                 )
     elif AWS_ACCESS_KEY_ID and AWS_ROLE_ARN:
         sts_client = boto3.client(
@@ -88,8 +86,7 @@ def aws_session(service='acm', region=None, roleArn=None, roleSessionName=None, 
             aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
             # verify=VERIFY_CERTIFICATE,
             config=config,
-            verify=False,
-            use_ssl=False
+            verify=False
         )
         kwargs.update({
             'RoleArn': AWS_ROLE_ARN,
@@ -104,8 +101,7 @@ def aws_session(service='acm', region=None, roleArn=None, roleSessionName=None, 
             aws_session_token=sts_response['Credentials']['SessionToken'],
             # verify=VERIFY_CERTIFICATE,
             config=config,
-            verify=False,
-            use_ssl=False
+            verify=False
         )
     else:
         if region is not None:
@@ -116,8 +112,7 @@ def aws_session(service='acm', region=None, roleArn=None, roleSessionName=None, 
                 aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
                 # verify=VERIFY_CERTIFICATE,
                 config=config,
-                verify=False,
-                use_ssl=False
+                verify=False
             )
         else:
             client = boto3.client(
@@ -127,7 +122,7 @@ def aws_session(service='acm', region=None, roleArn=None, roleSessionName=None, 
                 aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
                 # verify=VERIFY_CERTIFICATE,
                 verify=False,
-                use_ssl=False
+                config=config
             )
 
     return client
