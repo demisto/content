@@ -183,7 +183,7 @@ def request(url, message, **kwargs):
     method = message['method'].lower()
     data = message.get('body', "") if method == 'post' else None
     headers = dict(message.get('headers', []))
-    req = urllib2.Request(url, data, headers)
+    req = urllib2.Request(url, data, headers)  # guardrails-disable-line
     context = ssl.create_default_context()
 
     if VERIFY_CERTIFICATE:
@@ -193,7 +193,7 @@ def request(url, message, **kwargs):
         context.verify_mode = ssl.CERT_NONE
 
     try:
-        response = urllib2.urlopen(req, context=context)
+        response = urllib2.urlopen(req, context=context)  # guardrails-disable-line
     except urllib2.HTTPError as response:
         pass  # Propagate HTTP errors via the returned response message
     return {
