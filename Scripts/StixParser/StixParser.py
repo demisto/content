@@ -14,10 +14,8 @@ PATTERNS_DICT = {
     "ipv4-addr:": "IP",
     "url:": "URL",
     "domain-name:": "Domain",
-    "email:": "Email",
-    "email-message": "Email",
-    "win-registry-key:key": "Registry Path Reputation",
-    "windows-registry-key:key": "Registry Path Reputation"
+    "email": "Email",
+    "registry-key:key": "Registry Path Reputation"
 }
 
 """ HELPER FUNCTIONS"""
@@ -27,13 +25,15 @@ def ip_parser(ip):
     """IP can be in the form of `ip-x-x-x-x`.
     function will return it to `x.x.x.x` format
 
+    if it's not an ip, will return `ip` arg back.
+
     Args:
         ip (str): ip to parse
 
     Returns:
         str: parsed ip indicator
     """
-    if ip.startswith("ip-"):
+    if ip.lower().startswith("ip-"):
         return ip.lower().replace("ip-", "").replace("-", ".")
     return ip
 
@@ -206,7 +206,7 @@ def get_indicators(indicators):
             {
                 "<key>": "<stix entry>"
             }
-            )
+        )
     """
 
     def indicators_parser(stix_indicator):

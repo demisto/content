@@ -141,16 +141,17 @@ class TestHelperFunctions:
 
     def test_create_indicator_entry(self):
         from StixParser import create_indicator_entry
-        expected = {'indicator_type': 'ip',
-                    'value': '8.8.8.8',
-                    'CustomFields': {
-                        'indicatorId': 'ind_id',
-                        'stixPackageId': 'pkg_id'
-                    },
-                    'source': 'stix2',
-                    'score': 0,
-                    'timestamp': None
-                    }
+        expected = {
+            'indicator_type': 'ip',
+            'value': '8.8.8.8',
+            'CustomFields': {
+                'indicatorId': 'ind_id',
+                'stixPackageId': 'pkg_id'
+            },
+            'source': 'stix2',
+            'score': 0,
+            'timestamp': None
+        }
         result = create_indicator_entry(
             "ip",
             "8.8.8.8",
