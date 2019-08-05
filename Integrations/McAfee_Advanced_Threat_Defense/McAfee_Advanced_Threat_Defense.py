@@ -20,16 +20,16 @@ def load_server_url():
     """
     Cleans and loads the server url from the configuration
     """
-    url = demisto.params()['baseUrl']
+    url = demisto.params().get('baseUrl')
     url = re.sub('/[\/]+$/', '', url)
     url = re.sub('\/$', '', url)
     return url
 
 
 ''' GLOBALS '''
-USERNAME = demisto.params()['username']
-PASSWORD = demisto.params()['password']
-USE_SSL = not demisto.params()['unsecure']
+USERNAME = demisto.params().get('username')
+PASSWORD = demisto.params().get('password')
+USE_SSL = not demisto.params().get('unsecure')
 BASE_URL = load_server_url()
 LOGIN_HEADERS = {
     'Accept': 'application/vnd.ve.v1.0+json',
