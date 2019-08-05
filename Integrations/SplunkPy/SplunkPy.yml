@@ -24,6 +24,11 @@ configuration:
   name: fetchQuery
   required: false
   type: 0
+- defaultvalue: '200'
+  display: Fetch Limit
+  name: fetch_limit
+  required: false
+  type: 0
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -61,11 +66,6 @@ configuration:
   name: unsecure
   required: false
   type: 8
-- defaultvalue: '200'
-  display: Fetch Limit
-  name: fetch_limit
-  required: false
-  type: 0
 description: Run queries on Splunk servers
 display: SplunkPy
 name: SplunkPy
