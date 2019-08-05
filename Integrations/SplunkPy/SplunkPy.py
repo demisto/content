@@ -9,11 +9,12 @@ import ssl
 from StringIO import StringIO
 import requests
 import urllib3
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Define utf8 as default encoding
 reload(sys)
-sys.setdefaultencoding('utf8')
+sys.setdefaultencoding('utf8')  # pylint: disable=maybe-no-member
 
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 VERIFY_CERTIFICATE = not bool(demisto.params().get('unsecure'))
@@ -63,6 +64,7 @@ def rawToDict(raw):
                 result[key] = val
 
     return result
+
 
 # Converts to an str
 
@@ -192,7 +194,7 @@ def request(url, message, **kwargs):
 
     try:
         response = urllib2.urlopen(req, context=context)
-    except urllib2.HTTPError, response:
+    except urllib2.HTTPError as response:
         pass  # Propagate HTTP errors via the returned response message
     return {
         'status': response.code,  # type: ignore
