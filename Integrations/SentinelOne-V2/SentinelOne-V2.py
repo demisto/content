@@ -1516,6 +1516,143 @@ def broadcast_message():
         return_error('No messages were sent. Verify that the inputs are correct.')
 
 
+# Event Commands
+
+def create_query_request(query, from_date, to_date):
+
+    endpoint_url = 'dv/init-query'
+    payload = {
+        "query": query,
+        "fromDate": from_date,
+        "toDate": to_date
+    }
+
+    response = http_request('POST', endpoint_url, data=json.dumps(payload))
+    if response.get('errors'):
+        return_error(response.get('errors'))
+    else:
+        return response.get('data').get('queryId')
+
+
+def create_query():
+
+    query = demisto.args().get('query')
+    from_date = demisto.args().get('from_date')
+    to_date = demisto.args().get('to_date')
+
+    query_id = create_query_request(query, from_date, to_date)
+
+    demisto.results('The query ID is ' + str(query_id))
+
+
+def get_events_request(query_id=None, limit=None):
+
+    endpoint_url = 'dv/events'
+
+    params = {
+        'query_id': query_id,
+        'limit': limit
+    }
+
+    response = http_request('GET', endpoint_url, params)
+    if response.get('errors'):
+        return_error(response.get('errors'))
+    if 'data' in response:
+        return response.get('data')
+    return {}
+
+
+def get_events():
+    """
+    Get all Deep Visibility events from query
+    """
+    contents = []
+    headers = ['EventType', 'AgentName', 'SiteName', 'User', 'Time', 'AgentOS', 'ProcessID', 'ProcessUID',
+               'ProcessName', 'MD5', 'SHA256']
+    query_id = demisto.args().get('query_id')
+    limit = int(demisto.args().get('limit', 50))
+
+    events = get_events_request(query_id, limit)
+    if events:
+        for event in events:
+            contents.append({
+                'EventType': event.get('eventType'),
+                'Endpoint': event.get('agentName'),
+                'SiteName': event.get('siteName'),
+                'User': event.get('user'),
+                'Time': event.get('processStartTime'),
+                'AgentOS': event.get('agentOs'),
+                'ProcessID': event.get('pid'),
+                'ProcessUID': event.get('processUniqueKey'),
+                'ProcessName': event.get('processName'),
+                'MD5': event.get('md5'),
+                'SHA256': event.get('sha256')
+            })
+
+    context = {
+        'SentinelOne.Event(val.sha1 && val.sha1 === obj.sha1)': contents
+    }
+
+    return_outputs(tableToMarkdown('SentinelOne Events', contents, headers, removeNull=True), context, events)
+
+
+def get_processes_request(query_id=None, limit=None):
+    endpoint_url = 'dv/events/process'
+
+    params = {
+        'query_id': query_id,
+        'limit': limit
+    }
+
+    response = http_request('GET', endpoint_url, params)
+    if response.get('errors'):
+        return_error(response.get('errors'))
+    if 'data' in response:
+        return response.get('data')
+    return {}
+
+
+def get_processes():
+    """
+    Get Deep Visibility events from query by event type - process
+    """
+    contents = []
+    headers = ['EventType', 'AgentName', 'SiteName', 'User', 'Time', 'ParentProcessID', 'ParentProcessUID',
+               'ProcessName', 'ParentProcessName', 'ProcessDisplayName', 'ProcessID', 'ProcessUID',
+               'SHA1', 'CMD', 'SubsystemType', 'IntegrityLevel', 'ParentProcessStartTime']
+    query_id = demisto.args().get('query_id')
+    limit = int(demisto.args().get('limit', 50))
+
+    processes = get_events_request(query_id, limit)
+    if processes:
+        for process in processes:
+            contents.append({
+                'EventType': process.get('eventType'),
+                'Endpoint': process.get('agentName'),
+                'SiteName': process.get('siteName'),
+                'User': process.get('user'),
+                'Time': process.get('processStartTime'),
+                'ParentProcessID': process.get('parentPid'),
+                'ParentProcessUID': process.get('parentProcessUniqueKey'),
+                'ParentProcessName': process.get('parentProcessName'),
+                'ProcessID': process.get('pid'),
+                'ProcessUID': process.get('processUniqueKey'),
+                'ProcessName': process.get('processName'),
+                'ProcessDisplayName': process.get('processDisplayName'),
+                'SHA1': process.get('processImageSha1Hash'),
+                'CMD': process.get('"processCmd'),
+                'SubsystemType': process.get('processSubSystem'),
+                'IntegrityLevel': process.get('processIntegrityLevel'),
+                'ParentProcessStartTime': process.get('parentProcessStartTime')
+            })
+
+    context = {
+        'SentinelOne.Event(val.sha1 && val.sha1 === obj.sha1)': contents
+    }
+
+    return_outputs(tableToMarkdown('SentinelOne Processes', contents, headers, removeNull=True), context, processes)
+
+
 def fetch_incidents():
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
@@ -1606,6 +1743,12 @@ try:
         disconnect_agent_from_network()
     elif demisto.command() == 'sentinelone-broadcast-message':
         broadcast_message()
+    elif demisto.command() == 'sentinelone-get-events':
+        get_events()
+    elif demisto.command() == 'sentinelone-get-query-id':
+        create_query()
+    elif demisto.command() == 'sentinelone-get-processes':
+        get_processes()
 
 
 except Exception as e:
