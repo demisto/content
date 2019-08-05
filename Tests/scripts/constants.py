@@ -114,6 +114,8 @@ class PB_Status:
     FAILED = 'failed'
     IN_PROGRESS = 'inprogress'
 
-# Release notes regexes
+
+# change log regexes
+UNRELEASE_HEADER = '## [Unreleased]'
 CONTENT_RELEASE_TAG_REGEX = r'^\d{2}\.\d{1,2}\.\d'
-RELEASE_NOTES_REGEX = r'([\s\S]+?)\d{2}\.\d{1,2}\.\d'
+RELEASE_NOTES_REGEX = UNRELEASE_HEADER + r'\n([\s\S]+?)\d{2}\.\d{1,2}\.\d'

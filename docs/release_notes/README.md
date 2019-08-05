@@ -14,33 +14,38 @@ If the file already exists, add another note as a different bullet at the start 
 
 For example, 
 ```
- - Added 2 new commands:
-   - integ-add-indicator
-   - integ-delete-indicator
+## [Unreleased]
+  - Added 2 new commands:
+    - integ-add-indicator
+    - integ-delete-indicator
 ```
 
 should be updated to:
 ```
- - Logout errors are now ignored.
- - Added 2 new commands:
-   - integ-add-indicator
-   - integ-delete-indicator
+## [Unreleased]
+  - Logout errors are now ignored.
+  - Added 2 new commands:
+    - integ-add-indicator
+    - integ-delete-indicator
 ```
 
 Another example where `19.6.2` is an older release version,
 ```
-19.6.2
- - Added 2 new commands:
-   - integ-add-indicator
-   - integ-delete-indicator
+## [Unreleased]
+
+## [19.6.2] - 2019-06-20
+  - Added 2 new commands:
+    - integ-add-indicator
+    - integ-delete-indicator
 ```
 
 should be updated to:
 ```
- - Logout errors are now ignored.
+## [Unreleased]
+  - Logout errors are now ignored.
 
-19.6.2
- - Added 2 new commands:
-   - integ-add-indicator
-   - integ-delete-indicator
+## [19.6.2] - 2019-06-20
+  - Added 2 new commands:
+    - integ-add-indicator
+    - integ-delete-indicator
 ```

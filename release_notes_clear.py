@@ -2,10 +2,14 @@ import os
 import yaml
 import json
 import argparse
+import datetime
 
 from Tests.scripts.validate_files import FilesValidator
-from Tests.test_utils import server_version_compare
-from Tests.test_utils import run_command, get_release_notes_file_path
+from Tests.test_utils import server_version_compare, run_command, get_release_notes_file_path
+from Tests.scripts.constants import UNRELEASE_HEADER
+
+
+CHANGE_LOG_FORMAT = UNRELEASE_HEADER + '\n\n## [{version}] - {date}'
 
 
 def yml_should_skip_clearing(file_path, current_server_version):
@@ -73,6 +77,8 @@ def main():
     arg_parser.add_argument('server_version', help='Server version')
     args = arg_parser.parse_args()
 
+    date = datetime.now().strftime('%Y-%m-%d')
+
     # get changed yaml/json files (filter only relevant changed files)
     fv = FilesValidator()
     change_log = run_command('git diff --name-status {}'.format(args.git_sha1))
@@ -87,7 +93,8 @@ def main():
             with open(rn_path, 'r+') as rn_file:
                 text = rn_file.read()
                 rn_file.seek(0)
-                rn_file.write('{}\n{}'.format(args.version, text))
+                text = text.replace(UNRELEASE_HEADER, CHANGE_LOG_FORMAT.format(args.version, date))
+                rn_file.write(text)
 
 
 if __name__ == '__main__':
