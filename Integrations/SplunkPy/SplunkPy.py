@@ -17,7 +17,7 @@ sys.setdefaultencoding('utf8')
 
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 VERIFY_CERTIFICATE = not bool(demisto.params().get('unsecure'))
-FETCH_LIMIT=int(demisto.params().get('fetch_limit'))
+FETCH_LIMIT = int(demisto.params().get('fetch_limit'))
 
 
 def get_current_splunk_time(splunk_service):
@@ -322,11 +322,11 @@ if demisto.command() == 'splunk-results':
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
     sys.exit(0)
 if demisto.command() == 'fetch-incidents':
-    lastRun = demisto.getLastRun() and demisto.getLastRun()['time'] # demisto.getLastRun()  and demisto.getLastRun()['time']
+    lastRun = demisto.getLastRun() and demisto.getLastRun()['time']
     if demisto.getLastRun():
-        search_offset= demisto.getLastRun().get('offset',0)
+        search_offset = demisto.getLastRun().get('offset', 0)
     else:
-        search_offset=0
+        search_offset = 0
 
     incidents = []
     t = datetime.utcnow()
@@ -343,7 +343,7 @@ if demisto.command() == 'fetch-incidents':
         lastRun = t.strftime(SPLUNK_TIME_FORMAT)
 
     kwargs_oneshot = {"index_earliest": lastRun,
-                      "index_latest": now, "count": FETCH_LIMIT,'offset':search_offset}
+                      "index_latest": now, "count": FETCH_LIMIT, 'offset': search_offset}
 
     searchquery_oneshot = demisto.params()['fetchQuery']
 
@@ -361,13 +361,13 @@ if demisto.command() == 'fetch-incidents':
         incidents.append(inc)
 
     demisto.incidents(incidents)
-    if len(incidents)<FETCH_LIMIT:
-      demisto.setLastRun({'time':now,'offset':0})
+    if len(incidents) < FETCH_LIMIT:
+        demisto.setLastRun({'time': now, 'offset': 0})
     else:
-       demisto.setLastRun({'time':lastRun,'offset':search_offset+FETCH_LIMIT})
+        demisto.setLastRun({'time': lastRun, 'offset': search_offset + FETCH_LIMIT})
     sys.exit(0)
 
-if demisto.command() =='splunk-get-indexes': #splunk-get-indexes
+if demisto.command() == 'splunk-get-indexes':
     indexes = service.indexes
     indexesNames = []
     for index in indexes:
