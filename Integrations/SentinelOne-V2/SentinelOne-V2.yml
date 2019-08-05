@@ -1186,7 +1186,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A CSV list of agent IDs to connect to the network. Run the list-agents command to get a list of agent IDs.
+      description: A CSV list of agent IDs to connect to the network. Run the list-agents
+        command to get a list of agent IDs.
       isArray: false
       name: agent_id
       required: true
@@ -1204,7 +1205,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A CSV list of agent IDs to disconnect from the network. Run the list-agents command to get a list of agent IDs.
+      description: A CSV list of agent IDs to disconnect from the network. Run the
+        list-agents command to get a list of agent IDs.
       isArray: false
       name: agent_id
       required: true
@@ -1259,6 +1261,153 @@ script:
     description: Broadcasts a message to all agents that match the input filters.
     execution: false
     name: sentinelone-broadcast-message
+  - arguments:
+    - default: false
+      description: 'Limit number of returned items (1-100). Example: "10".'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: 'QueryId obtained when creating a query under Create Query. Example:
+        "q1xx2xx3".'
+      isArray: false
+      name: query_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get all Deep Visibility events from query
+    execution: false
+    name: sentinelone-get-events
+    outputs:
+    - contextPath: SentinelOne.Event.ProcessUID
+      description: Process unique idenntifier
+      type: String
+    - contextPath: SentinelOne.Event.SHA256
+      description: File SHA256
+      type: String
+    - contextPath: SentinelOne.Event.AgentOS
+      description: OS type. Can be windows, linux, macos or windows_legac
+      type: String
+    - contextPath: SentinelOne.Event.ProcessID
+      description: The Process ID
+      type: Number
+    - contextPath: SentinelOne.Event.User
+      description: 'User assign to the event '
+      type: String
+    - contextPath: SentinelOne.Event.Time
+      description: Process start time
+      type: Date
+    - contextPath: SentinelOne.Event.Endpoint
+      description: The agent name
+      type: String
+    - contextPath: SentinelOne.Event.SiteName
+      description: Site name
+      type: String
+    - contextPath: SentinelOne.Event.EventType
+      description: Event type. Can be events, file, ip, url, dns, process, registry,
+        scheduled_task or logins
+      type: String
+    - contextPath: SentinelOne.Event.ProcessName
+      description: The name of the process
+      type: String
+    - contextPath: SentinelOne.Event.MD5
+      description: File MD5
+      type: String
+  - arguments:
+    - default: false
+      description: Events matching the query search term will be returned
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: From date (e.g 2019-08-03T04:49:26.257525Z)
+      isArray: false
+      name: from_date
+      required: true
+      secret: false
+    - default: false
+      description: Events created before or at this timestamp. (e.g 2019-08-03T04:49:26.257525Z)
+      isArray: false
+      name: to_date
+      required: true
+      secret: false
+    deprecated: false
+    description: Start a Deep Visibility Query and get the queryId, use queryId for
+      all other APIs such as Get All Events
+    execution: false
+    name: sentinelone-get-query-id
+  - arguments:
+    - default: false
+      description: 'QueryId obtained when creating a query under Create Query. Example:
+        "q1xx2xx3". Get the query_id from "get-query-id" command.'
+      isArray: false
+      name: query_id
+      required: true
+      secret: false
+    - default: false
+      description: 'Limit number of returned items (1-100). Example: "10".'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get Deep Visibility events from query by event type - process
+    execution: false
+    name: sentinelone-get-processes
+    outputs:
+    - contextPath: SentinelOne.Event.ParentProcessID
+      description: Parent Process ID
+      type: Number
+    - contextPath: SentinelOne.Event.ProcessUID
+      description: The process unique identifier
+      type: String
+    - contextPath: SentinelOne.Event.SHA1
+      description: Process image SHA1 hash
+      type: String
+    - contextPath: SentinelOne.Event.SubsystemType
+      description: Process sub system
+      type: String
+    - contextPath: SentinelOne.Event.ParentProcessStartTime
+      description: The parent process start time
+      type: Date
+    - contextPath: SentinelOne.Event.[0].ProcessID
+      description: The process ID
+      type: Number
+    - contextPath: SentinelOne.Event.ParentProcessUID
+      description: Parent process unique identifier
+      type: String
+    - contextPath: SentinelOne.Event.User
+      description: User assign to the event
+      type: String
+    - contextPath: SentinelOne.Event.Time
+      description: Start time of the process
+      type: Date
+    - contextPath: SentinelOne.Event.ParentProcessName
+      description: Parent process name
+      type: String
+    - contextPath: SentinelOne.Event.SiteName
+      description: Sitee name
+      type: String
+    - contextPath: SentinelOne.Event.EventType
+      description: The event type
+      type: String
+    - contextPath: SentinelOne.Event.Endpoint
+      description: The agent name (endpoint)
+      type: String
+    - contextPath: SentinelOne.Event.IntegrityLevel
+      description: Process integrity level
+      type: String
+    - contextPath: SentinelOne.Event.CMD
+      description: Process CMD
+      type: String
+    - contextPath: SentinelOne.Event.ProcessName
+      description: Process name.
+      type: String
+    - contextPath: SentinelOne.Event.ProcessDisplayName
+      description: Process display name
+      type: String
   dockerimage: demisto/python3:3.7.3.286
   isfetch: true
   runonce: false
