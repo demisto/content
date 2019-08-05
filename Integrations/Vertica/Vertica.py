@@ -11,7 +11,7 @@ getpass_getuser = getpass.getuser
 def getuser_no_fail():
     try:
         user = getpass_getuser()
-    except KeyError:
+    except NameError:
         # getuser() fails on some systems. Provide a sane default.
         user = 'vertica'
     return user
