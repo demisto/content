@@ -718,7 +718,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 192.168.1.17
+              simple: 192.168.1.12
     view: |-
       {
         "position": {
