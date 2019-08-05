@@ -861,13 +861,13 @@ tasks:
             value:
               simple: www.bücher.de
       - - operator: containsString
-            left:
-              value:
-                simple: ${URL.Data}
-              iscontext: true
-            right:
-              value:
-                simple: https://emea01.safelinks.protection.outlook.com/?url=https://hs-493391.t.hubspotemail.net/e2t
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: https://emea01.safelinks.protection.outlook.com/?url=https://hs-493391.t.hubspotemail.net/e2t
     view: |-
       {
         "position": {
