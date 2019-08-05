@@ -6,7 +6,8 @@ import json
 import argparse
 from subprocess import Popen, PIPE
 
-from Tests.scripts.constants import CHECKED_TYPES_REGEXES, CONTENT_RELEASE_TAG_REGEX, RELEASE_NOTES_REGEX
+from Tests.scripts.constants import CHECKED_TYPES_REGEXES, CONTENT_RELEASE_TAG_REGEX, RELEASE_NOTES_REGEX, \
+    PACKAGE_YML_FILE_REGEX
 
 
 class LOG_COLORS:
@@ -143,7 +144,11 @@ def str2bool(v):
 def get_release_notes_file_path(file_path):
     file_name = os.path.basename(file_path)
     dir_name = os.path.dirname(file_path)
-    return os.path.join(dir_name, os.path.splitext(file_name)[0] + '_changelog.md')
+    if re.match(PACKAGE_YML_FILE_REGEX, file_path):
+        return os.path.join(dir_name, 'CHANGELOG.md')
+    else:
+        # outside of packages, change log file will include the original file name.
+        return os.path.join(dir_name, os.path.splitext(file_name)[0] + '_changelog.md')
 
 
 def get_latest_release_notes_text(rn_path):
@@ -152,7 +157,7 @@ def get_latest_release_notes_text(rn_path):
         return None
 
     with open(rn_path) as f:
-        rn = f.read().strip()
+        rn = f.read()
 
     if not rn:
         # empty releaseNotes is not supported
@@ -165,7 +170,7 @@ def get_latest_release_notes_text(rn_path):
     new_rn = re.findall(RELEASE_NOTES_REGEX, rn)
     if new_rn:
         # get release notes up to release header
-        return new_rn[0].strip()
+        return new_rn[0].rstrip()
     else:
         return rn
 

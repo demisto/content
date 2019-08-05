@@ -53,7 +53,7 @@ CONTENT_GITHUB_LINK = r'https://raw.githubusercontent.com/demisto/content'
 
 
 def add_dot(text):
-    text = text.strip()
+    text = text.rstrip()
     if text.endswith('.'):
         return text
     return text + '.'
