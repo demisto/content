@@ -301,7 +301,7 @@ script:
       description: The extension of the report file
       type: string
     - contextPath: InfoFile.Name
-      description: The name of the report file
+      description: The name of the report file, which you can use later, for example, to send the report in an email as part of a playbook task. The report name is the the taskId, for example, 7173.pdf.
       type: string
     - contextPath: InfoFile.Info
       description: The info of the report file
