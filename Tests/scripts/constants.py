@@ -1,3 +1,5 @@
+import re
+
 # dirs
 INTEGRATIONS_DIR = "Integrations"
 SCRIPTS_DIR = "Scripts"
@@ -118,4 +120,4 @@ class PB_Status:
 # change log regexes
 UNRELEASE_HEADER = '## [Unreleased]'
 CONTENT_RELEASE_TAG_REGEX = r'^\d{2}\.\d{1,2}\.\d'
-RELEASE_NOTES_REGEX = UNRELEASE_HEADER + r'\n([\s\S]+?)\d{2}\.\d{1,2}\.\d'
+RELEASE_NOTES_REGEX = re.escape(UNRELEASE_HEADER) + r'\n([\s\S]+?)## \[\d{2}\.\d{1,2}\.\d\] - \d{4}-\d{2}-\d{2}'
