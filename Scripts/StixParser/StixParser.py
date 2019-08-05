@@ -245,7 +245,6 @@ def get_indicators(indicators):
         "Domain": list(),
         "Email": list(),
         "URL": list(),
-        # TODO implement below
         "Registry Path Reputation": list(),
         "CVE CVSS Score": list()
     }  # type: dict

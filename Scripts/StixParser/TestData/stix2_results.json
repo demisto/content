@@ -19,20 +19,20 @@
       "user@example.com"
     ],
     "URL": [
-      "http://johnson.com"
+      "http://demisto.com"
     ],
     "Registry Path Reputation": ["HKEY_LOCAL_MACHINE\\\\SOFTWARE\\\\RKey"],
     "CVE CVSS Score": ["CVE-2019-7312"]
   },
   {
-    "http://johnson.com": {
+    "http://demisto.com": {
       "created": "2019-05-26T16:18:32.000Z",
       "id": "indicator--893eac0c-3232-4219-91bb-97f9a6b0de6c",
       "labels": [
         "url"
       ],
       "modified": "2019-05-26T16:18:32.000Z",
-      "pattern": "[url:value = 'http://johnson.com']",
+      "pattern": "[url:value = 'http://demisto.com']",
       "score": "None",
       "source": "",
       "type": "indicator",
@@ -282,7 +282,7 @@
     },
     {
       "indicator_type": "URL",
-      "value": "http://johnson.com",
+      "value": "http://demisto.com",
       "CustomFields": {
         "indicatorId": "indicator--893eac0c-3232-4219-91bb-97f9a6b0de6c",
         "stixPackageId": "bundle--6ab84b67-f7a2-47b4-b7cd-097231cb7031"
