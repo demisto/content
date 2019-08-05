@@ -1,7 +1,7 @@
 id: reputations.json Test
 version: -1
 name: reputations.json Test
-description: Test . our Reputions,json regexes in misc folder
+description: Test our repution*.json regexes in misc folder
 starttaskid: "0"
 tasks:
   "0":
@@ -775,7 +775,7 @@ tasks:
         simple: valid_urls
       value:
         simple: '"www.ru.wikipedia.org/wiki/Елизавета_I", "www.golang.org/pkg/regexp/syntax/",
-          "www.bücher.de"'
+          "www.bücher.de", "https://emea01.safelinks.protection.outlook.com/?url=https://hs-493391.t.hubspotemail.net/e2t"'
     separatecontext: false
     view: |-
       {
@@ -860,6 +860,14 @@ tasks:
           right:
             value:
               simple: www.bücher.de
+      - - operator: containsString
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: https://emea01.safelinks.protection.outlook.com/?url=https://hs-493391.t.hubspotemail.net/e2t
     view: |-
       {
         "position": {
