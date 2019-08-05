@@ -324,7 +324,7 @@ if demisto.command() == 'splunk-results':
 if demisto.command() == 'fetch-incidents':
     lastRun = demisto.getLastRun() and demisto.getLastRun()['time'] # demisto.getLastRun()  and demisto.getLastRun()['time']
     if demisto.getLastRun():
-        search_offset= demisto.getLastRun().get('offset')
+        search_offset= demisto.getLastRun().get('offset',0)
     else:
         search_offset=0
 
