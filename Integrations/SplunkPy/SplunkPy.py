@@ -320,7 +320,7 @@ if demisto.command() == 'splunk-results':
     if found:
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
     sys.exit(0)
-if demisto.command() == 'fetch-incidents':
+if demisto.command() == 'splunk-get-indexes':
     lastRun = demisto.getLastRun() and demisto.getLastRun()['time']
 
     incidents = []
@@ -337,7 +337,7 @@ if demisto.command() == 'fetch-incidents':
         t = t - timedelta(minutes=10)
         lastRun = t.strftime(SPLUNK_TIME_FORMAT)
     kwargs_oneshot = {"index_earliest": lastRun,
-                      "index_latest": now, "count": 0}
+                      "index_latest": now, "count": 162}
     searchquery_oneshot = demisto.params()['fetchQuery']
 
     if demisto.get(demisto.params(), 'extractFields'):
@@ -347,15 +347,31 @@ if demisto.command() == 'fetch-incidents':
             field_trimmed = field.strip()
             searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
 
+
     oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
     reader = results.ResultsReader(oneshotsearch_results)
     for item in reader:
         inc = notable_to_incident(item)
         incidents.append(inc)
+    print(lastRun,now)
     demisto.incidents(incidents)
-    demisto.setLastRun({'time': now})
+    # offset=0
+    # while(True):
+    #     kwargs_oneshot['offset']=offset
+    #     oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
+    #     reader = results.ResultsReader(oneshotsearch_results)
+    #     for item in reader:
+    #         inc = notable_to_incident(item)
+    #         incidents.append(inc)
+    #     if not incidents:
+    #         break
+    #     print(len(incidents))
+    #     demisto.incidents(incidents)
+    #     offset+=50
+    #     incidents=[]
+    demisto.setLastRun({'start_time': datetime.strptime(now, SPLUNK_TIME_FORMAT)})
     sys.exit(0)
-if demisto.command() == 'splunk-get-indexes':
+if demisto.command() =='dfsdfsd':  # to change back!!! splunk-get-indexes
     indexes = service.indexes
     indexesNames = []
     for index in indexes:
