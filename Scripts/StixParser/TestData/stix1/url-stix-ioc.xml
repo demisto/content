@@ -6,7 +6,7 @@
             <indicator:Observable id="example:Observable-ee59c28e-d922-480e-9b7b-a79502696505">
                 <cybox:Object id="example:URI-b13ae3fc-80af-49c2-9de9-f713abc070ba">
                     <cybox:Properties xsi:type="URIObj:URIObjectType" type="URL">
-                        <URIObj:Value condition="Equals">http:/demisto.com/4712</URIObj:Value>
+                        <URIObj:Value condition="Equals">http://demisto.com/4712</URIObj:Value>
                     </cybox:Properties>
                 </cybox:Object>
             </indicator:Observable>
