@@ -18,7 +18,7 @@ sys.setdefaultencoding('utf8')  # pylint: disable=maybe-no-member
 
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 VERIFY_CERTIFICATE = not bool(demisto.params().get('unsecure'))
-FETCH_LIMIT = int(demisto.params().get('fetch_limit'))
+FETCH_LIMIT = int(demisto.params().get('fetch_limit',200))
 
 
 def get_current_splunk_time(splunk_service):
@@ -325,10 +325,7 @@ if demisto.command() == 'splunk-results':
     sys.exit(0)
 if demisto.command() == 'fetch-incidents':
     lastRun = demisto.getLastRun() and demisto.getLastRun()['time']
-    if demisto.getLastRun():
-        search_offset = demisto.getLastRun().get('offset', 0)
-    else:
-        search_offset = 0
+    search_offset = demisto.getLastRun().get('offset', 0)
 
     incidents = []
     t = datetime.utcnow()
