@@ -17,6 +17,7 @@ sys.setdefaultencoding('utf8')
 
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 VERIFY_CERTIFICATE = not bool(demisto.params().get('unsecure'))
+FETCH_LIMIT=int(demisto.params().get('fetch_limit'))
 
 
 def get_current_splunk_time(splunk_service):
@@ -320,8 +321,12 @@ if demisto.command() == 'splunk-results':
     if found:
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
     sys.exit(0)
-if demisto.command() == 'splunk-get-indexes':
-    lastRun = demisto.getLastRun() and demisto.getLastRun()['time']
+if demisto.command() == 'fetch-incidents':
+    lastRun = demisto.getLastRun() and demisto.getLastRun()['time'] # demisto.getLastRun()  and demisto.getLastRun()['time']
+    if demisto.getLastRun():
+        search_offset= demisto.getLastRun().get('offset')
+    else:
+        search_offset=0
 
     incidents = []
     t = datetime.utcnow()
@@ -336,8 +341,10 @@ if demisto.command() == 'splunk-get-indexes':
     if len(lastRun) == 0:
         t = t - timedelta(minutes=10)
         lastRun = t.strftime(SPLUNK_TIME_FORMAT)
+
     kwargs_oneshot = {"index_earliest": lastRun,
-                      "index_latest": now, "count": 162}
+                      "index_latest": now, "count": FETCH_LIMIT,'offset':search_offset}
+
     searchquery_oneshot = demisto.params()['fetchQuery']
 
     if demisto.get(demisto.params(), 'extractFields'):
@@ -347,31 +354,20 @@ if demisto.command() == 'splunk-get-indexes':
             field_trimmed = field.strip()
             searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
 
-
     oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
     reader = results.ResultsReader(oneshotsearch_results)
     for item in reader:
         inc = notable_to_incident(item)
         incidents.append(inc)
-    print(lastRun,now)
+
     demisto.incidents(incidents)
-    # offset=0
-    # while(True):
-    #     kwargs_oneshot['offset']=offset
-    #     oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)
-    #     reader = results.ResultsReader(oneshotsearch_results)
-    #     for item in reader:
-    #         inc = notable_to_incident(item)
-    #         incidents.append(inc)
-    #     if not incidents:
-    #         break
-    #     print(len(incidents))
-    #     demisto.incidents(incidents)
-    #     offset+=50
-    #     incidents=[]
-    demisto.setLastRun({'start_time': datetime.strptime(now, SPLUNK_TIME_FORMAT)})
+    if len(incidents)<FETCH_LIMIT:
+      demisto.setLastRun({'time':now,'offset':0})
+    else:
+       demisto.setLastRun({'time':lastRun,'offset':search_offset+FETCH_LIMIT})
     sys.exit(0)
-if demisto.command() =='dfsdfsd':  # to change back!!! splunk-get-indexes
+
+if demisto.command() =='splunk-get-indexes': #splunk-get-indexes
     indexes = service.indexes
     indexesNames = []
     for index in indexes:
@@ -380,6 +376,7 @@ if demisto.command() =='dfsdfsd':  # to change back!!! splunk-get-indexes
     demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(indexesNames),
                      'HumanReadable': tableToMarkdown("Splunk Indexes names", indexesNames, '')})
     sys.exit(0)
+
 if demisto.command() == 'splunk-submit-event':
     try:
         index = service.indexes[demisto.args()['index']]
@@ -393,6 +390,7 @@ if demisto.command() == 'splunk-submit-event':
         r = index.submit(data_formatted, sourcetype=demisto.args()['sourcetype'], host=demisto.args()['host'])
         demisto.results('Event was created in Splunk index: ' + r.name)
     sys.exit(0)
+
 if demisto.command() == 'splunk-notable-event-edit':
     if not proxy:
         os.environ["HTTPS_PROXY"] = ""
