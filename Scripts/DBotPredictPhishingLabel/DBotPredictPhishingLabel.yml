@@ -1,0 +1,64 @@
+args:
+- default: false
+  description: Demisto list name that stores the machine learning model
+  isArray: false
+  name: modelListName
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'no'
+  description: Is the input text is hashed
+  isArray: false
+  name: hashData
+  predefined:
+  - 'yes'
+  - 'no'
+  required: false
+  secret: false
+- default: false
+  description: The email subject.
+  isArray: false
+  name: emailSubject
+  required: false
+  secret: false
+- default: false
+  description: The email body. It's better to use text body if possible, HTML is also
+    valid (HTML tags will be removed).
+  isArray: false
+  name: emailBody
+  required: false
+  secret: false
+comment: |-
+  Predict text label using pre-trained machine learning phishing model.
+  Notice you have to run training playbook successfully first.
+commonfields:
+  id: DBotPredictPhishingLabel
+  version: -1
+enabled: true
+name: DBotPredictPhishingLabel
+outputs:
+- contextPath: DBotPredictPhishingLabel.Label
+  description: The suggested label
+  type: String
+- contextPath: DBotPredictPhishingLabel.Probability
+  description: 'The prediction probability '
+  type: Number
+- contextPath: DBotPredictPhishingLabel.InputTextNumberOfTokens
+  description: Number of tokens in the input text
+  type: Number
+- contextPath: DBotPredictPhishingLabel.InputTextTokens
+  description: The input text
+  type: String
+script: '-'
+system: false
+tags:
+- ml
+- phishing
+timeout: '0'
+type: python
+dockerimage: demisto/dl:1.1
+runonce: false
+tests:
+- CreatePhishingClassifierMLTest
+fromversion: 4.1.0
