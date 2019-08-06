@@ -80,7 +80,24 @@ script:
     - contextPath: Example.Item.CreatedDate
       description: Item creation date
       type: date
+  - arguments:
+    - default: false
+      description: ZeroFox alert ID
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Fetches an alert by ID
+    execution: false
+    name: zerofox-get-alert
+    outputs:
+    - contextPath: ZeroFox.Alert
+      description: Alert Object
+      type: Unknown
   isfetch: false
   runonce: false
   script: '-'
   type: python
+tests:
+  - No test - not yet implemented
