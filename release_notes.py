@@ -538,8 +538,12 @@ def get_release_notes_draft(github_token, asset_id):
     # Disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
-    res = requests.get('https://api.github.com/repos/demisto/content/releases', verify=False,
+    try:
+        res = requests.get('https://api.github.com/repos/demisto/content/releases', verify=False,
                        headers={'Authorization': 'token {}'.format(github_token)})
+    except requests.exceptions.ConnectionError as e:
+        print_warning('unable to get release draft, reason:\n{}'.format(str(e)))
+        return ''
 
     if res.status_code != 200:
         print_warning('unable to get release draft ({}), reason:\n{}'.format(res.status_code, res.text))
@@ -668,7 +672,7 @@ def main():
         ans = value.generate_release_notes(args.server_version)
         if ans is None or value.is_missing_release_notes:
             missing_release_notes = True
-        elif len(ans) > 0:
+        if ans:
             res.append(ans)
 
     release_notes = "\n---\n".join(res)
