@@ -1563,7 +1563,60 @@ def shutdown_agents():
     }
 
     return_outputs(
-        f'{agents} agent(s) shutdown successfully.',
+        f'Shutting down {agents} agent(s).',
+        context,
+        affected_agents
+    )
+
+
+def uninstall_agent_request(query=None, agent_id=None, group_id=None):
+
+    endpoint_url = 'agents/actions/uninstall'
+    filters = {}
+
+    if query:
+        filters['query'] = query
+    if agent_id:
+        filters['ids'] = agent_id
+    if group_id:
+        filters['groupIds'] = group_id
+
+    payload = {
+        "filter": filters,
+        "data": {}
+    }
+
+    response = http_request('POST', endpoint_url, data=json.dumps(payload))
+    if response.get('errors'):
+        return_error(response.get('errors'))
+    else:
+        return response
+
+
+def uninstall_agent():
+    """
+    Sends an uninstall command to all agents matching the input filter.
+    """
+    query = demisto.args().get('query', '')
+
+    agent_id = argToList(demisto.args().get('agent_id'))
+    group_id = argToList(demisto.args().get('group_id'))
+
+    affected_agents = shutdown_agents_request(query, agent_id, group_id)
+    agents = affected_agents.get('data', {}).get('affected', 0)
+    if agents > 0:
+        contents = {
+            'ID': agent_id
+        }
+    else:
+        return_error('No agents were affected.')
+
+    context = {
+        'SentinelOne.Agent(val.ID && val.ID === obj.ID)': contents
+    }
+
+    return_outputs(
+        f' Uninstall was sent to {agents} agent(s).',
         context,
         affected_agents
     )
@@ -1804,6 +1857,8 @@ try:
         get_processes()
     elif demisto.command() == 'sentinelone-shutdown-agent':
         shutdown_agents()
+    elif demisto.command() == 'sentinelone-uninstall-agent':
+        uninstall_agent()
 
 except Exception as e:
     LOG(str(e))
