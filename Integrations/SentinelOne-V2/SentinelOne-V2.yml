@@ -1408,6 +1408,36 @@ script:
     - contextPath: SentinelOne.Event.ProcessDisplayName
       description: Process display name
       type: String
+  - arguments:
+    - default: false
+      description: 'A free-text search term, will match applicable attributes (sub-string
+        match). Note: Device''s physical addresses will be matched if they start with
+        the search term only (instead of being matched if they contain the term).'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: The Agents ID(s) to shutdown. For mulitple agents, seperate by
+        comma
+      isArray: false
+      name: agent_id
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the network group
+      isArray: false
+      name: group_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Sends a shutdown command to all agents matching the input filter.
+    execution: false
+    name: sentinelone-shutdown-agent
+    outputs:
+    - contextPath: SentinelOne.Agent.ID
+      description: The ID of the agent that was shutdown
+      type: String
   dockerimage: demisto/python3:3.7.3.286
   isfetch: true
   runonce: false
