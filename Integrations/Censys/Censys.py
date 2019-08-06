@@ -2,19 +2,21 @@ import demistomock as demisto
 from CommonServerPython import *
 import requests
 
+requests.packages.urllib3.disable_warnings()
+
 
 def sendRequest(method, url, uri, user, passwd, data=None):
     res = None
 
     if method.lower() == 'get':
-        res = requests.get(url + uri, auth=(user, passwd))
+        res = requests.get(url + uri, auth=(user, passwd), verify=False)
     if method.lower() == 'post':
         try:
-            temp = json.loads(data)
-        except ValueError, e:
+            json.loads(data)
+        except ValueError:
             return '### Error: Data is not in JSON format'
 
-        res = requests.post(url + uri, auth=(user, passwd), data=data)
+        res = requests.post(url + uri, auth=(user, passwd), data=data, verify=False)
 
     if res.status_code >= 400:
         if res.text.startswith('{'):
