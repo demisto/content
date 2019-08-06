@@ -1516,6 +1516,59 @@ def broadcast_message():
         return_error('No messages were sent. Verify that the inputs are correct.')
 
 
+def shutdown_agents_request(query, agent_id, group_id):
+
+    endpoint_url = 'agents/actions/shutdown'
+    filters = {}
+
+    if query:
+        filters['query'] = query
+    if agent_id:
+        filters['ids'] = agent_id
+    if group_id:
+        filters['groupIds'] = group_id
+
+    payload = {
+        "filter": filters,
+        "data": {}
+    }
+
+    response = http_request('POST', endpoint_url, data=json.dumps(payload))
+    if response.get('errors'):
+        return_error(response.get('errors'))
+    else:
+        return response
+
+
+def shutdown_agents():
+    """
+    Sends a shutdown command to all agents matching the input filter
+    """
+    query = demisto.args().get('query', '')
+
+    agent_id = argToList(demisto.args().get('agent_id'))
+    group_id = argToList(demisto.args().get('group_id'))
+
+    affected_agents = shutdown_agents_request(query, agent_id, group_id)
+    agents = affected_agents.get('data', {}).get('affected', 0)
+    if agents > 0:
+        contents = {
+            'ID': agent_id
+        }
+    else:
+        return_error('No agents were shutdown.')
+
+    context = {
+        'SentinelOne.Agent(val.ID && val.ID === obj.ID)': contents
+    }
+
+    return_outputs(
+        f'{agents} agent(s) shutdown successfully.',
+        context,
+        affected_agents
+    )
+
+
 # Event Commands
 
 def create_query_request(query, from_date, to_date):
@@ -1590,7 +1643,7 @@ def get_events():
             })
 
     context = {
-        'SentinelOne.Event(val.sha1 && val.sha1 === obj.sha1)': contents
+        'SentinelOne.Event(val.ProcessID && val.ProcessID === obj.ProcessID)': contents
     }
 
     return_outputs(tableToMarkdown('SentinelOne Events', contents, headers, removeNull=True), context, events)
@@ -1647,7 +1700,7 @@ def get_processes():
             })
 
     context = {
-        'SentinelOne.Event(val.sha1 && val.sha1 === obj.sha1)': contents
+        'SentinelOne.Event(val.ProcessID && val.ProcessID === obj.ProcessID)': contents
     }
 
     return_outputs(tableToMarkdown('SentinelOne Processes', contents, headers, removeNull=True), context, processes)
@@ -1749,7 +1802,8 @@ try:
         create_query()
     elif demisto.command() == 'sentinelone-get-processes':
         get_processes()
-
+    elif demisto.command() == 'sentinelone-shutdown-agent':
+        shutdown_agents()
 
 except Exception as e:
     LOG(str(e))
