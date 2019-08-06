@@ -3,20 +3,21 @@ from CommonServerPython import *
 import requests
 
 requests.packages.urllib3.disable_warnings()
+USE_SSL = not demisto.params().get('insecure', False)
 
 
 def sendRequest(method, url, uri, user, passwd, data=None):
     res = None
 
     if method.lower() == 'get':
-        res = requests.get(url + uri, auth=(user, passwd), verify=False)
+        res = requests.request('GET', url + uri, auth=(user, passwd), verify=USE_SSL)
     if method.lower() == 'post':
         try:
             json.loads(data)
         except ValueError:
             return '### Error: Data is not in JSON format'
 
-        res = requests.post(url + uri, auth=(user, passwd), data=data, verify=False)
+        res = requests.request('POST', url + uri, auth=(user, passwd), data=data, verify=USE_SSL)
 
     if res.status_code >= 400:
         if res.text.startswith('{'):

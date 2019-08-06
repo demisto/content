@@ -1,66 +1,86 @@
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Censys
   version: -1
-name: Censys
-display: Censys
-system: true
-category: Data Enrichment & Threat Intelligence
-description: 'Censys is a search engine that allows computer scientists to ask questions
+configuration:
+- defaultvalue: https://censys.io/api/v1/
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Censys API ID
+  name: apiid
+  required: true
+  type: 0
+- display: Censys API Secret
+  name: secret
+  required: true
+  type: 4
+- display: Trust any certificate (insecure)
+  name: insecure
+  required: true
+  type: 8
+description: Censys is a search engine that allows computer scientists to ask questions
   about the devices and networks that compose the Internet. Driven by Internet-wide
   scanning, Censys lets researchers find specific hosts and create aggregate reports
-  on how devices, websites, and certificates are configured and deployed. '
+  on how devices, websites, and certificates are configured and deployed.
 detaileddescription: 'Two commands aspects of the Censys.io API is available, Search
   (cen-search) and View (cen-view). Cen-view is the primary interface. Automations
   should take the output of cen-view to parse and display the relevant data. Cen-search
   requires a more advanced search syntax and should be used primarily in pivoting
   and hypersearch scripts. More information on the search syntax can be found: https://censys.io/api/v1/docs/search'
-configuration:
-- display: Server URL
-  name: url
-  defaultvalue: https://censys.io/api/v1/
-  type: 0
-  required: true
-- display: Censys API ID
-  name: apiid
-  defaultvalue: ""
-  type: 0
-  required: true
-- display: Censys API Secret
-  name: secret
-  defaultvalue: ""
-  type: 4
-  required: true
+display: Censys
+name: Censys
 script:
-  script: ''
-  type: python
   commands:
-  - name: cen-view
-    arguments:
-    - name: query
-      required: true
+  - arguments:
+    - default: false
       description: IP Address to search for
-    - name: index
+      isArray: false
+      name: query
       required: true
-      auto: PREDEFINED
-      predefined:
-      - ipv4
-      - websites
-      - certificates
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Which index to retrieve data from
-    description: Detailed view
-  - name: cen-search
-    arguments:
-    - name: query
-      required: true
-      description: The attribute you're searching for, JSON format
-    - name: index
-      description: The index to search on
-      required: true
-      auto: PREDEFINED
+      isArray: false
+      name: index
       predefined:
       - ipv4
       - websites
       - certificates
+      required: true
+      secret: false
+    deprecated: false
+    description: Detailed view
+    execution: false
+    name: cen-view
+  - arguments:
+    - default: false
+      description: The attribute you're searching for, JSON format
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The index to search on
+      isArray: false
+      name: index
+      predefined:
+      - ipv4
+      - websites
+      - certificates
+      required: true
+      secret: false
+    deprecated: false
     description: Attribute search
+    execution: false
+    name: cen-search
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+system: true
 tests:
-  - No test
+- No test
