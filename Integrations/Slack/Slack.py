@@ -473,6 +473,8 @@ async def handle_dm(user: dict, text: str, client: slack.WebClient):
         except Exception as e:
             data = str(e)
 
+    if not data:
+        data = 'Sorry, I could not perform the selected operation.'
     im = await client.im_open(user=user.get('id'))
     channel = im.get('channel', {}).get('id')
     await client.chat_postMessage(channel=channel, text=data)
