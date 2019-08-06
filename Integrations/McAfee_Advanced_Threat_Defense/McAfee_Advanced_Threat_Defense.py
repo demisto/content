@@ -33,7 +33,7 @@ BASE_URL = load_server_url()
 LOGIN_HEADERS = {
     'Accept': 'application/vnd.ve.v1.0+json',
     'Content-Type': 'application/json',
-    'VE-SDK-API': base64.b64encode(str.encode(USERNAME + ':' + PASSWORD))
+    'VE-SDK-API': base64.b64encode(USERNAME + ':' + PASSWORD)
 }
 HEARTBEAT_HEADERS = {
     'Accept': 'application/vnd.ve.v1.0+json',
@@ -59,7 +59,7 @@ def get_headers():
     sess = get_session_credentials()
     return {
         'Accept': 'application/vnd.ve.v1.0+json',
-        'VE-SDK-API': base64.b64encode(str.encode(sess['session'] + ':' + sess['userId']))
+        'VE-SDK-API': base64.b64encode(sess['session'] + ':' + sess['userId'])
     }
 
 
