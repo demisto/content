@@ -1,0 +1,1 @@
+- Fix bug: correct using of demisto.args() 
