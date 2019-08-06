@@ -7,7 +7,7 @@ import argparse
 from subprocess import Popen, PIPE
 
 from Tests.scripts.constants import CHECKED_TYPES_REGEXES, CONTENT_RELEASE_TAG_REGEX, RELEASE_NOTES_REGEX, \
-    PACKAGE_YML_FILE_REGEX
+    PACKAGE_YML_FILE_REGEX, UNRELEASE_HEADER
 
 
 class LOG_COLORS:
@@ -164,16 +164,14 @@ def get_latest_release_notes_text(rn_path):
         # empty releaseNotes is not supported
         return None
 
-    if re.match(CONTENT_RELEASE_TAG_REGEX, rn):
-        # in case rn already starts with a release tag - they considered invalid
-        return None
-
     new_rn = re.findall(RELEASE_NOTES_REGEX, rn)
     if new_rn:
         # get release notes up to release header
-        return new_rn[0].rstrip()
+        new_rn = new_rn[0].rstrip()
     else:
-        return rn
+        new_rn = rn.replace(UNRELEASE_HEADER, '')
+
+    return new_rn if new_rn else None
 
 
 def checked_type(file_path, compared_regexes=CHECKED_TYPES_REGEXES):
