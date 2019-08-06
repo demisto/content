@@ -152,14 +152,16 @@ def test_is_ip_valid():
     invalid_ip_v6 = "KKKK:0000:0000:0000:0202:B3FF:FE1E:8329"
     valid_ip_v4 = "10.10.10.10"
     invalid_ip_v4 = "10.10.10.9999"
-    invalid_general_ip = "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1"
+    invalid_not_ip_with_ip_structure = "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1"
+    not_ip = "Demisto"
     assert not is_ip_valid(valid_ip_v6)
     assert is_ip_valid(valid_ip_v6, True)
     assert is_ip_valid(valid_ip_v6_b, True)
     assert not is_ip_valid(invalid_ip_v6, True)
+    assert not is_ip_valid(not_ip, True)
     assert is_ip_valid(valid_ip_v4)
     assert not is_ip_valid(invalid_ip_v4)
-    assert not is_ip_valid(invalid_general_ip)
+    assert not is_ip_valid(invalid_not_ip_with_ip_structure)
 
 
 def test_tbl_to_md_list_values():
