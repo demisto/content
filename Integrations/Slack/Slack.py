@@ -1053,7 +1053,7 @@ def init_globals():
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE
 
     TOKEN = demisto.params().get('bot_token')
-    CHANNEL_TOKEN = demisto.params().get('channel_token')
+    CHANNEL_TOKEN = demisto.params().get('access_token')
     PROXY = handle_proxy().get('https')
     DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel')
     CLIENT = slack.WebClient(token=TOKEN, proxy=PROXY)
