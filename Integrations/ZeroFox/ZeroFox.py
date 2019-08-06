@@ -14,7 +14,7 @@ requests.packages.urllib3.disable_warnings()
 
 USERNAME = demisto.params().get('credentials').get('identifier')
 PASSWORD = demisto.params().get('credentials').get('password')
-TOKEN = demisto.params().get('token')
+TOKEN = None
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = demisto.params()['url'][:-1] \
     if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
@@ -23,7 +23,7 @@ USE_SSL = not demisto.params().get('insecure', False)
 # How many time before the first fetch to retrieve incidents
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 # Service base URL
-BASE_URL = SERVER + '/api/v2.0/'
+BASE_URL = 'https://api.zerofox.com/1.0' # disable-secrets-detection
 # Headers to be sent in requests
 HEADERS = {
     'Authorization': 'Token ' + TOKEN + ':' + USERNAME + PASSWORD,
@@ -39,6 +39,16 @@ if not demisto.params().get('proxy'):
 
 
 ''' HELPER FUNCTIONS '''
+
+def get_authorization_token():
+    endpoint = '/api-token-auth/'
+    data_for_request = {
+        'username': USERNAME,
+        'password': PASSWORD
+    }
+    request_respone = http_request('POST', endpoint, data=data_for_request)
+    try:
+    TOKEN = request_respone.json().get('token')
 
 
 def http_request(method, url_suffix, params=None, data=None):
@@ -71,6 +81,11 @@ def item_to_incident(item):
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
+def get_alert():
+
+
+def get_alert_command():
+    pass
 
 def test_module():
     """
@@ -185,6 +200,8 @@ try:
     elif demisto.command() == 'example-get-items':
         # An example command
         get_items_command()
+    elif demisto.command() == 'zerofox-get-alert':
+        get_alert_command()
 
 # Log exceptions
 except Exception, e:
