@@ -47,10 +47,6 @@ def main():
     arg_parser.add_argument('server_version', help='Server version')
     args = arg_parser.parse_args()
 
-
-    # import ipdb
-    # ipdb.set_trace()
-
     date = datetime.now().strftime('%Y-%m-%d')
 
     # get changed yaml/json files (filter only relevant changed files)
