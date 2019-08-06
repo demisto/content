@@ -413,3 +413,36 @@ def test_args_to_str_2():
         .format(json.dumps(xdr_incident))
 
     assert expected == actual
+
+
+def test_compare_incident_in_demisto_when_the_severity_is_unknown():
+    """
+    Given
+    - incident in demisto
+    - incident from xdr - older
+    - fields_mapping:
+        severity: severity
+
+    When
+    - severity in demisto is unknown
+
+    Then
+    - ensure severity is not updated in XDR
+
+    """
+    incident_id = "100"
+    fields_mapping = {
+        "severity": "severity"
+    }
+
+    incident_in_demisto = copy.deepcopy(INCIDENT_IN_DEMISTO)
+    incident_in_demisto["severity"] = 0
+
+    xdr_incident_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
+
+    is_modified, update_args = compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident_in_context,
+                                                                          incident_id,
+                                                                          fields_mapping)
+
+    assert is_modified is False
+    assert {} == update_args
