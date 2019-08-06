@@ -1,39 +1,32 @@
-import inspect
+''' IMPORTS '''
 
+import inspect
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
-''' IMPORTS '''
-
 import json
 import requests
-from distutils.util import strtobool
+import jwt
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-
-# USERNAME = demisto.params().get('credentials').get('identifier')
-# PASSWORD = demisto.params().get('credentials').get('password')
-TOKEN = demisto.params().get('token')
+PARAMS = demisto.params()
 # Remove trailing slash to prevent wrong URL path to service
-SERVER = demisto.params()['url'][:-1] \
-    if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
+SERVER = PARAMS['url'][:-1] \
+    if (PARAMS['url'] and PARAMS['url'].endswith('/')) else PARAMS['url']
 # Should we use SSL
-USE_SSL = not demisto.params().get('insecure', False)
+USE_SSL = not PARAMS.get('insecure', False)
 # How many time before the first fetch to retrieve incidents
-FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+FETCH_TIME = PARAMS.get('fetch_time', '3 days')
 # Service base URL
 BASE_URL = SERVER + '/xapi/v1/'
+APPLICATION_ID = PARAMS.get('application_id')
+PRIVATE_KEY = PARAMS.get('private_key')
 # Headers to be sent in requests
-TENANT_ID = '14'
-APPLICATION_ID = 'Demisto'
 HEADERS = {
-    'Content-Type': 'application/json',
-    'tenantid': TENANT_ID,
-    'applicationid': APPLICATION_ID
+    'Content-Type': 'application/json'
 }
 # Remove proxy if not set to true in params
 handle_proxy()
@@ -87,19 +80,14 @@ OUTPUTS = {
 ''' HELPER FUNCTIONS '''
 
 
-# def create_output(data, type='context'):
-#     new_data = {}
-#     for key, val in data.items():
-#         new_key = ''
-#         if type == 'context':
-#             new_key = string_to_context_key(key)
-#         elif type == 'md':
-#             new_key = string_to_table_header(key)
-#         new_data[new_key] = val
-#     return new_data
+def create_headers():
+    headers = HEADERS
+    token = generate_auth_token().decode('utf-8')
+    headers['Authorization'] = f'Bearer {token}'
+    return headers
 
 
-def http_request(method, url_suffix, plain_url=False, params=None, data=None, operation_err=None):
+def http_request(method, url_suffix, plain_url=False, params=None, data=None, operation_err=None, parse_response=True):
     # A wrapper for requests lib to send our requests and handle requests and responses better
     try:
         res = requests.request(
@@ -108,11 +96,13 @@ def http_request(method, url_suffix, plain_url=False, params=None, data=None, op
             verify=USE_SSL,
             params=params,
             data=json.dumps(data) if data else data,
-            headers=HEADERS,
+            headers=create_headers(),
         )
-    except requests.exceptions.ConnectionError as err:
+    except requests.exceptions.ConnectionError:
         return_error(f'Error connecting to Traps server check your connection and you server address')
-    return parse_http_response(res, operation_err, plain_url)
+    if parse_response:
+        res = parse_http_response(res, operation_err, plain_url)
+    return res
 
 
 def parse_http_response(resp, operation_err_message, test=False):
@@ -131,18 +121,6 @@ def parse_http_response(resp, operation_err_message, test=False):
         return_error(f'{operation_err_message}: \n{err_message}')
 
 
-# def item_to_incident(item):
-#     incident = {}
-#     # Incident Title
-#     incident['name'] = 'Example Incident: ' + item.get('name')
-#     # Incident occurrence time, usually item creation date in service
-#     incident['occurred'] = item.get('createdDate')
-#     # The raw response from the service, providing full info regarding the item
-#     incident['rawJSON'] = json.dumps(item)
-#     return incident
-#
-
-
 def health_check():
     path = f'{SERVER}/xapi/health-check'
     server_status = http_request('GET', path, plain_url=True).decode('utf-8')
@@ -150,6 +128,13 @@ def health_check():
         return
     else:
         return_error(f'Server health-check failed. Status returned was: {server_status}')
+
+
+def generate_auth_token():
+    key = PRIVATE_KEY
+    data = {'appId': APPLICATION_ID}
+    token = jwt.encode(data, key, algorithm='RS256')
+    return token
 
 
 def parse_data_from_response(resp_obj, operation_name=None):
@@ -238,13 +223,6 @@ def event_update_status_and_command(event_id, status, comment):
     return
 
 
-# def parse_ids(id_list):
-#     new_list = []  # type: list
-#     for id_obj in id_list:
-#         new_list.append(parse_data_from_response(id_obj))
-#     return new_list
-
-
 def event_bulk_update_status(event_ids, status):
     ids_obj = update_event_status(event_ids, status)
     # maybe should be changed to a separate function
@@ -271,6 +249,7 @@ def remove_hash_from_blacklist(hash_id):
     return result.get('status')
 
 
+# TODO: Check if needed error messge
 def hashes_blacklist_status(hash_ids):
     path = f'hashes/blacklist-status'
     data = {
@@ -297,10 +276,7 @@ def event_quarantine(event_id):
 
 def endpoint_isolate(endpoint_id):
     path = f'agents/{endpoint_id}/isolate'
-    # resp = http_request('POST', path, operation_err=f'Isolation of endpoint: {endpoint_id} failed')
-    resp = {
-        "operationId": "ac3f7f0f9cca11e9ad0b06493deb1492"
-    }
+    resp = http_request('POST', path, operation_err=f'Isolation of endpoint: {endpoint_id} failed')
     operation_obj = parse_data_from_response(resp)
     operation_obj.update({
         'EndpointID': endpoint_id,
@@ -335,16 +311,12 @@ def event_quarantine_result(operation_id):
     return quarantine_data
 
 
-# 15a8bb669e3211e9b66f06493deb1492
-# 235ff77f9e2b11e9b66f06493deb1492
-
 def endpoint_files_retrieve_result(operation_id):
     status, additional_data = sam_operation(operation_id, f'Failed to get file retrieve results')
     if status == 'finished':
         file_info = additional_data.get('uploadData')
         file_name = file_info.get('fileName')
         url = file_info.get('downloadUrl')
-        # url = "https://demisto-agent-uploads-40.s3.us-west-2.amazonaws.com/sam%3Ac33cf8881313db8d3e1ad8979d698faeb9d590aac7d8c059f29ff5b3841746a0?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIA4FSZU6GK3NMOF4UQ%2F20190704%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20190704T071746Z&X-Amz-Expires=604200&X-Amz-Security-Token=AgoJb3JpZ2luX2VjEJ%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJIMEYCIQDnkL3cgzgW0xSG0L6uFub3%2BWs6AdAoqCFLMZnYDNlcewIhAOqRuD0mJltKxMGmCt2xfHB2lYNsYyLkMnjQZOax2p2bKuMDCOj%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQABoMODM2NjMyODk5OTg5Igw8hoUgNZyoXUb9L2gqtwOJG9m9drhgzm5q4gNAwtMds3QDSD1s3558ZLC1B1Iqb44ajoFCrzkIU9xYUU5%2B239J7dYm6F%2Fn8dTTty3fYbrktvGZBMnyZfVcqloTJswXlik9sFgrx43tGQ8SbYwk0hjeBm%2BTzkaWh%2FohEllLk5PMX1NiQnijRlu6stxlUwvBkmWj9vIiJGdxCKT0bUw1TH1UfUrRBBz2hEz2qvcNkkclpP5im2Xb%2BrwwU%2BHe9098Uy93ZkiM%2Fxmw2AqpWp3pYLad3tLCVSA6A4b3Oklmnoe4J6CN6LHDjepumZapstmmpCeyqTMWBs%2B%2B%2BQQrN9VHabiZiQBbzZt05LSRTPvRG71%2FQAkQTJoU75muSfv5Fh93t4NbvOx9XrbbnRUX8k9jk11NDHGPVuidjGcafxz8aX8CbPxDEbMNgA3V7N4XjJsiB8SV%2B71n%2FvT%2BJenX7VNEQrqpMx52kDOVrPiLxrjOiiikTDrahfzMDfBJwli7NTnWTd7x8%2FR1hnZ9TNJusiulsN1wPMkYfIzL4FXkj%2F7x6GGryZH6JX0F12viQxG9i6P5sJ62%2FYZ0Xr01GmfDNfa0%2BSWIlkxVdx4UMNu29ugFOrMBGD%2FfbH2N2hvZmxMm2fnMewPFpwNmlH%2FHL51mdQvofrptU%2F7H8ea9ScWDFPKVsvGUKIODY7z%2F2w0Ag9DJzsRSxqUV6iRpmGHOv1rDca7UVUtFs8yPTUiNJAd39kwnyBZkkdQ%2FGHQxGGJcIQ7zOqWRhaSNQ5ov%2F9InMGUmncjX%2BPAiyKDFB%2FjpopMP0RPNL3ivHPlwKdgoXEMOubWT6RR7uJfUMLeKupbrpBcAau6g25poMqQ%3D&X-Amz-Signature=a0228494af45875d07ee97bf044bc1e32e9a7a9a5f86a6bed83438b184c0aa6c&X-Amz-SignedHeaders=host"
         data = http_request('GET', url, plain_url=True, operation_err=f'Unable to download file.')
         demisto.results(fileResult(filename=file_name, data=data))
     return {'Status': status, 'OperationId': operation_id}
@@ -355,6 +327,9 @@ def endpoint_files_retrieve_result(operation_id):
 
 def test_module_command():
     health_check()
+    res = http_request('GET', 'agents/1', parse_response=False)
+    if res.status_code == 403:
+        return_error(f'Error connecting to server. Check your Application ID and Private key')
     return
 
 
