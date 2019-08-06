@@ -67,8 +67,10 @@ def http_request(method, url, params=None):
             if 'message' in res_json:
                 demisto.debug(res_json['message'])
                 return_error(res_json['message'])
-        except Exception:
-            return_error('Could not execute the request')
+        except ValueError:
+            return_error(res.text)
+        except Exception as ex:
+            return_error(ex)
 
     try:
         res_json = res.json()
