@@ -673,7 +673,6 @@ script:
     - contextPath: ATD.Task.submitTime
       description: Submission time of the sample
       type: string
-  dockerimage: demisto/python3:3.7.3.286
   isfetch: false
   runonce: false
   script: '-'

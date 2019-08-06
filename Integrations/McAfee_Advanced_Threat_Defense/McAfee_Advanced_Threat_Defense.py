@@ -8,7 +8,6 @@ import json
 import re
 import base64
 import time
-from typing import Dict
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -259,7 +258,7 @@ def list_profiles_command():
 
 @logger
 def check_task_status_by_taskId(task_ids):
-    result: Dict = {}
+    result = {}  # type: dict
     multiple_results = []
     tasks = []
 
@@ -290,7 +289,7 @@ def check_task_status_by_jobId(job_ids):
 
 
 def check_task_status_command():
-    result: Dict = {}
+    result = {}  # type: dict
     args = demisto.args()
 
     if ('jobId' not in args and 'taskId' not in args) or ('jobId' in args and 'taskId' in args):
@@ -406,9 +405,9 @@ def url_upload_raw(body):
 def file_upload(submit_type, sample, vm_profile_list,
                 skip_task_id=None, analyze_again=None, x_mode=None, message_id=None,
                 file_priority_q=None, src_ip=None, dest_ip=None, file_name=None):
-    body: Dict = {}
+    body = {}  # type: dict
     body['data'] = {}
-    data: Dict = {}
+    data = {}  # type: dict
     data['data'] = {}
     # Add missing prefix to url
     if submit_type != 0:
@@ -487,7 +486,7 @@ def file_upload_command():
 
 
 def build_report_context(report_summary, upload_data, status, threshold):
-    context: Dict = {}
+    context = {}  # type: dict
     if report_summary and report_summary['Subject']:
         subject = report_summary['Subject']
         context = {
@@ -740,7 +739,7 @@ def main():
         # return detonate(3, args.url, args.timeout, args.format, args.threshold);
         # submit type for url-download is 3
 
-    except Exception as ex:
+    except Exception, ex:
         return_error(ex)
 
     finally:
