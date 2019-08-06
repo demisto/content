@@ -91,7 +91,7 @@ def http_request(uri, method, headers={}, body={}, params={}, files={}):
         # parsing the int as string is vital for long taskId/jobId that round up by json.loads
         try:
             result = json.loads(result, parse_int=str)
-        except json.JSONDecodeError:
+        except ValueError:
             LOG('result is: %s' % result)
             return_error('Response Parsing failed')
         if 'success' in result:  # type: ignore
