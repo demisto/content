@@ -24,11 +24,6 @@ description: Censys is a search engine that allows computer scientists to ask qu
   about the devices and networks that compose the Internet. Driven by Internet-wide
   scanning, Censys lets researchers find specific hosts and create aggregate reports
   on how devices, websites, and certificates are configured and deployed.
-detaileddescription: 'Two commands aspects of the Censys.io API is available, Search
-  (cen-search) and View (cen-view). Cen-view is the primary interface. Automations
-  should take the output of cen-view to parse and display the relevant data. Cen-search
-  requires a more advanced search syntax and should be used primarily in pivoting
-  and hypersearch scripts. More information on the search syntax can be found: https://censys.io/api/v1/docs/search'
 display: Censys
 name: Censys
 script:
