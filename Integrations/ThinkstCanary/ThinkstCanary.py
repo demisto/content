@@ -70,7 +70,7 @@ def http_request(method, url, params=None):
         except ValueError:
             return_error(res.text)
         except Exception as ex:
-            return_error(ex)
+            return_error(str(ex))
 
     try:
         res_json = res.json()
@@ -388,5 +388,5 @@ try:
         alert_status_command()
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents_command()
-except Exception, e:
+except Exception as e:
     return_error('Unable to perform command : {}, Reason: {}'.format(demisto.command, e))
