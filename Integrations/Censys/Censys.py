@@ -2,22 +2,17 @@ import demistomock as demisto
 from CommonServerPython import *
 import requests
 
-requests.packages.urllib3.disable_warnings()
 USE_SSL = not demisto.params().get('insecure', False)
 
 
 def sendRequest(method, url, uri, user, passwd, data=None):
-    res = None
-
-    if method.lower() == 'get':
-        res = requests.request('GET', url + uri, auth=(user, passwd), verify=USE_SSL)
     if method.lower() == 'post':
         try:
             json.loads(data)
         except ValueError:
             return '### Error: Data is not in JSON format'
 
-        res = requests.request('POST', url + uri, auth=(user, passwd), data=data, verify=USE_SSL)
+    res = requests.request(method, url + uri, auth=(user, passwd), data=data, verify=USE_SSL)
 
     if res.status_code >= 400:
         if res.text.startswith('{'):
@@ -36,7 +31,7 @@ url = demisto.params()['url']
 
 # What happens when the 'Test' button is pressed
 if demisto.command() == 'test-module':
-    res = sendRequest('get', url, "view/ipv4/8.8.8.8", apiid, secret)
+    res = sendRequest('￿￿￿￿￿￿￿￿￿GET', url, "view/ipv4/8.8.8.8", apiid, secret)
     if res.startswith('### Error:'):
         demisto.results({'Type': entryTypes['error'], 'ContentsFormat': 'text', 'Contents': res})
     elif 'Google' in res:
@@ -51,7 +46,7 @@ else:
         data = None
     elif demisto.command() == 'cen-search':
         uri = 'search/' + index
-        method = 'post'
+        method = 'POST'
         if not query.startswith('{'):
             data = '{ "query" : "' + query + '", "page" : 1 }'
 
