@@ -142,12 +142,13 @@ def str2bool(v):
 
 
 def get_release_notes_file_path(file_path):
-    file_name = os.path.basename(file_path)
     dir_name = os.path.dirname(file_path)
+
     if re.match(PACKAGE_YML_FILE_REGEX, file_path):
         return os.path.join(dir_name, 'CHANGELOG.md')
     else:
         # outside of packages, change log file will include the original file name.
+        file_name = os.path.basename(file_path)
         return os.path.join(dir_name, os.path.splitext(file_name)[0] + '_changelog.md')
 
 
