@@ -1,7 +1,6 @@
 commonfields:
   id: Hybrid Analysis
   version: -1
-defaultEnabled: false
 fromversion: 3.6.1
 name: Hybrid Analysis
 display: Hybrid Analysis
@@ -38,6 +37,8 @@ script:
     var apiKey;
     var integrationContext = getIntegrationContext();
     var licenseID = getLicenseID();
+    var Dbot = [1,2,3,0]; //  threat_level : (0=No Threat, 1=Suspicious, 2=Malicious, 3=Unknown)
+
     var HEADERS = {
         'User-Agent': ['Hybrid Analysis'],
         'accept': ['application/json'],
@@ -76,13 +77,19 @@ script:
     }
 
     // return a function that maps object keys by mapper (or capitlize keys if key is not exists in mapper)
-    function mapObject(mapper) {
+    function mapObject(mapper, identifier) {
         return function(obj) {
             var res = {};
             Object.keys(obj).forEach(function(key) {
                 // map key or capitalize if not exists
                 var newKey = mapper[key] || key;
                 res[newKey] = obj[key];
+                if (obj.threat_level && obj.threat_level > 1 && identifier=='context') { // only add 'malicious' to the context
+                    res.Malicious = {
+                        Vendor: 'Hybrid Analysis',
+                        Description: 'Score above ' + obj.threat_score
+                    };
+                  }
             });
             return res;
         };
@@ -94,7 +101,7 @@ script:
             ContentsFormat: formats.json,
             Contents: rawResponse,
             ReadableContentsFormat: formats.markdown,
-            HumanReadable: tableToMarkdown(name, table, headers, undefined, headerTransform=underscoreToCamelCase, removeNull=true),
+            HumanReadable: tableToMarkdown(name, table, headers, undefined, headerTransform=undefined, removeNull=true),
             EntryContext: context
         };
     }
@@ -127,9 +134,10 @@ script:
     }
 
     function scan(hash) {
-        return sendRequest('POST', '/api/v2/search/hash', 'hash='+hash);
+       return sendRequest('POST', '/api/v2/search/hash', 'hash='+hash);
+
     }
-    function scanToEntry(res) {
+    function scanToEntry(res, hash) {
 
         var response = res;
 
@@ -147,30 +155,33 @@ script:
            environmentId: 'environment id',
            isurlanalysis: 'url analysis',
            analysis_start_time: 'analysis start time',
-           total_signatures: 'total signatures'
+           total_signatures: 'total signatures',
         };
 
-        var table = response.map(mapObject(tableMapper));
-
+        var table = response.map(mapObject(tableMapper, 'table'));
         // create context from response
         var context = {};
 
         var contextMapper = {
             sha1: 'SHA1',
             sha256: 'SHA256',
-            md5: 'MD5',
+            md5: 'MD5'
         };
-        context[outputPaths.file] = response.map(mapObject(contextMapper));
+
+        context[outputPaths.file] = response.map(mapObject(contextMapper, 'context'));
+
+        // add DbotScore to context
         response.forEach(function(res) {
-           if(res.threatlevel && res.threatlevel > 1) {
-               addMalicious(context, outputPaths.file, {
-                    MD5: res.md5,
-                    SHA1: res.sha1,
-                    SHA256: res.sha256,
-                    Malicious: { Vendor: 'Hybrid Analysis', Description: 'Score above ' + res.threatscore }
-                });
-           }
+          {
+            context["DBotScore"] = {
+                "Indicator": hash,
+                "Type": "File",
+                "Vendor": "Hybrid Analysis",
+                "Score": Dbot[res.threat_level],
+            };
+          }
         });
+
         return createTableEntry('Scan Results:', response, table, context);
     }
 
@@ -215,7 +226,7 @@ script:
         var context = {
             'HybridAnalysis.Submit(val.JobID && val.JobID == obj.JobID)': result
         };
-        return createTableEntry('Submited file information:', result, result, context);
+        return createTableEntry('Submission information:', result, result, context);
     }
 
     function searchQuery(query) {
@@ -246,7 +257,7 @@ script:
            type_short: 'type short',
         };
 
-        var table = result.map(mapObject(tableMapper));
+        var table = result.map(mapObject(tableMapper, 'table'));
 
         // create context from search result
         var contextMapper = {
@@ -256,18 +267,16 @@ script:
         };
 
         var context = {
-            'HybridAnalysis.Search(val.JobID && val.JobID == obj.JobID || val.SHA256 && val.SHA256 == obj.SHA256)': result.map(mapObject(contextMapper))
+            'HybridAnalysis.Search(val.JobID && val.JobID == obj.JobID || val.SHA256 && val.SHA256 == obj.SHA256)': result.map(mapObject(contextMapper, 'context'))
         };
 
         result.forEach(function(res) {
-           if(res.threatlevel && res.threatlevel > 1) {
-               addMalicious(context, outputPaths.file, {
-                    MD5: res.md5,
-                    SHA1: res.sha1,
-                    SHA256: res.sha256,
-                    Malicious: { Vendor: 'Hybrid Analysis', Description: 'Score above ' + res.threatscore }
-                });
-           }
+            context["DBotScore"] = {
+                "Indicator": hash,
+                "Type": "File",
+                "Vendor": "Hybrid Analysis",
+                "Score": Dbot[res.threat_level],
+                };
         });
 
         return createTableEntry('Search results:', result, table, context);
@@ -354,6 +363,186 @@ script:
 
     }
 
+
+    function quick_scan_result_to_entry(response, indicator, threshold, headers) {
+
+        var unknown_counter = 0 ;
+        var malicious_counter = 0 ;
+        //var num_elements = 0 ;
+        var Score = 0;
+
+        // create scanners entry
+        var scanners = [];
+        response.scanners.forEach(function(key) {
+            scanners.push(
+                {
+                    'Name': key.name,
+                    'Status': key.status,
+                    'Positives': key.positives
+                });
+            if (key.status == 'unknown' || key.status =='no-result' )
+                unknown_counter++;
+            else if (key.status == 'malicious')
+                malicious_counter++;
+       //     num_elements++;
+        });
+
+        //calculating DBot Score
+        if (unknown_counter == response.scanners.lenght)
+            Score = 0;
+        if (malicious_counter == 0)
+            Score = 1;
+        if (malicious_counter == 1)
+            Score = 2;
+        if (malicious_counter >= threshold)
+            Score = 3;
+
+        var Dbot_context = {
+            'Indicator': response.sha256,
+            'Vendor': "Hybrid Analysis",
+            'Score': Score,
+            }
+        var whitelist = {
+            'ID': response.whitelist[0].id,
+            'Value' : response.whitelist[0].value
+        }
+        var res = {};
+        if (Score == 3){
+            res.Malicious = {
+                Vendor: 'Hybrid Analysis',
+                Description: 'DBotScore is 3' // check this!
+            };
+        }
+
+        //create context
+        var file_context = {
+            'ID': response.id,
+            'SHA256': response.sha256,
+            'Scanner' : scanners,
+            'Finished': response.finished,
+            'Whitelist': whitelist
+        };
+
+        if (indicator == 'File') {
+            res.EntryID = response.id;
+            res.SHA256 = response.sha256;
+            Dbot_context.Type = 'File';
+            var context= {
+                'HybridAnalysis.File(val.id && val.id == obj.id)' : file_context,
+                'File(val.id && val.id == obj.id)' : res,
+                'DBotScore' : Dbot_context
+            };
+        }
+
+        else {
+            Dbot_context.Type = 'URL';
+            var context= {
+                'HybridAnalysis.URL(val.id && val.id == obj.id)' : file_context,
+                'DBotScore' : Dbot_context
+            }
+            // if (Score == 3)
+            //     context.URL.Malicious = res;
+        }
+
+
+        var md = '### Scan Results: \n ##### ID: ' + response.id + '\n' + '##### SHA256: ' + response.sha256 + '\n' + '##### finished: ' + response.finished + '\n' ;
+        var scanTable = '##### scanners:\n' + tableToMarkdown(null, scanners, headers, undefined, headerTransform=undefined, removeNull=true);
+        var whitelistTable = '##### whitelist:\n' + tableToMarkdown(null, whitelist, headers, undefined, headerTransform=undefined, removeNull=true);
+
+        hr = md + scanTable + '\n' + whitelistTable;
+
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: response,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: hr,
+            EntryContext: context
+        };
+    }
+
+
+    function quick_scan_to_entry(response, indicator, url) {
+        var result = {
+            'ID':  response.id,
+            'SHA256': response.sha256,
+            'Finished': response.finished
+        };
+
+        if (indicator == 'File') {
+            result['Name'] = url ;
+            var context = {
+                'HybridAnalysis.File(val.id && val.id == obj.id)': result,
+                'File(val.id && val.id == obj.id)' : {
+                    'SHA256': response.sha256,
+                    'Name': url
+                }
+            };
+        }
+
+        else {
+            result['Data'] = url ;
+            var context = {
+                'HybridAnalysis.URL(val.id && val.id == obj.id)': result,
+                'URL(val.Data && val.Data == obj.Data)':{
+                    'Data': url
+                }
+            };
+         }
+
+        return createTableEntry('Scan information:', response,
+        {
+            'ID':  response.id,
+            'SHA256': response.sha256,
+            'Finished': response.finished
+        }, context);
+    }
+
+
+    //Quick Scan commands
+    function quick_scan_url(scan_type, url, endpoint) {
+        var body = 'scan_type=' + scan_type + '&url=' + url;
+        return sendRequest('POST', endpoint, body);
+    }
+
+
+    function quick_scan_id(id) {
+        return sendRequest('GET', '/api/v2/quick-scan/' + id );
+    }
+
+
+    function scan_states(headers) {
+        var result = sendRequest('GET', '/api/v2/quick-scan/state');
+        var scanners = [];
+        result.forEach(function(key) {// create scanner entry
+            scanners.push(
+                {
+                    'Name': key.name,
+                    'Available': key.available,
+                    'Description': key.description
+                }
+            );
+        });
+
+        return {
+            Type: entryTypes.note,
+            ContentsFormat: formats.json,
+            Contents: result,
+            ReadableContentsFormat: formats.markdown,
+            HumanReadable: '### Scanner:\n' + tableToMarkdown(null, scanners, ['Name', 'Available', 'Description'], undefined, headerTransform=undefined, removeNull=true),
+            EntryContext: {'HybridAnalysis.Scanner(val.name && val.name == obj.name) :' : scanners}
+        };
+
+    }
+
+
+    //Sandbox Submission commands
+    function submit_url(url, environment_id, endpoint) {
+        var body= 'url=' + url + '&environment_id=' + environment_id;
+        return sendRequest('POST', endpoint, body);
+    }
+
+
     switch (command) {
         case 'test-module':
             var entry = searchQuery('url:google');
@@ -363,7 +552,7 @@ script:
             return entry && entry.Contents;
         case 'hybrid-analysis-scan':
             var res = scan(args.file);
-            return scanToEntry(res);
+            return scanToEntry(res, args.file);
         case 'hybrid-analysis-submit-sample':
             var response = submitFile(args.entryId, args.environmentID);
             return submitFileMsg(response);
@@ -373,211 +562,429 @@ script:
             return detonateFile(args.entryId, args.delay, args.timeout);
         case 'hybrid-analysis-get-report-status':
             return reportState();
+        //Quick Scan commands
+        case 'hybrid-analysis-quick-scan-file':
+            var res = quick_scan_url(args.scan_type, args.url, '/api/v2/quick-scan/url-to-file');
+            return quick_scan_to_entry(res, 'File', args.url);
+        case 'hybrid-analysis-quick-scan-url':
+            var res = quick_scan_url(args.scan_type, args.url, '/api/v2/quick-scan/url-for-analysis');
+            return quick_scan_to_entry(res, 'Url', args.url);
+        case 'hybrid-analysis-quick-scan-file-results':
+            var res = quick_scan_id(args.ID);
+            return quick_scan_result_to_entry(res, 'File', args.threshold);
+        case 'hybrid-analysis-quick-scan-url-results':
+            var res = quick_scan_id(args.ID);
+            return quick_scan_result_to_entry(res, 'Url', args.threshold);
+        case 'hybrid-analysis-list-scanners':
+            return scan_states();
+        //Sandbox Submission commands
+        case 'hybrid-analysis-submit-url-to-file':
+            var response = submit_url(args.url, args.environmentID, '/api/v2/submit/url-to-file' );
+            return submitFileMsg(response);
+        case 'hybrid-analysis-submit-url-for-analysis':
+            var response = submit_url(args.url, args.environmentID, '/api/v2/submit/url-for-analysis');
+            return submitFileMsg(response);
     }
+
+
 
   type: javascript
   commands:
-    - name: hybrid-analysis-scan
-      arguments:
-        - name: file
-          required: true
-          default: true
-          description: File hash (MD5, SHA1 or SHA256)
-      outputs:
-        - contextPath: File.SHA256
-          description: SHA256 of the file
-          type: string
-        - contextPath: File.SHA1
-          description: SHA1 of the file
-          type: string
-        - contextPath: File.MD5
-          description: MD5 of the file
-          type: string
-        - contextPath: File.environmentId
-          description: 'Environment id of the file '
-          type: string
-        - contextPath: File.analysis_start_time
-          description: Analysis start time of the file
-          type: string
-        - contextPath: File.submitname
-          description: Submission name of the file
-          type: string
-        - contextPath: File.classification_tags
-          description: List of classification tags of the file
-          type: string
-        - contextPath: File.vxfamily
-          description: Family classification of the file
-          type: string
-        - contextPath: File.total_network_connections
-          description: Total network connections of the file
-          type: string
-        - contextPath: File.total_processes
-          description: Total processes count of the file
-          type: string
-        - contextPath: File.total_signatures
-          description: Total signatures count if the file
-          type: string
-        - contextPath: File.hosts
-          description: List of file's hosts
-          type: string
-        - contextPath: File.isinteresting
-          description: If server found this file interesting
-          type: string
-        - contextPath: File.domains
-          description: List of file's related domains
-          type: string
-        - contextPath: File.isurlanalysis
-          description: If file analyzed by url
-          type: string
-        - contextPath: File.Malicious.Vendor
-          description: or malicious files, the vendor that made the decision
-          type: string
-        - contextPath: File.Malicious.Description
-          description: For malicious files, the reason for the vendor to make the decision
-          type: string
-      description: Get summary information for a given MD5, SHA1 or SHA256 and all the
-        reports generated for any environment ID
-    - name: hybrid-analysis-submit-sample
-      arguments:
-        - name: entryId
-          required: true
-          default: true
-          description: War-room entry ID of sample file
-        - name: environmentID
-          required: true
-          description: Environment ID to submit file to (get all IDs via vx-get-environments)
-      outputs:
-        - contextPath: HybridAnalysis.Submit.JobID
-          description: JobID of the submission
-          type: string
-        - contextPath: HybridAnalysis.Submit.SHA256
-          description: 'SHA of the submission '
-          type: string
-        - contextPath: HybridAnalysis.Submit.EnvironmentID
-          description: 'EnvironmentID of the submission '
-          type: string
-      description: Submit a file from investigation to analysis server  (NOTE - minimum
-        required authorization is `default`)
-    - name: hybrid-analysis-search
-      arguments:
-        - name: query
-          description: Hybrid Analysis query syntax (see `<server url>/faq#advanced-search-options`
-            for more details). examples -  url:google, host:95.181.53.78
-        - name: filename
-          description: Filename e.g. invoice.exe
-        - name: filetype
-          description: Filetype e.g. docx
-        - name: filetype_desc
-          description: Filetype description e.g. PE32 executable
-        - name: env_id
-          description: Environment Id
-        - name: country
-          description: Country (3 digit ISO) e.g. swe
-        - name: verdict
-          description: 'Verdict e.g. 1 (available: 1 ''whitelisted’, 2 ''no verdict’,
+  - name: hybrid-analysis-scan
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: File hash (MD5, SHA1 or SHA256)
+    outputs:
+    - contextPath: File.SHA256
+      description: SHA256 of the file
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 of the file
+      type: string
+    - contextPath: File.MD5
+      description: MD5 of the file
+      type: string
+    - contextPath: File.environmentId
+      description: 'Environment id of the file '
+      type: string
+    - contextPath: File.analysis_start_time
+      description: Analysis start time of the file
+      type: string
+    - contextPath: File.submitname
+      description: Submission name of the file
+      type: string
+    - contextPath: File.classification_tags
+      description: List of classification tags of the file
+      type: string
+    - contextPath: File.vxfamily
+      description: Family classification of the file
+      type: string
+    - contextPath: File.total_network_connections
+      description: Total network connections of the file
+      type: string
+    - contextPath: File.total_processes
+      description: Total processes count of the file
+      type: string
+    - contextPath: File.total_signatures
+      description: Total signatures count if the file
+      type: string
+    - contextPath: File.hosts
+      description: List of file's hosts
+      type: string
+    - contextPath: File.isinteresting
+      description: If server found this file interesting
+      type: string
+    - contextPath: File.domains
+      description: List of file's related domains
+      type: string
+    - contextPath: File.isurlanalysis
+      description: If file analyzed by url
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The Indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: he Indicator Type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The DBot score vendor
+      type: string
+    - contextPath: DBotScore.Score
+      description: The DBot score
+      type: number
+    description: Get summary information for a given MD5, SHA1 or SHA256 and all the
+      reports generated for any environment ID
+  - name: hybrid-analysis-submit-sample
+    arguments:
+    - name: entryId
+      required: true
+      default: true
+      description: War-room entry ID of sample file
+    - name: environmentID
+      required: true
+      description: Environment ID to submit file to (get all IDs via vx-get-environments)
+    outputs:
+    - contextPath: HybridAnalysis.Submit.JobID
+      description: JobID of the submission
+      type: string
+    - contextPath: HybridAnalysis.Submit.SHA256
+      description: 'SHA of the submission '
+      type: string
+    - contextPath: HybridAnalysis.Submit.EnvironmentID
+      description: 'EnvironmentID of the submission '
+      type: string
+    description: Submit a file from investigation to analysis server  (NOTE - minimum
+      required authorization is `default`)
+  - name: hybrid-analysis-search
+    arguments:
+    - name: query
+      description: Hybrid Analysis query syntax (see `<server url>/faq#advanced-search-options`
+        for more details). examples -  url:google, host:95.181.53.78
+    - name: filename
+      description: Filename e.g. invoice.exe
+    - name: filetype
+      description: Filetype e.g. docx
+    - name: filetype_desc
+      description: Filetype description e.g. PE32 executable
+    - name: env_id
+      description: Environment Id
+    - name: country
+      description: Country (3 digit ISO) e.g. swe
+    - name: verdict
+      description: 'Verdict e.g. 1 (available: 1 ''whitelisted’, 2 ''no verdict’,
         3 ''no specific threat’, 4 ''suspicious’, 5 ‘malicious’)'
-        - name: av_detect
-          description: AV Multiscan range e.g. 50-70 (min 0, max 100)
-        - name: vx_family
-          description: AV Family Substring e.g. nemucod
-        - name: tag
-          description: Hashtag e.g. ransomware
-        - name: port
-          description: Port e.g. 8080
-        - name: host
-          description: Host e.g. 192.168.0.1
-        - name: domain
-          description: Domain e.g. checkip.dyndns.org
-        - name: url
-          description: HTTP Request Substring e.g. google
-        - name: similar_to
-          description: Similar Samples e.g. <sha256>
-        - name: context
-          description: Sample Context e.g. <sha256>
-        - name: imp_hash
-          description: Import Hash
-        - name: ssdeep
-          description: SSDeep
-        - name: authentihash
-          description: Authentication Hash
-      outputs:
-        - contextPath: HybridAnalysis.Search.SHA256
-          description: SHA256 of search result
-          type: string
-        - contextPath: HybridAnalysis.Search.SHA1
-          description: SHA1of search result
-          type: string
-        - contextPath: HybridAnalysis.Search.MD5
-          description: MD5 of search result
-          type: string
-        - contextPath: HybridAnalysis.Search.environmentId
-          description: Environment Id of search result
-          type: string
-        - contextPath: HybridAnalysis.Search.start_time
-          description: Start time of search result
-          type: date
-        - contextPath: HybridAnalysis.Search.threatscore
-          description: Threat score of search result by server
-          type: string
-        - contextPath: HybridAnalysis.Search.verdict
-          description: Verdict of search result
-          type: string
-        - contextPath: HybridAnalysis.Search.environmentDescription
-          description: Environment description of search result
-          type: string
-        - contextPath: HybridAnalysis.Search.submitname
-          description: Submission name of search result
-          type: string
-        - contextPath: HybridAnalysis.Search.vxfamily
-          description: Family of search result
-          type: string
-        - contextPath: HybridAnalysis.Search.threatscore
-          description: Threat score of search result
-          type: string
-        - contextPath: HybridAnalysis.Search.type_short
-          description: type of search result (url, host, etc.)
-          type: string
-        - contextPath: HybridAnalysis.Search.size
-          description: Size of search result
-          type: number
-        - contextPath: File.Malicious.Vendor
-          description: or malicious files, the vendor that made the decision
-          type: string
-        - contextPath: File.Malicious.Description
-          description: For malicious files, the reason for the vendor to make the decision
-          type: string
-      description: Search the database using the Hybrid Analysis search syntax
-    - name: hybrid-analysis-detonate-file
-      arguments:
-        - name: entryId
-          required: true
-          description: War-room entry ID of sample file
-        - name: environmentID
-          description: environment ID to submit file to(get all via vx-get-environments).
-            Default is 100, or other WINDOWS ID
-        - name: delay
-          description: Delay wait time between calls (in seconds)
-          defaultValue: "3"
-        - name: timeout
-          description: Total wait time (in seconds)
-          defaultValue: "60"
-      description: Detonate file through Hybrid Analysis
-    - name: hybrid-analysis-get-report-status
-      arguments: []
-      outputs:
-        - contextPath: HybridAnalysis.Submit.State
-          description: The state of the process
-          type: string
-        - contextPath: HybridAnalysis.Submit.SHA256
-          description: The submission SHA256
-          type: string
-        - contextPath: HybridAnalysis.Submit.JobID
-          description: The JobID of the submission
-          type: string
-        - contextPath: HybridAnalysis.Submit.EnvironmentID
-          description: The environmentID of the submission
-          type: string
-      description: Get the state of the file submission
+    - name: av_detect
+      description: AV Multiscan range e.g. 50-70 (min 0, max 100)
+    - name: vx_family
+      description: AV Family Substring e.g. nemucod
+    - name: tag
+      description: Hashtag e.g. ransomware
+    - name: port
+      description: Port e.g. 8080
+    - name: host
+      description: Host e.g. 192.168.0.1
+    - name: domain
+      description: Domain e.g. checkip.dyndns.org
+    - name: url
+      description: HTTP Request Substring e.g. google
+    - name: similar_to
+      description: Similar Samples e.g. <sha256>
+    - name: context
+      description: Sample Context e.g. <sha256>
+    - name: imp_hash
+      description: Import Hash
+    - name: ssdeep
+      description: SSDeep
+    - name: authentihash
+      description: Authentication Hash
+    outputs:
+    - contextPath: HybridAnalysis.Search.SHA256
+      description: SHA256 of search result
+      type: string
+    - contextPath: HybridAnalysis.Search.SHA1
+      description: SHA1of search result
+      type: string
+    - contextPath: HybridAnalysis.Search.MD5
+      description: MD5 of search result
+      type: string
+    - contextPath: HybridAnalysis.Search.environmentId
+      description: Environment Id of search result
+      type: string
+    - contextPath: HybridAnalysis.Search.start_time
+      description: Start time of search result
+      type: date
+    - contextPath: HybridAnalysis.Search.threatscore
+      description: Threat score of search result by server
+      type: string
+    - contextPath: HybridAnalysis.Search.verdict
+      description: Verdict of search result
+      type: string
+    - contextPath: HybridAnalysis.Search.environmentDescription
+      description: Environment description of search result
+      type: string
+    - contextPath: HybridAnalysis.Search.submitname
+      description: Submission name of search result
+      type: string
+    - contextPath: HybridAnalysis.Search.vxfamily
+      description: Family of search result
+      type: string
+    - contextPath: HybridAnalysis.Search.threatscore
+      description: Threat score of search result
+      type: string
+    - contextPath: HybridAnalysis.Search.type_short
+      description: type of search result (url, host, etc.)
+      type: string
+    - contextPath: HybridAnalysis.Search.size
+      description: Size of search result
+      type: number
+    - contextPath: File.Malicious.Vendor
+      description: or malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The Indicator
+    - contextPath: DBotScore.Type
+      description: The indicator type
+    - contextPath: DBotScore.Vendor
+      description: The DBotScore vendor
+    - contextPath: DBotScore.Score
+      description: The DBot score
+    description: Search the database using the Hybrid Analysis search syntax
+  - name: hybrid-analysis-detonate-file
+    arguments:
+    - name: entryId
+      required: true
+      description: War-room entry ID of sample file
+    - name: environmentID
+      description: environment ID to submit file to(get all via vx-get-environments).
+        Default is 100, or other WINDOWS ID
+    - name: delay
+      description: Delay wait time between calls (in seconds)
+      defaultValue: "3"
+    - name: timeout
+      description: Total wait time (in seconds)
+      defaultValue: "60"
+    description: Detonate file through Hybrid Analysis
+  - name: hybrid-analysis-get-report-status
+    arguments: []
+    outputs:
+    - contextPath: HybridAnalysis.Submit.State
+      description: The state of the process
+      type: string
+    - contextPath: HybridAnalysis.Submit.SHA256
+      description: The submission SHA256
+      type: string
+    - contextPath: HybridAnalysis.Submit.JobID
+      description: The JobID of the submission
+      type: string
+    - contextPath: HybridAnalysis.Submit.EnvironmentID
+      description: The environmentID of the submission
+      type: string
+    description: Get the state of the file submission
+  - name: hybrid-analysis-quick-scan-file-results
+    arguments:
+    - name: ID
+      required: true
+      description: ID of the File scanned
+    - name: threshold
+      default: true
+      description: Determines malicious
+      defaultValue: "2"
+    outputs:
+    - contextPath: HybridAnalysis.File.ID
+      description: Scan ID result
+      type: string
+    - contextPath: HybridAnalysis.File.SHA256
+      description: SHA256 of the File
+      type: string
+    - contextPath: HybridAnalysis.File.Finished
+      description: True if the process is finished
+      type: boolean
+    - contextPath: HybridAnalysis.File.Scanners.Name
+      description: The scanner name
+      type: string
+    - contextPath: HybridAnalysis.File.Scanner.Positives
+      description: Number of positive results
+      type: number
+    - contextPath: HybridAnalysis.File.Scanner.Status
+      description: The status of the file
+      type: string
+    - contextPath: HybridAnalysis.File.Whitelist.ID
+      description: Type of ID
+      type: string
+    - contextPath: HybridAnalysis.File.Whitelist.Value
+      description: True if the indicator is in the whitelist
+      type: boolean
+    - contextPath: File.EntryID
+      description: War-room entry ID of the file
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 of the File
+      type: string
+    description: Get the scan results of given file ID
+  - name: hybrid-analysis-quick-scan-url
+    arguments:
+    - name: scan_type
+      default: true
+      description: Type of scan. please see !hybrid-analysis-scan-states to see available
+        scanners
+      defaultValue: all
+    - name: url
+      required: true
+      description: Url for analyze
+    outputs:
+    - contextPath: HybridAnalysis.URL.Data
+      description: The url
+      type: string
+    - contextPath: HybridAnalysis.URL.ID
+      description: The url ID
+      type: string
+    - contextPath: HybridAnalysis.URL.SHA256
+      description: SHA256 of the url
+      type: string
+    - contextPath: HybridAnalysis.URL.Finished
+      description: Is the scan finished
+      type: boolean
+    - contextPath: Url.Data
+      description: The url
+      type: string
+    description: Scan a url for analysis
+  - name: hybrid-analysis-submit-url-to-file
+    arguments:
+    - name: url
+      required: true
+      description: Url of file to submit
+    - name: environmentID
+      required: true
+      description: Environment ID to submit file to (get all IDs via vx-get-environments)
+    outputs:
+    - contextPath: HybridAnalysis.Submit.JobID
+      description: JobID of the submission
+    - contextPath: HybridAnalysis.Submit.SHA256
+      description: SHA of the submission
+    - contextPath: HybridAnalysis.Submit.EnvironmentID
+      description: EnvironmentID of the submission
+    description: Submit a file by url for analysis
+  - name: hybrid-analysis-submit-url-for-analysis
+    arguments:
+    - name: url
+      required: true
+      description: Url to submit
+    - name: environmentID
+      required: true
+      description: Environment ID to submit file to (get all IDs via vx-get-environments)
+    outputs:
+    - contextPath: HybridAnalysis.Submit.JobID
+      description: JobID of the submission
+    - contextPath: HybridAnalysis.Submit.SHA256
+      description: SHA of the submission
+    - contextPath: HybridAnalysis.Submit.EnvironmentID
+      description: EnvironmentID of the submission
+    description: Submit a url for analysis
+  - name: hybrid-analysis-list-scanners
+    arguments: []
+    outputs:
+    - contextPath: HybridAnalysis.Scanner.Available
+      description: Is this scanner available
+    - contextPath: HybridAnalysis.Scanner.Name
+      description: The scanner name
+    - contextPath: HybridAnalysis.Scanner.Description
+      description: The scanner description
+    description: ' Get a list of available scanners'
+  - name: hybrid-analysis-quick-scan-file
+    arguments:
+    - name: scan_type
+      default: true
+      description: Type of scan. please see !hybrid-analysis-scan-states to see available
+        scanners
+      defaultValue: all
+    - name: url
+      required: true
+      description: Url of file to submit
+    outputs:
+    - contextPath: File.Name
+      description: File name
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: string
+    - contextPath: HybridAnalysis.File.Name
+      description: File name
+      type: string
+    - contextPath: HybridAnalysis.File.SHA256
+      description: SHA256 hash of the file
+      type: string
+    - contextPath: HybridAnalysis.File.ID
+      description: The file ID
+      type: string
+    - contextPath: HybridAnalysis.File.Finished
+      description: Is the scan finished
+      type: boolean
+    description: Scan a file by url for analysis
+  - name: hybrid-analysis-quick-scan-url-results
+    arguments:
+    - name: ID
+      required: true
+      description: ID of the Url scanned
+    - name: threshold
+      default: true
+      defaultValue: "2"
+    outputs:
+    - contextPath: HybridAnalysis.URL.ID
+      description: Scan ID result
+      type: string
+    - contextPath: HybridAnalysis.URL.SHA256
+      description: SHA256 of the indicator
+      type: string
+    - contextPath: HybridAnalysis.URL.Finished
+      description: True if the process is finished
+      type: boolean
+    - contextPath: HybridAnalysis.URL.Scanner.Name
+      description: The scanner name
+      type: string
+    - contextPath: HybridAnalysis.URL.Scanner.Positives
+      description: Number of positive results
+      type: number
+    - contextPath: HybridAnalysis.URL.Scanner.Status
+      description: The status of the file
+      type: string
+    - contextPath: HybridAnalysis.URL.Whitelist.ID
+      description: Type of ID
+      type: string
+    - contextPath: HybridAnalysis.URL.Whitelist.Value
+      description: True if the indicator is in the whitelist
+      type: boolean
+    description: Get the scan results of given url ID
   runonce: false
 tests:
-- "Detonate File - HybridAnalysis - Test"
+  - HybridAnalysis-Test
