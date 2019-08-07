@@ -7,7 +7,7 @@ import datetime
 
 import demisto
 
-from Tests.test_utils import print_error
+from Tests.test_utils import print_error, print_color, LOG_COLORS
 
 MAX_TRIES = 20
 SLEEP_TIME = 45
@@ -44,11 +44,12 @@ def content_version_installed(username, password, ips):
             notes = resp.get("releaseNotes")
             installed = resp.get("installed")
             if not (release and notes and installed):
-                print "Could not install content on instance [{}]".format(ami_instance_name)
+                print_error("Could not install content on instance [{}]".format(ami_instance_name))
                 return False
             else:
-                print "Instance [{instance_name}] content verified with version [{content_version}]".format(
-                    instance_name=ami_instance_name, content_version=release
+                print_color("Instance [{instance_name}] content verified with version [{content_version}]".format(
+                    instance_name=ami_instance_name, content_version=release),
+                    LOG_COLORS.GREEN
                 )
         except ValueError:
             return False
