@@ -1,9 +1,4 @@
 version: 2
-experimental:
-  notify:
-    branches:
-      only:
-        - master
 jobs:
   build:
     docker:
@@ -120,7 +115,7 @@ jobs:
               then
                 if [ -n "${NIGHTLY}" ] ;
                   then
-                    export IFRA_ENV_TYPE=Content-GA
+                    export IFRA_ENV_TYPE=Content-Master
 
                   else
                     export IFRA_ENV_TYPE=Content-Env

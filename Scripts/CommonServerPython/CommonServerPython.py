@@ -1280,6 +1280,23 @@ def get_hash_type(hash_file):
         return 'Unknown'
 
 
+def is_mac_address(mac):
+    """
+    Test for valid mac address
+
+    :type mac: ``str``
+    :param mac: MAC address in the form of AA:BB:CC:00:11:22
+
+    :return: True/False
+    :rtype: ``bool``
+    """
+
+    if re.search(r'([0-9A-F]{2}[:]){5}([0-9A-F]){2}', mac.upper()) is not None:
+        return True
+    else:
+        return False
+
+
 def is_ip_valid(s):
     """
        Checks if the given string represents a valid IPv4 address
@@ -1362,6 +1379,44 @@ def return_error(message, error='', outputs=None):
         "EntryContext": outputs
     })
     sys.exit(0)
+
+
+def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_extract=False):
+    """
+        Returns an error entry with the specified message, and exits the script.
+
+        :type message: ``str``
+        :param message: The message to return in the entry (required).
+
+        :type exit: ``bool``
+        :param exit: Determines if the program will terminate after the command is executed. Default is False.
+
+        :type warning: ``str``
+        :param warning: The warning message (raw) to log (optional).
+
+        :type outputs: ``dict or None``
+        :param outputs: The outputs that will be returned to playbook/investigation context (optional).
+
+        :type ignore_auto_extract: ``bool``
+        :param ignore_auto_extract: Determines if the War Room entry will be auto-enriched. Default is false.
+
+        :return: Warning entry object
+        :rtype: ``dict``
+    """
+    LOG(message)
+    if warning:
+        LOG(warning)
+    LOG.print_log()
+
+    demisto.results({
+        'Type': 11,
+        'ContentsFormat': formats['text'],
+        'IgnoreAutoExtract': ignore_auto_extract,
+        'Contents': str(message),
+        "EntryContext": outputs
+    })
+    if exit:
+        sys.exit(0)
 
 
 def camelize(src, delim=' '):
