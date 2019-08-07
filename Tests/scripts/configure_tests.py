@@ -50,7 +50,7 @@ def get_modified_files(files_string):
     """Get a string of the modified files"""
     is_conf_json = False
     is_reputations_json = False
-    is_indicator_json = True
+    is_indicator_json = False
 
     sample_tests = []
     all_tests = []
