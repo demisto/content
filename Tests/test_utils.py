@@ -149,7 +149,7 @@ def get_release_notes_file_path(file_path):
     else:
         # outside of packages, change log file will include the original file name.
         file_name = os.path.basename(file_path)
-        return os.path.join(dir_name, os.path.splitext(file_name)[0] + '_changelog.md')
+        return os.path.join(dir_name, os.path.splitext(file_name)[0] + '_CHANGELOG.md')
 
 
 def get_latest_release_notes_text(rn_path):

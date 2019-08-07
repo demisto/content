@@ -24,6 +24,9 @@ def should_clear(file_path, current_server_version="0.0.0"):
     :param current_server_version: current server version
     """
     extension = os.path.splitext(file_path)[1]
+    if extension not in FILE_TYPE_DICT:
+        return False
+
     load_function = FILE_TYPE_DICT[extension]
 
     with open(file_path, 'r') as f:
