@@ -194,7 +194,7 @@ script:
         return res;
     }
 
-    if (command === amp_get_computer_trajectory){
+    if (command === 'amp_get_computer_trajectory'){
       command = 'amp_get_computer_trajctory';
     }
     switch (command) {
