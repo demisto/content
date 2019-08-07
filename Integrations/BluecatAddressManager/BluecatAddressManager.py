@@ -197,20 +197,24 @@ def query_ip_command():
             ip_type = 'IPv4'
             base_ip_raw_res = query_ipv4(ip)
 
-        base_ip_parents = get_entity_parents(base_ip_raw_res.get('id'))
-        ip_object = {
-            'ID': base_ip_raw_res.get('id'),
-            'Name': base_ip_raw_res.get('name'),
-            'Parents': base_ip_parents,
-            'Type': ip_type
-        }
-        ip_object.update(properties_to_camelized_dict(base_ip_raw_res.get('properties')))
-        ec = {
-            'BlueCat.AddressManager.IP(obj.ID === val.ID)': ip_object,
-            'IP(val.Address === obj.Address)': {'Address': ip}
-        }
-        hr = create_human_readable_ip(ip_object, ip)
-        return_outputs(hr, ec, base_ip_raw_res)
+        # entity with id 0 is root, and CONF is root of parent
+        if base_ip_raw_res.get('id') in (None, 0, CONF):
+            return_outputs(f'IP: {ip} was not found.', {}, base_ip_raw_res)
+        else:
+            base_ip_parents = get_entity_parents(base_ip_raw_res.get('id'))
+            ip_object = {
+                'ID': base_ip_raw_res.get('id'),
+                'Name': base_ip_raw_res.get('name'),
+                'Parents': base_ip_parents,
+                'Type': ip_type
+            }
+            ip_object.update(properties_to_camelized_dict(base_ip_raw_res.get('properties')))
+            ec = {
+                'BlueCat.AddressManager.IP(obj.ID === val.ID)': ip_object,
+                'IP(val.Address === obj.Address)': {'Address': ip}
+            }
+            hr = create_human_readable_ip(ip_object, ip)
+            return_outputs(hr, ec, base_ip_raw_res)
 
     except ipaddress.AddressValueError:
         return_error(f'Invalid IP: {ip}')
