@@ -1,1 +1,2 @@
 - changed command `amp_get_computer_trajctory` to `amp_get_computer_trajectory`
+- changed command `mp_get_computer_actvity` to `mp_get_computer_activity`

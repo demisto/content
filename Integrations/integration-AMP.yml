@@ -194,8 +194,12 @@ script:
         return res;
     }
 
+    // Fixing commands names
     if (command === 'amp_get_computer_trajectory'){
       command = 'amp_get_computer_trajctory';
+    }
+    else if (command === 'amp_get_computer_activity'){
+      command = 'amp_get_computer_actvity';
     }
     switch (command) {
         case 'test-module':
@@ -251,7 +255,7 @@ script:
       required: true
       description: The group GUID.
     description: Moves a computer to a group with the corresponding connector_guid and group_guid, respectively.
-  - name: amp_get_computer_actvity
+  - name: amp_get_computer_activity
     arguments:
     - name: q
       required: true
