@@ -553,6 +553,9 @@
             "playbookID": "reputations.json Test"
         },
         {
+            "playbookID": "Test IP Indicator Fields"
+        },
+        {
             "integrations": "Shodan",
             "playbookID": "ShodanTest"
         },
