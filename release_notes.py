@@ -120,7 +120,7 @@ class Content(object):
         """
         rn = self.get_release_notes(file_path, data)
 
-        if rn == IGNORE_RN:
+        if rn.strip() == IGNORE_RN:
             rn = ''
 
         return rn
