@@ -5,7 +5,7 @@ from luminateapi.luminate_python import LuminateV2Client
 import json
 import ast
 import dateparser
-import datetime
+import datetime as dt
 import time
 
 ''' CONSTS '''
@@ -140,7 +140,7 @@ def alert_to_incident(line):
         raise Exception("no data")
 
     tenant, rule_name, rule_severity = data.get('rule_name').split("##")[:3]
-    alert_time = data.get('alert_time', datetime.now().isoformat())
+    alert_time = data.get('alert_time', dt.datetime.now().isoformat())
 
     return {
         'type': 'Luminate',
