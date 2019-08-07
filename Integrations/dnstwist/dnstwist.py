@@ -1,7 +1,7 @@
-import demistomock as demisto
+import json
+import subprocess
+
 from CommonServerPython import *
-from CommonServerUserPython import *
-import subprocess, json
 
 TWIST_EXE = '/dnstwist/dnstwist.py'
 
@@ -21,11 +21,12 @@ if demisto.command() == 'dnstwist-domain-variations':
         res = subprocess.check_output(args)
         return json.loads(res)
 
+
     def get_domain_to_info_map(dns_twist_result):
         results = []
         for x in dns_twist_result:
             temp = {}
-            for k,v in x.items():
+            for k, v in x.items():
                 if k in KEYS_TO_MD:
                     if x["domain-name"] not in temp:
                         temp["domain-name"] = x["domain-name"]
@@ -37,14 +38,16 @@ if demisto.command() == 'dnstwist-domain-variations':
                 results.append(temp)
         return results
 
+
     dnstwist_result = get_dnstwist_result(DOMAIN, WHOIS == 'yes')
     new_result = get_domain_to_info_map(dnstwist_result)
-    md = tableToMarkdown('dnstwist for domain - '  + DOMAIN, new_result, headers=["domain-name","IP Address","dns-mx","dns-ns","whois-updated", "whois-created"])
+    md = tableToMarkdown('dnstwist for domain - ' + DOMAIN, new_result,
+                         headers=["domain-name", "IP Address", "dns-mx", "dns-ns", "whois-updated", "whois-created"])
 
     domain_context = new_result[0]  # The requested domain for variations
-    domains_context_list = new_result[1:LIMIT+1]  # The variations domains
+    domains_context_list = new_result[1:LIMIT + 1]  # The variations domains
 
-    domains =[]
+    domains = []
     for item in domains_context_list:
         temp = {"Name": item["domain-name"]}
         if "IP Address" in item:
@@ -59,7 +62,7 @@ if demisto.command() == 'dnstwist-domain-variations':
             temp["WhoisCreated"] = item["whois-created"]
         domains.append(temp)
 
-    ec = {"Domains" : domains}
+    ec = {"Domains": domains}
     if "domain-name" in domain_context:
         ec["Name"] = domain_context["domain-name"]
     if "IP Address" in domain_context:
@@ -77,9 +80,9 @@ if demisto.command() == 'dnstwist-domain-variations':
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': dnstwist_result,
-        'HumanReadable':md,
+        'HumanReadable': md,
         'ReadableContentsFormat': formats['markdown'],
-        'EntryContext': {'dnstwist.Domain(val.Name == obj.Name)' : ec}
+        'EntryContext': {'dnstwist.Domain(val.Name == obj.Name)': ec}
     }
 
     demisto.results(entry_result)
