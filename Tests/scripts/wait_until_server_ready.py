@@ -9,7 +9,6 @@ import demisto
 
 from Tests.test_utils import print_error
 
-
 MAX_TRIES = 20
 SLEEP_TIME = 45
 
@@ -29,6 +28,31 @@ def get_username_password():
         return conf['username'], conf['username']
 
     return conf['username'], conf['userPassword']
+
+
+def content_version_installed(username, password, ips):
+    method = "post"
+    suffix = "/content/installed"
+    for ami_instance_name, ami_instance_ip in ips:
+        print "Checking if content installed on [{}]".format(ami_instance_name)
+        d = demisto.DemistoClient(None, "https://{}".format(ami_instance_ip), username, password)
+        d.Login()
+        resp = d.req(method, suffix, None)
+        try:
+            resp.json()
+            release = resp.get("release")
+            notes = resp.get("releaseNotes")
+            installed = resp.get("installed")
+            if not (release and notes and installed):
+                print "Could not install content on instance [{}]".format(ami_instance_name)
+                return False
+            else:
+                print "Instance [{instance_name}] content verified with version [{content_version}]".format(
+                    instance_name=ami_instance_name, content_version=release
+                )
+        except ValueError:
+            return False
+    return True
 
 
 def main():
@@ -60,6 +84,12 @@ def main():
     if len(ready_ami_list) != len(instance_ips):
         print_error("The server is not ready :(")
         sys.exit(1)
+
+    print "Checking if content installed "
+    if not content_version_installed(username, password, instance_ips):
+        print_error("Content version could not be installed")
+        sys.exit(1)
+
 
 
 if __name__ == "__main__":
