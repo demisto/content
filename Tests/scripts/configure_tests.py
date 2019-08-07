@@ -110,8 +110,7 @@ def get_modified_files(files_string):
             elif SECRETS_WHITE_LIST not in file_path:
                 sample_tests.append(file_path)
 
-    return modified_files_list, modified_tests_list, all_tests, is_conf_json, sample_tests, is_reputations_json,\
-           is_indicator_json
+    return modified_files_list, modified_tests_list, all_tests, is_conf_json, sample_tests, is_reputations_json, is_indicator_json
 
 
 def get_name(file_path):
@@ -513,8 +512,7 @@ def get_test_from_conf(branch_name):
 
 def get_test_list(files_string, branch_name):
     """Create a test list that should run"""
-    modified_files, modified_tests_list, all_tests, is_conf_json, sample_tests, is_reputations_json,\
-    is_indicator_json = get_modified_files(files_string)
+    modified_files, modified_tests_list, all_tests, is_conf_json, sample_tests, is_reputations_json, is_indicator_json = get_modified_files(files_string)
 
     tests = set([])
     if modified_files:
