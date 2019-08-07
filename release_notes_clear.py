@@ -5,11 +5,11 @@ import argparse
 from datetime import datetime
 
 from Tests.scripts.validate_files import FilesValidator
-from Tests.test_utils import server_version_compare, run_command, get_release_notes_file_path
+from Tests.test_utils import server_version_compare, run_command, get_release_notes_file_path, print_warning
 from Tests.scripts.constants import UNRELEASE_HEADER
 
 
-CHANGE_LOG_FORMAT = UNRELEASE_HEADER + '\n\n## [{version}] - {date}'
+CHANGE_LOG_FORMAT = UNRELEASE_HEADER + '\n\n## [{version}] - {date}\n'
 
 FILE_TYPE_DICT = {
     '.yml': yaml.safe_load,
@@ -28,16 +28,12 @@ def should_clear(file_path, current_server_version="0.0.0"):
         return False
 
     load_function = FILE_TYPE_DICT[extension]
-
     with open(file_path, 'r') as f:
         data = load_function(f)
 
     v = data.get('fromversion') or data.get('fromVersion')
     if v and server_version_compare(current_server_version, str(v)) < 0:
-        print('keeping release notes for ({})\nto be published on {} version release'.format(
-            file_path,
-            current_server_version
-        ))
+        print_warning('keeping release notes for ({})\nto be published on {} version release'.format(file_path, str(v)))
         return False
 
     return True
