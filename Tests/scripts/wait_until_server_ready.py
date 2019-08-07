@@ -32,7 +32,7 @@ def get_username_password():
 
 def content_version_installed(username, password, ips):
     method = "post"
-    suffix = "/content/installed"
+    suffix = "/content/installed/"
     for ami_instance_name, ami_instance_ip in ips:
         print "Checking if content installed on [{}]".format(ami_instance_name)
         d = demisto.DemistoClient(None, "https://{}".format(ami_instance_ip), username, password)
