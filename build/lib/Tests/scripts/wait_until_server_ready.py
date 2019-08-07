@@ -75,7 +75,7 @@ def main():
                 sleep(1)
 
         else:
-            print "I'm in else!!/!"
+            break
 
     if len(ready_ami_list) != len(instance_ips):
         print_error("The server is not ready :(")
