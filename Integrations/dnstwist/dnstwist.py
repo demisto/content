@@ -12,7 +12,6 @@ if demisto.command() == 'dnstwist-domain-variations':
     LIMIT = int(demisto.args()['limit'])
     WHOIS = demisto.args().get('whois')
 
-
     def get_dnstwist_result(domain, include_whois):
         args = [TWIST_EXE, '-j']
         if include_whois:
@@ -20,7 +19,6 @@ if demisto.command() == 'dnstwist-domain-variations':
         args.append(domain)
         res = subprocess.check_output(args)
         return json.loads(res)
-
 
     def get_domain_to_info_map(dns_twist_result):
         results = []
@@ -37,7 +35,6 @@ if demisto.command() == 'dnstwist-domain-variations':
             if temp:
                 results.append(temp)
         return results
-
 
     dnstwist_result = get_dnstwist_result(DOMAIN, WHOIS == 'yes')
     new_result = get_domain_to_info_map(dnstwist_result)
