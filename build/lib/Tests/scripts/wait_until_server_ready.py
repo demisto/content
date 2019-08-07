@@ -75,12 +75,13 @@ def main():
                 sleep(1)
 
         else:
-            pass
+            print "I'm in else!!/!"
 
     if len(ready_ami_list) != len(instance_ips):
         print_error("The server is not ready :(")
         sys.exit(1)
 
+    print "Checking if content installed "
     if not content_version_installed(username, password, instance_ips):
         print_error("Content version could not be installed")
         sys.exit(1)
