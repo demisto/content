@@ -1,0 +1,1 @@
+Added outputs to the **dnstwist-domain-variations** command
