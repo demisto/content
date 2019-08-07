@@ -959,6 +959,7 @@ script:
     - name: threshold
       default: true
       defaultValue: "2"
+      description: Sensitivity threshold for configuring which domains are suspicious versus trusted.
     outputs:
     - contextPath: HybridAnalysis.URL.ID
       description: Scan ID result
