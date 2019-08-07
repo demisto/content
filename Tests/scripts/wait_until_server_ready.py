@@ -39,7 +39,7 @@ def content_version_installed(username, password, ips):
         d.Login()
         resp = d.req(method, suffix, None)
         try:
-            resp.json()
+            resp = resp.json()
             release = resp.get("release")
             notes = resp.get("releaseNotes")
             installed = resp.get("installed")
