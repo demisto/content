@@ -1,0 +1,1 @@
+- changed command `amp_get_computer_trajctory` to `amp_get_computer_trajectory`
