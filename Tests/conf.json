@@ -1715,7 +1715,7 @@
             "playbookID": "Test-VulnDB"
         },
         {
-            "integrations": "HybridAnalysis",
+            "integrations": "Hybrid Analysis",
             "playbookID": "HybridAnalysis-Test"
         }
     ],
