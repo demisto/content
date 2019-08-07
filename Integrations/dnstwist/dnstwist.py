@@ -23,7 +23,7 @@ if demisto.command() == 'dnstwist-domain-variations':
     def get_domain_to_info_map(dns_twist_result):
         results = []
         for x in dns_twist_result:
-            temp = {}
+            temp = {}  # type: Dict
             for k, v in x.items():
                 if k in KEYS_TO_MD:
                     if x["domain-name"] not in temp:
