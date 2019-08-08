@@ -31,15 +31,15 @@ def get_username_password():
     return conf['username'], conf['userPassword'], options.contentVersion
 
 
-def is_content_installed(username, password, ips, content_version):
+def is_correct_content_installed(username, password, ips, content_version):
     # type: (AnyStr, AnyStr, List[List[AnyStr, AnyStr]], AnyStr) -> bool
-    """ Checks if any content version installed on servers
+    """ Checks if specific content version is installed on server list
 
     Args:
         username: for server connection
         password: for server connection
         ips: list with lists of [instance_name, instance_ip]
-        content_version: content version that shpuld be installed
+        content_version: content version that should be installed
 
     Returns:
         True: if all tests passed, False if one failure
@@ -56,7 +56,8 @@ def is_content_installed(username, password, ips, content_version):
             notes = resp.get("releaseNotes")
             installed = resp.get("installed")
             if not (release and content_version in release and notes and installed):
-                print_error("Could not install content on instance [{}]".format(ami_instance_name))
+                print_error("Failed install content on instance [{}]\nfound content version [{}], expected [{}]"
+                            "".format(ami_instance_name, release, content_version))
                 return False
             else:
                 print_color("Instance [{instance_name}] content verified with version [{content_version}]".format(
@@ -64,7 +65,7 @@ def is_content_installed(username, password, ips, content_version):
                     LOG_COLORS.GREEN
                 )
         except ValueError:
-            print_error("Content version could not be installed")
+            print_error("Failed to verify content version on server [{}]".format(ami_instance_name))
             return False
     print_color("Content was installed successfully on all of the instances! :)", LOG_COLORS.GREEN)
     return True
@@ -100,7 +101,7 @@ def main():
         print_error("The server is not ready :(")
         sys.exit(1)
 
-    if not is_content_installed(username, password, instance_ips, content_version):
+    if not is_correct_content_installed(username, password, instance_ips, content_version):
         sys.exit(1)
 
 
