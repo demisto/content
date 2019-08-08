@@ -15,7 +15,7 @@ detaileddescription: |-
   4) Copy the API key to the clipboard from Help --> About
   5) Paste this value into the apiKey parameter in the integration
 configuration:
-- display: DDA Server and Port  (e.g https://192.168.10.23:20002)
+- display: DDA Server and Port  (e.g https://192.168.0.1:<port>)
   name: server
   defaultvalue: ""
   type: 0
