@@ -48,3 +48,4 @@ script:
   runonce: false
   script: ''
   type: python
+  beta: True

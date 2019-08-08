@@ -50,5 +50,6 @@ script:
   runonce: false
   script: '-'
   type: python
+  beta: True
 tests:
 - MailListener-POP3 - Test

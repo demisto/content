@@ -429,5 +429,6 @@ script:
       description: DBotScore Malicious status
     description: Run file check against ThreatQ
   runonce: false
+beta: true
 tests:
 - No test

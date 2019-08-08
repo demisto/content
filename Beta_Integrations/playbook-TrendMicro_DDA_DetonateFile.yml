@@ -448,5 +448,6 @@ outputs:
 - contextPath: IP.Address
   description: IPs relevant to the submission
   type: string
+beta: True
 tests:
 - No Test - run "Test Playbook TrendMicroDDA" manually

@@ -1036,5 +1036,6 @@ script:
       defaultValue: "1"
     description: Retrieves a brief XML report of a given submission
   runonce: false
+beta: true
 tests:
 - No Test - run "Test Playbook TrendMicroDDA" manually
