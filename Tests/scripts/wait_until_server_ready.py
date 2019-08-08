@@ -17,8 +17,8 @@ SLEEP_TIME = 45
 def get_username_password():
     parser = argparse.ArgumentParser(description='Utility for batch action on incidents')
     parser.add_argument('-c', '--confPath', help='The path for the secret conf file', required=True)
+    parser.add_argument('-v', '--contentVersion', help='Content version to install', required=True)
     parser.add_argument("--non-ami", help="Do NOT run with AMI setting", action='store_true')
-    parser.add_argument('-v', '--contentVersion', help='Content version to install')
     options = parser.parse_args()
     conf_path = options.confPath
 
