@@ -117,7 +117,7 @@ def close_alert(alert_id):
 def close_alert_command():
     alert_id: int = demisto.args().get('alert_id')
     close_alert(alert_id)
-    demisto.results(f'Alert: {alert_id} has been closed successfully.')
+    return_outputs(f'Alert: {alert_id} has been closed successfully.', outputs={})
 
 
 def alert_request_takedown(alert_id):
@@ -129,7 +129,7 @@ def alert_request_takedown(alert_id):
 def alert_request_takedown_command():
     alert_id: int = demisto.args().get('alert_id')
     alert_request_takedown(alert_id)
-    demisto.results(f'Alert: {alert_id} has been taken down successfully.')
+    return_outputs(f'Alert: {alert_id} has been taken down successfully.', outputs={})
 
 
 def alert_user_assignment(alert_id, subject_email, subject_name):
@@ -147,15 +147,11 @@ def alert_user_assignment_command():
     subject_name: str = demisto.args().get('subject_name')
     subject_email: str = demisto.args().get('subject_email')
     alert_user_assignment(alert_id, subject_email, subject_name)
-    demisto.results(f'User: {subject_name} - {subject_email} has been assigned to Alert: {alert_id} successfully.')
+    return_outputs(f'User: {subject_email} has been assigned to Alert: {alert_id} successfully.', outputs={})
 
 
 def modify_alert_tags(alert_id, addition, tags_list_string):
     url_suffix: str = '/alerttagchangeset/'
-    if addition:
-        demisto.info('trueeeeeeeeeeeeeeeee')
-    else:
-        demisto.info('falseeeeeeeeeeeeeeee')
     tags_list_name: str = 'added' if addition else 'removed'
     tags_list: list = tags_list_string.split(',')
     request_body: Dict = {
@@ -177,21 +173,70 @@ def modify_alert_tags_command():
     tags_list_string = demisto.args().get('tags')
     response_content = modify_alert_tags(alert_id, addition, tags_list_string)
     alert_tags_change_uuid: str = response_content.get('uuid')
-    outputs: Dict = {'ZeroFox.Alert.ChangeUUID': alert_tags_change_uuid}
-    return_outputs('Changes were successfully made.', outputs, response_content)
+    return_outputs('Changes were successfully made.', outputs={})
 
 
-def get_alert(args={}):
-    alert_id: int = args.get('alert_id')
-    endpoint: str = f'/alerts/{alert_id}/'
-    response_content = http_request('GET', endpoint)
+def get_alert(alert_id):
+    url_suffix: str = f'/alerts/{alert_id}/'
+    response_content = http_request('GET', url_suffix)
     return response_content
 
 
 def get_alert_command():
-    args = demisto.args()
-    response_content = get_alert(args)
-    # TODO.
+    alert_id = demisto.args().get('alert_id')
+    response_content = get_alert(alert_id)
+    response_fields_json = response_content.get('alert')
+    contents = {
+        'AlertType': response_fields_json.get('alert_type'),
+        'OffendingContentURL': response_fields_json.get('off'),
+        'AssetTermID': response_fields_json.get('asset_term', {}).get('id'),
+        'AssetTermName': response_fields_json.get('asset_term', {}).get('name'),
+        'AssetTermDeleted': response_fields_json.get('asset_term', {}).get('deleted'),
+        'Assignee': response_fields_json.get('assignee'),
+        'EntityID': response_fields_json.get('entity', {}).get('id'),
+        'EntityName': response_fields_json.get('entity', {}).get('name'),
+        'EntityImage': response_fields_json.get('entity', {}).get('image'),
+        'EntityTermID': response_fields_json.get('entity_term', {}).get('id'),
+        'EntityTermName': response_fields_json.get('entity_term', {}).get('name'),
+        'EntityTermDeleted': response_fields_json.get('entity_term', {}).get('deleted'),
+        'ContentCreatedAt': response_fields_json.get('content_created_at'),
+        'ID': response_fields_json.get('id'),
+        'ProtectedAccount': response_fields_json.get('protected_account'),
+        'Severity': response_fields_json.get('severity'),
+        'PerpetratorName': response_fields_json.get('perpetrator', {}).get('name'),
+        'PerpetratorURL': response_fields_json.get('perpetrator', {}).get('url'),
+        'PerpetratorTimeStamp': response_fields_json.get('perpetrator', {}).get('timestamp'),
+        'PerpetratorType': response_fields_json.get('perpetrator', {}).get('type'),
+        'PerpetratorID': response_fields_json.get('perpetrator', {}).get('id'),
+        'PerpetratorNetwork': response_fields_json.get('perpetrator', {}).get('network'),
+        'RuleGroupID': response_fields_json.get('rule_group_id'),
+        'AssetID': response_fields_json.get('asset', {}).get('id'),
+        'AssetName': response_fields_json.get('asset', {}).get('name'),
+        'AssetImage': response_fields_json.get('asset', {}).get('image'),
+        'Status': response_fields_json.get('status'),
+        'TimeStamp': response_fields_json.get('timestamp'),
+        'RuleName': response_fields_json.get('rule_name'),
+        'LastModified': response_fields_json.get('last_modified'),
+        'ProtectedLocations': response_fields_json.get('protected_locations'),
+        'DarkwebTerm': response_fields_json.get('darkweb_Term'),
+        'Reviewed': response_fields_json.get('reviewed'),
+        'Escalated': response_fields_json.get('escalated'),
+        'Network': response_fields_json.get('network'),
+        'ProtectedSocialObject': response_fields_json.get('protected_social_object'),
+        'Notes': response_fields_json.get('notes'),
+        'RuleID': response_fields_json.get('rule_id'),
+        'EntityAccount': response_fields_json.get('entity_account'),
+    }
+    context = {
+        'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents
+    }
+    return_outputs(
+        tableToMarkdown(f'Alert: {alert_id}', contents, removeNull=True),
+        context,
+        response_content
+    )
+
+
 
 
 
