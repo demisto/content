@@ -1,12 +1,14 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 import requests
 import json
 import os
 import time
 import sys
+
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -240,7 +242,7 @@ def check_file_behaviour_command():
     # variables
     args = demisto.args()
     file_hash = args.get('resource')
-    threshold = int(args.get('threshold', None) or demisto.params().get('fileThreshold', None) or 10)
+    threshold = int(args.get('threshold', None) or demisto.params().get('fileThreshold', None) or 10)  # noqa: F841
     full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
     if (full_response):
         max_len = 1000
@@ -263,7 +265,8 @@ def check_file_behaviour_command():
                     'Score': 0
                 }
             },
-            'HumanReadable': "A report wasn't found for file " + file_hash + ". Virus Total returned the following response: " + json.dumps(
+            'HumanReadable': "A report wasn't found for file " + file_hash + ". Virus Total returned the following "
+                                                                             "response: " + json.dumps(
                 response.get('verbose_msg'))
         }
 
@@ -424,7 +427,8 @@ def get_domain_report_command():
                     'Score': 0
                 }
             },
-            'HumanReadable': "Domain " + domain + " not in Virus Total's dataset. Virus Total returned the following response: " + json.dumps(
+            'HumanReadable': "Domain " + domain + " not in Virus Total's dataset. Virus Total returned the following "
+                                                  "response: " + json.dumps(
                 response.get('verbose_msg'))
         }
 
@@ -761,7 +765,8 @@ def get_ip_report_command():
                     'Score': 0
                 }
             },
-            'HumanReadable': "IP " + ip + "not in Virus Total's dataset. Virus Total returned the following response: " + json.dumps(
+            'HumanReadable': "IP " + ip + "not in Virus Total's dataset. Virus Total returned the following response:"
+                                          " " + json.dumps(
                 response.get('verbose_msg'))
         }
 
@@ -791,7 +796,8 @@ def get_ip_report_command():
     if detected_downloaded_samples:
         detected_downloaded_samples = detected_downloaded_samples[:max_len]
         md += tableToMarkdown(
-            "Latest files that are detected by at least one antivirus solution and were downloaded by VirusTotal from the IP address provided",
+            "Latest files that are detected by at least one antivirus solution and were downloaded by VirusTotal from"
+            " the IP address provided",
             detected_downloaded_samples)
 
     undetected_downloaded_samples = response.get('undetected_downloaded_samples', None)
@@ -799,7 +805,8 @@ def get_ip_report_command():
     if undetected_downloaded_samples:
         undetected_downloaded_samples = undetected_downloaded_samples[:max_len]
         md += tableToMarkdown(
-            "Latest files that are not detected by any antivirus solution and were downloaded by VirusTotal from the IP address provided",
+            "Latest files that are not detected by any antivirus solution and were downloaded by VirusTotal from the "
+            "IP address provided",
             undetected_downloaded_samples)
 
     detected_communicating_samples = response.get('detected_communicating_samples', None)
@@ -934,8 +941,9 @@ def search_file_command():
     response = search_file(query)
 
     if (response.get('response_code') == -1):
-        return "There was some sort of error with your query. Virus Total returned the following response: " + json.dumps(
-            response.get('verbose_msg'))
+        return "There was some sort of error with your query. Virus Total returned the following response: " + \
+               json.dumps(
+                   response.get('verbose_msg'))
     elif (response.get('response_code') == 0):
         return "No files matched your query"
 
@@ -988,7 +996,8 @@ def hash_communication_command():
                     'Score': 0
                 }
             },
-            'HumanReadable': "A report wasn't found for file " + file_hash + ". Virus Total returned the following response: " + json.dumps(
+            'HumanReadable': "A report wasn't found for file " + file_hash + ". Virus Total returned the following "
+                                                                             "response: " + json.dumps(
                 response.get('verbose_msg'))
         }
 
