@@ -1821,6 +1821,122 @@ script:
     description: Add security label to a specific group
     execution: false
     name: tc-add-group-security-label
+  - arguments:
+    - default: false
+      description: The ID of the group
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of the group
+      isArray: false
+      name: group_type
+      predefined:
+      - adversaries
+      - campaigns
+      - documents
+      - emails
+      - events
+      - incidents
+      - intrusionSets
+      - reports
+      - signatures
+      - threats
+      required: true
+      secret: false
+    - default: false
+      description: Name tag to add to the group
+      isArray: false
+      name: tag_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Add tags to specific group
+    execution: false
+    name: tc-add-group-tag
+  - deprecated: false
+    description: Find the available Indicator types on your instance of ThreatConnect
+    execution: false
+    name: tc-get-indicator-types
+    outputs:
+    - contextPath: TC.Indicator.ApiBranch
+      description: API branch
+      type: String
+    - contextPath: TC.Indicator.ApiEntity
+      description: API entity
+      type: String
+    - contextPath: TC.Indicator.CasePreference
+      description: Indicator case preference
+      type: String
+    - contextPath: TC.Indicator.Custom
+      description: Custom indicator
+      type: Boolean
+    - contextPath: TC.Indicator.Parsable
+      description: Is the indicator parsable
+      type: Boolean
+    - contextPath: TC.Indicator.Value1Type
+      description: Indicator value type
+      type: String
+    - contextPath: TC.Indicator.value1Label
+      description: Indicator value label
+      type: String
+  - arguments:
+    - default: false
+      description: The indicator type. To get the types available use "get-indicator-types"
+        command (API branch column).
+      isArray: false
+      name: indicator_type
+      required: true
+      secret: false
+    - default: false
+      description: The indicator to associate
+      isArray: false
+      name: indicator
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of the group
+      isArray: false
+      name: group_type
+      predefined:
+      - adversaries
+      - campaigns
+      - documents
+      - emails
+      - events
+      - incidents
+      - intrusionSets
+      - reports
+      - signatures
+      - threats
+      required: true
+      secret: false
+    - default: false
+      description: Group ID.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Associate an Indicator to a Group
+    execution: false
+    name: tc-group-associate-indicator
+    outputs:
+    - contextPath: TC.Group.GroupID
+      description: The group ID
+      type: Number
+    - contextPath: TC.Group.GroupType
+      description: Group type.
+      type: String
+    - contextPath: TC.Group.Indicator
+      description: Indocator value
+      type: String
+    - contextPath: TC.Group.IndicatorType
+      description: Indicator type
+      type: String
   dockerimage: demisto/threatconnect-sdk
   isfetch: false
   runonce: false
