@@ -12,12 +12,6 @@ import sys
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-if not demisto.params().get('useProxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-
 # Define utf8 as default encoding
 reload(sys)
 sys.setdefaultencoding('utf8')  # pylint: disable=E1101
@@ -1120,6 +1114,7 @@ def download_file_command():
 ''' EXECUTION CODE '''
 LOG('command is %s' % (demisto.command(),))
 try:
+    handle_proxy(proxy_param_name='useProxy')
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
         if check_file_behaviour(
