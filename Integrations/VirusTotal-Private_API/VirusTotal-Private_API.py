@@ -37,6 +37,7 @@ DEFAULT_HEADERS = {
 
 ''' HELPER FUNCTIONS '''
 
+
 def is_enough_preferred_vendors(scan_results):
     if not (PREFERRED_VENDORS and PREFERRED_VENDORS_THRESHOLD):
         return False
@@ -90,7 +91,6 @@ def http_request(method, url_suffix, params_dict, headers):
         elif res.status_code == 204:
             return_error("You've reached your API call quota. Contact your VirusTotal representative.")
 
-
     except Exception as e:
         error_message = str(e)
         error_message = re.sub('apikey=[a-zA-Z0-9]+', 'apikey=*apikey*', error_message)
@@ -114,7 +114,7 @@ def create_scans_table(scans):
             "Update": scans.get(scan).get('update', None),
             "Details": scans.get(scan).get('detail', None)
         }
-        if (dict_for_table['Detected'] is not None and dict_for_table['Detected'] == True):
+        if (dict_for_table['Detected'] is not None and dict_for_table['Detected']):
             positives_scans_table.append(dict_for_table)
         else:
             negative_scans_table.append(dict_for_table)
@@ -138,7 +138,7 @@ def create_file_output(file_hash, threshold, vt_response, short_format):
     md += 'Scan date: **' + str(vt_response.get('scan_date')) + '**\n'
     md += 'Detections / Total: **' + str(positives) + '/' + str(vt_response.get('total')) + '**\n'
     md += 'VT Link: [' + str(vt_response.get('resource')) + '](' + str(vt_response.get('permalink')) + ')\n'
-    dbotScore = 0;
+    dbotScore = 0
 
     if (positives >= threshold or is_enough_preferred_vendors(vt_response)):
         ec.update({
@@ -240,7 +240,7 @@ def check_file_behaviour_command():
     # variables
     args = demisto.args()
     file_hash = args.get('resource')
-    threshold = int(args.get('threshold', None) or demisto.params().get('fileThreshold', None) or 10);
+    threshold = int(args.get('threshold', None) or demisto.params().get('fileThreshold', None) or 10)
     full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
     if (full_response):
         max_len = 1000
@@ -399,7 +399,7 @@ def get_domain_report_command():
     # variables
     args = demisto.args()
     domain = args['domain']
-    threshold = int(args.get('threshold', None) or demisto.params().get('domainThreshold', None) or 10);
+    threshold = int(args.get('threshold', None) or demisto.params().get('domainThreshold', None) or 10)
     full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
     if (full_response):
         max_len = 1000
@@ -519,7 +519,7 @@ def get_file_report_command():
     short_format = args.get('shortFormat', None) == 'true'
     all_info = args.get('allInfo', None)
     all_info = 1 if all_info == 'true' else 0
-    threshold = int(args.get('threshold', None) or demisto.params().get('fileThreshold', None) or 10);
+    threshold = int(args.get('threshold', None) or demisto.params().get('fileThreshold', None) or 10)
 
     response = get_file_report(file_hash, all_info)
 
@@ -569,9 +569,9 @@ def get_url_report_command():
     responses_dict = get_url_reports_with_retries(urls, all_info, retries, scan_finish_time_in_seconds)
     md = ''
     ec = {
-            'DBotScore': [],
-            outputPaths['url']: [],
-        }
+        'DBotScore': [],
+        outputPaths['url']: [],
+    }
     for url, res in responses_dict.iteritems():
         url_md, url_ec, dbot_score = create_url_report_output(url, res, threshold, max_len, short_format)
         md += url_md
@@ -680,7 +680,7 @@ def create_url_report_output(url, response, threshold, max_len, short_format):
             }
         else:
             ec_url.update({
-                'VirusTotal':{'Resolutions': resolution[:max_len]},
+                'VirusTotal': {'Resolutions': resolution[:max_len]},
                 'Data': url
             })
 
@@ -689,7 +689,7 @@ def create_url_report_output(url, response, threshold, max_len, short_format):
     if scans is not None and not short_format:
         scans_table = create_scans_table(scans)
         scans_table_md = tableToMarkdown('Scans', scans_table)
-    if (ec_url.get('VirusTotal',False)):
+    if (ec_url.get('VirusTotal', False)):
         ec_url['VirusTotal']['Scans'] = scans_table
     else:
         ec_url['VirusTotal'] = {
@@ -701,11 +701,11 @@ def create_url_report_output(url, response, threshold, max_len, short_format):
 
     if dropped_files is not None:
         if (ec_url.get('VirusTotal', False)):
-                ec_url['VirusTotal']['DroppedFiles'] = dropped_files
+            ec_url['VirusTotal']['DroppedFiles'] = dropped_files
         else:
             ec_url['VirusTotal'] = {
-            'DroppedFiles': dropped_files
-        }
+                'DroppedFiles': dropped_files
+            }
 
     return md, ec_url, ec_dbot
 
@@ -833,7 +833,8 @@ def get_ip_report_command():
     ec['DBotScore'] = []
     dbotScore = 0
     bad_downloads_amount = len(detected_communicating_samples) if detected_communicating_samples else 0
-    detected_url_is_above_threshold = check_detected_urls_threshold(detected_urls, demisto.params().get('urlThreshold', None) or 10)
+    detected_url_is_above_threshold = check_detected_urls_threshold(
+        detected_urls, demisto.params().get('urlThreshold', None) or 10)
     if (bad_downloads_amount >= threshold or detected_url_is_above_threshold):
         ec.update({
             outputPaths['ip']: {
@@ -849,7 +850,7 @@ def get_ip_report_command():
             }
         })
         dbotScore = 3
-    elif (bad_downloads_amount >= threshold/2 or len(detected_urls) >= threshold/2):
+    elif (bad_downloads_amount >= threshold / 2 or len(detected_urls) >= threshold / 2):
         dbotScore = 2
     else:
         dbotScore = 1
@@ -1136,7 +1137,7 @@ try:
     elif demisto.command() == 'vt-private-download-file':
         demisto.results(download_file_command())
 
-except Exception, e:
+except Exception as e:
     LOG(e.message)
     LOG.print_log()
     raise
