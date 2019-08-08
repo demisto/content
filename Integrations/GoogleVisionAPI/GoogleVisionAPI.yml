@@ -1,0 +1,40 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: aff925c2-c0f9-4e1c-91f2-4c70147b3f8a
+  version: -1
+configuration:
+- display: Google service account JSON (a credentials JSON generated from Google API
+    Manager or from GCP console)
+  name: auth_json
+  required: true
+  type: 4
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+description: Image processing with Google Vision API
+detaileddescription: Enter integrations instructions and help here (Markdown supported)
+display: Google Vision API
+name: aff925c2-c0f9-4e1c-91f2-4c70147b3f8a
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The entryId of the image to be processed
+      isArray: true
+      name: entry_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Detects brand logos in the given image
+    execution: false
+    name: vision-detect-logos
+  dockerimage: pingunaut/google-vision-api:1.0.0.1565181947
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
