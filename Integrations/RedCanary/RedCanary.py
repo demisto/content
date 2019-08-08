@@ -1,8 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 import requests
+
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -12,14 +14,14 @@ if not demisto.params()['proxy']:
     del os.environ['http_proxy']
     del os.environ['https_proxy']
 
-
 ''' GLOBAL VARS '''
 BASE_URL = '{}/openapi/v3'.format(demisto.params()['domain'])
 API_KEY = demisto.params()['api_key']
 USE_SSL = not demisto.params().get('insecure', False)
 
-
 ''' HELPER FUNCTIONS '''
+
+
 def get_time_obj(t, time_format=None):
     '''
     convert a time string to datetime object
@@ -71,17 +73,17 @@ def http_request(requests_func, url_suffix, **kwargs):
     data = kwargs.get('data', {})
 
     res = requests_func(BASE_URL + url_suffix,
-        verify=USE_SSL,
-        params=params,
-        headers=headers,
-        data=data
-    )
+                        verify=USE_SSL,
+                        params=params,
+                        headers=headers,
+                        data=data
+                        )
 
     if res.status_code == 403:
         raise Exception('API Key is incorrect')
 
     if res.status_code not in [200, 201, ]:
-        LOG('result is: %s' % (res.json(), ))
+        LOG('result is: %s' % (res.json(),))
         error = res.json()
         raise Exception('Your request failed with the following error: {}.\n'.format(error, ))
 
@@ -90,19 +92,19 @@ def http_request(requests_func, url_suffix, **kwargs):
 
 @logger
 def http_get(url_suffix, params=None, data=None):
-    headers = {'X-Api-Key' : API_KEY}
+    headers = {'X-Api-Key': API_KEY}
     return http_request(requests.get, url_suffix, headers=headers, params=params, data=data)
 
 
 @logger
 def http_patch(url_suffix, params=None, data=None):
-    headers = {'X-Api-Key' : API_KEY}
+    headers = {'X-Api-Key': API_KEY}
     return http_request(requests.patch, url_suffix, headers=headers, params=params, data=data)
 
 
 @logger
 def http_post(url_suffix, params=None, data=None):
-    headers = {'X-Api-Key' : API_KEY}
+    headers = {'X-Api-Key': API_KEY}
     return http_request(requests.post, url_suffix, headers=headers, params=params, data=data)
 
 
@@ -121,27 +123,27 @@ def get_endpoint_context(res=None, endpoint_id=None):
 
     # Endpoint(val.Hostname == obj.Hostname)
     return [{
-            'Hostname' : endpoint['attributes']['hostname'],
-            'ID' : endpoint['id'],
-            'IPAddress' : [addr['attributes']['ip_address']['attributes']['ip_address']
-                for addr in endpoint['attributes']['endpoint_network_addresses']],
-            'MACAddress' : [addr['attributes']['mac_address']['attributes']['address']
-                for addr in endpoint['attributes']['endpoint_network_addresses']],
-            'OS' : endpoint['attributes']['platform'],
-            'OSVersion' : endpoint['attributes']['operating_system'],
-            'IsIsolated' : endpoint['attributes']['is_isolated'],
-            'IsDecommissioned' : endpoint['attributes']['is_decommissioned'],
-        } for endpoint in res]
+        'Hostname': endpoint['attributes']['hostname'],
+        'ID': endpoint['id'],
+        'IPAddress': [addr['attributes']['ip_address']['attributes']['ip_address']
+                      for addr in endpoint['attributes']['endpoint_network_addresses']],
+        'MACAddress': [addr['attributes']['mac_address']['attributes']['address']
+                       for addr in endpoint['attributes']['endpoint_network_addresses']],
+        'OS': endpoint['attributes']['platform'],
+        'OSVersion': endpoint['attributes']['operating_system'],
+        'IsIsolated': endpoint['attributes']['is_isolated'],
+        'IsDecommissioned': endpoint['attributes']['is_decommissioned'],
+    } for endpoint in res]
+
 
 def get_endpoint_user_context(res=None, endpoint_user_id=None):
     if res is None:
         res = http_get('/endpoint_users/{}'.format(endpoint_user_id))['data']
 
     return [{
-            'Username' : endpoint_user['attributes']['username'].split('\\')[1],
-            'Hostname' : endpoint_user['attributes']['username'].split('\\')[0],
-        } for endpoint_user in res]
-
+        'Username': endpoint_user['attributes']['username'].split('\\')[1],
+        'Hostname': endpoint_user['attributes']['username'].split('\\')[0],
+    } for endpoint_user in res]
 
 
 def get_full_timeline(detection_id, per_page=100):
@@ -151,10 +153,10 @@ def get_full_timeline(detection_id, per_page=100):
     activities = []
     while not done:
         res = http_get('/detections/{}/timeline'.format(detection_id),
-            params={
-                'page' : page,
-                'per_page' : per_page,
-            })
+                       params={
+                           'page': page,
+                           'per_page': per_page,
+                       })
 
         if len(res['data']) == 0 or True:
             done = True
@@ -182,78 +184,81 @@ def process_timeline(detection_id):
         additional_data = {}
 
         if activity['attributes']['type'] == 'process_activity_occurred':
-            process = activity['attributes']['process_execution']['attributes']['operating_system_process']['attributes']
+            process = activity['attributes']['process_execution']['attributes']['operating_system_process'][
+                'attributes']
             image = process['image']['attributes']
             additional_data = {
-                'MD5' : image['md5'],
-                'SHA256' : image['sha256'],
-                'Path' : image['path'],
-                'Type' : image['file_type'],
-                'CommandLine' : process['command_line']['attributes']['command_line'],
+                'MD5': image['md5'],
+                'SHA256': image['sha256'],
+                'Path': image['path'],
+                'Type': image['file_type'],
+                'CommandLine': process['command_line']['attributes']['command_line'],
             }
             files.append({
-                'Name' : os.path.basename(image['path']),
-                'MD5' : image['md5'],
-                'SHA256' : image['sha256'],
-                'Path' : image['path'],
-                'Extension' : os.path.splitext(image['path'])[-1],
+                'Name': os.path.basename(image['path']),
+                'MD5': image['md5'],
+                'SHA256': image['sha256'],
+                'Path': image['path'],
+                'Extension': os.path.splitext(image['path'])[-1],
             })
             processes.append({
-                'Name' : os.path.basename(image['path']),
-                'Path' : image['path'],
-                'MD5' : image['md5'],
-                'SHA256' : image['sha256'],
-                'StartTime' : get_time_str(get_time_obj(process['started_at'])),
-                'CommandLine' : process['command_line']['attributes']['command_line'],
+                'Name': os.path.basename(image['path']),
+                'Path': image['path'],
+                'MD5': image['md5'],
+                'SHA256': image['sha256'],
+                'StartTime': get_time_str(get_time_obj(process['started_at'])),
+                'CommandLine': process['command_line']['attributes']['command_line'],
             })
 
         elif activity['attributes']['type'] == 'network_connection_activity_occurred':
             network = activity['attributes']['network_connection']['attributes']
             additional_data = {
-                'IP' : network['ip_address']['attributes']['ip_address'],
-                'Port' : network['port'],
-                'Domain' : network['domain']['attributes']['name'],
+                'IP': network['ip_address']['attributes']['ip_address'],
+                'Port': network['port'],
+                'Domain': network['domain']['attributes']['name'],
             }
-            domains.append({'Name' : network['domain']['attributes']['name'],
-                # 'DNS' :
-            })
+            domains.append({'Name': network['domain']['attributes']['name'],
+                            # 'DNS' :
+                            })
             ips.append({
-                'Address' : network['ip_address']['attributes']['ip_address'],
-                'Port' : network['port'],
+                'Address': network['ip_address']['attributes']['ip_address'],
+                'Port': network['port'],
             })
 
         activities.append({
-            'Time' : activity_time,
-            'Type' : activity['attributes']['type'].replace('_', ' '),
-            'Notes' : notes,
-            'Activity Details' : createContext(additional_data, removeNull=True),
+            'Time': activity_time,
+            'Type': activity['attributes']['type'].replace('_', ' '),
+            'Notes': notes,
+            'Activity Details': createContext(additional_data, removeNull=True),
         })
-
 
     return activities, domains, files, ips, processes
 
 
 def detection_to_context(raw_detection):
     return {
-        'Type' : 'RedCanaryDetection',
-        'ID' : raw_detection['id'],
-        'Headline' : raw_detection['attributes']['headline'],
-        'Severity' : raw_detection['attributes']['severity'],
-        'Summary' : raw_detection['attributes']['summary'],
-        'Classification' : raw_detection['attributes']['classification']['superclassification'],
-        'Subclassification' : raw_detection['attributes']['classification']['subclassification'],
-        'Time' : get_time_str(get_time_obj(raw_detection['attributes']['time_of_occurrence'])),
-        'Acknowledged' : raw_detection['attributes']['last_acknowledged_at'] is None and raw_detection['attributes']['last_acknowledged_by'] is None,
-        'RemediationStatus' : raw_detection['attributes'].get('last_remediated_status', {}).get('remediation_status', ''),
+        'Type': 'RedCanaryDetection',
+        'ID': raw_detection['id'],
+        'Headline': raw_detection['attributes']['headline'],
+        'Severity': raw_detection['attributes']['severity'],
+        'Summary': raw_detection['attributes']['summary'],
+        'Classification': raw_detection['attributes']['classification']['superclassification'],
+        'Subclassification': raw_detection['attributes']['classification']['subclassification'],
+        'Time': get_time_str(get_time_obj(raw_detection['attributes']['time_of_occurrence'])),
+        'Acknowledged': raw_detection['attributes']['last_acknowledged_at'] is None and raw_detection['attributes'][
+            'last_acknowledged_by'] is None,
+        'RemediationStatus': raw_detection['attributes'].get('last_remediated_status', {}).get('remediation_status',
+                                                                                               ''),
     }
 
 
 def detections_to_entry(detections, show_timeline=False):
     fixed_detections = [detection_to_context(d) for d in detections]
     endpoints = [get_endpoint_context(endpoint_id=d['relationships']['affected_endpoint']['data']['id'])
-        for d in detections]
+                 for d in detections]
     endpoints = sum(endpoints, [])
-    endpoint_users = [get_endpoint_user_context(endpoint_user_id=d['relationships']['related_endpoint_user']['data']['id'])
+    endpoint_users = [
+        get_endpoint_user_context(endpoint_user_id=d['relationships']['related_endpoint_user']['data']['id'])
         for d in detections]
     endpoint_users = sum(endpoint_users, [])
 
@@ -263,7 +268,8 @@ def detections_to_entry(detections, show_timeline=False):
     if show_timeline and len(detections) == 1:
         title = 'Detection {}'.format(fixed_detections[0]['Headline'])
         activities, domains, files, ips, processes = process_timeline(fixed_detections[0]['ID'])
-        activities = tableToMarkdown('Detection Timeline', activities, headers=['Time', 'Type', 'Activity Details', 'Notes'])
+        activities = tableToMarkdown('Detection Timeline', activities,
+                                     headers=['Time', 'Type', 'Activity Details', 'Notes'])
 
     headers = ['ID', 'Headline', 'Severity', 'Time', 'Classification', 'Summary', ]
     return {
@@ -274,17 +280,17 @@ def detections_to_entry(detections, show_timeline=False):
         'HumanReadable': '\n\n'.join([
             tableToMarkdown(title, fixed_detections, headers=headers, removeNull=True),
             activities,
-            ]),
-        'EntryContext' : {
-            'RedCanary.Detection(val.ID && val.ID == obj.ID)' : createContext(fixed_detections, removeNull=True),
-            'Account(val.Username == obj.Username)' : createContext(endpoint_users, removeNull=True),
-            'Domain(val.Username == obj.Username)' : createContext(domains, removeNull=True),
-            'Endpoint(val.Hostname == obj.Hostname)' : createContext(endpoints, removeNull=True),
-            'File(val.Name == obj.Name)' : createContext(files, removeNull=True),
-            'IP(val.Address == obj.Address)' : createContext(ips, removeNull=True),
-            'Process(val.Username == obj.Username)' : createContext(processes, removeNull=True),
-            }
+        ]),
+        'EntryContext': {
+            'RedCanary.Detection(val.ID && val.ID == obj.ID)': createContext(fixed_detections, removeNull=True),
+            'Account(val.Username == obj.Username)': createContext(endpoint_users, removeNull=True),
+            'Domain(val.Username == obj.Username)': createContext(domains, removeNull=True),
+            'Endpoint(val.Hostname == obj.Hostname)': createContext(endpoints, removeNull=True),
+            'File(val.Name == obj.Name)': createContext(files, removeNull=True),
+            'IP(val.Address == obj.Address)': createContext(ips, removeNull=True),
+            'Process(val.Username == obj.Username)': createContext(processes, removeNull=True),
         }
+    }
 
 
 def get_unacknowledge_detections(t, per_page=50):
@@ -301,7 +307,8 @@ def get_unacknowledge_detections(t, per_page=50):
             if get_time_obj(detection['attributes']['time_of_occurrence']) < t:
                 passed = True
                 break
-            if detection['attributes']['last_acknowledged_at'] is not None or detection['attributes']['last_acknowledged_by'] is not None:
+            if detection['attributes']['last_acknowledged_at'] is not None or detection['attributes'][
+                'last_acknowledged_by'] is not None:
                 continue
 
             yield detection
@@ -315,15 +322,17 @@ def detection_to_incident(raw_detection):
     detection['Timeline'] = get_full_timeline(detection['ID'])
 
     return {
-        'type' : 'RedCanaryDetection',
-        'name' : detection['Headline'],
-        'details' : detection['Summary'],
-        'occurred' : detection['Time'],
-        'rawJSON' : json.dumps(detection),
+        'type': 'RedCanaryDetection',
+        'name': detection['Headline'],
+        'details': detection['Summary'],
+        'occurred': detection['Time'],
+        'rawJSON': json.dumps(detection),
     }
 
 
 ''' FUNCTIONS '''
+
+
 def list_detections_command():
     args = demisto.args()
     page = int(args.get('page', '1'))
@@ -336,11 +345,11 @@ def list_detections_command():
 @logger
 def list_detections(page, per_page):
     res = http_get('/detections',
-        data={
-            'page' : page,
-            'per_page' : per_page
-        },
-    )
+                   data={
+                       'page': page,
+                       'per_page': per_page
+                   },
+                   )
     return res['data']
 
 
@@ -385,11 +394,11 @@ def remediate_detection_command():
 @logger
 def remediate_detection(_id, remediation_state, comment):
     res = http_patch('/detections/{}/update_remediation_state'.format(_id),
-        data={
-            'remediation_state' : remediation_state,
-            'comment' : comment,
-        }
-    )
+                     data={
+                         'remediation_state': remediation_state,
+                         'comment': comment,
+                     }
+                     )
 
 
 def list_endpoints_command():
@@ -399,27 +408,27 @@ def list_endpoints_command():
 
     data = list_endpoints(page, per_page)
     endpoints = get_endpoint_context(res=data)
-    headers = ['ID', 'IPAddress', 'Hostname', 'MACAddress', 'IsIsolated', 'IsDecommissioned', 'OSVersion',]
+    headers = ['ID', 'IPAddress', 'Hostname', 'MACAddress', 'IsIsolated', 'IsDecommissioned', 'OSVersion', ]
     return {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
         'Contents': endpoints,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('EndPoints', endpoints, headers=headers, removeNull=True),
-        'EntryContext' : {
-            'EndPoint(val.Hostname == obj.Hostname)' : createContext(endpoints, removeNull=True),
-            }
+        'EntryContext': {
+            'EndPoint(val.Hostname == obj.Hostname)': createContext(endpoints, removeNull=True),
         }
+    }
 
 
 @logger
 def list_endpoints(page, per_page):
     res = http_get('/endpoints',
-        data={
-            'page' : page,
-            'per_page' : per_page
-        },
-    )
+                   data={
+                       'page': page,
+                       'per_page': per_page
+                   },
+                   )
 
     return res['data']
 
@@ -430,17 +439,18 @@ def get_endpoint_command():
 
     data = get_endpoint(_id)
     endpoints = get_endpoint_context(res=data)
-    headers = ['ID', 'IPAddress', 'Hostname', 'MACAddress', 'IsIsolated', 'IsDecommissioned', 'OSVersion',]
+    headers = ['ID', 'IPAddress', 'Hostname', 'MACAddress', 'IsIsolated', 'IsDecommissioned', 'OSVersion', ]
     return {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
         'Contents': endpoints,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('EndPoint {}'.format(endpoints[0]['Hostname']), endpoints, headers=headers, removeNull=True),
-        'EntryContext' : {
-            'EndPoint(val.Hostname == obj.Hostname)' : createContext(endpoints, removeNull=True),
-            }
+        'HumanReadable': tableToMarkdown('EndPoint {}'.format(endpoints[0]['Hostname']), endpoints, headers=headers,
+                                         removeNull=True),
+        'EntryContext': {
+            'EndPoint(val.Hostname == obj.Hostname)': createContext(endpoints, removeNull=True),
         }
+    }
 
 
 @logger
@@ -456,6 +466,7 @@ def get_endpoint_detections_command():
 
     detections = get_endpoint_detections(_id)
     return detections_to_entry(detections)
+
 
 @logger
 def get_endpoint_detections(_id):
@@ -486,11 +497,11 @@ def execute_playbook_command():
 
 def execute_playbook(playbook_id, detection_id):
     res = http_post('/exec/playbooks/{}/execute'.format(playbook_id),
-        params={
-            'resource_type' : 'Detection',
-            'resource_id' : detection_id,
-        }
-    )
+                    params={
+                        'resource_type': 'Detection',
+                        'resource_id': detection_id,
+                    }
+                    )
 
     return res
 
@@ -515,7 +526,7 @@ def fetch_incidents():
 
     if len(incidents) != 0:
         last_fetch = max([get_time_obj(incident['occurred']) for incident in incidents])
-        demisto.setLastRun({'time' : get_time_str(last_fetch + timedelta(seconds=1))})
+        demisto.setLastRun({'time': get_time_str(last_fetch + timedelta(seconds=1))})
     demisto.incidents(incidents)
 
 
@@ -527,21 +538,20 @@ def test_integration():
 
 ''' EXECUTION CODE '''
 COMMANDS = {
-    'test-module' : test_integration,
-    'fetch-incidents' : fetch_incidents,
-    'redcanary-list-detections' : list_detections_command,
-    'redcanary-list-endpoints' : list_endpoints_command,
-    'redcanary-get-endpoint' : get_endpoint_command,
-    'redcanary-get-endpoint-detections' : get_endpoint_detections_command,
-    'redcanary-get-detection' : get_detection_command,
-    'redcanary-acknowledge-detection' : acknowledge_detection_command,
-    'redcanary-update-remediation-state' : remediate_detection_command,
-    'redcanary-execute-playbook' : execute_playbook_command,
+    'test-module': test_integration,
+    'fetch-incidents': fetch_incidents,
+    'redcanary-list-detections': list_detections_command,
+    'redcanary-list-endpoints': list_endpoints_command,
+    'redcanary-get-endpoint': get_endpoint_command,
+    'redcanary-get-endpoint-detections': get_endpoint_detections_command,
+    'redcanary-get-detection': get_detection_command,
+    'redcanary-acknowledge-detection': acknowledge_detection_command,
+    'redcanary-update-remediation-state': remediate_detection_command,
+    'redcanary-execute-playbook': execute_playbook_command,
 }
 
-
 try:
-    LOG('command is %s' % (demisto.command(), ))
+    LOG('command is %s' % (demisto.command(),))
     command_func = COMMANDS.get(demisto.command())
     if command_func is not None:
         if demisto.command() == 'fetch-incidents':
