@@ -160,6 +160,232 @@ script:
     description: adds/removes tags to/from a specific alert
     execution: false
     name: zerofox-modify-alert-tags
+  - arguments:
+    - default: false
+      description: Social network account number (unique ID)
+      isArray: false
+      name: account
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        x ∈ { account_information , entity_discovery_content , entity_discovery_profile , impersonating_account , impersonating_comment , impersonating_post , incoming_comment , incoming_post , incoming_private_message , outgoing_private_message , self_comment , self_post , search_query , location , email }*
+        CSV of alert types. Possible values are account_information, entity_discovery_content, entity_discovery_profile, impersonating_account, impersonating_comment, impersonating_post, incoming_comment, incoming_post, incoming_private_message, outgoing_private_message, self_comment, self_post, search_query, email, and location.
+      isArray: false
+      name: alert_type
+      required: false
+      secret: false
+    - default: false
+      description: Name of user assigned to alert
+      isArray: false
+      name: assignee
+      required: false
+      secret: false
+    - default: false
+      description: ZeroFox entity ID
+      isArray: false
+      name: entity
+      required: false
+      secret: false
+    - default: false
+      description: ZeroFox entity term ID
+      isArray: false
+      name: entity_term
+      required: false
+      secret: false
+    - default: false
+      description: Number of seconds since an alert has changed
+      isArray: false
+      name: last_modified
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of alerts to retrieve (0 - 100)
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: ISO-8601 date-time string to filter for alerts before
+      isArray: false
+      name: max_timestamp
+      required: false
+      secret: false
+    - default: false
+      description: ISO-8601 date-time string to filter for alerts after
+      isArray: false
+      name: min_timestamp
+      required: false
+      secret: false
+    - default: false
+      description: Network name csv
+      isArray: false
+      name: network
+      required: false
+      secret: false
+    - default: false
+      description: Used for pagination. Start response with n-th alert matching filters.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: ZeroFox page ID CSV
+      isArray: false
+      name: page_id
+      required: false
+      secret: false
+    - default: false
+      description: URL to Web/Social Web content
+      isArray: false
+      name: page_url
+      required: false
+      secret: false
+    - default: false
+      description: Encoded JSON array of strings to filter alerts by
+      isArray: false
+      name: pages
+      required: false
+      secret: false
+    - default: false
+      description: Social network post number (unique ID)
+      isArray: false
+      name: post
+      required: false
+      secret: false
+    - default: false
+      description: ZeroFox rule ID CSV
+      isArray: false
+      name: rule_id
+      required: false
+      secret: false
+    - default: false
+      description: ZeroFox rule name CSV
+      isArray: false
+      name: rule_name
+      required: false
+      secret: false
+    - default: false
+      description: Substring matching for the protected entity
+      isArray: false
+      name: entity_search
+      required: false
+      secret: false
+    - default: false
+      description: Substring to filter alerts by perpetrator username or display name
+      isArray: false
+      name: perpetrator_search
+      required: false
+      secret: false
+    - default: false
+      description: Substring to filter alerts by protected social object username,
+        display name, or entity term name
+      isArray: false
+      name: pro_social_obj_search
+      required: false
+      secret: false
+    - default: false
+      description: CSV of alert IDs
+      isArray: false
+      name: alert_id
+      required: false
+      secret: false
+    - default: false
+      description: Severity level of alert. 1 - 5 (Critical).
+      isArray: false
+      name: severity
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        x ∈ { asc , desc }
+        Sort results in ascending (asc) or descending (desc) order
+      isArray: false
+      name: sort_direction
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        x ∈ { alert_id , alert_status , alert_type , assigned_user , perpetrator , protected_entity , protected_social_object , rule , severity , social_network , timestamp , escalated }
+        Field to sort filtered alerts by. Possible values are alert_id, alert_status, alert_type, assigned_user, perpetrator, protected_entity (name), protected_social_object (name), rule (name), severity, social_network and timestamp.
+      isArray: false
+      name: sort_field
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        x ∈ { closed , open , takedown_accepted , takedown_denied , takedown_requested , whitelisted }
+        Alert status. Possible values are closed, open, takedown_accepted, takedown_denied, takedown_requested, and whitelisted.
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
+      description: If true, returns only alerts that are escalated.
+      isArray: false
+      name: escalated
+      required: false
+      secret: false
+    - default: false
+      description: Alert tags. Returns any alerts containing one or more of the tags
+        in provided comma separated list.
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns alerts matching given/default filters and parameters. By
+      default, no filters are applied and results are sorted by timestamp.
+    execution: false
+    name: zerofox-list-alerts
+    outputs:
+    - type: Unknown
+    - type: Unknown
+  - arguments:
+    - default: false
+      description: Name of the entity (may be non-unique)
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: indicating type of string matching for comparing name to impersonators
+      isArray: false
+      name: strict_name_matching
+      required: false
+      secret: false
+    - default: false
+      description: profile image for entity
+      isArray: false
+      name: image
+      required: false
+      secret: false
+    - default: false
+      description: List of string labels for tagging the entity
+      isArray: false
+      name: labels
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the policy to assign to the new entity
+      isArray: false
+      name: policy
+      required: false
+      secret: false
+    - default: false
+      description: organization name associated with entity
+      isArray: false
+      name: organization
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new entity on the company of the authorized user.
+    execution: false
+    name: zerofox-create-entity
+    outputs:
+    - contextPath: ZeroFox.Entity
+      description: Entity details
+      type: Unknown
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false
   runonce: false
