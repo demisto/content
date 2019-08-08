@@ -287,7 +287,20 @@ def create_entity_command():
     policy = demisto.args().get('policy')
     organization = demisto.args().get('organization')
     response_content = create_entity(name, strict_name_matching, image, labels, policy, organization)
+    entity_id = response_content.get('id')
+    return_outputs(
+        f'Entity has been created successfully. ID: {entity_id}',
+        {'ZeroFox.Entity(val.ID && val.ID === obj.ID)': {'ID': entity_id}},
+        response_content
+    )
 
+
+def get_entities():
+    pass
+
+
+def get_entities_command():
+    pass
 
 
 
@@ -418,6 +431,8 @@ def main():
             alert_request_takedown_command()
         elif demisto.command() == 'zerofox-modify-alert-tags':
             modify_alert_tags_command()
+        elif demisto.command() == 'zerofox-create-entity':
+            create_entity_command()
 
     # Log exceptions
     except Exception as e:
