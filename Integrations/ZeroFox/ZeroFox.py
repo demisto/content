@@ -37,6 +37,66 @@ if not demisto.params().get('proxy'):
 ''' HELPER FUNCTIONS '''
 
 
+def get_alert_contents(alert):
+    return {
+        'AlertType': alert.get('alert_type'),
+        'OffendingContentURL': alert.get('off'),
+        'AssetTermID': alert.get('asset_term', {}).get('id'),
+        'AssetTermName': alert.get('asset_term', {}).get('name'),
+        'AssetTermDeleted': alert.get('asset_term', {}).get('deleted'),
+        'Assignee': alert.get('assignee'),
+        'EntityID': alert.get('entity', {}).get('id'),
+        'EntityName': alert.get('entity', {}).get('name'),
+        'EntityImage': alert.get('entity', {}).get('image'),
+        'EntityTermID': alert.get('entity_term', {}).get('id'),
+        'EntityTermName': alert.get('entity_term', {}).get('name'),
+        'EntityTermDeleted': alert.get('entity_term', {}).get('deleted'),
+        'ContentCreatedAt': alert.get('content_created_at'),
+        'ID': alert.get('id'),
+        'ProtectedAccount': alert.get('protected_account'),
+        'Severity': alert.get('severity'),
+        'PerpetratorName': alert.get('perpetrator', {}).get('name'),
+        'PerpetratorURL': alert.get('perpetrator', {}).get('url'),
+        'PerpetratorTimeStamp': alert.get('perpetrator', {}).get('timestamp'),
+        'PerpetratorType': alert.get('perpetrator', {}).get('type'),
+        'PerpetratorID': alert.get('perpetrator', {}).get('id'),
+        'PerpetratorNetwork': alert.get('perpetrator', {}).get('network'),
+        'RuleGroupID': alert.get('rule_group_id'),
+        'AssetID': alert.get('asset', {}).get('id'),
+        'AssetName': alert.get('asset', {}).get('name'),
+        'AssetImage': alert.get('asset', {}).get('image'),
+        'Status': alert.get('status'),
+        'Timestamp': alert.get('timestamp'),
+        'RuleName': alert.get('rule_name'),
+        'LastModified': alert.get('last_modified'),
+        'ProtectedLocations': alert.get('protected_locations'),
+        'DarkwebTerm': alert.get('darkweb_Term'),
+        'Reviewed': alert.get('reviewed'),
+        'Escalated': alert.get('escalated'),
+        'Network': alert.get('network'),
+        'ProtectedSocialObject': alert.get('protected_social_object'),
+        'Notes': alert.get('notes'),
+        'RuleID': alert.get('rule_id'),
+        'EntityAccount': alert.get('entity_account'),
+        'Tags': alert.get('tags'),
+        'Notes': alert.get('notes')
+    }
+
+
+def get_alert_contents_war_room(contents):
+    return {
+        'ID': contents.get('ID'),
+        'Protected Entity': contents.get('EntityName').title(),
+        'Content Type': contents.get('AlertType').title(),
+        'Alert Date': contents.get('Timestamp'),
+        'Status': contents.get('Status').title(),
+        'Source': contents.get('Network').title(),
+        'Rule': contents.get('RuleName'),
+        'Severity': contents.get('Severity'),
+        'Notes': contents.get('Notes') if contents.get('Notes') != '' else None,
+        'Tags': contents.get('Tags')
+    }
+
 def clear_integration_context():
     demisto.setIntegrationContext({})
     demisto.info(demisto.getIntegrationContext())
@@ -185,57 +245,48 @@ def get_alert(alert_id):
 def get_alert_command():
     alert_id = demisto.args().get('alert_id')
     response_content = get_alert(alert_id)
-    response_fields_json = response_content.get('alert')
-    contents = {
-        'AlertType': response_fields_json.get('alert_type'),
-        'OffendingContentURL': response_fields_json.get('off'),
-        'AssetTermID': response_fields_json.get('asset_term', {}).get('id'),
-        'AssetTermName': response_fields_json.get('asset_term', {}).get('name'),
-        'AssetTermDeleted': response_fields_json.get('asset_term', {}).get('deleted'),
-        'Assignee': response_fields_json.get('assignee'),
-        'EntityID': response_fields_json.get('entity', {}).get('id'),
-        'EntityName': response_fields_json.get('entity', {}).get('name'),
-        'EntityImage': response_fields_json.get('entity', {}).get('image'),
-        'EntityTermID': response_fields_json.get('entity_term', {}).get('id'),
-        'EntityTermName': response_fields_json.get('entity_term', {}).get('name'),
-        'EntityTermDeleted': response_fields_json.get('entity_term', {}).get('deleted'),
-        'ContentCreatedAt': response_fields_json.get('content_created_at'),
-        'ID': response_fields_json.get('id'),
-        'ProtectedAccount': response_fields_json.get('protected_account'),
-        'Severity': response_fields_json.get('severity'),
-        'PerpetratorName': response_fields_json.get('perpetrator', {}).get('name'),
-        'PerpetratorURL': response_fields_json.get('perpetrator', {}).get('url'),
-        'PerpetratorTimeStamp': response_fields_json.get('perpetrator', {}).get('timestamp'),
-        'PerpetratorType': response_fields_json.get('perpetrator', {}).get('type'),
-        'PerpetratorID': response_fields_json.get('perpetrator', {}).get('id'),
-        'PerpetratorNetwork': response_fields_json.get('perpetrator', {}).get('network'),
-        'RuleGroupID': response_fields_json.get('rule_group_id'),
-        'AssetID': response_fields_json.get('asset', {}).get('id'),
-        'AssetName': response_fields_json.get('asset', {}).get('name'),
-        'AssetImage': response_fields_json.get('asset', {}).get('image'),
-        'Status': response_fields_json.get('status'),
-        'TimeStamp': response_fields_json.get('timestamp'),
-        'RuleName': response_fields_json.get('rule_name'),
-        'LastModified': response_fields_json.get('last_modified'),
-        'ProtectedLocations': response_fields_json.get('protected_locations'),
-        'DarkwebTerm': response_fields_json.get('darkweb_Term'),
-        'Reviewed': response_fields_json.get('reviewed'),
-        'Escalated': response_fields_json.get('escalated'),
-        'Network': response_fields_json.get('network'),
-        'ProtectedSocialObject': response_fields_json.get('protected_social_object'),
-        'Notes': response_fields_json.get('notes'),
-        'RuleID': response_fields_json.get('rule_id'),
-        'EntityAccount': response_fields_json.get('entity_account'),
-    }
-    context = {
-        'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents
-    }
+    response_json_fields = response_content.get('alert', {})
+    contents = get_alert_contents(response_json_fields)
+    contents_war_room = get_alert_contents_war_room(contents)
+    context = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents}
     return_outputs(
-        tableToMarkdown(f'Alert: {alert_id}', contents, removeNull=True),
+        tableToMarkdown(f'Alert: {alert_id}', contents_war_room, removeNull=True),
         context,
         response_content
     )
 
+
+def list_alerts():
+    pass
+
+
+def list_alerts_command():
+    pass
+
+
+def create_entity(name, strict_name_matching=None, image=None, labels=None, policy=None, organization=None):
+    url_suffix: str = '/entities/'
+    request_body = {
+        'name': name,
+        'strict_name_matching': strict_name_matching,
+        'image': image,
+        'labels': labels,
+        'policy': policy,
+        'organization': organization
+    }
+    request_body = {key: value for key, value in request_body.items() if value is not None}
+    response_content = http_request('POST', url_suffix, data=json.dumps(request_body))
+    return response_content
+
+
+def create_entity_command():
+    name = demisto.args().get('name')
+    strict_name_matching = demisto.args().get('strict_name_matching')
+    image = demisto.args().get('image')
+    labels = demisto.args().get('args')
+    policy = demisto.args().get('policy')
+    organization = demisto.args().get('organization')
+    response_content = create_entity(name, strict_name_matching, image, labels, policy, organization)
 
 
 
