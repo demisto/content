@@ -187,7 +187,8 @@ def parse_response(resp, err_operation):
             sys.exit(0)
         elif res_json.get("message").find("AF Cookie Not Found") != -1:
             demisto.results(err_msg)
-        elif res_json.get("message").find("Tag") != -1 and res_json.get("message").find("not found") != -1:
+        elif err_operation == 'Tag details operation failed' and\
+                res_json.get("message").find("Tag") != -1 and res_json.get("message").find("not found") != -1:
             demisto.results(err_msg)
             sys.exit(0)
         else:
