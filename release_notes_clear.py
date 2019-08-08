@@ -49,9 +49,10 @@ def main():
     arg_parser.add_argument('version', help='Release version')
     arg_parser.add_argument('git_sha1', help='commit sha1 to compare changes with')
     arg_parser.add_argument('server_version', help='Server version')
+    arg_parser.add_argument('-d', '--date', help='release date in the format %Y-%m-%d', required=False)
     args = arg_parser.parse_args()
 
-    date = datetime.now().strftime('%Y-%m-%d')
+    date = args.date if args.date else datetime.now().strftime('%Y-%m-%d')
 
     # get changed yaml/json files (filter only relevant changed files)
     fv = FilesValidator()
