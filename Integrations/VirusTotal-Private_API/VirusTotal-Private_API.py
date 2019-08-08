@@ -20,7 +20,7 @@ if not demisto.params().get('useProxy', False):
 
 # Define utf8 as default encoding
 reload(sys)
-sys.setdefaultencoding('utf8')
+sys.setdefaultencoding('utf8')  # pylint: disable=E1101
 
 ''' GLOBAL VARS '''
 SERVER_URL = 'https://www.virustotal.com/vtapi/v2/'
@@ -1140,7 +1140,7 @@ try:
     elif demisto.command() == 'vt-private-search-file':
         demisto.results(search_file_command())
     elif demisto.command() == 'vt-private-ip-to-domain':
-        demisto.results(ip_to_domain_command())  # type:ignore
+        demisto.results(ip_to_domain_command())  # type:ignore  # pylint: disable=E0602
     elif demisto.command() == 'vt-private-hash-communication':
         demisto.results(hash_communication_command())
     elif demisto.command() == 'vt-private-download-file':
