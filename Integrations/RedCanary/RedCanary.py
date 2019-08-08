@@ -526,7 +526,7 @@ def fetch_incidents():
         incidents.append(incident)
 
     if len(incidents) != 0:
-        last_fetch = max([get_time_obj(incident['occurred']) for incident in incidents])
+        last_fetch = max([get_time_obj(incident['occurred']) for incident in incidents])  # noqa:F812
         demisto.setLastRun({'time': get_time_str(last_fetch + timedelta(seconds=1))})
     demisto.incidents(incidents)
 
