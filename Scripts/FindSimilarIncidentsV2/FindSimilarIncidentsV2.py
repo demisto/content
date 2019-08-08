@@ -136,7 +136,7 @@ def get_incidents_by_keys(similar_incident_keys, incident_time, incident_id, hou
     incident_time = parse_datetime(incident_time)
     max_date = incident_time
     min_date = incident_time - timedelta(hours=hours_back)
-    hours_back_query = '{0}:>="{1}" and {0}:<="{2}"'.format(TIME_FIELD, min_date.isoformat(), max_date.isoformat())
+    hours_back_query = '{0}:>="{1}" and {0}:<"{2}"'.format(TIME_FIELD, min_date.isoformat(), max_date.isoformat())
 
     if similar_keys_query:
         query = "(%s) and (%s)" % (similar_keys_query, hours_back_query)
