@@ -1,0 +1,53 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: dnstwist
+  version: -1
+description: Domain name permutation engine for detecting typo squatting, phishing
+  and corporate espionage
+configuration: []
+display: dnstwist
+name: dnstwist
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Domain name to check variations
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    - default: true
+      defaultValue: '30'
+      description: Limits the results in the context. High value of context outputs
+        might slow your browser. Markdown entry will contain all results.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'no'
+      description: Perform lookup for WHOIS creation/update time (slow)
+      isArray: false
+      name: whois
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
+    deprecated: false
+    description: Check domain variations
+    execution: false
+    name: dnstwist-domain-variations
+    outputs:
+    - contextPath: dnstwist.Domain.Domains.Name
+      description: Domain variations
+      type: Unknown
+    - contextPath: dnstwist.Domain.Domains.IP
+      description: IPs resolved to domain variations
+      type: Unknown
+  dockerimage: demisto/dnstwist:1.0
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
