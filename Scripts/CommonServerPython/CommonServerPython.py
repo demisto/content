@@ -1352,7 +1352,7 @@ def return_outputs(readable_output, outputs, raw_response=None):
     demisto.results(return_entry)
 
 
-def return_error(message, error='', outputs=None):
+def return_error(message, error='', outputs=None, exception_object=None):
     """
         Returns error entry with given message and exits the script
 
@@ -1365,12 +1365,17 @@ def return_error(message, error='', outputs=None):
         :type outputs: ``dict or None``
         :param outputs: the outputs that will be returned to playbook/investigation context (optional)
 
+        :type exception_object: ``Exception or None``
+        :param exception_object: the exception raised from code
+
         :return: Error entry object
         :rtype: ``dict``
     """
     LOG(message)
     if error:
         LOG(error)
+    if exception_object:
+        LOG(str(exception_object))
     LOG.print_log()
     demisto.results({
         'Type': entryTypes['error'],
