@@ -1,0 +1,206 @@
+category: Messaging
+commonfields:
+  id: Microsoft Teams
+  version: -1
+configuration:
+- display: Bot ID
+  name: bot_id
+  required: true
+  type: 0
+- display: Bot Password
+  name: bot_password
+  required: true
+  type: 4
+- defaultvalue: General
+  display: Notifications channel
+  name: incident_notifications_channel
+  required: false
+  type: 0
+- defaultvalue: Low
+  display: Minimum incident severity to send notifications to Teams by
+  name: min_incident_severity
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: false
+  type: 15
+- display: Allow external users to create incidents via direct message
+  name: allow_external_incidents_creation
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Long running instance
+  name: longRunning
+  required: false
+  type: 8
+- display: Port mapping (<host port>:<docker port>)
+  name: longRunningPort
+  required: false
+  type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Integration Template
+display: Microsoft Teams
+name: Microsoft Teams
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Channel to send message to
+      isArray: false
+      name: channel
+      required: false
+      secret: false
+    - default: false
+      description: Message to send
+      isArray: false
+      name: message
+      required: false
+      secret: false
+    - default: false
+      description: Team member to send message to
+      isArray: false
+      name: team_member
+      required: false
+      secret: false
+    - default: false
+      description: Team in which provided channel is in to send message to
+      isArray: false
+      name: team
+      required: false
+      secret: false
+    deprecated: false
+    description: Send message to Teams
+    execution: false
+    name: send-notification
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: all
+      description: The type of mirroring can be "all" to mirror everything, "chat"
+        to mirror only chatting but not commands, or "none" to stop mirroring.
+      isArray: false
+      name: mirror_type
+      predefined:
+      - all
+      - chat
+      - none
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Should we auto-close the channel when the incident is closed.
+      isArray: false
+      name: autoclose
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: both
+      description: The mirroring direction - Microsoft Teams to Demisto, Demisto to
+        Microsoft Teams or both
+      isArray: false
+      name: direction
+      predefined:
+      - Both
+      - FromDemisto
+      - ToDemisto
+      required: false
+      secret: false
+    - default: false
+      description: Team to mirror investigation in. If not provided, the default team
+        set in integration parameters will be used
+      isArray: false
+      name: team
+      required: false
+      secret: false
+    deprecated: false
+    description: Mirror Demisto investigation in Teams
+    execution: false
+    name: mirror-investigation
+  - arguments:
+    - default: false
+      description: Channel name to close
+      isArray: false
+      name: channel
+      required: false
+      secret: false
+    deprecated: false
+    description: Delete a Teams channel
+    execution: false
+    name: close-channel
+  - arguments:
+    - default: false
+      description: The name to display in the address book for the group.
+      isArray: false
+      name: display_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Set to true for mail-enabled groups.
+      isArray: false
+      name: mail_enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The mail alias for the group.
+      isArray: false
+      name: mail_nickname
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Set to true for security-enabled groups, including Office 365 groups.
+      isArray: false
+      name: security_enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Email address or name of member to be team owner, given in comma-seperated
+        list.
+      isArray: false
+      name: owner
+      required: true
+      secret: false
+    - default: false
+      description: Email address or name of members to be added to the team, given
+        in comma-seperated list.
+      isArray: false
+      name: members
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new Microsoft Teams team.
+    execution: false
+    name: microsoft-teams-create-team
+  dockerimage: devtesting/teams:1.0.0.1562654266
+  isfetch: false
+  longRunning: true
+  longRunningPort: true
+  runonce: false
+  script: '-'
+  type: python

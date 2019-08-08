@@ -36,7 +36,8 @@ entryTypes = {
     'entryInfoFile': 9,
     'warning': 11,
     'map': 15,
-    'widget': 17
+    'widget': 17,
+    'warning': 11
 }
 formats = {
     'html': 'html',

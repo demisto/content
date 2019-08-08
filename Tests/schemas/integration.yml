@@ -67,6 +67,10 @@ mapping:
         - type: str
       isfetch:
         type: bool
+      longRunning:
+        type: bool
+      longRunningPort:
+        type: bool
       commands:
         type: seq
         sequence:
