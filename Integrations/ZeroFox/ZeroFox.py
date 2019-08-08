@@ -1,11 +1,11 @@
+from distutils.util import strtobool
+from typing import Dict
+
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 ''' IMPORTS '''
 
-import json
 import requests
-from distutils.util import strtobool
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -15,9 +15,9 @@ requests.packages.urllib3.disable_warnings()
 USERNAME = demisto.params().get('credentials').get('identifier')
 PASSWORD = demisto.params().get('credentials').get('password')
 TOKEN = None
-# Remove trailing slash to prevent wrong URL path to service
-SERVER = demisto.params()['url'][:-1] \
-    if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
+# # Remove trailing slash to prevent wrong URL path to service
+# SERVER = demisto.params()['url'][:-1] \
+#     if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
 # Should we use SSL
 USE_SSL = not demisto.params().get('insecure', False)
 # How many time before the first fetch to retrieve incidents
@@ -26,7 +26,7 @@ FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 BASE_URL = 'https://api.zerofox.com/1.0' # disable-secrets-detection
 # Headers to be sent in requests
 HEADERS = {
-    'Authorization': 'Token ' + TOKEN + ':' + USERNAME + PASSWORD,
+    'Authorization': 'Token {}'.format(TOKEN),
     'Content-Type': 'application/json',
     'Accept': 'application/json'
 }
@@ -40,18 +40,25 @@ if not demisto.params().get('proxy'):
 
 ''' HELPER FUNCTIONS '''
 
+
 def get_authorization_token():
-    endpoint = '/api-token-auth/'
-    data_for_request = {
+    context: Dict = demisto.getIntegrationContext()
+    # if context is a dict so it must have a token inside - because token is the first thing added to the context
+    if isinstance(context, Dict):
+        return
+    endpoint: str = '/api-token-auth/'
+    demisto.info(USERNAME)
+    demisto.info(PASSWORD)
+    data_for_request: Dict = {
         'username': USERNAME,
         'password': PASSWORD
     }
-    request_respone = http_request('POST', endpoint, data=data_for_request)
-    try:
-    TOKEN = request_respone.json().get('token')
+    request_response = http_request('POST', endpoint, data=data_for_request, headers=None)
+    global TOKEN
+    TOKEN = request_response.get('token')
+    demisto.setIntegrationContext({'auth_token': TOKEN})
 
-
-def http_request(method, url_suffix, params=None, data=None):
+def http_request(method: str, url_suffix: str, params: Dict = None, data: Dict = None, headers: Dict = HEADERS):
     # A wrapper for requests lib to send our requests and handle requests and responses better
     res = requests.request(
         method,
@@ -59,13 +66,27 @@ def http_request(method, url_suffix, params=None, data=None):
         verify=USE_SSL,
         params=params,
         data=data,
-        headers=HEADERS
+        headers=headers
     )
     # Handle error responses gracefully
-    if res.status_code not in {200}:
-        return_error('Error in API call to Example Integration [%d] - %s' % (res.status_code, res.reason))
-
-    return res.json()
+    if res.status_code not in {200, 201}:
+        err_msg: str = f'Error in ZeroFox Integration API call [{res.status_code}] -ggg {res.reason}\n'
+        try:
+            res_json = res.json()
+            if 'error' in res_json:
+                err_msg += res_json.get('error')
+            else:
+                err_msg += res_json
+        except ValueError:
+            pass
+        finally:
+            return_error(err_msg)
+    else:
+        try:
+            res_json = res.json()
+            return res_json
+        except ValueError:
+            return 'Success Message'
 
 
 def item_to_incident(item):
@@ -81,11 +102,94 @@ def item_to_incident(item):
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
-def get_alert():
+def close_alert(args={}):
+    alert_id: int = args.get('alert_id')
+    endpoint: str = f'/alerts/{alert_id}/close/'
+    response_content = http_request('POST', endpoint)
+    return response_content
 
+
+def close_alert_command():
+    args = demisto.args()
+    response_content = close_alert(args) # ???
+    alert_id: int = demisto.args('alert_id')
+    success_msg: str = f'Alert: {alert_id} has been closed successfully.'
+    demisto.results(success_msg)
+
+
+def alert_request_takedown(args={}):
+    alert_id: int = args.get('alert_id')
+    endpoint: str = f'/alerts/{alert_id}/request_takedown/'
+    response_content = http_request('POST', endpoint)
+    return response_content
+
+def alert_request_takedown_command():
+    args = demisto.args()
+    response_content = close_alert(args)
+    alert_id: int = demisto.args('alert_id')
+    success_msg: str = f'Alert: {alert_id} has been taken down successfully.'
+    demisto.results(success_msg)
+
+
+def alert_user_assignment(args={}):
+    alert_id: int = args.get('alert_id')
+    endpoint: str = f'/alerts/{alert_id}/assign/'
+    subject_email: str = args.get('subject_email')
+    subject_name: str = args.get('subject_name')
+    request_body: Dict = {
+        'subject_email': subject_email,
+        'subject': subject_name
+    }
+    response_content = http_request('POST', endpoint, data=request_body)
+    return response_content
+
+def alert_user_assignment_command():
+    args = demisto.args()
+    response_content = alert_user_assignment(args)
+    alert_id: int = demisto.args('alert_id')
+    subject_name: str = demisto.args('subject_name')
+    success_msg: str = f'User: {subject_name} has been assigned to Alert: {alert_id} successfully.'
+    demisto.results(success_msg)
+
+
+def modify_alert_tags(args={}):
+    endpoint: str = '/alerttagchangeset/'
+    alert_id: int = args.get('alert_id')
+    addition: bool = args.get('addition')
+    tags_list_name: str = 'added' if addition else 'removed'
+    tags_list: list = args.get('tags').split(',')
+    request_body: Dict = {
+        'changes': [
+            {
+                f'{tags_list_name}': tags_list,
+                'alert': alert_id
+            }
+        ]
+    }
+    response_content = http_request('POST', endpoint, data=request_body)
+    return response_content
+
+def modify_alert_tags_command():
+    args = demisto.args()
+    response_content = modify_alert_tags(args)
+    alert_tags_changeset_id: str = response_content.get('uuid')
+    human_readable: str = 'Changes were successfully made.'
+    outputs: Dict = {'ZeroFox.Alert.ChangeUUID': alert_tags_changeset_id}
+    return_outputs(human_readable, outputs, response_content)
+
+
+def get_alert(args={}):
+    alert_id: int = args.get('alert_id')
+    endpoint: str = f'/alerts/{alert_id}/'
+    response_content = http_request('GET', endpoint)
+    return response_content
 
 def get_alert_command():
-    pass
+    args = demisto.args()
+    response_content = get_alert(args)
+    # TODO.
+
+
 
 def test_module():
     """
@@ -187,24 +291,37 @@ def fetch_incidents():
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-LOG('Command being called is %s' % (demisto.command()))
+''' EXECUTION '''
 
-try:
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        test_module()
-        demisto.results('ok')
-    elif demisto.command() == 'fetch-incidents':
-        # Set and define the fetch incidents command to run after activated via integration settings.
-        fetch_incidents()
-    elif demisto.command() == 'example-get-items':
-        # An example command
-        get_items_command()
-    elif demisto.command() == 'zerofox-get-alert':
-        get_alert_command()
+def main():
+    LOG('Command being called is %s' % (demisto.command()))
+    try:
+        demisto.info(USERNAME)
+        demisto.info(PASSWORD)
+        get_authorization_token()
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+            demisto.results('ok')
+        elif demisto.command() == 'fetch-incidents':
+            # Set and define the fetch incidents command to run after activated via integration settings.
+            fetch_incidents()
+        elif demisto.command() == 'example-get-items':
+            # An example command
+            get_items_command()
+        elif demisto.command() == 'zerofox-get-alert':
+            get_alert_command()
+        elif demisto.command() == 'zerofox-alert-user-assignment':
+            alert_user_assignment_command()
+        elif demisto.command() == 'zerofox-close-alert':
+            close_alert_command()
 
-# Log exceptions
-except Exception, e:
-    LOG(e.message)
-    LOG.print_log()
-    raise
+    # Log exceptions
+    except Exception as e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == '__builtin__' or __name__ == 'builtins':
+    main()
