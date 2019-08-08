@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import requests
 import json
-import os
 import time
 import sys
 
