@@ -20,6 +20,8 @@ def get_username_password():
     parser.add_argument('-v', '--contentVersion', help='Content version to install', required=True)
     parser.add_argument("--non-ami", help="Do NOT run with AMI setting", action='store_true')
     options = parser.parse_args()
+    print json.dumps(options, indent=4)
+    exit(1)
     conf_path = options.confPath
 
     with open(conf_path, 'r') as conf_file:
