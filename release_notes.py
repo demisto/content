@@ -120,7 +120,7 @@ class Content(object):
         """
         rn = self.get_release_notes(file_path, data)
 
-        if rn.strip() == IGNORE_RN:
+        if rn and rn.strip() == IGNORE_RN:
             rn = ''
 
         return rn
@@ -540,7 +540,7 @@ def get_release_notes_draft(github_token, asset_id):
 
     try:
         res = requests.get('https://api.github.com/repos/demisto/content/releases', verify=False,
-                       headers={'Authorization': 'token {}'.format(github_token)})
+                           headers={'Authorization': 'token {}'.format(github_token)})
     except requests.exceptions.ConnectionError as e:
         print_warning('unable to get release draft, reason:\n{}'.format(str(e)))
         return ''
