@@ -64,7 +64,7 @@ def get_time_str(time_obj, time_format=None):
     if time_format is None:
         return time_obj.isoformat().split('.')[0] + 'Z'
     else:
-        return datetime.strftime(t, time_format)
+        return datetime.strftime(t, time_format)  # type:ignore
 
 
 def http_request(requests_func, url_suffix, **kwargs):
@@ -150,7 +150,7 @@ def get_full_timeline(detection_id, per_page=100):
     ''' iterate over all timeline  detections later then time t '''
     page = 1
     done = False
-    activities = []
+    activities = []  # type:ignore
     while not done:
         res = http_get('/detections/{}/timeline'.format(detection_id),
                        params={
@@ -181,7 +181,7 @@ def process_timeline(detection_id):
 
         activity_time = get_time_str(get_time_obj(activity['attributes']['occurred_at']))
         notes = activity['attributes']['analyst_notes']
-        additional_data = {}
+        additional_data = {}  # type:ignore
 
         if activity['attributes']['type'] == 'process_activity_occurred':
             process = activity['attributes']['process_execution']['attributes']['operating_system_process'][
@@ -262,7 +262,7 @@ def detections_to_entry(detections, show_timeline=False):
         for d in detections]
     endpoint_users = sum(endpoint_users, [])
 
-    domains, files, ips, processes = [], [], [], []
+    domains, files, ips, processes = [], [], [], []  # type:ignore
     activities = ''
     title = 'Detections'
     if show_timeline and len(detections) == 1:
@@ -474,7 +474,7 @@ def get_endpoint_detections(_id):
     endpoint = get_endpoint(_id)
 
     detection_ids = [d['href'].split('detections/')[1] for d in endpoint[0]['links']['detections']]
-    detections = []
+    detections = []  # type:ignore
     for detection_id in detection_ids:
         detections.extend(get_detection(detection_id))
 
