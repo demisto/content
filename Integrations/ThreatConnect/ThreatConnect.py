@@ -2,13 +2,11 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
-import urllib
 import datetime
 from urlparse import urlparse
 
 from threatconnect import ThreatConnect
 from threatconnect.RequestObject import RequestObject
-from threatconnect.Config.IndicatorType import IndicatorType
 from threatconnect.Config.ResourceType import ResourceType
 from threatconnect.Config.FilterOperator import FilterOperator
 
@@ -85,9 +83,9 @@ def create_context(indicators, include_dbot_score=False):
             if hasattr(ind, 'description'):
                 desc = ind.description
             mal = {
-                'Malicious':{
-                    'Vendor' : 'ThreatConnect',
-                    'Description' : desc,
+                'Malicious': {
+                    'Vendor': 'ThreatConnect',
+                    'Description': desc,
                 }
             }
             if indicator_type == 'ip':
@@ -533,7 +531,7 @@ def tc_create_incident_command():
             'Owner': raw_incident['ownerName'],
             'EventDate': raw_incident['eventDate'],
             'Tag': tag,
-            'SecurityLabel': security_label,
+            'SecurityLabel': security_label
     }
 
     demisto.results({
@@ -578,7 +576,7 @@ def tc_fetch_incidents_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Incidents:', raw_incidents, headerTransform=pascalToSpace),
         'EntryContext': {
-            'TC.Incident(val.ID && val.ID === obj.ID)' : createContext(raw_incidents, removeNull=True),
+            'TC.Incident(val.ID && val.ID === obj.ID)': createContext(raw_incidents, removeNull=True),
             'ThreatConnect.incidents': raw_incidents,  # backward compatible
         },
     })
@@ -676,7 +674,7 @@ def tc_incident_associate_indicator_command():
         'Contents': incidents,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': '\n'.join(md),
-        'EntryContext': {'TC.Incident(val.ID && val.ID === obj.ID)' : createContext(incidents, removeNull=True)}
+        'EntryContext': {'TC.Incident(val.ID && val.ID === obj.ID)': createContext(incidents, removeNull=True)}
     })
 
 
@@ -865,7 +863,7 @@ def tc_create_campaign_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': 'Campaign {} Created Successfully'.format(name),
         'EntryContext': {
-            'TC.Campaign(val.ID && val.ID === obj.ID)' : createContext([ec], removeNull=True),
+            'TC.Campaign(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True),
         },
     })
 
@@ -1073,6 +1071,29 @@ def tc_add_group_attribute():
                                    contents, headers, removeNull=True), context, attribute)
 
 
+def add_group_security_label_request(group_type, group_id, security_label):
+    tc = get_client()
+    ro = RequestObject()
+    ro.set_http_method('POST')
+    ro.set_request_uri('/v2/groups/{}/{}/securityLabels/{}'.format(group_type, group_id, security_label))
+
+    response = tc.api_request(ro).json()
+
+    return response.get('status') == 'Success'
+
+
+def add_group_security_label():
+
+    group_id = int(demisto.args().get('group_id'))
+    group_type = demisto.args().get('group_type')
+    security_label = demisto.args().get('security_label_name')
+
+    add_group_security_label_request(group_type, group_id, security_label)
+
+    demisto.results('The security label {} was added successfully to {} {}'.format(security_label, group_type,
+                                                                                   group_id))
+
+
 def get_events_request():
     tc = get_client()
     ro = RequestObject()
@@ -1194,7 +1215,8 @@ COMMANDS = {
     'tc-add-group-attribute': tc_add_group_attribute,
     'tc-create-threat': tc_create_threat_command,
     'tc-delete-group': tc_delete_group_command,
-    'tc-get-groups': tc_get_groups
+    'tc-get-groups': tc_get_groups,
+    'tc-add-group-security-label': add_group_security_label
 }
 
 try:
