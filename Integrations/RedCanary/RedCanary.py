@@ -156,7 +156,7 @@ def get_full_timeline(detection_id, per_page=100):
                        params={
                            'page': page,
                            'per_page': per_page,
-                       })
+        })
 
         if len(res['data']) == 0 or True:
             done = True
@@ -308,7 +308,7 @@ def get_unacknowledge_detections(t, per_page=50):
                 passed = True
                 break
             if detection['attributes']['last_acknowledged_at'] is not None or detection['attributes'][
-                'last_acknowledged_by'] is not None:
+                    'last_acknowledged_by'] is not None:
                 continue
 
             yield detection
@@ -397,8 +397,8 @@ def remediate_detection(_id, remediation_state, comment):
                      data={
                          'remediation_state': remediation_state,
                          'comment': comment,
-                     }
-                     )
+    }
+    )
 
 
 def list_endpoints_command():
@@ -500,8 +500,8 @@ def execute_playbook(playbook_id, detection_id):
                     params={
                         'resource_type': 'Detection',
                         'resource_id': detection_id,
-                    }
-                    )
+    }
+    )
 
     return res
 
@@ -559,7 +559,7 @@ try:
         else:
             demisto.results(command_func())
 
-except Exception, e:
+except Exception as e:
     LOG(e.message)
     if demisto.command() != 'test-module':
         LOG.print_log()
