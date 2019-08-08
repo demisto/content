@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 from urlparse import urlparse
 from datetime import timedelta
@@ -45,7 +46,7 @@ def create_context(indicators, include_dbot_score=False):
         outputPaths['domain']: [],
         outputPaths['file']: [],
         'TC.Indicator(val.ID && val.ID === obj.ID)': [],
-    }
+    }  # type: dict
     tc_type_to_demisto_type = {
         'Address': 'ip',
         'URL': 'url',
@@ -518,7 +519,7 @@ def tc_create_incident_command():
     if owner == '':
         return_error('you must specify an owner via the command or the Organization parameter')
 
-    event_date = args.get('eventDate', datetime.datetime.utcnow().isoformat().split('.')[0] + 'Z')
+    event_date = args.get('eventDate', datetime.utcnow().isoformat().split('.')[0] + 'Z')
     tag = args.get('tag')
     security_label = args.get('securityLabel')
     description = args.get('description')
@@ -840,7 +841,7 @@ def tc_create_campaign_command():
     if owner == '':
         return_error('you must specify an owner via the command or the Organization parameter')
 
-    first_seen = args.get('firstSeen', datetime.datetime.utcnow().isoformat().split('.')[0] + 'Z')
+    first_seen = args.get('firstSeen', datetime.utcnow().isoformat().split('.')[0] + 'Z')
     tag = args.get('tag')
     security_label = args.get('securityLabel')
     description = args.get('description')
@@ -904,7 +905,7 @@ def tc_create_campaign(name, owner, first_seen, tag=None, security_label=None, d
 def tc_create_event_command():
     args = demisto.args()
     name = args['name']
-    event_date = args.get('EventDate', datetime.datetime.utcnow().isoformat().split('.')[0] + 'Z')
+    event_date = args.get('EventDate', datetime.utcnow().isoformat().split('.')[0] + 'Z')
     status = args.get('status')
     owner = args.get('owner', demisto.params()['defaultOrg'])
     if owner == '':
@@ -972,7 +973,7 @@ def tc_create_event(name, owner, event_date, tag=None, status=None, description=
 def tc_create_threat_command():
     args = demisto.args()
     name = args['name']
-    date = args.get('dateAdded', datetime.datetime.utcnow().isoformat().split('.')[0] + 'Z')
+    date = args.get('dateAdded', datetime.utcnow().isoformat().split('.')[0] + 'Z')
     owner = args.get('owner', demisto.params()['defaultOrg'])
     if owner == '':
         return_error('you must specify an owner via the command or the Organization parameter')
@@ -1047,7 +1048,6 @@ def tc_add_group_attribute_request(group_type, group_id, attribute_type, attribu
 
 
 def tc_add_group_attribute():
-
     group_id = int(demisto.args().get('group_id'))
     group_type = demisto.args().get('group_type')
     attribute_type = demisto.args().get('attribute_type')
@@ -1082,7 +1082,6 @@ def add_group_security_label_request(group_type, group_id, security_label):
 
 
 def add_group_security_label():
-
     group_id = int(demisto.args().get('group_id'))
     group_type = demisto.args().get('group_type')
     security_label = demisto.args().get('security_label_name')
@@ -1105,7 +1104,6 @@ def add_group_tags_request(group_type, group_id, tag_name):
 
 
 def add_group_tag():
-
     group_id = int(demisto.args().get('group_id'))
     group_type = demisto.args().get('group_type')
     tag_name = demisto.args().get('tag_name')
@@ -1181,7 +1179,6 @@ def tc_get_indicator_types():
 
 
 def associate_indicator_request(indicator_type, indicator, group_type, group_id):
-
     tc = get_client()
     ro = RequestObject()
     ro.set_http_method('POST')
@@ -1192,7 +1189,6 @@ def associate_indicator_request(indicator_type, indicator, group_type, group_id)
 
 
 def associate_indicator():
-
     group_id = int(demisto.args().get('group_id'))
     group_type = demisto.args().get('group_type')
     indicator_type = demisto.args().get('indicator_type')
@@ -1227,7 +1223,6 @@ def get_groups_request(group_type):
 
 
 def tc_get_groups():
-
     group_type = demisto.args().get('group_type')
     raw_response = get_groups_request(group_type)
     headers = ['ID', 'Name', 'OwnerName', 'EventDate', 'DateAdded', 'Status']
@@ -1295,7 +1290,6 @@ def create_document_group_request(file_name, name, owner, res, malware, password
 
 
 def create_document_group():
-
     file_name = demisto.args().get('file_name')
     name = demisto.args().get('name')
     malware = bool(demisto.args().get('malware'))
@@ -1370,7 +1364,7 @@ COMMANDS = {
 }
 
 try:
-    LOG('command is %s' % (demisto.command(), ))
+    LOG('command is %s' % (demisto.command(),))
     command_func = COMMANDS.get(demisto.command())
     if command_func is not None:
         command_func()
