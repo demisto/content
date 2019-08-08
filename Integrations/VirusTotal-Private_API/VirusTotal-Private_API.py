@@ -105,7 +105,7 @@ def create_scans_table(scans):
     Returns a table with the scan result for each vendor
     """
 
-    scans_table = []
+    scans_table = []  # type:ignore
     positives_scans_table = []
     negative_scans_table = []
     for scan in scans:
@@ -129,7 +129,7 @@ def create_scans_table(scans):
 
 
 def create_file_output(file_hash, threshold, vt_response, short_format):
-    ec = {}
+    ec = {}  # type:ignore
     md = ''
 
     positives = demisto.get(vt_response, 'positives')
@@ -167,7 +167,7 @@ def create_file_output(file_hash, threshold, vt_response, short_format):
     else:
         dbotScore = 1
 
-    ec['DBotScore'].append(
+    ec['DBotScore'].append(  # type:ignore
         {'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'VirusTotal - Private API', 'Score': dbotScore})
     md += 'MD5: **' + vt_response.get('md5') + '**\n'
     md += 'SHA1: **' + vt_response.get('sha1') + '**\n'
@@ -572,7 +572,7 @@ def get_url_report_command():
 
     responses_dict = get_url_reports_with_retries(urls, all_info, retries, scan_finish_time_in_seconds)
     md = ''
-    ec = {
+    ec = {  # type:ignore
         'DBotScore': [],
         outputPaths['url']: [],
     }
@@ -770,7 +770,7 @@ def get_ip_report_command():
                 response.get('verbose_msg'))
         }
 
-    ec = {}
+    ec = {}  # type:ignore
     md = '## VirusTotal IP report for: ' + ip + '\n'
     asn = str(response.get('asn', None)) if response.get('asn', None) else None
     if asn is not None:
@@ -1140,7 +1140,7 @@ try:
     elif demisto.command() == 'vt-private-search-file':
         demisto.results(search_file_command())
     elif demisto.command() == 'vt-private-ip-to-domain':
-        demisto.results(ip_to_domain_command())
+        demisto.results(ip_to_domain_command())  # type:ignore
     elif demisto.command() == 'vt-private-hash-communication':
         demisto.results(hash_communication_command())
     elif demisto.command() == 'vt-private-download-file':
