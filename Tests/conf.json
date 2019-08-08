@@ -553,6 +553,10 @@
             "playbookID": "reputations.json Test"
         },
         {
+            "playbookID": "Test IP Indicator Fields",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Shodan",
             "playbookID": "ShodanTest"
         },
