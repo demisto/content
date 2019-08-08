@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
-import datetime
 from urlparse import urlparse
 
 from threatconnect import ThreatConnect
@@ -1272,6 +1271,60 @@ def tc_get_groups():
                    raw_response)
 
 
+def create_document_group_request(file_name, name, owner, res, malware, password, security_label, description):
+    tc = get_client()
+    documents = tc.documents()
+
+    document = documents.add(name, owner)
+    document.set_file_name(file_name)
+
+    # open a file handle for a local file and read the contents thereof
+    f = open(res['path'], 'rb')
+    contents = f.read()
+    # upload the contents of the file into the Document
+    document.upload(contents)
+    if malware:
+        document.set_malware(True)
+        document.set_password(password)
+    if security_label:
+        document.set_security_label(security_label)
+    if description:
+        document.add_attribute('Description', description)
+
+    return json.loads(document.commit().json)
+
+
+def create_document_group():
+
+    file_name = demisto.args().get('file_name')
+    name = demisto.args().get('name')
+    malware = bool(demisto.args().get('malware'))
+    password = demisto.args().get('password')
+    res = demisto.getFilePath(demisto.args()['EntryID'])
+    owner = demisto.args().get('owner', demisto.params()['defaultOrg'])
+    if owner == '':
+        return_error('you must specify an owner via the command or the Organization parameter')
+
+    security_label = demisto.args().get('securityLabel')
+    description = demisto.args().get('description')
+
+    raw_document = create_document_group_request(file_name, name, owner, res, malware, password, security_label,
+                                                 description)
+    content = {
+        'ID': raw_document.get('id'),
+        'Name': raw_document.get('name'),
+        'Owner': raw_document.get('ownerName'),
+        'EventDate': raw_document.get('eventDate'),
+        'Description': description,
+        'SecurityLabel': security_label
+    }
+    context = {
+        'TC.Group(val.ID && val.ID === obj.ID)': content
+    }
+    return_outputs(tableToMarkdown('ThreatConnect document group created successfully', content, removeNull=True),
+                   context, raw_document)
+
+
 def test_integration():
     tc = get_client()
     owners = tc.owners()
@@ -1312,7 +1365,8 @@ COMMANDS = {
     'tc-add-group-security-label': add_group_security_label,
     'tc-add-group-tag': add_group_tag,
     'tc-get-indicator-types': tc_get_indicator_types,
-    'tc-group-associate-indicator': associate_indicator
+    'tc-group-associate-indicator': associate_indicator,
+    'tc-create-document-group': create_document_group
 }
 
 try:
