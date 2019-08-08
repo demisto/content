@@ -3,23 +3,6 @@ commonfields:
   id: ZeroFox
   version: -1
 configuration:
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
-- defaultvalue: https://example.net # disable-secrets-detection
-  display: Server URL (e.g. https://example.net) # disable-secrets-detection
-  name: url
-  required: true
-  type: 0
-- display: API Token
-  name: token
-  required: true
-  type: 4
 - defaultvalue: 'true'
   display: Trust any certificate (insecure)
   name: insecure
@@ -34,6 +17,10 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
 description: Integration Template
 display: ZeroFox
 name: ZeroFox
@@ -95,9 +82,44 @@ script:
     - contextPath: ZeroFox.Alert
       description: Alert Object
       type: Unknown
+  - arguments:
+    - default: false
+      description: The ID of the alert to be assigned.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    - default: false
+      description: The email of the user to assign the alert to.
+      isArray: false
+      name: subject_email
+      required: true
+      secret: false
+    - default: false
+      description: The name of the user being assigned.
+      isArray: false
+      name: subject_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Assigns an alert to a user
+    execution: false
+    name: zerofox-alert-user-assignment
+  - arguments:
+    - default: false
+      description: ID of the alert being closed.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Closes an alert
+    execution: false
+    name: zerofox-close-alert
+  dockerimage: demisto/python3:3.7.4.977
   isfetch: false
   runonce: false
   script: '-'
   type: python
 tests:
-  - No test - not yet implemented
+- No test - not yet implemented
