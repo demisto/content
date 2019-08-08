@@ -55,11 +55,6 @@ def is_content_installed(username, password, ips, content_version):
             release = resp.get("release")
             notes = resp.get("releaseNotes")
             installed = resp.get("installed")
-            ####
-            t = resp
-            del t['releaseNotes']
-            print_color(json.dumps(t, indent=4), LOG_COLORS.YELLOW)
-            ####
             if not (release == content_version and notes and installed):
                 print_error("Could not install content on instance [{}]".format(ami_instance_name))
                 return False
