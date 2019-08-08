@@ -1937,6 +1937,71 @@ script:
     - contextPath: TC.Group.IndicatorType
       description: Indicator type
       type: String
+  - arguments:
+    - default: false
+      description: The name of the file to show in the UI
+      isArray: false
+      name: file_name
+      required: true
+      secret: false
+    - default: false
+      description: File name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Is the file malware. If true, create a password-protected zip file
+        on your local machine containing the sample and then upload the zip file.
+      isArray: false
+      name: malware
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The password for the zip malware file
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    - default: false
+      description: Security label for the group
+      isArray: false
+      name: security_label
+      required: false
+      secret: false
+    - default: false
+      description: Group description
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Create document group
+    execution: false
+    name: tc-create-document-group
+    outputs:
+    - contextPath: TC.Group.ID
+      description: Group ID
+      type: Number
+    - contextPath: TC.Group.Name
+      description: Group name
+      type: String
+    - contextPath: TC.Group.Owner
+      description: Group Owner
+      type: String
+    - contextPath: TC.Group.EventDate
+      description: Event date
+      type: Date
+    - contextPath: TC.Group.Description
+      description: Group description
+      type: String
+    - contextPath: TC.Group.SecurityLabel
+      description: Group security label
+      type: String
   dockerimage: demisto/threatconnect-sdk
   isfetch: false
   runonce: false
