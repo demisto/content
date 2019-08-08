@@ -1,0 +1,1 @@
+Fix bug: support new line in incident feilds
