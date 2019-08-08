@@ -18,7 +18,7 @@ def get_username_password():
     parser = argparse.ArgumentParser(description='Utility for batch action on incidents')
     parser.add_argument('-c', '--confPath', help='The path for the secret conf file', required=True)
     parser.add_argument("--non-ami", help="Do NOT run with AMI setting", action='store_true')
-
+    parser.add_argument('-v', '--contentVersion', help='Content version to install')
     options = parser.parse_args()
     conf_path = options.confPath
 
@@ -26,19 +26,20 @@ def get_username_password():
         conf = json.load(conf_file)
 
     if options.non_ami:
-        return conf['username'], conf['username']
+        return conf['username'], conf['username'], conf['contentVersion']
 
-    return conf['username'], conf['userPassword']
+    return conf['username'], conf['userPassword'], conf['contentVersion']
 
 
-def is_content_installed(username, password, ips):
-    # type: (AnyStr, AnyStr, List[List[AnyStr, AnyStr]]) -> bool
+def is_content_installed(username, password, ips, content_version):
+    # type: (AnyStr, AnyStr, List[List[AnyStr, AnyStr]], AnyStr) -> bool
     """ Checks if any content version installed on servers
 
     Args:
         username: for server connection
         password: for server connection
         ips: list with lists of [instance_name, instance_ip]
+        content_version: content version that shpuld be installed
 
     Returns:
         True: if all tests passed, False if one failure
@@ -54,7 +55,12 @@ def is_content_installed(username, password, ips):
             release = resp.get("release")
             notes = resp.get("releaseNotes")
             installed = resp.get("installed")
-            if not (release and notes and installed):
+            ####
+            t = resp
+            del t['releaseNotes']
+            print_color(json.dumps(t, indent=4), LOG_COLORS.YELLOW)
+            ####
+            if not (release and notes and installed == content_version):
                 print_error("Could not install content on instance [{}]".format(ami_instance_name))
                 return False
             else:
@@ -70,7 +76,7 @@ def is_content_installed(username, password, ips):
 
 
 def main():
-    username, password = get_username_password()
+    username, password, content_version = get_username_password()
 
     ready_ami_list = []
     with open('./Tests/instance_ips.txt', 'r') as instance_file:
@@ -99,7 +105,7 @@ def main():
         print_error("The server is not ready :(")
         sys.exit(1)
 
-    if not is_content_installed(username, password, instance_ips):
+    if not is_content_installed(username, password, instance_ips, content_version):
         sys.exit(1)
 
 
