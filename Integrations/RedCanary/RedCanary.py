@@ -399,6 +399,7 @@ def remediate_detection(_id, remediation_state, comment):
                          'comment': comment,
     }
     )
+    return res
 
 
 def list_endpoints_command():
