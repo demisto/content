@@ -1122,7 +1122,7 @@ LOG('command is %s' % (demisto.command(),))
 try:
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
-        if check_file_behaviour('10676cf66244cfa91567fbc1a937f4cb19438338b35b69d4bcc2cf0d3a44af5e'):
+        if check_file_behaviour('10676cf66244cfa91567fbc1a937f4cb19438338b35b69d4bcc2cf0d3a44af5e'):  # guardrails-disable-line
             demisto.results('ok')
         else:
             demisto.results('test failed')
