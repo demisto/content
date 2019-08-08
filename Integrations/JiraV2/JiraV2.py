@@ -519,7 +519,8 @@ def get_file(entry_id):
     return file_name, file_bytes
 
 
-def add_link_command(issue_id, title, url, summary=None, global_id=None, relationship=None, application_type=None, application_name=None):
+def add_link_command(issue_id, title, url, summary=None, global_id=None, relationship=None,
+                     application_type=None, application_name=None):
     req_url = f'rest/api/latest/issue/{issue_id}/remotelink'
     link = {
         "object": {
