@@ -486,7 +486,7 @@ def tc_add_indicator_command():
     rating = int(args.get('rating', 0))
     confidence = int(args.get('confidence', 0))
 
-    _indicator = tc_add_indicator(indicator, owner, rating, confidence)
+    tc_add_indicator(indicator, owner, rating, confidence)
     # get the indicator for full object data
     raw_indicators = get_indicators(indicator)
     ec, indicators = create_context(raw_indicators)
@@ -526,12 +526,12 @@ def tc_create_incident_command():
 
     raw_incident = tc_create_incident(incident_name, owner, event_date, tag, security_label, description)
     ec = {
-            'ID': raw_incident['id'],
-            'Name': raw_incident['name'],
-            'Owner': raw_incident['ownerName'],
-            'EventDate': raw_incident['eventDate'],
-            'Tag': tag,
-            'SecurityLabel': security_label
+        'ID': raw_incident['id'],
+        'Name': raw_incident['name'],
+        'Owner': raw_incident['ownerName'],
+        'EventDate': raw_incident['eventDate'],
+        'Tag': tag,
+        'SecurityLabel': security_label
     }
 
     demisto.results({
@@ -1094,6 +1094,28 @@ def add_group_security_label():
                                                                                    group_id))
 
 
+def add_group_tags_request(group_type, group_id, tag_name):
+    tc = get_client()
+    ro = RequestObject()
+    ro.set_http_method('POST')
+    ro.set_request_uri('/v2/groups/{}/{}/tags/{}'.format(group_type, group_id, tag_name))
+
+    response = tc.api_request(ro).json()
+
+    return response.get('status') == 'Success'
+
+
+def add_group_tag():
+
+    group_id = int(demisto.args().get('group_id'))
+    group_type = demisto.args().get('group_type')
+    tag_name = demisto.args().get('tag_name')
+
+    add_group_tags_request(group_type, group_id, tag_name)
+
+    demisto.results('The tag {} were added successfully to group {}'.format(tag_name, group_type, group_id))
+
+
 def get_events_request():
     tc = get_client()
     ro = RequestObject()
@@ -1123,6 +1145,77 @@ def tc_get_events():
     }
 
     return_outputs(tableToMarkdown('ThreatConnect Events', content, headers, removeNull=True), context, raw_response)
+
+
+def tc_get_indicator_types_request():
+    tc = get_client()
+    ro = RequestObject()
+    ro.set_http_method('GET')
+    ro.set_request_uri('/v2/types/indicatorTypes')
+
+    return tc.api_request(ro).json()
+
+
+def tc_get_indicator_types():
+    raw_response = tc_get_indicator_types_request()
+    data = raw_response.get('data', {}).get('indicatorType', {})
+    content = []
+    headers = ['Name', 'Custom', 'Parsable', 'ApiBranch', 'CasePreference', 'value1Label', 'Value1Type']
+
+    for type in data:
+        content.append({
+            'Custom': type.get('custom'),
+            'Name': type.get('name'),
+            'Parsable': type.get('parsable'),
+            'ApiBranch': type.get('apiBranch'),
+            'ApiEntity': type.get('apiEntity'),
+            'CasePreference': type.get('casePreference'),
+            'value1Label': type.get('value1Label'),
+            'Value1Type': type.get('value1Type')
+        })
+    context = {
+        'TC.Indicator(val.Name && val.Name === obj.Name)': content
+    }
+
+    return_outputs(tableToMarkdown('ThreatConnect Indicator types', content, headers, removeNull=True), context,
+                   raw_response)
+
+
+def associate_indicator_request(indicator_type, indicator, group_type, group_id):
+
+    tc = get_client()
+    ro = RequestObject()
+    ro.set_http_method('POST')
+    ro.set_request_uri('/v2/indicators/{}/{}/groups/{}/{}'.format(indicator_type, indicator, group_type, group_id))
+    response = tc.api_request(ro).json()
+
+    return response
+
+
+def associate_indicator():
+
+    group_id = int(demisto.args().get('group_id'))
+    group_type = demisto.args().get('group_type')
+    indicator_type = demisto.args().get('indicator_type')
+    indicator = demisto.args().get('indicator')
+
+    response = associate_indicator_request(indicator_type, indicator, group_type, group_id)
+
+    if response.get('status') == 'Success':
+        contents = {
+            'IndicatorType': indicator_type,
+            'Indicator': indicator,
+            'GroupType': group_type,
+            'GroupID': group_id
+        }
+    else:
+        return_error(response.get('message'))
+
+    context = {
+        'TC.Group(val.Indicator && val.Indicator === obj.Indicator)': contents
+    }
+
+    return_outputs(tableToMarkdown('The indicator was associated successfully', contents, removeNull=True), context)
 
 
 def get_groups_request(group_type):
@@ -1216,7 +1309,10 @@ COMMANDS = {
     'tc-create-threat': tc_create_threat_command,
     'tc-delete-group': tc_delete_group_command,
     'tc-get-groups': tc_get_groups,
-    'tc-add-group-security-label': add_group_security_label
+    'tc-add-group-security-label': add_group_security_label,
+    'tc-add-group-tag': add_group_tag,
+    'tc-get-indicator-types': tc_get_indicator_types,
+    'tc-group-associate-indicator': associate_indicator
 }
 
 try:
