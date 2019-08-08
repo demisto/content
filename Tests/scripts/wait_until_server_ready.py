@@ -32,7 +32,7 @@ def get_username_password():
 
 
 def is_correct_content_installed(username, password, ips, content_version):
-    # type: (AnyStr, AnyStr, List[List[AnyStr, AnyStr]], AnyStr) -> bool
+    # type: (AnyStr, AnyStr, List[List], AnyStr) -> bool
     """ Checks if specific content version is installed on server list
 
     Args:
