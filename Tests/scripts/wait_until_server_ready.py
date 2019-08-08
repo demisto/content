@@ -47,7 +47,7 @@ def is_content_installed(username, password, ips, content_version):
     method = "post"
     suffix = "/content/installed/"
     for ami_instance_name, ami_instance_ip in ips:
-        d = demisto.DemistoClient(None, "http://{}".format(ami_instance_ip), username, password)
+        d = demisto.DemistoClient(None, "https://{}".format(ami_instance_ip), username, password)
         d.Login()
         resp = d.req(method, suffix, None)
         try:
