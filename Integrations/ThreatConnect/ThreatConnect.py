@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 from urlparse import urlparse
-import datetime
+from datetime import timedelta
 from threatconnect import ThreatConnect
 from threatconnect.RequestObject import RequestObject
 from threatconnect.Config.ResourceType import ResourceType
@@ -33,7 +33,7 @@ def get_client():
 
 
 def calculate_freshness_time(freshness):
-    t = datetime.datetime.now() - datetime.timedelta(days=freshness)
+    t = datetime.now() - timedelta(days=freshness)
     return t.strftime('%Y-%m-%dT00:00:00Z')
 
 
