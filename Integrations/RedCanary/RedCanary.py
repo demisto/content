@@ -64,7 +64,7 @@ def get_time_str(time_obj, time_format=None):
     if time_format is None:
         return time_obj.isoformat().split('.')[0] + 'Z'
     else:
-        return datetime.strftime(t, time_format)  # type:ignore
+        return datetime.strftime(t, time_format)  # type:ignore  # pylint: disable=E0602
 
 
 def http_request(requests_func, url_suffix, **kwargs):
