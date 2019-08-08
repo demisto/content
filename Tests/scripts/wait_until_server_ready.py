@@ -6,6 +6,7 @@ from time import sleep
 import datetime
 
 import demisto
+from typing import List, AnyStr
 
 from Tests.test_utils import print_error, print_color, LOG_COLORS
 
@@ -30,12 +31,22 @@ def get_username_password():
     return conf['username'], conf['userPassword']
 
 
-def content_version_installed(username, password, ips):
+def is_content_installed(username, password, ips):
+    # type: (AnyStr, AnyStr, List[List[AnyStr, AnyStr]]) -> bool
+    """ Checks if any content version installed on servers
+
+    Args:
+        username: for server connection
+        password: for server connection
+        ips: list with lists of [instance_name, instance_ip]
+
+    Returns:
+        True: if all tests passed, False if one failure
+    """
     method = "post"
     suffix = "/content/installed/"
     for ami_instance_name, ami_instance_ip in ips:
-        print "Checking if content installed on [{}]".format(ami_instance_name)
-        d = demisto.DemistoClient(None, "https://{}".format(ami_instance_ip), username, password)
+        d = demisto.DemistoClient(None, "http://{}".format(ami_instance_ip), username, password)
         d.Login()
         resp = d.req(method, suffix, None)
         try:
@@ -52,7 +63,9 @@ def content_version_installed(username, password, ips):
                     LOG_COLORS.GREEN
                 )
         except ValueError:
+            print_error("Content version could not be installed")
             return False
+    print_color("Content was installed successfully on all of the instances! :)", LOG_COLORS.GREEN)
     return True
 
 
@@ -86,9 +99,7 @@ def main():
         print_error("The server is not ready :(")
         sys.exit(1)
 
-    print "Checking if content installed "
-    if not content_version_installed(username, password, instance_ips):
-        print_error("Content version could not be installed")
+    if not is_content_installed(username, password, instance_ips):
         sys.exit(1)
 
 
