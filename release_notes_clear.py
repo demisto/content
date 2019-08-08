@@ -17,6 +17,11 @@ FILE_TYPE_DICT = {
 }
 
 
+def get_changed_content_artifacts(modified_files, added_files):
+    return added_files.union([(file_path[1] if isinstance(file_path, tuple) else file_path)
+                              for file_path in modified_files])
+
+
 def should_clear(file_path, current_server_version="0.0.0"):
     """
     scan folder and remove all references to release notes
@@ -53,9 +58,7 @@ def main():
     change_log = run_command('git diff --name-status {}'.format(args.git_sha1))
     modified_files, added_files, _, _ = fv.get_modified_files(change_log)
 
-    for file_path in modified_files.union(added_files):
-        if isinstance(file_path, tuple):
-            file_path = file_path[1]
+    for file_path in get_changed_content_artifacts(modified_files, added_files):
         if not should_clear(file_path, args.server_version):
             continue
         rn_path = get_release_notes_file_path(file_path)
