@@ -6,7 +6,7 @@ import json
 import argparse
 from subprocess import Popen, PIPE
 
-from Tests.scripts.constants import CHECKED_TYPES_REGEXES, CONTENT_RELEASE_TAG_REGEX, RELEASE_NOTES_REGEX, \
+from Tests.scripts.constants import CHECKED_TYPES_REGEXES, RELEASE_NOTES_REGEX, \
     PACKAGE_YML_FILE_REGEX, UNRELEASE_HEADER
 
 
