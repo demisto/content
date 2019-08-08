@@ -55,7 +55,7 @@ def is_content_installed(username, password, ips, content_version):
             release = resp.get("release")
             notes = resp.get("releaseNotes")
             installed = resp.get("installed")
-            if not (release == content_version and notes and installed):
+            if not (release and content_version in release and notes and installed):
                 print_error("Could not install content on instance [{}]".format(ami_instance_name))
                 return False
             else:
