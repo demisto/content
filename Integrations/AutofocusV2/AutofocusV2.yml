@@ -319,6 +319,9 @@ script:
     - contextPath: AutoFocus.Tag.TagDefinitionStatus
       description: enabled/disabled/removing/rescoping
       type: String
+    - contextPath: AutoFocus.Tag.TagGroup
+      description: Tag group of the tag
+      type: String
     description: Get details on a given tag
   - name: autofocus-top-tags-search
     arguments:
