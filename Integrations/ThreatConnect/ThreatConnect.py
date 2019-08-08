@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 from urlparse import urlparse
-
+import datetime
 from threatconnect import ThreatConnect
 from threatconnect.RequestObject import RequestObject
 from threatconnect.Config.ResourceType import ResourceType
