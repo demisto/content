@@ -160,10 +160,6 @@ script:
     description: adds/removes tags to/from a specific alert
     execution: false
     name: zerofox-modify-alert-tags
-    outputs:
-    - contextPath: ZeroFox.Alert.ChangeUUID
-      description: Unique ID of the alert change made.
-      type: String
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false
   runonce: false
