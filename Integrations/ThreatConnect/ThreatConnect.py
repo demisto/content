@@ -151,7 +151,7 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
     _filter = indicators_obj.add_filter()
 
     if indicator_value is not None:
-        _filter.add_indicator(indicator_value)
+        _filter.add_indicator(indicator_value)  # pylint: disable=E1101
     if indicator_type is not None:
         _filter.add_pf_type(indicator_type, FilterOperator.EQ)
 
@@ -1110,7 +1110,7 @@ def add_group_tag():
 
     add_group_tags_request(group_type, group_id, tag_name)
 
-    demisto.results('The tag {} were added successfully to group {}'.format(tag_name, group_type, group_id))
+    demisto.results('The tag {} were added successfully to group {} {}'.format(tag_name, group_type, group_id))
 
 
 def get_events_request():
