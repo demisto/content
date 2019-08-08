@@ -1,0 +1,80 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: JsonWhoIs
+  version: -1
+configuration:
+- display: API Token
+  name: token
+  required: true
+  type: 4
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+description: Integration Template
+display: JsonWhoIs
+name: JsonWhoIs
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: demisto.com
+      description: URL, IP, or domain to be enriched
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: Provides data enrichment for Domains, URLs, and IP addresses.
+    execution: false
+    name: whois
+    outputs:
+    - contextPath: Domain.WHOIS.DomainStatus
+      description: Domain
+      type: Boolean
+    - contextPath: Domain.WHOIS.NameServers
+      description: Name servers
+      type: String
+    - contextPath: Domain.WHOIS.CreationDate
+      description: Creation date
+      type: Date
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: Updated date
+      type: Date
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: Expiration date
+      type: Date
+    - contextPath: Domain.WHOIS.Registrant.Name
+      description: Registrant name
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Email
+      description: Registrant email
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Phone
+      description: Registrant phone
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: Registrar name
+      type: String
+    - contextPath: "Domain.WHOIS.Registrar.Email\t"
+      description: Registrar email
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Phone
+      description: Registrar phone
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Name
+      description: Admin name
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Email
+      description: Admin email
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Phone
+      description: Admin phone
+      type: String
+  dockerimage: demisto/python3:3.7.3.286
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+tests:
+  - JsonWhoIs-Test
