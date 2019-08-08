@@ -1,5 +1,4 @@
 import os
-import filecmp
 import demistomock as demisto
 
 from CommonServerPython import entryTypes
@@ -32,8 +31,6 @@ def test_main(mocker):
     from JSONFileToCSV import main
 
     json_path = os.path.join(TEST_DATA_DIR, 'sanity.json')
-    expected_path = os.path.join(TEST_DATA_DIR, 'sanity_expected.csv')
-    csv_path = os.path.join(TEST_DATA_DIR, 'sanity_out.csv')
 
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': json_path})
