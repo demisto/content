@@ -202,4 +202,3 @@ try:
 except Exception as e:
     LOG(e)
     LOG.print_log()
-    return_error(str(e))
