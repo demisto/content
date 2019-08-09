@@ -30,8 +30,6 @@ HEADERS = {
 
 USE_SSL = False
 
-COUNTER_API_NOT_STABLE = 4
-
 # Remove proxy if not set to true in params
 handle_proxy()
 
@@ -52,9 +50,6 @@ def http_request(method, url_suffix, params=None, data=None):
     )
     # Handle error responses gracefully
     if res.status_code not in {200}:
-        if COUNTER_API_NOT_STABLE < 4:
-            COUNTER_API_NOT_STABLE += 1
-            http_request(method=method, url_suffix=url_suffix)
         url = demisto.args().get('query')
         return_error(f'Error enrich url "{url}" with JsonWhoIS API, status code {res.status_code}')
     return res.json()
