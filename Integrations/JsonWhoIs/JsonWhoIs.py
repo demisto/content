@@ -30,6 +30,8 @@ HEADERS = {
 
 USE_SSL = False
 
+COUNTER_API_NOT_STABLE = 4
+
 # Remove proxy if not set to true in params
 handle_proxy()
 
@@ -39,6 +41,7 @@ handle_proxy()
 @logger
 def http_request(method, url_suffix, params=None, data=None):
     # A wrapper for requests lib to send our requests and handle requests and responses better
+    global COUNTER_API_NOT_STABLE
     res = requests.request(
         method,
         BASE_URL + url_suffix,
@@ -49,6 +52,9 @@ def http_request(method, url_suffix, params=None, data=None):
     )
     # Handle error responses gracefully
     if res.status_code not in {200}:
+        if COUNTER_API_NOT_STABLE < 4:
+            COUNTER_API_NOT_STABLE += 1
+            http_request(method=method, url_suffix=url_suffix)
         url = demisto.args().get('query')
         return_error(f'Error enrich url "{url}" with JsonWhoIS API, status code {res.status_code}')
     return res.json()
@@ -107,8 +113,9 @@ def whois(url: str) -> tuple:
         res_shortcut['Admin'] = list_dict_by_ec(raw['admin_contacts'])
     if 'registrar' in raw.keys():
         res_shortcut['Registrar'] = {}
-        if 'name' in raw['registrar'].keys():
-            res_shortcut['Registrar']['Name'] = raw['registrar']['name']
+        if isinstance(raw['registrar'], dict):
+            if 'name' in raw['registrar'].keys():
+                res_shortcut['Registrar']['Name'] = raw['registrar']['name']
     return ec, raw
 
 
