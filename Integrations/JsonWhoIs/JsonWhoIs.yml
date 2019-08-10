@@ -11,8 +11,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Integration Template
-display: JsonWhoIs
+description: Provides data enrichment for domains and IP addresses.
+display: JsonWhoIs REST api
 name: JsonWhoIs
 script:
   commands:
@@ -73,8 +73,10 @@ script:
       type: String
   dockerimage: demisto/python3:3.7.3.286
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   type: python
 tests:
-  - JsonWhoIs-Test
+- JsonWhoIs-Test

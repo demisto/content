@@ -28,18 +28,18 @@ HEADERS = {
     'Authorization': f'Token token={TOKEN}'
 }
 
+# Self signed certificate so no need to verify by default
 USE_SSL = False
 
 # Remove proxy if not set to true in params
 handle_proxy()
 
+# Counter for unstable REST API
+COUNTER = 0
+
 ''' HELPER FUNCTIONS '''
-
-
-@logger
 def http_request(method, url_suffix, params=None, data=None):
     # A wrapper for requests lib to send our requests and handle requests and responses better
-    global COUNTER_API_NOT_STABLE
     res = requests.request(
         method,
         BASE_URL + url_suffix,
@@ -50,6 +50,11 @@ def http_request(method, url_suffix, params=None, data=None):
     )
     # Handle error responses gracefully
     if res.status_code not in {200}:
+        if COUNTER < 2:
+            COUNTER += 1
+            return http_request(method=method,
+                                url_suffix=url_suffix,
+                                params=params)
         url = demisto.args().get('query')
         return_error(f'Error enrich url "{url}" with JsonWhoIS API, status code {res.status_code}')
     return res.json()
@@ -80,10 +85,16 @@ def whois(url: str) -> tuple:
     :param url: url to search on
     :return: dict object of JsonWhoIs service
     """
+    # Params for request
     params = {
         'domain': url
     }
+
+    # Perform request to JsonWhoIs
+    demisto.debug('Perform JsonWhoIs request')
     raw = http_request(method='GET', url_suffix='/api/v1/whois', params=params)
+    demisto.debug('Success JsonWhoIs request')
+
     # entry context by code convention
     ec: dict = {'Domain': {
         'WHOIS': {
@@ -93,20 +104,28 @@ def whois(url: str) -> tuple:
 
     res_shortcut = ec['Domain']['WHOIS']
     if 'status' in raw.keys():
+        demisto.debug('JsonWhoIs parse status')
         res_shortcut['DomainStatus'] = raw['status']
     if 'nameservers' in raw.keys():
+        demisto.debug('JsonWhoIs parse name servers')
         res_shortcut['NameServers'] = raw['nameservers']
     if 'created_on' in raw.keys():
+        demisto.debug('JsonWhoIs parse creation date')
         res_shortcut['CreationDate'] = raw['created_on']
     if 'updated_on' in raw.keys():
+        demisto.debug('JsonWhoIs parse update date')
         res_shortcut['UpdatedDate'] = raw['updated_on']
     if 'expires_on' in raw.keys():
+        demisto.debug('JsonWhoIs parse Expiration date')
         res_shortcut['ExpirationDate'] = raw['expires_on']
     if 'registrant_contacts' in raw.keys():
+        demisto.debug('JsonWhoIs parse registrant contacts')
         res_shortcut['Registrant'] = list_dict_by_ec(raw['registrant_contacts'])
     if 'admin_contacts' in raw.keys():
+        demisto.debug('JsonWhoIs parse admin contacts')
         res_shortcut['Admin'] = list_dict_by_ec(raw['admin_contacts'])
     if 'registrar' in raw.keys():
+        demisto.debug('JsonWhoIs parse registrar contacts')
         res_shortcut['Registrar'] = {}
         if isinstance(raw['registrar'], dict):
             if 'name' in raw['registrar'].keys():
@@ -125,16 +144,17 @@ def whois_command():
     ec_shortcut = ec['Domain']['WHOIS']
 
     # Admin account table
+    
     human_readable_admin = ''
+    demisto.debug('Cretae admin table')
     if 'Admin' in ec_shortcut.keys():
-        LOG('Admin table created')
         human_readable_admin = tableToMarkdown(name='Admin account', t=ec_shortcut['Admin'])
         del ec_shortcut['Admin']
 
     # Name servers table
+    demisto.debug('Create name servers table')
     human_readable_ns = ''
     if 'NameServers' in ec_shortcut.keys():
-        LOG('Name servers table created')
         demisto.results(ec_shortcut['NameServers'])
         for server in ec_shortcut['NameServers']:
             del server['ipv4']
@@ -142,29 +162,31 @@ def whois_command():
         human_readable_ns = tableToMarkdown(name='Name servers', t=ec_shortcut['NameServers'])
         del ec_shortcut['NameServers']
 
+    demisto.debug('Create registrant table')
     # Registrant accounts table
     human_readable_registrant = ''
     if 'Registrant' in ec_shortcut.keys():
-        LOG('Registrant table created')
         human_readable_registrant = tableToMarkdown(name='Registrant', t=ec_shortcut['Registrant'])
         del ec_shortcut['Registrant']
 
     # Registrar accounts table
+    demisto.debug('Create registrar table')
     human_readable_registrar = ''
     if 'Registrar' in ec_shortcut.keys():
-        LOG('Registrar table created')
         human_readable_registrar = tableToMarkdown(name='Registrar', t=ec_shortcut['Registrar'])
         del ec_shortcut['Registrar']
 
     # Others table
-    LOG('Others table table created')
+    demisto.debug('Create other table')
     human_readable_others = tableToMarkdown(name='Others', t=ec['Domain']['WHOIS'])
 
+    demisto.debug('Aggregate tables')
     human_readable = (human_readable_admin
                       + human_readable_ns
                       + human_readable_registrar
                       + human_readable_registrant
                       + human_readable_others)
+
     return_outputs(raw_response=raw,
                    outputs=ec,
                    readable_output=human_readable)
