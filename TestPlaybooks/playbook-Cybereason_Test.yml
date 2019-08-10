@@ -415,6 +415,14 @@ tasks:
               right:
                 value:
                   simple: Cybereason
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.state
+                iscontext: true
+              right:
+                value:
+                  simple: active
           accessor: name
     separatecontext: false
     view: |-
