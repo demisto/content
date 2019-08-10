@@ -38,6 +38,7 @@ handle_proxy()
 COUNTER = 0
 
 ''' HELPER FUNCTIONS '''
+@logger
 def http_request(method, url_suffix, params=None, data=None):
     # A wrapper for requests lib to send our requests and handle requests and responses better
     res = requests.request(
