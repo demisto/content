@@ -1,7 +1,11 @@
-import re
+import os
 import yaml
+import requests
 
-from Tests.test_utils import print_error, run_command
+from Tests.test_utils import print_error, get_yaml
+
+# disable insecure warnings
+requests.packages.urllib3.disable_warnings()
 
 
 class ScriptValidator(object):
@@ -11,17 +15,41 @@ class ScriptValidator(object):
     Attributes:
        _is_valid (bool): the attribute which saves the valid/in-valid status of the current file.
        file_path (str): the path to the file we are examining at the moment.
-       change_string (string): the change string for the examined script.
-       yaml_data (dict): the data of the script in dictionary format.
+       current_script (dict): Json representation of the current script from the branch.
+       old_script (dict): Json representation of the current script from master.
     """
-    def __init__(self, file_path, check_git=True):
+    CONTENT_GIT_HUB_LINK = "https://raw.githubusercontent.com/demisto/content/master/"
+
+    def __init__(self, file_path, check_git=True, old_file_path=None):
         self._is_valid = True
         self.file_path = file_path
+        self.current_script = {}
+        self.old_script = {}
 
         if check_git:
-            self.change_string = run_command("git diff origin/master {0}".format(self.file_path))
-            with open(file_path, 'r') as file_data:
-                self.yaml_data = yaml.safe_load(file_data)
+            self.current_script = get_yaml(file_path)
+            # The replace in the end is for Windows support
+            if old_file_path:
+                git_hub_path = os.path.join(self.CONTENT_GIT_HUB_LINK, old_file_path).replace("\\", "/")
+            else:
+                git_hub_path = os.path.join(self.CONTENT_GIT_HUB_LINK, file_path).replace("\\", "/")
+
+            try:
+                file_content = requests.get(git_hub_path, verify=False).content
+                self.old_script = yaml.safe_load(file_content)
+            except Exception as e:
+                print(str(e))
+                print_error("Could not find the old script please make sure that you did not break "
+                            "backward compatibility")
+
+    @classmethod
+    def _is_sub_set(cls, supposed_bigger_list, supposed_smaller_list):
+        """Check if supposed_smaller_list is a subset of the supposed_bigger_list"""
+        for check_item in supposed_smaller_list:
+            if check_item not in supposed_bigger_list:
+                return False
+
+        return True
 
     def is_backward_compatible(self):
         """Check if the script is backward compatible."""
@@ -34,35 +62,21 @@ class ScriptValidator(object):
 
     def is_there_duplicates_args(self):
         """Check if there are duplicated arguments."""
-        args = self.yaml_data.get('args', [])
-        existing_args = []
-        for arg in args:
-            arg_name = arg['name']
-            if arg_name not in existing_args:
-                existing_args.append(arg_name)
-
-            else:
-                self._is_valid = False
-                return True
+        args = [arg['name'] for arg in self.current_script.get('args', [])]
+        if len(args) != len(set(args)):
+            self._is_valid = False
+            return True
 
         return False
 
     def is_arg_changed(self):
         """Check if the argument has been changed."""
-        deleted_args = re.findall("-([ ]+)?- name: (.*)", self.change_string)
-        added_args = re.findall("\+([ ]+)?- name: (.*)", self.change_string)
+        current_args = [arg['name'] for arg in self.current_script.get('args', [])]
+        old_args = [arg['name'] for arg in self.old_script.get('args', [])]
 
-        deleted_args = [arg[1] for arg in deleted_args]
-        added_args = [arg[1] for arg in added_args]
-
-        for added_arg in added_args:
-            if added_arg in deleted_args:
-                deleted_args.remove(added_arg)
-
-        if deleted_args:
-            print_error("Possible backwards compatibility break, You've changed the name of a command or its arg in"
-                        " the file {0} please undo, the line was:{1}".format(self.file_path,
-                                                                             "\n".join(deleted_args)))
+        if not self._is_sub_set(current_args, old_args):
+            print_error("Possible backwards compatibility break, You've changed the name of an arg in "
+                        "the file {}, please undo.".format(self.file_path))
             self._is_valid = False
             return True
 
@@ -70,19 +84,12 @@ class ScriptValidator(object):
 
     def is_context_path_changed(self):
         """Check if the context path as been changed."""
-        deleted_args = re.findall("-([ ]+)?- contextPath: (.*)", self.change_string)
-        added_args = re.findall("\+([ ]+)?- contextPath: (.*)", self.change_string)
+        current_context = [output['contextPath'] for output in self.current_script.get('outputs', [])]
+        old_context = [output['contextPath'] for output in self.old_script.get('outputs', [])]
 
-        deleted_args = [arg[1] for arg in deleted_args]
-        added_args = [arg[1] for arg in added_args]
-
-        for added_arg in added_args:
-            if added_arg in deleted_args:
-                deleted_args.remove(added_arg)
-
-        if deleted_args:
-            print_error("Possible backwards compatibility break, You've changed the context in the file {0} please "
-                        "undo, the line was:{1}".format(self.file_path, "\n".join(deleted_args)))
+        if not self._is_sub_set(current_context, old_context):
+            print_error("Possible backwards compatibility break, You've changed the context in the file {0},"
+                        " please undo.".format(self.file_path))
             self._is_valid = False
             return True
 
@@ -90,12 +97,7 @@ class ScriptValidator(object):
 
     def is_docker_image_changed(self):
         """Check if the docker image as been changed."""
-        is_docker_added = re.search("\+([ ]+)?dockerimage: .*", self.change_string)
-        is_docker_deleted = re.search("-([ ]+)?dockerimage: .*", self.change_string)
-        if is_docker_added and is_docker_deleted and is_docker_added.group(0)[1:] == is_docker_deleted.group(0)[1:]:
-            return False
-
-        if is_docker_added or is_docker_deleted:
+        if self.old_script.get('dockerimage', "") != self.current_script.get('dockerimage', ""):
             print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
                         " this is not allowed.".format(self.file_path))
             self._is_valid = False
