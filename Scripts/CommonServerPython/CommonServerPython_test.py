@@ -6,6 +6,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
 
 import copy
 import os
+import sys
 import pytest
 
 INFO = {'b': 1,
@@ -482,3 +483,39 @@ def test_is_mac_address():
 
     assert(is_mac_address(mac_address_false) is False)
     assert(is_mac_address(mac_address_true))
+
+
+def test_return_error(mocker):
+    from CommonServerPython import return_error
+    err_msg = "Testing unicode Ё"
+    outputs = {'output': 'error'}
+    expected_error = {
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'Contents': err_msg,
+        "EntryContext": outputs
+    }
+
+    # Test command that is not fetch-incidents
+    mocker.patch.object(demisto, 'command', return_value="test-command")
+    mocker.patch.object(sys, 'exit')
+    mocker.spy(demisto, 'results')
+    return_error(err_msg, '', outputs)
+    assert str(demisto.results.call_args) == "call({})".format(expected_error)
+
+    # Test fetch-incidents
+    mocker.patch.object(demisto, 'command', return_value="fetch-incidents")
+    returned_error = False
+    try:
+        return_error(err_msg)
+    except Exception as e:
+        returned_error = True
+        assert e.message == err_msg
+    assert returned_error
+    assert demisto.command()
+
+    # Test automation that is no a command
+    del demisto.command
+    assert not hasattr(demisto, 'command')
+    return_error(err_msg, '', outputs)
+    assert str(demisto.results.call_args) == "call({})".format(expected_error)
