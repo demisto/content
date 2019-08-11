@@ -36,11 +36,11 @@ def test_get_pdf_metadata_with_encrypted(mocker):
         'JavaScript': 'no',
         'Pages': '2',
         'Encrypted': 'yes (print:yes copy:yes change:yes addNotes:yes algorithm:AES)',
-        'Page size': '595 x 842 pts (A4)',
-        'Page rot': '0',
-        'File size': '71085 bytes',
+        'PageSize': '595 x 842 pts (A4)',
+        'PageRot': '0',
+        'FileSize': '71085 bytes',
         'Optimized': 'no',
-        'PDF version': '1.6'
+        'PDFVersion': '1.6'
     }
     assert expected.items() <= metadata.items()
 
@@ -54,7 +54,6 @@ def test_get_metadata_without_encrypted(tmp_path):
         assert 'Command Line Error: Incorrect password\nShell error code: 1' == str(e)
 
     metadata = get_pdf_metadata(f'{CWD}/text-only.pdf')
-    print(metadata)
     expected = {
         'Title': 'Microsoft Word - Document1',
         'Keywords': '',
@@ -67,11 +66,11 @@ def test_get_metadata_without_encrypted(tmp_path):
         'JavaScript': 'no',
         'Pages': '1',
         'Encrypted': 'no',
-        'Page size': '595 x 842 pts (A4)',
-        'Page rot': '0',
-        'File size': '18920 bytes',
+        'PageSize': '595 x 842 pts (A4)',
+        'PageRot': '0',
+        'FileSize': '18920 bytes',
         'Optimized': 'no',
-        'PDF version': '1.3'
+        'PDFVersion': '1.3'
     }
 
     assert expected.items() <= metadata.items()
