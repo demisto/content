@@ -7,10 +7,12 @@ configuration:
   name: server
   required: true
   type: 0
-- name: credentials
+- display: credentials
+  name: credentials
   required: true
   type: 9
 - defaultvalue: '1.0'
+  display: API version
   name: version
   required: false
   type: 0
