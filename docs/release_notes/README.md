@@ -6,8 +6,8 @@ Release Notes tells the user what has changed in the new version of this integra
 
 Under the same path of the changed integrtion yml (or name of json file), add a new file with the same name with the suffix of `_changelog.md`.
 For example,
-- If the changed file is `Integration/Alexa/Alexa.py` then create `Integration/Alexa/CHANGELOG.md` with the release notes inside.
-- If the changed file is `Integration/integration-jira.yml` then create `Integration/Alexa/CHANGELOG.md` with the release notes inside.
+- If the changed file is `Integrations/Alexa/Alexa.py` then create `Integrations/Alexa/CHANGELOG.md` with the release notes inside.
+- If the changed file is `Integrations/integration-jira.yml` then create `Integrations/integration-jira_CHANGELOG.md` with the release notes inside.
 - If the changed file is `Playbooks/playbook-Phishing.yml` then create `Playbooks/playbook-Phishing_CHANGELOG.md` with the release notes inside.
 
 If the file already exists, add another note as a different bullet at the start of the file.
