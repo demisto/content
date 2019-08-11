@@ -5,4 +5,4 @@
   - ***sentinelone-get-processes***
   - ***sentinelone-shutdown-agent***
   - ***sentinelone-uninstall-agent***
-- Fixed agentIds filter in get-activities command
+- Fixed agentIds filter in get-activities command.
