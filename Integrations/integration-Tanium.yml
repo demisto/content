@@ -188,11 +188,12 @@ script:
             parsed_param['Values'] = ','.join(param['values']) if param.get('values') else 'Any value'
             parsed_param['Key'] = param.get('key', 'No key')
             parsed_param['Type'] = param['parameterType'].split('::')[-1] if param.get('parameterType') else 'Type not specified'
+            parsed_param['DefaultValue'] = param.get('defaultValue', '')
             parsed_params.append(parsed_param)
             parsed_param = {}
         data['parameters'] = parsed_params
         del data['parameter_definition']
-        return tableToMarkdown(header, parsed_params, ['Key','Name', 'Values', 'Description', 'Type'])
+        return tableToMarkdown(header, parsed_params, ['Key','Name', 'Values', 'DefaultValue', 'Description', 'Type'])
 
     def getSensorVariable(parsed):
         if len(parsed) > 0 and parsed[0].get('command'):
