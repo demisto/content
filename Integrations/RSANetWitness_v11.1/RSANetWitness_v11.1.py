@@ -108,6 +108,7 @@ USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 USE_SSL = not demisto.params()['insecure']
 VERSION = demisto.params()['version']
+IS_FETCH = demisto.params()['isFetch']
 FETCH_TIME = demisto.params().get('fetchTime', '1 days')
 TOKEN = get_token()
 DEFAULT_HEADERS = {
@@ -919,6 +920,22 @@ def priority_to_severity(priority):
     return grade
 
 
+def test_module():
+    if IS_FETCH:
+        parse_date_range(FETCH_TIME)
+
+    since = datetime.now() - timedelta(days=int(10))
+    timestamp = since.isoformat() + 'Z'
+
+    incidents = get_all_incidents(
+        since=timestamp,
+        until=None,
+        limit=100
+    )
+    if incidents is not None:
+        return 'ok'
+
+
 """
 
 EXECUTION
@@ -928,8 +945,7 @@ command = demisto.command()
 try:
     handle_proxy()
     if command == 'test-module':
-        # global variable TOKEN initialization tests user credentials (will raise ValueError exception when unsuccessful).
-        demisto.results('ok')
+        demisto.results(test_module())
     elif command == 'fetch-incidents':
         fetch_incidents()
     elif command == 'netwitness-get-incident':
