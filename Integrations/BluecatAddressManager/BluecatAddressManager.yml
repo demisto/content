@@ -178,7 +178,7 @@ script:
     name: bluecat-am-response-policy-remove-domain
   - arguments:
     - default: false
-      description: The IP to get its range
+      description: The IP address for which to get the range.
       isArray: false
       name: ip
       required: true
