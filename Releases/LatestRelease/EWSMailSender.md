@@ -1,2 +1,2 @@
-- Improved memory resource usage.
-- Improved logging.
+  - Improved memory resource usage.
+  - Improved logging.
