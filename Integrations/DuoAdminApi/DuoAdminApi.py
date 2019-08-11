@@ -11,6 +11,7 @@ HOST = demisto.getParam('hostname')
 INTEGRATION_KEY = demisto.getParam('integration_key')
 SECRET_KEY = demisto.getParam('secret_key')
 USE_SSL = not demisto.params().get('insecure', False)
+USE_PROXY = demisto.params().get('proxy')
 
 # The duo client returns a signature error upon bad secret
 # Convert it to a more informative message using this
@@ -52,6 +53,17 @@ def create_api_call():
         skey=SECRET_KEY,
         host=HOST
     )
+
+
+def set_proxy(admin_api):
+    proxy_settings = (os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy', '')).split(':')
+    host = proxy_settings[1][2:]  # remove http://
+    port = proxy_settings[2]
+
+    if USE_PROXY:
+        admin_api.set_proxy(host=host, port=port)
+    else:
+        admin_api.set_proxy(host=host, port=port, proxy_type=None)
 
 
 def time_to_timestamp_milliseconds(time):
@@ -127,7 +139,9 @@ def test_instance():
 
 
 def get_all_users():
+    demisto.results("Before")
     res = admin_api.get_users()
+    demisto.results("After")
 
     entry = get_entry_for_object(
         'Users', res, res,
@@ -253,8 +267,8 @@ def delete_u2f_token(token_id):
 
 # Execution
 try:
-    handle_proxy()
     admin_api = create_api_call()
+    set_proxy(admin_api)
 
     if demisto.command() == 'test-module':
         test_instance()
