@@ -6,7 +6,8 @@ import json
 import argparse
 from subprocess import Popen, PIPE
 
-from Tests.scripts.constants import CHECKED_TYPES_REGEXES
+from Tests.scripts.constants import CHECKED_TYPES_REGEXES, RELEASE_NOTES_REGEX, \
+    PACKAGE_YML_FILE_REGEX, UNRELEASE_HEADER
 
 
 class LOG_COLORS:
@@ -141,8 +142,36 @@ def str2bool(v):
 
 
 def get_release_notes_file_path(file_path):
-    file_name = os.path.basename(file_path)
-    return os.path.join('Releases', 'LatestRelease', os.path.splitext(file_name)[0] + '.md')
+    dir_name = os.path.dirname(file_path)
+
+    if re.match(PACKAGE_YML_FILE_REGEX, file_path):
+        return os.path.join(dir_name, 'CHANGELOG.md')
+    else:
+        # outside of packages, change log file will include the original file name.
+        file_name = os.path.basename(file_path)
+        return os.path.join(dir_name, os.path.splitext(file_name)[0] + '_CHANGELOG.md')
+
+
+def get_latest_release_notes_text(rn_path):
+    if not os.path.isfile(rn_path):
+        # releaseNotes were not provided
+        return None
+
+    with open(rn_path) as f:
+        rn = f.read()
+
+    if not rn:
+        # empty releaseNotes is not supported
+        return None
+
+    new_rn = re.findall(RELEASE_NOTES_REGEX, rn)
+    if new_rn:
+        # get release notes up to release header
+        new_rn = new_rn[0].rstrip()
+    else:
+        new_rn = rn.replace(UNRELEASE_HEADER, '')
+
+    return new_rn if new_rn else None
 
 
 def checked_type(file_path, compared_regexes=CHECKED_TYPES_REGEXES):
