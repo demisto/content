@@ -87,4 +87,4 @@ type: python
 runas: DBotWeakRole
 runonce: false
 tests:
-- TestParseCSV
+- No tests
