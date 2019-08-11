@@ -1,5 +1,5 @@
 comment: Shows a bar chart of the number of Positive Detections out of overall detections
-fromVersion: 5.0.0
+fromversion: 5.0.0
 args:
 - default: false
   description: Indicator with detections custom fields
