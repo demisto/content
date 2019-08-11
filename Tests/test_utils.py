@@ -3,10 +3,11 @@ import os
 import sys
 import yaml
 import json
+import requests
 import argparse
 from subprocess import Popen, PIPE
 
-from Tests.scripts.constants import CHECKED_TYPES_REGEXES
+from Tests.scripts.constants import CHECKED_TYPES_REGEXES, PACKAGE_SUPPORTING_DIRECTORIES, CONTENT_GITHUB_LINK
 
 
 class LOG_COLORS:
@@ -54,6 +55,70 @@ def run_command(command, is_silenced=True, exit_on_error=True):
             raise RuntimeError('Failed to run command {}\nerror details:\n{}'.format(command, err))
 
     return output
+
+
+def filter_packagify_changes(modified_files, added_files, removed_files, tag='master'):
+    """
+    Mark scripts/integrations that were removed and added as modifiied.
+
+    :param modified_files: list of modified files in branch
+    :param added_files: list of new files in branch
+    :param removed_files: list of removed files in branch
+    :param tag: tag of compared revision
+
+    :return: tuple of updated lists: (modified_files, updated_added_files, removed_files)
+    """
+    # map IDs to removed files
+    packagify_diff = {}  # type: dict
+    for file_path in removed_files:
+        if file_path.split("/")[0] in PACKAGE_SUPPORTING_DIRECTORIES:
+            github_path = os.path.join(CONTENT_GITHUB_LINK, tag, file_path).replace('\\', '/')
+            file_content = requests.get(github_path, verify=False).content
+            details = yaml.safe_load(file_content)
+            if 404 not in details:
+                uniq_identifier = '_'.join([details['name'],
+                                           details.get('fromversion', '0.0.0'),
+                                           details.get('toversion', '99.99.99')])
+                packagify_diff[uniq_identifier] = file_path
+
+    updated_added_files = set()
+    for file_path in added_files:
+        if file_path.split("/")[0] in PACKAGE_SUPPORTING_DIRECTORIES:
+            with open(file_path) as f:
+                details = yaml.safe_load(f.read())
+
+            uniq_identifier = '_'.join([details['name'],
+                                        details.get('fromversion', '0.0.0'),
+                                        details.get('toversion', '99.99.99')])
+            if uniq_identifier in packagify_diff:
+                # if name appears as added and removed, this is packagify process - treat as modified.
+                removed_files.remove(packagify_diff[uniq_identifier])
+                modified_files.add((packagify_diff[uniq_identifier], file_path))
+                continue
+
+        updated_added_files.add(file_path)
+
+    # remove files that are marked as both "added" and "modified"
+    for file_path in modified_files:
+        if isinstance(file_path, tuple):
+            updated_added_files -= {file_path[1]}
+        else:
+            updated_added_files -= {file_path}
+
+    return modified_files, updated_added_files, removed_files
+
+
+def get_last_release_version():
+    """
+    Get latest release tag (xx.xx.xx)
+
+    :return: tag
+    """
+    tags = run_command('git tag').split('\n')
+    tags = [tag for tag in tags if re.match(r'\d+\.\d+\.\d+', tag) is not None]
+    tags.sort(cmp=server_version_compare, reverse=True)
+
+    return tags[0]
 
 
 def get_yaml(file_path):
