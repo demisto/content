@@ -1,11 +1,11 @@
 {
   "sortValues": null,
   "closeForm": false,
-  "cliName": "country",
+  "cliName": "signature",
   "neverSetAsRequired": false,
-  "threshold": 72,
+  "threshold": 0,
   "defaultRows": null,
-  "id": "indicator_country",
+  "id": "incident_signature",
   "validatedError": "",
   "group": 2,
   "script": "",
@@ -25,21 +25,28 @@
   "shouldCommit": false,
   "shouldPublish": false,
   "associatedTypes": [
-    "GDPR Data Breach"
+    "Vulnerability",
+    "Malware",
+    "Traps",
+    "Crowdstrike"
   ],
-  "caseInsensitive": true,
+  "caseInsensitive": false,
   "columns": null,
   "placeholder": "",
   "useAsKpi": false,
-  "systemAssociatedTypes": null,
-  "prevName": "Country",
+  "systemAssociatedTypes": [
+    "Vulnerability",
+    "Malware"
+  ],
+  "prevName": "Signature",
   "locked": false,
-  "name": "Country",
+  "name": "Signature",
   "ownerOnly": false,
   "required": false,
-  "modified": "2019-07-23T15:34:36.847877754Z",
+  "modified": "2019-07-29T10:37:51.821712792Z",
   "fieldCalcScript": "",
   "selectValues": null,
   "validationRegex": "",
-  "sla": 0
+  "sla": 0,
+  "fromVersion": "5.0.0"
 }

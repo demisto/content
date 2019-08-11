@@ -1,11 +1,11 @@
 {
   "sortValues": null,
   "closeForm": false,
-  "cliName": "address",
+  "cliName": "osversion",
   "neverSetAsRequired": false,
   "threshold": 72,
   "defaultRows": null,
-  "id": "indicator_address",
+  "id": "incident_osversion",
   "validatedError": "",
   "group": 2,
   "script": "",
@@ -25,21 +25,22 @@
   "shouldCommit": false,
   "shouldPublish": false,
   "associatedTypes": [
-    "URL"
+    "Crowdstrike"
   ],
   "caseInsensitive": true,
   "columns": null,
   "placeholder": "",
   "useAsKpi": false,
   "systemAssociatedTypes": null,
-  "prevName": "Address",
+  "prevName": "OS Version",
   "locked": false,
-  "name": "Address",
+  "name": "OS Version",
   "ownerOnly": false,
   "required": false,
-  "modified": "2019-07-18T08:08:19.591206809Z",
+  "modified": "2019-07-28T00:54:02.710776811Z",
   "fieldCalcScript": "",
-  "selectValues": [],
+  "selectValues": null,
   "validationRegex": "",
-  "sla": 0
+  "sla": 0,
+  "fromVersion": "5.0.0"
 }
