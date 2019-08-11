@@ -11,6 +11,10 @@ configuration:
   name: bot_password
   required: true
   type: 4
+- display: Team
+  name: team
+  required: false
+  type: 0
 - defaultvalue: General
   display: Notifications channel
   name: incident_notifications_channel
@@ -197,7 +201,10 @@ script:
     description: Creates a new Microsoft Teams team.
     execution: false
     name: microsoft-teams-create-team
-  dockerimage: devtesting/teams:1.0.0.1562654266
+  - deprecated: false
+    execution: false
+    name: test-command
+  dockerimage: devdemisto/teams:1.0.0.1402
   isfetch: false
   longRunning: true
   longRunningPort: true

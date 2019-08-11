@@ -6,6 +6,8 @@ import requests
 from distutils.util import strtobool
 from flask import Flask, request, Response
 from gevent.pywsgi import WSGIServer
+import jwt
+# from jwt.algorithms import RSAAlgorithm
 import time
 from threading import Thread
 from typing import Match, Union, Optional, cast, Dict, Any, List
@@ -446,7 +448,7 @@ def http_request(
         return_error(response.text)
         error = error_parser(response)
         raise ValueError(f'Error in API call to Microsoft Teams: [{response.status_code}] - {error}')
-    demisto.debug(response.status_code)
+
     if response.status_code in {202, 204}:
         return {}
     if response.status_code == 201:
@@ -457,6 +459,56 @@ def http_request(
         return response.json()
     except ValueError:
         raise ValueError('Could not decode response from API')
+
+
+def validate_auth_header(headers: dict) -> bool:
+    parts: list = headers.get('Authorization', '').split(' ')
+    if len(parts) != 2:
+        return False
+    scehma: str = parts[0]
+    jwt_token: str = parts[1]
+    if scehma != 'Bearer' or not jwt_token:
+        return False
+    decoded_payload: dict = jwt.decode(jwt_token, verify=False)
+    issuer: str = decoded_payload.get('iss', '')
+    if issuer != 'https://api.botframework.com':
+        return False
+    # integration_context: dict = demisto.getIntegrationContext()
+    # open_id_metadata: dict = integration_context.get('open_id_metadata', {})
+    # keys: list = open_id_metadata.get('keys', [])
+    # last_updated: int = open_id_metadata.get('last_updated', 0)
+    # if last_updated < datetime.timestamp(datetime.now() + timedelta(days=5)):
+    #     open_id_url: str = 'https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration'
+    #     response: dict = http_request('GET', open_id_url, api='bot')
+    #     jwks_uri: str = response.get('jwks_uri', '')
+    #     keys_response: dict = http_request('GET', jwks_uri, api='bot')
+    #     keys = keys_response.get('keys', [])
+    #     last_updated = datetime.timestamp(datetime.now())
+    #     open_id_metadata['keys'] = keys
+    #     open_id_metadata['last_updated'] = last_updated
+    # if not keys:
+    #     return False
+    # unverified_headers: dict = jwt.get_unverified_header(jwt_token)
+    # key_id: str = unverified_headers.get('kid', '')
+    # key_object: dict = dict()
+    # for key in keys:
+    #     if key.get('kid') == key_id:
+    #         key_object = key
+    #         break
+    # if not key_object:
+    #     return False
+    # public_key: str = RSAAlgorithm.from_jwk(json.dumps(key_object))
+    # options = {
+    #     'verify_aud': False,
+    #     'verify_exp': True
+    # }
+    # decoded_payload = jwt.decode(jwt_token, public_key, options=options)
+    audience_claim: str = decoded_payload.get('aud', '')
+    if audience_claim != demisto.params().get('bot_id'):
+        return False
+    # integration_context['open_id_metadata'] = json.dumps(open_id_metadata)
+    # demisto.setIntegrationContext(integration_context)
+    return True
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -846,14 +898,17 @@ def channel_mirror_loop():
     Runs in a long running container - checking for newly mirrored investigations.
     """
     while True:
+        found_team_and_channel: bool = False
         try:
             integration_context = demisto.getIntegrationContext()
-            if integration_context.get('mirrored_channels'):
-                mirrored_channels = json.loads(integration_context['mirrored_channels'])
+            teams: list = json.loads(integration_context.get('teams', '[]'))
+            for team_index, team in enumerate(teams):
+                mirrored_channels = team.get('mirrored_channels')
                 for index, channel in enumerate(mirrored_channels):
                     investigation_id = channel.get('investigation_id', '')
                     if not channel['mirrored']:
                         demisto.info(f'Mirroring incident: {investigation_id} in Microsoft Teams')
+                        team_to_update: dict = teams.pop(team_index)
                         channel = mirrored_channels.pop(index)
                         if channel['mirror_direction'] and channel['mirror_type']:
                             demisto.mirrorInvestigation(
@@ -866,8 +921,14 @@ def channel_mirror_loop():
                             demisto.info(f'Mirrored incident: {investigation_id} to Microsoft Teams successfully')
                         else:
                             demisto.info(f'Could not mirror {investigation_id}')
-                        integration_context['mirrored_channels'] = json.dumps(mirrored_channels)
+                        team_to_update['mirrored_channels'] = mirrored_channels
+                        teams.append(team_to_update)
+                        integration_context['teams'] = json.dumps(teams)
                         demisto.setIntegrationContext(integration_context)
+                        found_team_and_channel = True
+                        break
+                if found_team_and_channel:
+                    break
         except Exception as e:
             demisto.updateModuleHealth(f'An error occurred: {str(e)}')
         finally:
@@ -960,9 +1021,7 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
             return_card = True
             data = demisto.directMessage(message, username, user_email, allow_external_incidents_creation)
             if data.startswith('`'):  # We got a list of incidents/tasks:
-                demisto.debug(data)
                 data_by_line: list = data.replace('```', '').strip().split('\n')
-                demisto.debug(data_by_line)
                 return_card = True
                 if data_by_line[0].startswith('Task'):
                     attachment = process_tasks_list(data_by_line)
@@ -1028,7 +1087,6 @@ def message_handler(integration_context: dict, request_body: dict, channel_data:
                             investigation_id: str = mirrored_channel.get('investigation_id', '')
                             username: str = from_property.get('name', '')
                             user_email: str = get_team_member(integration_context, team_member_id).get('user_mail', '')
-
                             demisto.addEntry(
                                 id=investigation_id,
                                 entry=message,
@@ -1042,38 +1100,42 @@ def message_handler(integration_context: dict, request_body: dict, channel_data:
 @APP.route('/', methods=['POST'])
 def messages() -> Response:
     """Main bot handler"""
-    request_body: dict = request.json
-    integration_context: dict = demisto.getIntegrationContext()
-    service_url: str = request_body.get('serviceUrl', '')
-    if service_url:
-        service_url = service_url[:-1] if (service_url and service_url.endswith('/')) else service_url
-        integration_context['service_url'] = service_url
-        demisto.setIntegrationContext(integration_context)
-
-    channel_data: dict = request_body.get('channelData', {})
-    event_type: str = channel_data.get('eventType', '')
-
-    conversation: dict = request_body.get('conversation', {})
-    conversation_type: str = conversation.get('conversationType', '')
-    conversation_id: str = conversation.get('id', '')
-
-    message_text: str = request_body.get('text', '')
-
-    # Remove bot mention
-    bot_name = integration_context.get('bot_name', '')
-    formatted_message: str = message_text.replace(f'<at>{bot_name}</at>', '')
-
-    value: dict = request_body.get('value', {})
-
-    if event_type == 'teamMemberAdded':
-        member_added_handler(request_body, service_url, channel_data)
-    elif value:
-        # In TeamsAsk process
-        entitlement_handler(integration_context, request_body, value, conversation_id)
-    elif conversation_type == 'personal':
-        direct_message_handler(integration_context, request_body, conversation, formatted_message)
+    headers: dict = cast(Dict[Any, Any], request.headers)
+    if validate_auth_header(headers) is False:
+        demisto.info(f'Authorization header failed: {str(headers)}')
     else:
-        message_handler(integration_context, request_body, channel_data, formatted_message)
+        request_body: dict = request.json
+        integration_context: dict = demisto.getIntegrationContext()
+        service_url: str = request_body.get('serviceUrl', '')
+        if service_url:
+            service_url = service_url[:-1] if (service_url and service_url.endswith('/')) else service_url
+            integration_context['service_url'] = service_url
+            demisto.setIntegrationContext(integration_context)
+
+        channel_data: dict = request_body.get('channelData', {})
+        event_type: str = channel_data.get('eventType', '')
+
+        conversation: dict = request_body.get('conversation', {})
+        conversation_type: str = conversation.get('conversationType', '')
+        conversation_id: str = conversation.get('id', '')
+
+        message_text: str = request_body.get('text', '')
+
+        # Remove bot mention
+        bot_name = integration_context.get('bot_name', '')
+        formatted_message: str = message_text.replace(f'<at>{bot_name}</at>', '')
+
+        value: dict = request_body.get('value', {})
+
+        if event_type == 'teamMemberAdded':
+            member_added_handler(request_body, service_url, channel_data)
+        elif value:
+            # In TeamsAsk process
+            entitlement_handler(integration_context, request_body, value, conversation_id)
+        elif conversation_type == 'personal':
+            direct_message_handler(integration_context, request_body, conversation, formatted_message)
+        else:
+            message_handler(integration_context, request_body, channel_data, formatted_message)
 
     demisto.updateModuleHealth('')
     return Response(status=200)
@@ -1087,7 +1149,6 @@ def long_running_loop():
         else:
             raise ValueError('No port mapping was provided')
         Thread(target=channel_mirror_loop, daemon=True).start()
-
         http_server = WSGIServer(('', port), APP)
         http_server.serve_forever()
     except Exception as e:
