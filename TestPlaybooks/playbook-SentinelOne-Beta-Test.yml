@@ -47,6 +47,7 @@ tasks:
       - "4"
       - "7"
       - "12"
+      - "13"
     scriptarguments:
       all:
         simple: "yes"
@@ -389,10 +390,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 7120aa0b-62c3-4c8a-81c9-37cb6335700f
+    taskid: fab84b80-797e-4ab6-86ab-e067aff8da24
     type: regular
     task:
-      id: 7120aa0b-62c3-4c8a-81c9-37cb6335700f
+      id: fab84b80-797e-4ab6-86ab-e067aff8da24
       version: -1
       name: Broadcast Message
       description: Broadcasts a message to all agents matching the input filter.
@@ -402,7 +403,8 @@ tasks:
       brand: ""
     scriptarguments:
       active_agent: {}
-      agent_id: {}
+      agent_id:
+        simple: "657613730168123595"
       domain: {}
       group_id: {}
       message:
@@ -418,13 +420,136 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 0df4a8ff-955e-4078-8f6b-1fc72b0b1103
+    type: regular
+    task:
+      id: 0df4a8ff-955e-4078-8f6b-1fc72b0b1103
+      version: -1
+      name: Create Query ID
+      description: Start a Deep Visibility Query and get the queryId, use queryId
+        for all other APIs such as Get All Events
+      script: '|||sentinelone-create-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      from_date:
+        simple: 2019-08-02T04:49:26.257525Z
+      query:
+        simple: AgentName Is Not Empty
+      to_date:
+        simple: 2019-08-04T04:49:26.257525Z
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 35378106-47fd-4273-8fae-a05e56acbd8d
+    type: regular
+    task:
+      id: 35378106-47fd-4273-8fae-a05e56acbd8d
+      version: -1
+      name: Get events
+      description: Get all Deep Visibility events from query
+      script: '|||sentinelone-get-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      limit:
+        simple: "10"
+      query_id:
+        simple: ${SentinelOne.Query.QueryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 7bb1e635-2061-4f95-81b4-470e08d5eea6
+    type: regular
+    task:
+      id: 7bb1e635-2061-4f95-81b4-470e08d5eea6
+      version: -1
+      name: Get processes
+      description: Get Deep Visibility events from query by event type - process
+      script: '|||sentinelone-get-processes'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      limit: {}
+      query_id:
+        simple: ${SentinelOne.Query.QueryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2060,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: fb1d65bb-a0fc-4643-883f-cd5f639622b9
+    type: regular
+    task:
+      id: fb1d65bb-a0fc-4643-883f-cd5f639622b9
+      version: -1
+      name: Wait
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+      - "15"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1125,
-        "width": 2200,
+        "width": 2910,
         "x": -470,
         "y": 50
       }

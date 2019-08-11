@@ -319,7 +319,7 @@ script:
       description: The content hash.
       type: String
     - contextPath: SentinelOne.Hash.Classification
-      description: 'The hash classification '
+      description: The hash classification.
       type: String
     - contextPath: SentinelOne.Hash.Classification Source
       description: The hash classification source.
@@ -635,7 +635,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Full-text search for fields: name, account_name'
+      description: 'Full-text search for fields: name, account_name.'
       isArray: false
       name: query
       required: false
@@ -1263,14 +1263,15 @@ script:
     name: sentinelone-broadcast-message
   - arguments:
     - default: false
+      defaultValue: '50'
       description: 'Limit number of returned items (1-100). Example: "10".'
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: 'QueryId obtained when creating a query under Create Query. Example:
-        "q1xx2xx3".'
+      description: 'QueryId obtained when creating a query under Create-Query command.
+        Example: "q1xx2xx3".'
       isArray: false
       name: query_id
       required: true
@@ -1293,7 +1294,7 @@ script:
       description: The Process ID
       type: Number
     - contextPath: SentinelOne.Event.User
-      description: 'User assign to the event '
+      description: User assign to the event.
       type: String
     - contextPath: SentinelOne.Event.Time
       description: Process start time
@@ -1313,6 +1314,15 @@ script:
       type: String
     - contextPath: SentinelOne.Event.MD5
       description: File MD5
+      type: String
+    - contextPath: Event.ID
+      description: Event process ID
+      type: String
+    - contextPath: Event.Name
+      description: Event name
+      type: String
+    - contextPath: Event.Type
+      description: Event type
       type: String
   - arguments:
     - default: false
@@ -1337,7 +1347,20 @@ script:
     description: Start a Deep Visibility Query and get the queryId, use queryId for
       all other APIs such as Get All Events
     execution: false
-    name: sentinelone-get-query-id
+    name: sentinelone-create-query
+    outputs:
+    - contextPath: SentinelOne.Query.FromDate
+      description: From date
+      type: Date
+    - contextPath: SentinelOne.Query.Query
+      description: The serach query
+      type: String
+    - contextPath: SentinelOne.Query.QueryID
+      description: The query ID
+      type: String
+    - contextPath: SentinelOne.Query.ToDate
+      description: To date
+      type: Date
   - arguments:
     - default: false
       description: 'QueryId obtained when creating a query under Create Query. Example:
@@ -1347,6 +1370,7 @@ script:
       required: true
       secret: false
     - default: false
+      defaultValue: '50'
       description: 'Limit number of returned items (1-100). Example: "10".'
       isArray: false
       name: limit
