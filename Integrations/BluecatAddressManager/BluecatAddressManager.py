@@ -75,6 +75,7 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
         return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
     # Handle error responses gracefully
     if res.status_code not in {200, 201, 202}:
+        result_msg = None
         try:
             result_msg = res.json()
         finally:
