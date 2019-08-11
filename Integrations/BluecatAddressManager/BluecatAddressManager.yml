@@ -80,7 +80,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '0'
-      description: Start index from which to get the response policies. Default is 0.
+      description: Start index from which to get the response policies. Default is
+        0.
       isArray: false
       name: start
       required: false
@@ -107,8 +108,8 @@ script:
       description: Time to live (TTL) of the response policy.
       type: Unknown
     - contextPath: BlueCat.AddressManager.ResponsePolicies.Type
-      description: Type of the response policy (BLACKLIST, BLACKHOLE, WHITELIST,
-        or REDIRECT).
+      description: Type of the response policy (BLACKLIST, BLACKHOLE, WHITELIST, or
+        REDIRECT).
       type: String
     - contextPath: BlueCat.AddressManager.ResponsePolicies.RedirectTarget
       description: Target of redirect, in case of REDIRECT policy type.
@@ -175,6 +176,39 @@ script:
     description: Removes a domain from the given response policy.
     execution: false
     name: bluecat-am-response-policy-remove-domain
+  - arguments:
+    - default: false
+      description: The IP address for which to get the range.
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the IPv4 Block containing the specified IPv4 address.
+    execution: false
+    name: bluecat-am-get-range-by-ip
+    outputs:
+    - contextPath: BlueCat.AddressManager.Range.ID
+      description: The address manager ID of the Range.
+      type: String
+    - contextPath: BlueCat.AddressManager.Range.Name
+      description: Name of the Range.
+      type: String
+    - contextPath: BlueCat.AddressManager.Range.Type
+      description: Type of the Range.
+      type: String
+    - contextPath: BlueCat.AddressManager.Range.Parents.ID
+      description: ID of the parent Range.
+      type: String
+    - contextPath: BlueCat.AddressManager.Range.Parents.Type
+      description: Type of the parent Range.
+      type: String
+    - contextPath: BlueCat.AddressManager.Range.Parents.Name
+      description: Name of the parent Range.
+      type: String
+    - contextPath: BlueCat.AddressManager.Range.Parents.CIDR
+      description: Classless Inter-Domain Routing.
+      type: String
   dockerimage: demisto/python3:3.7.3.286
   isfetch: false
   runonce: false
