@@ -4,7 +4,6 @@ import json
 import sys
 import yaml
 import os
-import re
 import requests
 import argparse
 
