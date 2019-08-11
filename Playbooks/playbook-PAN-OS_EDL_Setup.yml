@@ -500,7 +500,7 @@ tasks:
       action:
         simple: ${inputs.action-type}
       application: {}
-      description: ""
+      description: {}
       destination:
         simple: ${Panorama.EDL.Name}
       disable: {}
