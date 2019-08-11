@@ -1,8 +1,8 @@
 {
-  "typeId": "7a6513be-9b91-4bc0-8d14-8fcd91448840",
+  "typeId": "account",
   "kind": "indicatorsDetails",
   "layout": {
-    "typeId": "7a6513be-9b91-4bc0-8d14-8fcd91448840",
+    "typeId": "account",
     "kind": "indicatorsDetails",
     "name": "",
     "tabs": [
@@ -181,7 +181,7 @@
     "system": false,
     "TypeName": "",
     "version": 2,
-    "id": "7a6513be-9b91-4bc0-8d14-8fcd91448840"
+    "id": "account"
   },
   "TypeName": "Account",
   "version": -1,

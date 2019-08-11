@@ -1,8 +1,8 @@
 {
-  "typeId": "8529f93c-f696-4d7b-8a00-1b0baa313c4d",
+  "typeId": "host",
   "kind": "indicatorsDetails",
   "layout": {
-    "typeId": "8529f93c-f696-4d7b-8a00-1b0baa313c4d",
+    "typeId": "host",
     "kind": "indicatorsDetails",
     "name": "",
     "tabs": [
@@ -219,7 +219,7 @@
     "system": false,
     "TypeName": "",
     "version": 1,
-    "id": "8529f93c-f696-4d7b-8a00-1b0baa313c4d"
+    "id": "host"
   },
   "TypeName": "Host",
   "version": -1,
