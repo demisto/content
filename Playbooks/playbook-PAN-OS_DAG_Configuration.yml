@@ -1,7 +1,6 @@
 id: PAN-OS DAG Configuration
 version: -1
 name: PAN-OS DAG Configuration
-fromversion: 4.5.0
 description: "This playbook utilizes the Dynamic Address Group capability of PAN-OS\nDAG
   allows the analyst to create a rule once with the group as the source/destination
   and add IPs dynamically without the need to commit the configuration every time.\n\nThe
@@ -12,13 +11,12 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 493842c0-cde7-4ddc-8adb-6057e6edf7d3
+    taskid: 24fcd4ca-bf27-4bc1-86fd-569548dd22ba
     type: start
     task:
-      id: 493842c0-cde7-4ddc-8adb-6057e6edf7d3
+      id: 24fcd4ca-bf27-4bc1-86fd-569548dd22ba
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -37,10 +35,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 0596ef9b-62e4-422c-8b55-6d40542caf54
+    taskid: 320fbaaa-b322-4d39-8549-2663d87df56e
     type: condition
     task:
-      id: 0596ef9b-62e4-422c-8b55-6d40542caf54
+      id: 320fbaaa-b322-4d39-8549-2663d87df56e
       version: -1
       name: Is PAN-OS integration enabled?
       description: Checks whether the integration is enabled and configured
@@ -92,13 +90,13 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 23248119-6a57-4821-80b3-110b6e5b6948
+    taskid: 2235c4df-c6d7-40ff-8ac3-6c43b66fe753
     type: regular
     task:
-      id: 23248119-6a57-4821-80b3-110b6e5b6948
+      id: 2235c4df-c6d7-40ff-8ac3-6c43b66fe753
       version: -1
       name: List Address Groups
-      description: "Lists all the address groups in PAN-OS"
+      description: Lists all the address groups in PAN-OS
       script: '|||panorama-list-address-groups'
       type: regular
       iscommand: true
@@ -119,13 +117,13 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 3b1c9c8e-9dcc-4d06-8615-37c9fd6b83bc
+    taskid: cf23bd70-8c0b-469e-8872-6b294bf3e9be
     type: condition
     task:
-      id: 3b1c9c8e-9dcc-4d06-8615-37c9fd6b83bc
+      id: cf23bd70-8c0b-469e-8872-6b294bf3e9be
       version: -1
       name: Check if tag exists in address groups
-      description: "Looks up the given tag in the address groups"
+      description: Looks up the given tag in the address groups
       type: condition
       iscommand: false
       brand: ""
@@ -169,10 +167,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: f4969d55-3ca1-43cd-84d5-95c77a5ec846
+    taskid: 3b6960c6-2d5f-4417-876e-86aced2808cc
     type: regular
     task:
-      id: f4969d55-3ca1-43cd-84d5-95c77a5ec846
+      id: 3b6960c6-2d5f-4417-876e-86aced2808cc
       version: -1
       name: Register tag on an IP
       description: Registers IP addresses to a tag
@@ -202,13 +200,12 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 077101c3-e6e2-4b14-8193-10872f508078
+    taskid: ee06ca45-8577-4b16-8911-2ac2560b2142
     type: title
     task:
-      id: 077101c3-e6e2-4b14-8193-10872f508078
+      id: ee06ca45-8577-4b16-8911-2ac2560b2142
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -225,10 +222,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 8115173b-3b8f-4dbe-81bb-0caa750dec15
+    taskid: bd80e411-5bc3-48b1-850b-362bc9d508a1
     type: regular
     task:
-      id: 8115173b-3b8f-4dbe-81bb-0caa750dec15
+      id: bd80e411-5bc3-48b1-850b-362bc9d508a1
       version: -1
       name: Create Address Group
       description: Creates an address group; "static" or "dynamic"
@@ -261,10 +258,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 0e12bde9-5486-4f8f-8a03-2caadd197f82
+    taskid: bcc6e979-2515-4aa2-8a8d-5c95f4b26b42
     type: regular
     task:
-      id: 0e12bde9-5486-4f8f-8a03-2caadd197f82
+      id: bcc6e979-2515-4aa2-8a8d-5c95f4b26b42
       version: -1
       name: Create Block Rule
       description: Creates a custom block policy rule
@@ -301,19 +298,19 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: c4508b9d-45ef-4e0f-8784-2ff8ba1e6fb3
+    taskid: 19cf90dc-4544-47e9-809f-38090341f269
     type: regular
     task:
-      id: c4508b9d-45ef-4e0f-8784-2ff8ba1e6fb3
+      id: 19cf90dc-4544-47e9-809f-38090341f269
       version: -1
       name: Manually commit
-      description: Allows the analyst to manually commit the changes. will be operational if auto-commit is false
+      description: Allows the analyst to manually commit the changes. will be operational
+        if auto-commit is false
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
       - "4"
     separatecontext: false
     view: |-
@@ -328,13 +325,12 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 0874253b-e5da-4c24-8912-cdd15aa2bd7f
+    taskid: 2bd82322-f586-4e9c-881c-f4385d43d012
     type: playbook
     task:
-      id: 0874253b-e5da-4c24-8912-cdd15aa2bd7f
+      id: 2bd82322-f586-4e9c-881c-f4385d43d012
       version: -1
       name: Pan-OS-Commit-Configuration
-      description: ""
       playbookName: Pan-OS Commit Configuration
       type: playbook
       iscommand: false
@@ -355,10 +351,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 1839eb13-c52f-42a3-8e0a-739845eef0e9
+    taskid: 31f00bc1-3fee-484e-8189-a0a011fd5f71
     type: condition
     task:
-      id: 1839eb13-c52f-42a3-8e0a-739845eef0e9
+      id: 31f00bc1-3fee-484e-8189-a0a011fd5f71
       version: -1
       name: Is auto commit defined?
       description: Check whether the values provided in arguments are equal. If either
