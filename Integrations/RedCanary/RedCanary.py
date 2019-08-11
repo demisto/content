@@ -9,8 +9,8 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
-BASE_URL = '{}/openapi/v3'.format(demisto.params()['domain'])
-API_KEY = demisto.params()['api_key']
+BASE_URL = '{}/openapi/v3'.format(demisto.params().get('domain'))
+API_KEY = demisto.params().get('api_key')
 USE_SSL = not demisto.params().get('insecure', False)
 
 ''' HELPER FUNCTIONS '''
@@ -435,12 +435,16 @@ def get_endpoint_command():
     data = get_endpoint(_id)
     endpoints = get_endpoint_context(res=data)
     headers = ['ID', 'IPAddress', 'Hostname', 'MACAddress', 'IsIsolated', 'IsDecommissioned', 'OSVersion', ]
+    if len(endpoints) != 0:
+        endpoint_hostname = endpoints[0]['Hostname']
+    else:
+        endpoint_hostname = 'Result'
     return {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
         'Contents': endpoints,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('EndPoint {}'.format(endpoints[0]['Hostname']), endpoints, headers=headers,
+        'HumanReadable': tableToMarkdown('EndPoint {}'.format(endpoint_hostname), endpoints, headers=headers,
                                          removeNull=True),
         'EntryContext': {
             'EndPoint(val.Hostname == obj.Hostname)': createContext(endpoints, removeNull=True),
@@ -467,7 +471,10 @@ def get_endpoint_detections_command():
 def get_endpoint_detections(_id):
     endpoint = get_endpoint(_id)
 
-    detection_ids = [d['href'].split('detections/')[1] for d in endpoint[0]['links']['detections']]
+    if len(endpoint) != 0:
+        detection_ids = [d['href'].split('detections/')[1] for d in endpoint[0]['links']['detections']]
+    else:
+        return_error('No detection links were found.')
     detections = []  # type:ignore
     for detection_id in detection_ids:
         detections.extend(get_detection(detection_id))
