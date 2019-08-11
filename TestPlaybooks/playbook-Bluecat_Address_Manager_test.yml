@@ -547,7 +547,7 @@ tasks:
       - "15"
     scriptarguments:
       ip:
-        simple: vc
+        simple: 2000::20C:29FF:FE89:58CB
     separatecontext: false
     view: |-
       {
