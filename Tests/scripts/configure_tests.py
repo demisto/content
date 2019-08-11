@@ -29,7 +29,6 @@ ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonInteg
 # secrets white list file to be ignored in tests to prevent full tests running each time it is updated
 SECRETS_WHITE_LIST = 'secrets_white_list.json'
 
-
 # Global used to indicate if failed during any of the validation states
 _FAILED = False
 
@@ -51,6 +50,7 @@ def get_modified_files(files_string):
     """Get a string of the modified files"""
     is_conf_json = False
     is_reputations_json = False
+    is_indicator_json = False
 
     sample_tests = []
     all_tests = []
@@ -87,8 +87,13 @@ def get_modified_files(files_string):
                 modified_tests_list.append(file_path)
 
             # reputations.json
-            elif re.match(MISC_REPUTATIONS_REGEX, file_path, re.IGNORECASE):
+            elif re.match(MISC_REPUTATIONS_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(REPUTATION_REGEX, file_path, re.IGNORECASE):
                 is_reputations_json = True
+
+            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(INCIDENT_FIELDS_REGEX, file_path, re.IGNORECASE):
+                is_indicator_json = True
 
             # conf.json
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
@@ -105,7 +110,8 @@ def get_modified_files(files_string):
             elif SECRETS_WHITE_LIST not in file_path:
                 sample_tests.append(file_path)
 
-    return modified_files_list, modified_tests_list, all_tests, is_conf_json, sample_tests, is_reputations_json
+    return (modified_files_list, modified_tests_list, all_tests, is_conf_json, sample_tests,
+            is_reputations_json, is_indicator_json)
 
 
 def get_name(file_path):
@@ -171,7 +177,6 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
                     if command in integration_commands:
                         if not command_to_integration.get(command) or \
                                 command_to_integration.get(command) == integration_id:
-
                             detected_usage = True
                             tests_set.add(test_playbook_id)
                             catched_intergrations.add(integration_id)
@@ -508,8 +513,8 @@ def get_test_from_conf(branch_name):
 
 def get_test_list(files_string, branch_name):
     """Create a test list that should run"""
-    modified_files, modified_tests_list, all_tests, is_conf_json, sample_tests, is_reputations_json = \
-        get_modified_files(files_string)
+    (modified_files, modified_tests_list, all_tests, is_conf_json, sample_tests, is_reputations_json,
+     is_indicator_json) = get_modified_files(files_string)
 
     tests = set([])
     if modified_files:
@@ -518,6 +523,9 @@ def get_test_list(files_string, branch_name):
     # Adding a unique test for a json file.
     if is_reputations_json:
         tests.add('reputations.json Test')
+
+    if is_indicator_json:
+        tests.add('Test IP Indicator Fields')
 
     for file_path in modified_tests_list:
         test = collect_ids(file_path)
