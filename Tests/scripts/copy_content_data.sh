@@ -16,7 +16,7 @@ ssh ${USER}@${PUBLIC_IP} 'mkdir ~/Beta_Integrations'
 
 scp content_new.zip ${USER}@${PUBLIC_IP}:~/content
 scp content_test.zip ${USER}@${PUBLIC_IP}:~/content
-scp -r ./Beta_Integrations/* ${USER}@${PUBLIC_IP}:~/Beta_Integrations
+scp $(find ./Beta_Integrations/ -maxdepth 1 -type f) ${USER}@${PUBLIC_IP}:~/Beta_Integrations
 
 # override exiting content with current
 # rm CommonServer*_4_1 as this was changed and is stuck on 4.1 server
