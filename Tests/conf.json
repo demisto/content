@@ -1483,6 +1483,11 @@
             "integrations": "palo_alto_networks_pan_os_edl_management"
         },
         {
+            "playbookID": "playbook-PAN-OS_DAG_Configuration_Test",
+            "integrations": "Panorama",
+            "timeout": 2400
+        },
+        {
             "integrations": "Snowflake",
             "playbookID": "Snowflake-Test"
         },
