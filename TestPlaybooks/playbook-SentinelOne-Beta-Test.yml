@@ -1,5 +1,5 @@
 id: SentinelOne V2 - test
-version: -1
+version: 16
 name: SentinelOne V2 - test
 starttaskid: "0"
 tasks:
@@ -120,6 +120,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
     scriptarguments:
       activities_ids: {}
       activity_types: {}
@@ -537,6 +540,51 @@ tasks:
       {
         "position": {
           "x": 1780,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 04604a2f-bd27-425e-87e2-40fca8fff6b8
+    type: regular
+    task:
+      id: 04604a2f-bd27-425e-87e2-40fca8fff6b8
+      version: -1
+      name: Get agent activities
+      description: Returns a list of activities.
+      script: '|||sentinelone-get-activities'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      activities_ids: {}
+      activity_types: {}
+      agent_ids:
+        complex:
+          root: SentinelOne
+          accessor: Activity.AgentID
+          transformers:
+          - operator: GetFirstObject
+      created_after: {}
+      created_before: {}
+      created_between: {}
+      created_from: {}
+      created_until: {}
+      group_ids: {}
+      include_hidden: {}
+      limit:
+        simple: "10"
+      threats_ids: {}
+      user_emails: {}
+      user_ids: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1350,
           "y": 560
         }
       }

@@ -32,7 +32,7 @@ HEADERS = {
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, params={}, data=None):
+def http_request(method, url_suffix, params={}, data=None, ignore_status_code=False):
     LOG(f'Attempting {method} request to {BASE_URL + url_suffix}\nWith params:{params}\nWith body:\n{data}')
     res = requests.request(
         method,
@@ -42,7 +42,7 @@ def http_request(method, url_suffix, params={}, data=None):
         data=data,
         headers=HEADERS
     )
-    if res.status_code not in {200}:
+    if not ignore_status_code and res.status_code not in {200}:
         try:
             errors = ''
             for error in res.json().get('errors'):
@@ -51,7 +51,6 @@ def http_request(method, url_suffix, params={}, data=None):
                          f'Error details: [{errors}]')
         except Exception:
             return_error(f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}')
-
     return res.json()
 
 
@@ -479,34 +478,37 @@ def get_hash_command():
     Get hash reputation and classification.
     """
     # Init main vars
-    context = {}
     headers = ['Hash', 'Rank', 'Classification Source', 'Classification']
-
     # Get arguments
     hash_ = demisto.args().get('hash')
-
+    type = get_hash_type(hash_)
+    if type == 'Unknown':
+        return_error('Please enter a valid hash format.')
     # Make request and get raw response
     hash_reputation = get_hash_reputation_request(hash_)
-    hash_classification = get_hash_classification_request(hash_)
+    reputation = hash_reputation.get('data')
+    contents = {
+        'Rank': reputation.get('rank'),
+        'Hash': hash_
+    }
+    try:
+        hash_classification = get_hash_classification_request(hash_)
+        classification = hash_classification.get('data')
+        if classification:
+            contents['Classification Source'] = classification.get('classificationSource'),
+            contents['Classification'] = classification.get('classification')
+        else:
+            contents['Classification'] = 'No classification was found'
+    except ValueError:
+        pass
 
     # Parse response into context & content entries
     title = 'Sentinel One - Hash Reputation and Classification \n' + \
             'Provides hash reputation (rank from 0 to 10):'
-    contents = {
-        'Rank': hash_reputation.get('rank'),
-        'Hash': hash_,
-        'Classification Source': hash_classification.get('classificationSource'),
-        'Classification': hash_classification.get('classification')
-    }
 
-    context_entries = {
-        'Rank': hash_reputation.get('rank'),
-        'Hash': hash_,
-        'Classification Source': hash_classification.get('classificationSource'),
-        'Classification': hash_classification.get('classification')
+    context = {
+        'SentinelOne.Hash(val.Hash && val.Hash === obj.Hash)': contents
     }
-
-    context['SentinelOne.Hash(val.Hash && val.Hash === obj.Hash)'] = context_entries
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -523,26 +525,15 @@ def get_hash_reputation_request(hash_):
     endpoint_url = f'hashes/{hash_}/reputation'
 
     response = http_request('GET', endpoint_url)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
+    return response
 
 
 def get_hash_classification_request(hash_):
 
     endpoint_url = f'hashes/{hash_}/classification'
 
-    response = http_request('GET', endpoint_url)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if response.get('data'):
-        if response.get('data').get('classification'):
-            return response.get('data')
-        else:
-            return {}
-    return {}
+    response = http_request('GET', endpoint_url, ignore_status_code=True)
+    return response
 
 
 def mark_as_threat_command():
