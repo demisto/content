@@ -1,6 +1,7 @@
 ## Overview
 ---
 Use the Whois integration to enrich domain indicators.
+The integraiton require API token that should be provided from [here](https://jsonwhois.com/).
 
 ## Use Cases
 ---
@@ -16,8 +17,6 @@ Use the Whois integration to enrich domain indicators.
     * __API Token__
     * __Use system proxy__
 4. Click __Test__ to validate the URLs, token, and connection.
-## Fetched Incidents Data
----
 
 ## Commands
 ---
