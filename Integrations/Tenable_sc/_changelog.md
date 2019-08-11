@@ -1,2 +1,2 @@
 ## [Unreleased]
-  - Packagified the integration.
+  -
