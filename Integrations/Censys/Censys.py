@@ -23,15 +23,13 @@ def sendRequest(method, url, uri, user, passwd, data=None):
     return res.text
 
 
-res = []
-
 apiid = demisto.params()['apiid']
 secret = demisto.params()['secret']
 url = demisto.params()['url']
 
 # What happens when the 'Test' button is pressed
 if demisto.command() == 'test-module':
-    res = sendRequest('￿￿￿￿￿￿￿￿￿GET', url, "view/ipv4/8.8.8.8", apiid, secret)
+    res = sendRequest('GET', url, "view/ipv4/8.8.8.8", apiid, secret)
     if res.startswith('### Error:'):
         demisto.results({'Type': entryTypes['error'], 'ContentsFormat': 'text', 'Contents': res})
     elif 'Google' in res:
