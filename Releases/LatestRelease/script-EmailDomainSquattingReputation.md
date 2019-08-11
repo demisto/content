@@ -1,1 +1,1 @@
-Support domain arrays as paramter with support for possible empty domains.
+Added support for domain arrays as a parameter, including empty domains.
