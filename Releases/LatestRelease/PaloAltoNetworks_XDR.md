@@ -1,1 +1,0 @@
-- added detailed description on how to generate API KEY in Cortex XDR
