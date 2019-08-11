@@ -74,4 +74,3 @@ class TestParseCSV:
         with open("./TestData/simple_non_utf_results.json") as f:
             expected = json.load(f)
         assert expected == result
-
