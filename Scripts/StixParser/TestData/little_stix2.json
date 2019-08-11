@@ -6,7 +6,7 @@
       "url"
     ],
     "modified": "2019-05-26T16:18:32.000Z",
-    "pattern": "[url:value = 'http://johnson.com']",
+    "pattern": "[url:value = 'http://demisto.com']",
     "score": "None",
     "source": "",
     "type": "indicator",
