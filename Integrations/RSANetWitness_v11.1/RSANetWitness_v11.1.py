@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 """
 
 IMPORTS
@@ -8,10 +9,10 @@ IMPORTS
 """
 from datetime import datetime, timedelta
 import requests
-import urllib
 import json
 import os
 import re
+
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -20,6 +21,7 @@ requests.packages.urllib3.disable_warnings()
 HANDLE PROXY
 
 """
+
 
 def set_proxies():
     if not demisto.params()['proxy']:
@@ -32,6 +34,8 @@ def set_proxies():
 HELPERS
 
 """
+
+
 def dict_list_to_str(dict_list):
     """
 
@@ -42,15 +46,17 @@ def dict_list_to_str(dict_list):
         return ''
     string_list = []
     for dict in dict_list:
-        key_values = ["{}: {}".format(k,v) for k,v in dict.items()]
+        key_values = ["{}: {}".format(k, v) for k, v in dict.items()]
         string_list.append(', '.join(key_values))
     return '\n'.join(string_list)
+
 
 """
 
 AUTHENTICATION
 
 """
+
 
 def get_token_request(username, password):
     """
@@ -67,24 +73,20 @@ def get_token_request(username, password):
     username_password = "username={}&password={}".format(username, password)
     url = '{}/auth/userpass'.format(BASE_PATH)
     get_token_headers = {
-        'Content-Type' : 'application/x-www-form-urlencoded;charset=ISO-8859-1',
+        'Content-Type': 'application/x-www-form-urlencoded;charset=ISO-8859-1',
         'Accept': 'application/json; charset=UTF-8',
         'NetWitness-Version': VERSION
     }
 
-    response = requests.post(url,
-        headers = get_token_headers,
-        data = username_password,
-        verify = USE_SSL,
-        proxies = PROXIES
-    )
+    response = requests.post(url, headers=get_token_headers, data=username_password, verify=USE_SSL, proxies=PROXIES)
 
-    #successful get_token
+    # successful get_token
     if response.status_code == 200:
         return response.json()
-    #bad request - NetWitness returns a common json structure for errors
+    # bad request - NetWitness returns a common json structure for errors
     error_lst = response.json().get('errors')
     raise ValueError('get_token failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
+
 
 def get_token():
     """
@@ -101,11 +103,12 @@ def get_token():
         USERNAME,
         PASSWORD
     )
-    LOG('Token recieved')
+    LOG('Token received')
     token = response_body.get('accessToken')
     if not token:
         raise ValueError('Failed to access get_token token (Unexpected response)')
     return token
+
 
 """
 
@@ -118,11 +121,11 @@ USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 USE_SSL = not demisto.params()['insecure']
 VERSION = demisto.params()['version']
-FETCH_TIME = demisto.params().get('fetchTime','1 days')
+FETCH_TIME = demisto.params().get('fetchTime', '1 days')
 PROXIES = set_proxies()
 TOKEN = get_token()
 DEFAULT_HEADERS = {
-    'Content-Type' : 'application/json;charset=UTF-8',
+    'Content-Type': 'application/json;charset=UTF-8',
     'Accept': 'application/json; charset=UTF-8',
     'NetWitness-Version': VERSION
 }
@@ -133,12 +136,15 @@ COMMAND HANDLERS
 
 """
 
+
 def http_request(method, url, body=None, headers={}, url_params=None):
     '''
     returns the http response body
 
-    uses TOKEN global var to send requests to RSA end (this enables using a token for multiple requests and avoiding unnecessary creation of a new token)
-    catches and handles token expiration: in case of 'request timeout' the  token will be renewed and the request will be resent once more.
+    uses TOKEN global var to send requests to RSA end (this enables using a token for multiple requests and avoiding
+     unnecessary creation of a new token)
+    catches and handles token expiration: in case of 'request timeout' the  token will be renewed and the request
+    will be resent once more.
 
     '''
 
@@ -153,13 +159,15 @@ def http_request(method, url, body=None, headers={}, url_params=None):
         'proxies': PROXIES
     }
 
-    #add optional arguments if specified
+    # add optional arguments if specified
     if body is not None:
         request_kwargs['data'] = body
     if url_params is not None:
         request_kwargs['params'] = url_params
 
-    LOG('Attempting {} request to {}\nWith params:{}\nWith body:\n{}'.format(method, url,json.dumps(url_params, indent=4), json.dumps(body, indent=4)))
+    LOG('Attempting {} request to {}\nWith params:{}\nWith body:\n{}'.format(method, url,
+                                                                             json.dumps(url_params, indent=4),
+                                                                             json.dumps(body, indent=4)))
     response = requests.request(
         method,
         url,
@@ -175,16 +183,17 @@ def http_request(method, url, body=None, headers={}, url_params=None):
             url,
             **request_kwargs
         )
-    #successful request
+    # successful request
     if response.status_code == 200:
         try:
             return response.json()
         except Exception as e:
             LOG(e.message)
             return None
-    #bad request - NetWitness returns a common json structure for errors; a list of error objects
+    # bad request - NetWitness returns a common json structure for errors; a list of error objects
     error_lst = response.json().get('errors')
     raise ValueError('Request failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
+
 
 def get_incident_request(incident_id):
     """
@@ -203,10 +212,9 @@ def get_incident_request(incident_id):
     response = http_request(
         'GET',
         url,
-        headers = DEFAULT_HEADERS
+        headers=DEFAULT_HEADERS
     )
     return response
-
 
 
 def get_incident():
@@ -220,9 +228,9 @@ def get_incident():
     args = demisto.args()
     incident_id = args.get('incidentId')
     LOG('Requesting information on incident ' + incident_id)
-    #call get_incident_request(), given user arguments
-    #returns the response body on success
-    #raises an exception on failed request
+    # call get_incident_request(), given user arguments
+    # returns the response body on success
+    # raises an exception on failed request
     incident = get_incident_request(
         incident_id
     )
@@ -241,6 +249,7 @@ def get_incident():
         }
     }
     demisto.results(entry)
+
 
 def get_incidents_request(since=None, until=None, page_number=None, page_size=10):
     """
@@ -269,11 +278,12 @@ def get_incidents_request(since=None, until=None, page_number=None, page_size=10
     response = http_request(
         'GET',
         url,
-        headers = DEFAULT_HEADERS,
-        url_params = url_params
+        headers=DEFAULT_HEADERS,
+        url_params=url_params
     )
 
     return response
+
 
 def get_all_incidents(since=None, until=None, limit=None):
     """
@@ -288,26 +298,28 @@ def get_all_incidents(since=None, until=None, limit=None):
     has_next = True
     page_number = 0
     incidents = []
-    LOG('Requesting for incidents in timeframe of: {s} - {u}'.format(s = since or 'not specified', u = until or 'not specified'))
+    LOG('Requesting for incidents in timeframe of: {s} - {u}'.format(s=since or 'not specified',
+                                                                     u=until or 'not specified'))
     while has_next and limit > len(incidents):
-    #call get_incidents_request(), given user arguments
-    #returns the response body on success
-    #raises an exception on failed request
+        # call get_incidents_request(), given user arguments
+        # returns the response body on success
+        # raises an exception on failed request
         LOG('Requesting for page {}'.format(page_number))
         response_body = get_incidents_request(
-            since = since,
-            until = until,
-            page_number = page_number
+            since=since,
+            until=until,
+            page_number=page_number
         )
         incidents.extend(response_body.get('items'))
         has_next = response_body.get('hasNext')
         page_number += 1
 
-    #if incidents list larger then limit - fit to limit
+    # if incidents list larger then limit - fit to limit
     if len(incidents) > limit:
-        incidents[limit-1 : -1] = []
+        incidents[limit - 1: -1] = []
 
     return incidents
+
 
 def get_incidents():
     """
@@ -319,15 +331,16 @@ def get_incidents():
     """
     args = demisto.args()
 
-    #validate one of the following was passed - until, since
+    # validate one of the following was passed - until, since
     if not any([args.get('since'), args.get('until'), args.get('lastDays')]):
-        raise ValueError("Please provide one or both of the following parameters: since, until. Alternatively, use lastDays")
+        raise ValueError(
+            "Please provide one or both of the following parameters: since, until. Alternatively, use lastDays")
 
     num_of_days = args.get('lastDays')
     if num_of_days:
         since = datetime.now() - timedelta(days=int(num_of_days))
-        #convert to ISO 8601 format and add Z suffix
-        timestamp =  since.isoformat() + 'Z'
+        # convert to ISO 8601 format and add Z suffix
+        timestamp = since.isoformat() + 'Z'
         args['since'] = timestamp
         args['until'] = None
 
@@ -337,9 +350,9 @@ def get_incidents():
         limit = int(limit)
 
     incidents = get_all_incidents(
-        since = args.get('since'),
-        until = args.get('until'),
-        limit = limit
+        since=args.get('since'),
+        until=args.get('until'),
+        limit=limit
     )
 
     md_content = create_incidents_list_md_table(incidents)
@@ -359,7 +372,6 @@ def get_incidents():
 
 
 def update_incident_request(incident_id, assignee=None, status=None):
-
     """
     returns the response body
 
@@ -376,17 +388,18 @@ def update_incident_request(incident_id, assignee=None, status=None):
     LOG('Requestig to update incident ' + incident_id)
 
     body = {
-            'assignee': assignee,
-            'status': status
-        }
+        'assignee': assignee,
+        'status': status
+    }
     url = '{}/incidents/{}'.format(BASE_PATH, incident_id)
     response = http_request(
         'PATCH',
         url,
-        headers = DEFAULT_HEADERS,
-        body = json.dumps(body)
+        headers=DEFAULT_HEADERS,
+        body=json.dumps(body)
     )
     return response
+
 
 def update_incident():
     """
@@ -399,18 +412,18 @@ def update_incident():
 
     args = demisto.args()
 
-    #validate at least one of the following was passed: status, assignee.
+    # validate at least one of the following was passed: status, assignee.
     if not any([args.get('status'), args.get('assignee')]):
         raise ValueError("Please provide one or both of the following parameters: status, assignee.")
 
-    #call update_incident_request(), given user arguments
-    #returns the response body on success
-    #raises an exception on failed request
+    # call update_incident_request(), given user arguments
+    # returns the response body on success
+    # raises an exception on failed request
     incident = update_incident_request(
         args.get('incidentId'),
-        status = args.get('status'),
-        assignee = args.get('assignee')
-        )
+        status=args.get('status'),
+        assignee=args.get('assignee')
+    )
 
     md_content = create_incident_md_table(incident)
 
@@ -419,12 +432,13 @@ def update_incident():
         'Contents': incident,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable':  "## NetWitness Update Incident\n" + md_content,
+        'HumanReadable': "## NetWitness Update Incident\n" + md_content,
         'EntryContext': {
             "NetWitness.Incidents(obj.id==val.id)": incident
         }
     }
     demisto.results(entry)
+
 
 def delete_incident_request(incident_id):
     """
@@ -444,9 +458,10 @@ def delete_incident_request(incident_id):
     response = http_request(
         'DELETE',
         url,
-        headers = DEFAULT_HEADERS
+        headers=DEFAULT_HEADERS
     )
     return response
+
 
 def delete_incident():
     """
@@ -458,9 +473,9 @@ def delete_incident():
     args = demisto.args()
     incident_id = args.get('incidentId')
 
-    #call delete_incident_request() function
-    #no return value on successful request
-    #raises an exception on failed request
+    # call delete_incident_request() function
+    # no return value on successful request
+    # raises an exception on failed request
     delete_incident_request(
         incident_id
     )
@@ -471,6 +486,7 @@ def delete_incident():
         'ContentsFormat': formats['text']
     }
     demisto.results(entry)
+
 
 def get_alerts_request(incident_id, page_number=None, page_size=None):
     """
@@ -488,17 +504,18 @@ def get_alerts_request(incident_id, page_number=None, page_size=None):
 
     url = '{}/incidents/{}/alerts'.format(BASE_PATH, incident_id)
     url_params = {
-        'pageNumber' : page_number,
-        'pageSize' : page_size
+        'pageNumber': page_number,
+        'pageSize': page_size
     }
 
     response = http_request(
         'GET',
         url,
-        headers = DEFAULT_HEADERS,
-        url_params = url_params
+        headers=DEFAULT_HEADERS,
+        url_params=url_params
     )
     return response
+
 
 def get_all_alerts(incident_id):
     """
@@ -511,19 +528,20 @@ def get_all_alerts(incident_id):
 
     LOG('Requesting for data on alerts related to incident ' + incident_id)
     while has_next:
-    #call get_alerts_request(), given user arguments
-    #returns the response body on success
-    #raises an exception on failed request
+        # call get_alerts_request(), given user arguments
+        # returns the response body on success
+        # raises an exception on failed request
         LOG('Requesting for page {}'.format(page_number))
         response_body = get_alerts_request(
             incident_id,
-            page_number = page_number
+            page_number=page_number
         )
         alerts.extend(response_body.get('items'))
         has_next = response_body.get('hasNext')
         page_number += 1
 
     return alerts
+
 
 def get_alerts():
     """
@@ -538,10 +556,10 @@ def get_alerts():
 
     alerts_parsed = []
     for alert in alerts:
-        #add incident id for each alert
+        # add incident id for each alert
         alert['incidentId'] = incident_id
 
-        #parse each alert to markdown representation, to display in the war room
+        # parse each alert to markdown representation, to display in the war room
         parsed_alert = parse_alert_to_md_representation(alert)
         alerts_parsed.append(parsed_alert)
 
@@ -560,27 +578,28 @@ def get_alerts():
     }
     demisto.results(entry)
 
+
 def fetch_incidents():
     """
     fetch is limited to 100 results
     """
     lastRun = demisto.getLastRun()
 
-    #if last timestamp was recorded- use it, else generate timestamp for one day prior to current date
+    # if last timestamp was recorded- use it, else generate timestamp for one day prior to current date
     if lastRun and lastRun.get('timestamp'):
         timestamp = lastRun.get('timestamp')
     else:
         last_fetch, _ = parse_date_range(FETCH_TIME)
-        #convert to ISO 8601 format and add Z suffix
+        # convert to ISO 8601 format and add Z suffix
         timestamp = last_fetch.isoformat() + 'Z'
 
     LOG('Fetching incidents since ' + timestamp)
     netwitness_incidents = get_all_incidents(
-        since = timestamp,
-        limit = 100
+        since=timestamp,
+        limit=100
     )
 
-    demisto_incidents =[]
+    demisto_incidents = []
     iso_format = "%Y-%m-%dT%H:%M:%S.%fZ"
 
     last_incident_datetime = datetime.strptime(timestamp, iso_format)
@@ -595,10 +614,10 @@ def fetch_incidents():
         if incident_timestamp == timestamp:
             continue
 
-        #parse timestamp to datetime format to be able to compare with last_incident_datetime
+        # parse timestamp to datetime format to be able to compare with last_incident_datetime
         incident_datetime = datetime.strptime(incident_timestamp, iso_format)
         if incident_datetime > last_incident_datetime:
-            #update last_incident_datetime
+            # update last_incident_datetime
             last_incident_datetime = incident_datetime
             last_incident_timestamp = incident_timestamp
 
@@ -606,7 +625,7 @@ def fetch_incidents():
         if import_alerts:
             try:
                 incident['alerts'] = get_all_alerts(incident.get('id'))
-            except ValueError as e:
+            except ValueError:
                 LOG('Failed to fetch alerts related to incident ' + incident.get('id'))
         demisto_incidents.append(parse_incident(incident))
 
@@ -628,15 +647,16 @@ def parse_incident(netwitness_incident):
         'sources',
         'categories'
     ]
-    incident_labels = [{'type': field, 'value': json.dumps(netwitness_incident.get(field))} for field in incident_fields ]
+    incident_labels = [{'type': field, 'value': json.dumps(netwitness_incident.get(field))} for field in
+                       incident_fields]
     alerts = netwitness_incident.get('alerts')
     if alerts:
         alerts_ids = [alert.get('id') for alert in alerts]
-        incident_labels.append({ 'type': 'alerts ids', 'value': ', '.join(alerts_ids)})
+        incident_labels.append({'type': 'alerts ids', 'value': ', '.join(alerts_ids)})
     incident = {
         'name': netwitness_incident.get('title'),
         'occurred': netwitness_incident.get('created'),
-        'severity': priority_to_severity( netwitness_incident.get('priority') ),
+        'severity': priority_to_severity(netwitness_incident.get('priority')),
         'labels': incident_labels,
         'rawJSON': json.dumps(netwitness_incident)
     }
@@ -651,8 +671,7 @@ ADDITIONAL FUNCTIONS
 
 
 def create_incident_md_table(incident):
-
-    #list of fields to be presented in 'incident details' md table, by order of appearance
+    # list of fields to be presented in 'incident details' md table, by order of appearance
     incident_entry_fields = [
         'id',
         'title',
@@ -667,7 +686,7 @@ def create_incident_md_table(incident):
         'categories'
     ]
 
-    #list of fields to be presented in 'journal' md table, by order of appearance
+    # list of fields to be presented in 'journal' md table, by order of appearance
     journal_entry_fields = [
         'created',
         'author',
@@ -675,17 +694,20 @@ def create_incident_md_table(incident):
         'milestone'
     ]
 
-    #create incident entry
-    incident_entry = { k:v for k,v in incident.items() if k in incident_entry_fields }
+    # create incident entry
+    incident_entry = {k: v for k, v in incident.items() if k in incident_entry_fields}
 
-    #if category field exists and not empty - update incident entry 'category' field with a short string representation of the categories-list as value
+    # if category field exists and not empty - update incident entry 'category' field with a
+    # short string representation of the categories-list as value
     categories = incident.get('categories')
     if categories:
-        incident_entry['categories'] = ', '.join(["{}:{}".format(category['parent'],category['name']) for category in categories])
+        incident_entry['categories'] = ', '.join(
+            ["{}:{}".format(category['parent'], category['name']) for category in categories])
     else:
         incident_entry['categories'] = ''
 
-    #if source fields exists and not empty - update incident entry 'source' field with a short string representation of the source-list as value
+    # if source fields exists and not empty - update incident entry 'source' field with a short string
+    # representation of the source-list as value
     source_list = incident.get('sources')
     if source_list:
         incident_entry['sources'] = ', '.join(source_list)
@@ -695,28 +717,28 @@ def create_incident_md_table(incident):
     incident_table = tableToMarkdown(
         'Incident Details',
         incident_entry,
-        headers = incident_entry_fields,
-        headerTransform = header_transformer
+        headers=incident_entry_fields,
+        headerTransform=header_transformer
     )
 
-    #if journalEntries field exists and not empty - create journal entry
-    journal = incident.get('journalEntries');
+    # if journalEntries field exists and not empty - create journal entry
+    journal = incident.get('journalEntries')
     journal_table = ''
     if journal:
-        journal_entry = [ { k:v for k,v in enrty.items() if k in journal_entry_fields } for enrty in journal]
+        journal_entry = [{k: v for k, v in enrty.items() if k in journal_entry_fields} for enrty in journal]
         journal_table = tableToMarkdown(
             'Incident Journal',
             journal_entry,
-            headers = journal_entry_fields,
-            headerTransform = header_transformer
+            headers=journal_entry_fields,
+            headerTransform=header_transformer
         )
 
-    md_content = '\n'.join([incident_table, journal_table]);
+    md_content = '\n'.join([incident_table, journal_table])
     return md_content
 
-def create_incidents_list_md_table(incidents):
 
-    #list of fields to be presented in 'incident details' md table, by order of appearance
+def create_incidents_list_md_table(incidents):
+    # list of fields to be presented in 'incident details' md table, by order of appearance
     incident_entry_fields = [
         'id',
         'title',
@@ -733,16 +755,19 @@ def create_incidents_list_md_table(incidents):
 
     incidents_list = []
     for incident in incidents:
-        #create incident entry to hold the fields to be presented in the md table
-        incident_entry = { k:v for k,v in incident.items() if k in incident_entry_fields }
-        #if category field exists and not empty - update incident entry 'category' field with a short string representation of the categories-list as value
+        # create incident entry to hold the fields to be presented in the md table
+        incident_entry = {k: v for k, v in incident.items() if k in incident_entry_fields}
+        # if category field exists and not empty - update incident entry 'category' field with a
+        # short string representation of the categories-list as value
         categories = incident.get('categories')
         if categories:
-            incident_entry['categories'] = ', '.join(["{}:{}".format(category['parent'],category['name']) for category in categories])
+            incident_entry['categories'] = ', '.join(
+                ["{}:{}".format(category['parent'], category['name']) for category in categories])
         else:
             incident_entry['categories'] = ''
 
-         #if source fields exists and not empty - update incident entry 'source' field with a short string representation of the source-list as value
+        # if source fields exists and not empty - update incident entry 'source' field with a
+        # short string representation of the source-list as value
         source_list = incident.get('sources')
         if source_list:
             incident_entry['sources'] = ', '.join(source_list)
@@ -754,15 +779,15 @@ def create_incidents_list_md_table(incidents):
     incident_table = tableToMarkdown(
         'Incident Details',
         incidents_list,
-        headers = incident_entry_fields,
-        headerTransform = header_transformer
+        headers=incident_entry_fields,
+        headerTransform=header_transformer
     )
 
     return incident_table
 
-def parse_alert_to_md_representation(alert):
 
-    #list of fields to be presented in 'alert details' md table, by order of appearance
+def parse_alert_to_md_representation(alert):
+    # list of fields to be presented in 'alert details' md table, by order of appearance
     alert_entry_fields = [
         'id',
         'title',
@@ -773,18 +798,18 @@ def parse_alert_to_md_representation(alert):
         'type'
     ]
 
-    alert_entry = { k:v for k,v in alert.items() if k in alert_entry_fields }
+    alert_entry = {k: v for k, v in alert.items() if k in alert_entry_fields}
     alert_events = alert.get('events', [])
 
-    #add 'total events' to alert entry
+    # add 'total events' to alert entry
     alert_entry['totalEvents'] = len(alert_events)
     alert_entry_fields.append('totalEvents')
 
     alert_md_table = tableToMarkdown(
         'Alert Details',
         alert_entry,
-        headers = alert_entry_fields,
-        headerTransform = header_transformer
+        headers=alert_entry_fields,
+        headerTransform=header_transformer
     )
 
     events = []
@@ -795,16 +820,16 @@ def parse_alert_to_md_representation(alert):
     md_content = '\n'.join([alert_md_table, events_md])
     return md_content
 
-def parse_event_to_md_representation(event):
 
+def parse_event_to_md_representation(event):
     event_details = "### Event Details \
     \n*Domain:* {domain} \
     \n*Source:* {source} \
     \n*ID:* {id} \
     ".format(
-    domain = event.get('domain', ''),
-    source = event.get('eventSource', ''),
-    id = event.get('eventSourceId', '')
+        domain=event.get('domain', ''),
+        source=event.get('eventSource', ''),
+        id=event.get('eventSourceId', '')
     )
 
     event_source = event.get('source')
@@ -812,20 +837,20 @@ def parse_event_to_md_representation(event):
 
     def parse_device(device):
         device_entry = {
-            'Device IP' : device.get('ipAddress'),
-            'Device Port' : device.get('port'),
-            'Device MAC' : device.get('macAddress'),
-            'DNS Hostname' : device.get('dnsHostname'),
-            'DNS Domain' : device.get('dnsDomain')
+            'Device IP': device.get('ipAddress'),
+            'Device Port': device.get('port'),
+            'Device MAC': device.get('macAddress'),
+            'DNS Hostname': device.get('dnsHostname'),
+            'DNS Domain': device.get('dnsDomain')
         }
         return device_entry
 
     def parse_user(user):
         user_entry = {
             'User UserName': user.get('username'),
-            'User Email' : user.get('emailAddress'),
-            'Active Directory UserName' : user.get('adUsername'),
-            'Active Directory Domain' : user.get('adDomain')
+            'User Email': user.get('emailAddress'),
+            'Active Directory UserName': user.get('adUsername'),
+            'Active Directory Domain': user.get('adDomain')
         }
         return user_entry
 
@@ -848,12 +873,12 @@ def parse_event_to_md_representation(event):
         user = resource.get('user')
         resource_entry.update(parse_device(device))
         resource_entry.update(parse_user(user))
-        #reduce headers to fields that hold actual value in resource_entry
-        headers = [ field for field in all_headers if resource_entry.get(field) ]
+        # reduce headers to fields that hold actual value in resource_entry
+        headers = [field for field in all_headers if resource_entry.get(field)]
         resource_md = tableToMarkdown(
             resource_type,
             resource_entry,
-            headers = headers)
+            headers=headers)
         return resource_md
 
     source_md = resource_md(event_source, 'Source')
@@ -861,6 +886,7 @@ def parse_event_to_md_representation(event):
 
     md_content = '\n'.join([event_details, source_md, destination_md])
     return md_content
+
 
 def return_error_entry(message):
     error_entry = {
@@ -870,13 +896,14 @@ def return_error_entry(message):
     }
     demisto.results(error_entry)
 
+
 def header_transformer(header):
     """
     e.g. input: 'someHeader' output: 'Some Header '
 
     """
 
-    return re.sub("([a-z])([A-Z])","\g<1> \g<2>", header).capitalize()
+    return re.sub("([a-z])([A-Z])", "\g<1> \g<2>", header).capitalize()
 
 
 def priority_to_severity(priority):
@@ -897,9 +924,9 @@ def priority_to_severity(priority):
     """
 
     priority_grade_map = {
-        'Low' : 1,
-        'Medium' : 2,
-        'High' : 3,
+        'Low': 1,
+        'Medium': 2,
+        'High': 3,
         'Critical': 4
     }
 
