@@ -1,4 +1,4 @@
-id: b51fce53-2cfc-438b-84ee-c48e10f1c480
+id: PAN-OS EDL Setup
 version: -1
 name: PAN-OS EDL Setup
 fromversion: 4.5.0
@@ -658,3 +658,5 @@ inputs:
   required: true
   description: either pre-rulebase or post-rulebase according to rule structure
 outputs: []
+tests:
+  - No test - requires a web server to run

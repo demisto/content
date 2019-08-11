@@ -1,5 +1,5 @@
-id: 3114a5ac-942f-4766-8ebc-fbec4a188d67
-version: 23
+id: PAN-OS DAG Configuration Test
+version: -1
 name: PAN-OS DAG Configuration Test
 starttaskid: "0"
 tasks:
