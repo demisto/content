@@ -417,7 +417,7 @@ tasks:
       id: 86700a5d-f744-402d-8201-69812002210e
       version: -1
       name: Detonate File - Trend Micro Deep Discovery Analyzer
-      playbookName: Detonate File - Trend Micro Deep Discovery Analyzer
+      playbookName: Detonate File - Trend Micro Deep Discovery Analyzer Beta
       type: playbook
       iscommand: false
       brand: ""
@@ -441,7 +441,7 @@ tasks:
       id: 927cfb35-eb2b-4d84-85cf-1d21a0cf855d
       version: -1
       name: Detonate URL - Trend Micro Deep Discovery Analyzer
-      playbookName: Detonate URL - Trend Micro Deep Discovery Analyzer
+      playbookName: Detonate URL - Trend Micro Deep Discovery Analyzer Beta
       type: playbook
       iscommand: false
       brand: ""
