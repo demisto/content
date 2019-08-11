@@ -182,7 +182,9 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
 
 def ip_command():
     args = demisto.args()
-    owners = args.get('owners')
+    owners = args.get('owners', demisto.params().get('defaultOrg'))
+    if owners == '':
+        return_error('you must specify an owner via the command or the Organization parameter')
     rating_threshold = int(args.get('ratingThreshold', -1))
     confidence_threshold = int(args.get('confidenceThreshold', -1))
     ip_addr = args['ip']
@@ -203,6 +205,9 @@ def ip_command():
 @logger
 def ip(ip_addr, owners, rating_threshold, confidence_threshold):
     indicators = get_indicators(ip_addr, 'Address', owners, rating_threshold, confidence_threshold)
+
+    if not indicators:
+        demisto.results('Make sure that the indicator is found in ThreatConnect')
     ec, indicators = create_context(indicators, include_dbot_score=True)
 
     return ec, indicators
@@ -210,7 +215,9 @@ def ip(ip_addr, owners, rating_threshold, confidence_threshold):
 
 def url_command():
     args = demisto.args()
-    owners = args.get('owners')
+    owners = args.get('owners', demisto.params().get('defaultOrg'))
+    if owners == '':
+        return_error('you must specify an owner via the command or the Organization parameter')
     url_addr = args['url']
     parsed_url = urlparse(url_addr)
     if not parsed_url.scheme:
@@ -233,6 +240,8 @@ def url_command():
 @logger
 def url(url_addr, owners, rating_threshold, confidence_threshold):
     indicators = get_indicators(url_addr, 'URL', owners, rating_threshold, confidence_threshold)
+    if not indicators:
+        demisto.results('Make sure that the indicator is found in ThreatConnect')
     ec, indicators = create_context(indicators, include_dbot_score=True)
 
     return ec, indicators
@@ -240,7 +249,9 @@ def url(url_addr, owners, rating_threshold, confidence_threshold):
 
 def file_command():
     args = demisto.args()
-    owners = args.get('owners')
+    owners = args.get('owners', demisto.params().get('defaultOrg'))
+    if owners == '':
+        return_error('you must specify an owner via the command or the Organization parameter')
     file_name = args['file']
     rating_threshold = int(args.get('ratingThreshold', -1))
     confidence_threshold = int(args.get('confidenceThreshold', -1))
@@ -260,6 +271,8 @@ def file_command():
 @logger
 def _file(url_addr, owners, rating_threshold, confidence_threshold):
     indicators = get_indicators(url_addr, 'File', owners, rating_threshold, confidence_threshold)
+    if not indicators:
+        demisto.results('Make sure that the indicator is found in ThreatConnect')
     ec, indicators = create_context(indicators, include_dbot_score=True)
 
     return ec, indicators
@@ -483,7 +496,7 @@ def tc_get_indicators_by_tag(tag, owner):
 def tc_add_indicator_command():
     args = demisto.args()
     indicator = args['indicator']
-    owner = args.get('owner', demisto.params()['defaultOrg'])
+    owner = args.get('owner', demisto.params().get('defaultOrg'))
     if owner == '':
         return_error('you must specify an owner via the command or the Organization parameter')
 
