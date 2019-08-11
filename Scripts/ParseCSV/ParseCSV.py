@@ -3,7 +3,7 @@ import csv
 from CommonServerPython import *
 
 reload(sys)  # type: ignore
-sys.setdefaultencoding('utf8')  # type: ignore
+sys.setdefaultencoding('utf8')  # pylint: disable=E1101 type: ignore
 codec_type = demisto.args().get('codec')
 
 
