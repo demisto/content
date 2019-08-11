@@ -1,5 +1,6 @@
 comment: Shows a bar chart of the number of incident the 'To' and 'From' email addresses
   appeared on
+fromVersion: 5.0.0
 commonfields:
   id: NumberOfPhishingAttemptPerUser
   version: -1
