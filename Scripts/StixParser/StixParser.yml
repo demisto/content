@@ -20,6 +20,6 @@ timeout: 0s
 type: python
 dockerimage: demisto/stix
 tests:
-- STIXParserTest
+- No tests
 dependson: {
   }
