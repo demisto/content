@@ -86,7 +86,7 @@ def get_activities_request(created_after=None, user_emails=None, group_ids=None,
         'userIds': user_ids,
         'created_at__gte': created_from,
         'createdAt_between': created_between,
-        'agentsIds': agent_ids,
+        'agentIds': agent_ids,
         'limit': limit
     }
 
@@ -1527,10 +1527,10 @@ def shutdown_agents_request(query, agent_id, group_id):
         filters['ids'] = agent_id
     if group_id:
         filters['groupIds'] = group_id
-
+    if not (agent_id or group_id):
+        return_error('Expecting at least one of the following arguments to filter by: agent_id, group_id.')
     payload = {
-        "filter": filters,
-        "data": {}
+        'filter': filters
     }
 
     response = http_request('POST', endpoint_url, data=json.dumps(payload))
@@ -1552,21 +1552,9 @@ def shutdown_agents():
     affected_agents = shutdown_agents_request(query, agent_id, group_id)
     agents = affected_agents.get('data', {}).get('affected', 0)
     if agents > 0:
-        contents = {
-            'ID': agent_id
-        }
+        demisto.results(f'Shutting down {agents} agent(s).')
     else:
         return_error('No agents were shutdown.')
-
-    context = {
-        'SentinelOne.Agent(val.ID && val.ID === obj.ID)': contents
-    }
-
-    return_outputs(
-        f'Shutting down {agents} agent(s).',
-        context,
-        affected_agents
-    )
 
 
 def uninstall_agent_request(query=None, agent_id=None, group_id=None):
@@ -1580,10 +1568,10 @@ def uninstall_agent_request(query=None, agent_id=None, group_id=None):
         filters['ids'] = agent_id
     if group_id:
         filters['groupIds'] = group_id
-
+    if not (agent_id or group_id):
+        return_error('Expecting at least one of the following arguments to filter by: agent_id, group_id.')
     payload = {
-        "filter": filters,
-        "data": {}
+        'filter': filters
     }
 
     response = http_request('POST', endpoint_url, data=json.dumps(payload))
@@ -1605,21 +1593,9 @@ def uninstall_agent():
     affected_agents = shutdown_agents_request(query, agent_id, group_id)
     agents = affected_agents.get('data', {}).get('affected', 0)
     if agents > 0:
-        contents = {
-            'ID': agent_id
-        }
+        demisto.results(f' Uninstall was sent to {agents} agent(s).')
     else:
         return_error('No agents were affected.')
-
-    context = {
-        'SentinelOne.Agent(val.ID && val.ID === obj.ID)': contents
-    }
-
-    return_outputs(
-        f' Uninstall was sent to {agents} agent(s).',
-        context,
-        affected_agents
-    )
 
 
 # Event Commands
@@ -1628,16 +1604,16 @@ def create_query_request(query, from_date, to_date):
 
     endpoint_url = 'dv/init-query'
     payload = {
-        "query": query,
-        "fromDate": from_date,
-        "toDate": to_date
+        'query': query,
+        'fromDate': from_date,
+        'toDate': to_date
     }
 
     response = http_request('POST', endpoint_url, data=json.dumps(payload))
     if response.get('errors'):
         return_error(response.get('errors'))
     else:
-        return response.get('data').get('queryId')
+        return response.get('data', {}).get('queryId')
 
 
 def create_query():
@@ -1648,7 +1624,17 @@ def create_query():
 
     query_id = create_query_request(query, from_date, to_date)
 
-    demisto.results('The query ID is ' + str(query_id))
+    context_entries = {
+        'Query': query,
+        'FromDate': from_date,
+        'ToDate': to_date,
+        'QueryID': query_id
+    }
+
+    context = {
+        'SentinelOne.Query(val.QueryID && val.QueryID === obj.QueryID)': context_entries
+    }
+    return_outputs('The query ID is ' + str(query_id), context, query_id)
 
 
 def get_events_request(query_id=None, limit=None):
@@ -1673,10 +1659,11 @@ def get_events():
     Get all Deep Visibility events from query
     """
     contents = []
+    event_standards = []
     headers = ['EventType', 'AgentName', 'SiteName', 'User', 'Time', 'AgentOS', 'ProcessID', 'ProcessUID',
                'ProcessName', 'MD5', 'SHA256']
     query_id = demisto.args().get('query_id')
-    limit = int(demisto.args().get('limit', 50))
+    limit = int(demisto.args().get('limit'))
 
     events = get_events_request(query_id, limit)
     if events:
@@ -1695,11 +1682,20 @@ def get_events():
                 'SHA256': event.get('sha256')
             })
 
-    context = {
-        'SentinelOne.Event(val.ProcessID && val.ProcessID === obj.ProcessID)': contents
-    }
+            event_standards.append({
+                'Type': event.get('eventType'),
+                'Name': event.get('processName'),
+                'ID': event.get('pid'),
+            })
 
-    return_outputs(tableToMarkdown('SentinelOne Events', contents, headers, removeNull=True), context, events)
+        context = {
+            'SentinelOne.Event(val.ProcessID && val.ProcessID === obj.ProcessID)': contents,
+            'Event': event_standards
+        }
+
+        return_outputs(tableToMarkdown('SentinelOne Events', contents, headers, removeNull=True), context, events)
+    else:
+        demisto.results('No events were found.')
 
 
 def get_processes_request(query_id=None, limit=None):
@@ -1727,7 +1723,7 @@ def get_processes():
                'ProcessName', 'ParentProcessName', 'ProcessDisplayName', 'ProcessID', 'ProcessUID',
                'SHA1', 'CMD', 'SubsystemType', 'IntegrityLevel', 'ParentProcessStartTime']
     query_id = demisto.args().get('query_id')
-    limit = int(demisto.args().get('limit', 50))
+    limit = int(demisto.args().get('limit'))
 
     processes = get_events_request(query_id, limit)
     if processes:
@@ -1752,11 +1748,14 @@ def get_processes():
                 'ParentProcessStartTime': process.get('parentProcessStartTime')
             })
 
-    context = {
-        'SentinelOne.Event(val.ProcessID && val.ProcessID === obj.ProcessID)': contents
-    }
+        context = {
+            'SentinelOne.Event(val.ProcessID && val.ProcessID === obj.ProcessID)': contents
+        }
 
-    return_outputs(tableToMarkdown('SentinelOne Processes', contents, headers, removeNull=True), context, processes)
+        return_outputs(tableToMarkdown('SentinelOne Processes', contents, headers, removeNull=True), context, processes)
+
+    else:
+        demisto.results('No processes were found.')
 
 
 def fetch_incidents():
@@ -1851,7 +1850,7 @@ try:
         broadcast_message()
     elif demisto.command() == 'sentinelone-get-events':
         get_events()
-    elif demisto.command() == 'sentinelone-get-query-id':
+    elif demisto.command() == 'sentinelone-create-query':
         create_query()
     elif demisto.command() == 'sentinelone-get-processes':
         get_processes()
