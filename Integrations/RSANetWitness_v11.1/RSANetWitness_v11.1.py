@@ -118,6 +118,7 @@ USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 USE_SSL = not demisto.params()['insecure']
 VERSION = demisto.params()['version']
+FETCH_TIME = demisto.params().get('fetchTime','1 days')
 PROXIES = set_proxies()
 TOKEN = get_token()
 DEFAULT_HEADERS = {
@@ -569,9 +570,9 @@ def fetch_incidents():
     if lastRun and lastRun.get('timestamp'):
         timestamp = lastRun.get('timestamp')
     else:
-        day_ago = datetime.now() - timedelta(days=1)
+        last_fetch, _ = parse_date_range(FETCH_TIME)
         #convert to ISO 8601 format and add Z suffix
-        timestamp = day_ago.isoformat() + 'Z'
+        timestamp = last_fetch.isoformat() + 'Z'
 
     LOG('Fetching incidents since ' + timestamp)
     netwitness_incidents = get_all_incidents(
