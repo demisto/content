@@ -219,3 +219,4 @@ class TestStix1:
         files_path = "./TestData/stix1/"
         mock_demisto(mocker)
         self._run_on_files(files_path, main, mocker)
+
