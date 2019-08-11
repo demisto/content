@@ -368,6 +368,6 @@ outputs:
 - contextPath: File.Name
   description: File name
   type: string
-beta: True
+beta: true
 tests:
 - No Test - run "Test Playbook TrendMicroDDA" manually
