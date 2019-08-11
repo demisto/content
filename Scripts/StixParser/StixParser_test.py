@@ -7,6 +7,19 @@ import demistomock as demisto
 """ helper functions """
 
 
+def get_files_in_dir(mypath, only_with_ext=None):
+    from os import listdir
+    from os.path import isfile, join
+    files_list = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+    if only_with_ext:
+        return [f for f in files_list if f.endswith(only_with_ext)]
+    return files_list
+
+
+def mock_demisto(mocker):
+    mocker.patch.object(demisto, 'results')
+
+
 def _get_stix(
         stix2="./TestData/stix2.json",
         stix2_results="./TestData/stix2_results.json"):
@@ -35,10 +48,6 @@ def _get_results_from_demisto(entry, func, mocker):
         pytest.fail(
             "Couldn't find results returned from Demisto", pytrace=True
         )
-
-
-def mock_demisto(mocker):
-    mocker.patch.object(demisto, 'results')
 
 
 class TestGetIndicators:
@@ -174,3 +183,39 @@ class TestHelperFunctions:
         from StixParser import get_score
         result = get_score("not a real score")
         assert result == 0, self.err_msg.format(0, result)
+
+
+class TestStix1:
+    @staticmethod
+    def _get_results_from_file_path(file_path):
+        entry_results_path = file_path.replace(".xml", "-results.json")
+        with open(entry_results_path) as f:
+            return json.load(f)
+
+    @staticmethod
+    def _get_results_from_demisto():
+        res = demisto.results.call_args[0][0]
+        return json.loads(res)
+
+    @staticmethod
+    def mock_demisto_with_file(file_path, mocker):
+        with open(file_path) as f:
+            file_string = f.read()
+        mocker.patch.object(demisto, "args", return_value={"iocXml": file_string})
+
+    def _run_on_files(self, files_path, func, mocker):
+        err = "Got wrong results for path [{}]"
+        files_list = get_files_in_dir(files_path, only_with_ext=".xml")
+        for entry in files_list:
+            self.mock_demisto_with_file(
+                files_path + entry, mocker)
+            func()
+            demisto_results = self._get_results_from_demisto()
+            expected_results = self._get_results_from_file_path(files_path + entry)
+            assert expected_results == demisto_results, err.format(entry)
+
+    def test_main(self, mocker):
+        from StixParser import main
+        files_path = "./TestData/stix1/"
+        mock_demisto(mocker)
+        self._run_on_files(files_path, main, mocker)
