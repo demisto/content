@@ -4,7 +4,7 @@ from CommonServerPython import *
 
 reload(sys)  # type: ignore
 sys.setdefaultencoding('utf8')  # pylint: disable=E1101
-codec_type = demisto.args().get('codec')
+codec_type = demisto.args().get('codec', 'utf-8')
 
 
 def remove_non_printable_chars(s):
@@ -44,6 +44,7 @@ def unicode_dict_reader(csv_data, **kwargs):
     csv_reader = csv.DictReader((line.replace('\0', '') for line in csv_data), **kwargs)
     arr = []
     no_name_columns_counter = 0
+    # if csv_reader.
     for row in csv_reader:
         row_dict = {}
 
@@ -103,6 +104,16 @@ domain_count = 0
 hash_count = 0
 
 
+def is_one_dimension_list(all_csv):
+    try:
+        entry = all_csv[0]
+        if not isinstance(entry, dict):
+            return True
+    except IndexError:
+        pass
+    return False
+
+
 def main():
     ip_list = []
     domain_list = []
@@ -145,14 +156,21 @@ def main():
         all_csv = []
         with open(file_path, mode='r') as f:
             records = unicode_dict_reader(f)
+        if records:
             for row in records:
                 all_csv.append(row)
+        else:  # Can be one-line csv
+            with open(file_path) as f:
+                line = f.read()
+                all_csv = line.split(',')
 
         output = {
             'ParseCSV.ParsedCSV': all_csv
         }
-
-        human_readable = tableToMarkdown(file_name, all_csv)
+        if is_one_dimension_list(all_csv):
+            human_readable = tableToMarkdown(file_name, all_csv, headers=["CSV list"])
+        else:
+            human_readable = tableToMarkdown(file_name, all_csv)
         demisto.results({
             "Type": entryTypes["note"],
             "ContentsFormat": formats["json"],
@@ -163,7 +181,7 @@ def main():
         })
 
     elif not (parse_ip == -1 and parse_domain == -1 and parse_hash == -1):
-        # if need to parse ips/domains/hashes, keep the function running
+        # if need to parse ips/domains/hashes, keep the script running
         with open(file_path, 'rU') as f:
             has_header = csv.Sniffer().has_header(f.read(1024))
             f.seek(0)

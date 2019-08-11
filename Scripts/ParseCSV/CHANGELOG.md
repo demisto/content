@@ -1,1 +1,1 @@
- - empty, not for user
+ - fixed bug when one-lined csv supplied
