@@ -8,11 +8,9 @@ configuration:
   required: true
   type: 0
 - name: credentials
-  display: ''
   required: true
   type: 9
 - defaultvalue: '1.0'
-  display: ''
   name: version
   required: false
   type: 0
@@ -39,6 +37,11 @@ configuration:
   name: importAlerts
   required: false
   type: 8
+- defaultvalue: 1 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetchTime
+  required: false
+  type: 0
 description: RSA NetWitness Platform provides systems Logs, Network, and endpoint
   visibility for real-time collection, detection, and automated response with the
   Demisto Enterprise platform. Providing full session analysis, customers can extract
@@ -613,6 +616,5 @@ script:
   runonce: false
   script: '-'
   type: python
-image: ''
 tests:
 - RSA NetWitness Test
