@@ -1,20 +1,16 @@
 version: 2
-experimental:
-  notify:
-    branches:
-      only:
-        - master
 jobs:
   build:
     docker:
-      - image: devdemisto/content-build-2and3:2.0.0.295  # disable-secrets-detection
+      - image: devdemisto/content-build-2and3:2.0.0.877  # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.5.1"
+      CONTENT_VERSION: "19.7.2"
       SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "33441eb94314f3779b8c17b0540f0394be4b6c20" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "b127a27e348b2f5cc53129da93ca153ce51572c4" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: Prepare Environment
           when: always
@@ -64,9 +60,13 @@ jobs:
               [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
               python ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
       - run:
+          name: Spell Checks
+          command: |
+            python ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
+      - run:
           name: Build Content Descriptor
           when: always
-          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM $GIT_SHA1 $CONTENT_VERSION $SERVER_VERSION
+          command: python release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION $GITHUB_TOKEN
       - run:
           name: Common Server Documentation
           when: always
@@ -78,7 +78,6 @@ jobs:
       - store_artifacts:
           path: artifacts
           destination: artifacts
-      - setup_remote_docker
       - run:
           name: Run Unit Testing and Lint
           when: always
@@ -109,13 +108,22 @@ jobs:
           name: Create Instance
           when: always
           command: |
+            pip install --upgrade awscli
+            pip install ansible ansible-runner rsa paramiko boto3 requests
+
             if ./Tests/scripts/is_ami.sh ;
               then
-                [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-                python ./Tests/scripts/create_instances.py -n $IS_NIGHTLY -b $CIRCLE_BRANCH
+                if [ -n "${NIGHTLY}" ] ;
+                  then
+                    export IFRA_ENV_TYPE=Content-Master
+
+                  else
+                    export IFRA_ENV_TYPE=Content-Env
+                fi
+                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType $IFRA_ENV_TYPE
 
               else
-                ./Tests/lastest_server_build_scripts/create_instance.sh instance.json
+                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild
             fi
       - run:
           name: Setup Instance
@@ -124,11 +132,11 @@ jobs:
             if ./Tests/scripts/is_ami.sh ;
               then
                 python ./Tests/scripts/run_content_installation.py
-                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path)
+                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION
 
               else
                 ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
-                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) --non-ami
+                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION --non-ami
             fi
       - run:
           name: Run Tests - Latest GA

@@ -1,20 +1,19 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 import requests
 import json
-import os
 import time
+import sys
+
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-if not demisto.params().get('useProxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-
+# Define utf8 as default encoding
+reload(sys)
+sys.setdefaultencoding('utf8')  # pylint: disable=E1101
 
 ''' GLOBAL VARS '''
 SERVER_URL = 'https://www.virustotal.com/vtapi/v2/'
@@ -99,7 +98,7 @@ def create_scans_table(scans):
     Returns a table with the scan result for each vendor
     """
 
-    scans_table = []  # type: ignore
+    scans_table = []  # type:ignore
     positives_scans_table = []
     negative_scans_table = []
     for scan in scans:
@@ -110,7 +109,7 @@ def create_scans_table(scans):
             "Update": scans.get(scan).get('update', None),
             "Details": scans.get(scan).get('detail', None)
         }
-        if (dict_for_table['Detected'] is not None and dict_for_table['Detected'] is True):
+        if (dict_for_table['Detected'] is not None and dict_for_table['Detected']):
             positives_scans_table.append(dict_for_table)
         else:
             negative_scans_table.append(dict_for_table)
@@ -162,7 +161,7 @@ def create_file_output(file_hash, threshold, vt_response, short_format):
     else:
         dbotScore = 1
 
-    ec['DBotScore'].append(  # type: ignore
+    ec['DBotScore'].append(  # type:ignore
         {'Indicator': file_hash, 'Type': 'hash', 'Vendor': 'VirusTotal - Private API', 'Score': dbotScore})
     md += 'MD5: **' + vt_response.get('md5') + '**\n'
     md += 'SHA1: **' + vt_response.get('sha1') + '**\n'
@@ -568,7 +567,7 @@ def get_url_report_command():
 
     responses_dict = get_url_reports_with_retries(urls, all_info, retries, scan_finish_time_in_seconds)
     md = ''
-    ec = {  # type: ignore
+    ec = {  # type:ignore
         'DBotScore': [],
         outputPaths['url']: [],
     }
@@ -793,8 +792,8 @@ def get_ip_report_command():
     if detected_downloaded_samples:
         detected_downloaded_samples = detected_downloaded_samples[:max_len]
         md += tableToMarkdown(
-            "Latest files that are detected by at least one antivirus solution and were downloaded "
-            + "by VirusTotal from the IP address provided",
+            "Latest files that are detected by at least one antivirus solution and were downloaded by VirusTotal from"
+            " the IP address provided",
             detected_downloaded_samples)
 
     undetected_downloaded_samples = response.get('undetected_downloaded_samples', None)
@@ -802,8 +801,8 @@ def get_ip_report_command():
     if undetected_downloaded_samples:
         undetected_downloaded_samples = undetected_downloaded_samples[:max_len]
         md += tableToMarkdown(
-            "Latest files that are not detected by any antivirus solution and were downloaded by"
-            + " VirusTotal from the IP address provided",
+            "Latest files that are not detected by any antivirus solution and were downloaded by VirusTotal from the "
+            "IP address provided",
             undetected_downloaded_samples)
 
     detected_communicating_samples = response.get('detected_communicating_samples', None)
@@ -992,10 +991,9 @@ def hash_communication_command():
                     'Score': 0
                 }
             },
-            'HumanReadable': "A report wasn't found for file "
-                             + file_hash
-                             + ". Virus Total returned the following response: "
-                             + json.dumps(response.get('verbose_msg'))
+            'HumanReadable': "A report wasn't found for file " + file_hash + ". Virus Total returned the following "
+                                                                             "response: " + json.dumps(
+                response.get('verbose_msg'))
         }
 
     # network data contains all the communication data
@@ -1117,9 +1115,11 @@ def download_file_command():
 ''' EXECUTION CODE '''
 LOG('command is %s' % (demisto.command(),))
 try:
+    handle_proxy(proxy_param_name='useProxy')
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
-        if check_file_behaviour('10676cf66244cfa91567fbc1a937f4cb19438338b35b69d4bcc2cf0d3a44af5e'):  # guardrails-disable-line
+        if check_file_behaviour(
+                '10676cf66244cfa91567fbc1a937f4cb19438338b35b69d4bcc2cf0d3a44af5e'):  # guardrails-disable-line
             demisto.results('ok')
         else:
             demisto.results('test failed')
@@ -1141,7 +1141,7 @@ try:
     elif demisto.command() == 'vt-private-download-file':
         demisto.results(download_file_command())
 
-except Exception, e:
+except Exception as e:
     LOG(e.message)
     LOG.print_log()
     raise

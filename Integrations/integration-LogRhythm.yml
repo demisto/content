@@ -680,6 +680,15 @@ script:
         if (mdRaw['-i']) {
             delete mdRaw['-i'];
         }
+
+        if(!mdRaw['LogDataModel']){
+            return {
+                Type: entryTypes.note,
+                Contents: "No events found for this alarm",
+                ContentsFormat: formats.text
+            };
+        }
+
         var processedMd = processAlarmEventsMd(mdRaw);
 
 
@@ -1575,4 +1584,3 @@ script:
   runonce: false
 tests:
 - LogRhythm-Test-Playbook
-releaseNotes: "Added several new commands. Added the LastHour option to time_frame argument."
