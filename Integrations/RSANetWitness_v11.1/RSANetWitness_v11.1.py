@@ -297,7 +297,7 @@ def get_all_incidents(since=None, until=None, limit=None):
         limit = float('inf')
     has_next = True
     page_number = 0
-    incidents = []
+    incidents = []  # type: list
     LOG('Requesting for incidents in timeframe of: {s} - {u}'.format(s=since or 'not specified',
                                                                      u=until or 'not specified'))
     while has_next and limit > len(incidents):
@@ -524,7 +524,7 @@ def get_all_alerts(incident_id):
     """
     has_next = True
     page_number = 0
-    alerts = []
+    alerts = []  # type: list
 
     LOG('Requesting for data on alerts related to incident ' + incident_id)
     while has_next:
@@ -868,7 +868,7 @@ def parse_event_to_md_representation(event):
     ]
 
     def resource_md(resource, resource_type):
-        resource_entry = {}
+        resource_entry = {}  # type: dict
         device = resource.get('device')
         user = resource.get('user')
         resource_entry.update(parse_device(device))
