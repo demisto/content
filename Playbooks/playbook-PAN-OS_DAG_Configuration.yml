@@ -1,6 +1,7 @@
 id: PAN-OS DAG Configuration
 version: -1
 name: PAN-OS DAG Configuration
+fromversion: 4.5.0
 description: "This playbook utilizes the Dynamic Address Group capability of PAN-OS\nDAG
   allows the analyst to create a rule once with the group as the source/destination
   and add IPs dynamically without the need to commit the configuration every time.\n\nThe
@@ -17,6 +18,7 @@ tasks:
       id: 24fcd4ca-bf27-4bc1-86fd-569548dd22ba
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -206,6 +208,7 @@ tasks:
       id: ee06ca45-8577-4b16-8911-2ac2560b2142
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -331,6 +334,7 @@ tasks:
       id: 2bd82322-f586-4e9c-881c-f4385d43d012
       version: -1
       name: Pan-OS-Commit-Configuration
+      description: ""
       playbookName: Pan-OS Commit Configuration
       type: playbook
       iscommand: false
