@@ -33,7 +33,7 @@ DEFAULT_DBOT_SCORE_DOMAIN = 2 if demisto.params().get('default_dbot_score_domain
 SAMPLE_TEST_SUFFIX = '/breaches?domain=demisto.com'
 PWNED_EMAIL_SUFFIX = '/breachedaccount/'
 PWNED_DOMAIN_SUFFIX = '/breaches?domain='
-
+TRUNCATE_RESPONSE_SUFFIX = '?truncateResponse=false&includeUnverified=false'
 
 ''' HELPER FUNCTIONS '''
 
@@ -60,10 +60,20 @@ def http_request(method, url_suffix, params=None, data=None):
 
 
 def readable_description(desc):
+    """
+
+    Args:
+        desc: Description of breach from hibp response
+
+    Returns: Description string that altered HTML urls to clickable urls
+    for better readability in war-room
+
+    """
     pattern = re.compile('<a href="(.+?)"(.+?)>(.+?)</a>')
-    patterns_found = pattern.search(desc)
-    if patterns_found:
-        return '[' + patterns_found.group(3) + ']' + '(' + patterns_found.group(1) + ')'
+    patterns_found = pattern.findall(desc)
+    for link in patterns_found:
+        link_from_desc = '[' + link[2] + ']' + '(' + link[0] + ')'
+        desc = re.sub(pattern, link_from_desc, desc, count=1)
     return desc
 
 
@@ -72,10 +82,11 @@ def data_to_md(query_type, query_arg, hibp_res):
 
     if hibp_res and len(hibp_res) > 0:
         for breach in hibp_res:
-            md += "#### " + breach.Title + " (" + breach.Domain + "): " + breach.PwnCount + " records breached\n"
-            md += "Date: **" + breach.BreachDate + "**\n"
-            md += readable_description(breach.Description) + "\n"
-            md += "Data breached: **" + breach.DataClasses + "**\n"
+            md += "#### " + breach['Title'] + " (" + breach['Domain'] + "): " + str(breach['PwnCount']) + \
+                  " records breached\n"
+            md += "Date: **" + breach['BreachDate'] + "**\n"
+            md += readable_description(breach['Description']) + "\n"
+            md += "Data breached: **" + ','.join(breach['DataClasses']) + "**\n"
     else:
         md += 'No records found'
 
@@ -83,10 +94,12 @@ def data_to_md(query_type, query_arg, hibp_res):
 
 
 def email_to_ec(email, hibp_res):
-    comp_sites = sorted([item.title for item in hibp_res])
+    comp_sites = sorted([item['Title'] for item in hibp_res])
     comp_email = dict()  # type: dict
+    dbot_score = 0
 
     if len(comp_sites) > 0:
+        dbot_score = DEFAULT_DBOT_SCORE_EMAIL
         email_context = \
             {
                 'Address': email,
@@ -110,17 +123,19 @@ def email_to_ec(email, hibp_res):
             'Indicator': email,
             'Type': 'email',
             'Vendor': 'Pwned',
-            'Score': DEFAULT_DBOT_SCORE_EMAIL
+            'Score': dbot_score
     }
 
     return comp_email
 
 
 def domain_to_ec(domain, hibp_res):
-    comp_sites = sorted([item.title for item in hibp_res])
+    comp_sites = sorted([item['Title'] for item in hibp_res])
     comp_domain = dict()  # type: dict
+    dbot_score = 0
 
     if len(comp_sites) > 0:
+        dbot_score = DEFAULT_DBOT_SCORE_DOMAIN
         domain_context = \
             {
                 'Name': domain,
@@ -144,7 +159,7 @@ def domain_to_ec(domain, hibp_res):
             'Indicator': domain,
             'Type': 'domain',
             'Vendor': 'Pwned',
-            'Score': DEFAULT_DBOT_SCORE_DOMAIN
+            'Score': dbot_score
     }
 
     return comp_domain
@@ -159,7 +174,7 @@ def test_module():
 
 
 def pwned_email_command():
-    hibp_res = http_request('GET', PWNED_EMAIL_SUFFIX + demisto.args().get('email'))
+    hibp_res = http_request('GET', PWNED_EMAIL_SUFFIX + demisto.args().get('email') + TRUNCATE_RESPONSE_SUFFIX)
     md = data_to_md('Email', demisto.args().get('email'), hibp_res)
     ec = email_to_ec(demisto.args().get('email'), hibp_res or [])
     return_outputs(md, ec, hibp_res)
@@ -179,9 +194,9 @@ LOG('Command being called is %s' % (demisto.command()))
 try:
     if demisto.command() == 'test-module':
         test_module()
-    elif demisto.command() == 'pwned-email' or 'email':
+    elif demisto.command() == 'pwned-email' or demisto.command() == 'email':
         pwned_email_command()
-    elif demisto.command() == 'pwned-domain' or 'domain':
+    elif demisto.command() == 'pwned-domain' or demisto.command() == 'domain':
         pwned_domain_command()
 
 
