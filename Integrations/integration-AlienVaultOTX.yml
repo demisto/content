@@ -110,9 +110,10 @@ script:
             argName: 'file',
             contextKey: outputPaths.file,
             translator: [
-                {to: 'MD5', from: 'indicator'},
+                {to: 'hash value', from: 'indicator'},
+                {to: 'hash type', from: 'type'}
             ],
-            tableTitle: 'AlienVault file response %MD5%',
+            tableTitle: 'AlienVault file response %hash value%',
         },
         'alienvault-query-file': {
             type: 'file',
