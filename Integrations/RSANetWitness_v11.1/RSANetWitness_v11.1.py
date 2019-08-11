@@ -10,23 +10,10 @@ IMPORTS
 from datetime import datetime, timedelta
 import requests
 import json
-import os
 import re
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
-"""
-
-HANDLE PROXY
-
-"""
-
-
-def set_proxies():
-    if not demisto.params()['proxy']:
-        for _ in ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy']:
-            del os.environ[_]
 
 
 """
@@ -78,7 +65,7 @@ def get_token_request(username, password):
         'NetWitness-Version': VERSION
     }
 
-    response = requests.post(url, headers=get_token_headers, data=username_password, verify=USE_SSL, proxies=PROXIES)
+    response = requests.post(url, headers=get_token_headers, data=username_password, verify=USE_SSL)
 
     # successful get_token
     if response.status_code == 200:
@@ -122,7 +109,6 @@ PASSWORD = demisto.params()['credentials']['password']
 USE_SSL = not demisto.params()['insecure']
 VERSION = demisto.params()['version']
 FETCH_TIME = demisto.params().get('fetchTime', '1 days')
-PROXIES = set_proxies()
 TOKEN = get_token()
 DEFAULT_HEADERS = {
     'Content-Type': 'application/json;charset=UTF-8',
@@ -155,8 +141,7 @@ def http_request(method, url, body=None, headers={}, url_params=None):
 
     request_kwargs = {
         'headers': headers,
-        'verify': USE_SSL,
-        'proxies': PROXIES
+        'verify': USE_SSL
     }
 
     # add optional arguments if specified
@@ -941,6 +926,7 @@ EXECUTION
 """
 command = demisto.command()
 try:
+    handle_proxy()
     if command == 'test-module':
         # global variable TOKEN initialization tests user credentials (will raise ValueError exception when unsuccessful).
         demisto.results('ok')
