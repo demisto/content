@@ -2904,6 +2904,9 @@ def panorama_refresh_edl_command():
     """
     Refresh an EDL
     """
+    if DEVICE_GROUP:
+        return_error('EDL refresh is only supported on Firewall (not Panorama).')
+
     edl_name = demisto.args()['name']
 
     result = panorama_refresh_edl(edl_name)
