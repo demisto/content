@@ -9,7 +9,7 @@ from stix.core import STIXPackage
 
 """ GLOBAL PARAMS """
 PATTERNS_DICT = {
-    "file:hashes": "File",
+    "file:": "File",
     "ipv6-addr": "IP",
     "ipv4-addr:": "IP",
     "url:": "URL",
