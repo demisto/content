@@ -34,6 +34,10 @@ def get_client():
 
 
 def calculate_freshness_time(freshness):
+    # today = datetime.today()
+    # delta = timedelta(days=freshness)
+    # t = (today - delta).isoformat() + 'Z'
+    # return t
     t = datetime.now() - timedelta(days=freshness)
     return t.strftime('%Y-%m-%dT00:00:00Z')
 
@@ -143,7 +147,7 @@ def create_context(indicators, include_dbot_score=False):
     return context, context.get('TC.Indicator(val.ID && val.ID === obj.ID)', [])
 
 
-@logger
+# pylint: disable=E1101
 def get_indicators(indicator_value=None, indicator_type=None, owners=None, rating_threshold=-1, confidence_threshold=-1,
                    freshness=None):
     tc = get_client()
@@ -151,7 +155,7 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
     _filter = indicators_obj.add_filter()
 
     if indicator_value is not None:
-        _filter.add_indicator(indicator_value)  # pylint: disable=E1101
+        _filter.add_indicator(indicator_value)
     if indicator_type is not None:
         _filter.add_pf_type(indicator_type, FilterOperator.EQ)
 
@@ -167,6 +171,7 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
         _filter.add_pf_last_modified(calculate_freshness_time(freshness), FilterOperator.GE)
 
     raw_indicators = indicators_obj.retrieve()
+
     indicators = [json.loads(indicator.json) for indicator in raw_indicators]
 
     return indicators
@@ -197,7 +202,7 @@ def ip_command():
 
 @logger
 def ip(ip_addr, owners, rating_threshold, confidence_threshold):
-    indicators = get_indicators(ip_addr, 'Address', owners, rating_threshold, confidence_threshold, freshness=FRESHNESS)
+    indicators = get_indicators(ip_addr, 'Address', owners, rating_threshold, confidence_threshold)
     ec, indicators = create_context(indicators, include_dbot_score=True)
 
     return ec, indicators
@@ -227,7 +232,7 @@ def url_command():
 
 @logger
 def url(url_addr, owners, rating_threshold, confidence_threshold):
-    indicators = get_indicators(url_addr, 'URL', owners, rating_threshold, confidence_threshold, freshness=FRESHNESS)
+    indicators = get_indicators(url_addr, 'URL', owners, rating_threshold, confidence_threshold)
     ec, indicators = create_context(indicators, include_dbot_score=True)
 
     return ec, indicators
@@ -254,7 +259,7 @@ def file_command():
 
 @logger
 def _file(url_addr, owners, rating_threshold, confidence_threshold):
-    indicators = get_indicators(url_addr, 'File', owners, rating_threshold, confidence_threshold, freshness=FRESHNESS)
+    indicators = get_indicators(url_addr, 'File', owners, rating_threshold, confidence_threshold)
     ec, indicators = create_context(indicators, include_dbot_score=True)
 
     return ec, indicators
@@ -281,8 +286,7 @@ def domain_command():
 
 @logger
 def domain(domain_addr, owners, rating_threshold, confidence_threshold):
-    indicators = get_indicators(domain_addr, 'Host', owners, rating_threshold, confidence_threshold,
-                                freshness=FRESHNESS)
+    indicators = get_indicators(domain_addr, 'Host', owners, rating_threshold, confidence_threshold)
     ec, indicators = create_context(indicators, include_dbot_score=True)
 
     return ec, indicators
@@ -1360,7 +1364,8 @@ COMMANDS = {
     'tc-add-group-tag': add_group_tag,
     'tc-get-indicator-types': tc_get_indicator_types,
     'tc-group-associate-indicator': associate_indicator,
-    'tc-create-document-group': create_document_group
+    'tc-create-document-group': create_document_group,
+    'tc-get-indicators': get_indicators
 }
 
 try:
