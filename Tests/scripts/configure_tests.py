@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 This script is used to create a filter_file.txt file which will run only the needed the tests for a given change.
 """
@@ -28,6 +29,9 @@ ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonInteg
 # secrets white list file to be ignored in tests to prevent full tests running each time it is updated
 SECRETS_WHITE_LIST = 'secrets_white_list.json'
 
+# Global used to indicate if failed during any of the validation states
+_FAILED = False
+
 
 def checked_type(file_path, regex_list):
     """Check if the file_path is from the regex list"""
@@ -45,6 +49,8 @@ def validate_not_a_package_test_script(file_path):
 def get_modified_files(files_string):
     """Get a string of the modified files"""
     is_conf_json = False
+    is_reputations_json = False
+    is_indicator_json = False
 
     sample_tests = []
     all_tests = []
@@ -80,6 +86,15 @@ def get_modified_files(files_string):
             elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 modified_tests_list.append(file_path)
 
+            # reputations.json
+            elif re.match(MISC_REPUTATIONS_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(REPUTATION_REGEX, file_path, re.IGNORECASE):
+                is_reputations_json = True
+
+            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(INCIDENT_FIELDS_REGEX, file_path, re.IGNORECASE):
+                is_indicator_json = True
+
             # conf.json
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
                 is_conf_json = True
@@ -95,7 +110,8 @@ def get_modified_files(files_string):
             elif SECRETS_WHITE_LIST not in file_path:
                 sample_tests.append(file_path)
 
-    return modified_files_list, modified_tests_list, all_tests, is_conf_json, sample_tests
+    return (modified_files_list, modified_tests_list, all_tests, is_conf_json, sample_tests,
+            is_reputations_json, is_indicator_json)
 
 
 def get_name(file_path):
@@ -161,7 +177,6 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
                     if command in integration_commands:
                         if not command_to_integration.get(command) or \
                                 command_to_integration.get(command) == integration_id:
-
                             detected_usage = True
                             tests_set.add(test_playbook_id)
                             catched_intergrations.add(integration_id)
@@ -228,7 +243,8 @@ def find_tests_for_modified_files(modified_files):
         print_color(message, LOG_COLORS.RED)
 
     if caught_missing_test or len(missing_ids) > 0:
-        sys.exit(1)
+        global _FAILED
+        _FAILED = True
 
     return tests_set
 
@@ -253,7 +269,8 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
             else:
                 message = "The test '{0}' does not exist in the conf.json file, please re-check your code".format(test)
                 print_color(message, LOG_COLORS.RED)
-                sys.exit(1)
+                global _FAILED
+                _FAILED = True
 
     return missing_ids
 
@@ -496,11 +513,19 @@ def get_test_from_conf(branch_name):
 
 def get_test_list(files_string, branch_name):
     """Create a test list that should run"""
-    modified_files, modified_tests_list, all_tests, is_conf_json, sample_tests = get_modified_files(files_string)
+    (modified_files, modified_tests_list, all_tests, is_conf_json, sample_tests, is_reputations_json,
+     is_indicator_json) = get_modified_files(files_string)
 
     tests = set([])
     if modified_files:
         tests = find_tests_for_modified_files(modified_files)
+
+    # Adding a unique test for a json file.
+    if is_reputations_json:
+        tests.add('reputations.json Test')
+
+    if is_indicator_json:
+        tests.add('Test IP Indicator Fields')
 
     for file_path in modified_tests_list:
         test = collect_ids(file_path)
@@ -515,16 +540,17 @@ def get_test_list(files_string, branch_name):
         tests.add("Run all tests")
 
     if sample_tests:  # Choosing 3 random tests for infrastructure testing
-        print_warning('Running sample tests due to: {}'.format(','.join(sample_tests)))
+        print_warning('Collecting sample tests due to: {}'.format(','.join(sample_tests)))
         test_ids = get_test_ids(check_nightly_status=True)
-        initial_tests_len = len(tests)
-        while len(tests) != initial_tests_len + 3:
-            tests.add(random.choice(test_ids))
+        rand = random.Random(files_string + branch_name)
+        while len(tests) < 3:
+            tests.add(rand.choice(test_ids))
 
     if not tests:
         if modified_files or modified_tests_list or all_tests:
             print_error("There are no tests that check the changes you've done, please make sure you write one")
-            sys.exit(1)
+            global _FAILED
+            _FAILED = True
         else:
             print_warning("Running Sanity check only")
             tests.add('DocumentationTest')  # test with integration configured
@@ -533,7 +559,7 @@ def get_test_list(files_string, branch_name):
     return tests
 
 
-def create_test_file(is_nightly):
+def create_test_file(is_nightly, skip_save=False):
     """Create a file containing all the tests we need to run for the CI"""
     tests_string = ''
     if not is_nightly:
@@ -558,9 +584,10 @@ def create_test_file(is_nightly):
         else:
             print('No filter configured, running all tests')
 
-    print("Creating filter_file.txt")
-    with open("./Tests/filter_file.txt", "w") as filter_file:
-        filter_file.write(tests_string)
+    if not skip_save:
+        print("Creating filter_file.txt")
+        with open("./Tests/filter_file.txt", "w") as filter_file:
+            filter_file.write(tests_string)
 
 
 if __name__ == "__main__":
@@ -568,10 +595,15 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Utility CircleCI usage')
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly or not')
+    parser.add_argument('-s', '--skip-save', type=str2bool,
+                        help='Skipping saving the test filter file (good for simply doing validation)')
     options = parser.parse_args()
 
     # Create test file based only on committed files
-    create_test_file(options.nightly)
-
-    print_color("Finished creation of the test filter file", LOG_COLORS.GREEN)
-    sys.exit(0)
+    create_test_file(options.nightly, options.skip_save)
+    if not _FAILED:
+        print_color("Finished test configuration", LOG_COLORS.GREEN)
+        sys.exit(0)
+    else:
+        print_color("Failed test configuration. See previous errors.", LOG_COLORS.RED)
+        sys.exit(1)
