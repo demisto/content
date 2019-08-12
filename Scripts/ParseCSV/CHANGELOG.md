@@ -1,2 +1,1 @@
-## [Unreleased]
- - fixed bug when one-lined csv supplied
+  - Fixed an issue in which parsing single-line CSV files returned a **No entries** message.
