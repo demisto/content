@@ -491,7 +491,7 @@ def get_hash_command():
         contents['Classification'] = classification.get('classification')
     except ValueError as e:
         if '404' in str(e):
-            contents['Classification'] = 'No classification was found'
+            contents['Classification'] = 'No classification was found.'
         else:
             raise e
 
