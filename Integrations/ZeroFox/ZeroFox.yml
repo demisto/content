@@ -21,6 +21,11 @@ configuration:
   name: credentials
   required: true
   type: 9
+- defaultvalue: https://api.zerofox.com/1.0 # disable-secrets-detection
+  display: URL
+  name: url
+  required: true
+  type: 0
 description: Integration Template
 display: ZeroFox
 name: ZeroFox
@@ -152,9 +157,6 @@ script:
     description: Closes an alert
     execution: false
     name: zerofox-close-alert
-  - deprecated: false
-    execution: false
-    name: zerofox-clear-integration-context
   - arguments:
     - default: false
       isArray: false
@@ -171,7 +173,7 @@ script:
       defaultValue: 'true'
       description: true = add, false = remove.
       isArray: false
-      name: addition
+      name: action
       predefined:
       - 'true'
       - 'false'
@@ -203,12 +205,27 @@ script:
       name: account
       required: false
       secret: false
-    - default: false
-      description: |-
-        x ∈ { account_information , entity_discovery_content , entity_discovery_profile , impersonating_account , impersonating_comment , impersonating_post , incoming_comment , incoming_post , incoming_private_message , outgoing_private_message , self_comment , self_post , search_query , location , email }*
-        CSV of alert types. Possible values are account_information, entity_discovery_content, entity_discovery_profile, impersonating_account, impersonating_comment, impersonating_post, incoming_comment, incoming_post, incoming_private_message, outgoing_private_message, self_comment, self_post, search_query, email, and location.
+    - auto: PREDEFINED
+      default: false
+      description: CSV of alert types
       isArray: false
       name: alert_type
+      predefined:
+      - account_information
+      - entity_discovery_content
+      - entity_discovery_profile
+      - impersonating_account
+      - impersonating_comment
+      - impersonating_post
+      - incoming_comment
+      - incoming_post
+      - incoming_private_message
+      - outgoing_private_message
+      - self_comment
+      - self_post
+      - search_query
+      - location
+      - email
       required: false
       secret: false
     - default: false
@@ -349,12 +366,19 @@ script:
       name: sort_field
       required: false
       secret: false
-    - default: false
-      description: |-
-        x ∈ { closed , open , takedown_accepted , takedown_denied , takedown_requested , whitelisted }
-        Alert status. Possible values are closed, open, takedown_accepted, takedown_denied, takedown_requested, and whitelisted.
+    - auto: PREDEFINED
+      default: false
+      description: Alert status. Possible values are closed, open, takedown_accepted,
+        takedown_denied, takedown_requested, and whitelisted.
       isArray: false
       name: status
+      predefined:
+      - closed
+      - open
+      - takedown_accepted
+      - takedown_denied
+      - takedown_requested
+      - whitelisted
       required: false
       secret: false
     - default: false
@@ -520,9 +544,9 @@ script:
     execution: false
     name: zerofox-open-alert
   dockerimage: demisto/python3:3.7.4.977
-  isfetch: false
+  isfetch: true
   runonce: false
   script: '-'
   type: python
 tests:
-- No test - not yet implemented
+- ZeroFox-Test
