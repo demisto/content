@@ -33,12 +33,13 @@ HEADERS = None
 def remove_none_dict(input_dict):
     return {key: value for key, value in input_dict.items() if value is not None}
 
+
 def initialize_preset():
     global USERNAME, PASSWORD, USE_SSL, BASE_URL
     USERNAME = demisto.params().get('credentials').get('identifier')
     PASSWORD = demisto.params().get('credentials').get('password')
     USE_SSL = not demisto.params().get('insecure', False)
-    BASE_URL = 'https://api.zerofox.com/1.0'  # disable-secrets-detection
+    BASE_URL = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
     # Remove proxy if not set to true in params
     handle_proxy()
 
