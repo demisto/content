@@ -29,6 +29,10 @@ HEADERS = None
 
 ''' HELPER FUNCTIONS '''
 
+
+def remove_none_dict(input_dict):
+    return {key: value for key, value in input_dict.items() if value is not None}
+
 def initialize_preset():
     global USERNAME, PASSWORD, USE_SSL, BASE_URL
     USERNAME = demisto.params().get('credentials').get('identifier')
@@ -37,6 +41,7 @@ def initialize_preset():
     BASE_URL = 'https://api.zerofox.com/1.0'  # disable-secrets-detection
     # Remove proxy if not set to true in params
     handle_proxy()
+
 
 
 def get_alert_contents(alert):
@@ -98,16 +103,13 @@ def get_alert_contents_war_room(contents):
         'Tags': contents.get('Tags')
     }
 
+
 def clear_integration_context():
     demisto.setIntegrationContext({})
     demisto.info(demisto.getIntegrationContext())
 
 
 def get_authorization_token():
-    # context: Dict = demisto.getIntegrationContext()
-    # if context is a dict so it must have a token inside - because token is the first thing added to the context
-    # if context.get('auth_token'):
-    #     return
     endpoint: str = '/api-token-auth/'
     data_for_request: Dict = {
         'username': USERNAME,
@@ -121,7 +123,6 @@ def get_authorization_token():
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     }
-    demisto.setIntegrationContext({'auth_token': TOKEN})
 
 
 def http_request(method: str, url_suffix: str, params=None, data=None):
@@ -170,6 +171,18 @@ def close_alert_command():
     return_outputs(f'Alert: {alert_id} has been closed successfully.', outputs={})
 
 
+def open_alert(alert_id):
+    url_suffix: str = f'/alerts/{alert_id}/open/'
+    response_content = http_request('POST', url_suffix)
+    return response_content
+
+
+def open_alert_command():
+    alert_id: int = demisto.args().get('alert_id')
+    open_alert(alert_id)
+    return_outputs(f'Alert: {alert_id} has been opened successfully.', outputs={})
+
+
 def alert_request_takedown(alert_id):
     url_suffix: str = f'/alerts/{alert_id}/request_takedown/'
     response_content = http_request('POST', url_suffix)
@@ -180,6 +193,18 @@ def alert_request_takedown_command():
     alert_id: int = demisto.args().get('alert_id')
     alert_request_takedown(alert_id)
     return_outputs(f'Alert: {alert_id} has been taken down successfully.', outputs={})
+
+
+def alert_cancel_takedown(alert_id):
+    url_suffix: str = f'/alerts/{alert_id}/cancel_takedown/'
+    response_content = http_request('POST', url_suffix)
+    return response_content
+
+
+def alert_cancel_takedown_command():
+    alert_id: int = demisto.args().get('alert_id')
+    alert_cancel_takedown(alert_id)
+    return_outputs(f'Alert: {alert_id} has canceled takedown successfully.', outputs={})
 
 
 def alert_user_assignment(alert_id, subject_email, subject_name):
@@ -247,12 +272,26 @@ def get_alert_command():
     )
 
 
-def list_alerts():
-    pass
+def list_alerts(params):  # not fully implemented
+    url_suffix: str = '/alerts/'
+    response_content = http_request('GET', url_suffix, params=params)
+    return response_content
 
 
-def list_alerts_command():
-    pass
+def list_alerts_command():  # not fully implemented
+    params = remove_none_dict(demisto.args())
+    response_content = list_alerts(params).get('alerts')
+    if not response_content:
+        return_outputs('No alerts found.', outputs={})
+    else:
+        contents = [get_alert_contents(alert) for alert in response_content]
+        contents_war_room = [get_alert_contents_war_room(content) for content in contents]
+        context = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents}
+        return_outputs(
+            tableToMarkdown('Alerts', contents_war_room, removeNull=True),
+            context,
+            response_content
+    )
 
 
 def create_entity(name, strict_name_matching=None, image=None, labels=None, policy=None, organization=None):
@@ -265,7 +304,7 @@ def create_entity(name, strict_name_matching=None, image=None, labels=None, poli
         'policy': policy,
         'organization': organization
     }
-    request_body = {key: value for key, value in request_body.items() if value is not None}
+    request_body = remove_none_dict(request_body)
     response_content = http_request('POST', url_suffix, data=json.dumps(request_body))
     return response_content
 
@@ -294,13 +333,11 @@ def get_entities_command():
     pass
 
 
-
 def test_module():
     """
     Performs basic get request to get item samples
     """
     samples = http_request('GET', 'items/samples')
-
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -309,10 +346,12 @@ def test_module():
 
 
 def main():
-    initialize_preset()
     LOG('Command being called is %s' % (demisto.command()))
     try:
-        get_authorization_token()
+        if USERNAME is None or PASSWORD is None or BASE_URL is None or USE_SSL is None:
+            initialize_preset()
+        if TOKEN is None:
+            get_authorization_token()
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
             test_module()
@@ -329,6 +368,12 @@ def main():
             modify_alert_tags_command()
         elif demisto.command() == 'zerofox-create-entity':
             create_entity_command()
+        elif demisto.command() == 'zerofox-list-alerts':
+            list_alerts_command()
+        elif demisto.command() == 'zerofox-open-alert':
+            open_alert_command()
+        elif demisto.command() == 'zerofox-alert-cancel-takedown':
+            alert_cancel_takedown_command()
 
     # Log exceptions
     except Exception as e:
