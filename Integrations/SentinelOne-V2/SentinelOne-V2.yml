@@ -1396,7 +1396,7 @@ script:
     - contextPath: SentinelOne.Event.ParentProcessStartTime
       description: The parent process start time
       type: Date
-    - contextPath: SentinelOne.Event.[0].ProcessID
+    - contextPath: SentinelOne.Event.ProcessID
       description: The process ID
       type: Number
     - contextPath: SentinelOne.Event.ParentProcessUID
