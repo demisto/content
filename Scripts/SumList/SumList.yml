@@ -1,0 +1,24 @@
+args:
+- default: true
+  description: List to reverse
+  isArray: true
+  name: value
+  required: true
+  secret: false
+comment: "Sums a List\ne.g. [\"25\", \"10\", \"25\"] =>  \"60\"\n\nThis is an example\
+  \ for number transformer.\n "
+commonfields:
+  id: SumList
+  version: -1
+enabled: true
+name: SumList
+script: '-'
+system: false
+tags:
+- transformer
+- number
+timeout: '0'
+type: python
+runas: DBotWeakRole
+runonce: false
+subtype: python3
