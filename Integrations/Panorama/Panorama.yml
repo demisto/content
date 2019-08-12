@@ -1386,7 +1386,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Object type to block in the policy rule. Can be "ip", "address-group", "edl", or "custom-url-category".
+      description: Object type to block in the policy rule. Can be "ip", "address-group",
+        "edl", or "custom-url-category".
       isArray: false
       name: object_type
       predefined:
@@ -1406,7 +1407,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: both
-      description: Direction to block. Can be "to", "from", or "both". Default is "both". This argument is not applicable to the "custom-url-category" object_type.
+      description: Direction to block. Can be "to", "from", or "both". Default is
+        "both". This argument is not applicable to the "custom-url-category" object_type.
       isArray: false
       name: direction
       predefined:
@@ -2045,6 +2047,151 @@ script:
       type: String
     - contextPath: Panorama.SecurityRule.Source
       description: Source address.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The type of the log.
+      isArray: false
+      name: log-type
+      predefined:
+      - threat
+      - traffic
+      - wildfire
+      - url
+      - data
+      required: true
+      secret: false
+    - default: false
+      description: Specify the match criteria for the logs. This is similar to the
+        query provided in the web interface under the Monitor tab when viewing the
+        logs.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: The time the log was generated from the timestamp and prior to
+        it. e.g, 2019/08/11 01:10:44
+      isArray: false
+      name: time-generated
+      required: false
+      secret: false
+    - default: false
+      description: Source address.
+      isArray: false
+      name: addr-src
+      required: false
+      secret: false
+    - default: false
+      description: Destination address.
+      isArray: false
+      name: addr-dst
+      required: false
+      secret: false
+    - default: false
+      description: Souce zone.
+      isArray: false
+      name: zone-src
+      required: false
+      secret: false
+    - default: false
+      description: Destination Source.
+      isArray: false
+      name: zone-dst
+      required: false
+      secret: false
+    - default: false
+      description: Rule action.
+      isArray: false
+      name: action
+      required: false
+      secret: false
+    - default: false
+      description: Destination port.
+      isArray: false
+      name: port-dst
+      required: false
+      secret: false
+    - default: false
+      description: Rule name. e.g, Allow all outopund
+      isArray: false
+      name: rule
+      required: false
+      secret: false
+    - default: false
+      description: URL. e.g, safebrowsing.googleapis.com
+      isArray: false
+      name: url
+      required: false
+      secret: false
+    - default: false
+      description: File hash (for WildFIre logs only).
+      isArray: false
+      name: filedigest
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Specify the number of logs to retrieve. The default is 100 when
+        the parameter is not specified. The maximum is 5000.
+      isArray: false
+      name: number_of_logs
+      required: false
+      secret: false
+    deprecated: false
+    description: Query logs
+    execution: false
+    name: panorama-query-logs
+    outputs:
+    - contextPath: Panorama.Logs.JobID
+      description: Job ID of the logs query.
+      type: String
+    - contextPath: Panorama.Logs.Status
+      description: Status of the logs query.
+      type: String
+    - contextPath: Panorama.Logs.Message
+      description: Message  of the logs query.
+      type: String
+  - arguments:
+    - default: false
+      description: Job ID of the query
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Check logs query status
+    execution: false
+    name: panorama-check-logs-status
+    outputs:
+    - contextPath: Panorama.Logs.JobID
+      description: Job ID of the logs query.
+      type: String
+    - contextPath: Panorama.Logs.Status
+      description: Status of the logs query.
+      type: String
+  - arguments:
+    - default: false
+      description: Job ID of the query
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: 'true'
+      description: do not auto enrich the war-room entry
+      isArray: false
+      name: ignore_auto_extract
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves logs query data by job id.
+    execution: false
+    name: panorama-get-logs
+    outputs:
+    - contextPath: add meeeeeeeeee
+      description: vs
       type: String
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
