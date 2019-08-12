@@ -2327,7 +2327,7 @@ script:
       description: Time the log was generated on the dataplane.
       type: String
     - contextPath: Panorama.Monitor.URLCategoryList
-      description: fix meeeeee too
+      description: URL Category List for the session.
       type: String
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
