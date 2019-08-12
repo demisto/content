@@ -44,7 +44,6 @@ def unicode_dict_reader(csv_data, **kwargs):
     csv_reader = csv.DictReader((line.replace('\0', '') for line in csv_data), **kwargs)
     arr = []
     no_name_columns_counter = 0
-    # if csv_reader.
     for row in csv_reader:
         row_dict = {}
 
