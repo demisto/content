@@ -1,0 +1,1 @@
+Added a new transformer to sum a list of numbers
