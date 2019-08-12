@@ -1,7 +1,7 @@
 id: PAN-OS DAG Configuration
 version: -1
 name: PAN-OS DAG Configuration
-fromversion: 4.5.0
+fromversion: 4.0.0
 description: "This playbook utilizes the Dynamic Address Group capability of PAN-OS\nDAG
   allows the analyst to create a rule once with the group as the source/destination
   and add IPs dynamically without the need to commit the configuration every time.\n\nThe
