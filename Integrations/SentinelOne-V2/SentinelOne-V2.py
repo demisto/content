@@ -493,7 +493,7 @@ def get_hash_command():
         if '404' in str(e):
             contents['Classification'] = 'No classification was found'
         else:
-            raise str(e)
+            raise e
 
     # Parse response into context & content entries
     title = 'Sentinel One - Hash Reputation and Classification \n' + \
