@@ -333,13 +333,15 @@ script:
         });
 
         // add DbotScore to context
-        var dbotScore = calculateDbotScore(unknownCounter, maliciousCounter, minMaliciousScanners, res.count);
-        context["DBotScore"] = {
-           "Indicator": res.search_terms[0].value,
-            "Type": "File",
-            "Vendor": "Hybrid Analysis",
-            "Score": dbotScore
-            };
+        if (result.length != 0){
+            var dbotScore = calculateDbotScore(unknownCounter, maliciousCounter, minMaliciousScanners, res.count);
+            context["DBotScore"] = {
+              "Indicator": res.search_terms[0].value,
+                "Type": "File",
+                "Vendor": "Hybrid Analysis",
+                "Score": dbotScore
+                };
+        }
 
         return createTableEntry('Search results:', result, table, context);
     }
@@ -642,11 +644,11 @@ script:
 
     switch (command) {
         case 'test-module':
-            var entry = searchQuery('url:google');
-            if (entry && entry.Type === entryTypes.note) {
+            var res = scan('dd014af5ed6b38d9130e3f466f850e46d21b951199d53a18ef29ee9341614eaf')[0]; // google's SHA256
+            if (res != null && res.state == 'SUCCESS') {
                return 'ok';
             }
-            return entry && entry.Contents;
+            return false;
         case 'hybrid-analysis-scan':
             var res = scan(args.file);
             return scanToEntry(res, args.file, args.malicious_threat_levels);
