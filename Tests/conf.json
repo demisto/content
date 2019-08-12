@@ -1485,7 +1485,7 @@
         {
             "playbookID": "PAN-OS DAG Configuration Test",
             "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall",
+            "instance_names": "palo_alto_panorama",
             "timeout": 1000
         },
         {
