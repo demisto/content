@@ -202,7 +202,10 @@ def dict_values_to_comma_separated_string(dic):
 # Sends request to the server using the given method, url, headers and params
 def send_request(method, url, headers=AUTH_HEADERS, params=None):
     try:
-        res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, auth=(USERNAME, PASSWORD))
+        if TOKEN:
+            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL)
+        else:
+            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, auth=(USERNAME, PASSWORD))
         res.raise_for_status()
     except HTTPError:
         err_json = res.json()
