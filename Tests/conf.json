@@ -90,6 +90,9 @@
             "playbookID": "RegPathReputationBasicLists_test"
         },
         {
+            "playbookID": "EmailDomainSquattingReputation-Test"
+        },
+        {
             "playbookID": "RandomStringGenerateTest"
         },
         {
@@ -891,6 +894,10 @@
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test"
+        },
+        {
+            "integrations": "remedy_sr_beta",
+            "playbookID": "remedy_sr_test_pb"
         },
         {
 
@@ -1786,6 +1793,7 @@
         "Cymon": "The service was discontinued since April 30th, 2019.",
         "FireEye ETP": "No instance",
         "ProofpointTAP_v2": "No instance",
+        "remedy_sr_beta": "No instance",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
