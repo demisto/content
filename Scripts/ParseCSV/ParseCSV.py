@@ -185,7 +185,7 @@ def main():
 
     elif not (parse_ip == -1 and parse_domain == -1 and parse_hash == -1):
         # if need to parse ips/domains/hashes, keep the script running
-        if sum(1 for line in open(file_path)) <= 1:  # checks if there are more less than one line
+        if sum(1 for line in open(file_path)) <= 1:  # checks if there are less than one line
             return_error('No data to parse. CSV file might be empty or one-lined. try the `ParseAll=yes` argument.')
 
         with open(file_path, 'rU') as f:
