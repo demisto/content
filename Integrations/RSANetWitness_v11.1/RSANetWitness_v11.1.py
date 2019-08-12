@@ -963,5 +963,7 @@ try:
 except ValueError as e:
     LOG(e.message)
     LOG.print_log()
+    if command == 'fetch-incidents':  # fetch-incidents supports only raising exceptions
+        raise
     return_error_entry(e.message)
     sys.exit(1)
