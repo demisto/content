@@ -105,13 +105,15 @@ hash_count = 0
 
 
 def is_one_dimension_list(all_csv):
-    try:
-        entry = all_csv[0]
-        if not isinstance(entry, dict):
-            return True
-    except IndexError:
-        pass
-    return False
+    """ Checks if given list is one dimensional
+
+    Args:
+        all_csv (list): list of csv entries
+
+    Returns:
+        bool: True if all strings (one dimension list) or False if not
+    """
+    return all(isinstance(entry, STRING_TYPES) for entry in all_csv) or not all_csv
 
 
 def main():
@@ -154,13 +156,15 @@ def main():
 
     if parse_all:
         all_csv = []
-        with open(file_path, mode='r') as f:
+        with open(file_path) as f:
             records = unicode_dict_reader(f)
-        if records:
-            for row in records:
-                all_csv.append(row)
-        else:  # Can be one-line csv
-            with open(file_path) as f:
+            # `records` is a list contains CSV rows (without headers)
+            # so if it doesn't exists - it can be empty or one-lined CSV
+            if records:
+                for row in records:
+                    all_csv.append(row)
+            else:  # Can be one-line csv
+                f.seek(0)
                 line = f.read()
                 all_csv = line.split(',')
 
@@ -182,10 +186,12 @@ def main():
 
     elif not (parse_ip == -1 and parse_domain == -1 and parse_hash == -1):
         # if need to parse ips/domains/hashes, keep the script running
+        if sum(1 for line in open(file_path)) <= 1:  # checks if there are more less than one line
+            return_error('No data to parse. CSV file might be empty or one-lined. try the `ParseAll=yes` argument.')
+
         with open(file_path, 'rU') as f:
             has_header = csv.Sniffer().has_header(f.read(1024))
             f.seek(0)
-
             csv_data = csv.reader(f)
 
             if has_header:
