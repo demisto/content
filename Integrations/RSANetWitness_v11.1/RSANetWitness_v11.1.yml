@@ -41,7 +41,7 @@ configuration:
   type: 8
 - defaultvalue: 1 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: fetchTime
+  name: fetch_time
   required: false
   type: 0
 description: RSA NetWitness Platform provides systems Logs, Network, and endpoint
