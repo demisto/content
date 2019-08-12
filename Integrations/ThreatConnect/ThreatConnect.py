@@ -21,7 +21,7 @@ def get_client():
     params = demisto.params()
     access = params['accessId']
     secret = params['secretKey']
-    default_org = params['defaultOrg']
+    default_org = params.get('defaultOrg')
     url = params['baseUrl']
     proxy_ip = params['proxyIp']
     proxy_port = params['proxyPort']
@@ -34,10 +34,6 @@ def get_client():
 
 
 def calculate_freshness_time(freshness):
-    # today = datetime.today()
-    # delta = timedelta(days=freshness)
-    # t = (today - delta).isoformat() + 'Z'
-    # return t
     t = datetime.now() - timedelta(days=freshness)
     return t.strftime('%Y-%m-%dT00:00:00Z')
 
@@ -61,7 +57,7 @@ def create_context(indicators, include_dbot_score=False):
         'Address': 'ip',
         'URL': 'text',
         'Host': 'hostName',
-        'File': 'md5',
+        'File': 'md5'
     }
 
     for ind in indicators:
@@ -120,7 +116,7 @@ def create_context(indicators, include_dbot_score=False):
                 'Indicator': value,
                 'Score': dbot_score,
                 'Type': indicator_type,
-                'Vendor': 'ThreatConnect',
+                'Vendor': 'ThreatConnect'
             })
 
         context['TC.Indicator(val.ID && val.ID === obj.ID)'].append({
@@ -183,7 +179,7 @@ def get_indicators(indicator_value=None, indicator_type=None, owners=None, ratin
 def ip_command():
     args = demisto.args()
     owners = args.get('owners', demisto.params().get('defaultOrg'))
-    if owners == '':
+    if not owners:
         return_error('you must specify an owner via the command or the Organization parameter')
     rating_threshold = int(args.get('ratingThreshold', -1))
     confidence_threshold = int(args.get('confidenceThreshold', -1))
@@ -198,7 +194,7 @@ def ip_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ThreatConnect IP Reputation for: {}'.format(ip_addr), indicators,
                                          headerTransform=pascalToSpace),
-        'EntryContext': ec,
+        'EntryContext': ec
     })
 
 
@@ -216,7 +212,7 @@ def ip(ip_addr, owners, rating_threshold, confidence_threshold):
 def url_command():
     args = demisto.args()
     owners = args.get('owners', demisto.params().get('defaultOrg'))
-    if owners == '':
+    if not owners:
         return_error('you must specify an owner via the command or the Organization parameter')
     url_addr = args['url']
     parsed_url = urlparse(url_addr)
@@ -233,7 +229,7 @@ def url_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ThreatConnect URL Reputation for: {}'.format(url_addr), indicators,
                                          headerTransform=pascalToSpace),
-        'EntryContext': ec,
+        'EntryContext': ec
     })
 
 
@@ -250,7 +246,7 @@ def url(url_addr, owners, rating_threshold, confidence_threshold):
 def file_command():
     args = demisto.args()
     owners = args.get('owners', demisto.params().get('defaultOrg'))
-    if owners == '':
+    if not owners:
         return_error('you must specify an owner via the command or the Organization parameter')
     file_name = args['file']
     rating_threshold = int(args.get('ratingThreshold', -1))
@@ -264,7 +260,7 @@ def file_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ThreatConnect File Report for: {}'.format(file_name), indicators,
                                          headerTransform=pascalToSpace),
-        'EntryContext': ec,
+        'EntryContext': ec
     })
 
 
@@ -280,7 +276,9 @@ def _file(url_addr, owners, rating_threshold, confidence_threshold):
 
 def domain_command():
     args = demisto.args()
-    owners = args.get('owners')
+    owners = args.get('owners', demisto.params().get('defaultOrg'))
+    if not owners:
+        return_error('you must specify an owner via the command or the Organization parameter')
     rating_threshold = int(args.get('ratingThreshold', -1))
     confidence_threshold = int(args.get('confidenceThreshold', -1))
     domain_addr = args['domain']
@@ -293,7 +291,7 @@ def domain_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ThreatConnect Domain Reputation for: {}'.format(domain_addr), indicators,
                                          headerTransform=pascalToSpace),
-        'EntryContext': ec,
+        'EntryContext': ec
     })
 
 
@@ -312,7 +310,7 @@ def tc_owners_command():
         owners.append({
             'ID': owner['id'],
             'Type': owner['type'],
-            'Name': owner['name'],
+            'Name': owner['name']
         })
 
     demisto.results({
@@ -321,7 +319,7 @@ def tc_owners_command():
         'Contents': raw_owners,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ThreatConnect Owners:', owners),
-        'EntryContext': {'TC.Owner(val.ID && val.ID === obj.ID)': owners},
+        'EntryContext': {'TC.Owner(val.ID && val.ID === obj.ID)': owners}
     })
 
 
@@ -348,7 +346,7 @@ def tc_indicators_command():
         'Contents': raw_response,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ThreatConnect Indicators:', indicators, headerTransform=pascalToSpace),
-        'EntryContext': ec,
+        'EntryContext': ec
     })
 
 
@@ -381,7 +379,7 @@ def tc_get_tags_command():
         'Contents': raw_response,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ThreatConnect Tags:', tags, headers='Name'),
-        'EntryContext': {'TC.Tags': tags},
+        'EntryContext': {'TC.Tags': tags}
     })
 
 
@@ -409,7 +407,7 @@ def tc_tag_indicator_command():
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
-        'Contents': '\n'.join(md),
+        'Contents': '\n'.join(md)
     })
 
 
@@ -447,7 +445,7 @@ def tc_get_indicator_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ThreatConnect indicator for: {}'.format(indicator), indicators,
                                          headerTransform=pascalToSpace),
-        'EntryContext': ec,
+        'EntryContext': ec
     })
 
 
@@ -475,7 +473,7 @@ def tc_get_indicators_by_tag_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('ThreatConnect Indicators with tag: {}'.format(tag), indicators,
                                          headerTransform=pascalToSpace),
-        'EntryContext': ec,
+        'EntryContext': ec
     })
 
 
@@ -497,7 +495,7 @@ def tc_add_indicator_command():
     args = demisto.args()
     indicator = args['indicator']
     owner = args.get('owner', demisto.params().get('defaultOrg'))
-    if owner == '':
+    if not owner:
         return_error('you must specify an owner via the command or the Organization parameter')
 
     rating = int(args.get('rating', 0))
@@ -514,7 +512,7 @@ def tc_add_indicator_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Created new indicator successfully:', indicators,
                                          headerTransform=pascalToSpace),
-        'EntryContext': ec,
+        'EntryContext': ec
     })
 
 
@@ -533,7 +531,7 @@ def tc_create_incident_command():
     args = demisto.args()
     incident_name = args['incidentName']
     owner = args.get('owner', demisto.params()['defaultOrg'])
-    if owner == '':
+    if not owner:
         return_error('you must specify an owner via the command or the Organization parameter')
 
     event_date = args.get('eventDate', datetime.utcnow().isoformat().split('.')[0] + 'Z')
@@ -559,7 +557,7 @@ def tc_create_incident_command():
         'HumanReadable': 'Incident {} Created Successfully'.format(incident_name),
         'EntryContext': {
             'TC.Incident(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True),
-        },
+        }
     })
 
 
@@ -594,8 +592,8 @@ def tc_fetch_incidents_command():
         'HumanReadable': tableToMarkdown('Incidents:', raw_incidents, headerTransform=pascalToSpace),
         'EntryContext': {
             'TC.Incident(val.ID && val.ID === obj.ID)': createContext(raw_incidents, removeNull=True),
-            'ThreatConnect.incidents': raw_incidents,  # backward compatible
-        },
+            'ThreatConnect.incidents': raw_incidents  # backward compatible
+        }
     })
 
 
@@ -631,7 +629,7 @@ def tc_get_incident_associate_indicators_command():
         'Contents': raw_indicators,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Incident Associated Indicators:', indicators, headerTransform=pascalToSpace),
-        'EntryContext': ec,
+        'EntryContext': ec
     })
 
 
@@ -741,7 +739,7 @@ def tc_update_indicator_command():
         'Contents': raw_indicators,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': '\n'.join('Indicator {} Updated Successfully'.format(ind['ID']) for ind in indicators),
-        'EntryContext': ec,
+        'EntryContext': ec
     })
 
 
@@ -792,7 +790,7 @@ def tc_delete_indicator_command():
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
-        'Contents': 'Indicator {} removed Successfully'.format(indicator),
+        'Contents': 'Indicator {} removed Successfully'.format(indicator)
     })
 
 
@@ -828,7 +826,7 @@ def tc_delete_indicator_tag_command():
         'Contents': raw_indicators,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': '\n'.join(md),
-        'EntryContext': ec,
+        'EntryContext': ec
     })
 
 
@@ -870,7 +868,7 @@ def tc_create_campaign_command():
         'Owner': raw_campaign['owner']['name'],
         'FirstSeen': raw_campaign['firstSeen'],
         'Tag': tag,
-        'SecurityLabel': security_label,
+        'SecurityLabel': security_label
     }
 
     demisto.results({
@@ -881,7 +879,7 @@ def tc_create_campaign_command():
         'HumanReadable': 'Campaign {} Created Successfully'.format(name),
         'EntryContext': {
             'TC.Campaign(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True),
-        },
+        }
     })
 
 
@@ -938,7 +936,7 @@ def tc_create_event_command():
         'Owner': raw_event['owner']['name'],
         'Date': raw_event['eventDate'],
         'Tag': tag,
-        'Status': status,
+        'Status': status
     }
 
     demisto.results({
@@ -949,7 +947,7 @@ def tc_create_event_command():
         'HumanReadable': 'Incident {} Created Successfully'.format(name),
         'EntryContext': {
             'TC.Event(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True),
-        },
+        }
     })
 
 
@@ -998,7 +996,7 @@ def tc_create_threat_command():
     raw_threat = tc_create_threat(name, owner, date)
     ec = {
         'ID': raw_threat['id'],
-        'Name': raw_threat['name'],
+        'Name': raw_threat['name']
     }
 
     demisto.results({
@@ -1009,7 +1007,7 @@ def tc_create_threat_command():
         'HumanReadable': 'Threat {} Created Successfully'.format(name),
         'EntryContext': {
             'TC.Threat(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True),
-        },
+        }
     })
 
 
