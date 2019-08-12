@@ -1,12 +1,7 @@
 ## [Unreleased]
-Added 3 commands.
-  - ***sentinelone-disconnect-agent***
-  - ***sentinelone-connect-agent***
-  - ***broadcast-message***
-
-Added 2 commands.
+Added 5 commands.
   - ***sentinelone-get-events***
-  - ***sentinelone-get-query-id***
+  - ***sentinelone-create-query***
   - ***sentinelone-get-processes***
   - ***sentinelone-shutdown-agent***
   - ***sentinelone-uninstall-agent***
