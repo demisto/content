@@ -95,10 +95,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 253df995-95d2-4ab6-8e60-970f6c5e9e2c
+    taskid: 9936e7be-ed9e-4688-854f-b04b3eac5a47
     type: regular
     task:
-      id: 253df995-95d2-4ab6-8e60-970f6c5e9e2c
+      id: 9936e7be-ed9e-4688-854f-b04b3eac5a47
       version: -1
       name: Delete address group
       description: Deletes an address group
@@ -108,7 +108,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - "5"
+      - "18"
     scriptarguments:
       name:
         simple: ${inputs.address_group}
@@ -126,10 +126,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: fdacd9aa-5574-4542-87bc-0b07684dd6e2
+    taskid: 880be585-1905-4ff7-8e08-f60c79092edc
     type: regular
     task:
-      id: fdacd9aa-5574-4542-87bc-0b07684dd6e2
+      id: 880be585-1905-4ff7-8e08-f60c79092edc
       version: -1
       name: delete 'from' rule
       description: Deletes a policy rule
@@ -157,86 +157,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 7656280e-2fdf-4326-8596-26cbb5aca488
-    type: playbook
-    task:
-      id: 7656280e-2fdf-4326-8596-26cbb5aca488
-      version: -1
-      name: Pan-OS Commit Configuration
-      playbookName: Pan-OS Commit Configuration
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 0a280504-e097-4585-8fa4-5c723dc12184
-    type: playbook
-    task:
-      id: 0a280504-e097-4585-8fa4-5c723dc12184
-      version: -1
-      name: PAN-OS DAG Configuration
-      description: "This playbook utilizes the Dynamic Address Group capability of
-        PAN-OS\nDAG allows the analyst to create a rule once with the group as the
-        source/destination and add IPs dynamically without the need to commit the
-        configuration every time.\n\nThe playbook checks if the given tag already
-        exists, and if yes then it adds the IP to the tag.\n\nIf the tag does not
-        exist, it creates a new address group with the given tag and a matching rule
-        and will commit the configuration. \n"
-      playbookName: PAN-OS DAG Configuration
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      address_group_name:
-        simple: ${inputs.address_group}
-      auto_commit:
-        simple: "Yes"
-      ip_list:
-        simple: ${inputs.ip}
-      rule_name:
-        simple: ${inputs.rule_name}
-      tag_name:
-        simple: ${inputs.tag_name}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "7":
     id: "7"
-    taskid: 92c8a029-9cb2-4a6c-8047-21ca23e52180
+    taskid: ee5870e9-8336-4d9a-8847-2dedbad35253
     type: regular
     task:
-      id: 92c8a029-9cb2-4a6c-8047-21ca23e52180
+      id: ee5870e9-8336-4d9a-8847-2dedbad35253
       version: -1
       name: Get address group
       description: Get details for the specified address group
@@ -256,7 +182,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -264,10 +190,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 8bc6fdd5-0f8c-44cf-8854-edb3d1241b4a
+    taskid: 017b0904-682b-4900-8b58-1775848a0c29
     type: condition
     task:
-      id: 8bc6fdd5-0f8c-44cf-8854-edb3d1241b4a
+      id: 017b0904-682b-4900-8b58-1775848a0c29
       version: -1
       name: check if address group does not exist
       type: condition
@@ -293,7 +219,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1430
+          "y": 1595
         }
       }
     note: false
@@ -315,7 +241,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 3170
         }
       }
     note: false
@@ -336,7 +262,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "19"
     scriptarguments:
       all:
         simple: "yes"
@@ -349,7 +275,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2120
         }
       }
     note: false
@@ -379,7 +305,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2470
         }
       }
     note: false
@@ -425,7 +351,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2645
         }
       }
     note: false
@@ -433,10 +359,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: f080ffe3-4ef8-478d-8645-d21764612da5
+    taskid: 720614d8-bab4-41d5-883c-c97845dce912
     type: regular
     task:
-      id: f080ffe3-4ef8-478d-8645-d21764612da5
+      id: 720614d8-bab4-41d5-883c-c97845dce912
       version: -1
       name: Get Rules
       description: Returns a list of predefined Security Rules.
@@ -450,12 +376,13 @@ tasks:
     scriptarguments:
       pre_post:
         simple: pre-rulebase
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
@@ -492,7 +419,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1945
         }
       }
     note: false
@@ -522,7 +449,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2820
         }
       }
     note: false
@@ -559,7 +486,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 2995
         }
       }
     note: false
@@ -567,10 +494,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 445b61f4-0cb9-4aa2-88d6-f97925f10855
+    taskid: 9918be34-bd09-421c-8487-aa204f3410d2
     type: regular
     task:
-      id: 445b61f4-0cb9-4aa2-88d6-f97925f10855
+      id: 9918be34-bd09-421c-8487-aa204f3410d2
       version: -1
       name: delete 'to' rule
       description: Deletes a policy rule
@@ -598,12 +525,120 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "18":
+    id: "18"
+    taskid: ecd1cbdd-5a5b-484b-89d0-0e21ab7afaf9
+    type: playbook
+    task:
+      id: ecd1cbdd-5a5b-484b-89d0-0e21ab7afaf9
+      version: -1
+      name: Pan-OS Commit Configuration
+      playbookName: Pan-OS Commit Configuration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 2ec6ee7c-b7ae-441a-878d-43039c42a704
+    type: playbook
+    task:
+      id: 2ec6ee7c-b7ae-441a-878d-43039c42a704
+      version: -1
+      name: PAN-OS DAG Configuration
+      description: "This playbook utilizes the Dynamic Address Group capability of
+        PAN-OS\nDAG allows the analyst to create a rule once with the group as the
+        source/destination and add IPs dynamically without the need to commit the
+        configuration every time.\n\nThe playbook checks if the given tag already
+        exists, and if yes then it adds the IP to the tag.\n\nIf the tag does not
+        exist, it creates a new address group with the given tag and a matching rule
+        and will commit the configuration. \n"
+      playbookName: PAN-OS DAG Configuration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      address_group_name:
+        simple: ${inputs.address_group}
+      auto_commit:
+        simple: "Yes"
+      ip_list:
+        simple: ${inputs.ip}
+      rule_name:
+        simple: ${inputs.rule_name}
+      tag_name:
+        simple: ${inputs.tag_name}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 906474c3-a8c2-4ab1-85f1-3ba09b4f61be
+    type: regular
+    task:
+      id: 906474c3-a8c2-4ab1-85f1-3ba09b4f61be
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3010,
+        "height": 3185,
         "width": 380,
         "x": 50,
         "y": 50
