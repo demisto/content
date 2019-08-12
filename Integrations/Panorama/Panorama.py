@@ -150,6 +150,11 @@ def http_request(uri: str, method: str, headers: Dict = {},
                     'IP ' + str(ips) + ' already exist in the tag. All submitted IPs were not registered to the tag')
                 sys.exit(0)
 
+            # catch timed out log queries and return this as an entry.note
+            elif str(json_result['response']['msg']['line']).find('Query timed out') != -1:
+                demisto.results(str(json_result['response']['msg']['line']))
+                sys.exit(0)
+
         if '@code' in json_result['response']:
             return_error(
                 'Request Failed.\nStatus code: ' + str(json_result['response']['@code']) + '\nWith message: ' + str(
