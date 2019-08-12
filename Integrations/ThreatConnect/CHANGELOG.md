@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added new commands.
+Added 7 new commands.
   - ***tc-get-groups***
   - ***tc-add-group-security-label***
   - ***tc-add-group-tag***
