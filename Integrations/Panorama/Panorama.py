@@ -152,7 +152,7 @@ def http_request(uri: str, method: str, headers: Dict = {},
 
             # catch timed out log queries and return this as an entry.note
             elif str(json_result['response']['msg']['line']).find('Query timed out') != -1:
-                demisto.results(str(json_result['response']['msg']['line']))
+                demisto.results(str(json_result['response']['msg']['line']) + '. Rerun the query')
                 sys.exit(0)
 
         if '@code' in json_result['response']:
@@ -3454,36 +3454,78 @@ def prettify_logs(logs):
         pretty_log = {}
         if 'action' in log:
             pretty_log['Action'] = log['action']
-        if 'action_source' in log:
-            pretty_log['ActionSource'] = log['action_source']
         if 'app' in log:
             pretty_log['Application'] = log['app']
         if 'category' in log:
-            pretty_log['Category'] = log['category']
+            pretty_log['CategoryOrVerdict'] = log['category']
         if 'device_name' in log:
             pretty_log['DeviceName'] = log['device_name']
         if 'dst' in log:
-            pretty_log['Destination'] = log['dst']
+            pretty_log['DestinationAddress'] = log['dst']
+        if 'dstuser' in log:
+            pretty_log['DestinationUser'] = log['dstuser']
+        if 'dstloc' in log:
+            pretty_log['DestinationCountry'] = log['dstloc']
         if 'dport' in log:
             pretty_log['DestinationPort'] = log['dport']
+        if 'filedigest' in log:
+            pretty_log['FileDigest'] = log['filedigest']
+        if 'filename' in log:
+            pretty_log['FileName'] = log['filename']
+        if 'filetype' in log:
+            pretty_log['FileType'] = log['filetype']
         if 'from' in log:
             pretty_log['FromZone'] = log['from']
+        if 'misc' in log:
+            pretty_log['URLOrFilename'] = log['misc']
+        if 'natdst' in log:
+            pretty_log['NATDestinationIP'] = log['natdst']
+        if 'natdport' in log:
+            pretty_log['NATDestinationPort'] = log['natdport']
+        if 'natsrc' in log:
+            pretty_log['NATSourceIP'] = log['natsrc']
+        if 'natsport' in log:
+            pretty_log['NATSourcePort'] = log['natsport']
+        if 'pcap_id' in log:
+            pretty_log['PCAPid'] = log['pcap_id']
         if 'proto' in log:
-            pretty_log['Protocol'] = log['proto']
+            pretty_log['IPProtocol'] = log['proto']
+        if 'recipient' in log:
+            pretty_log['Recipient'] = log['recipient']
         if 'rule' in log:
             pretty_log['Rule'] = log['rule']
+        if 'rule_uuid' in log:
+            pretty_log['RuleID'] = log['rule_uuid']
         if 'receive_time' in log:
             pretty_log['ReceiveTime'] = log['receive_time']
-        if 'session_end_reason' in log:
-            pretty_log['SessionEndReason'] = log['session_end_reason']
+        if 'sender' in log:
+            pretty_log['Sender'] = log['sender']
+        if 'sessionid' in log:
+            pretty_log['SessionID'] = log['sessionid']
+        if 'serial' in log:
+            pretty_log['DeviceSN'] = log['serial']
+        if 'severity' in log:
+            pretty_log['Severity'] = log['severity']
         if 'src' in log:
-            pretty_log['Source'] = log['src']
+            pretty_log['SourceAddress'] = log['src']
+        if 'srcloc' in log:
+            pretty_log['SourceCountry'] = log['srcloc']
+        if 'srcuser' in log:
+            pretty_log['SourceUser'] = log['srcuser']
         if 'sport' in log:
             pretty_log['SourcePort'] = log['sport']
-        if 'start' in log:
-            pretty_log['StartTime'] = log['start']
+        if 'thr_category' in log:
+            pretty_log['ThreatCategory'] = log['thr_category']
+        if 'threatid' in log:
+            pretty_log['Name'] = log['threatid']
+        if 'tid' in log:
+            pretty_log['ID'] = log['tid']
         if 'to' in log:
             pretty_log['ToZone'] = log['to']
+        if 'time_generated' in log:
+            pretty_log['TimeGenerated'] = log['time_generated']
+        if 'url_category_list' in log:
+            pretty_log['URLCategoryList'] = log['url_category_list']
 
         pretty_logs_arr.append(pretty_log)
     return pretty_logs_arr
