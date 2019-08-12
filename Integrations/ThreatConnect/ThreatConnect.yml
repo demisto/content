@@ -1675,7 +1675,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The type of the attribute
+      description: The type of the attribute.
       isArray: false
       name: attribute_type
       required: true
@@ -1788,7 +1788,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The group ID.
+      description: The group ID. Get the group_id from get-groups command.
       isArray: false
       name: group_id
       required: true
@@ -1812,7 +1812,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name f the security label
+      description: The name of the security label. (e.g TLP:GREEN)
       isArray: false
       name: security_label_name
       required: true
@@ -1823,7 +1823,7 @@ script:
     name: tc-add-group-security-label
   - arguments:
     - default: false
-      description: The ID of the group
+      description: The ID of the group. Get the group_id from get-groups command.
       isArray: false
       name: group_id
       required: true
@@ -1891,7 +1891,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The indicator to associate
+      description: The indicator to associate. (e.g indicator_type=emailAddresses
+        indicator=a@a.co.il)
       isArray: false
       name: indicator
       required: true
@@ -1926,7 +1927,7 @@ script:
     name: tc-group-associate-indicator
     outputs:
     - contextPath: TC.Group.GroupID
-      description: The group ID
+      description: The group ID. Get the group_id from get-groups command.
       type: Number
     - contextPath: TC.Group.GroupType
       description: Group type.
