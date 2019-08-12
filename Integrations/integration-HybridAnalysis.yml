@@ -37,8 +37,6 @@ script:
     var apiKey;
     var integrationContext = getIntegrationContext();
     var licenseID = getLicenseID();
-    var Dbot = [1,2,3,0]; //  threat_level : (0=No Threat, 1=Suspicious, 2=Malicious, 3=Unknown)
-
     var HEADERS = {
         'User-Agent': ['Hybrid Analysis'],
         'accept': ['application/json'],
@@ -76,24 +74,78 @@ script:
         return {Type: entryTypes.error, ContentsFormat: formats.text, Contents: error};
     }
 
+
+    function fixContextOutputs(res) {
+         Object.keys(res).forEach(function(key) {
+                switch (key) {
+                    case 'environment_id':
+                        res.environmentId = res['environment_id'];
+                        break;
+                    case 'submit_name':
+                        res.submitname = res['submit_name'];
+                        break;
+                    case 'vx_family':
+                        res.vxfamily = res['vx_family'];
+                        break;
+                    case 'interesting':
+                        res.isinteresting = res['interesting'];
+                        break;
+                    case 'url_analysis':
+                        res.isurlanalysis = res['url_analysis'];
+                        break;
+                }
+            });
+        return res;
+    }
+
+     //  get threat level and calculate Dbot score by the next rule: 0=No Threat, 1=Suspicious, 2=Malicious, 3=Unknown
+    function threatLevelToDbotScore(threatLevel, maliciousThreatLevels) {
+        var dbotScore = 0;
+        if (maliciousThreatLevels.indexOf(threatLevel) !== -1){
+            dbotScore = 3;
+        }
+
+        else {
+            switch (threatLevel) {
+                case 0:
+                    dbotScore = 1;
+                    break;
+                case 1:
+                    dbotScore = 2;
+                    break;
+                case 2:
+                    dbotScore = 2;
+                    break;
+                case 3:
+                    dbotScore = 0;
+                    break;
+            }
+        }
+        return dbotScore;
+    }
+
+
     // return a function that maps object keys by mapper (or capitlize keys if key is not exists in mapper)
-    function mapObject(mapper, identifier) {
+    function mapObject(mapper, shouldAddMalicious, maliciousThreatLevels) {
         return function(obj) {
             var res = {};
             Object.keys(obj).forEach(function(key) {
                 // map key or capitalize if not exists
                 var newKey = mapper[key] || key;
                 res[newKey] = obj[key];
-                if (obj.threat_level && obj.threat_level > 1 && identifier=='context') { // only add 'malicious' to the context
+                if (maliciousThreatLevels && obj.threat_level && maliciousThreatLevels.indexOf(obj.threat_level) !== -1 && shouldAddMalicious) {
                     res.Malicious = {
                         Vendor: 'Hybrid Analysis',
                         Description: 'Score above ' + obj.threat_score
                     };
-                  }
+                }
             });
+
+            res = fixContextOutputs(res);
             return res;
         };
     }
+
 
     function createTableEntry(name, rawResponse, table, context, headers) {
         return {
@@ -137,8 +189,7 @@ script:
        return sendRequest('POST', '/api/v2/search/hash', 'hash='+hash);
 
     }
-    function scanToEntry(res, hash) {
-
+    function scanToEntry(res, hash, maliciousThreatLevels) {
         var response = res;
 
         // create table from response
@@ -155,10 +206,10 @@ script:
            environmentId: 'environment id',
            isurlanalysis: 'url analysis',
            analysis_start_time: 'analysis start time',
-           total_signatures: 'total signatures',
+           total_signatures: 'total signatures'
         };
 
-        var table = response.map(mapObject(tableMapper, 'table'));
+        var table = response.map(mapObject(tableMapper, false, maliciousThreatLevels));
         // create context from response
         var context = {};
 
@@ -168,18 +219,17 @@ script:
             md5: 'MD5'
         };
 
-        context[outputPaths.file] = response.map(mapObject(contextMapper, 'context'));
+        context[outputPaths.file] = response.map(mapObject(contextMapper, true, maliciousThreatLevels));
 
         // add DbotScore to context
         response.forEach(function(res) {
-          {
+            var dbotScore = threatLevelToDbotScore(res.threat_level, maliciousThreatLevels);
             context["DBotScore"] = {
                 "Indicator": hash,
                 "Type": "File",
                 "Vendor": "Hybrid Analysis",
-                "Score": Dbot[res.threat_level],
+                "Score": dbotScore
             };
-          }
         });
 
         return createTableEntry('Scan Results:', response, table, context);
@@ -229,7 +279,7 @@ script:
         return createTableEntry('Submission information:', result, result, context);
     }
 
-    function searchQuery(query) {
+    function searchQuery(query, minMaliciousScanners) {
         body = '';
             if (args.query) {
                 args.query.split(',').forEach(function(keyValue){
@@ -257,7 +307,7 @@ script:
            type_short: 'type short',
         };
 
-        var table = result.map(mapObject(tableMapper, 'table'));
+        var table = result.map(mapObject(tableMapper, false, null));
 
         // create context from search result
         var contextMapper = {
@@ -267,20 +317,34 @@ script:
         };
 
         var context = {
-            'HybridAnalysis.Search(val.JobID && val.JobID == obj.JobID || val.SHA256 && val.SHA256 == obj.SHA256)': result.map(mapObject(contextMapper, 'context'))
+            'HybridAnalysis.Search(val.JobID && val.JobID == obj.JobID || val.SHA256 && val.SHA256 == obj.SHA256)': result.map(mapObject(contextMapper, true, null))
         };
 
-        result.forEach(function(res) {
-            context["DBotScore"] = {
-                "Indicator": hash,
-                "Type": "File",
-                "Vendor": "Hybrid Analysis",
-                "Score": Dbot[res.threat_level],
-                };
+        //dbotScore pre-calculation
+        var unknownCounter = 0;
+        var maliciousCounter = 0;
+        result.forEach(function(key) {
+            if (key.verdict == null){
+                unknownCounter++;
+            }
+            else if (key.verdict == 'malicious'){
+                maliciousCounter++;
+            }
         });
+
+        // add DbotScore to context
+        var dbotScore = calculateDbotScore(unknownCounter, maliciousCounter, minMaliciousScanners, res.count);
+        context["DBotScore"] = {
+           "Indicator": res.search_terms[0].value,
+            "Type": "File",
+            "Vendor": "Hybrid Analysis",
+            "Score": dbotScore
+            };
 
         return createTableEntry('Search results:', result, table, context);
     }
+
+
     //Return the state of the submission
     function reportState(){
 
@@ -324,6 +388,8 @@ script:
             EntryContext: context
         };
     }
+
+
     function detonateFile(entryId, delay, timeout) {
         var environmentId;
         if (args.environmentID) {
@@ -363,59 +429,29 @@ script:
 
     }
 
+    //Dbot score calculation for a response without 'threat_level' field
+    function calculateDbotScore(unknownCounter, maliciousCounter,minMaliciousScanners, numOfScanners){
+        var dbotScore = 0;
 
-    function quick_scan_result_to_entry(response, indicator, threshold, headers) {
+        if (numOfScanners == 1 && maliciousCounter == 1) // if the only scanner says malicious
+                dbotScore = 3;
+        else if (maliciousCounter >= minMaliciousScanners)
+            dbotScore = 3;
+        else if (unknownCounter == numOfScanners)
+            dbotScore = 0;
+        else if (maliciousCounter == 0)
+            dbotScore = 1;
+        else if (maliciousCounter == 1)
+            dbotScore = 2;
 
-        var unknown_counter = 0 ;
-        var malicious_counter = 0 ;
-        //var num_elements = 0 ;
-        var Score = 0;
+        return dbotScore;
+    }
 
-        // create scanners entry
-        var scanners = [];
-        response.scanners.forEach(function(key) {
-            scanners.push(
-                {
-                    'Name': key.name,
-                    'Status': key.status,
-                    'Positives': key.positives
-                });
-            if (key.status == 'unknown' || key.status =='no-result' )
-                unknown_counter++;
-            else if (key.status == 'malicious')
-                malicious_counter++;
-       //     num_elements++;
-        });
 
-        //calculating DBot Score
-        if (unknown_counter == response.scanners.lenght)
-            Score = 0;
-        if (malicious_counter == 0)
-            Score = 1;
-        if (malicious_counter == 1)
-            Score = 2;
-        if (malicious_counter >= threshold)
-            Score = 3;
+    // create the context, different between file and url context
+    function createQuickScanContext(response, scanners, dbotScore, indicatorType, whitelist){
 
-        var Dbot_context = {
-            'Indicator': response.sha256,
-            'Vendor': "Hybrid Analysis",
-            'Score': Score,
-            }
-        var whitelist = {
-            'ID': response.whitelist[0].id,
-            'Value' : response.whitelist[0].value
-        }
-        var res = {};
-        if (Score == 3){
-            res.Malicious = {
-                Vendor: 'Hybrid Analysis',
-                Description: 'DBotScore is 3' // check this!
-            };
-        }
-
-        //create context
-        var file_context = {
+        var baseContext = {
             'ID': response.id,
             'SHA256': response.sha256,
             'Scanner' : scanners,
@@ -423,33 +459,87 @@ script:
             'Whitelist': whitelist
         };
 
-        if (indicator == 'File') {
+        var DbotContext = {
+        'Indicator': response.sha256,
+        'Vendor': "Hybrid Analysis",
+        'Score': dbotScore,
+        }
+
+        var res = {};
+        if (dbotScore == 3){
+            res.Malicious = {
+                Vendor: 'Hybrid Analysis',
+                Description: 'DBotScore is 3' // need a better description here
+            };
+        }
+
+        var context = {};
+
+        if (indicatorType == 'File') {
             res.EntryID = response.id;
             res.SHA256 = response.sha256;
-            Dbot_context.Type = 'File';
-            var context= {
-                'HybridAnalysis.File(val.id && val.id == obj.id)' : file_context,
-                'File(val.id && val.id == obj.id)' : res,
-                'DBotScore' : Dbot_context
+            DbotContext.Type = 'File';
+            context= {
+                'HybridAnalysis.File(val.SHA256 && val.SHA256 == obj.SHA256)' : baseContext,
+                'File(val.SHA256 && val.SHA256 == obj.SHA256)' : res,
+                'DBotScore' : DbotContext
             };
         }
 
         else {
-            Dbot_context.Type = 'URL';
-            var context= {
-                'HybridAnalysis.URL(val.id && val.id == obj.id)' : file_context,
-                'DBotScore' : Dbot_context
+            res.Data = getIntegrationContext()[response.id];
+            DbotContext.Type = 'URL';
+            context= {
+                'HybridAnalysis.URL(val.ID && val.ID == obj.ID)' : baseContext,
+                'URL(val.Data && val.Data == obj.Data)' : res,
+                'DBotScore' : DbotContext
             }
-            // if (Score == 3)
-            //     context.URL.Malicious = res;
         }
 
+        return context;
+    }
 
+
+    function createQuickScanHumanReadable (response, scannersContext, whitelist, headers){
         var md = '### Scan Results: \n ##### ID: ' + response.id + '\n' + '##### SHA256: ' + response.sha256 + '\n' + '##### finished: ' + response.finished + '\n' ;
-        var scanTable = '##### scanners:\n' + tableToMarkdown(null, scanners, headers, undefined, headerTransform=undefined, removeNull=true);
+        var scanTable = '##### scanners:\n' + tableToMarkdown(null, scannersContext, headers, undefined, headerTransform=undefined, removeNull=true);
         var whitelistTable = '##### whitelist:\n' + tableToMarkdown(null, whitelist, headers, undefined, headerTransform=undefined, removeNull=true);
 
-        hr = md + scanTable + '\n' + whitelistTable;
+        var hr = md + scanTable + '\n' + whitelistTable;
+        return hr;
+    }
+
+
+    //create table entry from response after 'quick-scan-url/file-results' command
+    function quickScanResultToEntry(response, indicatorType, minMaliciousScanners) {
+
+        var unknownCounter = 0 ;
+        var maliciousCounter = 0 ;
+
+        // create scanners entry context and calculate counters
+        var scannersContext = [];
+        response.scanners.forEach(function(key) {
+            scannersContext.push(
+                {
+                    'Name': key.name,
+                    'Status': key.status,
+                    'Positives': key.positives
+                });
+            if (key.status == 'unknown' || key.status =='no-result' )
+                unknownCounter++;
+            else if (key.status == 'malicious')
+                maliciousCounter++;
+        });
+
+        var whitelist = {
+            'ID': response.whitelist[0].id,
+            'Value' : response.whitelist[0].value
+        }
+
+        var dbotScore = calculateDbotScore(unknownCounter, maliciousCounter, minMaliciousScanners, response.scanners.lenght);
+
+        var context = createQuickScanContext (response, scannersContext, dbotScore, indicatorType, whitelist);
+        var hr = createQuickScanHumanReadable (response, scannersContext, whitelist);
 
         return {
             Type: entryTypes.note,
@@ -462,14 +552,16 @@ script:
     }
 
 
-    function quick_scan_to_entry(response, indicator, url) {
+    //create table entry from response after 'quick-scan-url/file' command
+    function quickScanToEntry(response, indicatorType, url) {
+        var id = response.id;
         var result = {
             'ID':  response.id,
             'SHA256': response.sha256,
             'Finished': response.finished
         };
 
-        if (indicator == 'File') {
+        if (indicatorType == 'File') {
             result['Name'] = url ;
             var context = {
                 'HybridAnalysis.File(val.id && val.id == obj.id)': result,
@@ -481,6 +573,11 @@ script:
         }
 
         else {
+            // adding { ID : url } to the context for future use
+            var add_to_context = {};
+            add_to_context[id] = url;
+            setIntegrationContext(add_to_context);
+
             result['Data'] = url ;
             var context = {
                 'HybridAnalysis.URL(val.id && val.id == obj.id)': result,
@@ -500,22 +597,22 @@ script:
 
 
     //Quick Scan commands
-    function quick_scan_url(scan_type, url, endpoint) {
+    function quickScanUrl(scan_type, url, endpoint) {
         var body = 'scan_type=' + scan_type + '&url=' + url;
         return sendRequest('POST', endpoint, body);
     }
 
 
-    function quick_scan_id(id) {
+    function quickScanId(id) {
         return sendRequest('GET', '/api/v2/quick-scan/' + id );
     }
 
 
-    function scan_states(headers) {
+    function scanStates(headers) {
         var result = sendRequest('GET', '/api/v2/quick-scan/state');
-        var scanners = [];
+        var scannersContext = [];
         result.forEach(function(key) {// create scanner entry
-            scanners.push(
+            scannersContext.push(
                 {
                     'Name': key.name,
                     'Available': key.available,
@@ -529,15 +626,15 @@ script:
             ContentsFormat: formats.json,
             Contents: result,
             ReadableContentsFormat: formats.markdown,
-            HumanReadable: '### Scanner:\n' + tableToMarkdown(null, scanners, ['Name', 'Available', 'Description'], undefined, headerTransform=undefined, removeNull=true),
-            EntryContext: {'HybridAnalysis.Scanner(val.name && val.name == obj.name) :' : scanners}
+            HumanReadable: '### Scanner:\n' + tableToMarkdown(null, scannersContext, ['Name', 'Available', 'Description'], undefined, headerTransform=undefined, removeNull=true),
+            EntryContext: {'HybridAnalysis.Scanner(val.name && val.name == obj.name) :' : scannersContext}
         };
 
     }
 
 
     //Sandbox Submission commands
-    function submit_url(url, environment_id, endpoint) {
+    function submitUrl(url, environment_id, endpoint) {
         var body= 'url=' + url + '&environment_id=' + environment_id;
         return sendRequest('POST', endpoint, body);
     }
@@ -552,37 +649,37 @@ script:
             return entry && entry.Contents;
         case 'hybrid-analysis-scan':
             var res = scan(args.file);
-            return scanToEntry(res, args.file);
+            return scanToEntry(res, args.file, args.malicious_threat_levels);
         case 'hybrid-analysis-submit-sample':
             var response = submitFile(args.entryId, args.environmentID);
             return submitFileMsg(response);
         case 'hybrid-analysis-search':
-            return searchQuery(args.query);
+            return searchQuery(args.query, args.min_malicious_scanners);
         case 'hybrid-analysis-detonate-file':
             return detonateFile(args.entryId, args.delay, args.timeout);
         case 'hybrid-analysis-get-report-status':
             return reportState();
         //Quick Scan commands
         case 'hybrid-analysis-quick-scan-file':
-            var res = quick_scan_url(args.scan_type, args.url, '/api/v2/quick-scan/url-to-file');
-            return quick_scan_to_entry(res, 'File', args.url);
+            var res = quickScanUrl(args.scan_type, args.url, '/api/v2/quick-scan/url-to-file');
+            return quickScanToEntry(res, 'File', args.url);
         case 'hybrid-analysis-quick-scan-url':
-            var res = quick_scan_url(args.scan_type, args.url, '/api/v2/quick-scan/url-for-analysis');
-            return quick_scan_to_entry(res, 'Url', args.url);
+            var res = quickScanUrl(args.scan_type, args.url, '/api/v2/quick-scan/url-for-analysis');
+            return quickScanToEntry(res, 'Url', args.url);
         case 'hybrid-analysis-quick-scan-file-results':
-            var res = quick_scan_id(args.ID);
-            return quick_scan_result_to_entry(res, 'File', args.threshold);
+            var res = quickScanId(args.ID);
+            return quickScanResultToEntry(res, 'File', args.min_malicious_scanners);
         case 'hybrid-analysis-quick-scan-url-results':
-            var res = quick_scan_id(args.ID);
-            return quick_scan_result_to_entry(res, 'Url', args.threshold);
+            var res = quickScanId(args.ID);
+            return quickScanResultToEntry(res, 'Url', args.min_malicious_scanners);
         case 'hybrid-analysis-list-scanners':
-            return scan_states();
+            return scanStates();
         //Sandbox Submission commands
         case 'hybrid-analysis-submit-url-to-file':
-            var response = submit_url(args.url, args.environmentID, '/api/v2/submit/url-to-file' );
+            var response = submitUrl(args.url, args.environmentID, '/api/v2/submit/url-to-file' );
             return submitFileMsg(response);
         case 'hybrid-analysis-submit-url-for-analysis':
-            var response = submit_url(args.url, args.environmentID, '/api/v2/submit/url-for-analysis');
+            var response = submitUrl(args.url, args.environmentID, '/api/v2/submit/url-for-analysis');
             return submitFileMsg(response);
     }
 
@@ -594,8 +691,12 @@ script:
     arguments:
     - name: file
       required: true
-      default: true
       description: File hash (MD5, SHA1 or SHA256)
+    - name: malicious_threat_levels
+      default: true
+      description: threat level values which will be considered as malicious
+      isArray: true
+      defaultValue: "2"
     outputs:
     - contextPath: File.SHA256
       description: SHA256 of the file
@@ -725,6 +826,12 @@ script:
       description: SSDeep
     - name: authentihash
       description: Authentication Hash
+    - name: min_malicious_scanners
+      default: true
+      description: Number of scanners returned Malicious to determine if the file
+        is malicious
+      isArray: true
+      defaultValue: "2"
     outputs:
     - contextPath: HybridAnalysis.Search.SHA256
       description: SHA256 of search result
@@ -816,9 +923,10 @@ script:
     - name: ID
       required: true
       description: ID of the File scanned
-    - name: threshold
+    - name: min_malicious_scanners
       default: true
-      description: Determines malicious
+      description: Number of scanners returned Malicious to determine if the file
+        is Malicious
       defaultValue: "2"
     outputs:
     - contextPath: HybridAnalysis.File.ID
@@ -956,10 +1064,11 @@ script:
     - name: ID
       required: true
       description: ID of the Url scanned
-    - name: threshold
+    - name: min_malicious_scanners
       default: true
+      description: Number of scanners returned Malicious to determine if the url is
+        malicious
       defaultValue: "2"
-      description: Sensitivity threshold for configuring which domains are suspicious versus trusted.
     outputs:
     - contextPath: HybridAnalysis.URL.ID
       description: Scan ID result
