@@ -628,7 +628,7 @@ script:
     }
 
     function createCommandAndWait() {
-        let result = createCommandRequest(args.session, args.name, args.timeout, args.object, args.commpress, args.wait,
+        let result = createCommandRequest(args.session, args.name, args.timeout, args.object, args.compress, args.wait,
             args['working-dir'], args['output-file'], args['value-data'], args['value-type'], args.overwrite, args.offset,
             args['get-count']);
         sleep(1000);
