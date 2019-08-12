@@ -56,14 +56,18 @@ def create_api_call():
 
 
 def set_proxy(admin_api):
-    proxy_settings = (os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy', '')).split(':')
-    host = proxy_settings[1][2:]  # remove http://
-    port = proxy_settings[2]
+    try:
+        proxy_settings = str(os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy', '')).split(':')
+        # host = proxy_settings[1][2:]  # remove http://
+        host = ':'.join(proxy_settings[0:2])
+        port = proxy_settings[2]
 
-    if USE_PROXY:
-        admin_api.set_proxy(host=host, port=port)
-    else:
-        admin_api.set_proxy(host=host, port=port, proxy_type=None)
+        if USE_PROXY:
+            admin_api.set_proxy(host=host, port=port)
+            return
+    # if no proxy settings have been set
+    except ValueError:
+        admin_api.set_proxy(proxy_type=None)
 
 
 def time_to_timestamp_milliseconds(time):
