@@ -28,11 +28,10 @@ HEADERS = {
     'Accept': 'application/json'
 }
 
-
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, params={}, data=None, ignore_status_code=False):
+def http_request(method, url_suffix, params={}, data=None):
     LOG(f'Attempting {method} request to {BASE_URL + url_suffix}\nWith params:{params}\nWith body:\n{data}')
     res = requests.request(
         method,
@@ -42,15 +41,17 @@ def http_request(method, url_suffix, params={}, data=None, ignore_status_code=Fa
         data=data,
         headers=HEADERS
     )
-    if not ignore_status_code and res.status_code not in {200}:
+    if res.status_code not in {200}:
         try:
             errors = ''
             for error in res.json().get('errors'):
                 errors = '\n' + errors + error.get('detail')
-            return_error(f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}] \n'
-                         f'Error details: [{errors}]')
+            raise ValueError(
+                f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}] \n'
+                f'Error details: [{errors}]'
+            )
         except Exception:
-            return_error(f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}')
+            raise ValueError(f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}]')
     return res.json()
 
 
@@ -69,7 +70,6 @@ def get_activities_request(created_after=None, user_emails=None, group_ids=None,
                            activities_ids=None, include_hidden=None, created_before=None, threats_ids=None,
                            activity_types=None, user_ids=None, created_from=None, created_between=None, agent_ids=None,
                            limit=None):
-
     endpoint_url = 'activities'
 
     params = {
@@ -170,7 +170,6 @@ def get_activities_command():
 
 def get_groups_request(group_type=None, group_ids=None, group_id=None, is_default=None, name=None, query=None,
                        rank=None, limit=None):
-
     endpoint_url = 'groups'
 
     params = {
@@ -236,7 +235,6 @@ def get_groups_command():
 
 
 def delete_group_request(group_id=None):
-
     endpoint_url = f'groups/{group_id}'
 
     response = http_request('DELETE', endpoint_url)
@@ -258,7 +256,6 @@ def delete_group():
 
 
 def move_agent_request(group_id, agents_id):
-
     endpoint_url = f'groups/{group_id}/move-agents'
 
     payload = {
@@ -311,7 +308,6 @@ def move_agent_to_group_command():
 
 
 def get_agent_processes_request(agents_ids=None):
-
     endpoint_url = 'agents/processes'
 
     params = {
@@ -428,8 +424,6 @@ def get_threats_command():
                     'FilePath': threat.get('filePath'),
                     'Username': threat.get('username')
 
-
-
                 })
 
         context['SentinelOne.Threat(val.ID && val.ID === obj.ID)'] = context_entries
@@ -447,7 +441,6 @@ def get_threats_command():
 def get_threats_request(content_hash=None, mitigation_status=None, created_before=None, created_after=None,
                         created_until=None, created_from=None, resolved=None, display_name=None, query=None,
                         threat_ids=None, limit=None, classifications=None):
-
     endpoint_url = 'threats'
 
     params = {
@@ -478,29 +471,29 @@ def get_hash_command():
     Get hash reputation and classification.
     """
     # Init main vars
-    headers = ['Hash', 'Rank', 'Classification Source', 'Classification']
+    headers = ['Hash', 'Rank', 'ClassificationSource', 'Classification']
     # Get arguments
     hash_ = demisto.args().get('hash')
-    type = get_hash_type(hash_)
-    if type == 'Unknown':
+    type_ = get_hash_type(hash_)
+    if type_ == 'Unknown':
         return_error('Please enter a valid hash format.')
     # Make request and get raw response
     hash_reputation = get_hash_reputation_request(hash_)
-    reputation = hash_reputation.get('data')
+    reputation = hash_reputation.get('data', {})
     contents = {
         'Rank': reputation.get('rank'),
         'Hash': hash_
     }
     try:
         hash_classification = get_hash_classification_request(hash_)
-        classification = hash_classification.get('data')
-        if classification:
-            contents['Classification Source'] = classification.get('classificationSource'),
-            contents['Classification'] = classification.get('classification')
-        else:
+        classification = hash_classification.get('data', {})
+        contents['ClassificationSource'] = classification.get('classificationSource')
+        contents['Classification'] = classification.get('classification')
+    except ValueError as e:
+        if '404' in str(e):
             contents['Classification'] = 'No classification was found'
-    except ValueError:
-        pass
+        else:
+            raise str(e)
 
     # Parse response into context & content entries
     title = 'Sentinel One - Hash Reputation and Classification \n' + \
@@ -521,7 +514,6 @@ def get_hash_command():
 
 
 def get_hash_reputation_request(hash_):
-
     endpoint_url = f'hashes/{hash_}/reputation'
 
     response = http_request('GET', endpoint_url)
@@ -529,10 +521,9 @@ def get_hash_reputation_request(hash_):
 
 
 def get_hash_classification_request(hash_):
-
     endpoint_url = f'hashes/{hash_}/classification'
 
-    response = http_request('GET', endpoint_url, ignore_status_code=True)
+    response = http_request('GET', endpoint_url)
     return response
 
 
@@ -796,7 +787,6 @@ def get_white_list_command():
 
 
 def get_white_list_request(item_ids, os_types, exclusion_type, limit):
-
     endpoint_url = 'exclusions'
 
     params = {
@@ -972,7 +962,6 @@ def get_sites_command():
 
 def get_sites_request(updated_at, query, site_type, features, state, suite, admin_only, account_id, site_name,
                       created_at, limit, site_ids):
-
     endpoint_url = 'sites'
 
     params = {
@@ -1460,7 +1449,6 @@ def disconnect_agent_from_network():
 
 
 def broadcast_message_request(message, is_active=None, group_id=None, agent_id=None, domain=None):
-
     filters = {}
     endpoint_url = 'agents/actions/broadcast'
 
@@ -1508,7 +1496,6 @@ def broadcast_message():
 
 
 def shutdown_agents_request(query, agent_id, group_id):
-
     endpoint_url = 'agents/actions/shutdown'
     filters = {}
 
@@ -1518,8 +1505,7 @@ def shutdown_agents_request(query, agent_id, group_id):
         filters['ids'] = agent_id
     if group_id:
         filters['groupIds'] = group_id
-    if not (agent_id or group_id):
-        return_error('Expecting at least one of the following arguments to filter by: agent_id, group_id.')
+
     payload = {
         'filter': filters
     }
@@ -1539,6 +1525,8 @@ def shutdown_agents():
 
     agent_id = argToList(demisto.args().get('agent_id'))
     group_id = argToList(demisto.args().get('group_id'))
+    if not (agent_id or group_id):
+        return_error('Expecting at least one of the following arguments to filter by: agent_id, group_id.')
 
     affected_agents = shutdown_agents_request(query, agent_id, group_id)
     agents = affected_agents.get('data', {}).get('affected', 0)
@@ -1549,7 +1537,6 @@ def shutdown_agents():
 
 
 def uninstall_agent_request(query=None, agent_id=None, group_id=None):
-
     endpoint_url = 'agents/actions/uninstall'
     filters = {}
 
@@ -1559,8 +1546,7 @@ def uninstall_agent_request(query=None, agent_id=None, group_id=None):
         filters['ids'] = agent_id
     if group_id:
         filters['groupIds'] = group_id
-    if not (agent_id or group_id):
-        return_error('Expecting at least one of the following arguments to filter by: agent_id, group_id.')
+
     payload = {
         'filter': filters
     }
@@ -1580,6 +1566,8 @@ def uninstall_agent():
 
     agent_id = argToList(demisto.args().get('agent_id'))
     group_id = argToList(demisto.args().get('group_id'))
+    if not (agent_id or group_id):
+        return_error('Expecting at least one of the following arguments to filter by: agent_id, group_id.')
 
     affected_agents = shutdown_agents_request(query, agent_id, group_id)
     agents = affected_agents.get('data', {}).get('affected', 0)
@@ -1592,7 +1580,6 @@ def uninstall_agent():
 # Event Commands
 
 def create_query_request(query, from_date, to_date):
-
     endpoint_url = 'dv/init-query'
     payload = {
         'query': query,
@@ -1608,7 +1595,6 @@ def create_query_request(query, from_date, to_date):
 
 
 def create_query():
-
     query = demisto.args().get('query')
     from_date = demisto.args().get('from_date')
     to_date = demisto.args().get('to_date')
@@ -1629,7 +1615,6 @@ def create_query():
 
 
 def get_events_request(query_id=None, limit=None):
-
     endpoint_url = 'dv/events'
 
     params = {
@@ -1853,4 +1838,4 @@ try:
 except Exception as e:
     LOG(str(e))
     LOG.print_log()
-    raise
+    return_error(e)
