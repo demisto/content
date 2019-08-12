@@ -3,9 +3,8 @@ from CommonServerPython import *
 value = demisto.args()["value"]
 
 if isinstance(value, list):
-    result = value
     try:
-        result = sum(result)
+        result = sum(value)
     except TypeError:
         return_error('This transformer applies only to numbers.')
 else:
