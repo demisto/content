@@ -2,7 +2,6 @@ category: Network Security
 commonfields:
   id: Panorama
   version: -1
-fromversion: 3.0.0
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
   name: server
@@ -2319,7 +2318,7 @@ script:
         string followed by a 64-bit numerical identifier
       type: String
     - contextPath: Panorama.Monitor.ID
-      description: fix meeeeeeeeeeeeee
+      description: Palo Alto Networks ID for the threat.
       type: String
     - contextPath: Panorama.Monitor.ToZone
       description: Zone the session was destined to.
@@ -2338,3 +2337,4 @@ script:
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
+fromversion: 3.0.0
