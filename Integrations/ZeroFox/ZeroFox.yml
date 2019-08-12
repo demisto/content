@@ -28,47 +28,6 @@ script:
   commands:
   - arguments:
     - default: false
-      description: 'This is a list argument, please provide comma separated list (example:
-        "1,2,3"). This item is mandatory so it must be provided in order to use the
-        command.'
-      isArray: true
-      name: item_ids
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: Get only active items, acts as boolean
-      isArray: false
-      name: is_active
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
-      description: limit number of returned results, to avoid flooding context
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    deprecated: false
-    description: Get items from service.
-    execution: false
-    name: example-get-items
-    outputs:
-    - contextPath: Example.Item.ID
-      description: Item ID
-      type: number
-    - contextPath: Example.Item.Name
-      description: Item name
-      type: string
-    - contextPath: Example.Item.CreatedDate
-      description: Item creation date
-      type: date
-  - arguments:
-    - default: false
       description: ZeroFox alert ID
       isArray: false
       name: alert_id
@@ -79,8 +38,85 @@ script:
     execution: false
     name: zerofox-get-alert
     outputs:
-    - contextPath: ZeroFox.Alert
-      description: Alert Object
+    - contextPath: ZeroFox.Alert.AlertType
+      type: String
+    - contextPath: ZeroFox.Alert.OffendingContentURL
+      type: String
+    - contextPath: ZeroFox.Alert.AssetTerm.ID
+      type: Number
+    - contextPath: ZeroFox.Alert.AssetTerm.Name
+      type: String
+    - contextPath: ZeroFox.Alert.AssetTerm.Deleted
+      type: Boolean
+    - contextPath: ZeroFox.Alert.Assignee
+      type: String
+    - contextPath: ZeroFox.Alert.Entity.ID
+      type: Number
+    - contextPath: ZeroFox.Alert.Entity.Name
+      type: String
+    - contextPath: ZeroFox.Alert.Entity.Image
+      type: String
+    - contextPath: ZeroFox.Alert.EntityTerm.ID
+      type: Number
+    - contextPath: ZeroFox.Alert.EntityTerm.Name
+      type: String
+    - contextPath: ZeroFox.Alert.EntityTerm.Deleted
+      type: Boolean
+    - contextPath: ZeroFox.Alert.ContentCreatedAt
+      type: String
+    - contextPath: ZeroFox.Alert.ID
+      type: Number
+    - contextPath: ZeroFox.Alert.ProtectedAccount
+      type: Unknown
+    - contextPath: ZeroFox.Alert.Severity
+      type: Number
+    - contextPath: ZeroFox.Alert.Perpetrator.Name
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.URL
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.Timestamp
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.Type
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.ID
+      type: Number
+    - contextPath: ZeroFox.Alert.Perpetrator.Network
+      type: String
+    - contextPath: ZeroFox.Alert.RuleGroupID
+      type: Unknown
+    - contextPath: ZeroFox.Alert.Asset.ID
+      type: Number
+    - contextPath: ZeroFox.Alert.Asset.Name
+      type: String
+    - contextPath: ZeroFox.Alert.Asset.Image
+      type: String
+    - contextPath: ZeroFox.Alert.Status
+      type: String
+    - contextPath: ZeroFox.Alert.Timestamp
+      type: String
+    - contextPath: ZeroFox.Alert.RuleName
+      type: String
+    - contextPath: ZeroFox.Alert.LastModified
+      type: String
+    - contextPath: ZeroFox.Alert.ProtectedLocations
+      type: Unknown
+    - contextPath: ZeroFox.Alert.DarkwebTerm
+      type: Unknown
+    - contextPath: ZeroFox.Alert.Reviewed
+      type: Boolean
+    - contextPath: ZeroFox.Alert.Escalated
+      type: Boolean
+    - contextPath: ZeroFox.Alert.Network
+      type: String
+    - contextPath: ZeroFox.Alert.ProtectedSocialObject
+      type: String
+    - contextPath: ZeroFox.Alert.Notes
+      type: String
+    - contextPath: ZeroFox.Alert.RuleID
+      type: Number
+    - contextPath: ZeroFox.Alert.EntityAccount
+      type: Unknown
+    - contextPath: ZeroFox.Alert.Tags
       type: Unknown
   - arguments:
     - default: false
@@ -199,8 +235,9 @@ script:
       name: last_modified
       required: false
       secret: false
-    - default: false
-      description: Maximum number of alerts to retrieve (0 - 100)
+    - default: true
+      defaultValue: '10'
+      description: Maximum number of alerts to retrieve (0 - 100).
       isArray: false
       name: limit
       required: false
@@ -339,8 +376,84 @@ script:
     execution: false
     name: zerofox-list-alerts
     outputs:
-    - type: Unknown
-    - type: Unknown
+    - contextPath: ZeroFox.Alert.AlertType
+      type: String
+    - contextPath: ZeroFox.Alert.OffendingContentURL
+      type: String
+    - contextPath: ZeroFox.Alert.AssetTerm.ID
+      type: Number
+    - contextPath: ZeroFox.Alert.AssetTerm.Name
+      type: String
+    - contextPath: ZeroFox.Alert.AssetTerm.Deleted
+      type: Boolean
+    - contextPath: ZeroFox.Alert.Assignee
+      type: String
+    - contextPath: ZeroFox.Alert.Entity.ID
+      type: Number
+    - contextPath: ZeroFox.Alert.Entity.Name
+      type: String
+    - contextPath: ZeroFox.Alert.Entity.Image
+      type: String
+    - contextPath: ZeroFox.Alert.EntityTerm.ID
+      type: Number
+    - contextPath: ZeroFox.Alert.EntityTerm.Name
+      type: String
+    - contextPath: ZeroFox.Alert.EntityTerm.Deleted
+      type: Boolean
+    - contextPath: ZeroFox.Alert.ContentCreatedAt
+      type: String
+    - contextPath: ZeroFox.Alert.ID
+      type: Number
+    - contextPath: ZeroFox.Alert.ProtectedAccount
+      type: Unknown
+    - contextPath: ZeroFox.Alert.Severity
+      type: Number
+    - contextPath: ZeroFox.Alert.Perpetrator.Name
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.URL
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.Timestamp
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.Type
+      type: String
+    - contextPath: ZeroFox.Alert.Perpetrator.ID
+      type: Number
+    - contextPath: ZeroFox.Alert.Perpetrator.Network
+      type: String
+    - contextPath: ZeroFox.Alert.RuleGroupID
+      type: Unknown
+    - contextPath: ZeroFox.Alert.Asset.ID
+      type: Number
+    - contextPath: ZeroFox.Alert.Asset.Name
+      type: String
+    - contextPath: ZeroFox.Alert.Asset.Image
+      type: String
+    - contextPath: ZeroFox.Alert.Status
+      type: String
+    - contextPath: ZeroFox.Alert.Timestamp
+      type: String
+    - contextPath: ZeroFox.Alert.RuleName
+      type: String
+    - contextPath: ZeroFox.Alert.LastModified
+      type: String
+    - contextPath: ZeroFox.Alert.ProtectedLocations
+      type: Unknown
+    - contextPath: ZeroFox.Alert.DarkwebTerm
+      type: Unknown
+    - contextPath: ZeroFox.Alert.Reviewed
+      type: Boolean
+    - contextPath: ZeroFox.Alert.Escalated
+      type: Boolean
+    - contextPath: ZeroFox.Alert.Network
+      type: String
+    - contextPath: ZeroFox.Alert.ProtectedSocialObject
+      type: String
+    - contextPath: ZeroFox.Alert.Notes
+      type: String
+    - contextPath: ZeroFox.Alert.RuleID
+      type: Number
+    - contextPath: ZeroFox.Alert.EntityAccount
+      type: Unknown
   - arguments:
     - default: false
       description: Name of the entity (may be non-unique)
@@ -386,6 +499,26 @@ script:
     - contextPath: ZeroFox.Entity
       description: Entity details
       type: Unknown
+  - arguments:
+    - default: false
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Cancels takedown of a specific alert
+    execution: false
+    name: zerofox-alert-cancel-takedown
+  - arguments:
+    - default: false
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Opens an alert'
+    execution: false
+    name: zerofox-open-alert
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false
   runonce: false
