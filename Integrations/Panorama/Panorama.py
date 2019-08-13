@@ -3533,7 +3533,7 @@ def prettify_log(log):
 
 
 def prettify_logs(logs):
-    if not isinstance(logs, list):  # handle case of only one edl in the instance
+    if not isinstance(logs, list):  # handle case of only one log that matched the query
         return prettify_log(logs)
     pretty_logs_arr = []
     for log in logs:
@@ -3596,7 +3596,7 @@ def panorama_get_logs_command():
                 'Contents': result,
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': tableToMarkdown('Query ' + log_type + ' Logs:', query_logs_output['Logs'],
-                                                 ['TimeGenerated', 'Source', 'Destination', 'Application',
+                                                 ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application',
                                                   'Action', 'Rule', 'URLOrFilename'], removeNull=True),
                 'IgnoreAutoExtract': ignore_auto_extract,
                 'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
