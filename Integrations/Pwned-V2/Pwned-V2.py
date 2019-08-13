@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 
 import re
@@ -10,7 +11,6 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-
 
 API_KEY = demisto.params().get('api_key')
 USE_SSL = not demisto.params().get('insecure', False)
@@ -48,36 +48,31 @@ def http_request(method, url_suffix, params=None, data=None):
         headers=HEADERS
     )
 
-    if res.status_code in {404}:
-        return None
-    elif res.status_code < 200 or 299 < res.status_code:
-        demisto.error('Error ' + str(res.status_code) + '. ' + res.text)
-        return None
-    elif res.status_code not in {200}:
+    if not res.status_code == 200:
         return_error('Error in API call to Example Integration [%d] - %s' % (res.status_code, res.reason))
 
     return res.json()
 
 
-def readable_description(desc):
+def html_description_to_human_readable(breach_description):
     """
 
     Args:
-        desc: Description of breach from hibp response
+        breach_description: Description of breach from hibp response
 
     Returns: Description string that altered HTML urls to clickable urls
     for better readability in war-room
 
     """
-    pattern = re.compile('<a href="(.+?)"(.+?)>(.+?)</a>')
-    patterns_found = pattern.findall(desc)
+    html_link_pattern = re.compile('<a href="(.+?)"(.+?)>(.+?)</a>')
+    patterns_found = html_link_pattern.findall(breach_description)
     for link in patterns_found:
         link_from_desc = '[' + link[2] + ']' + '(' + link[0] + ')'
-        desc = re.sub(pattern, link_from_desc, desc, count=1)
-    return desc
+        breach_description = re.sub(html_link_pattern, link_from_desc, breach_description, count=1)
+    return breach_description
 
 
-def data_to_md(query_type, query_arg, hibp_res):
+def data_to_markdown(query_type, query_arg, hibp_res):
     md = "### Have I Been Pwned query for " + query_type.lower() + ": *" + query_arg + "*\n"
 
     if hibp_res and len(hibp_res) > 0:
@@ -85,7 +80,7 @@ def data_to_md(query_type, query_arg, hibp_res):
             md += "#### " + breach['Title'] + " (" + breach['Domain'] + "): " + str(breach['PwnCount']) + \
                   " records breached\n"
             md += "Date: **" + breach['BreachDate'] + "**\n"
-            md += readable_description(breach['Description']) + "\n"
+            md += html_description_to_human_readable(breach['Description']) + "\n"
             md += "Data breached: **" + ','.join(breach['DataClasses']) + "**\n"
     else:
         md += 'No records found'
@@ -93,74 +88,68 @@ def data_to_md(query_type, query_arg, hibp_res):
     return md
 
 
-def email_to_ec(email, hibp_res):
+def create_dbot_score_dictionary(indicator_value, indicator_type, dbot_score):
+    return {
+        'Indicator': indicator_value,
+        'Type': indicator_type,
+        'Vendor': 'Pwned',
+        'Score': dbot_score
+    }
+
+
+def create_context_entry(context_type, context_main_value, comp_sites, malicious_score):
+    context_dict = dict()  # dict
+
+    if context_type == 'email':
+        context_dict['Address'] = context_main_value
+    else:
+        context_dict['Name'] = context_main_value
+
+    context_dict['Compromised'] = \
+        {
+            'Vendor': 'Pwned',
+            'Reporters': ', '.join(comp_sites)
+        }
+
+    if malicious_score == 3:
+        context_dict['Malicious'] = add_malicious_to_context(context_type)
+
+    return context_dict
+
+
+def add_malicious_to_context(malicious_type):
+    return {
+        'Vendor': 'Pwned',
+        'Description': 'The ' + malicious_type + ' has been compromised'
+    }
+
+
+def email_to_entry_context(email, hibp_res):
     comp_sites = sorted([item['Title'] for item in hibp_res])
     comp_email = dict()  # type: dict
     dbot_score = 0
 
     if len(comp_sites) > 0:
         dbot_score = DEFAULT_DBOT_SCORE_EMAIL
-        email_context = \
-            {
-                'Address': email,
-                'Compromised': {
-                    'Vendor': 'Pwned',
-                    'Reporters': ', '.join(comp_sites)
-                }
-            }
-
-        if DEFAULT_DBOT_SCORE_EMAIL == 3:
-            email_context['Malicious'] = \
-                {
-                    'Vendor': 'Pwned',
-                    'Description': 'The email has been compromised'
-            }
-
+        email_context = create_context_entry('email', email, comp_sites, DEFAULT_DBOT_SCORE_EMAIL)
         comp_email[outputPaths['email']] = email_context
 
-    comp_email['DBotScore'] = \
-        {
-            'Indicator': email,
-            'Type': 'email',
-            'Vendor': 'Pwned',
-            'Score': dbot_score
-    }
+    comp_email['DBotScore'] = create_dbot_score_dictionary(email, 'email', dbot_score)
 
     return comp_email
 
 
-def domain_to_ec(domain, hibp_res):
+def domain_to_entry_context(domain, hibp_res):
     comp_sites = sorted([item['Title'] for item in hibp_res])
     comp_domain = dict()  # type: dict
     dbot_score = 0
 
     if len(comp_sites) > 0:
         dbot_score = DEFAULT_DBOT_SCORE_DOMAIN
-        domain_context = \
-            {
-                'Name': domain,
-                'Compromised': {
-                    'Vendor': 'Pwned',
-                    'Reporters': ', '.join(comp_sites)
-                }
-            }
-
-        if DEFAULT_DBOT_SCORE_DOMAIN == 3:
-            domain_context['Malicious'] = \
-                {
-                    'Vendor': 'Pwned',
-                    'Description': 'The domain has been compromised'
-            }
-
+        domain_context = create_context_entry('domain', domain, comp_sites, DEFAULT_DBOT_SCORE_DOMAIN)
         comp_domain[outputPaths['domain']] = domain_context
 
-    comp_domain['DBotScore'] = \
-        {
-            'Indicator': domain,
-            'Type': 'domain',
-            'Vendor': 'Pwned',
-            'Score': dbot_score
-    }
+    comp_domain['DBotScore'] = create_dbot_score_dictionary(domain, 'domain', dbot_score)
 
     return comp_domain
 
@@ -174,16 +163,28 @@ def test_module():
 
 
 def pwned_email_command():
-    hibp_res = http_request('GET', PWNED_EMAIL_SUFFIX + demisto.args().get('email') + TRUNCATE_RESPONSE_SUFFIX)
-    md = data_to_md('Email', demisto.args().get('email'), hibp_res)
-    ec = email_to_ec(demisto.args().get('email'), hibp_res or [])
+    email = demisto.args().get('email')
+    suffix = PWNED_EMAIL_SUFFIX + email + TRUNCATE_RESPONSE_SUFFIX
+    pwned_email(email, suffix)
+
+
+def pwned_email(email, suffix):
+    hibp_res = http_request('GET', suffix)
+    md = data_to_markdown('Email', email, hibp_res)
+    ec = email_to_entry_context(email, hibp_res or [])
     return_outputs(md, ec, hibp_res)
 
 
 def pwned_domain_command():
-    hibp_res = http_request('GET', PWNED_DOMAIN_SUFFIX + demisto.args().get('domain'))
-    md = data_to_md('Domain', demisto.args().get('domain'), hibp_res)
-    ec = domain_to_ec(demisto.args().get('domain'), hibp_res or [])
+    domain = demisto.args().get('domain')
+    suffix = PWNED_DOMAIN_SUFFIX + domain
+    pwned_domain(domain, suffix)
+
+
+def pwned_domain(domain, suffix):
+    hibp_res = http_request('GET', suffix)
+    md = data_to_markdown('Domain', domain, hibp_res)
+    ec = domain_to_entry_context(domain, hibp_res or [])
     return_outputs(md, ec, hibp_res)
 
 

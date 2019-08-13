@@ -78,9 +78,6 @@ script:
     - contextPath: Email.DBotScore.Score
       description: The actual score.
       type: Number
-    - contextPath: Persons(val.Compromised)
-      description: Compromised persons.
-      type: String
   - arguments:
     - default: true
       description: Domain to check.
@@ -121,9 +118,6 @@ script:
     - contextPath: Domain.DBotScore.Score
       description: The actual score.
       type: Number
-    - contextPath: Domain(val.Compromised)
-      description: Compromised domains.
-      type: String
   - arguments:
     - default: true
       description: Email to check.
@@ -167,9 +161,6 @@ script:
     - contextPath: Email.DBotScore.Score
       description: The actual score.
       type: Number
-    - contextPath: Persons(val.Compromised)
-      description: Compromised Persons.
-      type: String
   - arguments:
     - default: true
       description: Domain to check.
@@ -213,9 +204,6 @@ script:
     - contextPath: Domain.DBotScore.Score
       description: The actual score.
       type: Number
-    - contextPath: Domain(val.Compromised)
-      description: Compromised domains.
-      type: String
   isfetch: false
   runonce: false
   script: '-'
