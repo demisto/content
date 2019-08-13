@@ -484,13 +484,14 @@ def get_hash_command():
         'Rank': reputation.get('rank'),
         'Hash': hash_
     }
+    # try get classification - might return 404 (classification is not mandatory)
     try:
         hash_classification = get_hash_classification_request(hash_)
         classification = hash_classification.get('data', {})
         contents['ClassificationSource'] = classification.get('classificationSource')
         contents['Classification'] = classification.get('classification')
     except ValueError as e:
-        if '404' in str(e):
+        if '404' in str(e):  # handling case classification not found for the specific hash
             contents['Classification'] = 'No classification was found.'
         else:
             raise e

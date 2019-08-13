@@ -561,10 +561,10 @@ tasks:
       version: -1
       name: Get agent activities
       description: Returns a list of activities.
-      script: SentinelOne Beta|||sentinelone-get-activities
+      script: "|||sentinelone-get-activities"
       type: regular
       iscommand: true
-      brand: SentinelOne Beta
+      brand: ""
     nexttasks:
       '#none#':
       - "21"
