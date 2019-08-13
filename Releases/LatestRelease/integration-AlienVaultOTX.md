@@ -1,1 +1,0 @@
-- bug fix hash file type in human readable.
