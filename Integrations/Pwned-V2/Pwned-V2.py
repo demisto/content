@@ -105,7 +105,7 @@ def data_to_markdown(query_type, query_arg, hibp_res, hibp_psate_res):
                     'Id': paste_breach['Id'],
                     'Date': '',
                     'Amount of emails in paste': str(paste_breach['EmailCount'])
-            }
+                }
 
             if paste_breach['Date']:
                 paste_entry['Date'] = paste_breach['Date'].split('T')[0]
