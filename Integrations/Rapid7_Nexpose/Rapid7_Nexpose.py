@@ -16,12 +16,6 @@ HOUR_IN_MINUTES = 60
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-if not demisto.params().get('proxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
-
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 VERIFY_SSL = not demisto.params().get('unsecure', False)
@@ -1309,6 +1303,7 @@ def set_scan_status(scan_id, scan_status):
 
 def main():
     try:
+        handle_proxy()
         if demisto.command() == 'test-module':
             get_assets(limit=1)
             demisto.results('ok')

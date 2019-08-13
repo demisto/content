@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import requests
 import json
-import os
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -13,22 +12,17 @@ BASE_URL = demisto.getParam('url')
 USERNAME = demisto.getParam('credentials')['identifier']
 PASSWORD = demisto.getParam('credentials')['password']
 AUTH = (USERNAME, PASSWORD)
-USE_SSL = True if demisto.params().get('insecure') else False
+USE_SSL = not demisto.params().get('insecure', False)
 IS_USING_PROXY = True if demisto.params().get('proxy') else False
 LAST_TIME_KEY = 'time_last'
-
-if not IS_USING_PROXY:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 
 def http_request(method, url):
     response = requests.request(
         method,
         url,
-        auth=AUTH
+        auth=AUTH,
+        verify=USE_SSL
     )
 
     if response.status_code != 200:
@@ -256,6 +250,7 @@ LOG('command is %s' % (demisto.command(), ))
 try:
     command = demisto.command()
     args = demisto.args()
+    handle_proxy()
 
     if command == 'test-module':
         result = http_dns_get('test.com')

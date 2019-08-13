@@ -305,7 +305,7 @@ def get_issue_fields(issue_creating=False, **issue_args):
     if issue_args.get('summary'):
         issue['fields']['summary'] = issue_args['summary']
 
-    if not issue['fields'].get('project'):
+    if not issue['fields'].get('project') and (issue_args.get('projectKey') or issue_args.get('projectName')):
         issue['fields']['project'] = {}
 
     if issue_args.get('projectKey'):
@@ -519,7 +519,8 @@ def get_file(entry_id):
     return file_name, file_bytes
 
 
-def add_link_command(issue_id, title, url, summary=None, global_id=None, relationship=None):
+def add_link_command(issue_id, title, url, summary=None, global_id=None, relationship=None,
+                     application_type=None, application_name=None):
     req_url = f'rest/api/latest/issue/{issue_id}/remotelink'
     link = {
         "object": {
@@ -534,6 +535,12 @@ def add_link_command(issue_id, title, url, summary=None, global_id=None, relatio
         link['globalId'] = global_id
     if relationship:
         link['relationship'] = relationship
+    if application_type or application_name:
+        link['application'] = {}
+    if application_type:
+        link['application']['type'] = application_type
+    if application_type:
+        link['application']['name'] = application_name
 
     result = jira_req('POST', req_url, json.dumps(link))
     data = result.json()
@@ -573,7 +580,7 @@ def test_module():
         demisto.results('ok')
 
 
-def fetch_incidents(query, id_offset=None, fetch_by_created=None, **_):
+def fetch_incidents(query, id_offset=0, fetch_by_created=None, **_):
     last_run = demisto.getLastRun()
     demisto.debug(f"last_run: {last_run}" if last_run else 'last_run is empty')
     id_offset = last_run.get("idOffset") if (last_run and last_run.get("idOffset")) else id_offset
@@ -584,8 +591,13 @@ def fetch_incidents(query, id_offset=None, fetch_by_created=None, **_):
     if fetch_by_created:
         query = f'{query} AND created>-1m'
     res = run_query(query, '', max_results)
+    curr_id = id_offset
     for ticket in res.get('issues'):
-        id_offset = max(id_offset, ticket.get("id"))
+        ticket_id = int(ticket.get("id"))
+        if ticket_id == curr_id:
+            continue
+
+        id_offset = max(int(id_offset), ticket_id)
         incidents.append(create_incident_from_ticket(ticket))
 
     demisto.setLastRun({"idOffset": id_offset})
