@@ -1791,6 +1791,8 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "Anomali ThreatStream v2": "Credentials are invalid (issue 18561)",
+        "Anomali ThreatStream": "Credentials are invalid (issue 18561)",
         "SCADAfence CNM": "Once in a while SCADAfence CNM integration fails to create an instance, throwing a '502 bad gateway' error (issue #18376)",
         "Cortex XDR - IR": "Instance seems to have problems - returning 500 internal server error (issue #18377)",
         "ArcSight ESM v2": "License expired (issue #18328)",
