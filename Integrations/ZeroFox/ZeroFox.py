@@ -30,6 +30,16 @@ HEADERS = None
 ''' HELPER FUNCTIONS '''
 
 
+# transforms an alert to incident convention
+def alert_to_incident(alert):
+    incident = {
+        'rawJSON': json.dumps(alert),
+        'name': 'ZeroFox Alert' + alert.get('id'),  # not sure if it's the right name
+        'occurred': alert.get('timestamp')  # not sure if it's the right field
+    }
+    return incident
+
+
 # return context convention of alert without printing to war room
 def get_alert_context_no_war_room(alert_id):
     alert = get_alert(alert_id).get('alert')
@@ -371,6 +381,34 @@ def get_entities_command():
     pass
 
 
+def fetch_incidents():
+    last_run = demisto.getLastRun()
+
+    if last_run and last_run['last_fetched_event_timestamp']:
+        last_update_time = int(last_run['last_fetched_event_timestamp'])
+    else:
+        pass
+
+    max_update_time = last_update_time
+
+    incidents = []
+    limit = demisto.params().get('fetch_limit')
+    alerts = list_alerts({'sort_direction': 'desc', 'limit': limit}).get('alerts')
+    if not alerts:
+        return
+    for alert in alerts:
+        alert_time = alert.get('timestamp')
+        if alert_time >= last_update_time:
+            incident = alert_to_incident(alert)
+            incidents.append(incident)
+            if alert_time > max_update_time:
+                max_update_time = alert_time
+        else:
+            break
+
+    demisto.setLastRun({'last_fetched_event_timestamp': max_update_time})  # check whether max_update_time is a string?
+    demisto.incidents(incidents)
+
 def test_module():
     """
     Performs basic get request to get item samples
@@ -412,10 +450,18 @@ def main():
             open_alert_command()
         elif demisto.command() == 'zerofox-alert-cancel-takedown':
             alert_cancel_takedown_command()
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
 
     # Log exceptions
     except Exception as e:
-        return_error(str(e))
+        error_msg = str(e)
+        if demisto.command() == 'fetch-incidents':
+            LOG(error_msg)
+            LOG.print_log()
+            raise
+        else:
+            return_error(error_msg)
 
 
 # python2 uses __builtin__ python3 uses builtins
