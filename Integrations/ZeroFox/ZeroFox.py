@@ -25,7 +25,9 @@ USE_SSL = None
 BASE_URL = None
 # Headers to be sent in requests
 HEADERS = None
-
+# default fetch time
+FETCH_TIME_DEFAULT = '3 days'
+FETCH_TIME = None
 
 ''' HELPER FUNCTIONS '''
 
@@ -34,7 +36,7 @@ HEADERS = None
 def alert_to_incident(alert):
     incident = {
         'rawJSON': json.dumps(alert),
-        'name': 'ZeroFox Alert' + alert.get('id'),  # not sure if it's the right name
+        'name': 'ZeroFox Alert ' + str(alert.get('id')),  # not sure if it's the right name
         'occurred': alert.get('timestamp')  # not sure if it's the right field
     }
     return incident
@@ -62,6 +64,8 @@ def initialize_preset():
     PASSWORD = demisto.params().get('credentials').get('password')
     USE_SSL = not demisto.params().get('insecure', False)
     BASE_URL = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
+    global FETCH_TIME
+    FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
     # Remove proxy if not set to true in params
     handle_proxy()
 
@@ -111,6 +115,34 @@ def get_alert_contents(alert):
     }
 
 
+def get_entity_contents_war_room(contents):
+    return {
+        'Name': contents.get('Name'),
+        'Type': contents.get('Type'),
+        'Policy': contents.get('Policy'),
+        'Email': contents.get('EmailAddress'),
+        'Tags': contents.get('Labels'),
+        'ID': contents.get('ID')
+    }
+
+
+def get_entity_contents(entity):
+    return {
+        'ID': entity.get('id'),
+        'Name': entity.get('name'),
+        'EmailAddress': entity.get('email_address'),
+        'Organization': entity.get('organization'),
+        'Labels': entity.get('labels'),
+        'StrictNameMatching': entity.get('strict_name_matching'),
+        'PolicyID': entity.get('policy_id'),
+        'Profile': entity.get('profile'),
+        'EntityGroupID': entity.get('entity_group', {}).get('id'),
+        'EntityGroupName': entity.get('entity_group', {}).get('name'),
+        'EntityTypeID': entity.get('type', {}).get('id'),
+        'EntityTypeName': entity.get('name', {}).get('name')
+    }
+
+
 # returns the convention for the war room
 def get_alert_contents_war_room(contents):
     return {
@@ -125,7 +157,6 @@ def get_alert_contents_war_room(contents):
         'Notes': contents.get('Notes') if contents.get('Notes') != '' else None,
         'Tags': contents.get('Tags')
     }
-
 
 def get_authorization_token():
     endpoint: str = '/api-token-auth/'
@@ -320,28 +351,6 @@ def get_alert_command():
     )
 
 
-def list_alerts(params):  # not fully implemented
-    url_suffix: str = '/alerts/'
-    response_content = http_request('GET', url_suffix, params=params)
-    return response_content
-
-
-def list_alerts_command():  # not fully implemented
-    params = remove_none_dict(demisto.args())
-    response_content = list_alerts(params).get('alerts')
-    if not response_content:
-        return_outputs('No alerts found.', outputs={})
-    else:
-        contents = [get_alert_contents(alert) for alert in response_content]
-        contents_war_room = [get_alert_contents_war_room(content) for content in contents]
-        context = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents}
-        return_outputs(
-            tableToMarkdown('Alerts', contents_war_room, removeNull=True),
-            context,
-            response_content
-    )
-
-
 def create_entity(name, strict_name_matching=None, image=None, labels=None, policy=None, organization=None):
     url_suffix: str = '/entities/'
     request_body = {
@@ -373,38 +382,68 @@ def create_entity_command():
     )
 
 
-def get_entities():
-    pass
+def list_alerts(params):  # not fully implemented
+    url_suffix: str = '/alerts/'
+    response_content = http_request('GET', url_suffix, params=params)
+    return response_content
+
+
+def list_alerts_command():  # not fully implemented
+    params = remove_none_dict(demisto.args())
+    response_content = list_alerts(params).get('alerts')
+    if not response_content:
+        return_outputs('No alerts found.', outputs={})
+    else:
+        contents = [get_alert_contents(alert) for alert in response_content]
+        contents_war_room = [get_alert_contents_war_room(content) for content in contents]
+        context = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents}
+        return_outputs(
+            tableToMarkdown('Alerts', contents_war_room, removeNull=True),
+            context,
+            response_content
+        )
+
+
+def get_entities(params):
+    url_suffix: str = '/entities/'
+    response_content = http_request('GET', url_suffix, params=params)
+    return response_content
 
 
 def get_entities_command():
-    pass
+    params = remove_none_dict(demisto.args())
+    response_content = get_entities(params).get('entities')
+    if not response_content:
+        return_outputs('No entities found.', outputs={})
+    else:
+        contents = [get_entity_contents(entity) for entity in response_content]
+        contents_war_room = [get_entity_contents_war_room(content) for content in contents]
+        context = {'ZeroFox.Entity(val.ID && val.ID === obj.ID)': contents}
+        return_outputs(
+            tableToMarkdown('Entities', contents_war_room, removeNull=True),
+            context,
+            response_content
+        )
 
 
 def fetch_incidents():
     last_run = demisto.getLastRun()
 
-    if last_run and last_run['last_fetched_event_timestamp']:
-        last_update_time = int(last_run['last_fetched_event_timestamp'])
+    if last_run and last_run.get('last_fetched_event_timestamp'):
+        last_update_time = last_run['last_fetched_event_timestamp']
     else:
-        pass
-
-    max_update_time = last_update_time
+        last_update_time = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%S')[0]
 
     incidents = []
     limit = demisto.params().get('fetch_limit')
-    alerts = list_alerts({'sort_direction': 'desc', 'limit': limit}).get('alerts')
+    alerts = list_alerts({'sort_direction': 'asc', 'limit': limit, 'min_timestamp': last_update_time}).get('alerts')
+    # max_update_time is the timestamp of the last alert in alerts (because alerts is a sorted list)
+    max_update_time = str(alerts[len(alerts)-1].get('timestamp')).split('+')[0]
     if not alerts:
         return
     for alert in alerts:
-        alert_time = alert.get('timestamp')
-        if alert_time >= last_update_time:
-            incident = alert_to_incident(alert)
-            incidents.append(incident)
-            if alert_time > max_update_time:
-                max_update_time = alert_time
-        else:
-            break
+        incident = alert_to_incident(alert)
+        incidents.append(incident)
 
     demisto.setLastRun({'last_fetched_event_timestamp': max_update_time})  # check whether max_update_time is a string?
     demisto.incidents(incidents)
@@ -450,6 +489,8 @@ def main():
             open_alert_command()
         elif demisto.command() == 'zerofox-alert-cancel-takedown':
             alert_cancel_takedown_command()
+        elif demisto.command() == 'zerofox-get-entities':
+            get_entities_command()
         elif demisto.command() == 'fetch-incidents':
             fetch_incidents()
 
