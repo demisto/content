@@ -1310,7 +1310,7 @@ def create_document_group():
     malware = bool(demisto.args().get('malware'))
     password = demisto.args().get('password')
     res = demisto.getFilePath(demisto.args()['entry_id'])
-    owner = demisto.args().get('owner', demisto.params()['defaultOrg'])
+    owner = demisto.args().get('owner', demisto.params().get('defaultOrg'))
     if not owner:
         return_error('You must specify an owner in the command, or by using the Organization parameter.')
 
