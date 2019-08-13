@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ThreatConnect
+  id: ThreatConnect1
   version: -1
 configuration:
 - display: Access ID
@@ -44,8 +44,8 @@ configuration:
   required: false
   type: 0
 description: Threat Intelligence platform
-display: ThreatConnect
-name: ThreatConnect
+display: ThreatConnect1
+name: ThreatConnect1
 script:
   commands:
   - arguments:
@@ -1861,25 +1861,25 @@ script:
     execution: false
     name: tc-get-indicator-types
     outputs:
-    - contextPath: TC.Indicator.ApiBranch
+    - contextPath: TC.IndicatorType.ApiBranch
       description: API branch
       type: String
-    - contextPath: TC.Indicator.ApiEntity
+    - contextPath: TC.IndicatorType.ApiEntity
       description: API entity
       type: String
-    - contextPath: TC.Indicator.CasePreference
+    - contextPath: TC.IndicatorType.CasePreference
       description: Indicator case preference
       type: String
-    - contextPath: TC.Indicator.Custom
+    - contextPath: TC.IndicatorType.Custom
       description: Custom indicator
       type: Boolean
-    - contextPath: TC.Indicator.Parsable
+    - contextPath: TC.IndicatorType.Parsable
       description: Is the indicator parsable
       type: Boolean
-    - contextPath: TC.Indicator.Value1Type
+    - contextPath: TC.IndicatorType.Value1Type
       description: Indicator value type
       type: String
-    - contextPath: TC.Indicator.value1Label
+    - contextPath: TC.IndicatorType.Value1Label
       description: Indicator value label
       type: String
   - arguments:
@@ -1979,6 +1979,12 @@ script:
       isArray: false
       name: description
       required: false
+      secret: false
+    - default: false
+      description: Entry ID of the file as shown at the war room
+      isArray: false
+      name: entry_id
+      required: true
       secret: false
     deprecated: false
     description: Create document group

@@ -793,10 +793,10 @@ tasks:
       version: -1
       name: Get Groups
       description: Get all groups by type
-      script: ThreatConnect1|||tc-get-groups
+      script: '|||tc-get-groups'
       type: regular
       iscommand: true
-      brand: ThreatConnect1
+      brand: ""
     nexttasks:
       '#none#':
       - "30"
@@ -823,10 +823,10 @@ tasks:
       version: -1
       name: Get Indicator types
       description: Find the available Indicator types on your instance of ThreatConnect
-      script: ThreatConnect1|||tc-get-indicator-types
+      script: '|||tc-get-indicator-types'
       type: regular
       iscommand: true
-      brand: ThreatConnect1
+      brand: ""
     separatecontext: false
     view: |-
       {
@@ -847,10 +847,10 @@ tasks:
       version: -1
       name: Create Event Group
       description: Create a ThreatConnect group from type Event
-      script: ThreatConnect1|||tc-create-event
+      script: '|||tc-create-event'
       type: regular
       iscommand: true
-      brand: ThreatConnect1
+      brand: ""
     nexttasks:
       '#none#':
       - "31"
@@ -882,10 +882,10 @@ tasks:
       version: -1
       name: Associate Group Attribute
       description: Add attribute to a sepcific event
-      script: ThreatConnect1|||tc-add-group-attribute
+      script: '|||tc-add-group-attribute'
       type: regular
       iscommand: true
-      brand: ThreatConnect1
+      brand: ""
     nexttasks:
       '#none#':
       - "33"
@@ -918,10 +918,10 @@ tasks:
       version: -1
       name: Add Security Label
       description: Add security label to a specific group
-      script: ThreatConnect1|||tc-add-group-security-label
+      script: '|||tc-add-group-security-label'
       type: regular
       iscommand: true
-      brand: ThreatConnect1
+      brand: ""
     nexttasks:
       '#none#':
       - "34"
@@ -952,10 +952,10 @@ tasks:
       version: -1
       name: Add Group tag
       description: Add tags to specific group
-      script: ThreatConnect1|||tc-add-group-tag
+      script: '|||tc-add-group-tag'
       type: regular
       iscommand: true
-      brand: ThreatConnect1
+      brand: ""
     nexttasks:
       '#none#':
       - "32"
@@ -986,10 +986,10 @@ tasks:
       version: -1
       name: Associate Indicator
       description: Associate an Indicator to a Group
-      script: ThreatConnect1|||tc-group-associate-indicator
+      script: '|||tc-group-associate-indicator'
       type: regular
       iscommand: true
-      brand: ThreatConnect1
+      brand: ""
     nexttasks:
       '#none#':
       - "35"
@@ -1022,10 +1022,10 @@ tasks:
       version: -1
       name: Delete Group
       description: Delete a Group from ThreatConnect (Incident, Event, Campaign, Threat)
-      script: ThreatConnect1|||tc-delete-group
+      script: '|||tc-delete-group'
       type: regular
       iscommand: true
-      brand: ThreatConnect1
+      brand: ""
     scriptarguments:
       groupID:
         simple: ${TC.Event.ID}
