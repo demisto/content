@@ -1716,7 +1716,8 @@
         },
         {
             "integrations": "Hybrid Analysis",
-            "playbookID": "HybridAnalysis-Test"
+            "playbookID": "HybridAnalysis-Test",
+            "timeout": 600
         }
     ],
     "skipped_tests": {
