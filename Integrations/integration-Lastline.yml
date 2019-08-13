@@ -410,6 +410,7 @@ script:
                 MD5: analysis.md5,
                 SHA1: analysis.sha1,
                 SHA256: analysis.sha256,
+                Type: analysis.mime_type,
                 Malicious: {
                     Vendor: 'Lastline',
                     Description: 'Score above ' + threshold,
@@ -517,6 +518,7 @@ script:
                         MD5: analysis.md5,
                         SHA1: analysis.sha1,
                         SHA256: analysis.sha256,
+                        Type: analysis.mime_type,
                         Malicious: {
                             Vendor: 'Lastline',
                             Description: 'Score above ' + threshold,
@@ -817,6 +819,9 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
+    - contextPath: File.Type
+      description: File type
+      type: string
     description: Check file reputation of the given hash
   - name: lastline-upload
     deprecated: true
@@ -983,6 +988,9 @@ script:
     - contextPath: Lastline.Submission.Process.process_id
       description: The process ID
       type: string
+    - contextPath: File.Type
+      description: File type
+      type: string
     description: Get analysis report
   - name: lastline-get-task-list
     arguments:
@@ -998,7 +1006,8 @@ script:
     arguments:
     - name: uuid
       required: true
-      description: Task UUID of the submitted Lastline analysis. Recieved from lastline-upload-file or lastline-upload-url.
+      description: Task UUID of the submitted Lastline analysis. Recieved from lastline-upload-file
+        or lastline-upload-url.
       isArray: true
     outputs:
     - contextPath: Lastline.Submission.UUID

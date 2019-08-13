@@ -1,0 +1,1 @@
+Added File.Type output to file, lastline-get-report commands
