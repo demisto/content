@@ -1,3 +1,6 @@
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
