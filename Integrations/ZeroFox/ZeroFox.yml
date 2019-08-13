@@ -26,6 +26,11 @@ configuration:
   name: url
   required: true
   type: 0
+- defaultvalue: '10'
+  display: Fetch Limit
+  name: fetch_limit
+  required: true
+  type: 0
 description: Integration Template
 display: ZeroFox
 name: ZeroFox
