@@ -48,8 +48,11 @@ def http_request(method, url_suffix, params=None, data=None):
         headers=HEADERS
     )
 
-    if not res.status_code == 200:
-        return_error('Error in API call to Example Integration [%d] - %s' % (res.status_code, res.reason))
+    if res.status_code == 404:
+        return None
+    elif not res.status_code == 200:
+        return_error('Error in API call to Pwned Integration [%d] - %s' % (res.status_code, res.reason))
+        return None
 
     return res.json()
 
@@ -67,7 +70,9 @@ def html_description_to_human_readable(breach_description):
     html_link_pattern = re.compile('<a href="(.+?)"(.+?)>(.+?)</a>')
     patterns_found = html_link_pattern.findall(breach_description)
     for link in patterns_found:
-        link_from_desc = '[' + link[2] + ']' + '(' + link[0] + ')'
+        html_actual_address = link[0]
+        html_readable_name = link[2]
+        link_from_desc = '[' + html_readable_name + ']' + '(' + html_actual_address + ')'
         breach_description = re.sub(html_link_pattern, link_from_desc, breach_description, count=1)
     return breach_description
 
@@ -125,7 +130,8 @@ def add_malicious_to_context(malicious_type):
 
 
 def email_to_entry_context(email, hibp_res):
-    comp_sites = sorted([item['Title'] for item in hibp_res])
+    comp_sites = [item['Title'] for item in hibp_res]
+    comp_sites = sorted(comp_sites)
     comp_email = dict()  # type: dict
     dbot_score = 0
 
@@ -140,7 +146,8 @@ def email_to_entry_context(email, hibp_res):
 
 
 def domain_to_entry_context(domain, hibp_res):
-    comp_sites = sorted([item['Title'] for item in hibp_res])
+    comp_sites = [item['Title'] for item in hibp_res]
+    comp_sites = sorted(comp_sites)
     comp_domain = dict()  # type: dict
     dbot_score = 0
 
@@ -195,9 +202,13 @@ LOG('Command being called is %s' % (demisto.command()))
 try:
     if demisto.command() == 'test-module':
         test_module()
-    elif demisto.command() == 'pwned-email' or demisto.command() == 'email':
+    elif demisto.command() == 'pwned-email':
         pwned_email_command()
-    elif demisto.command() == 'pwned-domain' or demisto.command() == 'domain':
+    elif demisto.command() == 'email':
+        pwned_email_command()
+    elif demisto.command() == 'pwned-domain':
+        pwned_domain_command()
+    elif demisto.command() == 'domain':
         pwned_domain_command()
 
 
