@@ -21,7 +21,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-- defaultvalue: https://api.zerofox.com/1.0 #disable-secrets-detection
+- defaultvalue: https://api.zerofox.com/1.0
   display: URL
   name: url
   required: true
@@ -218,14 +218,13 @@ script:
     name: zerofox-alert-request-takedown
   - arguments:
     - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: true = add, false = remove.
+      default: true
+      defaultValue: add
       isArray: false
       name: action
       predefined:
-      - 'true'
-      - 'false'
+      - add
+      - remove
       required: false
       secret: false
     - default: false

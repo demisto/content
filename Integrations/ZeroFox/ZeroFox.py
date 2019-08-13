@@ -258,9 +258,9 @@ def alert_user_assignment_command():
     )
 
 
-def modify_alert_tags(alert_id, addition, tags_list_string):
+def modify_alert_tags(alert_id, action, tags_list_string):
     url_suffix: str = '/alerttagchangeset/'
-    tags_list_name: str = 'added' if addition else 'removed'
+    tags_list_name: str = 'added' if action else 'removed'
     tags_list: list = tags_list_string.split(',')
     request_body: Dict = {
         'changes': [
@@ -276,10 +276,10 @@ def modify_alert_tags(alert_id, addition, tags_list_string):
 
 def modify_alert_tags_command():
     alert_id = demisto.args().get('alert_id')
-    addition_string = demisto.args().get('addition')
-    addition = True if addition_string == 'true' else False
+    action_string = demisto.args().get('action')
+    action = True if action_string == 'add' else False
     tags_list_string = demisto.args().get('tags')
-    modify_alert_tags(alert_id, addition, tags_list_string)
+    modify_alert_tags(alert_id, action, tags_list_string)
     context = get_alert_context_no_war_room(alert_id)
     return_outputs(
         'Changes were successfully made.',
