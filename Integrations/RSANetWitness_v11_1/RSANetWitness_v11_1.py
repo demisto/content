@@ -584,10 +584,10 @@ def get_timestamp(timestamp):
     iso_format = "%Y-%m-%dT%H:%M:%S.%fZ"
     if not new_timestamp.endswith('Z'):  # Adds Z if somehow previous task didn't
         new_timestamp += 'Z'
-    x = new_timestamp[-4]
-    if x == ':':  # if contains no milisecs
+    timestamp_min_four_position = new_timestamp[-4]
+    if timestamp_min_four_position == ':':  # if contains no milisecs
         new_timestamp = new_timestamp[:-1] + '.00000Z'
-    elif x == '.':  # if contains only 3 milisecs
+    elif timestamp_min_four_position == '.':  # if contains only 3 milisecs
         new_timestamp = new_timestamp[:-1] + '000Z'
     try:
         return datetime.strptime(new_timestamp, iso_format)
