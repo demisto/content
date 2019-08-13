@@ -893,37 +893,37 @@ def test_update_message(requests_mock):
     assert json.loads(requests_mock.request_history[0].body) == expected_conversation
 
 
-def test_create_team(mocker, requests_mock):
-    from MicrosoftTeams import create_team
-    mocker.patch.object(
-        demisto,
-        'args',
-        return_value={
-            'display_name': 'OhMyTeam',
-            'mail_nickname': 'NoNicknamesPlease',
-            'owner': 'nonexistingmmember@demisto.com',
-            'mail_enabled': 'true',
-            'security_enabled': 'false'
-        }
-    )
-    requests_mock.get(
-        f'https://graph.microsoft.com/v1.0/users',
-        json={
-            'value': team_members
-        }
-    )
-    with pytest.raises(ValueError) as e:
-        create_team()
-    assert str(e.value) == 'Could not find given users to be Team owners.'
-    mocker.patch.object(
-        demisto,
-        'args',
-        return_value={
-            'display_name': 'OhMyTeam',
-            'mail_nickname': 'NoNicknamesPlease',
-            'owner': 'dwashinton@email.com'
-        }
-    )
+# def test_create_team(mocker, requests_mock):
+#     from MicrosoftTeams import create_team
+#     mocker.patch.object(
+#         demisto,
+#         'args',
+#         return_value={
+#             'display_name': 'OhMyTeam',
+#             'mail_nickname': 'NoNicknamesPlease',
+#             'owner': 'nonexistingmmember@demisto.com',
+#             'mail_enabled': 'true',
+#             'security_enabled': 'false'
+#         }
+#     )
+#     requests_mock.get(
+#         f'https://graph.microsoft.com/v1.0/users',
+#         json={
+#             'value': team_members
+#         }
+#     )
+#     with pytest.raises(ValueError) as e:
+#         create_team()
+#     assert str(e.value) == 'Could not find given users to be Team owners.'
+#     mocker.patch.object(
+#         demisto,
+#         'args',
+#         return_value={
+#             'display_name': 'OhMyTeam',
+#             'mail_nickname': 'NoNicknamesPlease',
+#             'owner': 'dwashinton@email.com'
+#         }
+#     )
 
 
 def test_member_added_handler(mocker, requests_mock):

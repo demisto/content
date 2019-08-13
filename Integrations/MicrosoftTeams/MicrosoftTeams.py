@@ -7,7 +7,6 @@ from distutils.util import strtobool
 from flask import Flask, request, Response
 from gevent.pywsgi import WSGIServer
 import jwt
-# from jwt.algorithms import RSAAlgorithm
 import time
 from threading import Thread
 from typing import Match, Union, Optional, cast, Dict, Any, List
@@ -29,7 +28,8 @@ GRAPH_BASE_URL: str = 'https://graph.microsoft.com'
 INCIDENT_TYPE: str = PARAMS.get('incidentType', '')
 
 URL_REGEX: str = r'http[s]?://(?:[a-zA-Z]|[0-9]|[:/$_@.&+#-]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
-ENTITLEMENT_REGEX: str = r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
+ENTITLEMENT_REGEX: str = \
+    r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
 ENTRY_FOOTER: str = 'From Microsoft Teams'
 
 MESSAGE_TYPES: dict = {
@@ -44,11 +44,8 @@ MESSAGE_TYPES: dict = {
 def epoch_seconds(d: datetime = None) -> int:
     """
     Return the number of seconds for given date. If no date, return current.
-
-    Args:
-        d (datetime): timestamp
-    Returns:
-         int: timestamp in epoch
+    :param d: timestamp datetime object
+    :return: timestamp in epoch
     """
     if not d:
         d = datetime.utcnow()
@@ -119,8 +116,8 @@ def process_incident_create_message(demisto_user: dict, message: str) -> str:
         if re.search(name_pattern, message) or re.search(type_pattern, message):
             data = 'No other properties other than json should be specified.'
         else:
-            incidents_json = json_match.group()
-            incidents = json.loads(incidents_json.replace('“', '"').replace('”', '"'))
+            incidentsjson_ = json_match.group()
+            incidents = json.loads(incidentsjson_.replace('“', '"').replace('”', '"'))
             if not isinstance(incidents, list):
                 incidents = [incidents]
             created_incident = create_incidents(demisto_user, incidents)
@@ -160,6 +157,12 @@ def process_incident_create_message(demisto_user: dict, message: str) -> str:
 
 
 def is_investigation_mirrored(investigation_id: str, mirrored_channels: list) -> int:
+    """
+    Checks if investigation is already mirrored
+    :param investigation_id: Investigation ID to check if mirrored
+    :param mirrored_channels: List of mirrored channels to check if investigation is mirrored in
+    :return: Index in mirrored channels list if mirrored, else -1
+    """
     for index, channel in enumerate(mirrored_channels):
         if channel.get('investigation_id') == investigation_id:
             return index
@@ -167,6 +170,12 @@ def is_investigation_mirrored(investigation_id: str, mirrored_channels: list) ->
 
 
 def urlify_hyperlinks(message: str) -> str:
+    """
+    Turns URL to markdown hyper-link
+    e.g. https://www.demisto.com -> [https://www.demisto.com](https://www.demisto.com)
+    :param message: Message to look for URLs in
+    :return: Formatted message with hyper-links
+    """
     formatted_message: str = message
     # URLify markdown hyperlinks
     urls = re.findall(URL_REGEX, message)
@@ -175,13 +184,19 @@ def urlify_hyperlinks(message: str) -> str:
     return formatted_message
 
 
-def get_team_member(integration_context: dict, user_id: str) -> dict:
+def get_team_member(integration_context: dict, team_member_id: str) -> dict:
+    """
+    Searches for a team member
+    :param integration_context: Cached object to search for team member in
+    :param team_member_id: Team member ID to search for
+    :return: Found team member object
+    """
     team_member: dict = dict()
     teams: list = json.loads(integration_context.get('teams', '[]'))
     for team in teams:
         team_members: list = team.get('team_members', [])
         for member in team_members:
-            if member.get('id') == user_id:
+            if member.get('id') == team_member_id:
                 team_member['username'] = member.get('name', '')
                 team_member['user_email'] = member.get('userPrincipalName', '')
                 break
@@ -193,6 +208,12 @@ def get_team_member(integration_context: dict, user_id: str) -> dict:
 
 
 def get_team_member_id(requested_team_member: str, integration_context: dict) -> str:
+    """
+    Gets team member ID based on name, email or principal name
+    :param requested_team_member: Team member name / principal name / email to look for
+    :param integration_context: Cached object to search for team member in
+    :return: Team member ID
+    """
     member_id: str = str()
     teams: list = json.loads(integration_context.get('teams', '[]'))
     for team in teams:
@@ -209,13 +230,19 @@ def get_team_member_id(requested_team_member: str, integration_context: dict) ->
 
 
 def create_adaptive_card(body: list, actions: list = None) -> dict:
+    """
+    Creates Microsoft Teams adaptive card object given body and actions
+    :param body: Adaptive card data
+    :param actions: Adaptive card actions
+    :return: Adaptive card object
+    """
     adaptive_card: dict = {
-        "contentType": "application/vnd.microsoft.card.adaptive",
-        "content": {
-            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
-            "version": "1.0",
-            "type": "AdaptiveCard",
-            "body": body
+        'contentType': 'application/vnd.microsoft.card.adaptive',
+        'content': {
+            '$schema': 'http://adaptivecards.io/schemas/adaptive-card.json',
+            'version': '1.0',
+            'type': 'AdaptiveCard',
+            'body': body
         }
     }
     if actions:
@@ -224,6 +251,11 @@ def create_adaptive_card(body: list, actions: list = None) -> dict:
 
 
 def process_tasks_list(data_by_line: list) -> dict:
+    """
+    Processes tasks list assigned to user given from Demisto server and creates adaptive card
+    :param data_by_line: List of tasks to process
+    :return: Adaptive card of assigned tasks
+    """
     body: list = list()
     for line in data_by_line[2:]:
         split_data: list = [stat.strip() for stat in line.split('|')]
@@ -252,6 +284,11 @@ def process_tasks_list(data_by_line: list) -> dict:
 
 
 def process_incidents_list(data_by_line: list) -> dict:
+    """
+    Processes incidents list assigned to user given from Demisto server and creates adaptive card
+    :param data_by_line: List of incidents to process
+    :return: Adaptive card of assigned incidents
+    """
     body: list = list()
     for line in data_by_line[2:]:
         split_data: list = [stat.strip() for stat in line.split('|')]
@@ -292,6 +329,11 @@ def process_incidents_list(data_by_line: list) -> dict:
 
 
 def process_unknown_message(message: str) -> dict:
+    """
+    Processes unknown direct message and creates adaptive card
+    :param message: The known direct message to process
+    :return: Adaptive card of unknown message
+    """
     body: list = [{
         'type': 'TextBlock',
         'text': message.replace('\n', '\n\n'),
@@ -301,6 +343,11 @@ def process_unknown_message(message: str) -> dict:
 
 
 def process_ask_user(message: str) -> dict:
+    """
+    Processes ask user message creates adaptive card
+    :param message: The question object
+    :return: Adaptive card of the question to send
+    """
     message_object: dict = json.loads(message)
     text: str = message_object.get('message_text', '')
     entitlement: str = message_object.get('entitlement', '')
@@ -329,6 +376,10 @@ def process_ask_user(message: str) -> dict:
 
 
 def get_bot_access_token() -> str:
+    """
+    Retrieves Bot Framework API access token, either from cache or from Microsoft
+    :return: The Bot Framework API access token
+    """
     integration_context: dict = demisto.getIntegrationContext()
     access_token: str = integration_context.get('bot_access_token', '')
     valid_until: int = integration_context.get('bot_valid_until', int)
@@ -351,9 +402,9 @@ def get_bot_access_token() -> str:
         error = error_parser(response)
         raise ValueError(f'Failed to get bot access token [{response.status_code}] - {error}')
     try:
-        response_json: dict = response.json()
-        access_token = response_json.get('access_token', '')
-        expires_in: int = response_json.get('expires_in', 3595)
+        responsejson_: dict = response.json()
+        access_token = responsejson_.get('access_token', '')
+        expires_in: int = responsejson_.get('expires_in', 3595)
         time_now: int = epoch_seconds()
         time_buffer = 5  # seconds by which to shorten the validity period
         if expires_in - time_buffer > 0:
@@ -366,6 +417,10 @@ def get_bot_access_token() -> str:
 
 
 def get_graph_access_token() -> str:
+    """
+    Retrieves Microsoft Graph API access token, either from cache or from Microsoft
+    :return: The Microsoft Graph API access token
+    """
     integration_context: dict = demisto.getIntegrationContext()
     access_token: str = integration_context.get('graph_access_token', '')
     valid_until: int = integration_context.get('graph_valid_until', int)
@@ -393,9 +448,9 @@ def get_graph_access_token() -> str:
         error = error_parser(response)
         raise ValueError(f'Failed to get Graph access token [{response.status_code}] - {error}')
     try:
-        response_json: dict = response.json()
-        access_token = response_json.get('access_token', '')
-        expires_in: int = response_json.get('expires_in', 3595)
+        responsejson_: dict = response.json()
+        access_token = responsejson_.get('access_token', '')
+        expires_in: int = responsejson_.get('expires_in', 3595)
         time_now: int = epoch_seconds()
         time_buffer = 5  # seconds by which to shorten the validity period
         if expires_in - time_buffer > 0:
@@ -408,21 +463,17 @@ def get_graph_access_token() -> str:
 
 
 def http_request(
-        method: str, url: str = '', data: dict = None, _json: dict = None, api: str = 'graph'
+        method: str, url: str = '', data: dict = None, json_: dict = None, api: str = 'graph'
 ) -> Union[dict, list]:
     """
     A wrapper for requests lib to send our requests and handle requests and responses better
     Headers to be sent in requests
-
-    Args:
-        method (str): any restful method
-        url (str): URL to query
-        data (dict): HTTP body
-        _json (dict): HTTP JSON body
-        api (str): API to query (graph/bot)
-
-    Returns:
-        dict: requests.json()
+    :param method: any restful method
+    :param url: URL to query
+    :param data: HTTP body
+    :param json_: HTTP JSON body
+    :param api: API to query (graph/bot)
+    :return: requests.json()
     """
     if api == 'graph':
         access_token = get_graph_access_token()
@@ -441,7 +492,7 @@ def http_request(
         verify=USE_SSL,
         data=data,
         headers=headers,
-        json=_json
+        json=json_
     )
 
     if not response.ok:
@@ -462,6 +513,11 @@ def http_request(
 
 
 def validate_auth_header(headers: dict) -> bool:
+    """
+    Validated authorization header provided in the bot activity object
+    :param headers: Bot activity headers
+    :return: True if authorized, else False
+    """
     parts: list = headers.get('Authorization', '').split(' ')
     if len(parts) != 2:
         return False
@@ -537,115 +593,132 @@ def get_team_aad_id(team_name: str) -> str:
 
 # def add_member_to_team(user_principal_name: str, team_id: str):
 #     url: str = f'{GRAPH_BASE_URL}/v1.0/groups/{team_id}/members/$ref'
-#     request_json: dict = {
+#     requestjson_: dict = {
 #         '@odata.id': f'https://graph.microsoft.com/v1.0/directoryObjects/{user_principal_name}'
 #     }
-#     http_request('POST', url, _json=request_json)
+#     http_request('POST', url, json_=requestjson_)
 
 
 def get_users() -> list:
+    """
+    Retrieves list of AAD users
+    :return: List of AAD users
+    """
     url: str = f'{GRAPH_BASE_URL}/v1.0/users'
     users: dict = cast(Dict[Any, Any], http_request('GET', url))
     return users.get('value', [])
 
 
-def create_group_request(
-        display_name: str, mail_enabled: bool, mail_nickname: str, security_enabled: bool,
-        owners_ids: list, members_ids: list = None
-) -> str:
-    url = f'{GRAPH_BASE_URL}/v1.0/groups'
-    data: dict = {
-        'displayName': display_name,
-        'groupTypes': ['Unified'],
-        'mailEnabled': mail_enabled,
-        'mailNickname': mail_nickname,
-        'securityEnabled': security_enabled,
-        'owners@odata.bind': owners_ids,
-        'members@odata.bind': members_ids or owners_ids
-    }
-    group_creation_response: dict = cast(Dict[Any, Any], http_request('POST', url, _json=data))
-    group_id: str = group_creation_response.get('id', '')
-    return group_id
-
-
-def create_team_request(group_id: str) -> str:
-    url = f'{GRAPH_BASE_URL}/v1.0/groups/{group_id}/team'
-    team_creation_response: dict = cast(Dict[Any, Any], http_request('PUT', url, _json={}))
-    team_id: str = team_creation_response.get('id', '')
-    return team_id
-
-
-def add_bot_to_team(team_id: str):
-    url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/installedApps'
-    bot_app_id: str = ''
-    data: dict = {
-        'teamsApp@odata.bind': f'https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/{bot_app_id}'
-    }
-    print(http_request('POST', url, _json=data))
-
-
-def create_team():
-    display_name: str = demisto.args().get('display_name', '')
-    mail_enabled: bool = bool(strtobool(demisto.args().get('mail_enabled', True)))
-    mail_nickname: str = demisto.args().get('mail_nickname', '')
-    security_enabled: bool = bool(strtobool(demisto.args().get('security_enabled', True)))
-    owners = argToList(demisto.args().get('owner', ''))
-    members = argToList(demisto.args().get('members', ''))
-    owners_ids: list = list()
-    members_ids: list = list()
-    users: list = get_users()
-    user_id: str = str()
-    for member in members:
-        found_member: bool = False
-        for user in users:
-            if member in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
-                found_member = True
-                user_id = user.get('id', '')
-                members_ids.append(f'https://graph.microsoft.com/v1.0/users/{user_id}')
-                break
-        if not found_member:
-            demisto.results({
-                'Type': entryTypes['warning'],
-                'Contents': f'User {member} was not found',
-                'ContentsFormat': formats['text']
-            })
-    for owner in owners:
-        found_owner: bool = False
-        for user in users:
-            if owner in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
-                found_owner = True
-                user_id = user.get('id', '')
-                owners_ids.append(f'https://graph.microsoft.com/v1.0/users/{user_id}')
-                break
-        if not found_owner:
-            demisto.results({
-                'Type': entryTypes['warning'],
-                'Contents': f'User {owner} was not found',
-                'ContentsFormat': formats['text']
-            })
-    if not owners_ids:
-        raise ValueError('Could not find given users to be Team owners.')
-    group_id: str = create_group_request(
-        display_name, mail_enabled, mail_nickname, security_enabled, owners_ids, members_ids
-    )
-    team_id: str = create_team_request(group_id)
-    add_bot_to_team(team_id)
-    demisto.results(f'Team {display_name} was created successfully')
+# def create_group_request(
+#         display_name: str, mail_enabled: bool, mail_nickname: str, security_enabled: bool,
+#         owners_ids: list, members_ids: list = None
+# ) -> str:
+#     url = f'{GRAPH_BASE_URL}/v1.0/groups'
+#     data: dict = {
+#         'displayName': display_name,
+#         'groupTypes': ['Unified'],
+#         'mailEnabled': mail_enabled,
+#         'mailNickname': mail_nickname,
+#         'securityEnabled': security_enabled,
+#         'owners@odata.bind': owners_ids,
+#         'members@odata.bind': members_ids or owners_ids
+#     }
+#     group_creation_response: dict = cast(Dict[Any, Any], http_request('POST', url, json_=data))
+#     group_id: str = group_creation_response.get('id', '')
+#     return group_id
+#
+#
+# def create_team_request(group_id: str) -> str:
+#     url = f'{GRAPH_BASE_URL}/v1.0/groups/{group_id}/team'
+#     team_creation_response: dict = cast(Dict[Any, Any], http_request('PUT', url, json_={}))
+#     team_id: str = team_creation_response.get('id', '')
+#     return team_id
+#
+#
+# def add_bot_to_team(team_id: str):
+#     url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/installedApps'
+#     bot_app_id: str = ''
+#     data: dict = {
+#         'teamsApp@odata.bind': f'https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/{bot_app_id}'
+#     }
+#     print(http_request('POST', url, json_=data))
+#
+#
+# def create_team():
+#     display_name: str = demisto.args().get('display_name', '')
+#     mail_enabled: bool = bool(strtobool(demisto.args().get('mail_enabled', True)))
+#     mail_nickname: str = demisto.args().get('mail_nickname', '')
+#     security_enabled: bool = bool(strtobool(demisto.args().get('security_enabled', True)))
+#     owners = argToList(demisto.args().get('owner', ''))
+#     members = argToList(demisto.args().get('members', ''))
+#     owners_ids: list = list()
+#     members_ids: list = list()
+#     users: list = get_users()
+#     user_id: str = str()
+#     for member in members:
+#         found_member: bool = False
+#         for user in users:
+#             if member in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
+#                 found_member = True
+#                 user_id = user.get('id', '')
+#                 members_ids.append(f'https://graph.microsoft.com/v1.0/users/{user_id}')
+#                 break
+#         if not found_member:
+#             demisto.results({
+#                 'Type': entryTypes['warning'],
+#                 'Contents': f'User {member} was not found',
+#                 'ContentsFormat': formats['text']
+#             })
+#     for owner in owners:
+#         found_owner: bool = False
+#         for user in users:
+#             if owner in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
+#                 found_owner = True
+#                 user_id = user.get('id', '')
+#                 owners_ids.append(f'https://graph.microsoft.com/v1.0/users/{user_id}')
+#                 break
+#         if not found_owner:
+#             demisto.results({
+#                 'Type': entryTypes['warning'],
+#                 'Contents': f'User {owner} was not found',
+#                 'ContentsFormat': formats['text']
+#             })
+#     if not owners_ids:
+#         raise ValueError('Could not find given users to be Team owners.')
+#     group_id: str = create_group_request(
+#         display_name, mail_enabled, mail_nickname, security_enabled, owners_ids, members_ids
+#     )
+#     team_id: str = create_team_request(group_id)
+#     add_bot_to_team(team_id)
+#     demisto.results(f'Team {display_name} was created successfully')
 
 
 def create_channel(team_aad_id: str, channel_name: str, channel_description: str = '') -> str:
+    """
+    Creates a Microsoft Teams channel
+    :param team_aad_id: Team AAD ID to create channel in
+    :param channel_name: Name of channel to create
+    :param channel_description: Description of channel to create
+    :return: ID of created channel
+    """
     url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_aad_id}/channels'
     request_json: dict = {
         'displayName': channel_name,
         'description': channel_description
     }
-    channel_data: dict = cast(Dict[Any, Any], http_request('POST', url, _json=request_json))
+    channel_data: dict = cast(Dict[Any, Any], http_request('POST', url, json_=request_json))
     assert isinstance(channel_data, dict)
     channel_id: str = channel_data.get('id', '')
     return channel_id
 
 
 def get_channel_id(channel_name: str, team_aad_id: str) -> str:
+    """
+    Retrieves Microsoft Teams channel ID
+    :param channel_name: Name of channel to get ID of
+    :param team_aad_id: AAD ID of team to search channel in
+    :return: Requested channel ID
+    """
     integration_context: dict = demisto.getIntegrationContext()
     if integration_context.get('teams'):
         teams: list = json.loads(integration_context['teams'])
@@ -670,12 +743,26 @@ def get_channel_id(channel_name: str, team_aad_id: str) -> str:
 
 
 def get_team_members(team_id: str, service_url: str) -> list:
+    """
+    Retrieves team members given a team
+    :param team_id: ID of team to get team members of
+    :param service_url: Bot service URL to query
+    :return: List of team members
+    """
     url: str = f'{service_url}/v3/conversations/{team_id}/members'
     response: list = cast(List[Any], http_request('GET', url, api='bot'))
     return response
 
 
 def update_message(service_url: str, conversation_id: str, activity_id: str, text: str):
+    """
+    Updates a message in Microsoft Teams channel
+    :param service_url: Bot service URL to query
+    :param conversation_id: Conversation ID of message to update
+    :param activity_id: Activity ID of message to update
+    :param text: Text to update in the message
+    :return: None
+    """
     body = [{
         'type': 'TextBlock',
         'text': text
@@ -686,10 +773,16 @@ def update_message(service_url: str, conversation_id: str, activity_id: str, tex
         'attachments': [adaptive_card]
     }
     url: str = f'{service_url}/v3/conversations/{conversation_id}/activities/{activity_id}'
-    http_request('PUT', url, _json=conversation, api='bot')
+    http_request('PUT', url, json_=conversation, api='bot')
 
 
 def close_channel_request(team_aad_id: str, channel_id: str):
+    """
+    Sends an HTTP request to close a Microsoft Teams channel
+    :param team_aad_id: AAD ID of team to close the channel in
+    :param channel_id: ID of channel to close
+    :return: None
+    """
     url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_aad_id}/channels/{channel_id}'
     http_request('DELETE', url)
 
@@ -732,7 +825,13 @@ def close_channel():
     demisto.results('Channel was successfully closed')
 
 
-def create_personal_conversation(integration_context: dict, member_id: str) -> str:
+def create_personal_conversation(integration_context: dict, team_member_id: str) -> str:
+    """
+    Create a personal conversation with a team member
+    :param integration_context: Cached object to retrieve relevant data for the conversation creation
+    :param team_member_id: ID of team member to create a conversation with
+    :return: ID of created conversation
+    """
     bot_id: str = demisto.params().get('bot_id', '')
     bot_name: str = integration_context.get('bot_name', '')
     tenant_id: str = integration_context.get('tenant_id', '')
@@ -742,7 +841,7 @@ def create_personal_conversation(integration_context: dict, member_id: str) -> s
             'name': bot_name
         },
         'members': [{
-            'id': member_id
+            'id': team_member_id
         }],
         'channelData': {
             'tenant': {
@@ -754,16 +853,23 @@ def create_personal_conversation(integration_context: dict, member_id: str) -> s
     if not service_url:
         raise ValueError('Did not find service URL. Try messaging the bot on Microsoft Teams')
     url: str = f'{service_url}/v3/conversations'
-    response: dict = cast(Dict[Any, Any], http_request('POST', url, _json=conversation, api='bot'))
+    response: dict = cast(Dict[Any, Any], http_request('POST', url, json_=conversation, api='bot'))
     return response.get('id', '')
 
 
 def send_message_request(channel_id: str, conversation: dict, integration_context: dict = {}):
+    """
+    Sends an HTTP request to send message to Microsoft Teams
+    :param channel_id: ID of channel to send message in
+    :param conversation: Conversation message object to send
+    :param integration_context: Cached object to get retrieve data from for the message sending
+    :return: None
+    """
     service_url: str = integration_context.get('service_url', '')
     if not service_url:
         raise ValueError('Did not find service URL. Try messaging the bot on Microsoft Teams')
     url: str = f'{service_url}/v3/conversations/{channel_id}/activities'
-    http_request('POST', url, _json=conversation, api='bot')
+    http_request('POST', url, json_=conversation, api='bot')
 
 
 def send_message():
@@ -800,8 +906,8 @@ def send_message():
         team_aad_id: str = get_team_aad_id(team_name)
         channel_id = get_channel_id(channel_name, team_aad_id)
     elif team_member:
-        member_id: str = get_team_member_id(team_member, integration_context)
-        personal_conversation_id = create_personal_conversation(integration_context, member_id)
+        team_member_id: str = get_team_member_id(team_member, integration_context)
+        personal_conversation_id = create_personal_conversation(integration_context, team_member_id)
 
     recipient: str = channel_id or personal_conversation_id
 
@@ -829,7 +935,6 @@ def mirror_investigation():
     """
     Updates the integration context with a new or existing mirror.
     """
-
     investigation: dict = demisto.investigation()
 
     if investigation.get('type') == PLAYGROUND_INVESTIGATION_TYPE:
@@ -936,6 +1041,13 @@ def channel_mirror_loop():
 
 
 def member_added_handler(request_body: dict, service_url: str, channel_data: dict):
+    """
+    Handles member added activity
+    :param request_body: Activity payload
+    :param service_url: Bot service URL
+    :param channel_data: Microsoft Teams tenant, team and channel details
+    :return: None
+    """
     bot_id = demisto.params().get('bot_id')
 
     team: dict = channel_data.get('team', {})
@@ -978,11 +1090,11 @@ def member_added_handler(request_body: dict, service_url: str, channel_data: dic
 def direct_message_handler(integration_context: dict, request_body: dict, conversation: dict, message: str):
     """
     Handles a direct message sent to the bot
-    :param integration_context:
-    :param request_body:
-    :param conversation:
-    :param message:
-    :return:
+    :param integration_context: Cached object to retrieve relevant data from
+    :param request_body: Activity payload
+    :param conversation: Conversation object sent
+    :param message: The direct message sent
+    :return: None
     """
     conversation_id: str = conversation.get('id', '')
 
@@ -1046,6 +1158,14 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
 
 
 def entitlement_handler(integration_context: dict, request_body: dict, value: dict, conversation_id: str):
+    """
+    Handles activity the bot received as part of TeamsAsk flow, which includes entitlement
+    :param integration_context: Cached object to retrieve relevant data from
+    :param request_body: Activity payload
+    :param value: Object which includes
+    :param conversation_id: Message conversation ID
+    :return: None
+    """
     response: str = value.get('response', '')
     entitlement_guid: str = value.get('entitlement', '')
     investigation_id: str = value.get('investigation_id', '')
@@ -1068,6 +1188,14 @@ def entitlement_handler(integration_context: dict, request_body: dict, value: di
 
 
 def message_handler(integration_context: dict, request_body: dict, channel_data: dict, message: str):
+    """
+    Handles a message in which the bot was mentioned
+    :param integration_context: Cached object to retrieve relevant data from
+    :param request_body: Activity payload
+    :param channel_data: Microsoft Teams tenant, team and channel details
+    :param message: The message which was sent mentioning the bot
+    :return: None
+    """
     channel: dict = channel_data.get('channel', {})
     channel_id: str = channel.get('id', '')
     team_id: str = channel_data.get('team', {}).get('id', '')
@@ -1099,7 +1227,9 @@ def message_handler(integration_context: dict, request_body: dict, channel_data:
 
 @APP.route('/', methods=['POST'])
 def messages() -> Response:
-    """Main bot handler"""
+    """
+    Main handler for messages sent to the bot
+    """
     headers: dict = cast(Dict[Any, Any], request.headers)
     if validate_auth_header(headers) is False:
         demisto.info(f'Authorization header failed: {str(headers)}')
@@ -1142,6 +1272,9 @@ def messages() -> Response:
 
 
 def long_running_loop():
+    """
+    The infinite loop which runs the mirror loop and the bot app in two different threads
+    """
     try:
         port_mapping: str = PARAMS.get('longRunningPort', '')
         if port_mapping:
@@ -1163,10 +1296,6 @@ def test_module():
     demisto.results('ok')
 
 
-def test_command():
-    print(demisto.getIntegrationContext())
-
-
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
 
@@ -1176,9 +1305,8 @@ def main():
         'send-notification': send_message,
         'mirror-investigation': mirror_investigation,
         'close-channel': close_channel,
-        'microsoft-teams-create-team': create_team,
-        # 'microsoft-teams-send-file': send_file,
-        'test-command': test_command
+        # 'microsoft-teams-create-team': create_team,
+        # 'microsoft-teams-send-file': send_file
     }
 
     ''' EXECUTION '''

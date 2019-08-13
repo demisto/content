@@ -13,12 +13,12 @@ configuration:
   type: 4
 - display: Team
   name: team
-  required: false
+  required: true
   type: 0
 - defaultvalue: General
   display: Notifications channel
   name: incident_notifications_channel
-  required: false
+  required: true
   type: 0
 - defaultvalue: Low
   display: Minimum incident severity to send notifications to Teams by
@@ -148,63 +148,7 @@ script:
     description: Delete a Teams channel
     execution: false
     name: close-channel
-  - arguments:
-    - default: false
-      description: The name to display in the address book for the group.
-      isArray: false
-      name: display_name
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: Set to true for mail-enabled groups.
-      isArray: false
-      name: mail_enabled
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The mail alias for the group.
-      isArray: false
-      name: mail_nickname
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: Set to true for security-enabled groups, including Office 365 groups.
-      isArray: false
-      name: security_enabled
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Email address or name of member to be team owner, given in comma-seperated
-        list.
-      isArray: false
-      name: owner
-      required: true
-      secret: false
-    - default: false
-      description: Email address or name of members to be added to the team, given
-        in comma-seperated list.
-      isArray: false
-      name: members
-      required: false
-      secret: false
-    deprecated: false
-    description: Creates a new Microsoft Teams team.
-    execution: false
-    name: microsoft-teams-create-team
-  - deprecated: false
-    execution: false
-    name: test-command
-  dockerimage: devdemisto/teams:1.0.0.1402
+  dockerimage: demisto/teams:1.0.0.1405
   isfetch: false
   longRunning: true
   longRunningPort: true
