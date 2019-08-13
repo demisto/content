@@ -3374,8 +3374,10 @@ def panorama_query_logs_command():
     action = demisto.args().get('action')
     port_dst = demisto.args().get('port-dst')
     rule = demisto.args().get('rule')
-    url = demisto.args().get('url')
     filedigest = demisto.args().get('filedigest')
+    url = demisto.args().get('url')
+    if url and url[-1] != '/':
+        url += '/'
 
     if query and (address_src or address_dst or zone_src or zone_dst
                   or time_generated or action or port_dst or rule or url or filedigest):

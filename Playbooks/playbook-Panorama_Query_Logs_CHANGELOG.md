@@ -1,0 +1,1 @@
+Added new playbook to handle logs querying in PAN-OS.

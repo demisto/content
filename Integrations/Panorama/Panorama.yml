@@ -2089,7 +2089,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Souce zone.
+      description: Source zone.
       isArray: false
       name: zone-src
       required: false
@@ -2113,7 +2113,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Rule name. e.g, Allow all outopund
+      description: Rule name. e.g, Allow all outbound
       isArray: false
       name: rule
       required: false
