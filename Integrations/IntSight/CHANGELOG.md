@@ -1,1 +1,1 @@
-set integration dockerimage to python3:3.7.4.977
+set default encoding to utf-8
