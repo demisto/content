@@ -15,7 +15,6 @@ import re
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-
 """
 
 HELPERS
@@ -124,8 +123,8 @@ COMMAND HANDLERS
 """
 
 
-def http_request(method, url, body=None, headers={}, url_params=None):
-    '''
+def http_request(method, url, body=None, headers=None, url_params=None):
+    """
     returns the http response body
 
     uses TOKEN global var to send requests to RSA end (this enables using a token for multiple requests and avoiding
@@ -133,8 +132,10 @@ def http_request(method, url, body=None, headers={}, url_params=None):
     catches and handles token expiration: in case of 'request timeout' the  token will be renewed and the request
     will be resent once more.
 
-    '''
+    """
 
+    if headers is None:
+        headers = {}
     global TOKEN
 
     # add token to headers
@@ -565,15 +566,28 @@ def get_alerts():
     demisto.results(entry)
 
 
+def get_timestamp(timestamp):
+    iso_formats = [
+        "%Y-%m-%dT%H:%M:%S.%fZ"
+    ]
+    for iso_format in iso_formats:
+        try:
+            unix_timestamp = datetime.strptime(timestamp, iso_format)
+            return unix_timestamp
+        except ValueError:  # If wrong time format, will pass
+            pass
+    raise ValueError("Could not parse timestamp [{}]".format(timestamp))
+
+
 def fetch_incidents():
     """
     fetch is limited to 100 results
     """
-    lastRun = demisto.getLastRun()
+    last_run = demisto.getLastRun()
 
     # if last timestamp was recorded- use it, else generate timestamp for one day prior to current date
-    if lastRun and lastRun.get('timestamp'):
-        timestamp = lastRun.get('timestamp')
+    if last_run and last_run.get('timestamp'):
+        timestamp = last_run.get('timestamp')
     else:
         last_fetch, _ = parse_date_range(FETCH_TIME)
         # convert to ISO 8601 format and add Z suffix
@@ -588,7 +602,7 @@ def fetch_incidents():
     demisto_incidents = []
     iso_format = "%Y-%m-%dT%H:%M:%S.%fZ"
 
-    last_incident_datetime = datetime.strptime(timestamp, iso_format)
+    last_incident_datetime = get_timestamp(timestamp)
     last_incident_timestamp = timestamp
 
     # set boolean flag for fetching alerts per incident
@@ -941,29 +955,36 @@ def test_module():
 EXECUTION
 
 """
-command = demisto.command()
-try:
-    handle_proxy()
-    if command == 'test-module':
-        demisto.results(test_module())
-    elif command == 'fetch-incidents':
-        fetch_incidents()
-    elif command == 'netwitness-get-incident':
-        get_incident()
-        get_alerts()
-    elif command == 'netwitness-get-incidents':
-        get_incidents()
-    elif command == 'netwitness-update-incident':
-        update_incident()
-    elif command == 'netwitness-delete-incident':
-        delete_incident()
-    elif command == 'netwitness-get-alerts':
-        get_alerts()
-    sys.exit(0)
-except ValueError as e:
-    LOG(e.message)
-    LOG.print_log()
-    if command == 'fetch-incidents':  # fetch-incidents supports only raising exceptions
-        raise
-    return_error_entry(e.message)
-    sys.exit(1)
+
+
+def main():
+    command = demisto.command()
+    try:
+        handle_proxy()
+        if command == 'test-module':
+            demisto.results(test_module())
+        elif command == 'fetch-incidents':
+            fetch_incidents()
+        elif command == 'netwitness-get-incident':
+            get_incident()
+            get_alerts()
+        elif command == 'netwitness-get-incidents':
+            get_incidents()
+        elif command == 'netwitness-update-incident':
+            update_incident()
+        elif command == 'netwitness-delete-incident':
+            delete_incident()
+        elif command == 'netwitness-get-alerts':
+            get_alerts()
+        sys.exit(0)
+    except ValueError as e:
+        LOG(e.message)
+        LOG.print_log()
+        if command == 'fetch-incidents':  # fetch-incidents supports only raising exceptions
+            raise
+        return_error_entry(e.message)
+        sys.exit(1)
+
+
+if __name__ in ('__builtin__', 'builtins'):
+    main()
