@@ -1382,7 +1382,7 @@ def return_error(message, error='', outputs=None):
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
             'Contents': message,
-            "EntryContext": outputs
+            'EntryContext': outputs
         })
         sys.exit(0)
 
