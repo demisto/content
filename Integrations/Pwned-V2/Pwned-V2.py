@@ -114,7 +114,7 @@ def create_context_entry(context_type, context_main_value, comp_sites, malicious
         {
             'Vendor': 'Pwned',
             'Reporters': ', '.join(comp_sites)
-        }
+    }
 
     if malicious_score == 3:
         context_dict['Malicious'] = add_malicious_to_context(context_type)
