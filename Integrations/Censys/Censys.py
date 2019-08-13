@@ -1,61 +1,73 @@
 import demistomock as demisto
 from CommonServerPython import *
+
+''' IMPORTS '''
 import requests
 
-USE_SSL = not demisto.params().get('insecure', False)
+''' GLOBAL VARIABLES '''
+API_URL = demisto.params()['url']
+API_ID = demisto.params()['apiid']
+API_SECRET = demisto.params()['secret']
 
 
-def sendRequest(method, url, uri, user, passwd, data=None):
-    if method.lower() == 'post':
-        try:
-            json.loads(data)
-        except ValueError:
-            return '### Error: Data is not in JSON format'
-
-    res = requests.request(method, url + uri, auth=(user, passwd), data=data, verify=USE_SSL)
-
-    if res.status_code >= 400:
-        if res.text.startswith('{'):
-            return '### Error: ' + str(res.status_code) + ': ' + res.json()["error"]
-        else:
-            return '### Error: ' + str(res.status_code)
-
-    return res.text
-
-
-apiid = demisto.params()['apiid']
-secret = demisto.params()['secret']
-url = demisto.params()['url']
-
-# What happens when the 'Test' button is pressed
-if demisto.command() == 'test-module':
-    res = sendRequest('GET', url, "view/ipv4/8.8.8.8", apiid, secret)
-    if res.startswith('### Error:'):
-        demisto.results({'Type': entryTypes['error'], 'ContentsFormat': 'text', 'Contents': res})
-    elif 'Google' in res:
+def test_module():
+    url_suffix = "view/ipv4/8.8.8.8"
+    res = requests.get(API_URL + url_suffix, auth=(API_ID, API_SECRET), verify=False)
+    if res.status_code == 200:
         demisto.results('ok')
-else:
-    query = demisto.args()['query']
-    index = demisto.args()['index']
+    else:
+        demisto.results('test failed')
 
-    if demisto.command() == 'cen-view':
-        uri = 'view/' + index + '/' + query
-        method = 'get'
-        data = None
-    elif demisto.command() == 'cen-search':
-        uri = 'search/' + index
-        method = 'POST'
-        if not query.startswith('{'):
-            data = '{ "query" : "' + query + '", "page" : 1 }'
 
-    res = sendRequest(method, url, uri, apiid, secret, data)
+def send_request(method, url_suffix, data=None):
+    res = None
+    if method == 'GET':
+        res = requests.get(API_URL + url_suffix, auth=(API_ID, API_SECRET), verify=False)
+    elif method == 'POST':
+        res = requests.post(API_URL + url_suffix, auth=(API_ID, API_SECRET), data=json.dumps(data), verify=False)
 
-    if res.startswith('### Error:'):
-        demisto.results({'Type': entryTypes['error'], 'ContentsFormat': 'text', 'Contents': res})
-        sys.exit(0)
-    elif res.startswith('{'):
-        res = json.loads(res)
+    data = json.loads(res.text)
 
-    demisto.results(res)
+    if res.status_code == 404:
+        return None
+    elif res.status_code >= 400:
+        return_error("Error {0}: {1}".format(res.status_code, data["error"].title()))
 
-sys.exit(0)
+    return data
+
+
+def censys_view_command(query, index):
+    url_suffix = 'view/{0}/{1}'.format(index, query)
+    raw = send_request('GET', url_suffix)
+    if raw:
+        demisto.results(raw)
+    else:
+        demisto.results("No view results for {0}.".format(query))
+
+
+def censys_search_command(query, index):
+    url_suffix = 'search/{0}'.format(index)
+    data = {
+        "query": query,
+        "page": 1
+    }
+    raw = send_request('POST', url_suffix, data)
+    readable = tableToMarkdown("Search results for {0} in {1}".format(query, index), raw["results"])
+    return_outputs(readable, raw)
+
+
+''' EXECUTION CODE '''
+command = demisto.command()
+LOG('command is {0}'.format(command))
+try:
+    args = demisto.args()
+    if command == 'test-module':
+        test_module()
+    elif command == 'cen-view':
+        censys_view_command(**args)
+    elif command == 'cen-search':
+        censys_search_command(**args)
+
+except Exception as ex:
+    LOG(ex)
+    return_error(str(ex))
