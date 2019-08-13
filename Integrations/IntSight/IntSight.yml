@@ -789,7 +789,5 @@ script:
     description: Get all mssp sub accounts
   isfetch: true
   runonce: false
-  subtype: python3
-  dockerimage: demisto/python3:3.7.4.977
 tests:
   - IntSights Test
