@@ -1,5 +1,5 @@
-id: 36cd6044-9f8c-4c5f-8cd5-7f18f35bc243
-version: 52
+id: ZeroFox-Test
+version: -1
 name: ZeroFox-Test
 starttaskid: "0"
 tasks:
@@ -123,7 +123,7 @@ tasks:
           root: ZeroFox
           accessor: Alert.ID
       subject_email:
-        simple: gf@gmail.com
+        simple: gf@gmail.com #disable-secrets-detection
       subject_name:
         complex:
           root: RandomString

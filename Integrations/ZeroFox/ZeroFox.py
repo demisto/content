@@ -30,10 +30,22 @@ HEADERS = None
 ''' HELPER FUNCTIONS '''
 
 
+# return context convention of alert without printing to war room
+def get_alert_context_no_war_room(alert_id):
+    alert = get_alert(alert_id).get('alert')
+    if not alert:
+        return {}
+    contents = get_alert_contents(alert)
+    context = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents}
+    return context
+
+
+# removes all none values from a dict
 def remove_none_dict(input_dict):
     return {key: value for key, value in input_dict.items() if value is not None}
 
 
+# initialize all preset values
 def initialize_preset():
     global USERNAME, PASSWORD, USE_SSL, BASE_URL
     USERNAME = demisto.params().get('credentials').get('identifier')
@@ -42,7 +54,6 @@ def initialize_preset():
     BASE_URL = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
     # Remove proxy if not set to true in params
     handle_proxy()
-
 
 
 def get_alert_contents(alert):
@@ -90,6 +101,7 @@ def get_alert_contents(alert):
     }
 
 
+# returns the convention for the war room
 def get_alert_contents_war_room(contents):
     return {
         'ID': contents.get('ID'),
@@ -103,11 +115,6 @@ def get_alert_contents_war_room(contents):
         'Notes': contents.get('Notes') if contents.get('Notes') != '' else None,
         'Tags': contents.get('Tags')
     }
-
-
-def clear_integration_context():
-    demisto.setIntegrationContext({})
-    demisto.info(demisto.getIntegrationContext())
 
 
 def get_authorization_token():
@@ -169,7 +176,12 @@ def close_alert(alert_id):
 def close_alert_command():
     alert_id: int = demisto.args().get('alert_id')
     close_alert(alert_id)
-    return_outputs(f'Alert: {alert_id} has been closed successfully.', outputs={})
+    context = get_alert_context_no_war_room(alert_id)
+    return_outputs(
+        f'Alert: {alert_id} has been closed successfully.',
+        context,
+        raw_response={}
+    )
 
 
 def open_alert(alert_id):
@@ -181,7 +193,12 @@ def open_alert(alert_id):
 def open_alert_command():
     alert_id: int = demisto.args().get('alert_id')
     open_alert(alert_id)
-    return_outputs(f'Alert: {alert_id} has been opened successfully.', outputs={})
+    context = get_alert_context_no_war_room(alert_id)
+    return_outputs(
+        f'Alert: {alert_id} has been opened successfully.',
+        context,
+        raw_response={}
+    )
 
 
 def alert_request_takedown(alert_id):
@@ -193,7 +210,12 @@ def alert_request_takedown(alert_id):
 def alert_request_takedown_command():
     alert_id: int = demisto.args().get('alert_id')
     alert_request_takedown(alert_id)
-    return_outputs(f'Alert: {alert_id} has been taken down successfully.', outputs={})
+    context = get_alert_context_no_war_room(alert_id)
+    return_outputs(
+        f'Alert: {alert_id} has been requested to be taken down successfully.',
+        context,
+        raw_response={}
+    )
 
 
 def alert_cancel_takedown(alert_id):
@@ -205,7 +227,12 @@ def alert_cancel_takedown(alert_id):
 def alert_cancel_takedown_command():
     alert_id: int = demisto.args().get('alert_id')
     alert_cancel_takedown(alert_id)
-    return_outputs(f'Alert: {alert_id} has canceled takedown successfully.', outputs={})
+    context = get_alert_context_no_war_room(alert_id)
+    return_outputs(
+        f'Alert: {alert_id} has canceled takedown successfully.',
+        context,
+        raw_response={}
+    )
 
 
 def alert_user_assignment(alert_id, subject_email, subject_name):
@@ -223,7 +250,12 @@ def alert_user_assignment_command():
     subject_name: str = demisto.args().get('subject_name')
     subject_email: str = demisto.args().get('subject_email')
     alert_user_assignment(alert_id, subject_email, subject_name)
-    return_outputs(f'User: {subject_email} has been assigned to Alert: {alert_id} successfully.', outputs={})
+    context = get_alert_context_no_war_room(alert_id)
+    return_outputs(
+        f'User: {subject_email} has been assigned to Alert: {alert_id} successfully.',
+        context,
+        raw_response={}
+    )
 
 
 def modify_alert_tags(alert_id, addition, tags_list_string):
@@ -248,7 +280,12 @@ def modify_alert_tags_command():
     addition = True if addition_string == 'true' else False
     tags_list_string = demisto.args().get('tags')
     modify_alert_tags(alert_id, addition, tags_list_string)
-    return_outputs('Changes were successfully made.', outputs={})
+    context = get_alert_context_no_war_room(alert_id)
+    return_outputs(
+        'Changes were successfully made.',
+        context,
+        raw_response={}
+    )
 
 
 def get_alert(alert_id):
