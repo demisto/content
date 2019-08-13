@@ -8,6 +8,7 @@ IMPORTS
 
 """
 from datetime import datetime, timedelta
+
 import requests
 import json
 import re
@@ -109,7 +110,7 @@ USE_SSL = not demisto.params()['insecure']
 VERSION = demisto.params()['version']
 IS_FETCH = demisto.params()['isFetch']
 FETCH_TIME = demisto.params().get('fetch_time', '1 days')
-TOKEN = get_token()
+TOKEN = None
 DEFAULT_HEADERS = {
     'Content-Type': 'application/json;charset=UTF-8',
     'Accept': 'application/json; charset=UTF-8',
@@ -567,15 +568,31 @@ def get_alerts():
 
 
 def get_timestamp(timestamp):
-    iso_formats = [
-        "%Y-%m-%dT%H:%M:%S.%fZ"
-    ]
-    for iso_format in iso_formats:
-        try:
-            unix_timestamp = datetime.strptime(timestamp, iso_format)
-            return unix_timestamp
-        except ValueError:  # If wrong time format, will pass
-            pass
+    """Gets a timestamp and parse it
+
+    Args:
+        timestamp (str): timestamp
+
+    Returns:
+        datetime
+
+    Examples:
+        ("2019-08-13T09:56:02.000000Z", "2019-08-13T09:56:02.440")
+
+    """
+    new_timestamp = timestamp
+    iso_format = "%Y-%m-%dT%H:%M:%S.%fZ"
+    if not new_timestamp.endswith('Z'):  # Adds Z if somehow previous task didn't
+        new_timestamp += 'Z'
+    x = new_timestamp[-4]
+    if x == ':':  # if contains no milisecs
+        new_timestamp = new_timestamp[:-1] + '.00000Z'
+    elif x == '.':  # if contains only 3 milisecs
+        new_timestamp = new_timestamp[:-1] + '000Z'
+    try:
+        return datetime.strptime(new_timestamp, iso_format)
+    except ValueError:  # If wrong time format, will pass
+        pass
     raise ValueError("Could not parse timestamp [{}]".format(timestamp))
 
 
@@ -958,6 +975,8 @@ EXECUTION
 
 
 def main():
+    global TOKEN
+    TOKEN = get_token()
     command = demisto.command()
     try:
         handle_proxy()
