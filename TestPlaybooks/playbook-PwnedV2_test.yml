@@ -1,5 +1,5 @@
 id: Pwned test
-version: 11
+version: 14
 name: Pwned test
 starttaskid: "0"
 tasks:
@@ -230,7 +230,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2295
         }
       }
     note: false
@@ -294,7 +294,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1945
         }
       }
     note: false
@@ -364,7 +364,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2120
         }
       }
     note: false
@@ -413,7 +413,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "14"
+      - "15"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -466,6 +466,42 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: f8482073-9d86-472b-8576-35d93e9db0f9
+    type: condition
+    task:
+      id: f8482073-9d86-472b-8576-35d93e9db0f9
+      version: -1
+      name: Check paste
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Account.Email.Compromised.Reporters
+            iscontext: true
+          right:
+            value:
+              simple: Pastebin
+    view: |-
+      {
+        "position": {
+          "x": 50,
           "y": 1595
         }
       }
@@ -479,7 +515,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2135,
+        "height": 2310,
         "width": 380,
         "x": 50,
         "y": 50
