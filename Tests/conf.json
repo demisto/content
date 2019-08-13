@@ -770,7 +770,8 @@
         {
             "integrations": "RSA Archer",
             "playbookID": "Archer-Test-Playbook",
-            "nightly": true
+            "nightly": true,
+            "timeout" : 1200
         },
         {
             "integrations": "jira",
