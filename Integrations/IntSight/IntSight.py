@@ -1,13 +1,13 @@
-import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import requests
 import json
 import base64
+import sys
 from datetime import datetime
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 requests.packages.urllib3.disable_warnings()
 
