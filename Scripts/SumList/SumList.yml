@@ -1,6 +1,6 @@
 args:
 - default: true
-  description: List to reverse
+  description: List to sum
   isArray: true
   name: value
   required: true
