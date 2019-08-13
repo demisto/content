@@ -1675,7 +1675,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The type of the attribute.
+      description: The type of the attribute. Can be found in the UI inside a specific
+        group or under organization settings.
       isArray: false
       name: attribute_type
       required: true
