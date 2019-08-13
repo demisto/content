@@ -8,11 +8,12 @@ import requests
 API_URL = demisto.params()['url']
 API_ID = demisto.params()['apiid']
 API_SECRET = demisto.params()['secret']
+USE_SSL = not demisto.params().get('insecure', False)
 
 
 def test_module():
     url_suffix = "view/ipv4/8.8.8.8"
-    res = requests.get(API_URL + url_suffix, auth=(API_ID, API_SECRET), verify=False)
+    res = requests.get(API_URL + url_suffix, auth=(API_ID, API_SECRET), verify=USE_SSL)
     if res.status_code == 200:
         demisto.results('ok')
     else:
@@ -20,12 +21,8 @@ def test_module():
 
 
 def send_request(method, url_suffix, data=None):
-    res = None
-    if method == 'GET':
-        res = requests.get(API_URL + url_suffix, auth=(API_ID, API_SECRET), verify=False)
-    elif method == 'POST':
-        res = requests.post(API_URL + url_suffix, auth=(API_ID, API_SECRET), data=json.dumps(data), verify=False)
-
+    res = requests.request(method, API_URL + url_suffix, auth=(API_ID, API_SECRET),
+                           data=json.dumps(data), verify=USE_SSL)
     data = json.loads(res.text)
 
     if res.status_code == 404:
