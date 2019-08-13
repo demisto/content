@@ -1,8 +1,10 @@
-from distutils.util import strtobool
-from typing import Dict
-
 import demistomock as demisto
 from CommonServerPython import *
+
+
+
+from typing import Dict
+
 ''' IMPORTS '''
 
 import requests
@@ -115,14 +117,19 @@ def get_alert_contents(alert):
     }
 
 
-def get_entity_contents_war_room(contents):
+# returns the convention for the war room
+def get_alert_contents_war_room(contents):
     return {
-        'Name': contents.get('Name'),
-        'Type': contents.get('Type'),
-        'Policy': contents.get('Policy'),
-        'Email': contents.get('EmailAddress'),
-        'Tags': contents.get('Labels'),
-        'ID': contents.get('ID')
+        'ID': contents.get('ID'),
+        'Protected Entity': contents.get('EntityName', '').title(),
+        'Content Type': contents.get('AlertType', '').title(),
+        'Alert Date': contents.get('Timestamp', ''),
+        'Status': contents.get('Status', '').title(),
+        'Source': contents.get('Network', '').title(),
+        'Rule': contents.get('RuleName'),
+        'Risk Rating': contents.get('Severity'),
+        'Notes': contents.get('Notes') if contents.get('Notes') != '' else None,
+        'Tags': contents.get('Tags')
     }
 
 
@@ -138,25 +145,21 @@ def get_entity_contents(entity):
         'Profile': entity.get('profile'),
         'EntityGroupID': entity.get('entity_group', {}).get('id'),
         'EntityGroupName': entity.get('entity_group', {}).get('name'),
-        'EntityTypeID': entity.get('type', {}).get('id'),
-        'EntityTypeName': entity.get('name', {}).get('name')
+        'TypeID': entity.get('type', {}).get('id'),
+        'TypeName': entity.get('name', {}).get('name')
     }
 
 
-# returns the convention for the war room
-def get_alert_contents_war_room(contents):
+def get_entity_contents_war_room(contents):
     return {
-        'ID': contents.get('ID'),
-        'Protected Entity': contents.get('EntityName', '').title(),
-        'Content Type': contents.get('AlertType', '').title(),
-        'Alert Date': contents.get('Timestamp', ''),
-        'Status': contents.get('Status', '').title(),
-        'Source': contents.get('Network', '').title(),
-        'Rule': contents.get('RuleName'),
-        'Severity': contents.get('Severity'),
-        'Notes': contents.get('Notes') if contents.get('Notes') != '' else None,
-        'Tags': contents.get('Tags')
+        'Name': contents.get('Name'),
+        'Type': contents.get('Type'),
+        'Policy': contents.get('Policy'),
+        'Email': contents.get('EmailAddress'),
+        'Tags': contents.get('Labels'),
+        'ID': contents.get('ID')
     }
+
 
 def get_authorization_token():
     endpoint: str = '/api-token-auth/'
@@ -176,6 +179,7 @@ def get_authorization_token():
 
 def http_request(method: str, url_suffix: str, params=None, data=None):
     # A wrapper for requests lib to send our requests and handle requests and responses better
+
     res = requests.request(
         method,
         BASE_URL + url_suffix,
@@ -339,8 +343,8 @@ def get_alert_command():
     alert_id = demisto.args().get('alert_id')
     response_content = get_alert(alert_id)
     response_json_fields = response_content.get('alert')
-    if not isinstance(response_json_fields, dict) or len(response_json_fields) <= 0:
-        demisto.results("NO RESULTS FOUND")
+    if not isinstance(response_json_fields, dict) or not response_json_fields <= 0:
+        demisto.results('No alert found.')
     contents = get_alert_contents(response_json_fields)
     contents_war_room = get_alert_contents_war_room(contents)
     context = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents}
