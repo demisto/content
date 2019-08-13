@@ -3,6 +3,7 @@ from CommonServerPython import *
 import re
 from requests import Session
 import requests
+import functools
 import json
 from datetime import datetime
 
@@ -24,6 +25,8 @@ FETCH_TIME_DEFAULT = '3 days'
 FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
 FETCH_TIME = FETCH_TIME if FETCH_TIME and FETCH_TIME.strip() else FETCH_TIME_DEFAULT
 SESSION = Session()
+COOKIE = demisto.getIntegrationContext().get("cookie")
+TOKEN = demisto.getIntegrationContext().get("token")
 
 
 def get_server_url():
@@ -51,12 +54,21 @@ ACTION_TYPE_TO_VALUE = {
 def send_request(path, method='get', body=None, params=None, headers=None):
     body = body if body is not None else {}
     params = params if params is not None else {}
+    headers = headers if headers is not None else get_headers()
 
+    headers['X-SecurityCenter'] = TOKEN
     url = '{}/{}'.format(SERVER_URL, path)
 
-    headers = headers if headers is not None else get_headers()
-    res = SESSION.request(method, url, data=json.dumps(body), params=params, verify=VERIFY_SSL)
-    if res.status_code < 200 or res.status_code >= 300:
+    session_cookie = requests.cookies.create_cookie('TNS_SESSIONID', COOKIE)
+    SESSION.cookies.set_cookie(session_cookie)
+
+    res = SESSION.request(method, url, data=json.dumps(body), params=params, headers=headers, verify=VERIFY_SSL)
+
+    if res.status_code == 403:
+        login()
+        headers['X-SecurityCenter'] = TOKEN
+        return send_request(path, method, body, params, headers)
+    elif res.status_code < 200 or res.status_code >= 300:
         try:
             error = res.json()
         except Exception:
@@ -80,17 +92,21 @@ def send_login_request(login_body):
 
     headers = get_headers()
     res = SESSION.request('post', url, headers=headers, data=json.dumps(login_body), verify=VERIFY_SSL)
+
     if res.status_code < 200 or res.status_code >= 300:
         return_error('Got status code {} with url {} with body {} with headers {}'.format(
             str(res.status_code), url, res.content, str(res.headers)))
+    global COOKIE
+    COOKIE = res.cookies.get('TNS_SESSIONID', COOKIE)
+    demisto.setIntegrationContext({"cookie": COOKIE})
 
     return res.json()
 
 
-def login(user_name, password):
+def login():
     login_body = {
-        'username': user_name,
-        'password': password
+        'username': USERNAME,
+        'password': PASSWORD
     }
     login_response = send_login_request(login_body)
 
@@ -98,7 +114,7 @@ def login(user_name, password):
         return_error('Could not retrieve login token')
 
     token = login_response['response'].get('token')
-    # There might be a case where the API does not return a token because there are too many sessions with the same user.
+    # There might be a case where the API does not return a token because there are too many sessions with the same user
     # In that case we need to add 'releaseSession = true'
     if not token:
         login_body['releaseSession'] = 'true'
@@ -106,8 +122,9 @@ def login(user_name, password):
         if 'response' not in login_response or 'token' not in login_response['response']:
             return_error('Could not retrieve login token')
         token = login_response['response']['token']
-
-    return token
+    global TOKEN
+    TOKEN = str(token)
+    demisto.setIntegrationContext({"token": TOKEN})
 
 
 def logout():
@@ -508,8 +525,8 @@ def list_report_definitions_command():
 
     reports = get_elements(res['response'], manageable)
     # Remove duplicates, take latest
-    reports = [reduce(lambda x, y: x if int(x['modifiedTime']) > int(y['modifiedTime']) else y,
-                      filter(lambda e: e['name'] == n, reports)) for n in {r['name'] for r in reports}]
+    reports = [functools.reduce(lambda x, y: x if int(x['modifiedTime']) > int(y['modifiedTime']) else y,
+                                filter(lambda e: e['name'] == n, reports)) for n in {r['name'] for r in reports}]
 
     if len(reports) == 0:
         return_message('No report definitions found')
@@ -852,8 +869,8 @@ def get_scan_report_command():
 
     scan_results = res['response']
 
-    headers = ['ID', 'Name', 'Description', 'Policy', 'Group', 'Owner', 'Group', 'ScannedIPs',
-               'StartTime', 'EndTime', 'Duration', 'Checks', 'ImportTime''RepositoryName', 'Status']
+    headers = ['ID', 'Name', 'Description', 'Policy', 'Group', 'Owner', 'ScannedIPs',
+               'StartTime', 'EndTime', 'Duration', 'Checks', 'ImportTime', 'RepositoryName', 'Status']
     vuln_headers = ['ID', 'Name', 'Family', 'Severity', 'Total']
 
     mapped_results = {
@@ -992,15 +1009,15 @@ def get_vulnearbilites(scan_results_id):
 
         mapped_vulns.append(mapped_vuln)
 
-    sv = [
-        'Critical',
-        'High',
-        'Medium',
-        'Low',
-        'Info'
-    ]
+    sv_level = {
+        'Critical': 4,
+        'High': 3,
+        'Medium': 2,
+        'Low': 1,
+        'Info': 0
+    }
 
-    mapped_vulns.sort(key=lambda r: r['Severity'], cmp=lambda a, b: sv.index(str(a)) - sv.index(str(a)))
+    mapped_vulns.sort(key=lambda r: sv_level[r['Severity']])
 
     return mapped_vulns
 
@@ -1021,14 +1038,15 @@ def create_query(scan_id, tool, query_filters=None):
     return send_request(path, method='post', body=body)
 
 
-def get_analysis(query_id, scan_results_id):
+def get_analysis(query, scan_results_id):
     path = 'analysis'
+
+    if not isinstance(query, dict):
+        query = {'id': query}
 
     body = {
         'type': 'vuln',
-        'query': {
-            'id': query_id
-        },
+        'query': query,
         'sourceType': 'individual',
         'scanID': scan_results_id,
         'view': 'all'
@@ -1047,12 +1065,16 @@ def get_vulnerability_command():
         'value': vuln_id
     }]
 
-    query = create_query(scan_results_id, 'vulnipdetail', vuln_filter)
+    query = {
+        "scanID": scan_results_id,
+        "filters": vuln_filter,
+        "tool": "vulndetails",
+        "type": "vuln",
+        "startOffset": 0,
+        "endOffset": 50
+    }
 
-    if not query or 'response' not in query:
-        return_error('Could not get vulnerability query')
-
-    analysis = get_analysis(query['response']['id'], scan_results_id)
+    analysis = get_analysis(query, scan_results_id)
 
     if not analysis or 'response' not in analysis:
         return_error('Could not get vulnerability analysis')
@@ -1069,12 +1091,7 @@ def get_vulnerability_command():
 
     vuln = vuln_response['response']
 
-    vuln['severity'] = results[0]['severity']
-    vuln['hosts'] = results[0]['hosts']
-
-    vuln_hosts = vuln['hosts']
-    severity = vuln['severity'].get('name')
-    hosts = [{'IP': h['ip'], 'MAC': h['macAddress']} for h in demisto.dt(vuln_hosts, 'iplist')]
+    hosts = [{'IP': h['ip'], 'MAC': h['macAddress'], "Port": h['port'], "Protocol": h['protocol']} for h in results]
 
     cves = None
     cves_output = []  # type: List[dict]
@@ -1092,10 +1109,9 @@ def get_vulnerability_command():
         'Name': vuln['name'],
         'Description': vuln['description'],
         'Type': vuln['type'],
-        'Severity': severity,
+        'Severity': results[0]['severity'].get('name'),
         'Synopsis': vuln['synopsis'],
-        'Solution': vuln['solution'],
-
+        'Solution': vuln['solution']
     }
 
     vuln_info = {
@@ -1139,6 +1155,7 @@ def get_vulnerability_command():
     mapped_vuln.update(exploit_info)
     mapped_vuln.update(risk_info)
     mapped_vuln['PluginDetails'] = plugin_details
+    mapped_vuln['Hosts'] = hosts
 
     scan_result = {
         'ID': scan_results_id,
@@ -1685,12 +1702,67 @@ def fetch_incidents():
     demisto.setLastRun({'time': max_timestamp})
 
 
+def request_scan_results():
+    path = 'scanResult'
+    params = {
+        'fields': 'name,description,details,status,scannedIPs,startTime,scanDuration,importStart,'
+                  'finishTime,completedChecks,owner,ownerGroup,repository'
+    }
+    return send_request(path, params=params)
+
+
+def get_all_scan_results_command():
+    res = request_scan_results()
+    manageable = demisto.args().get('manageable', 'false').lower()
+
+    if not res or 'response' not in res or not res['response']:
+        return_message('Scan results not found')
+
+    elements = get_elements(res['response'], manageable)
+
+    headers = ['ID', 'Name', 'Description', 'Policy', 'Group', 'Owner', 'ScannedIPs',
+               'StartTime', 'EndTime', 'Duration', 'Checks', 'ImportTime', 'RepositoryName', 'Status']
+
+    scan_results = [{
+        'ID': elem['id'],
+        'Name': elem['name'],
+        'Status': elem['status'],
+        'Description': elem.get('description', None),
+        'Policy': elem['details'],
+        'Group': elem.get('ownerGroup', {}).get('name'),
+        'Checks': elem.get('completedChecks', None),
+        'StartTime': datetime.utcfromtimestamp(int(elem['startTime'])).strftime(
+            '%Y-%m-%dT%H:%M:%SZ') if elem['startTime'] else '',
+        'EndTime': datetime.utcfromtimestamp(int(elem['finishTime'])).strftime(
+            '%Y-%m-%dT%H:%M:%SZ') if elem['finishTime'] else '',
+        'Duration': float(elem['scanDuration']) / 60 if elem['scanDuration'] else '',
+        'ImportTime': datetime.utcfromtimestamp(int(elem['importStart'])).strftime(
+            '%Y-%m-%dT%H:%M:%SZ') if elem['importStart'] else '',
+        'ScannedIPs': elem['scannedIPs'],
+        'Owner': elem['owner'].get('username'),
+        'RepositoryName': elem['repository'].get('name')
+    } for elem in elements]
+
+    hr = tableToMarkdown('Tenable.sc Scan results', scan_results, headers, removeNull=True)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': res,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': hr,
+        'EntryContext': {
+            'TenableSC.ScanResults(val.ID===obj.ID)': createContext(scan_results, removeNull=True)
+        }
+    })
+
+
 ''' LOGIC '''
 
 LOG('Executing command ' + demisto.command())
 
-token = login(USERNAME, PASSWORD)
-SESSION.headers.update({'X-SecurityCenter': str(token)})
+if not TOKEN or not COOKIE:
+    login()
 
 try:
     if demisto.command() == 'test-module':
@@ -1743,9 +1815,11 @@ try:
         get_system_information_command()
     elif demisto.command() == 'tenable-sc-get-system-licensing':
         get_system_licensing_command()
+    elif demisto.command() == 'tenable-sc-get-all-scan-results':
+        get_all_scan_results_command()
 except Exception as e:
     LOG(e)
     LOG.print_log(False)
-    return_error(e.message)
+    return_error(e)
 finally:
     logout()
