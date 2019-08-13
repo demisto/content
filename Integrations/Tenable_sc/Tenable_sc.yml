@@ -190,6 +190,18 @@ script:
     - contextPath: CVE.ID
       description: CVE ID
       type: Unknown
+    - contextPath: TenableSC.ScanResults.Vulnerability.Hosts.IP
+      description: Vulnerability Host IP
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.Hosts.MAC
+      description: Vulnerability Host MAC
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.Hosts.Port
+      description: Vulnerability Host Port
+      type: number
+    - contextPath: TenableSC.ScanResults.Vulnerability.Hosts.Protocol
+      description: Vulnerability Host Protocol
+      type: string
   - arguments:
     - default: false
       description: Scan results ID from the launch-scan command
