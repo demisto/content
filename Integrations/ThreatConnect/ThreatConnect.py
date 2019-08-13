@@ -180,7 +180,7 @@ def ip_command():
     args = demisto.args()
     owners = args.get('owners', demisto.params().get('defaultOrg'))
     if not owners:
-        return_error('you must specify an owner via the command or the Organization parameter')
+        return_error('You must specify an owner in the command, or by using the Organization parameter.')
     rating_threshold = int(args.get('ratingThreshold', -1))
     confidence_threshold = int(args.get('confidenceThreshold', -1))
     ip_addr = args['ip']
@@ -213,7 +213,7 @@ def url_command():
     args = demisto.args()
     owners = args.get('owners', demisto.params().get('defaultOrg'))
     if not owners:
-        return_error('you must specify an owner via the command or the Organization parameter')
+        return_error('You must specify an owner in the command, or by using the Organization parameter.')
     url_addr = args['url']
     parsed_url = urlparse(url_addr)
     if not parsed_url.scheme:
@@ -247,7 +247,7 @@ def file_command():
     args = demisto.args()
     owners = args.get('owners', demisto.params().get('defaultOrg'))
     if not owners:
-        return_error('you must specify an owner via the command or the Organization parameter')
+        return_error('You must specify an owner in the command, or by using the Organization parameter.')
     file_name = args['file']
     rating_threshold = int(args.get('ratingThreshold', -1))
     confidence_threshold = int(args.get('confidenceThreshold', -1))
@@ -278,7 +278,7 @@ def domain_command():
     args = demisto.args()
     owners = args.get('owners', demisto.params().get('defaultOrg'))
     if not owners:
-        return_error('you must specify an owner via the command or the Organization parameter')
+        return_error('You must specify an owner in the command, or by using the Organization parameter.')
     rating_threshold = int(args.get('ratingThreshold', -1))
     confidence_threshold = int(args.get('confidenceThreshold', -1))
     domain_addr = args['domain']
@@ -496,7 +496,7 @@ def tc_add_indicator_command():
     indicator = args['indicator']
     owner = args.get('owner', demisto.params().get('defaultOrg'))
     if not owner:
-        return_error('you must specify an owner via the command or the Organization parameter')
+        return_error('You must specify an owner in the command, or by using the Organization parameter.')
 
     rating = int(args.get('rating', 0))
     confidence = int(args.get('confidence', 0))
@@ -532,7 +532,7 @@ def tc_create_incident_command():
     incident_name = args['incidentName']
     owner = args.get('owner', demisto.params()['defaultOrg'])
     if not owner:
-        return_error('you must specify an owner via the command or the Organization parameter')
+        return_error('You must specify an owner in the command, or by using the Organization parameter.')
 
     event_date = args.get('eventDate', datetime.utcnow().isoformat().split('.')[0] + 'Z')
     tag = args.get('tag')
@@ -854,7 +854,7 @@ def tc_create_campaign_command():
     name = args['name']
     owner = args.get('owner', demisto.params()['defaultOrg'])
     if owner == '':
-        return_error('you must specify an owner via the command or the Organization parameter')
+        return_error('You must specify an owner in the command, or by using the Organization parameter.')
 
     first_seen = args.get('firstSeen', datetime.utcnow().isoformat().split('.')[0] + 'Z')
     tag = args.get('tag')
@@ -924,7 +924,7 @@ def tc_create_event_command():
     status = args.get('status')
     owner = args.get('owner', demisto.params()['defaultOrg'])
     if owner == '':
-        return_error('you must specify an owner via the command or the Organization parameter')
+        return_error('You must specify an owner in the command, or by using the Organization parameter.')
 
     description = args.get('description')
     tag = args.get('tag')
@@ -991,7 +991,7 @@ def tc_create_threat_command():
     date = args.get('dateAdded', datetime.utcnow().isoformat().split('.')[0] + 'Z')
     owner = args.get('owner', demisto.params()['defaultOrg'])
     if owner == '':
-        return_error('you must specify an owner via the command or the Organization parameter')
+        return_error('You must specify an owner in the command, or by using the Organization parameter.')
 
     raw_threat = tc_create_threat(name, owner, date)
     ec = {
@@ -1139,7 +1139,7 @@ def get_events_request():
 
 def tc_get_events():
     raw_response = get_events_request()
-    data = raw_response.get('data', {}).get('event', {})
+    data = raw_response.get('data', {}).get('event', [])
     content = []
     headers = ['ID', 'Name', 'OwnerName', 'EventDate', 'DateAdded', 'Status']
 
@@ -1170,26 +1170,26 @@ def tc_get_indicator_types_request():
 
 def tc_get_indicator_types():
     raw_response = tc_get_indicator_types_request()
-    data = raw_response.get('data', {}).get('indicatorType', {})
+    data = raw_response.get('data', {}).get('indicatorType', [])
     content = []
     headers = ['Name', 'Custom', 'Parsable', 'ApiBranch', 'CasePreference', 'value1Label', 'Value1Type']
 
-    for type in data:
+    for type_ in data:
         content.append({
-            'Custom': type.get('custom'),
-            'Name': type.get('name'),
-            'Parsable': type.get('parsable'),
-            'ApiBranch': type.get('apiBranch'),
-            'ApiEntity': type.get('apiEntity'),
-            'CasePreference': type.get('casePreference'),
-            'value1Label': type.get('value1Label'),
-            'Value1Type': type.get('value1Type')
+            'Custom': type_.get('custom'),
+            'Name': type_.get('name'),
+            'Parsable': type_.get('parsable'),
+            'ApiBranch': type_.get('apiBranch'),
+            'ApiEntity': type_.get('apiEntity'),
+            'CasePreference': type_.get('casePreference'),
+            'Value1Label': type_.get('value1Label'),
+            'Value1Type': type_.get('value1Type')
         })
     context = {
-        'TC.Indicator(val.Name && val.Name === obj.Name)': content
+        'TC.IndicatorType(val.Name && val.Name === obj.Name)': content
     }
 
-    return_outputs(tableToMarkdown('ThreatConnect Indicator types', content, headers, removeNull=True), context,
+    return_outputs(tableToMarkdown('ThreatConnect indicator types', content, headers, removeNull=True), context,
                    raw_response)
 
 
@@ -1281,6 +1281,59 @@ def tc_get_groups():
                    raw_response)
 
 
+def create_document_group_request(file_name, name, owner, res, malware, password, security_label, description):
+    tc = get_client()
+    documents = tc.documents()
+
+    document = documents.add(name, owner)
+    document.set_file_name(file_name)
+
+    # open a file handle for a local file and read the contents thereof
+    f = open(res['path'], 'rb')
+    contents = f.read()
+    # upload the contents of the file into the Document
+    document.upload(contents)
+    if malware:
+        document.set_malware(True)
+        document.set_password(password)
+    if security_label:
+        document.set_security_label(security_label)
+    if description:
+        document.add_attribute('Description', description)
+
+    return json.loads(document.commit().json)
+
+
+def create_document_group():
+    file_name = demisto.args().get('file_name')
+    name = demisto.args().get('name')
+    malware = bool(demisto.args().get('malware'))
+    password = demisto.args().get('password')
+    res = demisto.getFilePath(demisto.args()['entry_id'])
+    owner = demisto.args().get('owner', demisto.params()['defaultOrg'])
+    if not owner:
+        return_error('You must specify an owner in the command, or by using the Organization parameter.')
+
+    security_label = demisto.args().get('securityLabel')
+    description = demisto.args().get('description')
+
+    raw_document = create_document_group_request(file_name, name, owner, res, malware, password, security_label,
+                                                 description)
+    content = {
+        'ID': raw_document.get('id'),
+        'Name': raw_document.get('name'),
+        'Owner': raw_document.get('ownerName'),
+        'EventDate': raw_document.get('eventDate'),
+        'Description': description,
+        'SecurityLabel': security_label
+    }
+    context = {
+        'TC.Group(val.ID && val.ID === obj.ID)': content
+    }
+    return_outputs(tableToMarkdown('ThreatConnect document group created successfully', content, removeNull=True),
+                   context, raw_document)
+
+
 def test_integration():
     tc = get_client()
     owners = tc.owners()
@@ -1321,7 +1374,8 @@ COMMANDS = {
     'tc-add-group-security-label': add_group_security_label,
     'tc-add-group-tag': add_group_tag,
     'tc-get-indicator-types': tc_get_indicator_types,
-    'tc-group-associate-indicator': associate_indicator
+    'tc-group-associate-indicator': associate_indicator,
+    'tc-create-document-group': create_document_group
 }
 
 try:
