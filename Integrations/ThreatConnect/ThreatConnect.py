@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 from urlparse import urlparse
 from datetime import timedelta
+from distutils.util import strtobool
 from threatconnect import ThreatConnect
 from threatconnect.RequestObject import RequestObject
 from threatconnect.Config.ResourceType import ResourceType
@@ -1322,7 +1323,7 @@ def create_document_group_request(contents, file_name, name, owner, res, malware
 def create_document_group():
     file_name = demisto.args().get('file_name')
     name = demisto.args().get('name')
-    malware = bool(demisto.args().get('malware'))
+    malware = bool(strtobool(demisto.args().get('malware', False)))
     password = demisto.args().get('password')
     res = demisto.getFilePath(demisto.args()['entry_id'])
     owner = demisto.args().get('owner', demisto.params().get('defaultOrg'))

@@ -800,6 +800,7 @@ tasks:
     nexttasks:
       '#none#':
       - "30"
+      - "37"
     scriptarguments:
       group_type:
         simple: events
@@ -827,6 +828,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
     separatecontext: false
     view: |-
       {
@@ -889,6 +893,7 @@ tasks:
     nexttasks:
       '#none#':
       - "33"
+      - "39"
     scriptarguments:
       attribute_type:
         simple: External ID
@@ -992,7 +997,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+      - "38"
     scriptarguments:
       group_id:
         simple: ${TC.Event.ID}
@@ -1036,7 +1041,156 @@ tasks:
       {
         "position": {
           "x": -510,
-          "y": 1670
+          "y": 1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "36":
+    id: "36"
+    taskid: eca43b33-4a32-4904-8b4f-e63bbafb92ed
+    type: condition
+    task:
+      id: eca43b33-4a32-4904-8b4f-e63bbafb92ed
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: TC.IndicatorType.ApiBranch
+            iscontext: true
+          right:
+            value:
+              simple: emailAddresses
+      - - operator: isEqualString
+          left:
+            value:
+              simple: TC.IndicatorType.ApiBranch
+            iscontext: true
+          right:
+            value:
+              simple: urls
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "37":
+    id: "37"
+    taskid: 96871af1-5d84-4219-867f-11ff63a8c635
+    type: condition
+    task:
+      id: 96871af1-5d84-4219-867f-11ff63a8c635
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: TC.Group.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: TC.Group.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -970,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "38":
+    id: "38"
+    taskid: 1b6ff7ef-11c2-4d16-85b3-6d43cc156340
+    type: condition
+    task:
+      id: 1b6ff7ef-11c2-4d16-85b3-6d43cc156340
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: TC.Group.GroupID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: TC.Group.Indicator
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -510,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "39":
+    id: "39"
+    taskid: 09375337-8e00-4e62-849a-4639fdc8f16a
+    type: condition
+    task:
+      id: 09375337-8e00-4e62-849a-4639fdc8f16a
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: TC.Group.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: TC.Group.Type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 1100
         }
       }
     note: false
@@ -1048,8 +1202,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2805,
-        "width": 2720,
-        "x": -510,
+        "width": 3180,
+        "x": -970,
         "y": 50
       }
     }
