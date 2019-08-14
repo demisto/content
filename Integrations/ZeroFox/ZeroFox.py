@@ -17,8 +17,6 @@ PASSWORD = None
 USE_SSL = None
 # Service base URL
 BASE_URL = None
-# Headers to be sent in requests
-HEADERS = None
 # default fetch time
 FETCH_TIME_DEFAULT = '3 days'
 FETCH_TIME = None
@@ -78,13 +76,6 @@ def initialize_preset():
     FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
     # Remove proxy if not set to true in params
     handle_proxy()
-    token = get_authorization_token()
-    global HEADERS
-    HEADERS = {
-        'Authorization': f'Token {token}',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    }
 
 
 def get_alert_contents(alert):
@@ -178,12 +169,16 @@ def get_entity_contents_war_room(contents):
 
 
 def get_authorization_token():
+    integration_context = demisto.getIntegrationContext()
+    token = integration_context.get('token')
+    if token:
+        return token
     url_suffix: str = '/api-token-auth/'
     data_for_request: Dict = {
         'username': USERNAME,
         'password': PASSWORD
     }
-    response_content = http_request('POST', url_suffix, data=data_for_request, continue_err=True)
+    response_content = http_request('POST', url_suffix, data=data_for_request, continue_err=True, regular_request=False)
     if not response_content or not isinstance(response_content, Dict):
         raise Exception('Unexpected outputs from API call.')
     token = response_content.get('token')
@@ -193,20 +188,26 @@ def get_authorization_token():
             raise Exception('Unexpected outputs from API call.')
         else:
             raise Exception(x[0])
-    # TODO: use integration context to store the token
+    demisto.setIntegrationContext({'token': token})
     return token
 
 
-def http_request(method: str, url_suffix: str, params=None, data=None, continue_err=False):
+def http_request(method: str, url_suffix: str, params=None, data=None, continue_err=False, regular_request=True):
     # A wrapper for requests lib to send our requests and handle requests and responses better
     try:
+        token = get_authorization_token()
+        headers = {
+            'Authorization': f'Token {token}',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
         res = requests.request(
             method,
             BASE_URL + url_suffix,
             verify=USE_SSL,
             params=params,
             data=data,
-            headers=HEADERS
+            headers=headers
         )
         # Handle error responses gracefully
         if res.status_code not in {200, 201} and not continue_err:
