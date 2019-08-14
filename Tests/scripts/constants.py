@@ -105,6 +105,10 @@ FILE_TYPES_FOR_TESTING = [
     '.yml'
 ]
 
+# github repository url
+CONTENT_GITHUB_LINK = r'https://raw.githubusercontent.com/demisto/content'
+CONTENT_GITHUB_MASTER_LINK = CONTENT_GITHUB_LINK + '/master'
+
 # Run all test signal
 RUN_ALL_TESTS_FORMAT = "Run all tests"
 FILTER_CONF = "./Tests/filter_file.txt"
