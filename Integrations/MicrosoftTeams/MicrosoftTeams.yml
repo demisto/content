@@ -57,7 +57,6 @@ configuration:
 description: Send messages and notifications to your Microsoft Teams team members.
 display: Microsoft Teams
 name: Microsoft Teams
-fromversion: 5.0.0
 script:
   commands:
   - arguments:
@@ -149,6 +148,9 @@ script:
     description: Delete a Teams channel
     execution: false
     name: close-channel
+  - deprecated: false
+    execution: false
+    name: test-command
   dockerimage: demisto/teams:1.0.0.1405
   isfetch: false
   longRunning: true
@@ -157,4 +159,5 @@ script:
   script: '-'
   type: python
 tests:
-  - No test
+- No test
+fromversion: 5.0.0

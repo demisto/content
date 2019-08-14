@@ -980,6 +980,7 @@ def mirror_investigation():
             'channel_name': channel_name
         })
         demisto.results(f'Investigation mirrored successfully in channel incident-{investigation_id}.')
+    team['mirrored_channels'] = mirrored_channels
     integration_context['teams'] = json.dumps(teams)
     demisto.setIntegrationContext(integration_context)
 
@@ -1011,12 +1012,15 @@ def channel_mirror_loop():
                             demisto.info(f'Mirrored incident: {investigation_id} to Microsoft Teams successfully')
                         else:
                             demisto.info(f'Could not mirror {investigation_id}')
+                        team['mirrored_channels'] = mirrored_channels
+                        integration_context['teams'] = json.dumps(teams)
                         demisto.setIntegrationContext(integration_context)
                         found_channel_to_mirror = True
                         break
                 if found_channel_to_mirror:
                     break
         except Exception as e:
+            demisto.error(f'An error occurred in channel mirror loop: {str(e)}')
             demisto.updateModuleHealth(f'An error occurred: {str(e)}')
         finally:
             time.sleep(5)
@@ -1054,6 +1058,7 @@ def member_added_handler(request_body: dict, service_url: str, channel_data: dic
         member_id = member.get('id', '')
         if bot_id in member_id:
             # The bot was added to a team, caching team ID and team members
+            demisto.info(f'The bot was added to team {team_name}')
             integration_context['tenant_id'] = tenant_id
             integration_context['bot_name'] = recipient_name
             break
@@ -1239,15 +1244,19 @@ def messages() -> Response:
         value: dict = request_body.get('value', {})
 
         if event_type == 'teamMemberAdded':
+            demisto.info('New Microsoft Teams team member was added')
             member_added_handler(request_body, service_url, channel_data)
         elif value:
             # In TeamsAsk process
+            demisto.info('Got response from user in MicrosoftTeamsAsk process')
             entitlement_handler(integration_context, request_body, value, conversation_id)
         elif conversation_type == 'personal':
+            demisto.info('Got direct message to the bot')
             direct_message_handler(integration_context, request_body, conversation, formatted_message)
         else:
+            demisto.info('Got message mentioning the bot')
             message_handler(integration_context, request_body, channel_data, formatted_message)
-
+    demisto.info('Finished processing Microsoft Teams activity successfully')
     demisto.updateModuleHealth('')
     return Response(status=200)
 
@@ -1263,9 +1272,11 @@ def long_running_loop():
         else:
             raise ValueError('No port mapping was provided')
         Thread(target=channel_mirror_loop, daemon=True).start()
+        demisto.info('Started channel mirror loop thread')
         http_server = WSGIServer(('', port), APP)
         http_server.serve_forever()
     except Exception as e:
+        demisto.error(f'An error occurred in long running loop: {str(e)}')
         raise ValueError(str(e))
 
 
@@ -1275,6 +1286,10 @@ def test_module():
     """
     get_bot_access_token()
     demisto.results('ok')
+
+
+def test_command():
+    print(demisto.getIntegrationContext())
 
 
 def main():
@@ -1287,7 +1302,8 @@ def main():
         'mirror-investigation': mirror_investigation,
         'close-channel': close_channel,
         # 'microsoft-teams-create-team': create_team,
-        # 'microsoft-teams-send-file': send_file
+        # 'microsoft-teams-send-file': send_file,
+        'test-command': test_command
     }
 
     ''' EXECUTION '''
