@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: aff925c2-c0f9-4e1c-91f2-4c70147b3f8a
+  id: google-vision-api
   version: -1
 configuration:
 - display: Google service account JSON (a credentials JSON generated from Google API
@@ -17,9 +17,8 @@ configuration:
   required: false
   type: 8
 description: Image processing with Google Vision API
-detaileddescription: Enter integrations instructions and help here (Markdown supported)
 display: Google Vision API
-name: aff925c2-c0f9-4e1c-91f2-4c70147b3f8a
+name: google-vision-api
 script:
   commands:
   - arguments:
@@ -33,7 +32,7 @@ script:
     description: Detects brand logos in the given image
     execution: false
     name: vision-detect-logos
-  dockerimage: pingunaut/google-vision-api:1.0.0.1565181947
+  dockerimage: demisto/google-vision-api:1.0.0.1388
   isfetch: false
   runonce: false
   script: '-'
