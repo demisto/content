@@ -78,6 +78,13 @@ def initialize_preset():
     FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
     # Remove proxy if not set to true in params
     handle_proxy()
+    token = get_authorization_token()
+    global HEADERS
+    HEADERS = {
+        'Authorization': f'Token {token}',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
 
 
 def get_alert_contents(alert):
@@ -193,13 +200,6 @@ def get_authorization_token():
 def http_request(method: str, url_suffix: str, params=None, data=None, continue_err=False):
     # A wrapper for requests lib to send our requests and handle requests and responses better
     try:
-        token = get_authorization_token()
-        global HEADERS
-        HEADERS = {
-            'Authorization': f'Token {token}',
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
         res = requests.request(
             method,
             BASE_URL + url_suffix,
