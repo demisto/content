@@ -1032,7 +1032,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Groupd ID by which to filter, for example: "225494730938493804".'
+      description: 'Group ID by which to filter, for example: "225494730938493804".'
       isArray: false
       name: group_id
       required: false
@@ -1282,7 +1282,7 @@ script:
     name: sentinelone-get-events
     outputs:
     - contextPath: SentinelOne.Event.ProcessUID
-      description: Process unique idenntifier
+      description: Process unique identifier
       type: String
     - contextPath: SentinelOne.Event.SHA256
       description: File SHA256
@@ -1353,7 +1353,7 @@ script:
       description: From date
       type: Date
     - contextPath: SentinelOne.Query.Query
-      description: The serach query
+      description: The search query
       type: String
     - contextPath: SentinelOne.Query.QueryID
       description: The query ID
@@ -1412,7 +1412,7 @@ script:
       description: Parent process name
       type: String
     - contextPath: SentinelOne.Event.SiteName
-      description: Sitee name
+      description: Site name
       type: String
     - contextPath: SentinelOne.Event.EventType
       description: The event type
