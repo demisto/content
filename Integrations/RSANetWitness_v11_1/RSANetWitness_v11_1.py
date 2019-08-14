@@ -269,7 +269,6 @@ def get_incidents_request(since=None, until=None, page_number=None, page_size=10
         headers=DEFAULT_HEADERS,
         url_params=url_params
     )
-
     return response
 
 
@@ -610,7 +609,7 @@ def fetch_incidents():
         # convert to ISO 8601 format and add Z suffix
         timestamp = last_fetch.isoformat() + 'Z'
 
-    LOG('Fetching incidents since ' + timestamp)
+    LOG('Fetching incidents since {}'.format(timestamp))
     netwitness_incidents = get_all_incidents(
         since=timestamp,
         limit=100
@@ -626,7 +625,6 @@ def fetch_incidents():
     import_alerts = demisto.params().get('importAlerts')
 
     for incident in netwitness_incidents:
-
         incident_timestamp = incident.get('created')
         if incident_timestamp == timestamp:
             continue
@@ -905,15 +903,6 @@ def parse_event_to_md_representation(event):
     return md_content
 
 
-def return_error_entry(message):
-    error_entry = {
-        'Type': entryTypes['error'],
-        'Contents': message,
-        'ContentsFormat': formats['text']
-    }
-    demisto.results(error_entry)
-
-
 def header_transformer(header):
     """
     e.g. input: 'someHeader' output: 'Some Header '
@@ -995,14 +984,12 @@ def main():
             delete_incident()
         elif command == 'netwitness-get-alerts':
             get_alerts()
-        sys.exit(0)
     except ValueError as e:
-        LOG(e.message)
-        LOG.print_log()
         if command == 'fetch-incidents':  # fetch-incidents supports only raising exceptions
+            LOG(e.message)
+            LOG.print_log()
             raise
-        return_error_entry(e.message)
-        sys.exit(1)
+        return_error(str(e))
 
 
 if __name__ in ('__builtin__', 'builtins'):
