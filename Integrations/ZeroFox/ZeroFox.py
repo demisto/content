@@ -3,7 +3,7 @@ from CommonServerPython import *
 
 
 
-from typing import Dict
+from typing import Dict, List, Any, cast
 
 ''' IMPORTS '''
 
@@ -34,6 +34,7 @@ FETCH_TIME = None
 ''' HELPER FUNCTIONS '''
 
 
+# transforms severity number to string representation
 def severity_num_to_string(severity_num):
     if severity_num == 1:
         return 'Info'
@@ -45,6 +46,7 @@ def severity_num_to_string(severity_num):
         return 'High'
     elif severity_num == 5:
         return 'Critical'
+
 
 # transforms an alert to incident convention
 def alert_to_incident(alert):
@@ -140,7 +142,7 @@ def get_alert_contents_war_room(contents):
         'Source': contents.get('Network', '').title(),
         'Rule': contents.get('RuleName'),
         'Risk Rating': contents.get('RiskRating'),
-        'Notes': contents.get('Notes') if contents.get('Notes') != '' else None,
+        'Notes': contents.get('Notes') if contents.get('Notes') else None,
         'Tags': contents.get('Tags')
     }
 
@@ -174,48 +176,79 @@ def get_entity_contents_war_room(contents):
 
 
 def get_authorization_token():
-    endpoint: str = '/api-token-auth/'
+    url_suffix: str = '/api-token-auth/'
     data_for_request: Dict = {
         'username': USERNAME,
         'password': PASSWORD
     }
-    request_response = http_request('POST', endpoint, data=data_for_request)
-    global TOKEN, HEADERS
-    TOKEN = request_response.get('token')
+    response_content = http_request('POST', url_suffix, data=data_for_request, continue_err=True)
+    if not response_content or not isinstance(response_content, Dict):
+        raise Exception('Unexpected outputs from API call.')
+    token = response_content.get('token')
+    if not token:
+        x = response_content.get('non_field_errors')
+        if not x or not isinstance(x, List):
+            raise Exception('Unexpected outputs from API call.')
+        else:
+            raise Exception(x[0])
+    global HEADERS
     HEADERS = {
-        'Authorization': f'Token {TOKEN}',
+        'Authorization': f'Token {token}',
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     }
 
 
-def http_request(method: str, url_suffix: str, params=None, data=None):
+def http_request(method: str, url_suffix: str, params=None, data=None, continue_err=False):
     # A wrapper for requests lib to send our requests and handle requests and responses better
-
-    res = requests.request(
-        method,
-        BASE_URL + url_suffix,
-        verify=USE_SSL,
-        params=params,
-        data=data,
-        headers=HEADERS
-    )
-    # Handle error responses gracefully
-    if res.status_code not in {200, 201}:
-        err_msg: str = f'Error in ZeroFox Integration API call [{res.status_code}] - {res.reason}\n'
-        try:
-            res_json = res.json()
-            if 'error' in res_json:
-                err_msg += res_json.get('error')
-        except ValueError:
-            err_msg += res.content
-        finally:
-            raise ValueError(err_msg)
-    else:
-        try:
-            return res.json()
-        except ValueError:
-            return res.content
+    try:
+        res = requests.request(
+            method,
+            BASE_URL + url_suffix,
+            verify=USE_SSL,
+            params=params,
+            data=data,
+            headers=HEADERS
+        )
+        demisto.info('bla bla bla ' + str(res))
+        # Handle error responses gracefully
+        if res.status_code not in {200, 201} and not continue_err:
+            err_msg: str = f'Error in ZeroFox Integration API call [{res.status_code}] - {res.reason}\n'
+            try:
+                res_json = res.json()
+                if 'error' in res_json:
+                    err_msg += res_json.get('error')
+            except ValueError:
+                err_msg += res.content
+            finally:
+                raise ValueError(err_msg)
+        else:
+            try:
+                return res.json()
+            except ValueError:
+                return res.content
+    except requests.exceptions.ConnectTimeout:
+        err_msg = 'Connection Timeout Error - potential reasons may be that the Server URL parameter' \
+                  ' is incorrect or that the Server is not accessible from your host.'
+        raise Exception(err_msg)
+    except requests.exceptions.SSLError:
+        err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' in' \
+                  ' the integration configuration.'
+        raise Exception(err_msg)
+    except requests.exceptions.ProxyError:
+        err_msg = 'Proxy Error - if \'Use system proxy\' in the integration configuration has been' \
+                  ' selected, try deselecting it.'
+        raise Exception(err_msg)
+    except requests.exceptions.ConnectionError as e:
+        # Get originating Exception in Exception chain
+        while '__context__' in dir(e) and e.__context__:
+            e = cast(Any, e.__context__)
+        error_class = str(e.__class__)
+        err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+        err_msg = f'\nERRTYPE: {err_type}\nERRNO: [{e.errno}]\nMESSAGE: {e.strerror}\n' \
+                  f'ADVICE: Check that the Server URL parameter is correct and that you' \
+                  f' have access to the Server from your host.'
+        return_error(err_msg)
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -315,7 +348,7 @@ def alert_user_assignment_command():
 def modify_alert_tags(alert_id, action, tags_list_string):
     url_suffix: str = '/alerttagchangeset/'
     tags_list_name: str = 'added' if action else 'removed'
-    tags_list: list = tags_list_string.split(',')
+    tags_list: list = argToList(tags_list_string, separator=',')
     request_body: Dict = {
         'changes': [
             {
@@ -344,21 +377,23 @@ def modify_alert_tags_command():
 
 def get_alert(alert_id):
     url_suffix: str = f'/alerts/{alert_id}/'
-    response_content = http_request('GET', url_suffix)
+    response_content = http_request('GET', url_suffix, continue_err=True)
     return response_content
 
 
 def get_alert_command():
     alert_id = demisto.args().get('alert_id')
     response_content = get_alert(alert_id)
-    response_json_fields = response_content.get('alert')
-    if not isinstance(response_json_fields, dict) or not response_json_fields:
-        demisto.results('No alert found.')
-    contents = get_alert_contents(response_json_fields)
+    if not response_content or not isinstance(response_content, Dict):
+        raise Exception('Unexpected outputs from API call.')
+    alert = response_content.get('alert')
+    if not alert or not isinstance(alert, Dict):
+        raise Exception('No alert found.')
+    contents = get_alert_contents(alert)
     contents_war_room = get_alert_contents_war_room(contents)
     context = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents}
     return_outputs(
-        tableToMarkdown(f'Alert: {alert_id}', contents_war_room, removeNull=True),
+        tableToMarkdown(f'ZeroFox Alert {alert_id}', contents_war_room, removeNull=True),
         context,
         response_content
     )
@@ -387,6 +422,8 @@ def create_entity_command():
     policy = demisto.args().get('policy')
     organization = demisto.args().get('organization')
     response_content = create_entity(name, strict_name_matching, image, labels, policy, organization)
+    if not response_content or not isinstance(response_content, Dict):
+        raise Exception('Unexpected outputs from API call.')
     entity_id = response_content.get('id')
     return_outputs(
         f'Entity has been created successfully. ID: {entity_id}',
@@ -403,18 +440,21 @@ def list_alerts(params):  # not fully implemented
 
 def list_alerts_command():  # not fully implemented
     params = remove_none_dict(demisto.args())
-    response_content = list_alerts(params).get('alerts')
+    response_content = list_alerts(params)
     if not response_content:
         return_outputs('No alerts found.', outputs={})
-    else:
-        contents = [get_alert_contents(alert) for alert in response_content]
+    elif isinstance(response_content, Dict):
+        alerts = response_content.get('alerts')
+        contents = [get_alert_contents(alert) for alert in alerts]
         contents_war_room = [get_alert_contents_war_room(content) for content in contents]
         context = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents}
         return_outputs(
-            tableToMarkdown('Alerts', contents_war_room, removeNull=True),
+            tableToMarkdown('ZeroFox Alerts', contents_war_room, removeNull=True),
             context,
             response_content
         )
+    else:
+        return_outputs('Unexpected outputs from API call.', outputs={})
 
 
 def get_entities(params):
@@ -425,31 +465,33 @@ def get_entities(params):
 
 def get_entities_command():
     params = remove_none_dict(demisto.args())
-    response_content = get_entities(params).get('entities')
+    response_content = get_entities(params)
     if not response_content:
         return_outputs('No entities found.', outputs={})
-    else:
-        contents = [get_entity_contents(entity) for entity in response_content]
+    elif isinstance(response_content, Dict):
+        entities = response_content.get('entities')
+        contents = [get_entity_contents(entity) for entity in entities]
         contents_war_room = [get_entity_contents_war_room(content) for content in contents]
         context = {'ZeroFox.Entity(val.ID && val.ID === obj.ID)': contents}
         return_outputs(
-            tableToMarkdown('Entities', contents_war_room, removeNull=True),
+            tableToMarkdown('ZeroFox Entities', contents_war_room, removeNull=True),
             context,
             response_content
         )
+    else:
+        raise Exception('Unexpected outputs from API call.')
 
 
 def fetch_incidents():
     last_run = demisto.getLastRun()
-
     if last_run and last_run.get('last_fetched_event_timestamp'):
         last_update_time = last_run['last_fetched_event_timestamp']
     else:
         last_update_time = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%S')[0]
-
     incidents = []
     limit = demisto.params().get('fetch_limit')
-    alerts = list_alerts({'sort_direction': 'asc', 'limit': limit, 'min_timestamp': last_update_time}).get('alerts')
+    response_content = list_alerts({'sort_direction': 'asc', 'limit': limit, 'min_timestamp': last_update_time})
+    alerts = response_content.get('alerts')
     # max_update_time is the timestamp of the last alert in alerts (because alerts is a sorted list)
     max_update_time = str(alerts[len(alerts)-1].get('timestamp')).split('+')[0]
     if not alerts:
@@ -457,15 +499,15 @@ def fetch_incidents():
     for alert in alerts:
         incident = alert_to_incident(alert)
         incidents.append(incident)
-
     demisto.setLastRun({'last_fetched_event_timestamp': max_update_time})  # check whether max_update_time is a string?
     demisto.incidents(incidents)
+
 
 def test_module():
     """
     Performs basic get request to get item samples
     """
-    samples = http_request('GET', 'items/samples')
+    get_authorization_token()
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -478,7 +520,7 @@ def main():
     try:
         if USERNAME is None or PASSWORD is None or BASE_URL is None or USE_SSL is None:
             initialize_preset()
-        if TOKEN is None:
+        if TOKEN is None and demisto.command() != 'test-module':
             get_authorization_token()
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
