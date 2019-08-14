@@ -134,7 +134,6 @@ def convert_to_output(result):
 def detect_logos(file_id):
     """Detects logos in the file."""
     file_path = get_file_path(file_id)
-    demisto.log(" file path for id: " + file_path)
     with open(file_path, 'rb') as f:
         content = f.read()
         return perform_logo_detection_service_request(content)
