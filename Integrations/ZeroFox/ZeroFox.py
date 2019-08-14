@@ -1,14 +1,11 @@
 import demistomock as demisto
 from CommonServerPython import *
-
-
-
-from typing import Dict, List, Any, cast
+from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
 import requests
-
+from typing import Dict, List, Any, cast
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -16,13 +13,8 @@ requests.packages.urllib3.disable_warnings()
 
 USERNAME = None
 PASSWORD = None
-TOKEN = None
-# # Remove trailing slash to prevent wrong URL path to service
-# SERVER = demisto.params()['url'][:-1] \
-#     if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
 # Should we use SSL
 USE_SSL = None
-# How many time before the first fetch to retrieve incidents
 # Service base URL
 BASE_URL = None
 # Headers to be sent in requests
@@ -194,17 +186,20 @@ def get_authorization_token():
             raise Exception('Unexpected outputs from API call.')
         else:
             raise Exception(x[0])
-    global HEADERS
-    HEADERS = {
-        'Authorization': f'Token {token}',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    }
+    # TODO: use integration context to store the token
+    return token
 
 
 def http_request(method: str, url_suffix: str, params=None, data=None, continue_err=False):
     # A wrapper for requests lib to send our requests and handle requests and responses better
     try:
+        token = get_authorization_token()
+        global HEADERS
+        HEADERS = {
+            'Authorization': f'Token {token}',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
         res = requests.request(
             method,
             BASE_URL + url_suffix,
@@ -328,11 +323,10 @@ def alert_cancel_takedown_command():
     )
 
 
-def alert_user_assignment(alert_id, subject_email, subject_name):
+def alert_user_assignment(alert_id, username):
     url_suffix: str = f'/alerts/{alert_id}/assign/'
     request_body: Dict = {
-        'subject_email': subject_email,
-        'subject': subject_name
+        'subject': username
     }
     response_content = http_request('POST', url_suffix, data=json.dumps(request_body))
     return response_content
@@ -340,13 +334,12 @@ def alert_user_assignment(alert_id, subject_email, subject_name):
 
 def alert_user_assignment_command():
     alert_id: int = int(demisto.args().get('alert_id'))
-    subject_name: str = demisto.args().get('subject_name')
-    subject_email: str = demisto.args().get('subject_email')
-    alert_user_assignment(alert_id, subject_email, subject_name)
+    username: str = demisto.args().get('username')
+    alert_user_assignment(alert_id, username)
     contents = get_updated_contents(alert_id)
-    context = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Assignee': subject_name}}
+    context = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Assignee': username}}
     return_outputs(
-        f'User: {subject_email} has been assigned to Alert: {alert_id} successfully.',
+        f'{username} has been assigned to alert {alert_id} successfully.',
         context,
         raw_response=contents
     )
@@ -526,12 +519,8 @@ def test_module():
 def main():
     LOG('Command being called is %s' % (demisto.command()))
     try:
-        if USERNAME is None or PASSWORD is None or BASE_URL is None or USE_SSL is None:
-            initialize_preset()
-        if TOKEN is None and demisto.command() != 'test-module':
-            get_authorization_token()
+        initialize_preset()
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration test button.
             test_module()
             demisto.results('ok')
         elif demisto.command() == 'zerofox-get-alert':
@@ -568,6 +557,5 @@ def main():
             return_error(error_msg)
 
 
-# python2 uses __builtin__ python3 uses builtins
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ == 'builtins':
     main()
