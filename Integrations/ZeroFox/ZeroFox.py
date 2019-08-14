@@ -34,6 +34,18 @@ FETCH_TIME = None
 ''' HELPER FUNCTIONS '''
 
 
+def severity_num_to_string(severity_num):
+    if severity_num == 1:
+        return 'Info'
+    elif severity_num == 2:
+        return 'Low'
+    elif severity_num == 3:
+        return 'Medium'
+    elif severity_num == 4:
+        return 'High'
+    elif severity_num == 5:
+        return 'Critical'
+
 # transforms an alert to incident convention
 def alert_to_incident(alert):
     incident = {
@@ -89,7 +101,7 @@ def get_alert_contents(alert):
         'ContentCreatedAt': alert.get('content_created_at'),
         'ID': alert.get('id'),
         'ProtectedAccount': alert.get('protected_account'),
-        'Severity': alert.get('severity'),
+        'RiskRating': severity_num_to_string(alert.get('severity')),
         'PerpetratorName': alert.get('perpetrator', {}).get('name'),
         'PerpetratorURL': alert.get('perpetrator', {}).get('url'),
         'PerpetratorTimeStamp': alert.get('perpetrator', {}).get('timestamp'),
@@ -127,7 +139,7 @@ def get_alert_contents_war_room(contents):
         'Status': contents.get('Status', '').title(),
         'Source': contents.get('Network', '').title(),
         'Rule': contents.get('RuleName'),
-        'Risk Rating': contents.get('Severity'),
+        'Risk Rating': contents.get('RiskRating'),
         'Notes': contents.get('Notes') if contents.get('Notes') != '' else None,
         'Tags': contents.get('Tags')
     }
@@ -195,18 +207,15 @@ def http_request(method: str, url_suffix: str, params=None, data=None):
             res_json = res.json()
             if 'error' in res_json:
                 err_msg += res_json.get('error')
-            else:
-                err_msg += res_json
         except ValueError:
-            pass
+            err_msg += res.content
         finally:
-            return_error(err_msg)
+            raise ValueError(err_msg)
     else:
         try:
-            res_json = res.json()
-            return res_json
+            return res.json()
         except ValueError:
-            return 'Success Message'
+            return res.content
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -343,7 +352,7 @@ def get_alert_command():
     alert_id = demisto.args().get('alert_id')
     response_content = get_alert(alert_id)
     response_json_fields = response_content.get('alert')
-    if not isinstance(response_json_fields, dict) or not response_json_fields <= 0:
+    if not isinstance(response_json_fields, dict) or not response_json_fields:
         demisto.results('No alert found.')
     contents = get_alert_contents(response_json_fields)
     contents_war_room = get_alert_contents_war_room(contents)
