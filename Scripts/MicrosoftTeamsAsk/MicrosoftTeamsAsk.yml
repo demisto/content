@@ -68,3 +68,5 @@ dependson:
   must:
   - Microsoft Teams|||send-notification
 subtype: python3
+tests:
+  - No test

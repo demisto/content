@@ -34,7 +34,7 @@ mirrored_channels: list = [
         'mirror_direction': 'both',
         'auto_close': 'true',
         'mirrored': True,
-        'channel_name': 'incident-0'
+        'channel_name': 'incident-10'
     }
 ]
 
@@ -196,7 +196,7 @@ def test_mirror_investigation(mocker, requests_mock):
         'displayName': 'incident-2',
         'description': 'Channel to mirror incident 2'
     }
-    assert demisto.setIntegrationContext.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 2
     set_integration_context = demisto.setIntegrationContext.call_args[0]
     assert len(set_integration_context) == 1
     set_integration_context[0].pop('graph_access_token')
@@ -204,7 +204,7 @@ def test_mirror_investigation(mocker, requests_mock):
     assert set_integration_context[0] == expected_integration_context
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0] == 'Investigation mirrored successfully in channel incident-2'
+    assert results[0] == 'Investigation mirrored successfully in channel incident-2.'
 
     # verify channel mirror is updated successfully
     mocker.patch.object(demisto, 'setIntegrationContext')
@@ -230,7 +230,7 @@ def test_mirror_investigation(mocker, requests_mock):
     assert len(set_integration_context) == 1
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0] == 'Investigation mirror was updated successfully'
+    assert results[0] == 'Investigation mirror was updated successfully.'
 
 
 def test_send_message(mocker, requests_mock):
@@ -480,13 +480,13 @@ def test_close_channel(mocker, requests_mock):
     assert demisto.setIntegrationContext.call_count == 1
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0] == 'Channel was successfully closed'
+    assert results[0] == 'Channel was successfully closed.'
 
     # try to close channel without given channel name, which does not exist in the integration context
     mocker.patch.object(demisto, 'investigation', return_value={'id': '5'})
     with pytest.raises(ValueError) as e:
         close_channel()
-    assert str(e.value) == 'Could not find mirrored Teams channel to close.'
+    assert str(e.value) == 'Could not find Microsoft Teams channel to close.'
 
     # close channel given channel name
     mocker.patch.object(demisto, 'results')
@@ -521,7 +521,7 @@ def test_close_channel(mocker, requests_mock):
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    assert results[0] == 'Channel was successfully closed'
+    assert results[0] == 'Channel was successfully closed.'
 
 
 def test_entitlement_handler(mocker, requests_mock):
@@ -966,7 +966,7 @@ def test_member_added_handler(mocker, requests_mock):
         }]),
         'tenant_id': tenant_id
     }
-    assert demisto.setIntegrationContext.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 2
     set_integration_context = demisto.setIntegrationContext.call_args[0]
     assert len(set_integration_context) == 1
     set_integration_context[0].pop('bot_access_token')
@@ -1030,7 +1030,8 @@ def test_direct_message_handler(mocker, requests_mock):
                     'facts': [
                         {
                             'title': 'ID:',
-                            'value': '257'},
+                            'value': '257'
+                        },
                         {
                             'title': 'Name:',
                             'value': 'w'

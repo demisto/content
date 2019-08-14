@@ -54,7 +54,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Integration Template
+description: Send messages and notifications to your Microsoft Teams team members.
 display: Microsoft Teams
 name: Microsoft Teams
 fromversion: 5.0.0
@@ -156,3 +156,5 @@ script:
   runonce: false
   script: '-'
   type: python
+tests:
+  - No test

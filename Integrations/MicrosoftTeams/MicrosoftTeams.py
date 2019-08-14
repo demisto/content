@@ -16,12 +16,11 @@ import re
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARIABLES'''
-PARAMS = demisto.params()
-BOT_ID = PARAMS.get('bot_id')
-BOT_PASSWORD = PARAMS.get('bot_password')
-TEAM = PARAMS.get('team')
-USE_SSL = not PARAMS.get('insecure', False)
-APP = Flask('demisto-teams')
+PARAMS: dict = demisto.params()
+BOT_ID: str = PARAMS.get('bot_id', '')
+BOT_PASSWORD: str = PARAMS.get('bot_password', '')
+USE_SSL: bool = not PARAMS.get('insecure', False)
+APP: Flask = Flask('demisto-teams')
 PLAYGROUND_INVESTIGATION_TYPE: int = 9
 GRAPH_BASE_URL: str = 'https://graph.microsoft.com'
 
@@ -402,15 +401,16 @@ def get_bot_access_token() -> str:
         error = error_parser(response)
         raise ValueError(f'Failed to get bot access token [{response.status_code}] - {error}')
     try:
-        responsejson_: dict = response.json()
-        access_token = responsejson_.get('access_token', '')
-        expires_in: int = responsejson_.get('expires_in', 3595)
+        response_json: dict = response.json()
+        access_token = response_json.get('access_token', '')
+        expires_in: int = response_json.get('expires_in', 3595)
         time_now: int = epoch_seconds()
         time_buffer = 5  # seconds by which to shorten the validity period
         if expires_in - time_buffer > 0:
             expires_in -= time_buffer
         integration_context['bot_access_token'] = access_token
         integration_context['bot_valid_until'] = time_now + expires_in
+        demisto.setIntegrationContext(integration_context)
         return access_token
     except ValueError:
         raise ValueError('Failed to get bot access token')
@@ -448,29 +448,29 @@ def get_graph_access_token() -> str:
         error = error_parser(response)
         raise ValueError(f'Failed to get Graph access token [{response.status_code}] - {error}')
     try:
-        responsejson_: dict = response.json()
-        access_token = responsejson_.get('access_token', '')
-        expires_in: int = responsejson_.get('expires_in', 3595)
+        response_json: dict = response.json()
+        access_token = response_json.get('access_token', '')
+        expires_in: int = response_json.get('expires_in', 3595)
         time_now: int = epoch_seconds()
         time_buffer = 5  # seconds by which to shorten the validity period
         if expires_in - time_buffer > 0:
             expires_in -= time_buffer
         integration_context['graph_access_token'] = access_token
         integration_context['graph_valid_until'] = time_now + expires_in
+        demisto.setIntegrationContext(integration_context)
         return access_token
     except ValueError:
         raise ValueError('Failed to get Graph access token')
 
 
 def http_request(
-        method: str, url: str = '', data: dict = None, json_: dict = None, api: str = 'graph'
+        method: str, url: str = '', json_: dict = None, api: str = 'graph'
 ) -> Union[dict, list]:
     """
     A wrapper for requests lib to send our requests and handle requests and responses better
     Headers to be sent in requests
     :param method: any restful method
     :param url: URL to query
-    :param data: HTTP body
     :param json_: HTTP JSON body
     :param api: API to query (graph/bot)
     :return: requests.json()
@@ -489,18 +489,18 @@ def http_request(
     response: requests.Response = requests.request(
         method,
         url,
-        verify=USE_SSL,
-        data=data,
         headers=headers,
-        json=json_
+        json=json_,
+        verify=USE_SSL
     )
 
     if not response.ok:
-        return_error(response.text)
         error = error_parser(response)
         raise ValueError(f'Error in API call to Microsoft Teams: [{response.status_code}] - {error}')
 
     if response.status_code in {202, 204}:
+        # Delete channel returns 204 if successful
+        # Update message returns 202 if the request has been accepted for processing
         return {}
     if response.status_code == 201:
         # For channel creation query, we get a body in the response, otherwise we should just return
@@ -509,7 +509,7 @@ def http_request(
     try:
         return response.json()
     except ValueError:
-        raise ValueError('Could not decode response from API')
+        raise ValueError(f'Error in API call to Microsoft Teams: {response.text}')
 
 
 def validate_auth_header(headers: dict) -> bool:
@@ -707,7 +707,6 @@ def create_channel(team_aad_id: str, channel_name: str, channel_description: str
         'description': channel_description
     }
     channel_data: dict = cast(Dict[Any, Any], http_request('POST', url, json_=request_json))
-    assert isinstance(channel_data, dict)
     channel_id: str = channel_data.get('id', '')
     return channel_id
 
@@ -789,40 +788,38 @@ def close_channel_request(team_aad_id: str, channel_id: str):
 
 def close_channel():
     """
-    Deletes a mirrored Teams channel
+    Deletes a mirrored Microsoft Teams channel
     """
     integration_context: dict = demisto.getIntegrationContext()
     channel_name: str = demisto.args().get('channel', '')
     channel_id: str = str()
     team_aad_id: str
-    mirrored_channels: list = list()
+    mirrored_channels: list
     if not channel_name:
         # Closing channel as part of autoclose in mirroring process
         investigation: dict = demisto.investigation()
         investigation_id: str = investigation.get('id', '')
         teams: list = json.loads(integration_context.get('teams', '[]'))
-        for team_index, team in enumerate(teams):
+        for team in teams:
             team_aad_id = team.get('team_aad_id', '')
             mirrored_channels = team.get('mirrored_channels', [])
             for channel_index, channel in enumerate(mirrored_channels):
                 if channel.get('investigation_id') == investigation_id:
                     channel_id = channel.get('channel_id', '')
                     close_channel_request(team_aad_id, channel_id)
-                    team_to_update: dict = teams.pop(team_index)
+                    team_to_update: dict = team
                     mirrored_channels.pop(channel_index)
                     team_to_update['mirrored_channels'] = mirrored_channels
-                    teams.append(team_to_update)
                     break
         if not channel_id:
-            raise ValueError('Could not find mirrored Teams channel to close.')
-        integration_context['teams'] = json.dumps(teams)
+            raise ValueError('Could not find Microsoft Teams channel to close.')
         demisto.setIntegrationContext(integration_context)
     else:
         team_name: str = demisto.args().get('team') or demisto.params().get('team')
         team_aad_id = get_team_aad_id(team_name)
         channel_id = get_channel_id(channel_name, team_aad_id)
         close_channel_request(team_aad_id, channel_id)
-    demisto.results('Channel was successfully closed')
+    demisto.results('Channel was successfully closed.')
 
 
 def create_personal_conversation(integration_context: dict, team_member_id: str) -> str:
@@ -944,56 +941,45 @@ def mirror_investigation():
 
     mirror_type: str = demisto.args().get('mirror_type', 'all')
     auto_close: str = demisto.args().get('autoclose', 'true')
-    mirror_direction: str = demisto.args().get('direction', 'both')
+    mirror_direction: str = demisto.args().get('direction', 'both').lower()
     team_name: str = demisto.args().get('team', '')
     if not team_name:
         team_name = demisto.params().get('team', '')
     team_aad_id: str = get_team_aad_id(team_name)
-    team_to_mirror_channel: dict = dict()
     mirrored_channels: list = list()
-    if integration_context.get('teams'):
-        teams: list = json.loads(integration_context['teams'])
-        for index, team in enumerate(teams):
-            if team.get('team_aad_id', '') == team_aad_id:
-                if team.get('mirrored_channels'):
-                    mirrored_channels = team['mirrored_channels']
-                team_to_mirror_channel = teams.pop(index)
+    teams: list = json.loads(integration_context.get('teams', '[]'))
+    for team in teams:
+        if team.get('team_aad_id', '') == team_aad_id:
+            if team.get('mirrored_channels'):
+                mirrored_channels = team['mirrored_channels']
+            break
     if mirror_direction != 'both':
         mirror_type = f'{mirror_type}:{mirror_direction}'
 
     investigation_id: str = investigation.get('id', '')
-    investigation_mirrored_index = is_investigation_mirrored(investigation_id, mirrored_channels)
+    investigation_mirrored_index: int = is_investigation_mirrored(investigation_id, mirrored_channels)
 
     if investigation_mirrored_index > -1:
         # Updating channel mirror configuration
-        channel = mirrored_channels.pop(investigation_mirrored_index)
-        mirrored_channels.append({
-            'channel_id': channel.get('channel_id', ''),
-            'investigation_id': investigation.get('id'),
-            'mirror_type': mirror_type,
-            'mirror_direction': mirror_direction,
-            'auto_close': auto_close,
-            'mirrored': False,
-            'channel_name': channel.get('channel_name')
-        })
-        demisto.results('Investigation mirror was updated successfully')
+        mirrored_channels[investigation_mirrored_index]['mirror_type'] = mirror_type
+        mirrored_channels[investigation_mirrored_index]['mirror_direction'] = mirror_direction
+        mirrored_channels[investigation_mirrored_index]['auto_close'] = auto_close
+        mirrored_channels[investigation_mirrored_index]['mirrored'] = False
+        demisto.results('Investigation mirror was updated successfully.')
     else:
         channel_name: str = f'incident-{investigation_id}'
         channel_description = f'Channel to mirror incident {investigation_id}'
         channel_id = create_channel(team_aad_id, channel_name, channel_description)
         mirrored_channels.append({
             'channel_id': channel_id,
-            'investigation_id': investigation.get('id'),
+            'investigation_id': investigation_id,
             'mirror_type': mirror_type,
             'mirror_direction': mirror_direction,
             'auto_close': auto_close,
             'mirrored': False,
             'channel_name': channel_name
         })
-        demisto.results(f'Investigation mirrored successfully in channel incident-{investigation_id}')
-
-    team_to_mirror_channel['mirrored_channels'] = mirrored_channels
-    teams.append(team_to_mirror_channel)
+        demisto.results(f'Investigation mirrored successfully in channel incident-{investigation_id}.')
     integration_context['teams'] = json.dumps(teams)
     demisto.setIntegrationContext(integration_context)
 
@@ -1003,36 +989,32 @@ def channel_mirror_loop():
     Runs in a long running container - checking for newly mirrored investigations.
     """
     while True:
-        found_team_and_channel: bool = False
+        found_channel_to_mirror: bool = False
         try:
             integration_context = demisto.getIntegrationContext()
             teams: list = json.loads(integration_context.get('teams', '[]'))
-            for team_index, team in enumerate(teams):
-                mirrored_channels = team.get('mirrored_channels')
-                for index, channel in enumerate(mirrored_channels):
+            for team in teams:
+                mirrored_channels = team.get('mirrored_channels', [])
+                channel: dict
+                for channel in mirrored_channels:
                     investigation_id = channel.get('investigation_id', '')
                     if not channel['mirrored']:
                         demisto.info(f'Mirroring incident: {investigation_id} in Microsoft Teams')
-                        team_to_update: dict = teams.pop(team_index)
-                        channel = mirrored_channels.pop(index)
-                        if channel['mirror_direction'] and channel['mirror_type']:
+                        channel_to_update: dict = channel
+                        if channel_to_update['mirror_direction'] and channel_to_update['mirror_type']:
                             demisto.mirrorInvestigation(
-                                channel['investigation_id'],
-                                channel['mirror_type'],
-                                bool(strtobool(channel['auto_close']))
+                                channel_to_update['investigation_id'],
+                                channel_to_update['mirror_type'],
+                                bool(strtobool(channel_to_update['auto_close']))
                             )
-                            channel['mirrored'] = True
-                            mirrored_channels.append(channel)
+                            channel_to_update['mirrored'] = True
                             demisto.info(f'Mirrored incident: {investigation_id} to Microsoft Teams successfully')
                         else:
                             demisto.info(f'Could not mirror {investigation_id}')
-                        team_to_update['mirrored_channels'] = mirrored_channels
-                        teams.append(team_to_update)
-                        integration_context['teams'] = json.dumps(teams)
                         demisto.setIntegrationContext(integration_context)
-                        found_team_and_channel = True
+                        found_channel_to_mirror = True
                         break
-                if found_team_and_channel:
+                if found_channel_to_mirror:
                     break
         except Exception as e:
             demisto.updateModuleHealth(f'An error occurred: {str(e)}')
@@ -1066,8 +1048,7 @@ def member_added_handler(request_body: dict, service_url: str, channel_data: dic
     teams: list = list()
 
     integration_context: dict = demisto.getIntegrationContext()
-    if integration_context.get('teams'):
-        teams = json.loads(integration_context['teams'])
+    teams = json.loads(integration_context.get('teams', '[]'))
 
     for member in members_added:
         member_id = member.get('id', '')
@@ -1326,5 +1307,5 @@ def main():
             return_error(str(e))
 
 
-if __name__ == "builtins":
+if __name__ == 'builtins':
     main()
