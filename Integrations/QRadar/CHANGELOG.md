@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+  - 
 
 ## [19.8.0] - 2019-08-06
   - Fixed an issue in which the fetch incidents function would fail when there were non-ASCII characters in the data.
