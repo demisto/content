@@ -851,7 +851,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: https://www.golang.org/pkg/regexp/syntax/
+              simple: http://www.golang.org/pkg/regexp/syntax/
       - - operator: containsString
           left:
             value:
@@ -859,7 +859,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: www.bücher.de
+              simple: http://www.bücher.de
       - - operator: containsString
           left:
             value:
