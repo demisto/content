@@ -289,8 +289,8 @@ def create_msg():
         msg['CC'] = header(','.join(cc))
     if additional_header:
         for h in additional_header:
-            header_name_value = h.split('=')
-            msg.add_header(header_name_value[0], header(header_name_value[1]))
+            header_name_and_value = h.split('=')
+            msg[header_name_and_value[0]] = header(header_name_and_value[1])
     # Notice we should not add BCC header since Python2 does not filter it
     return msg.as_string(), to, cc, bcc
 
