@@ -1,3 +1,7 @@
 ## [Unreleased]
-- Support for eml file attachements with generic "data" type
 - Fixed missing special characters from a msg email
+
+
+## [19.8.0] - 2019-08-06
+  - Added support for EML file attachments with a generic "data" type.
+  - Added support for smime signed EML file attachments.
