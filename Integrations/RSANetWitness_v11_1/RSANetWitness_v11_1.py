@@ -590,9 +590,8 @@ def get_timestamp(timestamp):
         new_timestamp = new_timestamp[:-1] + '000Z'
     try:
         return datetime.strptime(new_timestamp, iso_format)
-    except ValueError:  # If wrong time format, will pass
-        pass
-    raise ValueError("Could not parse timestamp [{}]".format(timestamp))
+    except ValueError:
+        raise ValueError("Could not parse timestamp [{}]".format(timestamp))
 
 
 def fetch_incidents():
