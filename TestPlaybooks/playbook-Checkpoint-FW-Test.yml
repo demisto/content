@@ -129,10 +129,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: d2747e1a-0726-40ac-8e1e-73da1be12fcb
+    taskid: 25da3377-b361-4b92-8f6f-bb6cc0fabd5c
     type: condition
     task:
-      id: d2747e1a-0726-40ac-8e1e-73da1be12fcb
+      id: 25da3377-b361-4b92-8f6f-bb6cc0fabd5c
       version: -1
       name: check checkpoint-show-access-rule-base
       type: condition
@@ -148,18 +148,16 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              complex:
-                root: CheckpointFWRule
-                accessor: Name
+              simple: CheckpointFWRule.UID
             iscontext: true
           right:
             value:
-              simple: bar-to-1.2.3.4
+              simple: 69c71244-6410-49e3-9938-eb0735d07720
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1090
         }
       }
     note: false
