@@ -1706,7 +1706,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Add attribute to a sepcific event
+    description: Add attribute to a specific event
     execution: false
     name: tc-add-group-attribute
     outputs:
@@ -1714,13 +1714,13 @@ script:
       description: The date the attribute was added
       type: Date
     - contextPath: TC.Group.ID
-      description: Attribute ID
+      description: Group ID
       type: Number
     - contextPath: TC.Group.LastModified
       description: When the attribute was last modified
       type: Date
     - contextPath: TC.Group.Type
-      description: The type of the attribute
+      description: The type of the group
       type: String
     - contextPath: TC.Group.Value
       description: The attribute value
@@ -1778,7 +1778,7 @@ script:
     - contextPath: TC.Group.ID
       description: Group ID.
       type: Number
-    - contextPath: TC.Group..Name
+    - contextPath: TC.Group.Name
       description: Group name.
       type: String
     - contextPath: TC.Group.OwnerName
@@ -1917,7 +1917,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Group ID.
+      description: Group ID. Get the group ID from get-groups command.
       isArray: false
       name: group_id
       required: true
@@ -1934,7 +1934,7 @@ script:
       description: Group type.
       type: String
     - contextPath: TC.Group.Indicator
-      description: Indocator value
+      description: Indicator value
       type: String
     - contextPath: TC.Group.IndicatorType
       description: Indicator type
