@@ -1296,7 +1296,7 @@ def main():
         'long-running-execution': long_running_loop,
         'send-notification': send_message,
         'mirror-investigation': mirror_investigation,
-        'close-channel': close_channel,
+        'close-channel': close_channel
         # 'microsoft-teams-create-team': create_team,
         # 'microsoft-teams-send-file': send_file,
     }

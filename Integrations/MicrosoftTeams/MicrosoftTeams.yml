@@ -148,9 +148,6 @@ script:
     description: Delete a Teams channel
     execution: false
     name: close-channel
-  - deprecated: false
-    execution: false
-    name: test-command
   dockerimage: demisto/teams:1.0.0.1405
   isfetch: false
   longRunning: true
