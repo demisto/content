@@ -773,7 +773,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: List of string labels for tagging the entity
+      description: |-
+        List of string labels for tagging the entity.
+        Seperated by a comma, for example:
+        label1,label2,label3
       isArray: false
       name: labels
       required: false
