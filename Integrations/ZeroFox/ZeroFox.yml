@@ -91,8 +91,10 @@ script:
       type: Number
     - contextPath: ZeroFox.Alert.ProtectedAccount
       type: Unknown
-    - contextPath: ZeroFox.Alert.Severity
-      description: Severity level of alert. 1 - 5 (Critical).
+    - contextPath: ZeroFox.Alert.RiskRating
+      description: |-
+        Risk rating of alert.
+        Critical, High, Medium, Low, Info
       type: Number
     - contextPath: ZeroFox.Alert.Perpetrator.Name
       description: For account/post/page alerts, social network account display name
@@ -398,15 +400,17 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Severity level of alert. 1 - 5 (Critical).
+      description: |-
+        Risk rating of alert.
+        Critical,High,Medium,Low,Info
       isArray: false
-      name: severity
+      name: risk_rating
       predefined:
-      - '1'
-      - '2'
-      - '3'
-      - '4'
-      - '5'
+      - Critical
+      - High
+      - Medium
+      - Low
+      - Info
       required: false
       secret: false
     - auto: PREDEFINED
@@ -517,8 +521,10 @@ script:
       type: Number
     - contextPath: ZeroFox.Alert.ProtectedAccount
       type: Unknown
-    - contextPath: ZeroFox.Alert.Severity
-      description: Severity level of alert. 1 - 5 (Critical).
+    - contextPath: ZeroFox.Alert.RiskRating
+      description: |-
+        Risk rating of alert.
+        Critical, High, Medium, Low, Info
       type: Number
     - contextPath: ZeroFox.Alert.Perpetrator.Name
       description: For account/post/page alerts, social network account display name
