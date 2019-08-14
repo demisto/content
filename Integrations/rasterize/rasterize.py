@@ -104,9 +104,9 @@ def get_pdf(driver, file_name: str, width: int, height: int):
 
 def rasterize_command():
     url = demisto.getArg('url')
-    width = demisto.getArg('width', 800)
-    height = demisto.getArg('height', 1600)
-    r_type = demisto.getArg('type', 'png')
+    width = demisto.args().get('width', 800)
+    height = demisto.args().get('height', 1600)
+    r_type = demisto.args().get('type', 'png')
 
     if not (url.startswith('http')):
         url = "http://" + url
@@ -122,9 +122,9 @@ def rasterize_command():
 
 
 def rasterize_image_command():
-    url = demisto.getArg('url')
-    width = demisto.getArg('width')
-    height = demisto.getArg('height')
+    url = demisto.args().get('url')
+    width = demisto.args().get('width', 800)
+    height = demisto.args().get('height', 1600)
 
     if not (url.startswith('http')):
         url = f'http://{url}'
@@ -140,10 +140,10 @@ def rasterize_image_command():
 
 
 def rasterize_email_command():
-    html_body = demisto.getArg('htmlBody')
-    w = demisto.getArg('width', 800)
-    h = demisto.getArg('height', 1600)
-    r_type = demisto.getArg('type', 'png')
+    html_body = demisto.args().get('htmlBody')
+    w = demisto.args().get('width', 800)
+    h = demisto.args().get('height', 1600)
+    r_type = demisto.args().get('type', 'png')
 
     name = f'email.{"pdf" if r_type == "pdf" else "png"}'  # type: ignore
     with open('htmlBody.html', 'w') as f:
