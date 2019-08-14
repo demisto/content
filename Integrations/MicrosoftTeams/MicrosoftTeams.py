@@ -1288,10 +1288,6 @@ def test_module():
     demisto.results('ok')
 
 
-def test_command():
-    print(demisto.getIntegrationContext())
-
-
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
 
@@ -1303,7 +1299,6 @@ def main():
         'close-channel': close_channel,
         # 'microsoft-teams-create-team': create_team,
         # 'microsoft-teams-send-file': send_file,
-        'test-command': test_command
     }
 
     ''' EXECUTION '''
