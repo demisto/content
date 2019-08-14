@@ -556,7 +556,7 @@ def tc_create_incident_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': 'Incident {} Created Successfully'.format(incident_name),
         'EntryContext': {
-            'TC.Incident(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True),
+            'TC.Incident(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
         }
     })
 
@@ -878,7 +878,7 @@ def tc_create_campaign_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': 'Campaign {} Created Successfully'.format(name),
         'EntryContext': {
-            'TC.Campaign(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True),
+            'TC.Campaign(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
         }
     })
 
@@ -946,7 +946,7 @@ def tc_create_event_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': 'Incident {} Created Successfully'.format(name),
         'EntryContext': {
-            'TC.Event(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True),
+            'TC.Event(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
         }
     })
 
@@ -1006,7 +1006,7 @@ def tc_create_threat_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': 'Threat {} Created Successfully'.format(name),
         'EntryContext': {
-            'TC.Threat(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True),
+            'TC.Threat(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
         }
     })
 
@@ -1030,7 +1030,7 @@ def tc_delete_group_command():
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['text'],
-            'Contents': '{} {} deleted Successfully'.format(group_type.lower(), group_id),
+            'Contents': '{} {} deleted Successfully'.format(group_type.lower(), group_id)
         })
     else:
         return_error('Failed to delete {} {}'.format(group_type, group_id))
@@ -1081,8 +1081,12 @@ def tc_add_group_attribute():
         'TC.Group(val.ID && val.ID === obj.ID)': contents
     }
 
-    return_outputs(tableToMarkdown('The attribute was added successfully to group {}'.format(group_id),
-                                   contents, headers, removeNull=True), context, attribute)
+    return_outputs(
+        tableToMarkdown('The attribute was added successfully to group {}'.format(group_id), contents, headers,
+                        removeNull=True),
+        context,
+        attribute
+    )
 
 
 def add_group_security_label_request(group_type, group_id, security_label):
@@ -1156,7 +1160,11 @@ def tc_get_events():
         'TC.Event(val.ID && val.ID === obj.ID)': content
     }
 
-    return_outputs(tableToMarkdown('ThreatConnect Events', content, headers, removeNull=True), context, raw_response)
+    return_outputs(
+        tableToMarkdown('ThreatConnect Events', content, headers, removeNull=True),
+        context,
+        raw_response
+    )
 
 
 def tc_get_indicator_types_request():
@@ -1189,8 +1197,11 @@ def tc_get_indicator_types():
         'TC.IndicatorType(val.Name && val.Name === obj.Name)': content
     }
 
-    return_outputs(tableToMarkdown('ThreatConnect indicator types', content, headers, removeNull=True), context,
-                   raw_response)
+    return_outputs(
+        tableToMarkdown('ThreatConnect indicator types', content, headers, removeNull=True),
+        context,
+        raw_response
+    )
 
 
 def associate_indicator_request(indicator_type, indicator, group_type, group_id):
@@ -1225,7 +1236,10 @@ def associate_indicator():
         'TC.Group(val.Indicator && val.Indicator === obj.Indicator)': contents
     }
 
-    return_outputs(tableToMarkdown('The indicator was associated successfully', contents, removeNull=True), context)
+    return_outputs(
+        tableToMarkdown('The indicator was associated successfully', contents, removeNull=True),
+        context
+    )
 
 
 def get_groups_request(group_type):
@@ -1277,20 +1291,21 @@ def tc_get_groups():
         'TC.Group(val.ID && val.ID === obj.ID)': content
     }
 
-    return_outputs(tableToMarkdown('ThreatConnect {}'.format(group_type), content, headers, removeNull=True), context,
-                   raw_response)
+    return_outputs(
+        tableToMarkdown('ThreatConnect {}'.format(group_type), content, headers, removeNull=True),
+        context,
+        raw_response
+    )
 
 
-def create_document_group_request(file_name, name, owner, res, malware, password, security_label, description):
+def create_document_group_request(contents, file_name, name, owner, res, malware, password, security_label,
+                                  description):
     tc = get_client()
     documents = tc.documents()
 
     document = documents.add(name, owner)
     document.set_file_name(file_name)
 
-    # open a file handle for a local file and read the contents thereof
-    f = open(res['path'], 'rb')
-    contents = f.read()
     # upload the contents of the file into the Document
     document.upload(contents)
     if malware:
@@ -1317,8 +1332,12 @@ def create_document_group():
     security_label = demisto.args().get('securityLabel')
     description = demisto.args().get('description')
 
-    raw_document = create_document_group_request(file_name, name, owner, res, malware, password, security_label,
-                                                 description)
+    # open a file handle for a local file and read the contents thereof
+    f = open(res['path'], 'rb')
+    contents = f.read()
+
+    raw_document = create_document_group_request(contents, file_name, name, owner, res, malware, password,
+                                                 security_label, description)
     content = {
         'ID': raw_document.get('id'),
         'Name': raw_document.get('name'),
@@ -1330,8 +1349,10 @@ def create_document_group():
     context = {
         'TC.Group(val.ID && val.ID === obj.ID)': content
     }
-    return_outputs(tableToMarkdown('ThreatConnect document group created successfully', content, removeNull=True),
-                   context, raw_document)
+    return_outputs(tableToMarkdown('ThreatConnect document group was created successfully', content, removeNull=True),
+                   context,
+                   raw_document
+    )
 
 
 def test_integration():
