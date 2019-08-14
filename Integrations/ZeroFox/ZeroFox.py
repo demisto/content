@@ -58,14 +58,16 @@ def alert_to_incident(alert):
     return incident
 
 
-# return context convention of alert without printing to war room
-def get_alert_context_no_war_room(alert_id):
-    alert = get_alert(alert_id).get('alert')
-    if not alert:
+# return updated contents of an alert
+def get_updated_contents(alert_id):
+    response_content = get_alert(alert_id)
+    if not response_content or not isinstance(response_content, Dict):
+        return {}
+    alert = response_content.get('alert')
+    if not alert or not isinstance(alert, Dict):
         return {}
     contents = get_alert_contents(alert)
-    context = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents}
-    return context
+    return contents
 
 
 # removes all none values from a dict
@@ -87,39 +89,39 @@ def initialize_preset():
 
 
 def get_alert_contents(alert):
-    return {
+    contents = {
         'AlertType': alert.get('alert_type'),
-        'OffendingContentURL': alert.get('off'),
-        'AssetTermID': alert.get('asset_term', {}).get('id'),
-        'AssetTermName': alert.get('asset_term', {}).get('name'),
-        'AssetTermDeleted': alert.get('asset_term', {}).get('deleted'),
+        'OffendingContentURL': alert.get('offending_content_url'),
+        'AssetTermID': alert.get('asset_term').get('id') if alert.get('asset_term') else None,
+        'AssetTermName': alert.get('asset_term').get('name') if alert.get('asset_term') else None,
+        'AssetTermDeleted': alert.get('asset_term').get('deleted') if alert.get('asset_term') else None,
         'Assignee': alert.get('assignee'),
-        'EntityID': alert.get('entity', {}).get('id'),
-        'EntityName': alert.get('entity', {}).get('name'),
-        'EntityImage': alert.get('entity', {}).get('image'),
-        'EntityTermID': alert.get('entity_term', {}).get('id'),
-        'EntityTermName': alert.get('entity_term', {}).get('name'),
-        'EntityTermDeleted': alert.get('entity_term', {}).get('deleted'),
+        'EntityID': alert.get('entity').get('id') if alert.get('entity') else None,
+        'EntityName': alert.get('entity').get('name') if alert.get('entity') else None,
+        'EntityImage': alert.get('entity').get('image') if alert.get('entity') else None,
+        'EntityTermID': alert.get('entity_term').get('id') if alert.get('entity_term') else None,
+        'EntityTermName': alert.get('entity_term').get('name') if alert.get('entity_term') else None,
+        'EntityTermDeleted': alert.get('entity_term').get('deleted') if alert.get('entity_term') else None,
         'ContentCreatedAt': alert.get('content_created_at'),
         'ID': alert.get('id'),
         'ProtectedAccount': alert.get('protected_account'),
         'RiskRating': severity_num_to_string(alert.get('severity')),
-        'PerpetratorName': alert.get('perpetrator', {}).get('name'),
-        'PerpetratorURL': alert.get('perpetrator', {}).get('url'),
-        'PerpetratorTimeStamp': alert.get('perpetrator', {}).get('timestamp'),
-        'PerpetratorType': alert.get('perpetrator', {}).get('type'),
-        'PerpetratorID': alert.get('perpetrator', {}).get('id'),
-        'PerpetratorNetwork': alert.get('perpetrator', {}).get('network'),
+        'PerpetratorName': alert.get('perpetrator').get('name') if alert.get('perpetrator') else None,
+        'PerpetratorURL': alert.get('perpetrator').get('url') if alert.get('perpetrator') else None,
+        'PerpetratorTimeStamp': alert.get('perpetrator').get('timestamp') if alert.get('perpetrator') else None,
+        'PerpetratorType': alert.get('perpetrator').get('type') if alert.get('perpetrator') else None,
+        'PerpetratorID': alert.get('perpetrator').get('id') if alert.get('perpetrator') else None,
+        'PerpetratorNetwork': alert.get('perpetrator').get('network') if alert.get('perpetrator') else None,
         'RuleGroupID': alert.get('rule_group_id'),
-        'AssetID': alert.get('asset', {}).get('id'),
-        'AssetName': alert.get('asset', {}).get('name'),
-        'AssetImage': alert.get('asset', {}).get('image'),
+        'AssetID': alert.get('asset').get('id') if alert.get('asset') else None,
+        'AssetName': alert.get('asset').get('name') if alert.get('asset') else None,
+        'AssetImage': alert.get('asset').get('image') if alert.get('asset') else None,
         'Status': alert.get('status'),
         'Timestamp': alert.get('timestamp'),
         'RuleName': alert.get('rule_name'),
         'LastModified': alert.get('last_modified'),
         'ProtectedLocations': alert.get('protected_locations'),
-        'DarkwebTerm': alert.get('darkweb_Term'),
+        'DarkwebTerm': alert.get('darkweb_term'),
         'Reviewed': alert.get('reviewed'),
         'Escalated': alert.get('escalated'),
         'Network': alert.get('network'),
@@ -129,6 +131,7 @@ def get_alert_contents(alert):
         'EntityAccount': alert.get('entity_account'),
         'Tags': alert.get('tags')
     }
+    return contents
 
 
 # returns the convention for the war room
@@ -157,10 +160,10 @@ def get_entity_contents(entity):
         'StrictNameMatching': entity.get('strict_name_matching'),
         'PolicyID': entity.get('policy_id'),
         'Profile': entity.get('profile'),
-        'EntityGroupID': entity.get('entity_group', {}).get('id'),
-        'EntityGroupName': entity.get('entity_group', {}).get('name'),
-        'TypeID': entity.get('type', {}).get('id'),
-        'TypeName': entity.get('name', {}).get('name')
+        'EntityGroupID': entity.get('entity_group').get('id') if entity.get('entity_group') else None,
+        'EntityGroupName': entity.get('entity_group').get('name') if entity.get('entity_group') else None,
+        'TypeID': entity.get('type').get('id') if entity.get('type') else None,
+        'TypeName': entity.get('type').get('name') if entity.get('type') else None
     }
 
 
@@ -210,7 +213,6 @@ def http_request(method: str, url_suffix: str, params=None, data=None, continue_
             data=data,
             headers=HEADERS
         )
-        demisto.info('bla bla bla ' + str(res))
         # Handle error responses gracefully
         if res.status_code not in {200, 201} and not continue_err:
             err_msg: str = f'Error in ZeroFox Integration API call [{res.status_code}] - {res.reason}\n'
@@ -261,13 +263,14 @@ def close_alert(alert_id):
 
 
 def close_alert_command():
-    alert_id: int = demisto.args().get('alert_id')
+    alert_id: int = int(demisto.args().get('alert_id'))
     close_alert(alert_id)
-    context = get_alert_context_no_war_room(alert_id)
+    contents = get_updated_contents(alert_id)
+    context = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Closed'}}
     return_outputs(
         f'Alert: {alert_id} has been closed successfully.',
         context,
-        raw_response={}
+        raw_response=contents
     )
 
 
@@ -278,13 +281,14 @@ def open_alert(alert_id):
 
 
 def open_alert_command():
-    alert_id: int = demisto.args().get('alert_id')
+    alert_id: int = int(demisto.args().get('alert_id'))
     open_alert(alert_id)
-    context = get_alert_context_no_war_room(alert_id)
+    contents = get_updated_contents(alert_id)
+    context = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Open'}}
     return_outputs(
         f'Alert: {alert_id} has been opened successfully.',
         context,
-        raw_response={}
+        raw_response=contents
     )
 
 
@@ -295,13 +299,14 @@ def alert_request_takedown(alert_id):
 
 
 def alert_request_takedown_command():
-    alert_id: int = demisto.args().get('alert_id')
+    alert_id: int = int(demisto.args().get('alert_id'))
     alert_request_takedown(alert_id)
-    context = get_alert_context_no_war_room(alert_id)
+    contents = get_updated_contents(alert_id)
+    context = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Takedown:Requested'}}
     return_outputs(
         f'Alert: {alert_id} has been requested to be taken down successfully.',
         context,
-        raw_response={}
+        raw_response=contents
     )
 
 
@@ -312,13 +317,14 @@ def alert_cancel_takedown(alert_id):
 
 
 def alert_cancel_takedown_command():
-    alert_id: int = demisto.args().get('alert_id')
+    alert_id: int = int(demisto.args().get('alert_id'))
     alert_cancel_takedown(alert_id)
-    context = get_alert_context_no_war_room(alert_id)
+    contents = get_updated_contents(alert_id)
+    context = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Open'}}
     return_outputs(
         f'Alert: {alert_id} has canceled takedown successfully.',
         context,
-        raw_response={}
+        raw_response=contents
     )
 
 
@@ -333,15 +339,16 @@ def alert_user_assignment(alert_id, subject_email, subject_name):
 
 
 def alert_user_assignment_command():
-    alert_id: int = demisto.args().get('alert_id')
+    alert_id: int = int(demisto.args().get('alert_id'))
     subject_name: str = demisto.args().get('subject_name')
     subject_email: str = demisto.args().get('subject_email')
     alert_user_assignment(alert_id, subject_email, subject_name)
-    context = get_alert_context_no_war_room(alert_id)
+    contents = get_updated_contents(alert_id)
+    context = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Assignee': subject_name}}
     return_outputs(
         f'User: {subject_email} has been assigned to Alert: {alert_id} successfully.',
         context,
-        raw_response={}
+        raw_response=contents
     )
 
 
@@ -362,16 +369,17 @@ def modify_alert_tags(alert_id, action, tags_list_string):
 
 
 def modify_alert_tags_command():
-    alert_id = demisto.args().get('alert_id')
+    alert_id = int(demisto.args().get('alert_id'))
     action_string = demisto.args().get('action')
     action = True if action_string == 'add' else False
     tags_list_string = demisto.args().get('tags')
     modify_alert_tags(alert_id, action, tags_list_string)
-    context = get_alert_context_no_war_room(alert_id)
+    contents = get_updated_contents(alert_id)
+    context = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents}
     return_outputs(
-        'Changes were successfully made.',
+        'Tags were modified successfully.',
         context,
-        raw_response={}
+        raw_response=contents
     )
 
 
