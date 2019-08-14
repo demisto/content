@@ -58,6 +58,7 @@ enabled: false
 name: MicrosoftTeamsAsk
 script: '-'
 system: false
+fromversion: 5.0.0
 tags:
 - microsoftteams
 timeout: '0'

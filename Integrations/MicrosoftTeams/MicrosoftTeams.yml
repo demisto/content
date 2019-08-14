@@ -57,6 +57,7 @@ configuration:
 description: Integration Template
 display: Microsoft Teams
 name: Microsoft Teams
+fromversion: 5.0.0
 script:
   commands:
   - arguments:
