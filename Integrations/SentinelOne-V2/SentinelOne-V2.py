@@ -52,7 +52,10 @@ def http_request(method, url_suffix, params={}, data=None):
             )
         except Exception:
             raise ValueError(f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}]')
-    return res.json()
+    try:
+        return res.json()
+    except ValueError:
+        return None
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -476,7 +479,7 @@ def get_hash_command():
     hash_ = demisto.args().get('hash')
     type_ = get_hash_type(hash_)
     if type_ == 'Unknown':
-        return_error('Please enter a valid hash format.')
+        return_error('Enter a valid hash format.')
     # Make request and get raw response
     hash_reputation = get_hash_reputation_request(hash_)
     reputation = hash_reputation.get('data', {})
@@ -1837,6 +1840,8 @@ try:
         uninstall_agent()
 
 except Exception as e:
-    LOG(str(e))
-    LOG.print_log()
-    return_error(e)
+    if demisto.command() == 'fetch-incidents':
+        LOG(str(e))
+        raise
+    else:
+        return_error(e)
