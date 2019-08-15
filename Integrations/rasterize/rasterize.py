@@ -104,8 +104,8 @@ def get_pdf(driver, file_name: str, width: int, height: int):
 
 def rasterize_command():
     url = demisto.getArg('url')
-    width = demisto.args().get('width', 800)
-    height = demisto.args().get('height', 1600)
+    w = demisto.args().get('width', 800)
+    h = demisto.args().get('height', 1600)
     r_type = demisto.args().get('type', 'png')
 
     if not (url.startswith('http')):
@@ -116,27 +116,23 @@ def rasterize_command():
         proxy_flag = f"--proxy={HTTPS_PROXY if url.startswith('https') else HTTP_PROXY}"  # type: ignore
     demisto.debug('rasterize proxy settings: ' + proxy_flag)
 
-    results = rasterize(friendly_name, url, width, height, r_type)
-
+    results = rasterize(file_name=friendly_name, path=url, r_type=r_type, width=w, height=h)
     demisto.results(results)
 
 
 def rasterize_image_command():
-    url = demisto.args().get('url')
-    width = demisto.args().get('width', 800)
-    height = demisto.args().get('height', 1600)
+    entry_id = demisto.args().get('EntryID')
+    w = demisto.args().get('width', 800)
+    h = demisto.args().get('height', 800)
 
-    if not (url.startswith('http')):
-        url = f'http://{url}'
-    friendly_name = 'url.png'  # type: ignore
-    proxy_flag = ""
-    if PROXY:
-        proxy_flag = f"--proxy={HTTPS_PROXY if url.startswith('https') else HTTP_PROXY}"  # type: ignore
-    demisto.debug('rasterize proxy settings: ' + proxy_flag)
+    file_path = demisto.getFilePath(entry_id).get('path')
+    name = 'image.png'  # type: ignore
 
-    results = rasterize(friendly_name, url, width, height)
-
-    demisto.results(results)
+    with open(file_path, 'rb') as f, open('output_image', 'w') as image:
+        data = base64.b64encode(f.read()).decode('utf-8')
+        image.write(data)
+        results = rasterize(file_name=name, path=f'file://{os.path.realpath(f.name)}', width=w, height=h)
+        demisto.results(results)
 
 
 def rasterize_email_command():
@@ -148,15 +144,15 @@ def rasterize_email_command():
     name = f'email.{"pdf" if r_type == "pdf" else "png"}'  # type: ignore
     with open('htmlBody.html', 'w') as f:
         f.write(f'<html style="background:white";>{html_body}</html>')
-        result = rasterize(file_name=name, path=f'file://{os.path.realpath(f.name)}', r_type=r_type, width=w, height=h)
+        results = rasterize(file_name=name, path=f'file://{os.path.realpath(f.name)}', r_type=r_type, width=w, height=h)
 
-    demisto.results(result)
+    demisto.results(results)
 
 
 def test():
     with open('htmlBody.html', 'w') as f:
         f.write('<html style="background:white";><head></head><body><div>Hello World!</div></body></html>')
-        rasterize(file_name='test.png', path=f'file://{os.path.realpath(f.name)}', r_type='pdf', width=800, height=800)
+        rasterize(file_name='test.png', path=f'file://{os.path.realpath(f.name)}', r_type='png', width=800, height=800)
     demisto.results('ok')
     sys.exit(0)
 
