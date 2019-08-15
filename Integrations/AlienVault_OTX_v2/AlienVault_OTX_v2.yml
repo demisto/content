@@ -3,6 +3,7 @@ commonfields:
   id: AlienVault_OTX_v2
   version: -1
 configuration:
+<<<<<<< HEAD
 - defaultvalue: 'false'
   display: Trust any certificate
   name: insecure
@@ -13,6 +14,18 @@ configuration:
   name: proxy
   required: true
   type: 8
+=======
+- display: Trust any certificate
+  name: insecure
+  required: true
+  type: 8
+  defaultvalue: false
+- display: Use system proxy
+  name: proxy
+  required: true
+  type: 8
+  defaultvalue: false
+>>>>>>> 06fb793838bb01166ed05d17df320dbd00888c18
 description: query IOCs in AlienVault
 display: AlienVault_OTX_v2
 name: AlienVault_OTX_v2
@@ -42,7 +55,11 @@ script:
     - contextPath: IP.Geo.Location
       description: IP latitude, longtitude
       type: String
+<<<<<<< HEAD
     - contextPath: AlienVaultOTX.IP.Reputation
+=======
+    - contextPath: AlienVaultOTX.Reputation
+>>>>>>> 06fb793838bb01166ed05d17df320dbd00888c18
       description: IP reputation
       type: String
     - contextPath: DBotScore.Score
@@ -72,10 +89,17 @@ script:
     - contextPath: Domain.Name
       description: Domain name
       type: String
+<<<<<<< HEAD
     - contextPath: AlienVaultOTX.Domain.Alexa
       description: Alexa URL for domain data
       type: String
     - contextPath: AlienVaultOTX.Domain.Whois
+=======
+    - contextPath: Domain.AlienVaultOTX.Alexa
+      description: Alexa URL for domain data
+      type: String
+    - contextPath: Domain.AlienVaultOTX.Whois
+>>>>>>> 06fb793838bb01166ed05d17df320dbd00888c18
       description: Whois URL for domain data
       type: String
     - contextPath: DBotScore.Indicator
@@ -157,6 +181,7 @@ script:
     name: file
     outputs:
     - contextPath: File.MD5
+<<<<<<< HEAD
       description: MD5 Hash of the file
       type: String
     - contextPath: File.SHA1
@@ -164,6 +189,15 @@ script:
       type: String
     - contextPath: File.SHA256
       description: SHA256 Hash of the file
+=======
+      description: File md5
+      type: String
+    - contextPath: File.SHA1
+      description: File sha1
+      type: String
+    - contextPath: File.SHA256
+      description: File sha256
+>>>>>>> 06fb793838bb01166ed05d17df320dbd00888c18
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator we tested
@@ -180,6 +214,7 @@ script:
     - contextPath: File.Malicious.PulseIDs
       description: IDs of pulses marked this as malicious
       type: String
+<<<<<<< HEAD
     - contextPath: File.Type
       description: File.Type /*use file.class from the api*/
       type: String
@@ -189,6 +224,8 @@ script:
     - contextPath: File.SSDeep
       description: The ssdeep value for the file
       type: String
+=======
+>>>>>>> 06fb793838bb01166ed05d17df320dbd00888c18
   - arguments:
     - default: false
       description: The cve to query
@@ -269,7 +306,11 @@ script:
     execution: false
     name: alienvault-get-related-hashes-by-indicator
     outputs:
+<<<<<<< HEAD
     - contextPath: AlienValutOTX.File.Hash
+=======
+    - contextPath: AlienValut.File.Hash
+>>>>>>> 06fb793838bb01166ed05d17df320dbd00888c18
       description: the path of the url
       type: String
   - arguments:
@@ -297,6 +338,7 @@ script:
     execution: false
     name: alienvault-get-passive-dns-data-by-indicator
     outputs:
+<<<<<<< HEAD
     - contextPath: AlienValutOTX.PassiveDNS.Domain
       description: the domain value
       type: String
@@ -310,6 +352,21 @@ script:
       description: the first seen date
       type: Date
     - contextPath: AlienValutOTX.PassiveDNS.LastSeen
+=======
+    - contextPath: AlienValut.PassiveDNS.Domain
+      description: the domain value
+      type: String
+    - contextPath: AlienValut.PassiveDNS.IP
+      description: the ip value
+      type: String
+    - contextPath: AlienValut.PassiveDNS.Type
+      description: the asset type
+      type: String
+    - contextPath: AlienValut.PassiveDNS.FirstSeen
+      description: the first seen date
+      type: Date
+    - contextPath: AlienValut.PassiveDNS.LastSeen
+>>>>>>> 06fb793838bb01166ed05d17df320dbd00888c18
       description: the last seen date
       type: Date
   - arguments:
@@ -324,6 +381,7 @@ script:
     execution: false
     name: alienvault-search-pulses
     outputs:
+<<<<<<< HEAD
     - contextPath: AlienVaultOTX.Pulses.ID
       description: Pulse ID
       type: String
@@ -352,6 +410,36 @@ script:
       description: Pulse tags
       type: String
     - contextPath: AlienVaultOTX.Pulses.Description
+=======
+    - contextPath: AlienVault.Pulses.ID
+      description: Pulse ID
+      type: String
+    - contextPath: AlienVault.Pulses.Author.ID
+      description: Author ID
+      type: String
+    - contextPath: AlienVault.Pulses.Author.Username
+      description: Author username
+      type: String
+    - contextPath: AlienVault.Pulses.Count
+      description: Pulse count
+      type: String
+    - contextPath: AlienVault.Pulses.Modified
+      description: Pulse modification date
+      type: Date
+    - contextPath: AlienVault.Pulses.Name
+      description: Pulse name
+      type: String
+    - contextPath: AlienVault.Pulses.Source
+      description: Pulse source
+      type: String
+    - contextPath: AlienVault.Pulses.SubscriberCount
+      description: Pulse subscriber count
+      type: String
+    - contextPath: AlienVault.Pulses.Tags
+      description: Pulse tags
+      type: String
+    - contextPath: AlienVault.Pulses.Description
+>>>>>>> 06fb793838bb01166ed05d17df320dbd00888c18
       description: Pulse description
       type: String
   - arguments:
@@ -366,6 +454,7 @@ script:
     execution: false
     name: alienvault-get-pulse-details
     outputs:
+<<<<<<< HEAD
     - contextPath: AlienVaultOTX.Pulses.Created
       description: Pulse created
       type: Date
@@ -385,6 +474,27 @@ script:
       description: Pulse targeted countries
       type: String
     - contextPath: AlienVaultOTX.Pulses.Description
+=======
+    - contextPath: AlienVault.Pulses.Created
+      description: Pulse created
+      type: Date
+    - contextPath: AlienVault.Pulses.Author.Username
+      description: Pulse author username
+      type: String
+    - contextPath: AlienVault.Pulses.ID
+      description: Pulse ID
+      type: String
+    - contextPath: AlienVault.Pulses.Name
+      description: Pulse name
+      type: String
+    - contextPath: AlienVault.Pulses.Tags
+      description: Pulse tags
+      type: String
+    - contextPath: AlienVault.Pulses.TargetedCountries
+      description: Pulse targeted countries
+      type: String
+    - contextPath: AlienVault.Pulses.Description
+>>>>>>> 06fb793838bb01166ed05d17df320dbd00888c18
       description: Pulse description
       type: String
   - arguments:
@@ -400,6 +510,7 @@ script:
     name: url
     outputs:
     - contextPath: URL.Data
+<<<<<<< HEAD
       description: URL path
       type: String
     - contextPath: AlienVaultOTX.URL.Hostname
@@ -430,6 +541,12 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
+=======
+      description: 'URL '
+      type: Unknown
+  dockerimage: docker pull demisto/python3:3.7.4.1150
+  isfetch: false
+>>>>>>> 06fb793838bb01166ed05d17df320dbd00888c18
   runonce: false
   script: '-'
   type: python

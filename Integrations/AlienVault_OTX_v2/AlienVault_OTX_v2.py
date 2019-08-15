@@ -42,7 +42,10 @@ def http_request(method, url_path, params=None, data=None):
     # Handle error responses gracefully
     if res.status_code not in {200}:
         return_error('Error in API call to Example Integration [%d] - %s' % (res.status_code, res.reason))
+<<<<<<< HEAD
 
+=======
+>>>>>>> 06fb793838bb01166ed05d17df320dbd00888c18
     return res.json()
 
 
@@ -86,9 +89,13 @@ def ip():
             }
         },
         'AlienVaultOTX': {
+<<<<<<< HEAD
             'IP': {
                 'Reputation': ''
             }
+=======
+            'Reputation': '',
+>>>>>>> 06fb793838bb01166ed05d17df320dbd00888c18
         }
     }
 
@@ -99,6 +106,7 @@ def ip_command():
 
 # Domain command
 def domain():
+<<<<<<< HEAD
     ec = {
         'Domain': {
             'Name': '',
@@ -116,6 +124,9 @@ def domain():
             'Vendor': ''
         }
     }
+=======
+    pass
+>>>>>>> 06fb793838bb01166ed05d17df320dbd00888c18
 
 
 def domain_command():
@@ -167,9 +178,12 @@ def file():
             'MD5': '',
             'SHA1': '',
             'SHA256': '',
+<<<<<<< HEAD
             'SSDeep': '',
             'Size': '',
             'Type': '',
+=======
+>>>>>>> 06fb793838bb01166ed05d17df320dbd00888c18
             'Malicious': {
                 'PulseIDs': ''
             }
@@ -220,10 +234,15 @@ def alienvault_get_related_urls_by_indicator_command():
 # alienvault-get-related-hashes-by-indicator command
 def alienvault_get_related_hashes_by_indicator():
     ec = {
+<<<<<<< HEAD
         'AlienVaultOTX': {
             'File': {
                 'Hash': ''
             }
+=======
+        'File': {
+            'Hash': ''
+>>>>>>> 06fb793838bb01166ed05d17df320dbd00888c18
         }
     }
 
@@ -235,7 +254,11 @@ def alienvault_get_related_hashes_by_indicator_command():
 # alienvault-get-passive-dns-data-by-indicator command
 def alienvault_get_passive_dns_data_by_indicator():
     ec = {
+<<<<<<< HEAD
         'AlienVaultOTX': {
+=======
+        'AlienVault': {
+>>>>>>> 06fb793838bb01166ed05d17df320dbd00888c18
             'PassiveDNS': {
                 'Domain': '',
                 'IP': '',
@@ -254,7 +277,11 @@ def alienvault_get_passive_dns_data_by_indicator_command():
 # alienvault-search-pulses command
 def alienvault_search_pulses():
     ec = {
+<<<<<<< HEAD
         'AlienVaultOTX': {
+=======
+        'AlienVault': {
+>>>>>>> 06fb793838bb01166ed05d17df320dbd00888c18
             'Pulses': {
                 'ID': '',
                 'Author': {
@@ -280,7 +307,11 @@ def alienvault_search_pulses_command():
 # alienvault-get-pulse-details command
 def alienvault_get_pulse_details():
     ec = {
+<<<<<<< HEAD
         'AlienVaultOTX': {
+=======
+        'AlienVault': {
+>>>>>>> 06fb793838bb01166ed05d17df320dbd00888c18
             'Pulses': {
                 'Description': '',
                 'Created': '',
@@ -305,6 +336,7 @@ def url():
     ec = {
         'URL': {
             'Data': ''
+<<<<<<< HEAD
         },
         'AlienVaultOTX': {
             'URL': {
@@ -319,6 +351,8 @@ def url():
             'Score': '',
             'Type': '',
             'Vendor': ''
+=======
+>>>>>>> 06fb793838bb01166ed05d17df320dbd00888c18
         }
     }
 
