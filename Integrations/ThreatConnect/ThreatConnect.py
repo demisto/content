@@ -1352,8 +1352,7 @@ def create_document_group():
     }
     return_outputs(tableToMarkdown('ThreatConnect document group was created successfully', content, removeNull=True),
                    context,
-                   raw_document
-    )
+                   raw_document)
 
 
 def test_integration():
