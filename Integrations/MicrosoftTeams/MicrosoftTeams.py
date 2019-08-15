@@ -807,12 +807,12 @@ def close_channel():
                 if channel.get('investigation_id') == investigation_id:
                     channel_id = channel.get('channel_id', '')
                     close_channel_request(team_aad_id, channel_id)
-                    team_to_update: dict = team
                     mirrored_channels.pop(channel_index)
-                    team_to_update['mirrored_channels'] = mirrored_channels
+                    team['mirrored_channels'] = mirrored_channels
                     break
         if not channel_id:
             raise ValueError('Could not find Microsoft Teams channel to close.')
+        integration_context['teams'] = json.dumps(teams)
         demisto.setIntegrationContext(integration_context)
     else:
         team_name: str = demisto.args().get('team') or demisto.params().get('team')
