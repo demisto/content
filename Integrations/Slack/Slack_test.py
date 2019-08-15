@@ -1193,8 +1193,6 @@ async def test_handle_dm_empty_message(mocker):
     from Slack import handle_dm
 
     # Set
-
-
     @asyncio.coroutine
     def fake_message(channel, text):
         if not text:
