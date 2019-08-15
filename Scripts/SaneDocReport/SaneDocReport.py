@@ -2,9 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import os
-
-
-
 import base64
 from sane_doc_reports.main import run
 
@@ -12,11 +9,11 @@ from sane_doc_reports.main import run
 OUTPUT_FILE_PATH = 'out.docx'
 try:
     sane_json_b64 = demisto.args().get('sane_docx_report_base64', '').encode(
-        "utf-8")
+        'utf-8')
     orientation = demisto.args().get('orientation', 'portrait').encode(
-        "utf-8")
+        'utf-8')
     paper_size = demisto.args().get('paperSize', 'A4').encode(
-        "utf-8")
+        'utf-8')
     with open('sane.json', 'wb') as f:
         f.write(base64.b64decode(sane_json_b64))
 
