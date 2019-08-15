@@ -1,4 +1,5 @@
 ## [Unreleased]
+- Fixed an issue in which special characters were missing from MSG emails.
 
 
 ## [19.8.0] - 2019-08-06
