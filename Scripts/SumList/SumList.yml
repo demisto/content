@@ -1,6 +1,6 @@
 args:
 - default: true
-  description: List to sum
+  description: A list for which to sum the list values.
   isArray: true
   name: value
   required: true
