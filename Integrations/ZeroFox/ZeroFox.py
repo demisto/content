@@ -6,20 +6,20 @@ from CommonServerUserPython import *
 
 import requests
 from typing import Dict, List, Any, cast
+from datetime import datetime, timedelta
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-USERNAME = None
-PASSWORD = None
-# Should we use SSL
-USE_SSL = None
-# Service base URL
-BASE_URL = None
-# default fetch time
+USERNAME: str = demisto.params().get('credentials').get('identifier')
+PASSWORD: str = demisto.params().get('credentials').get('password')
+USE_SSL: str = not demisto.params().get('insecure', False)
+BASE_URL: str = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
 FETCH_TIME_DEFAULT = '3 days'
-FETCH_TIME = None
+FETCH_TIME: str = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
+# Remove proxy if not set to true in params
+handle_proxy()
 
 ''' HELPER FUNCTIONS '''
 
@@ -63,19 +63,6 @@ def get_updated_contents(alert_id: int):
 # removes all none values from a dict
 def remove_none_dict(input_dict: Dict):
     return {key: value for key, value in input_dict.items() if value is not None}
-
-
-# initialize all preset values
-def initialize_preset():
-    global USERNAME, PASSWORD, USE_SSL, BASE_URL
-    USERNAME: str = demisto.params().get('credentials').get('identifier')
-    PASSWORD: str = demisto.params().get('credentials').get('password')
-    USE_SSL: str = not demisto.params().get('insecure', False)
-    BASE_URL: str = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
-    global FETCH_TIME
-    FETCH_TIME: str = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
-    # Remove proxy if not set to true in params
-    handle_proxy()
 
 
 def get_alert_contents(alert: Dict):
@@ -467,15 +454,15 @@ def list_alerts_command():  # not fully implemented
         return_outputs('Unexpected outputs from API call.', outputs={})
 
 
-def get_entities(params: Dict):
+def list_entities(params: Dict):
     url_suffix: str = '/entities/'
     response_content: Dict = http_request('GET', url_suffix, params=params)
     return response_content
 
 
-def get_entities_command():
+def list_entities_command():
     params: Dict = remove_none_dict(demisto.args())
-    response_content: Dict = get_entities(params)
+    response_content: Dict = list_entities(params)
     if not response_content:
         return_outputs('No entities found.', outputs={})
     elif isinstance(response_content, Dict):
@@ -492,23 +479,42 @@ def get_entities_command():
         raise Exception('Unexpected outputs from API call.')
 
 
+# REMEMBER TO DELETE
+def fetch_incidents_command():
+    return_outputs('fetch 1', outputs={})
+    fetch_incidents()
+    return_outputs('fetch 2', outputs={})
+    fetch_incidents()
+
+
 def fetch_incidents():
+    date_format = '%Y-%m-%dT%H:%M:%S'
     last_run = demisto.getLastRun()
     if last_run and last_run.get('last_fetched_event_timestamp'):
         last_update_time = last_run['last_fetched_event_timestamp']
     else:
-        last_update_time = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%S')[0]
+        last_update_time = parse_date_range(FETCH_TIME, date_format=date_format)[0]
     incidents = []
     limit = demisto.params().get('fetch_limit')
     response_content = list_alerts({'sort_direction': 'asc', 'limit': limit, 'min_timestamp': last_update_time})
     alerts = response_content.get('alerts')
-    # max_update_time is the timestamp of the last alert in alerts (because alerts is a sorted list)
-    max_update_time = str(alerts[len(alerts)-1].get('timestamp')).split('+')[0]
     if not alerts:
         return
     for alert in alerts:
+        alert_id = alert.get('id')
+        ts = alert.get('timestamp')
+        # REMEMBER TO DELETE
+        return_outputs(f'Alert: {alert_id}, TS: {ts}', outputs={})
         incident = alert_to_incident(alert)
         incidents.append(incident)
+    # max_update_time is the timestamp of the last alert in alerts (alerts is a sorted list)
+    last_alert_timestamp = str(alerts[len(alerts) - 1].get('timestamp'))
+    if '+' in last_alert_timestamp:
+        max_update_time = last_alert_timestamp.split('+')[0]
+    else:
+        max_update_time = last_alert_timestamp.split('-')[0]
+    # add 1 second to last alert timestamp, in order to prevent duplicated alerts
+    max_update_time = (datetime.strptime(max_update_time, date_format) + timedelta(0, 1)).isoformat()
     demisto.setLastRun({'last_fetched_event_timestamp': max_update_time})  # check whether max_update_time is a string?
     demisto.incidents(incidents)
 
@@ -528,7 +534,6 @@ def test_module():
 def main():
     LOG('Command being called is %s' % (demisto.command()))
     try:
-        initialize_preset()
         if demisto.command() == 'test-module':
             test_module()
             demisto.results('ok')
@@ -550,10 +555,12 @@ def main():
             open_alert_command()
         elif demisto.command() == 'zerofox-alert-cancel-takedown':
             alert_cancel_takedown_command()
-        elif demisto.command() == 'zerofox-get-entities':
-            get_entities_command()
+        elif demisto.command() == 'zerofox-list-entities':
+            list_entities_command()
         elif demisto.command() == 'fetch-incidents':
             fetch_incidents()
+        elif demisto.command() == 'zerofox-fetch-incidents':
+            fetch_incidents_command()
 
     # Log exceptions
     except Exception as e:
