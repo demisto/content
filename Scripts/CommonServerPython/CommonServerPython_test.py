@@ -534,11 +534,11 @@ def test_return_error_long_running_execution(mocker):
     assert returned_error
 
 
-def test_return_error_script(mocker):
+def test_return_error_script(mocker, monkeypatch):
     from CommonServerPython import return_error
     mocker.patch.object(sys, 'exit')
     mocker.spy(demisto, 'results')
-    del demisto.command
+    monkeypatch.delattr(demisto, 'command')
     err_msg = "Testing unicode Ё"
     outputs = {'output': 'error'}
     expected_error = {
