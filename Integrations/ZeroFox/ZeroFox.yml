@@ -604,10 +604,14 @@ script:
       - whitelisted
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: If true, returns only alerts that are escalated.
       isArray: false
       name: escalated
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
