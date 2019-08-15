@@ -1,4 +1,5 @@
-Slack integration now written in python as BYOI. New features include:
-* Mirroring - support channels with a custom name and topic.
-* Creating incidents via direct message - Support incident types and whole incident JSON.
-* Sending a file - Support sending to a provided thread and to the current investigation.
+Rewrote the integration in Python as a BYOI integration. New features include:
+  - Mirror incidents between Demisto and Slack, with support for custom channel names and topics.
+  - Create incidents by sending a direct message.
+  - Support for incident types and whole incident JSON.
+  - Sends files to Slack, with support for sending to a thread and to the current investigation.
