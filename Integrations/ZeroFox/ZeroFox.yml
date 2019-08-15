@@ -894,7 +894,7 @@ script:
     deprecated: false
     description: Lists all entities on the company of the authorized user.
     execution: false
-    name: zerofox-get-entities
+    name: zerofox-list-entities
     outputs:
     - contextPath: ZeroFox.Entity.ID
       description: The ID of the entity.
@@ -922,6 +922,9 @@ script:
       type: Number
     - contextPath: ZeroFox.Entity.TypeName
       type: String
+  - deprecated: false
+    execution: false
+    name: zerofox-fetch-incidents
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
   runonce: false
