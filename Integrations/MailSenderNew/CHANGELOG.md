@@ -1,2 +1,2 @@
 ## [Unreleased]
-  - Added the ability to add custom headers to an email.
+Added the *additionalHeader* argument, which enables you to add custom headers to an email.
