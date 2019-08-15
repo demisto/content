@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from mock import patch
 
 import demistomock as demisto
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
