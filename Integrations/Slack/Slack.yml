@@ -16,12 +16,12 @@ configuration:
   required: true
   type: 0
 - defaultvalue: 'true'
-  display: Sends incident notifications to the dedicated Slack channel
+  display: Send notifications about incidents to the dedicated channel
   name: notify_incidents
   required: false
   type: 8
 - defaultvalue: Low
-  display: Sets the minimum incident severity for messages sent to Slack
+  display: Minimum incident severity to send messages to slack by
   name: min_severity
   options:
   - Low
@@ -31,15 +31,15 @@ configuration:
   required: false
   type: 15
 - defaultvalue: Unclassified
-  display: Sets the type of incidents created in Slack.
+  display: Type of incidents created in Slack
   name: incidentType
   required: false
   type: 13
-- display: Lets external users create incidents via DM.
+- display: Allow external users to create incidents via DM
   name: allow_incidents
   required: false
   type: 8
-- display: Uses the system's proxy settings.
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
