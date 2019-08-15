@@ -236,7 +236,6 @@ def check_file_behaviour_command():
     # variables
     args = demisto.args()
     file_hash = args.get('resource')
-    # threshold = int(args.get('threshold', None) or demisto.params().get('fileThreshold', None) or 10)
     full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
     if (full_response):
         max_len = 1000
