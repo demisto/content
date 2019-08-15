@@ -275,7 +275,7 @@ def test_send_message(mocker, requests_mock):
     )
     with pytest.raises(ValueError) as e:
         send_message()
-    assert str(e.value) == 'No channel or user to send message were provided.'
+    assert str(e.value) == 'No channel or team member to send message were provided.'
 
     # verify error is raised if both user and channel were provided
     mocker.patch.object(
@@ -288,7 +288,7 @@ def test_send_message(mocker, requests_mock):
     )
     with pytest.raises(ValueError) as e:
         send_message()
-    assert str(e.value) == 'Provide either channel or user to send message to, not both.'
+    assert str(e.value) == 'Provide either channel or team member to send message to, not both.'
 
     # verify message is sent properly given user to send to
     mocker.patch.object(
@@ -302,7 +302,8 @@ def test_send_message(mocker, requests_mock):
         demisto,
         'args',
         return_value={
-            'team_member': 'Denzel Washington'
+            'team_member': 'Denzel Washington',
+            'message': 'MESSAGE'
         }
     )
     requests_mock.post(
@@ -347,7 +348,8 @@ def test_send_message(mocker, requests_mock):
         demisto,
         'args',
         return_value={
-            'channel': 'incident-1'
+            'channel': 'incident-1',
+            'message': 'MESSAGE'
         }
     )
     requests_mock.post(
@@ -425,6 +427,82 @@ def test_send_message(mocker, requests_mock):
 
     send_message()
     assert requests_mock.request_history[5].json() == expected_ask_user_message
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0] == 'Message was sent successfully.'
+
+    # verify proper error is raised if invalid JSON provided as adaptive card
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'channel': 'channel',
+            'adaptive_card': 'THISisSTRINGnotJSON'
+        }
+    )
+    with pytest.raises(ValueError) as e:
+        send_message()
+    assert str(e.value) == 'Given adaptive card is not in valid JSON format.'
+
+    # verify proper error is raised if both message and adaptive card were provided
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'channel': 'channel',
+            'message': 'message',
+            'adaptive_card': '{"a":"b"}'
+        }
+    )
+    with pytest.raises(ValueError) as e:
+        send_message()
+    assert str(e.value) == 'Provide either message or adaptive to send, not both.'
+
+    # verify proper error is raised if neither message or adaptive card were provided
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'channel': 'channel'
+        }
+    )
+    with pytest.raises(ValueError) as e:
+        send_message()
+    assert str(e.value) == 'No message or adaptive card to send were provided.'
+
+    # verify adaptive card sent successfully
+
+    adaptive_card: dict = {
+        "contentType": "application/vnd.microsoft.card.adaptive",
+        "content": {
+            "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+            "type": "AdaptiveCard",
+            "version": "1.0",
+            "body": [
+                {
+                    "type": "Container",
+                    "items": [{
+                        "type": "TextBlock",
+                        "text": "What a pretty adaptive card"
+                    }]
+                }
+            ]
+        }
+    }
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'team_member': 'bwillis@email.com',
+            'adaptive_card': json.dumps(adaptive_card)
+        }
+    )
+    expected_conversation: dict = {
+        'type': 'message',
+        'attachments': [adaptive_card]
+    }
+    send_message()
+    assert requests_mock.request_history[7].json() == expected_conversation
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0] == 'Message was sent successfully.'

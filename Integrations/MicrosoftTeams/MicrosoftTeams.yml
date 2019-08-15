@@ -84,6 +84,12 @@ script:
       name: team
       required: false
       secret: false
+    - default: false
+      description: Microsoft Teams adaptive card to send
+      isArray: false
+      name: adaptive_card
+      required: false
+      secret: false
     deprecated: false
     description: Send message to Teams
     execution: false
@@ -155,6 +161,7 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
 - No test
 fromversion: 5.0.0

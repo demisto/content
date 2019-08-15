@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: Question message to send to the user
+  description: Question message to send to the team member
   isArray: false
   name: message
   required: true
@@ -17,14 +17,14 @@ args:
   secret: false
 - default: false
   defaultValue: 'yes'
-  description: First option for a user reply.
+  description: First option for the team member reply.
   isArray: false
   name: option1
   required: false
   secret: false
 - default: false
   defaultValue: 'no'
-  description: Second option for the user reply.
+  description: Second option for the team member reply.
   isArray: false
   name: option2
   required: false
@@ -58,15 +58,15 @@ enabled: false
 name: MicrosoftTeamsAsk
 script: '-'
 system: false
-fromversion: 5.0.0
 tags:
 - microsoftteams
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.7.4.1150
+tests:
+- No test
 dependson:
   must:
   - Microsoft Teams|||send-notification
 subtype: python3
-tests:
-  - No test
+fromversion: 5.0.0

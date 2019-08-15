@@ -485,31 +485,43 @@ def http_request(
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     }
-
-    response: requests.Response = requests.request(
-        method,
-        url,
-        headers=headers,
-        json=json_,
-        verify=USE_SSL
-    )
-
-    if not response.ok:
-        error = error_parser(response)
-        raise ValueError(f'Error in API call to Microsoft Teams: [{response.status_code}] - {error}')
-
-    if response.status_code in {202, 204}:
-        # Delete channel returns 204 if successful
-        # Update message returns 202 if the request has been accepted for processing
-        return {}
-    if response.status_code == 201:
-        # For channel creation query, we get a body in the response, otherwise we should just return
-        if not response.content:
-            return {}
     try:
-        return response.json()
-    except ValueError:
-        raise ValueError(f'Error in API call to Microsoft Teams: {response.text}')
+        response: requests.Response = requests.request(
+            method,
+            url,
+            headers=headers,
+            json=json_,
+            verify=USE_SSL
+        )
+
+        if not response.ok:
+            error = error_parser(response)
+            raise ValueError(f'Error in API call to Microsoft Teams: [{response.status_code}] - {error}')
+
+        if response.status_code in {202, 204}:
+            # Delete channel returns 204 if successful
+            # Update message returns 202 if the request has been accepted for processing
+            return {}
+        if response.status_code == 201:
+            # For channel creation query, we get a body in the response, otherwise we should just return
+            if not response.content:
+                return {}
+        try:
+            return response.json()
+        except ValueError:
+            raise ValueError(f'Error in API call to Microsoft Teams: {response.text}')
+    except requests.exceptions.ConnectTimeout:
+        error_message = 'Connection Timeout Error - potential reason may be that Microsoft Teams is not ' \
+                        'accessible from your host.'
+        raise ConnectionError(error_message)
+    except requests.exceptions.SSLError:
+        error_message = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' in ' \
+                        'the integration configuration.'
+        raise ConnectionError(error_message)
+    except requests.exceptions.ProxyError:
+        error_message = 'Proxy Error - if \'Use system proxy settings\' in the integration configuration has been ' \
+                        'selected, try deselecting it.'
+        raise ConnectionError(error_message)
 
 
 def validate_auth_header(headers: dict) -> bool:
@@ -873,6 +885,10 @@ def send_message():
     message_type: str = demisto.args().get('messageType', '')
     original_message: str = demisto.args().get('originalMessage', '')
     message: str = demisto.args().get('message', '')
+    try:
+        adaptive_card: dict = json.loads(demisto.args().get('adaptive_card', '{}'))
+    except ValueError:
+        raise ValueError('Given adaptive card is not in valid JSON format.')
 
     if message_type == MESSAGE_TYPES['mirror_entry'] and ENTRY_FOOTER in original_message:
         # Got a message which was already mirrored - skipping it
@@ -890,10 +906,16 @@ def send_message():
     team_member: str = demisto.args().get('team_member', '')
 
     if not (team_member or channel_name):
-        raise ValueError('No channel or user to send message were provided.')
+        raise ValueError('No channel or team member to send message were provided.')
 
     if team_member and channel_name:
-        raise ValueError('Provide either channel or user to send message to, not both.')
+        raise ValueError('Provide either channel or team member to send message to, not both.')
+
+    if not (message or adaptive_card):
+        raise ValueError('No message or adaptive card to send were provided.')
+
+    if message and adaptive_card:
+        raise ValueError('Provide either message or adaptive to send, not both.')
 
     integration_context: dict = demisto.getIntegrationContext()
     channel_id: str = str()
@@ -908,20 +930,28 @@ def send_message():
 
     recipient: str = channel_id or personal_conversation_id
 
-    entitlement_match: Optional[Match[str]] = re.search(ENTITLEMENT_REGEX, message)
-    if entitlement_match:
-        # In TeamsAskUser process
-        adaptive_card = process_ask_user(message)
-        conversation: dict = {
-            'type': 'message',
-            'attachments': [adaptive_card]
-        }
-    else:
-        # Sending regular message
-        formatted_message: str = urlify_hyperlinks(message)
+    conversation: dict
+
+    if message:
+        entitlement_match: Optional[Match[str]] = re.search(ENTITLEMENT_REGEX, message)
+        if entitlement_match:
+            # In TeamsAskUser process
+            adaptive_card = process_ask_user(message)
+            conversation = {
+                'type': 'message',
+                'attachments': [adaptive_card]
+            }
+        else:
+            # Sending regular message
+            formatted_message: str = urlify_hyperlinks(message)
+            conversation = {
+                'type': 'message',
+                'text': formatted_message
+            }
+    else:  # Adaptive card
         conversation = {
             'type': 'message',
-            'text': formatted_message
+            'attachments': [adaptive_card]
         }
 
     send_message_request(recipient, conversation, integration_context)
