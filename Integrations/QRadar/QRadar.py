@@ -19,7 +19,9 @@ USERNAME = CREDENTIALS['identifier'] if CREDENTIALS else ''
 PASSWORD = CREDENTIALS['password'] if CREDENTIALS else ''
 TOKEN = demisto.params().get('token')
 USE_SSL = not demisto.params().get('insecure', False)
-AUTH_HEADERS = {'SEC': str(TOKEN), 'Content-Type': 'application/json'}
+AUTH_HEADERS = {'Content-Type': 'application/json'}
+if TOKEN:
+    AUTH_HEADERS['SEC'] = str(TOKEN)
 OFFENSES_PER_CALL = int(demisto.params().get('offensesPerCall', 50))
 OFFENSES_PER_CALL = 50 if OFFENSES_PER_CALL > 50 else OFFENSES_PER_CALL
 
@@ -205,6 +207,10 @@ def send_request(method, url, headers=AUTH_HEADERS, params=None):
         LOG('qradar is attempting {method} request sent to {url} with headers:\n{headers}\nparams:\n{params}'
             .format(method=method, url=url, headers=json.dumps(log_hdr, indent=4), params=json.dumps(params, indent=4)))
         res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, auth=(USERNAME, PASSWORD))
+        if TOKEN:
+            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL)
+        else:
+            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, auth=(USERNAME, PASSWORD))
         res.raise_for_status()
     except HTTPError:
         err_json = res.json()
