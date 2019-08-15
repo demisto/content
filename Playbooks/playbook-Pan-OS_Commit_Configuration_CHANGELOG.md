@@ -1,2 +1,2 @@
 ## [Unreleased]
-  - Determines automatically whether the product is firewall or panorama and commits the configuration accordingly. deprecates panorama-commit-configuration playbook
+Automatically determines the operable product (Firewall or Panorama), and commits accordingly. This playbook replaces the deprecated **panorama-commit-configuration** playbook.
