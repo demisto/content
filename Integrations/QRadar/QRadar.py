@@ -206,7 +206,6 @@ def send_request(method, url, headers=AUTH_HEADERS, params=None):
         log_hdr.pop('SEC', None)
         LOG('qradar is attempting {method} request sent to {url} with headers:\n{headers}\nparams:\n{params}'
             .format(method=method, url=url, headers=json.dumps(log_hdr, indent=4), params=json.dumps(params, indent=4)))
-        res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, auth=(USERNAME, PASSWORD))
         if TOKEN:
             res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL)
         else:
