@@ -8,9 +8,9 @@ import re
 import requests
 import argparse
 
-from Tests.scripts.constants import PACKAGE_SUPPORTING_DIRECTORIES
+from Tests.scripts.constants import PACKAGE_SUPPORTING_DIRECTORIES, CONTENT_RELEASE_TAG_REGEX
 from Tests.test_utils import print_error, print_warning, \
-    run_command, server_version_compare, get_release_notes_file_path
+    run_command, server_version_compare, get_release_notes_file_path, get_latest_release_notes_text
 from Tests.scripts.validate_files import FilesValidator
 
 contentLibPath = "./"
@@ -53,7 +53,7 @@ CONTENT_GITHUB_LINK = r'https://raw.githubusercontent.com/demisto/content'
 
 
 def add_dot(text):
-    text = text.strip()
+    text = text.rstrip()
     if text.endswith('.'):
         return text
     return text + '.'
@@ -97,18 +97,7 @@ class Content(object):
         """
         rn_path = get_release_notes_file_path(file_path)
 
-        if not os.path.isfile(rn_path):
-            # releaseNotes were not provided
-            return None
-
-        with open(rn_path) as f:
-            rn = f.read()
-
-        if not rn:
-            # empty releaseNotes is not supported
-            return None
-
-        return rn.strip()
+        return get_latest_release_notes_text(rn_path)
 
     @abc.abstractmethod
     def added_release_notes(self, file_path, data):
@@ -131,7 +120,7 @@ class Content(object):
         """
         rn = self.get_release_notes(file_path, data)
 
-        if rn == IGNORE_RN:
+        if rn and rn.strip() == IGNORE_RN:
             rn = ''
 
         return rn
@@ -549,8 +538,12 @@ def get_release_notes_draft(github_token, asset_id):
     # Disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
-    res = requests.get('https://api.github.com/repos/demisto/content/releases', verify=False,
-                       headers={'Authorization': 'token {}'.format(github_token)})
+    try:
+        res = requests.get('https://api.github.com/repos/demisto/content/releases', verify=False,
+                           headers={'Authorization': 'token {}'.format(github_token)})
+    except requests.exceptions.ConnectionError as e:
+        print_warning('unable to get release draft, reason:\n{}'.format(str(e)))
+        return ''
 
     if res.status_code != 200:
         print_warning('unable to get release draft ({}), reason:\n{}'.format(res.status_code, res.text))
@@ -635,8 +628,9 @@ def filter_packagify_changes(modified_files, added_files, removed_files, tag):
 
 
 def get_last_release_version():
+    regex = re.compile(CONTENT_RELEASE_TAG_REGEX)
     tags = run_command('git tag').split('\n')
-    tags = [tag for tag in tags if re.match(r'\d+\.\d+\.\d+', tag) is not None]
+    tags = [tag for tag in tags if regex.match(tag) is not None]
     tags.sort(cmp=server_version_compare, reverse=True)
     return tags[0]
 
@@ -678,7 +672,7 @@ def main():
         ans = value.generate_release_notes(args.server_version)
         if ans is None or value.is_missing_release_notes:
             missing_release_notes = True
-        elif len(ans) > 0:
+        if ans:
             res.append(ans)
 
     release_notes = "\n---\n".join(res)

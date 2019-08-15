@@ -7,7 +7,36 @@ from datetime import datetime
 
 from stix.core import STIXPackage
 
+""" GLOBAL PARAMS """
+PATTERNS_DICT = {
+    "file:": "File",
+    "ipv6-addr": "IP",
+    "ipv4-addr:": "IP",
+    "url:": "URL",
+    "domain-name:": "Domain",
+    "email": "Email",
+    "registry-key:key": "Registry Path Reputation",
+    "user-account": "Username"
+}
+
 """ HELPER FUNCTIONS"""
+
+
+def ip_parser(ip):
+    """IP can be in the form of `ip-x-x-x-x`.
+    function will return it to `x.x.x.x` format
+
+    if it's not an ip, will return `ip` arg back.
+
+    Args:
+        ip (str): ip to parse
+
+    Returns:
+        str: parsed ip indicator
+    """
+    if ip.lower().startswith("ip-"):
+        return ip.lower().replace("ip-", "").replace("-", ".")
+    return ip
 
 
 def convert_to_json(string):
@@ -96,7 +125,7 @@ def get_score(description):
     Returns:
         str: `IMPACT` field
     """
-    if description and isinstance(description, (str, unicode)):
+    if description and isinstance(description, str):
         regex = re.compile("(IMPACT:)(Low|Medium|High)")
         groups = regex.match(description)
         score = groups.group(2) if groups else None
@@ -107,7 +136,7 @@ def get_score(description):
     return 0
 
 
-def dscore(score):
+def dbot_score(score):
     if score == "High":
         return 3
     if score == "Medium":
@@ -117,61 +146,120 @@ def dscore(score):
     return 0
 
 
-def build_entry(stx_obj, indicators):
+def build_entry(indicators_dict, stix_indicators_dict, pkg_id):
     """Extracting all pattern from stix object
     function will take care of one bundle only.
     Args:
-        indicators: (dict) output
-        stx_obj: json stix2 format
+        pkg_id (str):
+        stix_indicators_dict (dict):
+        indicators_dict (dict):
+
+    Returns:
+        list: Results output
+
     """
-    if "objects" in stx_obj:
-        results_list = list()
-        pkg_id = stx_obj.get("id")
-        objects = stx_obj.get("objects")
-        if isinstance(objects, list):
-            for obj in objects:
-                if isinstance(obj, dict):
-                    # Creating parameters
-                    ind_id = obj.get("id")
-                    source = obj.get("source")
-                    # times
-                    timestamp = obj.get("created")
+    results_list = list()
+    for key, indicators_list in indicators_dict.items():
+        for indicator in indicators_list:
+            obj = stix_indicators_dict.get(indicator)
+            if isinstance(obj, dict):
+                # Creating parameters
+                ind_id = obj.get("id")
+                source = obj.get("source")
+                # times
+                timestamp = obj.get("created")
 
-                    score = (
-                        dscore(obj.get("score"))
-                        if "score" in obj
-                        else get_score(obj.get("description"))
-                    )
+                score = (
+                    dbot_score(obj.get("score"))
+                    if "score" in obj
+                    else get_score(obj.get("description"))
+                )
 
-                    for k, v in indicators.items():
-                        if isinstance(v, list):
-                            for indicator in v:
-                                if indicator:
-                                    result = create_indicator_entry(
-                                        indicator_type=k,
-                                        value=indicator,
-                                        pkg_id=pkg_id,
-                                        ind_id=ind_id,
-                                        timestamp=timestamp,
-                                        source=source,
-                                        score=score,
-                                    )
-                                    if result:
-                                        results_list.append(result)
-                        elif v:
-                            result = create_indicator_entry(
-                                indicator_type=k,
-                                value=v,
-                                pkg_id=pkg_id,
-                                ind_id=ind_id,
-                                timestamp=timestamp,
-                                source=source,
-                                score=score,
-                            )
-                            if result:
-                                results_list.append(result)
-        return results_list
-    return None
+                result = create_indicator_entry(
+                    indicator_type=key,
+                    value=indicator,
+                    pkg_id=pkg_id,
+                    ind_id=ind_id,
+                    timestamp=timestamp,
+                    source=source,
+                    score=score
+                )
+                if result:
+                    results_list.append(result)
+    return results_list
+
+
+def get_indicators(indicators):
+    """Gets a STIX entry and building the list
+
+    Args:
+        indicators (dict or list): STIX-formatted entry
+
+    Returns:
+        (dict, dict): in the format of:
+        (
+            {
+                "File": [],
+                "IP": [],
+                "Domain": [],
+                "URL": []
+            },
+            {
+                "<key>": "<stix entry>"
+            }
+        )
+    """
+
+    def indicators_parser(stix_indicator):
+        # type: (dict) -> None
+        """
+        Args:
+            stix_indicator (dict):
+        """
+        pattern = stix_indicator.get("pattern")
+        if pattern:
+            groups = regex.findall(pattern)
+            if groups:
+                for key, value in PATTERNS_DICT.items():
+                    for term in groups:
+                        '''
+                        term should be list with 2 argument parsed with regex
+                        [`pattern`, `indicator`]
+                        '''
+                        if len(term) == 2 and key in term[0]:
+                            new_indicator = term[1]
+                            if value in ("IP", "URL", "Domain"):
+                                new_indicator = ip_parser(new_indicator)
+                            patterns_lists[value].append(new_indicator)
+                            entries_dict[new_indicator] = stix_indicator
+        # Handle CVE
+        elif stix_indicator.get("description") == "cve cvss score":
+            new_indicator = stix_indicator.get("name")
+            if new_indicator:
+                patterns_lists["CVE CVSS Score"].append(new_indicator)
+                entries_dict[new_indicator] = stix_indicator
+
+    regex = re.compile("(\\w.*?) = '(.*?)'")
+    patterns_lists = {
+        "File": list(),
+        "IP": list(),
+        "Domain": list(),
+        "Email": list(),
+        "URL": list(),
+        "Registry Path Reputation": list(),
+        "CVE CVSS Score": list(),
+        "Username": list()
+    }  # type: dict
+
+    # Will hold values for package {"KEY": <STIX OBJECT>}
+    entries_dict = dict()  # type: dict
+
+    if isinstance(indicators, list):
+        for indicator in indicators:
+            indicators_parser(indicator)
+    else:
+        indicators_parser(indicators)
+    return patterns_lists, entries_dict
 
 
 def extract_indicators(data):
@@ -181,54 +269,25 @@ def extract_indicators(data):
         data: (dict) of STIX2 object. can be
 
     Returns:
-        dict: containing all indicators data
+        (dict, dict):
+            First dict contains indicator types to indicator value
+            Second dict contains indicators value to STIX object defining them
 
     """
-    regex = re.compile("(\\w.*?) = '(.*?)'")
 
-    patterns_dict = {
-        "file:hashes": "File",
-        "ipv6-addr": "IP",
-        "ipv4-addr:": "IP",
-        "url:": "URL",
-        "domain-name:": "Domain",
-        "email:": "Email",
-    }
-
-    patterns_lists = {
-        "File": list(),
-        "IP": list(),
-        "Domain": list(),
-        "Email": list(),
-        "URL": list(),
-    }  # type: dict
-    # Check if is it's
-    if isinstance(data, dict) and data.get("objects"):
+    # Check if is `objects` keyword exists
+    if isinstance(data, dict) and "objects" in data:
         # Create objects
         objects = data.get("objects")
 
         # Use regex to extract indicators
-        if isinstance(objects, list):
-            for obj in objects:
-                pattern = obj.get("pattern")
-                groups = regex.findall(pattern)
-                for key, value in patterns_dict.items():
-                    for term in groups:
-                        if len(term) == 2 and key in term[0]:
-                            patterns_lists[value].append(term[1])
-        else:
-            if isinstance(objects, dict):
-                pattern = objects.get("pattern")
-                groups = regex.findall(pattern)
-                for key, value in patterns_dict.items():
-                    for term in groups:
-                        if len(term) == 2 and key in term[0]:
-                            patterns_lists[value].append(term[1])
+        patterns_lists, entries_dict = get_indicators(objects)
 
         # Make all the values unique
         for key, value in patterns_lists.items():
-            patterns_dict[key] = list(set(value))  # type: ignore
-        return patterns_lists
+            patterns_lists[key] = list(set(value))  # type: ignore
+
+        return patterns_lists, entries_dict
     else:
         return_error("No STIX2 object could be parsed")
 
@@ -241,22 +300,21 @@ def stix2_to_demisto(stx_obj):
     """
     data = list()
     if isinstance(stx_obj, dict):
-        indicators = extract_indicators(stx_obj)
-        entry = build_entry(stx_obj, indicators)
+        indicators, indicators_dict = extract_indicators(stx_obj)
+        entry = build_entry(indicators, indicators_dict, stx_obj.get("id"))
         if isinstance(entry, list):
             data.extend(entry)
         else:
             data.append(entry)
     elif isinstance(stx_obj, list):
         for obj in stx_obj:
-            indicators = extract_indicators(obj)
-            entry = build_entry(stx_obj, indicators)
+            indicators, indicators_dict = extract_indicators(obj)
+            entry = build_entry(obj, indicators, obj.get("id"))
             if entry:
                 if isinstance(entry, list):
                     data.extend(entry)
                 else:
                     data.append(entry)
-
     dumped = json.dumps(data)
     demisto.results(dumped)
 
@@ -272,10 +330,7 @@ def create_new_ioc(data, i, timestamp, pkg_id, ind_id):
         data[i]["timestamp"] = timestamp.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
 
-# SCRIPT START
-
-# IF STIX2 FILE
-if __name__ in ('__builtin__', 'builtins'):
+def main():
     txt = demisto.args().get("iocXml").encode("utf-8")
     stx = convert_to_json(txt)
     if stx:
@@ -337,3 +392,10 @@ if __name__ in ('__builtin__', 'builtins'):
                                 i = i + 1
         json_data = json.dumps(data)
         demisto.results(json_data)
+
+
+# SCRIPT START
+
+# IF STIX2 FILE
+if __name__ in ('__builtin__', 'builtins'):
+    main()
