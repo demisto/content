@@ -1728,6 +1728,9 @@
             "playbookID": "MailListener-POP3 - Test"
         },
         {
+            "playbookID": "sumList - Test"
+        },
+        {
             "integrations": "VulnDB",
             "playbookID": "Test-VulnDB"
         }
@@ -1797,6 +1800,9 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "Anomali ThreatStream v2": "Credentials are invalid (issue 18561)",
+        "Anomali ThreatStream": "Credentials are invalid (issue 18561)",
+        "RSA Archer": "Instance does not seem to be working, Arian is checking",
         "SCADAfence CNM": "Once in a while SCADAfence CNM integration fails to create an instance, throwing a '502 bad gateway' error (issue #18376)",
         "Cortex XDR - IR": "Instance seems to have problems - returning 500 internal server error (issue #18377)",
         "ArcSight ESM v2": "License expired (issue #18328)",
@@ -1841,6 +1847,7 @@
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
+        "MailListener - POP3": "Failing test module (issue 18580)",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
