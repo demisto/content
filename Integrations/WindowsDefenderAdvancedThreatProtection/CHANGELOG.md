@@ -1,2 +1,2 @@
 ## [Unreleased]
-  - Improved error messages
+Improved error messages.
