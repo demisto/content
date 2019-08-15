@@ -84,10 +84,10 @@ def get_image(driver, file_name: str, width: int, height: int):
 
 
 def get_pdf(driver, file_name: str, width: int, height: int):
-    demisto.debug("Taking PDF and saving it")
+    demisto.debug('Generating PDF and saving it')
 
     driver.set_window_size(width, height)
-    resource = f"{driver.command_executor._url}/session/{driver.session_id}/chromium/send_command_and_get_result"
+    resource = f'{driver.command_executor._url}/session/{driver.session_id}/chromium/send_command_and_get_result'
     body = json.dumps({'cmd': 'Page.printToPDF', 'params': {'landscape': False}})
     response = driver.command_executor._request('POST', resource, body)
 
@@ -97,7 +97,7 @@ def get_pdf(driver, file_name: str, width: int, height: int):
 
     file = fileResult(filename=file_name, data=base64.b64decode(response.get('value').get('data')))
     file['Type'] = entryTypes['image']
-    demisto.debug("Taking PDF and saving it - FINISHED")
+    demisto.debug('Generating PDF and saving it - FINISHED')
 
     return file
 
@@ -109,7 +109,7 @@ def rasterize_command():
     r_type = demisto.args().get('type', 'png')
 
     if not (url.startswith('http')):
-        url = "http://" + url
+        url = f'http://{url}'
     friendly_name = f'url.{"pdf" if r_type == "pdf" else "png"}'  # type: ignore
     proxy_flag = ""
     if PROXY:
