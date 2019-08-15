@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 import demistomock as demisto
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
@@ -439,10 +440,10 @@ def test_get_error_need_raise_error_on_non_error_input():
 
 
 @pytest.mark.parametrize('data,data_expected', [
-                        ("this is a test", b"this is a test"),
-                        (u"עברית", u"עברית".encode('utf-8')),
-                        (b"binary data\x15\x00", b"binary data\x15\x00"),
-                        ])  # noqa: E124
+    ("this is a test", b"this is a test"),
+    (u"עברית", u"עברית".encode('utf-8')),
+    (b"binary data\x15\x00", b"binary data\x15\x00"),
+])  # noqa: E124
 def test_fileResult(mocker, request, data, data_expected):
     mocker.patch.object(demisto, 'uniqueFile', return_value="test_file_result")
     mocker.patch.object(demisto, 'investigation', return_value={'id': '1'})
@@ -480,5 +481,19 @@ def test_is_mac_address():
     mac_address_false = 'AA:BB:CC:00:11'
     mac_address_true = 'AA:BB:CC:00:11:22'
 
-    assert(is_mac_address(mac_address_false) is False)
-    assert(is_mac_address(mac_address_true))
+    assert (is_mac_address(mac_address_false) is False)
+    assert (is_mac_address(mac_address_true))
+
+
+def test_exception_in_return_error(mocker):
+    from CommonServerPython import return_error, IntegrationLogger
+
+    expected = {'EntryContext': None, 'Type': 4, 'ContentsFormat': 'text', 'Contents': 'Message'}
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(IntegrationLogger, '__call__')
+    with pytest.raises(SystemExit, match='0'):
+        return_error("Message", error=ValueError("Error!"))
+    results = demisto.results.call_args[0][0]
+    assert expected == results
+    # IntegrationLogger = LOG (2 times if exception supplied)
+    assert IntegrationLogger.__call__.call_count == 2
