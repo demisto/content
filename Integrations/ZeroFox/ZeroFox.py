@@ -42,8 +42,8 @@ def severity_num_to_string(severity_num: int):
 def alert_to_incident(alert: Dict):
     incident: Dict = {
         'rawJSON': json.dumps(alert),
-        'name': 'ZeroFox Alert ' + str(alert.get('id')),  # not sure if it's the right name
-        'occurred': alert.get('timestamp')  # not sure if it's the right field
+        'name': 'ZeroFox Alert ' + str(alert.get('id')),
+        'occurred': alert.get('timestamp')
     }
     return incident
 
@@ -143,6 +143,7 @@ def get_entity_contents(entity: Dict):
     }
 
 
+# returns the convention for the war room
 def get_entity_contents_war_room(contents: Dict):
     return {
         'Name': contents.get('Name'),
@@ -429,13 +430,13 @@ def create_entity_command():
     )
 
 
-def list_alerts(params: Dict):  # not fully implemented
+def list_alerts(params: Dict):
     url_suffix: str = '/alerts/'
     response_content: Dict = http_request('GET', url_suffix, params=params)
     return response_content
 
 
-def list_alerts_command():  # not fully implemented
+def list_alerts_command():
     params: Dict = remove_none_dict(demisto.args())
     response_content: Dict = list_alerts(params)
     if not response_content:
@@ -479,7 +480,7 @@ def list_entities_command():
         raise Exception('Unexpected outputs from API call.')
 
 
-# REMEMBER TO DELETE
+# TODO: REMEMBER TO DELETE
 def fetch_incidents_command():
     return_outputs('fetch 1', outputs={})
     fetch_incidents()
@@ -503,7 +504,7 @@ def fetch_incidents():
     for alert in alerts:
         alert_id = alert.get('id')
         ts = alert.get('timestamp')
-        # REMEMBER TO DELETE
+        # TODO: REMEMBER TO DELETE
         return_outputs(f'Alert: {alert_id}, TS: {ts}', outputs={})
         incident = alert_to_incident(alert)
         incidents.append(incident)
@@ -559,6 +560,7 @@ def main():
             list_entities_command()
         elif demisto.command() == 'fetch-incidents':
             fetch_incidents()
+        # TODO: REMEMBER TO DELETE
         elif demisto.command() == 'zerofox-fetch-incidents':
             fetch_incidents_command()
 
