@@ -1359,7 +1359,7 @@ def return_error(message, error='', outputs=None):
         :type message: ``str``
         :param message: The message to return in the entry (required)
 
-        :type error: ``str``
+        :type error: ``str`` or Exception
         :param error: The raw error message to log (optional)
 
         :type outputs: ``dict or None``
@@ -1370,15 +1370,21 @@ def return_error(message, error='', outputs=None):
     """
     LOG(message)
     if error:
-        LOG(error)
+        LOG(str(error))
     LOG.print_log()
-    demisto.results({
-        'Type': entryTypes['error'],
-        'ContentsFormat': formats['text'],
-        'Contents': str(message),
-        "EntryContext": outputs
-    })
-    sys.exit(0)
+    if not isinstance(message, str):
+        message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
+
+    if hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents', 'long-running-execution'):
+        raise Exception(message)
+    else:
+        demisto.results({
+            'Type': entryTypes['error'],
+            'ContentsFormat': formats['text'],
+            'Contents': message,
+            'EntryContext': outputs
+        })
+        sys.exit(0)
 
 
 def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_extract=False):
