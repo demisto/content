@@ -187,6 +187,9 @@ def parse_response(resp, err_operation):
             sys.exit(0)
         elif res_json.get("message").find("AF Cookie Not Found") != -1:
             demisto.results(err_msg)
+        elif err_operation == 'Tag details operation failed' and\
+                res_json.get("message").find("Tag") != -1 and res_json.get("message").find("not found") != -1:
+            demisto.results(err_msg)
             sys.exit(0)
         else:
             return return_error(err_msg)
@@ -409,6 +412,11 @@ def parse_tag_details_response(resp):
     new_tag_info = {}
     for field in fields_to_extract_from_tag_details:
         new_tag_info[field] = tag_details.get(field)
+
+    tag_group_details = resp.get('tag_groups')
+    if tag_group_details:
+        new_tag_info['tag_group'] = tag_group_details
+
     return new_tag_info
 
 
