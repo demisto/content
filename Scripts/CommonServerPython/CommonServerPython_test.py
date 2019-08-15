@@ -493,7 +493,7 @@ def test_exception_in_return_error(mocker):
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(IntegrationLogger, '__call__')
     with pytest.raises(SystemExit, match='0'):
-        return_error("Message", exception_object=ValueError("Error!"))
+        return_error("Message", error=ValueError("Error!"))
     results = demisto.results.call_args[0][0]
     assert expected == results
     # IntegrationLogger = LOG (2 times if exception supplied)
