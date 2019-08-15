@@ -2,6 +2,7 @@ import os
 import yaml
 import requests
 
+from Tests.scripts.constants import CONTENT_GITHUB_MASTER_LINK
 from Tests.test_utils import print_error, get_yaml
 
 # disable insecure warnings
@@ -18,7 +19,6 @@ class IntegrationValidator(object):
        current_integration (dict): Json representation of the current integration from the branch.
        old_integration (dict): Json representation of the current integration from master.
     """
-    CONTENT_GIT_HUB_LINK = "https://raw.githubusercontent.com/demisto/content/master/"
 
     def __init__(self, file_path, check_git=True, old_file_path=None):
         self._is_valid = True
@@ -28,12 +28,12 @@ class IntegrationValidator(object):
             self.current_integration = get_yaml(file_path)
             # The replace in the end is for Windows support
             if old_file_path:
-                git_hub_path = os.path.join(self.CONTENT_GIT_HUB_LINK, old_file_path).replace("\\", "/")
+                git_hub_path = os.path.join(CONTENT_GITHUB_MASTER_LINK, old_file_path).replace("\\", "/")
                 file_content = requests.get(git_hub_path, verify=False).content
                 self.old_integration = yaml.safe_load(file_content)
             else:
                 try:
-                    file_path_from_master = os.path.join(self.CONTENT_GIT_HUB_LINK, file_path).replace("\\", "/")
+                    file_path_from_master = os.path.join(CONTENT_GITHUB_MASTER_LINK, file_path).replace("\\", "/")
                     self.old_integration = yaml.safe_load(requests.get(file_path_from_master, verify=False).content)
                 except Exception as e:
                     print(str(e))
