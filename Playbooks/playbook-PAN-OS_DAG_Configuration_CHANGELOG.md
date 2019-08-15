@@ -1,2 +1,2 @@
 ## [Unreleased]
-  - Support creation of dynamic address group, attaching it to a rule and adding ips to it.
+Added support for creating dynamic address groups (DAGs). You can attach DAGs and add IP addresses to a rule.
