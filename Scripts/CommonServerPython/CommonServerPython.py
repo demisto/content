@@ -1375,7 +1375,7 @@ def return_error(message, error='', outputs=None):
     if not isinstance(message, str):
         message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
 
-    if hasattr(demisto, 'command') and demisto.command() == 'fetch-incidents':
+    if hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents', 'long-running-execution'):
         raise Exception(message)
     else:
         demisto.results({

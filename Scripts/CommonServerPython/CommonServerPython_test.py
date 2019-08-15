@@ -536,3 +536,18 @@ def test_return_error_fetch_incidents(mocker):
         returned_error = True
         assert e.message == err_msg
     assert returned_error
+
+
+def test_return_error_long_running_execution(mocker):
+    from CommonServerPython import return_error
+    err_msg = "Testing unicode Ё"
+
+    # Test fetch-incidents
+    mocker.patch.object(demisto, 'command', return_value="long-running-execution")
+    returned_error = False
+    try:
+        return_error(err_msg)
+    except Exception as e:
+        returned_error = True
+        assert e.message == err_msg
+    assert returned_error
