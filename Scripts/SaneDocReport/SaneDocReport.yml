@@ -6,12 +6,14 @@ args:
   required: true
   secret: false
 - default: false
+  defaultValue: portrait
   description: orientation of the report
   isArray: false
   name: orientation
   required: false
   secret: false
 - default: false
+  defaultValue: A4
   description: the paper size of the report
   isArray: false
   name: paperSize
