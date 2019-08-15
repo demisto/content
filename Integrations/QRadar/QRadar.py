@@ -202,6 +202,11 @@ def dict_values_to_comma_separated_string(dic):
 # Sends request to the server using the given method, url, headers and params
 def send_request(method, url, headers=AUTH_HEADERS, params=None):
     try:
+        log_hdr = deepcopy(headers)
+        log_hdr.pop('SEC', None)
+        LOG('qradar is attempting {method} request sent to {url} with headers:\n{headers}\nparams:\n{params}'
+            .format(method=method, url=url, headers=json.dumps(log_hdr, indent=4), params=json.dumps(params, indent=4)))
+        res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, auth=(USERNAME, PASSWORD))
         if TOKEN:
             res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL)
         else:
