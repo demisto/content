@@ -485,25 +485,6 @@ def test_is_mac_address():
     assert(is_mac_address(mac_address_true))
 
 
-def test_return_error_script(mocker):
-    from CommonServerPython import return_error
-    mocker.patch.object(sys, 'exit')
-    mocker.spy(demisto, 'results')
-    del demisto.command
-    err_msg = "Testing unicode Ё"
-    outputs = {'output': 'error'}
-    expected_error = {
-        'Type': entryTypes['error'],
-        'ContentsFormat': formats['text'],
-        'Contents': err_msg,
-        "EntryContext": outputs
-    }
-
-    assert not hasattr(demisto, 'command')
-    return_error(err_msg, '', outputs)
-    assert str(demisto.results.call_args) == "call({})".format(expected_error)
-
-
 def test_return_error_command(mocker):
     from CommonServerPython import return_error
     err_msg = "Testing unicode Ё"
@@ -551,3 +532,22 @@ def test_return_error_long_running_execution(mocker):
         returned_error = True
         assert e.message == err_msg
     assert returned_error
+
+
+def test_return_error_script(mocker):
+    from CommonServerPython import return_error
+    mocker.patch.object(sys, 'exit')
+    mocker.spy(demisto, 'results')
+    del demisto.command
+    err_msg = "Testing unicode Ё"
+    outputs = {'output': 'error'}
+    expected_error = {
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'Contents': err_msg,
+        "EntryContext": outputs
+    }
+
+    assert not hasattr(demisto, 'command')
+    return_error(err_msg, '', outputs)
+    assert str(demisto.results.call_args) == "call({})".format(expected_error)
