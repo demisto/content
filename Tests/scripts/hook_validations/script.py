@@ -2,6 +2,7 @@ import os
 import yaml
 import requests
 
+from Tests.scripts.constants import CONTENT_GITHUB_MASTER_LINK
 from Tests.test_utils import print_error, get_yaml
 
 # disable insecure warnings
@@ -18,7 +19,6 @@ class ScriptValidator(object):
        current_script (dict): Json representation of the current script from the branch.
        old_script (dict): Json representation of the current script from master.
     """
-    CONTENT_GIT_HUB_LINK = "https://raw.githubusercontent.com/demisto/content/master/"
 
     def __init__(self, file_path, check_git=True, old_file_path=None):
         self._is_valid = True
@@ -30,9 +30,9 @@ class ScriptValidator(object):
             self.current_script = get_yaml(file_path)
             # The replace in the end is for Windows support
             if old_file_path:
-                git_hub_path = os.path.join(self.CONTENT_GIT_HUB_LINK, old_file_path).replace("\\", "/")
+                git_hub_path = os.path.join(CONTENT_GITHUB_MASTER_LINK, old_file_path).replace("\\", "/")
             else:
-                git_hub_path = os.path.join(self.CONTENT_GIT_HUB_LINK, file_path).replace("\\", "/")
+                git_hub_path = os.path.join(CONTENT_GITHUB_MASTER_LINK, file_path).replace("\\", "/")
 
             try:
                 file_content = requests.get(git_hub_path, verify=False).content
@@ -53,12 +53,49 @@ class ScriptValidator(object):
 
     def is_backward_compatible(self):
         """Check if the script is backward compatible."""
-        self.is_arg_changed()
+        if not self.old_script:
+            return True
+
         self.is_context_path_changed()
         self.is_docker_image_changed()
+        self.is_added_required_args()
+        self.is_arg_changed()
         self.is_there_duplicates_args()
 
         return self._is_valid
+
+    @classmethod
+    def _get_arg_to_required_dict(cls, script_json):
+        """Get a dictionary arg name to its required status.
+
+        Args:
+            script_json (dict): Dictionary of the examined script.
+
+        Returns:
+            dict. arg name to its required status.
+        """
+        arg_to_required = {}
+        args = script_json.get('args', [])
+        for arg in args:
+            arg_to_required[arg.get('name')] = arg.get('required', False)
+
+        return arg_to_required
+
+    def is_added_required_args(self):
+        """Check if required arg were added."""
+        current_args_to_required = self._get_arg_to_required_dict(self.current_script)
+        old_args_to_required = self._get_arg_to_required_dict(self.old_script)
+
+        for arg, required in current_args_to_required.items():
+            if required:
+                if (arg not in old_args_to_required) or \
+                        (arg in old_args_to_required and required != old_args_to_required[arg]):
+                    print_error("You've added required args in the script file '{}', the field is '{}'".format(
+                        self.file_path, arg))
+                    self._is_valid = False
+                    return True
+
+        return False
 
     def is_there_duplicates_args(self):
         """Check if there are duplicated arguments."""
