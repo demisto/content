@@ -180,7 +180,7 @@ def get_from_version(file_path):
 
         if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", from_version):
             raise ValueError("{} fromversion is invalid \"{}\". "
-                             "Should be of format: 4.0.0 or 4.5.0".format(file_path, from_version))
+                             "Should be of format: \"x.x.x\". for example: \"4.5.0\"".format(file_path, from_version))
 
         return from_version
 
@@ -192,7 +192,7 @@ def get_to_version(file_path):
         to_version = data_dictionary.get('toversion', '99.99.99')
         if not re.match(r"^\d{1,2}\.\d{1,2}\.\d{1,2}$", to_version):
             raise ValueError("{} toversion is invalid \"{}\". "
-                             "Should be of format: 4.0.0 or 4.5.0".format(file_path, to_version))
+                             "Should be of format: \"x.x.x\". for example: \"4.5.0\"".format(file_path, to_version))
 
         return to_version
 
