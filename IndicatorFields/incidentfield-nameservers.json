@@ -12,7 +12,7 @@
   "isReadOnly": false,
   "commitMessage": "",
   "system": false,
-  "content": false,
+  "content": true,
   "unsearchable": false,
   "version": -1,
   "unmapped": false,
@@ -37,12 +37,13 @@
   "name": "Name Servers",
   "ownerOnly": false,
   "required": false,
-  "modified": "2019-07-18T07:31:10.684097713Z",
+  "modified": "2019-07-29T10:37:51.937388926Z",
   "fieldCalcScript": "",
   "selectValues": [
     "",
     ""
   ],
   "validationRegex": "",
-  "sla": 0
+  "sla": 0,
+  "fromVersion": "5.0.0"
 }
