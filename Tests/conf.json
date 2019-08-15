@@ -1722,6 +1722,9 @@
             "playbookID": "MailListener-POP3 - Test"
         },
         {
+            "playbookID": "sumList - Test"
+        },
+        {
             "integrations": "VulnDB",
             "playbookID": "Test-VulnDB"
         }
