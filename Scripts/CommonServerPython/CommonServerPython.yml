@@ -1,19 +1,18 @@
-comment: Common code that will be merged into each server script when it runs
 commonfields:
   id: CommonServerPython
   version: -1
-enabled: false
 name: CommonServerPython
-script: '-'
-system: true
+script: ''
+type: python
 tags:
 - infra
 - server
+comment: Common code that will be merged into each server script when it runs
+system: true
+scripttarget: 0
+dependson: {}
 timeout: 0s
-type: python
+alt_dockerimages: # used for unit testing
+  - demisto/python3:3.7.3.286
 tests:
-- TestCommonPython
-dependson: {
-  }
-alt_dockerimages:
-- demisto/python3:3.7.3.286
+  - TestCommonPython
