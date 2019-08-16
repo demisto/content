@@ -1359,7 +1359,7 @@ def return_error(message, error='', outputs=None):
         :type message: ``str``
         :param message: The message to return in the entry (required)
 
-        :type error: ``str``
+        :type error: ``str`` or Exception
         :param error: The raw error message to log (optional)
 
         :type outputs: ``dict or None``
@@ -1370,15 +1370,59 @@ def return_error(message, error='', outputs=None):
     """
     LOG(message)
     if error:
-        LOG(error)
+        LOG(str(error))
     LOG.print_log()
+    if not isinstance(message, str):
+        message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
+
+    if hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents', 'long-running-execution'):
+        raise Exception(message)
+    else:
+        demisto.results({
+            'Type': entryTypes['error'],
+            'ContentsFormat': formats['text'],
+            'Contents': message,
+            'EntryContext': outputs
+        })
+        sys.exit(0)
+
+
+def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_extract=False):
+    """
+        Returns an error entry with the specified message, and exits the script.
+
+        :type message: ``str``
+        :param message: The message to return in the entry (required).
+
+        :type exit: ``bool``
+        :param exit: Determines if the program will terminate after the command is executed. Default is False.
+
+        :type warning: ``str``
+        :param warning: The warning message (raw) to log (optional).
+
+        :type outputs: ``dict or None``
+        :param outputs: The outputs that will be returned to playbook/investigation context (optional).
+
+        :type ignore_auto_extract: ``bool``
+        :param ignore_auto_extract: Determines if the War Room entry will be auto-enriched. Default is false.
+
+        :return: Warning entry object
+        :rtype: ``dict``
+    """
+    LOG(message)
+    if warning:
+        LOG(warning)
+    LOG.print_log()
+
     demisto.results({
-        'Type': entryTypes['error'],
+        'Type': 11,
         'ContentsFormat': formats['text'],
+        'IgnoreAutoExtract': ignore_auto_extract,
         'Contents': str(message),
         "EntryContext": outputs
     })
-    sys.exit(0)
+    if exit:
+        sys.exit(0)
 
 
 def camelize(src, delim=' '):
