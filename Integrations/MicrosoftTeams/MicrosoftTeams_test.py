@@ -1087,7 +1087,7 @@ def test_direct_message_handler(mocker, requests_mock):
     mocker.patch.object(demisto, 'findUser', return_value={'id': 'nice-demisto-id'})
     direct_message_handler(integration_context, request_body, conversation, message)
     assert requests_mock.request_history[1].json() == {
-        'text': "Successfully created incident incidentnumberfour.\n "
+        'text': "Successfully created incident incidentnumberfour.\n"
                 "View it on: [https://test-address:8443#/WarRoom/4](https://test-address:8443#/WarRoom/4)",
         'type': 'message'
     }

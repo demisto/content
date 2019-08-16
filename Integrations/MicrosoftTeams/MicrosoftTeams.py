@@ -64,7 +64,7 @@ def error_parser(resp_err: requests.Response) -> str:
         if err_str:
             return err_str
         # If no error message
-        raise ValueError
+        raise ValueError()
     except ValueError:
         return resp_err.text
 
@@ -92,7 +92,7 @@ def create_incidents(demisto_user: dict, incidents: list) -> dict:
     :return: The creation result
     """
     if demisto_user:
-        data = demisto.createIncidents(incidents, userID=demisto_user['id'])
+        data = demisto.createIncidents(incidents, userID=demisto_user.get('id', ''))
     else:
         data = demisto.createIncidents(incidents)
     return data
@@ -109,32 +109,32 @@ def process_incident_create_message(demisto_user: dict, message: str) -> str:
     name_pattern: str = r'(?<=name=).*'
     type_pattern: str = r'(?<=type=).*'
     json_match: Optional[Match[str]] = re.search(json_pattern, message)
-    created_incident = None
-    data: str = ''
+    created_incident: Union[dict, list]
+    data: str = str()
     if json_match:
         if re.search(name_pattern, message) or re.search(type_pattern, message):
             data = 'No other properties other than json should be specified.'
         else:
-            incidentsjson_ = json_match.group()
-            incidents = json.loads(incidentsjson_.replace('“', '"').replace('”', '"'))
+            incidents_json: str = json_match.group()
+            incidents: Union[dict, list] = json.loads(incidents_json.replace('“', '"').replace('”', '"'))
             if not isinstance(incidents, list):
                 incidents = [incidents]
             created_incident = create_incidents(demisto_user, incidents)
             if not created_incident:
                 data = 'Failed creating incidents.'
     else:
-        name_match = re.search(name_pattern, message)
+        name_match: Optional[Match[str]] = re.search(name_pattern, message)
         if not name_match:
             data = 'Please specify arguments in the following manner: name=<name> type=[type] or json=<json>.'
         else:
-            incident_name = re.sub('type=.*', '', name_match.group()).strip()
-            incident_type: str = ''
+            incident_name: str = re.sub('type=.*', '', name_match.group()).strip()
+            incident_type: str = str()
 
-            type_match = re.search(type_pattern, message)
+            type_match: Optional[Match[str]] = re.search(type_pattern, message)
             if type_match:
                 incident_type = re.sub('name=.*', '', type_match.group()).strip()
 
-            incident = {'name': incident_name}
+            incident: dict = {'name': incident_name}
 
             incident_type = incident_type or INCIDENT_TYPE
             if incident_type:
@@ -147,10 +147,11 @@ def process_incident_create_message(demisto_user: dict, message: str) -> str:
     if created_incident:
         if isinstance(created_incident, list):
             created_incident = created_incident[0]
-        server_links = demisto.demistoUrls()
-        server_link = server_links.get('server')
-        data = ('Successfully created incident {}.\n View it on: {}#/WarRoom/{}'
-                .format(created_incident['name'], server_link, created_incident['id']))
+        created_incident = cast(Dict[Any, Any], created_incident)
+        server_links: dict = demisto.demistoUrls()
+        server_link: str = server_links.get('server', '')
+        data = f"Successfully created incident {created_incident.get('name', '')}.\n" \
+               f"View it on: {server_link}#/WarRoom/{created_incident.get('id', '')}"
 
     return data
 
@@ -192,18 +193,16 @@ def get_team_member(integration_context: dict, team_member_id: str) -> dict:
     """
     team_member: dict = dict()
     teams: list = json.loads(integration_context.get('teams', '[]'))
+
     for team in teams:
         team_members: list = team.get('team_members', [])
         for member in team_members:
             if member.get('id') == team_member_id:
                 team_member['username'] = member.get('name', '')
                 team_member['user_email'] = member.get('userPrincipalName', '')
-                break
-        if team_member:
-            break
-    if not team_member:
-        raise ValueError('Team member was not found')
-    return team_member
+                return team_member
+
+    raise ValueError('Team member was not found')
 
 
 def get_team_member_id(requested_team_member: str, integration_context: dict) -> str:
@@ -213,19 +212,15 @@ def get_team_member_id(requested_team_member: str, integration_context: dict) ->
     :param integration_context: Cached object to search for team member in
     :return: Team member ID
     """
-    member_id: str = str()
     teams: list = json.loads(integration_context.get('teams', '[]'))
+
     for team in teams:
         team_members: list = team.get('team_members', [])
         for team_member in team_members:
             if requested_team_member in {team_member.get('name', ''), team_member.get('userPrincipalName', '')}:
-                member_id = team_member.get('id')
-                break
-        if member_id:
-            break
-    if not member_id:
-        raise ValueError('Team member was not found')
-    return member_id
+                return team_member.get('id')
+
+    raise ValueError('Team member was not found')
 
 
 def create_adaptive_card(body: list, actions: list = None) -> dict:
@@ -343,7 +338,7 @@ def process_unknown_message(message: str) -> dict:
 
 def process_ask_user(message: str) -> dict:
     """
-    Processes ask user message creates adaptive card
+    Processes ask user message and creates adaptive card
     :param message: The question object
     :return: Adaptive card of the question to send
     """
@@ -866,7 +861,7 @@ def create_personal_conversation(integration_context: dict, team_member_id: str)
     return response.get('id', '')
 
 
-def send_message_request(channel_id: str, conversation: dict, integration_context: dict = {}):
+def send_message_request(channel_id: str, conversation: dict, integration_context: dict = None):
     """
     Sends an HTTP request to send message to Microsoft Teams
     :param channel_id: ID of channel to send message in
@@ -874,6 +869,7 @@ def send_message_request(channel_id: str, conversation: dict, integration_contex
     :param integration_context: Cached object to get retrieve data from for the message sending
     :return: None
     """
+    integration_context = integration_context or dict()
     service_url: str = integration_context.get('service_url', '')
     if not service_url:
         raise ValueError('Did not find service URL. Try messaging the bot on Microsoft Teams')
@@ -1254,7 +1250,7 @@ def messages() -> Response:
         integration_context: dict = demisto.getIntegrationContext()
         service_url: str = request_body.get('serviceUrl', '')
         if service_url:
-            service_url = service_url[:-1] if (service_url and service_url.endswith('/')) else service_url
+            service_url = service_url[:-1] if service_url.endswith('/') else service_url
             integration_context['service_url'] = service_url
             demisto.setIntegrationContext(integration_context)
 
