@@ -1394,7 +1394,8 @@
             "nightly": true
         },
         {
-            "playbookID": "Autoextract - Test"
+            "playbookID": "Autoextract - Test",
+            "fromversion": "4.1.0"
         },
         {
             "playbookID": "FilterByList - Test",
