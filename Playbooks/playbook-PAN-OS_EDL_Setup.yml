@@ -2,7 +2,7 @@ id: PAN-OS EDL Setup
 version: -1
 name: PAN-OS EDL Setup
 fromversion: 4.5.0
-description: Sets up external dynamic list in Pan-OS.\nin case file exists in web server it will sync it to demisto. then it will create an EDL object and a matching rule.
+description: Sets up external dynamic list in PAN-OS.\nin case file exists in web server it will sync it to demisto. then it will create an EDL object and a matching rule.
 starttaskid: "0"
 tasks:
   "0":
@@ -370,9 +370,9 @@ tasks:
     task:
       id: 915c9aa1-b402-40a8-81c5-4acd24384556
       version: -1
-      name: Pan-OS-Commit-Configuration
+      name: PAN-OS-Commit-Configuration
       description: ""
-      playbookName: Pan-OS Commit Configuration
+      playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
       brand: ""
@@ -397,9 +397,9 @@ tasks:
     task:
       id: 66b309f9-5e29-4dfd-8908-4dedac4c3a0f
       version: -1
-      name: Pan-OS-Commit-Configuration
+      name: PAN-OS-Commit-Configuration
       description: ""
-      playbookName: Pan-OS Commit Configuration
+      playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
       brand: ""
