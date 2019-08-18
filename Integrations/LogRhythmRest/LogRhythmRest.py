@@ -556,7 +556,7 @@ def get_alarm_events(data_args):
     events = []
 
     for block in res:
-        if not block['DrillDownLogs']:
+        if not block.get('DrillDownLogs'):
             continue
         logs = json.loads(block['DrillDownLogs'])
         for log in logs:
