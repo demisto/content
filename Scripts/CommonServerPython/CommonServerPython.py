@@ -1304,9 +1304,9 @@ def is_ipv6_valid(address):
     Checks if the given string represents a valid IPv6 address
 
     :type address: str
-    :param address: The string to be checked
+    :param address: The string to check
 
-    :return: True if the given string represents a valid IPv6 address, False otherwise
+    :return: True if the given string represents a valid IPv6 address
     :rtype: ``bool``
     """
     try:
