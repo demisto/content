@@ -4,12 +4,10 @@ import json
 import sys
 import yaml
 import os
-import re
 import requests
 import argparse
 
-from Tests.scripts.constants import PACKAGE_SUPPORTING_DIRECTORIES, CONTENT_RELEASE_TAG_REGEX
-from Tests.test_utils import print_error, print_warning, \
+from Tests.test_utils import print_error, print_warning, get_last_release_version, filter_packagify_changes, \
     run_command, server_version_compare, get_release_notes_file_path, get_latest_release_notes_text
 from Tests.scripts.validate_files import FilesValidator
 
@@ -48,8 +46,6 @@ REPUTATIONS_DIR = "Misc"
 RELEASE_NOTES_ORDER = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR,
                        DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR,
                        CLASSIFIERS_DIR, REPUTATIONS_DIR]
-
-CONTENT_GITHUB_LINK = r'https://raw.githubusercontent.com/demisto/content'
 
 
 def add_dot(text):
@@ -587,54 +583,6 @@ def create_content_descriptor(version, asset_id, res, github_token):
         outfile.write(release_notes)
 
 
-def filter_packagify_changes(modified_files, added_files, removed_files, tag):
-    # map IDs to removed files
-    packagify_diff = {}  # type: dict
-    for file_path in removed_files:
-        if file_path.split("/")[0] in PACKAGE_SUPPORTING_DIRECTORIES:
-            github_path = os.path.join(CONTENT_GITHUB_LINK, tag, file_path).replace('\\', '/')
-            file_content = requests.get(github_path).content
-            details = yaml.safe_load(file_content)
-            if 404 not in details:
-                uniq_identifier = '_'.join([details['name'],
-                                           details.get('fromversion', '0.0.0'),
-                                           details.get('toversion', '99.99.99')])
-                packagify_diff[uniq_identifier] = file_path
-
-    updated_added_files = set()
-    for file_path in added_files:
-        if file_path.split("/")[0] in PACKAGE_SUPPORTING_DIRECTORIES:
-            with open(file_path) as f:
-                details = yaml.safe_load(f.read())
-
-            uniq_identifier = '_'.join([details['name'],
-                                        details.get('fromversion', '0.0.0'),
-                                        details.get('toversion', '99.99.99')])
-            if uniq_identifier in packagify_diff:
-                # if name appears as added and removed, this is packagify process - treat as modified.
-                removed_files.remove(packagify_diff[uniq_identifier])
-                modified_files.add(file_path)
-                continue
-
-        updated_added_files.add(file_path)
-
-    for file_path in modified_files:
-        if isinstance(file_path, tuple):
-            updated_added_files -= {file_path[1]}
-        else:
-            updated_added_files -= {file_path}
-
-    return modified_files, updated_added_files, removed_files
-
-
-def get_last_release_version():
-    regex = re.compile(CONTENT_RELEASE_TAG_REGEX)
-    tags = run_command('git tag').split('\n')
-    tags = [tag for tag in tags if regex.match(tag) is not None]
-    tags.sort(cmp=server_version_compare, reverse=True)
-    return tags[0]
-
-
 def main():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('version', help='Release version')
@@ -652,7 +600,7 @@ def main():
     change_log = run_command('git diff --name-status {}'.format(args.git_sha1))
     modified_files, added_files, removed_files, _ = fv.get_modified_files(change_log)
     modified_files, added_files, removed_files = filter_packagify_changes(modified_files, added_files,
-                                                                          removed_files, tag)
+                                                                          removed_files, tag=tag)
     deleted_data = run_command('git diff --diff-filter=D {}'.format(args.git_sha1))
 
     for file_path in added_files:
