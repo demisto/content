@@ -28,7 +28,7 @@ from Tests.scripts.hook_validations.conf_json import ConfJsonValidator
 from Tests.scripts.hook_validations.structure import StructureValidator
 from Tests.scripts.hook_validations.integration import IntegrationValidator
 from Tests.test_utils import checked_type, run_command, print_error, collect_ids, print_color, str2bool, LOG_COLORS, \
-    get_yaml
+    get_yaml, filter_packagify_changes
 
 
 class FilesValidator(object):
@@ -94,7 +94,8 @@ class FilesValidator(object):
                 file_status = 'r'
                 file_path = file_data[2]
 
-            if checked_type(file_path, CODE_FILES_REGEX) and file_status.lower() != 'd' and not file_path.endswith('_test.py'):
+            if checked_type(file_path, CODE_FILES_REGEX) and file_status.lower() != 'd' \
+                    and not file_path.endswith('_test.py'):
                 # naming convention - code file and yml file in packages must have same name.
                 file_path = os.path.splitext(file_path)[0] + '.yml'
             elif file_path.endswith('.js') or file_path.endswith('.py'):
@@ -114,6 +115,12 @@ class FilesValidator(object):
             elif file_status.lower() not in KNOWN_FILE_STATUSES:
                 print_error(file_path + " file status is an unknown known one, "
                                         "please check. File status was: " + file_status)
+
+        modified_files_list, added_files_list, deleted_files = filter_packagify_changes(
+            modified_files_list,
+            added_files_list,
+            deleted_files,
+            'master')
 
         return modified_files_list, added_files_list, deleted_files, old_format_files
 
