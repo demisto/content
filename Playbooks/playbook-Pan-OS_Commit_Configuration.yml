@@ -1,6 +1,6 @@
-id: Pan-OS Commit Configuration
+id: PAN-OS Commit Configuration
 version: -1
-name: Pan-OS Commit Configuration
+name: PAN-OS Commit Configuration
 fromversion: 4.0.0
 description: "Commit PAN-OS Panorama or Firewall Configuration.\nIf specified as Panorama,
   will also push the Policies to the specified Device Group in the instance "
