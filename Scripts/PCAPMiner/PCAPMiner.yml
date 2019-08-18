@@ -32,3 +32,5 @@ timeout: 720ns
 type: python
 dockerimage: trorabaugh/dempcap:1.0
 deprecated: true
+tests:
+  - no tests
