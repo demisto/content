@@ -26,7 +26,7 @@ FETCH_TIME: str = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT).strip()
 def severity_num_to_string(severity_num: int) -> str:
     """
     :param severity_num: Severity score as Integer
-    :return: Returns the string representation of the severity score
+    :return: Returns the String representation of the severity score
     """
     if severity_num == 1:
         return 'Info'
@@ -41,19 +41,33 @@ def severity_num_to_string(severity_num: int) -> str:
 
 
 def severity_string_to_num(severity_str: str) -> int:
-    pass
+    """
+    :param severity_str: Severity score as String
+    :return: Returns the Integer representation of the severity score
+    """
+    if severity_str == 'Info':
+        return 1
+    elif severity_str == 'Low':
+        return 2
+    elif severity_str == 'Medium':
+        return 3
+    elif severity_str == 'High':
+        return 4
+    elif severity_str == 'Critical':
+        return 5
 
 
 # transforms an alert to incident convention
 def alert_to_incident(alert: Dict) -> Dict:
     """
     :param alert: alert is a dictionary
-    :return: incident - dictionary
+    :return: Incident - dictionary
     """
+    alert_id: str = str(alert.get('id', ''))
     incident: Dict = {
         'rawJSON': json.dumps(alert),
-        'name': 'ZeroFox Alert ' + str(alert.get('id')),
-        'occurred': alert.get('timestamp')
+        'name': f'ZeroFox Alert {alert_id}',
+        'occurred': alert.get('timestamp', '')
     }
     return incident
 
@@ -65,9 +79,7 @@ def get_updated_contents(alert_id: int) -> Dict:
     :return: Dict of the contents of the alert
     """
     response_content: Dict = get_alert(alert_id)
-    if not response_content or not isinstance(response_content, Dict):
-        return {}
-    alert: Dict = response_content.get('alert')
+    alert: Dict = response_content.get('alert', {})
     if not alert or not isinstance(alert, Dict):
         return {}
     contents: Dict = get_alert_contents(alert)
@@ -75,11 +87,19 @@ def get_updated_contents(alert_id: int) -> Dict:
 
 
 # removes all none values from a dict
-def remove_none_dict(input_dict: Dict):
+def remove_none_dict(input_dict: Dict) -> Dict:
+    """
+    :param input_dict: any dictionary in the world is OK
+    :return: same dictionary but without None values
+    """
     return {key: value for key, value in input_dict.items() if value is not None}
 
 
-def get_alert_contents(alert: Dict):
+def get_alert_contents(alert: Dict) -> Dict:
+    """
+    :param alert: Alert is a dictionary
+    :return: A dict representing the alert contents
+    """
     return {
         'AlertType': alert.get('alert_type'),
         'OffendingContentURL': alert.get('offending_content_url'),
@@ -125,7 +145,11 @@ def get_alert_contents(alert: Dict):
 
 
 # returns the convention for the war room
-def get_alert_contents_war_room(contents: Dict):
+def get_alert_contents_war_room(contents: Dict) -> Dict:
+    """
+    :param contents: Contents is a dictionary
+    :return: A dict representation of the war room contents displayed to the user
+    """
     return {
         'ID': contents.get('ID'),
         'Protected Entity': contents.get('EntityName', '').title(),
@@ -140,7 +164,11 @@ def get_alert_contents_war_room(contents: Dict):
     }
 
 
-def get_entity_contents(entity: Dict):
+def get_entity_contents(entity: Dict) -> Dict:
+    """
+    :param entity: Entity is a dictionary
+    :return: A dict representation of the contents of entity
+    """
     return {
         'ID': entity.get('id'),
         'Name': entity.get('name'),
@@ -158,7 +186,11 @@ def get_entity_contents(entity: Dict):
 
 
 # returns the convention for the war room
-def get_entity_contents_war_room(contents: Dict):
+def get_entity_contents_war_room(contents: Dict) -> Dict:
+    """
+    :param contents: Contents is a dictionary
+    :return: A dict representation of the war room contents displayed to the user
+    """
     return {
         'Name': contents.get('Name'),
         'Type': contents.get('Type'),
@@ -169,7 +201,10 @@ def get_entity_contents_war_room(contents: Dict):
     }
 
 
-def get_authorization_token():
+def get_authorization_token() -> str:
+    """
+    :return: Returns the authorization token
+    """
     integration_context: Dict = demisto.getIntegrationContext()
     token: str = integration_context.get('token', '')
     if token:
@@ -181,21 +216,32 @@ def get_authorization_token():
     }
     response_content: Dict = http_request('POST', url_suffix, data=data_for_request, continue_err=True,
                                           api_request=False)
-    if not response_content or not isinstance(response_content, Dict):
-        raise Exception('Unexpected outputs from API call.')
-    token: str = response_content.get('token')
+    token: str = response_content.get('token', '')
     if not token:
-        x: List = response_content.get('non_field_errors')
-        if not x or not isinstance(x, List):
-            raise Exception('Unexpected outputs from API call.')
+        error_msg_list: List = response_content.get('non_field_errors', [])
+        if not error_msg_list or not isinstance(error_msg_list, List):
+            raise Exception('Unable to log in with provided credentials.')
         else:
-            raise Exception(x[0])
+            raise Exception(error_msg_list[0])
     demisto.setIntegrationContext({'token': token})
     return token
 
 
 def http_request(method: str, url_suffix: str, params: Dict = None, data: Dict = None, continue_err: bool = False,
-                 api_request: bool = True):
+                 api_request: bool = True) -> Dict:
+    """
+    :param method: HTTP request type
+    :param url_suffix: The suffix of the URL
+    :param params: The request's query parameters
+    :param data: The request's body parameters
+    :param continue_err: A boolean flag to help us know if we want to show the error like we got it from
+    the API, or if we want to parse the error message. If continue_err is False (default) we handle the error as
+    we received it from the API, otherwise if continue_err is True we parse it.
+    :param api_request: A boolean flag to help us know if the request is a regular API call or a token call.
+    If api_request is False the call is to get Authorization Token, otherwise if api_request is True then it's a
+    regular API call.
+    :return: Returns the content of the response received from the API.
+    """
     # A wrapper for requests lib to send our requests and handle requests and responses better
     headers: Dict = {}
     try:
@@ -220,7 +266,7 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Dict =
             try:
                 res_json = res.json()
                 if 'error' in res_json:
-                    err_msg += res_json.get('error')
+                    err_msg += res_json.get('error', '')
             except ValueError:
                 err_msg += res.content
             finally:
@@ -257,14 +303,18 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Dict =
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def close_alert(alert_id: int):
+def close_alert(alert_id: int) -> Dict:
+    """
+    :param alert_id: The ID of the alert.
+    :return: HTTP request content.
+    """
     url_suffix: str = f'/alerts/{alert_id}/close/'
     response_content: Dict = http_request('POST', url_suffix)
     return response_content
 
 
 def close_alert_command():
-    alert_id: int = int(demisto.args().get('alert_id'))
+    alert_id: int = int(demisto.args().get('alert_id', ''))
     close_alert(alert_id)
     contents: Dict = get_updated_contents(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Closed'}}
@@ -275,14 +325,18 @@ def close_alert_command():
     )
 
 
-def open_alert(alert_id: int):
+def open_alert(alert_id: int) -> Dict:
+    """
+    :param alert_id: The ID of the alert.
+    :return: HTTP request content.
+    """
     url_suffix: str = f'/alerts/{alert_id}/open/'
     response_content: Dict = http_request('POST', url_suffix)
     return response_content
 
 
 def open_alert_command():
-    alert_id: int = int(demisto.args().get('alert_id'))
+    alert_id: int = int(demisto.args().get('alert_id', ''))
     open_alert(alert_id)
     contents: Dict = get_updated_contents(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Open'}}
@@ -293,14 +347,18 @@ def open_alert_command():
     )
 
 
-def alert_request_takedown(alert_id: int):
+def alert_request_takedown(alert_id: int) -> Dict:
+    """
+    :param alert_id: The ID of the alert.
+    :return: HTTP request content.
+    """
     url_suffix: str = f'/alerts/{alert_id}/request_takedown/'
     response_content: Dict = http_request('POST', url_suffix)
     return response_content
 
 
 def alert_request_takedown_command():
-    alert_id: int = int(demisto.args().get('alert_id'))
+    alert_id: int = int(demisto.args().get('alert_id', ''))
     alert_request_takedown(alert_id)
     contents: Dict = get_updated_contents(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Takedown:Requested'}}
@@ -311,14 +369,18 @@ def alert_request_takedown_command():
     )
 
 
-def alert_cancel_takedown(alert_id: int):
+def alert_cancel_takedown(alert_id: int) -> Dict:
+    """
+    :param alert_id: The ID of the alert.
+    :return: HTTP request content.
+    """
     url_suffix: str = f'/alerts/{alert_id}/cancel_takedown/'
     response_content: Dict = http_request('POST', url_suffix)
     return response_content
 
 
 def alert_cancel_takedown_command():
-    alert_id: int = int(demisto.args().get('alert_id'))
+    alert_id: int = int(demisto.args().get('alert_id', ''))
     alert_cancel_takedown(alert_id)
     contents: Dict = get_updated_contents(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Open'}}
@@ -329,7 +391,12 @@ def alert_cancel_takedown_command():
     )
 
 
-def alert_user_assignment(alert_id: int, username: str):
+def alert_user_assignment(alert_id: int, username: str) -> Dict:
+    """
+    :param alert_id: The ID of the alert.
+    :param username: The username we want to assign to the alert.
+    :return: HTTP request content.
+    """
     url_suffix: str = f'/alerts/{alert_id}/assign/'
     request_body: Dict = {
         'subject': username
@@ -339,8 +406,8 @@ def alert_user_assignment(alert_id: int, username: str):
 
 
 def alert_user_assignment_command():
-    alert_id: int = int(demisto.args().get('alert_id'))
-    username: str = demisto.args().get('username')
+    alert_id: int = int(demisto.args().get('alert_id', ''))
+    username: str = demisto.args().get('username', '')
     alert_user_assignment(alert_id, username)
     contents: Dict = get_updated_contents(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Assignee': username}}
@@ -351,7 +418,13 @@ def alert_user_assignment_command():
     )
 
 
-def modify_alert_tags(alert_id: int, action: str, tags_list_string: str):
+def modify_alert_tags(alert_id: int, action: str, tags_list_string: str) -> Dict:
+    """
+    :param alert_id: The ID of the alert.
+    :param action: action can be 'added' or 'removed'. It indicates what action we want to do i.e add/remove tags/
+    :param tags_list_string: A string representation of the tags, separated by a comma ','
+    :return: HTTP request content.
+    """
     url_suffix: str = '/alerttagchangeset/'
     tags_list: list = argToList(tags_list_string, separator=',')
     request_body: Dict = {
@@ -367,13 +440,11 @@ def modify_alert_tags(alert_id: int, action: str, tags_list_string: str):
 
 
 def modify_alert_tags_command():
-    alert_id: int = int(demisto.args().get('alert_id'))
-    action_string: str = demisto.args().get('action')
+    alert_id: int = int(demisto.args().get('alert_id', ''))
+    action_string: str = demisto.args().get('action', '')
     action: str = 'added' if action_string == 'add' else 'removed'
-    tags_list_string: str = demisto.args().get('tags')
+    tags_list_string: str = demisto.args().get('tags', '')
     response_content: Dict = modify_alert_tags(alert_id, action, tags_list_string)
-    if not response_content or not isinstance(response_content, Dict):
-        raise Exception('Unexpected outputs from API call.')
     if not response_content.get('changes'):
         raise Exception(f'Alert with ID `{alert_id}` does not exist')
     contents: Dict = get_updated_contents(alert_id)
@@ -384,18 +455,20 @@ def modify_alert_tags_command():
     )
 
 
-def get_alert(alert_id: int):
+def get_alert(alert_id: int) -> Dict:
+    """
+    :param alert_id: The ID of the alert.
+    :return: HTTP request content.
+    """
     url_suffix: str = f'/alerts/{alert_id}/'
     response_content: Dict = http_request('GET', url_suffix, continue_err=True)
     return response_content
 
 
 def get_alert_command():
-    alert_id: int = int(demisto.args().get('alert_id'))
+    alert_id: int = int(demisto.args().get('alert_id', ''))
     response_content: Dict = get_alert(alert_id)
-    if not response_content or not isinstance(response_content, Dict):
-        raise Exception('Unexpected outputs from API call.')
-    alert: Dict = response_content.get('alert')
+    alert: Dict = response_content.get('alert', {})
     if not alert or not isinstance(alert, Dict):
         raise Exception(f'Alert with ID `{alert_id}` does not exist')
     contents: Dict = get_alert_contents(alert)
@@ -409,7 +482,15 @@ def get_alert_command():
 
 
 def create_entity(name: str, strict_name_matching: bool = None, tags: list = None,
-                  policy: int = None, organization: str = None):
+                  policy: int = None, organization: str = None) -> Dict:
+    """
+    :param name: Name of the entity (may be non-unique).
+    :param strict_name_matching: Indicating type of string matching for comparing name to impersonators.
+    :param tags: List of string tags for tagging the entity. Seperated by a comma ','.
+    :param policy: The ID of the policy to assign to the new entity.
+    :param organization: Organization name associated with entity.
+    :return: HTTP request content.
+    """
     url_suffix: str = '/entities/'
     request_body: Dict = {
         'name': name,
@@ -425,16 +506,14 @@ def create_entity(name: str, strict_name_matching: bool = None, tags: list = Non
 
 
 def create_entity_command():
-    name: str = demisto.args().get('name')
-    strict_name_matching: bool = bool(demisto.args().get('strict_name_matching'))
-    tags: str = demisto.args().get('tags')
+    name: str = demisto.args().get('name', '')
+    strict_name_matching: bool = bool(demisto.args().get('strict_name_matching', ''))
+    tags: str = demisto.args().get('tags', '')
     tags: List = argToList(tags, ',')
-    policy_id: int = demisto.args().get('policy_id')
-    organization: str = demisto.args().get('organization')
+    policy_id: int = demisto.args().get('policy_id', '')
+    organization: str = demisto.args().get('organization', '')
     response_content: Dict = create_entity(name, strict_name_matching, tags, policy_id, organization)
-    if not response_content or not isinstance(response_content, Dict):
-        raise Exception('Unexpected outputs from API call.')
-    entity_id: int = response_content.get('id')
+    entity_id: int = response_content.get('id', '')
     return_outputs(
         f'Entity has been created successfully. ID: {entity_id}',
         {'ZeroFox.Entity(val.ID && val.ID === obj.ID)':
@@ -452,6 +531,9 @@ def create_entity_command():
 
 
 def get_entity_types() -> Dict:
+    """
+    :return: HTTP request content.
+    """
     url_suffix: str = '/entities/types/'
     response_content: Dict = http_request('GET', url_suffix)
     return response_content
@@ -459,15 +541,13 @@ def get_entity_types() -> Dict:
 
 def get_entity_types_command():
     response_content: Dict = get_entity_types()
-    if not response_content or not isinstance(response_content, Dict):
-        raise Exception('Unexpected outputs from API call.')
-    entity_types: List = response_content.get('results')
-    if not entity_types or not isinstance(entity_types, List):
-        raise Exception('Unexpected outputs from API call.')
-    contents_war_room: Dict = {'Name': 'ID'}
+    entity_types: List = response_content.get('results', [])
+    contents_war_room = {}
+    if entity_types:
+        contents_war_room['Name'] = 'ID'
     for entity_type in entity_types:
-        type_name: str = entity_type.get('name')
-        type_id: int = entity_type.get('id')
+        type_name: str = entity_type.get('name', '')
+        type_id: int = entity_type.get('id', '')
         contents_war_room[type_name] = type_id
     headers = []
     for key in contents_war_room.keys():
@@ -480,6 +560,9 @@ def get_entity_types_command():
 
 
 def get_policy_types() -> Dict:
+    """
+    :return: HTTP request content.
+    """
     url_suffix: str = '/policies/'
     response_content: Dict = http_request('GET', url_suffix)
     return response_content
@@ -487,15 +570,13 @@ def get_policy_types() -> Dict:
 
 def get_policy_types_command():
     response_content: Dict = get_policy_types()
-    if not response_content or not isinstance(response_content, Dict):
-        raise Exception('Unexpected outputs from API call.')
-    policy_types: List = response_content.get('policies')
-    if not policy_types or not isinstance(policy_types, List):
-        raise Exception('Unexpected outputs from API call.')
-    contents_war_room: Dict = {'Name': 'ID'}
+    policy_types: List = response_content.get('policies', [])
+    contents_war_room = {}
+    if policy_types:
+        contents_war_room: Dict = {'Name': 'ID'}
     for policy_type in policy_types:
-        type_name: str = policy_type.get('name')
-        type_id: int = policy_type.get('id')
+        type_name: str = policy_type.get('name', '')
+        type_id: int = policy_type.get('id', '')
         contents_war_room[type_name] = type_id
     headers = []
     for key in contents_war_room.keys():
@@ -507,7 +588,11 @@ def get_policy_types_command():
     )
 
 
-def list_alerts(params: Dict):
+def list_alerts(params: Dict) -> Dict:
+    """
+    :param params: The request's body parameters.
+    :return: HTTP request content.
+    """
     url_suffix: str = '/alerts/'
     response_content: Dict = http_request('GET', url_suffix, params=params)
     return response_content
@@ -515,11 +600,16 @@ def list_alerts(params: Dict):
 
 def list_alerts_command():
     params: Dict = remove_none_dict(demisto.args())
+    # handle severity/risk_rating parameter
+    risk_rating_string: str = params.get('risk_rating', '')
+    if risk_rating_string:
+        del params['risk_rating']
+        params['severity'] = severity_string_to_num(risk_rating_string)
     response_content: Dict = list_alerts(params)
     if not response_content:
         return_outputs('No alerts found.', outputs={})
     elif isinstance(response_content, Dict):
-        alerts: List = response_content.get('alerts')
+        alerts: List = response_content.get('alerts', [])
         contents: List = [get_alert_contents(alert) for alert in alerts]
         contents_war_room: List = [get_alert_contents_war_room(content) for content in contents]
         context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents}
@@ -532,7 +622,11 @@ def list_alerts_command():
         return_outputs('No alerts found.', outputs={})
 
 
-def list_entities(params: Dict):
+def list_entities(params: Dict) -> Dict:
+    """
+    :param params: The request's body parameters.
+    :return: HTTP request content.
+    """
     url_suffix: str = '/entities/'
     response_content: Dict = http_request('GET', url_suffix, params=params)
     return response_content
@@ -544,7 +638,7 @@ def list_entities_command():
     if not response_content:
         return_outputs('No entities found.', outputs={})
     elif isinstance(response_content, Dict):
-        entities: List = response_content.get('entities')
+        entities: List = response_content.get('entities', [])
         contents: List = [get_entity_contents(entity) for entity in entities]
         contents_war_room: List = [get_entity_contents_war_room(content) for content in contents]
         context: Dict = {'ZeroFox.Entity(val.ID && val.ID === obj.ID)': contents}
@@ -554,7 +648,7 @@ def list_entities_command():
             response_content
         )
     else:
-        raise Exception('Unexpected outputs from API call.')
+        return_outputs('No entities found.', outputs={})
 
 
 # TODO: REMEMBER TO DELETE
@@ -573,20 +667,22 @@ def fetch_incidents():
     else:
         last_update_time = parse_date_range(FETCH_TIME, date_format=date_format)[0]
     incidents = []
-    limit = demisto.params().get('fetch_limit')
+    limit: int = int(demisto.params().get('fetch_limit', ''))
     response_content = list_alerts({'sort_direction': 'asc', 'limit': limit, 'min_timestamp': last_update_time})
-    alerts = response_content.get('alerts')
+    alerts: [] = response_content.get('alerts', [])
     for alert in alerts:
         incident = alert_to_incident(alert)
         incidents.append(incident)
     # max_update_time is the timestamp of the last alert in alerts (alerts is a sorted list)
-    last_alert_timestamp = str(alerts[len(alerts) - 1].get('timestamp'))
+    last_alert_timestamp: str = str(alerts[-1].get('timestamp', ''))
+    # ZeroFox is using full timestamp ISO 8061 format which includes the GMT field i.e (+00:00/-00:00)
+    # The option to refine the search of alerts in the API is by the ISO 8061 format without the GMT field.
     if '+' in last_alert_timestamp:
         max_update_time = last_alert_timestamp.split('+')[0]
     else:
         max_update_time = last_alert_timestamp.split('-')[0]
     # add 1 second to last alert timestamp, in order to prevent duplicated alerts
-    max_update_time = (datetime.strptime(max_update_time, date_format) + timedelta(0, 1)).isoformat()
+    max_update_time = (datetime.strptime(max_update_time, date_format) + timedelta(seconds=1)).isoformat()
     demisto.setLastRun({'last_fetched_event_timestamp': max_update_time})
     demisto.incidents(incidents)
 
@@ -596,7 +692,7 @@ def test_module():
     Performs basic get request to get item samples
     """
     get_authorization_token()
-    # TODO: add 'GET' request
+    get_policy_types()
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
