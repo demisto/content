@@ -1,0 +1,1 @@
+set default encoding to utf-8
