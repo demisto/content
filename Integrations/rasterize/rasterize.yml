@@ -100,7 +100,7 @@ script:
     description: Rasterize an image file
     execution: false
     name: rasterize-image
-  dockerimage: devdemisto/rasterize-chrome:1.0.0.1435
+  dockerimage: demisto/chromium:1.0.0.1480
   isfetch: false
   runonce: false
   script: '-'
