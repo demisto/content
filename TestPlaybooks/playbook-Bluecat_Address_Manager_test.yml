@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e39da556-3b11-4362-8473-106c1da9f1ff
+    taskid: c28e0e5f-b956-44e7-857d-a68fe30f0f1d
     type: start
     task:
-      id: e39da556-3b11-4362-8473-106c1da9f1ff
+      id: c28e0e5f-b956-44e7-857d-a68fe30f0f1d
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 92db5763-9474-4823-8c67-2072f87a7d41
+    taskid: 6ccff3fc-65c3-4531-8efe-74b6fc366320
     type: regular
     task:
-      id: 92db5763-9474-4823-8c67-2072f87a7d41
+      id: 6ccff3fc-65c3-4531-8efe-74b6fc366320
       version: -1
       name: Delete context
       description: Delete field from context
@@ -63,10 +63,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 7bf55664-5219-401b-86b6-23af760e6c26
+    taskid: 4cf04659-b716-4a9d-8c58-ab2e16d1619a
     type: regular
     task:
-      id: 7bf55664-5219-401b-86b6-23af760e6c26
+      id: 4cf04659-b716-4a9d-8c58-ab2e16d1619a
       version: -1
       name: Query ipv4
       description: Enriches an ipv4 with data about IP networks and blocks that it
@@ -94,10 +94,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: f6c9a0a7-5e03-49a1-84b0-badaf82ec67e
+    taskid: b6d8c109-a8f4-4898-8476-5de3ecc2e6a1
     type: condition
     task:
-      id: f6c9a0a7-5e03-49a1-84b0-badaf82ec67e
+      id: b6d8c109-a8f4-4898-8476-5de3ecc2e6a1
       version: -1
       name: Assert ipv4 results
       type: condition
@@ -160,10 +160,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 0bca9d01-cdba-4888-84b8-68d786246d72
+    taskid: 86204ec0-cea4-45be-89ee-1ba7e8777ed0
     type: regular
     task:
-      id: 0bca9d01-cdba-4888-84b8-68d786246d72
+      id: 86204ec0-cea4-45be-89ee-1ba7e8777ed0
       version: -1
       name: Query ipv6
       description: Enriches an ipv4 with data about IP networks and blocks that it
@@ -191,10 +191,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: d5fce6f2-9df7-42c3-8fc7-071c0d3b81f9
+    taskid: 046563cb-3621-4f5b-83bb-bb64ab920a18
     type: condition
     task:
-      id: d5fce6f2-9df7-42c3-8fc7-071c0d3b81f9
+      id: 046563cb-3621-4f5b-83bb-bb64ab920a18
       version: -1
       name: Assert ipv6 results
       type: condition
@@ -202,7 +202,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "6"
+      - "14"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -257,10 +257,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 1fc96511-4446-4564-8bc3-c2c8a637b7fb
+    taskid: c2bb5ce5-7cf5-4f4c-8665-88c73704f364
     type: regular
     task:
-      id: 1fc96511-4446-4564-8bc3-c2c8a637b7fb
+      id: c2bb5ce5-7cf5-4f4c-8665-88c73704f364
       version: -1
       name: Get response policies
       description: Gets all response policies
@@ -279,7 +279,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1420
         }
       }
     note: false
@@ -287,10 +287,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 1e113a3f-d328-4f39-887e-f8342d85865c
+    taskid: ec79c1fc-fb36-48fb-8278-5c6a5df5983a
     type: condition
     task:
-      id: 1e113a3f-d328-4f39-887e-f8342d85865c
+      id: ec79c1fc-fb36-48fb-8278-5c6a5df5983a
       version: -1
       name: Assert response policies
       type: condition
@@ -337,7 +337,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1595
         }
       }
     note: false
@@ -345,10 +345,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 91ffd101-dc58-49de-8beb-293f2de162fe
+    taskid: ac8a52a8-a050-48ca-8c5c-c4b16d4dc0e9
     type: title
     task:
-      id: 91ffd101-dc58-49de-8beb-293f2de162fe
+      id: ac8a52a8-a050-48ca-8c5c-c4b16d4dc0e9
       version: -1
       name: Done
       type: title
@@ -359,7 +359,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2645
         }
       }
     note: false
@@ -367,10 +367,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 77576823-4efc-436d-80c7-521389d2e08d
+    taskid: 61209b35-efad-4eab-88e6-01f991c1b71e
     type: regular
     task:
-      id: 77576823-4efc-436d-80c7-521389d2e08d
+      id: 61209b35-efad-4eab-88e6-01f991c1b71e
       version: -1
       name: Add domain to response policy
       description: Adds a domain to the given response policy.
@@ -391,7 +391,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1945
         }
       }
     note: false
@@ -399,10 +399,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: caaeff26-ae32-4c46-8783-9ef4d64f3e56
+    taskid: dbf4f70c-245d-4619-81fd-86d69f4c9c1b
     type: regular
     task:
-      id: caaeff26-ae32-4c46-8783-9ef4d64f3e56
+      id: dbf4f70c-245d-4619-81fd-86d69f4c9c1b
       version: -1
       name: Search response policy by domain
       description: Searches all response policies in which the given domain is included
@@ -421,7 +421,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2120
         }
       }
     note: false
@@ -429,10 +429,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: f18f14bd-d05f-4267-8ebf-adaa03e4f40f
+    taskid: fd638e20-432c-4a3a-810e-a1b72cf3830e
     type: condition
     task:
-      id: f18f14bd-d05f-4267-8ebf-adaa03e4f40f
+      id: fd638e20-432c-4a3a-810e-a1b72cf3830e
       version: -1
       name: Assert response policy was found
       type: condition
@@ -457,7 +457,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2295
         }
       }
     note: false
@@ -465,10 +465,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: b8f29c7c-58cd-4900-8e21-00c50aa71655
+    taskid: 3ac59768-b931-4c6a-81bb-ec84b2221b4c
     type: regular
     task:
-      id: b8f29c7c-58cd-4900-8e21-00c50aa71655
+      id: 3ac59768-b931-4c6a-81bb-ec84b2221b4c
       version: -1
       name: Clear context
       description: Delete field from context
@@ -491,7 +491,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1770
         }
       }
     note: false
@@ -499,10 +499,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: ec1523d6-748d-4bf9-8606-2ea393282987
+    taskid: 239b8efb-1812-4d2e-8920-1dc08ca2a61f
     type: regular
     task:
-      id: ec1523d6-748d-4bf9-8606-2ea393282987
+      id: 239b8efb-1812-4d2e-8920-1dc08ca2a61f
       version: -1
       name: Remove domain from response policy
       description: Removes a domain from the given response policy.
@@ -523,7 +523,75 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: b81f8c99-3f37-4d60-892c-6ff5f1afcca0
+    type: regular
+    task:
+      id: b81f8c99-3f37-4d60-892c-6ff5f1afcca0
+      version: -1
+      name: bluecat-am-get-range-by-ip ipv6
+      description: Returns the IPv4 Block containing the specified IPv4 address.
+      script: '|||bluecat-am-get-range-by-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      ip:
+        simple: 2000::20C:29FF:FE89:58CB
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 3ef978ab-e5ca-47be-8000-570d654d6d1e
+    type: condition
+    task:
+      id: 3ef978ab-e5ca-47be-8000-570d654d6d1e
+      version: -1
+      name: Assert ipv6 range results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: BlueCat
+                accessor: AddressManager.Range.ID
+            iscontext: true
+          right:
+            value:
+              simple: "100932"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -534,7 +602,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2310,
+        "height": 2660,
         "width": 380,
         "x": 50,
         "y": 50

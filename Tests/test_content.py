@@ -291,6 +291,7 @@ def set_integration_params(demisto_api_key, integrations, secret_params, instanc
 
             integration['params'] = matched_integration_params.get('params', {})
             integration['byoi'] = matched_integration_params.get('byoi', True)
+            integration['instance_name'] = matched_integration_params.get('instance_name', integration['name'])
         elif 'Demisto REST API' == integration['name']:
             integration['params'] = {
                 'url': 'https://localhost',
@@ -610,6 +611,8 @@ def main():
                 sleep(8)
 
     else:  # Run tests in Server build configuration
+        server_numeric_version = '99.99.98'  # assume latest
+        print("Using server version: {} (assuming latest for non-ami)".format(server_numeric_version))
         with open('./Tests/instance_ips.txt', 'r') as instance_file:
             instance_ips = instance_file.readlines()
             instance_ip = [line.strip('\n').split(":")[1] for line in instance_ips][0]

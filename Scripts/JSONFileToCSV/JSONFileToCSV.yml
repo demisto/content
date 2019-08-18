@@ -1,0 +1,53 @@
+args:
+- default: false
+  description: entry id of json
+  isArray: false
+  name: entryid
+  required: true
+  secret: false
+- default: false
+  description: output csv filename
+  isArray: false
+  name: filename
+  required: true
+  secret: false
+- default: true
+  defaultValue: ','
+  description: CSV Delimiter.
+  isArray: false
+  name: delimiter
+  required: false
+  secret: false
+comment: Script to convert a JSON File waroom output to a CSV file.
+commonfields:
+  id: JSONFileToCSV
+  version: -1
+enabled: true
+name: JSONFileToCSV
+outputs:
+- contextPath: File.Name
+  description: Filename (only in case of report type=json)
+  type: Unknown
+- contextPath: File.Type
+  description: File type e.g. "PE" (only in case of report type=json)
+  type: Unknown
+- contextPath: File.Size
+  description: File size (only in case of report type=json)
+  type: Unknown
+- contextPath: File.MD5
+  description: MD5 hash of the file (only in case of report type=json)
+  type: Unknown
+- contextPath: File.SHA1
+  description: SHA1 hash of the file (only in case of report type=json)
+  type: Unknown
+- contextPath: File.SHA256
+  description: SHA256 hash of the file (only in case of report type=json)
+  type: Unknown
+script: '-'
+system: false
+timeout: 600ns
+type: python
+runonce: false
+tags: []
+tests:
+- JSONtoCSV-Test
