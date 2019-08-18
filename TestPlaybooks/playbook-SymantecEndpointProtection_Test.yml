@@ -709,16 +709,13 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: SEPM
                 accessor: Endpoint.IPAddresses.[0]
             iscontext: true
-          right:
-            value:
-              simple: 192.168.1.17
     view: |-
       {
         "position": {
