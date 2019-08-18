@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f041b439-d8ea-4921-8a82-689aaf13ceda
+    taskid: dd1c0f3a-115b-491e-81a0-70e86c921879
     type: start
     task:
-      id: f041b439-d8ea-4921-8a82-689aaf13ceda
+      id: dd1c0f3a-115b-491e-81a0-70e86c921879
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 905a6c40-955e-43a3-83b3-2181ee1562c3
+    taskid: 1a2914ae-2e44-4604-8421-69714b5784e5
     type: regular
     task:
-      id: 905a6c40-955e-43a3-83b3-2181ee1562c3
+      id: 1a2914ae-2e44-4604-8421-69714b5784e5
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -63,17 +63,17 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: b004aa51-537e-4242-8f78-b2f66b5fb6d9
+    taskid: 3b0fd588-ccc8-48dc-8b9f-148905b18120
     type: regular
     task:
-      id: b004aa51-537e-4242-8f78-b2f66b5fb6d9
+      id: 3b0fd588-ccc8-48dc-8b9f-148905b18120
       version: -1
       name: whois
       description: Provides data enrichment for Domains, URLs, and IP addresses.
-      script: JsonWhoIs|||whois
+      script: '|||whois'
       type: regular
       iscommand: true
-      brand: JsonWhoIs
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
@@ -93,18 +93,20 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 86eac723-efa2-469e-8403-9a196225a815
+    taskid: 7675aed5-d549-4737-83a8-909ec23dc826
     type: condition
     task:
-      id: 86eac723-efa2-469e-8403-9a196225a815
+      id: 7675aed5-d549-4737-83a8-909ec23dc826
       version: -1
       name: Validate parameters
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "5"
       "yes":
-      - "4"
+      - "6"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -134,30 +136,53 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 464e80ef-b861-4638-811e-275639ffbc16
+  "5":
+    id: "5"
+    taskid: 2cc5b75d-0d7d-44fc-8e22-6bfeb637e179
     type: regular
     task:
-      id: 464e80ef-b861-4638-811e-275639ffbc16
+      id: 2cc5b75d-0d7d-44fc-8e22-6bfeb637e179
       version: -1
-      name: Close incident
-      description: commands.local.cmd.close.inv
-      script: Builtin|||closeInvestigation
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
       type: regular
-      iscommand: true
-      brand: Builtin
+      iscommand: false
+      brand: ""
     scriptarguments:
-      assetid: {}
-      closeNotes: {}
-      closeReason: {}
-      id: {}
+      message: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 800
+          "x": 120,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 6af1c93a-6a5d-44d9-86b3-a4a5c0de0f41
+    type: regular
+    task:
+      id: 6af1c93a-6a5d-44d9-86b3-a4a5c0de0f41
+      version: -1
+      name: Done
+      description: Pretty-print the contents of the playbook context
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      outputformat: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 890
         }
       }
     note: false
@@ -168,9 +193,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 845,
-        "width": 380,
-        "x": 450,
+        "height": 935,
+        "width": 940,
+        "x": 120,
         "y": 50
       }
     }

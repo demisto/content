@@ -11,14 +11,17 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Trust any certificate
+  name: insecure
+  required: false
+  type: 8
 description: Provides data enrichment for domains and IP addresses.
 display: JsonWhoIs REST api
 name: JsonWhoIs
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: demisto.com
+    - default: true
       description: URL, IP, or domain to be enriched
       isArray: false
       name: query
@@ -56,12 +59,15 @@ script:
     - contextPath: Domain.WHOIS.Registrar.Name
       description: Registrar name
       type: String
-    - contextPath: "Domain.WHOIS.Registrar.Email\t"
+    - contextPath: Domain.WHOIS.Registrar.Url
       description: Registrar email
       type: String
-    - contextPath: Domain.WHOIS.Registrar.Phone
-      description: Registrar phone
+    - contextPath: Domain.WHOIS.Registrar.Organization
+      description: Registrar organization name
       type: String
+    - contextPath: Domain.WHOIS.Registrar.Id
+      description: Registrar ID
+      type: Number
     - contextPath: Domain.WHOIS.Admin.Name
       description: Admin name
       type: String
