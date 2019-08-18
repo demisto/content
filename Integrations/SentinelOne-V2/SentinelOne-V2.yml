@@ -1261,7 +1261,7 @@ script:
     description: Broadcasts a message to all agents that match the input filters.
     execution: false
     name: sentinelone-broadcast-message
- arguments:
+  - arguments:
     - default: false
       defaultValue: '50'
       description: 'Maximum number of items to return (1-100). Default is "50".'
@@ -1434,9 +1434,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'A free-text search term, will match applicable attributes (sub-string
+      description: "A free-text search term, will match applicable attributes (sub-string
         match). Note: A device's physical addresses will only be matched if they start with
-        the search term  (not if they contain the search term).'
+        the search term  (not if they contain the search term)."
       isArray: false
       name: query
       required: false
@@ -1463,9 +1463,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'A free-text search term, will match applicable attributes (sub-string
+      description: "A free-text search term, will match applicable attributes (sub-string
         match). Note: A device's physical addresses will only be matched if they start with
-        the search term  (not if they contain the search term).'
+        the search term  (not if they contain the search term)."
       isArray: false
       name: query
       required: false
