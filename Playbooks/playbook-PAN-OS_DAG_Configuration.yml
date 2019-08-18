@@ -2,12 +2,12 @@ id: PAN-OS DAG Configuration
 version: -1
 name: PAN-OS DAG Configuration
 fromversion: 4.0.0
-description: "This playbook utilizes the Dynamic Address Group capability of PAN-OS\nDAG
-  allows the analyst to create a rule once with the group as the source/destination
-  and add IPs dynamically without the need to commit the configuration every time.\n\nThe
-  playbook checks if the given tag already exists, and if yes then it adds the IP
-  to the tag.\n\nIf the tag does not exist, it creates a new address group with the
-  given tag and a matching rule and will commit the configuration. \n"
+description: "This playbook utilizes the Dynamic Address Group (DAG) capability of PAN-OS.\nDAG
+  enables analysts to create a rule one time, where the group is the source/destination,
+  and adds IP addresses dynamically without the need to commit the configuration every time.\n\nThe
+  playbook checks if the given tag already exists. If the tag exists, then the IP address is added
+  to the tag.\n\nIf the tag does not exist, a new address group is created with the
+  given tag and a matching rule, and the configuration is committed. \n"
 starttaskid: "0"
 tasks:
   "0":
@@ -43,7 +43,7 @@ tasks:
       id: 320fbaaa-b322-4d39-8549-2663d87df56e
       version: -1
       name: Is PAN-OS integration enabled?
-      description: Checks whether the integration is enabled and configured
+      description: Checks if there is an active instance of PAN-OS enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -98,7 +98,7 @@ tasks:
       id: 2235c4df-c6d7-40ff-8ac3-6c43b66fe753
       version: -1
       name: List Address Groups
-      description: Lists all the address groups in PAN-OS
+      description: Lists all address groups in PAN-OS.
       script: '|||panorama-list-address-groups'
       type: regular
       iscommand: true
@@ -125,7 +125,7 @@ tasks:
       id: cf23bd70-8c0b-469e-8872-6b294bf3e9be
       version: -1
       name: Check if tag exists in address groups
-      description: Looks up the given tag in the address groups
+      description: Checks if the given tag exists in the address groups.
       type: condition
       iscommand: false
       brand: ""
@@ -174,8 +174,8 @@ tasks:
     task:
       id: 3b6960c6-2d5f-4417-876e-86aced2808cc
       version: -1
-      name: Register tag on an IP
-      description: Registers IP addresses to a tag
+      name: Register IP addresses to a tag
+      description: Registers IP addresses to a tag.
       script: Panorama|||panorama-register-ip-tag
       type: regular
       iscommand: true
@@ -231,7 +231,7 @@ tasks:
       id: bd80e411-5bc3-48b1-850b-362bc9d508a1
       version: -1
       name: Create Address Group
-      description: Creates an address group; "static" or "dynamic"
+      description: Creates an address group. Can be "static" or "dynamic".
       script: Panorama|||panorama-create-address-group
       type: regular
       iscommand: true
@@ -266,8 +266,8 @@ tasks:
     task:
       id: bcc6e979-2515-4aa2-8a8d-5c95f4b26b42
       version: -1
-      name: Create Block Rule
-      description: Creates a custom block policy rule
+      name: Create block rule
+      description: Creates a custom block policy rule.
       script: Panorama|||panorama-custom-block-rule
       type: regular
       iscommand: true
@@ -307,8 +307,8 @@ tasks:
       id: 19cf90dc-4544-47e9-809f-38090341f269
       version: -1
       name: Manually commit
-      description: Allows the analyst to manually commit the changes. will be operational
-        if auto-commit is false
+      description: Allows the analyst to manually commit the changes. This will be operational
+        if auto-commit is "false".
       type: regular
       iscommand: false
       brand: ""
@@ -360,9 +360,9 @@ tasks:
     task:
       id: 31f00bc1-3fee-484e-8189-a0a011fd5f71
       version: -1
-      name: Is auto commit defined?
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      name: Is auto-commit defined?
+      description: Checks if the values provided in arguments are equal. If either
+        of the arguments are missing, "no" is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -412,23 +412,23 @@ inputs:
 - key: tag_name
   value: {}
   required: true
-  description: the name of the tag that we wish to add to PAN-OS
+  description: The name of the tag to add to PAN-OS.
 - key: ip_list
   value: {}
   required: true
-  description: the list of the IPs that we are wishing to block
+  description: The list of the IP addresses to block.
 - key: address_group_name
   value: {}
   required: true
-  description: the name of the group that will be created in case the tag does not
-    exist
+  description: The name of the group that will be created if the tag does not
+    exist.
 - key: rule_name
   value: {}
   required: false
-  description: the informative name of the rule in PAN-OS
+  description: A meaningful name of the rule in PAN-OS.
 - key: auto_commit
   value:
     simple: "Yes"
   required: false
-  description: Should the rule be committed automatically or manually?
+  description: Whether the rule will be committed automatically.
 outputs: []
