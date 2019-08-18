@@ -1,3 +1,5 @@
+import socket
+
 import demistomock as demisto
 # Common functions script
 # =======================
@@ -1297,26 +1299,50 @@ def is_mac_address(mac):
         return False
 
 
-def is_ip_valid(s):
+def is_ipv6_valid(address):
     """
-       Checks if the given string represents a valid IPv4 address
+    Checks if the given string represents a valid IPv6 address.
+
+    :type address: str
+    :param address: The string to check.
+
+    :return: True if the given string represents a valid IPv6 address.
+    :rtype: ``bool``
+    """
+    try:
+        socket.inet_pton(socket.AF_INET6, address)
+    except socket.error:  # not a valid address
+        return False
+    return True
+
+
+def is_ip_valid(s, accept_v6_ips=False):
+    """
+       Checks if the given string represents a valid IP address.
+       By default, will only return 'True' for IPv4 addresses.
 
        :type s: ``str``
        :param s: The string to be checked (required)
+       :type accept_v6_ips: ``bool``
+       :param accept_v6_ips: A boolean determining whether the
+       function should accept IPv6 addresses
 
        :return: True if the given string represents a valid IP address, False otherwise
        :rtype: ``bool``
     """
     a = s.split('.')
-    if len(a) != 4:
+    if accept_v6_ips and is_ipv6_valid(s):
+        return True
+    elif len(a) != 4:
         return False
-    for x in a:
-        if not x.isdigit():
-            return False
-        i = int(x)
-        if i < 0 or i > 255:
-            return False
-    return True
+    else:
+        for x in a:
+            if not x.isdigit():
+                return False
+            i = int(x)
+            if i < 0 or i > 255:
+                return False
+        return True
 
 
 def return_outputs(readable_output, outputs, raw_response=None):
