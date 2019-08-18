@@ -254,7 +254,7 @@ def generate_single_command_section(index, cmd, example_dict):
                 errors.append(
                     'Error! You are missing description in input {} of command {}'.format(arg['name'], cmd['name']))
             required_status = 'Required' if arg.get('required') else 'Optional'
-            section.append('| {} | {} | {} | '.format(arg['name'], stringEscapeMD(arg.get('description'), True, True),
+            section.append('| {} | {} | {} | '.format(arg['name'], stringEscapeMD(arg.get('description', ''), True, True),
                                                       required_status))
         section.append('')
 
