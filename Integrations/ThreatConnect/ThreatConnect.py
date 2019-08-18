@@ -204,7 +204,7 @@ def ip(ip_addr, owners, rating_threshold, confidence_threshold):
     indicators = get_indicators(ip_addr, 'Address', owners, rating_threshold, confidence_threshold)
 
     if not indicators:
-        demisto.results('Make sure that the indicator is found in ThreatConnect')
+        demisto.results('Make sure that the indicator exists in your ThreatConnect environment')
     ec, indicators = create_context(indicators, include_dbot_score=True)
 
     return ec, indicators
@@ -238,7 +238,7 @@ def url_command():
 def url(url_addr, owners, rating_threshold, confidence_threshold):
     indicators = get_indicators(url_addr, 'URL', owners, rating_threshold, confidence_threshold)
     if not indicators:
-        demisto.results('Make sure that the indicator is found in ThreatConnect')
+        demisto.results('Make sure that the indicator exists in your ThreatConnect environment')
     ec, indicators = create_context(indicators, include_dbot_score=True)
 
     return ec, indicators
@@ -269,7 +269,7 @@ def file_command():
 def _file(url_addr, owners, rating_threshold, confidence_threshold):
     indicators = get_indicators(url_addr, 'File', owners, rating_threshold, confidence_threshold)
     if not indicators:
-        demisto.results('Make sure that the indicator is found in ThreatConnect')
+        demisto.results('Make sure that the indicator exists in your ThreatConnect environment')
     ec, indicators = create_context(indicators, include_dbot_score=True)
 
     return ec, indicators
@@ -1130,7 +1130,7 @@ def add_group_tag():
 
     add_group_tags_request(group_type, group_id, tag_name)
 
-    demisto.results('The tag {} were added successfully to group {} {}'.format(tag_name, group_type, group_id))
+    demisto.results('The tag {} was added successfully to group {} {}'.format(tag_name, group_type, group_id))
 
 
 def get_events_request():
