@@ -279,7 +279,7 @@ def test_tbl_to_md_dict_with_special_character():
         'header_1': u'foo',
         'header_2': [u'\xe2.rtf']
     }
-    table_with_character = tableToMarkdown('', data)
+    table_with_character = tableToMarkdown('tableToMarkdown test with special character', data)
     expected_string_with_special_character = '''### tableToMarkdown test with special character
 |header_1|header_2|
 |---|---|
