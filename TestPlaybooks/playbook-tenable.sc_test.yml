@@ -1,5 +1,5 @@
 id: tenable-sc-test
-version: 40
+version: -1
 name: Tenable.sc Test
 description: Test playbook for Tenable.sc integration
 starttaskid: "0"
