@@ -38,7 +38,7 @@ tasks:
       id: 131a0e57-5142-4c46-841f-2a1d92d76a12
       version: -1
       name: Is PAN-OS integration enabled?
-      description: Checks whether the integration is enabled and configured
+      description: Checks if there is an active instance of the PAN-OS integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -93,7 +93,7 @@ tasks:
       id: 1bcbc1b7-d68f-44b1-8ca3-0ab6a8040e51
       version: -1
       name: Is PAN-OS EDL Management integration enabled?
-      description: Checks whether the integration is enabled and configured
+      description: Checks if there is an active instance of the PAN-OS EDL Management integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -332,7 +332,7 @@ tasks:
       id: 6aa68a47-b642-489c-8bbc-f38b9415d565
       version: -1
       name: Create EDL Object
-      description: Creates an external dynamic list on PAN-OS and connect it to the
+      description: Creates an external dynamic list in PAN-OS and connects it to the
         external file.
       script: Panorama|||panorama-create-edl
       type: regular
@@ -425,8 +425,8 @@ tasks:
       id: f2737a83-96fc-46d4-8915-fd122017ce11
       version: -1
       name: Is auto-commit defined?
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Checks if the values provided in arguments are equal. If either
+        of the arguments are missing, "no" is returned.
       scriptName: AreValuesEqual
       type: condition
       iscommand: false
@@ -462,7 +462,7 @@ tasks:
       id: 9b26423f-5509-478d-8e20-f4c5313d60ad
       version: -1
       name: Manually commit
-      description: Allows the analyst to manually commit the changes. will be operational if auto-commit is false
+      description: Allows the analyst to manually commit the changes. This will be operational if auto-commit is "false".
       type: regular
       iscommand: false
       brand: ""
@@ -535,7 +535,7 @@ tasks:
       id: ddd362fc-e9fd-49c1-87c7-4e662fdce8aa
       version: -1
       name: Manually commit
-      description: Allows the analyst to manually commit the changes. will be operational if auto-commit is false
+      description: Allows the analyst to manually commit the changes. This will be operational if auto-commit is "false".
       type: regular
       iscommand: false
       brand: ""
@@ -625,12 +625,12 @@ inputs:
   value: {}
   required: true
   description: |-
-    the name of the list that will store the IOCs
-    the name of the file on the web server will be the name of the list with 'txt' extension
+    The name of the list that will store the IOCs.
+    The name of the file on the web server. This file name will be the name of the list with the extension ".txt".
 - key: ioc-type
   value: {}
   required: true
-  description: the type of the IOCs that the list will store. can be IP/URL/Domain
+  description: The type of the IOCs that the list will store. Can be "IP", "URL", or "Domain".
 - key: action-type
   value: {}
   required: true
@@ -642,21 +642,20 @@ inputs:
   value:
     simple: "No"
   required: false
-  description: commit the configuration automatically or not?
+  description: Whether to commit the configuration automatically.
 - key: log-forwarding-server
   value: {}
   required: false
-  description: server address to forward logs to
+  description: The server address to which to forward logs.
 - key: web-server-ip
   value: {}
   required: true
-  description: The ip of the web-server that is storing the files. defined in the
-    instance configuration
+  description: The IP address of the web server on which the files are stored. The web server IP address is configured in the integration instance.
 - key: pre-post-rulebase
   value:
     simple: pre-rulebase
   required: true
-  description: either pre-rulebase or post-rulebase according to rule structure
+  description: Either pre-rulebase or post-rulebase,  according to the rule structure.
 outputs: []
 tests:
   - No test - requires a web server to run
