@@ -2,6 +2,7 @@ import sys
 import os
 import json
 import subprocess
+from Tests.test_utils import print_warning, print_error
 import Tests.scripts.awsinstancetool.aws_functions as aws_functions
 
 
@@ -17,18 +18,30 @@ def main():
                          '"sudo chmod -R 755 /var/log/demisto"'
             scp_string = 'scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ' \
                          '{}@{}:/var/log/demisto/server.log {} || echo "WARN: Failed downloading server.log"'
-            subprocess.check_output(ssh_string.format(env["SSHuser"], env["InstanceDNS"]), shell=True)
-            subprocess.check_output(
-                scp_string.format(
-                    env["SSHuser"],
-                    env["InstanceDNS"],
-                    "{}/server_{}.log".format(circle_aritfact, env["Role"].replace(' ', ''))),
-                shell=True)
+
+            try:
+                subprocess.check_output(
+                    ssh_string.format(env["SSHuser"], env["InstanceDNS"]), shell=True)
+
+            except subprocess.CalledProcessError as exc:
+                print(exc.output)
+
+            try:
+                subprocess.check_output(
+                    scp_string.format(
+                        env["SSHuser"],
+                        env["InstanceDNS"],
+                        "{}/server_{}.log".format(circle_aritfact, env["Role"].replace(' ', ''))),
+                    shell=True)
+
+            except subprocess.CalledProcessError as exc:
+                print(exc.output)
+
             rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
             if aws_functions.isError(rminstance):
-                raise ValueError(rminstance)
+                print_error(rminstance)
         else:
-            raise ValueError("Tests failed on {} ,keeping instance alive".format(env["Role"]))
+            print_warning("Tests failed on {} ,keeping instance alive".format(env["Role"]))
 
 
 if __name__ == "__main__":

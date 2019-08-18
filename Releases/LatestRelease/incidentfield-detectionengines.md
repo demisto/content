@@ -1,1 +1,0 @@
-Total number of engines that checked the indicator
