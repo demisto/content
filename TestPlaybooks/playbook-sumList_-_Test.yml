@@ -1,0 +1,201 @@
+id: sumList - Test
+version: -1
+name: sumList - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 51b04300-3373-4457-8a99-a9bb9e7a68df
+    type: start
+    task:
+      id: 51b04300-3373-4457-8a99-a9bb9e7a68df
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: f48877d0-79ef-4e28-8d69-5ec7349eda11
+    type: regular
+    task:
+      id: f48877d0-79ef-4e28-8d69-5ec7349eda11
+      version: -1
+      name: Set
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: my_list
+      value:
+        simple: '[10,15,20]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 0efbff75-ecee-436b-8f18-65d443236bb4
+    type: regular
+    task:
+      id: 0efbff75-ecee-436b-8f18-65d443236bb4
+      version: -1
+      name: sumLIst
+      description: "Sums a List\ne.g. [\"25\", \"10\", \"25\"] =>  \"60\"\n\nThis
+        is an example for number transformer.\n "
+      scriptName: SumList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      value:
+        simple: ${my_list}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 032da87c-d46a-4192-838e-336fd985c487
+    type: condition
+    task:
+      id: 032da87c-d46a-4192-838e-336fd985c487
+      version: -1
+      name: Sanity check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: my_sum
+            iscontext: true
+          right:
+            value:
+              simple: "45"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 822d9826-1e10-4aa2-802f-11321981dd1a
+    type: title
+    task:
+      id: 822d9826-1e10-4aa2-802f-11321981dd1a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 3aa0a22a-1194-45f5-8c9e-23b86ed9909e
+    type: regular
+    task:
+      id: 3aa0a22a-1194-45f5-8c9e-23b86ed9909e
+      version: -1
+      name: commetnstocontext
+      description: "Takes the comments of a given entry ID and stores them in the
+        incident context, under a provided context key. \nFor accessing the last executed
+        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
+        the entryId input parameter."
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      contextKey:
+        simple: my_sum
+      entryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      listSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
