@@ -1,9 +1,11 @@
 ## [Unreleased]
-Added support for Logs retrieve Use case of types: traffic, threat, url, wildfire, data-filtering
-USing the commands: panorama-query-logs, panorama-check-logs-status, panorama-get-logs and the playbook "Panorama Query Logs"
-
-Handle URL Filtering licensing error gracefully
-Handle trying to edit a non committed Custom URL category error carefully
-Add panorama-list-rules command
-Add edl argument for panorama-custom-block command
-Handle error trying to refresh an EDL object on a Panorama instance error gracefully
+  - Added 4 new commands:
+    - ***panorama-query-logs***
+    - ***panorama-check-logs-status***
+    - ***panorama-get-logs***
+    - ***panorama-list-rules command***
+  - Added the **Panorama Query Logs** playbook.
+  - Improved handling of URL Filtering licensing errors.
+  - Improved handling of errors in cases of editing a non-committed Custom URL category.
+  - Added the *edl* argument to the ***panorama-custom-block*** command.
+  - Improved handling of errors in cases of trying to refresh an EDL object on a Panorama instance.
