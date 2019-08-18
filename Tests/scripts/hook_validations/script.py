@@ -14,14 +14,12 @@ class ScriptValidator(object):
         also try to catch possible Backward compatibility breaks due to the preformed changes.
 
     Attributes:
-       _is_valid (bool): the attribute which saves the valid/in-valid status of the current file.
        file_path (str): the path to the file we are examining at the moment.
        current_script (dict): Json representation of the current script from the branch.
        old_script (dict): Json representation of the current script from master.
     """
 
     def __init__(self, file_path, check_git=True, old_file_path=None):
-        self._is_valid = True
         self.file_path = file_path
         self.current_script = {}
         self.old_script = {}
@@ -56,13 +54,15 @@ class ScriptValidator(object):
         if not self.old_script:
             return True
 
-        self.is_context_path_changed()
-        self.is_docker_image_changed()
-        self.is_added_required_args()
-        self.is_arg_changed()
-        self.is_there_duplicates_args()
+        is_bc_broke = any([
+            self.is_context_path_changed(),
+            self.is_docker_image_changed(),
+            self.is_added_required_args(),
+            self.is_arg_changed(),
+            self.is_there_duplicates_args(),
+        ])
 
-        return self._is_valid
+        return is_bc_broke
 
     @classmethod
     def _get_arg_to_required_dict(cls, script_json):
@@ -92,7 +92,6 @@ class ScriptValidator(object):
                         (arg in old_args_to_required and required != old_args_to_required[arg]):
                     print_error("You've added required args in the script file '{}', the field is '{}'".format(
                         self.file_path, arg))
-                    self._is_valid = False
                     return True
 
         return False
@@ -101,7 +100,6 @@ class ScriptValidator(object):
         """Check if there are duplicated arguments."""
         args = [arg['name'] for arg in self.current_script.get('args', [])]
         if len(args) != len(set(args)):
-            self._is_valid = False
             return True
 
         return False
@@ -114,7 +112,6 @@ class ScriptValidator(object):
         if not self._is_sub_set(current_args, old_args):
             print_error("Possible backwards compatibility break, You've changed the name of an arg in "
                         "the file {}, please undo.".format(self.file_path))
-            self._is_valid = False
             return True
 
         return False
@@ -127,7 +124,6 @@ class ScriptValidator(object):
         if not self._is_sub_set(current_context, old_context):
             print_error("Possible backwards compatibility break, You've changed the context in the file {0},"
                         " please undo.".format(self.file_path))
-            self._is_valid = False
             return True
 
         return False
@@ -137,7 +133,6 @@ class ScriptValidator(object):
         if self.old_script.get('dockerimage', "") != self.current_script.get('dockerimage', ""):
             print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
                         " this is not allowed.".format(self.file_path))
-            self._is_valid = False
             return True
 
         return False
