@@ -1,8 +1,8 @@
 {
-  "typeId": "cveRep",
+  "typeId": "emailRep",
   "kind": "indicatorsDetails",
   "layout": {
-    "typeId": "cveRep",
+    "typeId": "emailRep",
     "kind": "indicatorsDetails",
     "name": "",
     "tabs": [
@@ -11,7 +11,7 @@
         "sections": [
           {
             "name": "Reputation",
-            "i": "default-main-reputationSources",
+            "i": "reputationSources",
             "h": 2,
             "moved": false,
             "static": false,
@@ -22,7 +22,7 @@
           },
           {
             "name": "Related Incidents",
-            "i": "default-main-relatedIncidents",
+            "i": "relatedIncidents",
             "h": 2,
             "moved": false,
             "static": false,
@@ -33,7 +33,7 @@
           },
           {
             "name": "Timeline",
-            "i": "default-main-indicatorTimeline",
+            "i": "indicatorTimeline",
             "items": [
               {
                 "index": 0,
@@ -50,22 +50,6 @@
                 "startCol": 0,
                 "fieldId": "lastseen",
                 "id": "indicator-last-seen"
-              },
-              {
-                "index": 2,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "modified",
-                "id": "6c11f3d0-b1df-11e9-b8c7-15ca72216f6a"
-              },
-              {
-                "index": 3,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "published",
-                "id": "753f3210-b1df-11e9-b8c7-15ca72216f6a"
               }
             ],
             "moved": false,
@@ -78,42 +62,48 @@
             "type": "indicatorTimeline"
           },
           {
-            "name": "CVE Info",
-            "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+            "name": "Email Address Info",
+            "i": "e2c8c970-a09d-11e9-8956-390f602b039a",
             "items": [
               {
                 "index": 0,
                 "endCol": 2,
-                "dropEffect": "move",
                 "height": 24,
-                "listId": "e2c8c970-a09d-11e9-8956-390f602b039a",
                 "startCol": 0,
-                "fieldId": "source",
-                "id": "indicator-source"
+                "fieldId": "indicatortype",
+                "id": "indicator-type"
               },
               {
                 "index": 1,
                 "endCol": 2,
                 "height": 24,
                 "startCol": 0,
-                "fieldId": "cvedescription",
-                "id": "44fc9ca0-b1df-11e9-b8c7-15ca72216f6a"
+                "fieldId": "emailaddress",
+                "id": "4cee05a0-b9d9-11e9-aeb8-096452ab8d25"
               },
               {
                 "index": 2,
                 "endCol": 2,
                 "height": 24,
                 "startCol": 0,
-                "fieldId": "cvss",
-                "id": "45c40b50-b1df-11e9-b8c7-15ca72216f6a"
+                "fieldId": "source",
+                "id": "indicator-source"
               },
               {
                 "index": 3,
                 "endCol": 2,
                 "height": 24,
                 "startCol": 0,
-                "fieldId": "indicatortype",
-                "id": "indicator-type"
+                "fieldId": "domainname",
+                "id": "49f18e80-b9d9-11e9-aeb8-096452ab8d25"
+              },
+              {
+                "index": 4,
+                "endCol": 2,
+                "height": 24,
+                "startCol": 0,
+                "fieldId": "internal",
+                "id": "50d2b9e0-b9d9-11e9-aeb8-096452ab8d25"
               },
               {
                 "index": 5,
@@ -137,13 +127,13 @@
         "name": "Info"
       }
     ],
-    "modified": "2019-08-08T12:17:03.724237487Z",
+    "modified": "2019-08-08T12:37:59.390987612Z",
     "system": false,
     "TypeName": "",
-    "version": 2,
-    "id": "cveRep"
+    "version": -1,
+    "id": "emailRep"
   },
-  "TypeName": "cveRep",
+  "TypeName": "emailRep",
   "version": -1,
   "fromVersion": "5.0.0"
 }

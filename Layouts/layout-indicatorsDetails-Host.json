@@ -1,5 +1,5 @@
 {
-  "typeId": "host",
+  "typeId": "hostRep",
   "kind": "indicatorsDetails",
   "layout": {
     "typeId": "host",
@@ -218,8 +218,8 @@
     "modified": "2019-08-08T12:40:58.395092938Z",
     "system": false,
     "TypeName": "",
-    "version": 1,
-    "id": "host"
+    "version": -1,
+    "id": "hostRep"
   },
   "TypeName": "Host",
   "version": -1,

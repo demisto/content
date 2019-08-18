@@ -1,2 +1,0 @@
-## [Unreleased]
-- Added ipRep layout.

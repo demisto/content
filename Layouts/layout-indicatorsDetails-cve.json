@@ -1,8 +1,8 @@
 {
-  "typeId": "urlRep",
+  "typeId": "cveRep",
   "kind": "indicatorsDetails",
   "layout": {
-    "typeId": "urlRep",
+    "typeId": "cveRep",
     "kind": "indicatorsDetails",
     "name": "",
     "tabs": [
@@ -11,19 +11,19 @@
         "sections": [
           {
             "name": "Reputation",
-            "i": "reputationSources",
+            "i": "default-main-reputationSources",
             "h": 2,
             "moved": false,
             "static": false,
-            "w": 1,
+            "w": 2,
             "y": 0,
             "x": 1,
             "type": "reputationSources"
           },
           {
             "name": "Related Incidents",
-            "i": "relatedIncidents",
-            "h": 3,
+            "i": "default-main-relatedIncidents",
+            "h": 2,
             "moved": false,
             "static": false,
             "w": 2,
@@ -33,10 +33,10 @@
           },
           {
             "name": "Timeline",
-            "i": "indicatorTimeline",
+            "i": "default-main-indicatorTimeline",
             "items": [
               {
-                "index": 1,
+                "index": 0,
                 "endCol": 2,
                 "height": 24,
                 "startCol": 0,
@@ -44,12 +44,28 @@
                 "id": "indicator-first-seen"
               },
               {
-                "index": 2,
+                "index": 1,
                 "endCol": 2,
                 "height": 24,
                 "startCol": 0,
                 "fieldId": "lastseen",
                 "id": "indicator-last-seen"
+              },
+              {
+                "index": 2,
+                "endCol": 2,
+                "height": 24,
+                "startCol": 0,
+                "fieldId": "modified",
+                "id": "6c11f3d0-b1df-11e9-b8c7-15ca72216f6a"
+              },
+              {
+                "index": 3,
+                "endCol": 2,
+                "height": 24,
+                "startCol": 0,
+                "fieldId": "published",
+                "id": "753f3210-b1df-11e9-b8c7-15ca72216f6a"
               }
             ],
             "moved": false,
@@ -57,16 +73,42 @@
             "static": false,
             "w": 1,
             "h": 2,
-            "y": 3,
+            "y": 2,
             "x": 0,
             "type": "indicatorTimeline"
           },
           {
-            "name": "URL Info",
-            "i": "e2c8c970-a09d-11e9-8956-390f602b039a",
+            "name": "CVE Info",
+            "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
             "items": [
               {
                 "index": 0,
+                "endCol": 2,
+                "dropEffect": "move",
+                "height": 24,
+                "listId": "e2c8c970-a09d-11e9-8956-390f602b039a",
+                "startCol": 0,
+                "fieldId": "source",
+                "id": "indicator-source"
+              },
+              {
+                "index": 1,
+                "endCol": 2,
+                "height": 24,
+                "startCol": 0,
+                "fieldId": "cvedescription",
+                "id": "44fc9ca0-b1df-11e9-b8c7-15ca72216f6a"
+              },
+              {
+                "index": 2,
+                "endCol": 2,
+                "height": 24,
+                "startCol": 0,
+                "fieldId": "cvss",
+                "id": "45c40b50-b1df-11e9-b8c7-15ca72216f6a"
+              },
+              {
+                "index": 3,
                 "endCol": 2,
                 "height": 24,
                 "startCol": 0,
@@ -74,84 +116,34 @@
                 "id": "indicator-type"
               },
               {
-                "index": 1,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "source",
-                "id": "indicator-source"
-              },
-              {
-                "index": 2,
+                "index": 5,
                 "endCol": 2,
                 "height": 48,
                 "startCol": 0,
                 "fieldId": "comment",
                 "id": "indicator-comment"
-              },
-              {
-                "index": 3,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "internal",
-                "id": "81487eb0-ac6f-11e9-8443-17259235cee7"
-              },
-              {
-                "index": 4,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "malwarefamily",
-                "id": "852ce4d0-ac6f-11e9-8443-17259235cee7"
-              },
-              {
-                "index": 5,
-                "endCol": 2,
-                "height": 24,
-                "startCol": 0,
-                "fieldId": "signed",
-                "id": "8b8669a0-ac6f-11e9-8443-17259235cee7"
               }
             ],
             "moved": false,
             "displayType": "ROW",
             "static": false,
             "w": 1,
-            "h": 3,
+            "h": 2,
             "y": 0,
             "x": 0
-          },
-          {
-            "minH": 1,
-            "x": 2,
-            "name": "Community Score",
-            "i": "63ce90e0-ac6f-11e9-8443-17259235cee7",
-            "h": 2,
-            "moved": false,
-            "maxW": 3,
-            "static": false,
-            "w": 1,
-            "hideName": false,
-            "y": 0,
-            "query": "01dc8416-fd7b-4a5f-8ab9-109a826261c5",
-            "items": [],
-            "type": "dynamicIndicator",
-            "queryType": "script",
-            "minW": 1
           }
         ],
         "id": "default-main",
         "name": "Info"
       }
     ],
-    "modified": "2019-08-08T12:34:51.96555249Z",
+    "modified": "2019-08-08T12:17:03.724237487Z",
     "system": false,
     "TypeName": "",
-    "version": 2,
-    "id": "urlRep"
+    "version": -1,
+    "id": "cveRep"
   },
-  "TypeName": "urlRep",
+  "TypeName": "cveRep",
   "version": -1,
   "fromVersion": "5.0.0"
 }

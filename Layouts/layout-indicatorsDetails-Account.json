@@ -1,5 +1,5 @@
 {
-  "typeId": "account",
+  "typeId": "accountRep",
   "kind": "indicatorsDetails",
   "layout": {
     "typeId": "account",
@@ -180,8 +180,8 @@
     "modified": "2019-07-24T11:49:46.253775898Z",
     "system": false,
     "TypeName": "",
-    "version": 2,
-    "id": "account"
+    "version": -1,
+    "id": "accountRep"
   },
   "TypeName": "Account",
   "version": -1,

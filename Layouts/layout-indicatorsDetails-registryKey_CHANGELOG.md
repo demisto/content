@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Added registryKey layout.
+- Added registryKey indicator layout.
