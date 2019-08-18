@@ -241,6 +241,8 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: add
+      description: Choose an action, add if you want to add tags or remove for remove
+        tags.
       isArray: false
       name: action
       predefined:
@@ -956,8 +958,6 @@ script:
     description: Shows in the war room a table of all entity type names & IDs
     execution: false
     name: zerofox-get-entity-types
-    outputs:
-    - type: Unknown
   - deprecated: false
     description: Shows in the war room a table of all policy type names & IDs
     execution: false
