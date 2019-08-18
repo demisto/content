@@ -1,53 +1,77 @@
 # Overview
-We currently use CircleCI to test each of our integrations. The tests run for **your** integration each time you commit to the content repo. Tests for **every** integration runs nightly. Perhaps the easiest way to create a test playbook is via the Demisto Playbook Editor and remains the preferred way to create one.
+We use *CircleCI* to test our integrations. The tests for **your** integration run each time you commit to the content repo. The tests for **every** integration run every night. The easiest, and preferred, way to create a test playbook is by using the Demisto playbook editor.
 
-* **Every pull request _must_ have a test playbook.** 
-* **Unit tests should be used to test smaller units of code: See: [Unit Testing](docs/unit-testing/README.md)**
+When creating a test playbook:
+* Every pull request _must_ have a test playbook.
+* Unit tests should be used to test smaller units of code. For more information, see [Unit Testing](docs/unit-testing/README.md).
 
-## Creating a Test Playbook
-
-### Getting Started
-To create a test playbook, we begin by navigating to the **Playbooks** tab in Demisto and clicking **New Playbook**. When running a test, it is often necessary for the first step to be **DeleteContext** which is found under the **Utilities** section in the Task Library. Make sure to select "yes" for the field "all". Finally click okay and connect the **Playbook Triggered** task to the **DeleteContext** task as shown below:
+# Create a Test Playbook
+After you create a test playbook, there are several tests you should run, including testing commands, verifying the results, and closing the investigation.
+## Create a playbook
+1. Navigate to **Playbooks** and click **New Playbook**.
+2. Define a **Playbook name**.
+3. In the search field, type **deletecontext** and click **Utilities**.
+4. In the **DeleteContext** task, click **Add**.
+5. From the dropdown menu in the **all** field, select **yes**.
+6. Click **OK** and connect the **Playbook Triggered** task to the **DeleteContext** task.
 
 <img src="https://user-images.githubusercontent.com/42912128/50275566-51eaa780-0448-11e9-8089-b3631fff1274.png" width="250" align="middle">
 
-### Testing a Command
-It is important to test as many parts of the integration as possible and it is suggested to have a task for each command. For this example we will look at the Integration IPInfo. IPInfo accepts only one command called ```!ip```. A search for ipinfo in the Task Library will display the command "ip". Click **Add** to bring up the configuration options. 
+# Testing a Command, Verifying the Results, and Closing an Investigation
 
-When we run a test against an entity such as an IP address, or domain, we must select an entity that will give us the most *consistent* results. We will use Google's 8.8.8.8 as an example in the configuration below.
+It's important to test as many commands of the integration as possible as tasks, and each command should have a task. For example, the *IPIinfo* integration is a command and requires a task, (the `!ip` command).
 
-<img src="https://user-images.githubusercontent.com/42912128/50276007-8448d480-0449-11e9-9413-67a842a8ce72.png" width="400" align="middle">
+## Test a Command
 
-Click **OK** to save your changes and finally connect "ip" task to the "DeleteContext" task.
+1. Navigate to **Playbooks** and click **New Playbook**.
+2. In the search field, type **ipinfo** and click **ip**.
+3. In the **ip** task, click **Add** to edit the configuration options.
+4. Select an entity that will produce the most *consistent* results in the *ip* field, such as 8.8.8.8, the Google DNS server.
+5. Click **OK** to save your changes.
+6. Connect the **DeleteContext** task to the **ip** task.
 
-### Verifying Results
-Once we have built a command task, we must next verify that the results are what we expected to receive. To do this, we will open the **Task Library** and select **Create Task**. Click the radio button next to "Conditional" to open the options for conditions as seen below:
+## Verify the Command Results
+After you build the command, verify that you have received the results that you expect.
+1. Open the **Task Library** and select **Create Task**.
+2. Configure the new task.
 
-<img src="https://user-images.githubusercontent.com/42912128/50276352-6fb90c00-044a-11e9-8210-a4df27b9500c.png" width="400" align="middle">
+| Configuration | Action |
+| ---- | ----| 
+| **Conditional** | Select the **Conditional** button to display the condition options. |
+| **Task Name** | Type a task name. |
+| **From previous tasks** |  Click **{}** to display the **Select source for** tool. The **Select source for** tool displays the **#2 ip** task that you created. |
+| **2 ip** | Click to display the **ip** task configurations. |
+| **IP** | Click **Address** and click **Close**. The `IP.Address` is displayed in the **From previous tasks** field. This is the Context Path. |
+| **From previous tasks** | Wrap the Context Path using this format `${IP.Address}`. Wrapping the Context Path tells Demisto to retrieve the value located in the curly brackets. |
+| **As value** | Type 8.8.8.8 and click ✅. |
 
-Under the section "Condition for yes", we will click the **{}** option to bring up the source tool. You will see an option for the task we have just created called "#2 ip". Click the "Address" option. 
+**Note:** If you need to edit the value in a field, you can click on the value and edit it. For example, click on the value in the **From previous tasks** field and edit the `${IP.Address}` value.
 
-**Please note:** If you need to filter or format the result, click "Filter and Operations" to do so.
+3. Optional: If you need to filter or format the result, click **Filters and Operations** located in the **Select source for** dialog box.
+4. Click **Save**.
+5. Connect the **ip** task to the **Verify Command Results** task.
 
-<img src="https://user-images.githubusercontent.com/42912128/50276603-fff75100-044a-11e9-97ef-c848cc051985.png" width="400" align="middle">
-
-We now must wrap the Context Path like this **${IP.Address}**. This tells Demisto that we are looking for the value present at that location.
-
-Next, in the "Equals (String)" field enter our expected value of "8.8.8.8" and click ✅ followed by **Save**. Connect the tasks together. 
-
-Lastly we will close the investigation if the test is successful. To do this find "closeInvestigation" in the Task Library and click "add". For the "id" field, select "ID" path found under "Incident details" in the source tool. Click "OK" and connect the task to the others.
+## Close the Investigation
+1. Navigate to **Playbooks** and click **New Playbook**.
+2. In the search field, type **closeinvestigation** and click **BuiltIn Commands**.
+3. For **closeInvestigation**, click **Add**.
+4. Click the **{}** in the *id* field.
+5. Click **Incident details** and find **ID**. `${incident.id}` is inserted into the **id** field.
+6. Click **Close** and click **OK**.
+7. Connect the **Verify Command Results** task to the **closeInvestigation** task.
+8. Choose the **yes** label name for the condition and click **Save**.
 
 ### Naming and Exporting the Playbook
-We use a standard naming convention for our playbook tests which follows the format below:
+Demisto uses a standard naming convention for playbook tests that follows this format: `Integration_Name-Test`.
 
-```Integration_Name-Test```
-
-Click "Save Version" and exit the Playbook editor.
-
-Lastly, we need to download the YAML file for the Playbook we have just created. Click ![download button](https://user-images.githubusercontent.com/42912128/50277516-4d74bd80-044d-11e9-94b6-5195dd0db796.png) to export the playbook.
+1. Click **Save Version**.
+2. Exit the playbook editor.
+3. Export the playbook by clicking ![download button](https://user-images.githubusercontent.com/42912128/50277516-4d74bd80-044d-11e9-94b6-5195dd0db796.png).
 
 ## Adding the Playbook to your Project
-With the YAML file we have just created, edit the ```id```  to be the same as the field ```name```. Next we change the ```version``` field to "-1" to prevent changes. using the example above, the top of your YAML should look like this:
+1. In the YAML file that you created, edit the `id` so that it is identical to the `name` field.
+2. Modify the value in the `version` field to *-1* to prevent user changes.
+3. Using the example above, the top of your YAML should look like this:
 
 ```yml
 id: IPInfo-Test
@@ -56,9 +80,9 @@ name: IPInfo-Test
 ```
 
 ## Adding Tests to conf.json
-The conf.json file (located in the "Tests" directory) is where we tell CircleCI which tests to run and for which integrations.
+The *CircleCI* is set to run integration tests from the conf.json file. The conf.json file is located in the **Tests** directory.
 
-Your conf.json entry for the integration should be similar to the following:
+The following is an example of a correct conf.json entry for an integration:
 ```yml
         {
             "integrations": "Forcepoint",
@@ -67,16 +91,16 @@ Your conf.json entry for the integration should be similar to the following:
             "nightly": true
         },
 ```
-An explanation of the fields are as follows:
+The following table describes the fields:
 
 |Name|Description|
 |---|---|
-| **integrations** | The ID of the integration you are testing |
-| **playbookID** | The ID of the test playbook |
-| **timeout** | Time in seconds to extend the timeout to |
-| **nightly** | Boolean to indicate if the test should be part of the nightly tests **only** |
+| **integrations** | The ID of the integration that you are testing. |
+| **playbookID** | The ID of the test playbook that you are running. |
+| **timeout** | The time in seconds to extend the timeout to. |
+| **nightly** | Boolean that indicates if the test should be part of **only** the nightly tests. |
 
-If your integration requires a configuration in order to be executed, add the following to the [content-test-conf/conf.json](https://github.com/demisto/content-test-conf/blob/master/conf.json) file. The field names should match what you have assigned as the parameters for your integration.
+1. If your integration must be configured to be executed, you must add the code below to the [content-test-conf/conf.json](https://github.com/demisto/content-test-conf/blob/master/conf.json) file. The field names must match the parameters that you assigned to your integration.
 
 ```yml
 {
@@ -90,9 +114,8 @@ If your integration requires a configuration in order to be executed, add the fo
 }
 ```
 
-Finally commit, push your changes, and cross your fingers. If everything works well, you should have a "Green Build"
+2. Commit, push your changes, and cross your fingers. If everything works well, you should have a "Green Build".
 
-Example of a Test Playbook:
-https://github.com/demisto/content/blob/master/TestPlaybooks/playbook-Carbon_Black_Response_Test.yml
+Example of a Test Playbook - https://github.com/demisto/content/blob/master/TestPlaybooks/playbook-Carbon_Black_Response_Test.yml
 
 Example of a Playbook Image - https://user-images.githubusercontent.com/7270217/41154872-459f93fe-6b24-11e8-848b-25ca71f59629.png
