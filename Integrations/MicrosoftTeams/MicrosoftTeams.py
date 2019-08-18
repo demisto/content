@@ -322,11 +322,11 @@ def process_incidents_list(data_by_line: list) -> dict:
     return create_adaptive_card(body)
 
 
-def process_unknown_message(message: str) -> dict:
+def process_mirror_or_unknown_message(message: str) -> dict:
     """
-    Processes unknown direct message and creates adaptive card
-    :param message: The known direct message to process
-    :return: Adaptive card of unknown message
+    Processes mirror investigation command or unknown direct message and creates adaptive card
+    :param message: The direct message to process
+    :return: Adaptive card of mirror response / unknown message
     """
     body: list = [{
         'type': 'TextBlock',
@@ -601,7 +601,7 @@ def get_team_aad_id(team_name: str) -> str:
 # def add_member_to_team(user_principal_name: str, team_id: str):
 #     url: str = f'{GRAPH_BASE_URL}/v1.0/groups/{team_id}/members/$ref'
 #     requestjson_: dict = {
-#         '@odata.id': f'https://graph.microsoft.com/v1.0/directoryObjects/{user_principal_name}'
+#          '@odata.id': f'{GRAPH_BASE_URL}/v1.0/directoryObjects/{user_principal_name}'
 #     }
 #     http_request('POST', url, json_=requestjson_)
 
@@ -748,7 +748,7 @@ def get_channel_id(channel_name: str, team_aad_id: str) -> str:
     return channel_id
 
 
-def get_team_members(team_id: str, service_url: str) -> list:
+def get_team_members(service_url: str, team_id: str) -> list:
     """
     Retrieves team members given a team
     :param team_id: ID of team to get team members of
@@ -861,18 +861,14 @@ def create_personal_conversation(integration_context: dict, team_member_id: str)
     return response.get('id', '')
 
 
-def send_message_request(channel_id: str, conversation: dict, integration_context: dict = None):
+def send_message_request(service_url: str, channel_id: str, conversation: dict):
     """
     Sends an HTTP request to send message to Microsoft Teams
     :param channel_id: ID of channel to send message in
     :param conversation: Conversation message object to send
-    :param integration_context: Cached object to get retrieve data from for the message sending
+    :param service_url: Bot service URL to query
     :return: None
     """
-    integration_context = integration_context or dict()
-    service_url: str = integration_context.get('service_url', '')
-    if not service_url:
-        raise ValueError('Did not find service URL. Try messaging the bot on Microsoft Teams')
     url: str = f'{service_url}/v3/conversations/{channel_id}/activities'
     http_request('POST', url, json_=conversation, api='bot')
 
@@ -931,7 +927,7 @@ def send_message():
     if message:
         entitlement_match: Optional[Match[str]] = re.search(ENTITLEMENT_REGEX, message)
         if entitlement_match:
-            # In TeamsAskUser process
+            # In TeamsAsk process
             adaptive_card = process_ask_user(message)
             conversation = {
                 'type': 'message',
@@ -950,7 +946,11 @@ def send_message():
             'attachments': [adaptive_card]
         }
 
-    send_message_request(recipient, conversation, integration_context)
+    service_url: str = integration_context.get('service_url', '')
+    if not service_url:
+        raise ValueError('Did not find service URL. Try messaging the bot on Microsoft Teams')
+
+    send_message_request(service_url, recipient, conversation)
     demisto.results('Message was sent successfully.')
 
 
@@ -974,6 +974,7 @@ def mirror_investigation():
     team_aad_id: str = get_team_aad_id(team_name)
     mirrored_channels: list = list()
     teams: list = json.loads(integration_context.get('teams', '[]'))
+    team: dict = dict()
     for team in teams:
         if team.get('team_aad_id', '') == team_aad_id:
             if team.get('mirrored_channels'):
@@ -1052,11 +1053,11 @@ def channel_mirror_loop():
             time.sleep(5)
 
 
-def member_added_handler(request_body: dict, service_url: str, channel_data: dict):
+def member_added_handler(integration_context: dict, request_body: dict, channel_data: dict):
     """
     Handles member added activity
+    :param integration_context: Cached object to retrieve relevant data from
     :param request_body: Activity payload
-    :param service_url: Bot service URL
     :param channel_data: Microsoft Teams tenant, team and channel details
     :return: None
     """
@@ -1075,10 +1076,11 @@ def member_added_handler(request_body: dict, service_url: str, channel_data: dic
 
     members_added: list = request_body.get('membersAdded', [])
 
-    teams: list = list()
+    teams: list = json.loads(integration_context.get('teams', '[]'))
 
-    integration_context: dict = demisto.getIntegrationContext()
-    teams = json.loads(integration_context.get('teams', '[]'))
+    service_url: str = integration_context.get('service_url', '')
+    if not service_url:
+        raise ValueError('Did not find service URL. Try messaging the bot on Microsoft Teams')
 
     for member in members_added:
         member_id = member.get('id', '')
@@ -1088,13 +1090,22 @@ def member_added_handler(request_body: dict, service_url: str, channel_data: dic
             integration_context['tenant_id'] = tenant_id
             integration_context['bot_name'] = recipient_name
             break
-    team_members: list = get_team_members(team_id, service_url)
-    teams.append({
-        'team_aad_id': team_aad_id,
-        'team_id': team_id,
-        'team_name': team_name,
-        'team_members': team_members
-    })
+    team_members: list = get_team_members(service_url, team_id)
+
+    found_team: bool = False
+    for team in teams:
+        if team.get('team_aad_id', '') == team_aad_id:
+            team['team_members'] = team_members
+            found_team = True
+            break
+    if not found_team:
+        # Didn't found an existing team, adding new team object
+        teams.append({
+            'team_aad_id': team_aad_id,
+            'team_id': team_id,
+            'team_name': team_name,
+            'team_members': team_members
+        })
     integration_context['teams'] = json.dumps(teams)
     demisto.setIntegrationContext(integration_context)
 
@@ -1151,8 +1162,8 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
                     attachment = process_tasks_list(data_by_line)
                 else:
                     attachment = process_incidents_list(data_by_line)
-            else:  # Unknown direct message
-                attachment = process_unknown_message(data)
+            else:  # Mirror investigation command / unknown direct message
+                attachment = process_mirror_or_unknown_message(data)
         except Exception as e:
             data = str(e)
     if return_card:
@@ -1166,7 +1177,12 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
             'type': 'message',
             'text': formatted_message
         }
-    send_message_request(conversation_id, conversation, integration_context)
+
+    service_url: str = integration_context.get('service_url', '')
+    if not service_url:
+        raise ValueError('Did not find service URL. Try messaging the bot on Microsoft Teams')
+
+    send_message_request(service_url, conversation_id, conversation)
 
 
 def entitlement_handler(integration_context: dict, request_body: dict, value: dict, conversation_id: str):
@@ -1196,7 +1212,7 @@ def entitlement_handler(integration_context: dict, request_body: dict, value: di
     service_url: str = integration_context.get('service_url', '')
     if not service_url:
         raise ValueError('Did not find service URL. Try messaging the bot on Microsoft Teams')
-    update_message(service_url, conversation_id, activity_id, 'Your response was submitted successfully')
+    update_message(service_url, conversation_id, activity_id, 'Your response was submitted successfully.')
 
 
 def message_handler(integration_context: dict, request_body: dict, channel_data: dict, message: str):
@@ -1271,7 +1287,7 @@ def messages() -> Response:
 
         if event_type == 'teamMemberAdded':
             demisto.info('New Microsoft Teams team member was added')
-            member_added_handler(request_body, service_url, channel_data)
+            member_added_handler(integration_context, request_body, channel_data)
         elif value:
             # In TeamsAsk process
             demisto.info('Got response from user in MicrosoftTeamsAsk process')
@@ -1317,7 +1333,7 @@ def test_module():
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
 
-    commands = {
+    commands: dict = {
         'test-module': test_module,
         'long-running-execution': long_running_loop,
         'send-notification': send_message,

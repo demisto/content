@@ -130,6 +130,54 @@ def test_message_handler(mocker):
     }
 
 
+def test_member_added_handler(mocker, requests_mock):
+    from MicrosoftTeams import member_added_handler
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
+    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'params', return_value={'bot_id': bot_id})
+    requests_mock.get(
+        f'{service_url}/v3/conversations/{team_id}/members',
+        json=team_members
+    )
+    request_body: dict = {
+        'recipient': {
+            'id': f'28:{bot_id}',
+            'name': 'DemistoBot'
+        },
+        'membersAdded': [{
+            'id': f'28:{bot_id}'
+        }]
+    }
+    channel_data: dict = {
+        'team': {
+            'id': team_id,
+            'name': team_name,
+            'aadGroupId': team_aad_id
+        },
+        'eventType': 'teamMemberAdded',
+        'tenant': {
+            'id': tenant_id
+        }
+    }
+    member_added_handler(integration_context, request_body, channel_data)
+    expected_integration_context: dict = {
+        'bot_name': 'DemistoBot',
+        'teams': json.dumps([{
+            'mirrored_channels': mirrored_channels,
+            'team_id': team_id,
+            'team_aad_id': team_aad_id,
+            'team_members': team_members,
+            'team_name': team_name
+        }]),
+        'tenant_id': tenant_id,
+        'service_url': service_url
+    }
+    assert demisto.setIntegrationContext.call_count == 2
+    set_integration_context = demisto.setIntegrationContext.call_args[0]
+    assert len(set_integration_context) == 1
+    assert set_integration_context[0] == expected_integration_context
+
+
 def test_mirror_investigation(mocker, requests_mock):
     from MicrosoftTeams import mirror_investigation
 
@@ -902,8 +950,8 @@ def test_process_incidents_list():
     assert process_incidents_list(data_by_line) == expected_adaptive_card
 
 
-def test_process_unknown_message():
-    from MicrosoftTeams import process_unknown_message
+def test_process_mirror_or_unknown_message():
+    from MicrosoftTeams import process_mirror_or_unknown_message
     message: str = 'I can understand the following commands:\nlist incidents [page x]\nlist my incidents [page x]\n' \
                    'list my tasks\nlist closed incidents\nnew incident [details]\nmirror incident-id'
     expected_adaptive_card: dict = {
@@ -920,7 +968,7 @@ def test_process_unknown_message():
             }]
         }
     }
-    assert process_unknown_message(message) == expected_adaptive_card
+    assert process_mirror_or_unknown_message(message) == expected_adaptive_card
 
 
 def test_create_channel(requests_mock):
@@ -942,7 +990,7 @@ def test_get_team_members(requests_mock):
         f'{service_url}/v3/conversations/{team_aad_id}/members',
         json=team_members
     )
-    assert get_team_members(team_aad_id, service_url) == team_members
+    assert get_team_members(service_url, team_aad_id) == team_members
 
 
 def test_update_message(requests_mock):
@@ -1002,54 +1050,6 @@ def test_update_message(requests_mock):
 #             'owner': 'dwashinton@email.com'
 #         }
 #     )
-
-
-def test_member_added_handler(mocker, requests_mock):
-    from MicrosoftTeams import member_added_handler
-    mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
-    mocker.patch.object(demisto, 'setIntegrationContext')
-    mocker.patch.object(demisto, 'params', return_value={'bot_id': bot_id})
-    requests_mock.get(
-        f'{service_url}/v3/conversations/{team_id}/members',
-        json=team_members
-    )
-    request_body: dict = {
-        'recipient': {
-            'id': f'28:{bot_id}',
-            'name': 'DemistoBot'
-        },
-        'membersAdded': [{
-            'id': f'28:{bot_id}'
-        }]
-    }
-    channel_data: dict = {
-        'team': {
-            'id': team_id,
-            'name': team_name,
-            'aadGroupId': team_aad_id
-        },
-        'eventType': 'teamMemberAdded',
-        'tenant': {
-            'id': tenant_id
-        }
-    }
-    member_added_handler(request_body, service_url, channel_data)
-    expected_integration_context: dict = {
-        'bot_name': 'DemistoBot',
-        'teams': json.dumps([{
-            'team_aad_id': team_aad_id,
-            'team_id': team_id,
-            'team_name': team_name,
-            'team_members': team_members
-        }]),
-        'tenant_id': tenant_id
-    }
-    assert demisto.setIntegrationContext.call_count == 2
-    set_integration_context = demisto.setIntegrationContext.call_args[0]
-    assert len(set_integration_context) == 1
-    set_integration_context[0].pop('bot_access_token')
-    set_integration_context[0].pop('bot_valid_until')
-    assert set_integration_context[0] == expected_integration_context
 
 
 def test_direct_message_handler(mocker, requests_mock):
