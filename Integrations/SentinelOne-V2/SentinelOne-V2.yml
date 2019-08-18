@@ -319,7 +319,7 @@ script:
       description: The content hash.
       type: String
     - contextPath: SentinelOne.Hash.Classification
-      description: 'The hash classification '
+      description: The hash classification.
       type: String
     - contextPath: SentinelOne.Hash.Classification Source
       description: The hash classification source.
@@ -635,7 +635,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Full-text search for fields: name, account_name'
+      description: 'Full-text search for fields: name, account_name.'
       isArray: false
       name: query
       required: false
@@ -1032,7 +1032,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Groupd ID by which to filter, for example: "225494730938493804".'
+      description: 'Group ID by which to filter, for example: "225494730938493804".'
       isArray: false
       name: group_id
       required: false
@@ -1186,7 +1186,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A CSV list of agent IDs to connect to the network. Run the list-agents command to get a list of agent IDs.
+      description: A CSV list of agent IDs to connect to the network. Run the list-agents
+        command to get a list of agent IDs.
       isArray: false
       name: agent_id
       required: true
@@ -1204,7 +1205,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A CSV list of agent IDs to disconnect from the network. Run the list-agents command to get a list of agent IDs.
+      description: A CSV list of agent IDs to disconnect from the network. Run the
+        list-agents command to get a list of agent IDs.
       isArray: false
       name: agent_id
       required: true
@@ -1259,6 +1261,231 @@ script:
     description: Broadcasts a message to all agents that match the input filters.
     execution: false
     name: sentinelone-broadcast-message
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: 'Maximum number of items to return (1-100). Default is "50".'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: 'QueryId obtained when creating a query in the sentinelone-create-query command.
+        Example: "q1xx2xx3".'
+      isArray: false
+      name: query_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns all Deep Visibility events that match the query.
+    execution: false
+    name: sentinelone-get-events
+    outputs:
+    - contextPath: SentinelOne.Event.ProcessUID
+      description: Process unique identifier.
+      type: String
+    - contextPath: SentinelOne.Event.SHA256
+      description: SHA256 hash of the file.
+      type: String
+    - contextPath: SentinelOne.Event.AgentOS
+      description: OS type. Can be "windows", "linux", "macos", or "windows_legac".
+      type: String
+    - contextPath: SentinelOne.Event.ProcessID
+      description: The process ID.
+      type: Number
+    - contextPath: SentinelOne.Event.User
+      description: User assigned to the event.
+      type: String
+    - contextPath: SentinelOne.Event.Time
+      description: Process start time.
+      type: Date
+    - contextPath: SentinelOne.Event.Endpoint
+      description: The agent name.
+      type: String
+    - contextPath: SentinelOne.Event.SiteName
+      description: Site name.
+      type: String
+    - contextPath: SentinelOne.Event.EventType
+      description: Event type. Can be "events", "file", "ip", "url", "dns", "process", "registry",
+        "scheduled_task", or "logins".
+      type: String
+    - contextPath: SentinelOne.Event.ProcessName
+      description: The name of the process.
+      type: String
+    - contextPath: SentinelOne.Event.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: Event.ID
+      description: Event process ID.
+      type: String
+    - contextPath: Event.Name
+      description: Event name.
+      type: String
+    - contextPath: Event.Type
+      description: Event type.
+      type: String
+  - arguments:
+    - default: false
+      description: The query string for which to return events.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: Query start date, for example, "2019-08-03T04:49:26.257525Z".
+      isArray: false
+      name: from_date
+      required: true
+      secret: false
+    - default: false
+      description: Query end date, for example, "2019-08-03T04:49:26.257525Z".
+      isArray: false
+      name: to_date
+      required: true
+      secret: false
+    deprecated: false
+    description: Runs a Deep Visibility Query and returns the queryId. You can use the queryId for
+      all other commands, such as the sentinelone-get-events command.
+    execution: false
+    name: sentinelone-create-query
+    outputs:
+    - contextPath: SentinelOne.Query.FromDate
+      description: Query start date.
+      type: Date
+    - contextPath: SentinelOne.Query.Query
+      description: The search query string.
+      type: String
+    - contextPath: SentinelOne.Query.QueryID
+      description: The query ID.
+      type: String
+    - contextPath: SentinelOne.Query.ToDate
+      description: Query end date.
+      type: Date
+  - arguments:
+    - default: false
+      description: 'The queryId that is returned when creating a query under Create Query. Example:
+        "q1xx2xx3". Get the query_id from the "get-query-id" command.'
+      isArray: false
+      name: query_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: 'Maximum number of items to return (1-100). Default is "50".'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of Deep Visibility events from query by event type - process.
+    execution: false
+    name: sentinelone-get-processes
+    outputs:
+    - contextPath: SentinelOne.Event.ParentProcessID
+      description: Parent process ID.
+      type: Number
+    - contextPath: SentinelOne.Event.ProcessUID
+      description: The process unique identifier.
+      type: String
+    - contextPath: SentinelOne.Event.SHA1
+      description: SHA1 hash of the process image.
+      type: String
+    - contextPath: SentinelOne.Event.SubsystemType
+      description: Process sub-system.
+      type: String
+    - contextPath: SentinelOne.Event.ParentProcessStartTime
+      description: The parent process start time.
+      type: Date
+    - contextPath: SentinelOne.Event.ProcessID
+      description: The process ID.
+      type: Number
+    - contextPath: SentinelOne.Event.ParentProcessUID
+      description: Parent process unique identifier.
+      type: String
+    - contextPath: SentinelOne.Event.User
+      description: User assigned to the event.
+      type: String
+    - contextPath: SentinelOne.Event.Time
+      description: Start time of the process.
+      type: Date
+    - contextPath: SentinelOne.Event.ParentProcessName
+      description: Parent process name.
+      type: String
+    - contextPath: SentinelOne.Event.SiteName
+      description: Site name.
+      type: String
+    - contextPath: SentinelOne.Event.EventType
+      description: The event type.
+      type: String
+    - contextPath: SentinelOne.Event.Endpoint
+      description: The agent name (endpoint).
+      type: String
+    - contextPath: SentinelOne.Event.IntegrityLevel
+      description: Process integrity level.
+      type: String
+    - contextPath: SentinelOne.Event.CMD
+      description: Process CMD.
+      type: String
+    - contextPath: SentinelOne.Event.ProcessName
+      description: Process name.
+      type: String
+    - contextPath: SentinelOne.Event.ProcessDisplayName
+      description: Process display name.
+      type: String
+  - arguments:
+    - default: false
+      description: "A free-text search term, will match applicable attributes (sub-string
+        match). Note: A device's physical addresses will only be matched if they start with
+        the search term  (not if they contain the search term)."
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: A CSV list of agents IDs to shutdown.
+      isArray: false
+      name: agent_id
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the network group.
+      isArray: false
+      name: group_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Sends a shutdown command to all agents that match the input filter.
+    execution: false
+    name: sentinelone-shutdown-agent
+    outputs:
+    - contextPath: SentinelOne.Agent.ID
+      description: The ID of the agent that was shutdown.
+      type: String
+  - arguments:
+    - default: false
+      description: "A free-text search term, will match applicable attributes (sub-string
+        match). Note: A device's physical addresses will only be matched if they start with
+        the search term  (not if they contain the search term)."
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: A CSV list of agents IDs to shutdown.
+      isArray: false
+      name: agent_id
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the network group.
+      isArray: false
+      name: group_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Sends an uninstall command to all agents that match the input filter.
+    execution: false
+    name: sentinelone-uninstall-agent
   dockerimage: demisto/python3:3.7.3.286
   isfetch: true
   runonce: false
