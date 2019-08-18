@@ -1,1 +1,1 @@
-Added new playbook to handle logs querying in PAN-OS.
+Added a playbook that handles querying logs in Palo Alto Networks PAN-OS.
