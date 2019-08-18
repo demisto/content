@@ -12,3 +12,5 @@ on your AWS environment.
 3. Configure the Necessary IAM Roles that the AWS Integration Can Assume.
 
 For detailed instructions, [see the AWS Integrations Configuration Guide](https://support.demisto.com/hc/en-us/articles/360005686854-AWS-Integrations-Configuration-Guide).
+
+Command descriptions, input descriptions, and output descriptions are taken from the Amazon ACM documentation. For more information, see the [Amazon ACM documention](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/acm.html).
