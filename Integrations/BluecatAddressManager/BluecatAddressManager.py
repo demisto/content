@@ -1,6 +1,5 @@
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
+
 ''' IMPORTS '''
 
 import requests
@@ -31,7 +30,7 @@ HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
 }
-TOKEN_LIFE_TIME_MINS = 5
+TOKEN_LIFE_TIME_MINUTES = 5
 USER_CONF = demisto.params().get('conf_name')
 USERNAME = demisto.params().get('credentials').get('identifier')
 PASSWORD = demisto.params().get('credentials').get('password')
@@ -76,6 +75,7 @@ def http_request(method, url_suffix, params=None, data=None, headers=HEADERS, sa
         return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
     # Handle error responses gracefully
     if res.status_code not in {200, 201, 202}:
+        result_msg = None
         try:
             result_msg = res.json()
         finally:
@@ -99,8 +99,8 @@ def get_token(new_token=False):
     now = datetime.now()
     ctx = demisto.getIntegrationContext()
     if ctx and not new_token:
-        passed_mins = get_passed_mins(now, datetime.fromtimestamp(ctx.get('time')))
-        if passed_mins >= TOKEN_LIFE_TIME_MINS:
+        passed_minutes = get_passed_minutes(now, datetime.fromtimestamp(ctx.get('time')))
+        if passed_minutes >= TOKEN_LIFE_TIME_MINUTES:
             # token expired
             auth_token = get_token_request()
             demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
@@ -137,12 +137,12 @@ def get_configuration():
     return confs[0].get('id')
 
 
-def get_passed_mins(start_time, end_time):
+def get_passed_minutes(start_time, end_time):
     """
-        Returns the time passed in mins
+        Returns the time passed in minutes
         :param start_time: Start time in datetime
         :param end_time: End time in datetime
-        :return: The passed mins in int
+        :return: The passed minutes in int
     """
     time_delta = start_time - end_time
     return time_delta.seconds / 60
@@ -197,20 +197,24 @@ def query_ip_command():
             ip_type = 'IPv4'
             base_ip_raw_res = query_ipv4(ip)
 
-        base_ip_parents = get_entity_parents(base_ip_raw_res.get('id'))
-        ip_object = {
-            'ID': base_ip_raw_res.get('id'),
-            'Name': base_ip_raw_res.get('name'),
-            'Parents': base_ip_parents,
-            'Type': ip_type
-        }
-        ip_object.update(properties_to_camelized_dict(base_ip_raw_res.get('properties')))
-        ec = {
-            'BlueCat.AddressManager.IP(obj.ID === val.ID)': ip_object,
-            'IP(val.Address === obj.Address)': {'Address': ip}
-        }
-        hr = create_human_readable_ip(ip_object, ip)
-        return_outputs(hr, ec, base_ip_raw_res)
+        # entity with id 0 is root, and CONF is root of parent
+        if base_ip_raw_res.get('id') in (None, 0, CONF):
+            return_outputs(f'IP: {ip} was not found.', {}, base_ip_raw_res)
+        else:
+            base_ip_parents = get_entity_parents(base_ip_raw_res.get('id'))
+            ip_object = {
+                'ID': base_ip_raw_res.get('id'),
+                'Name': base_ip_raw_res.get('name'),
+                'Parents': base_ip_parents,
+                'Type': ip_type
+            }
+            ip_object.update(properties_to_camelized_dict(base_ip_raw_res.get('properties')))
+            ec = {
+                'BlueCat.AddressManager.IP(obj.ID === val.ID)': ip_object,
+                'IP(val.Address === obj.Address)': {'Address': ip}
+            }
+            hr = create_human_readable_ip(ip_object, ip)
+            return_outputs(hr, ec, base_ip_raw_res)
 
     except ipaddress.AddressValueError:
         return_error(f'Invalid IP: {ip}')
@@ -224,9 +228,17 @@ def query_ipv4(ip):
     return http_request('GET', '/getIP4Address', params=params)
 
 
+def query_ipv6(ip):
+    params = {
+        'containerId': CONF,
+        'address': ip
+    }
+    return http_request('GET', '/getIP6Address', params=params)
+
+
 def get_entity_parents(base_id):
     base_ip_parents = []
-    entity_parent = get_entity_parent(id=base_id)
+    entity_parent = get_entity_parent(entity_id=base_id)
     # entity with id 0 is root, and CONF is root of parent
     while entity_parent.get('id') not in (None, 0, CONF):
         parent_obj = {
@@ -236,14 +248,14 @@ def get_entity_parents(base_id):
         }
         parent_obj.update(properties_to_camelized_dict(entity_parent.get('properties')))
         base_ip_parents.append(parent_obj)
-        entity_parent = get_entity_parent(id=entity_parent.get('id'))
+        entity_parent = get_entity_parent(entity_id=entity_parent.get('id'))
 
     return base_ip_parents
 
 
-def get_entity_parent(id):
+def get_entity_parent(entity_id):
     params = {
-        'entityId': id
+        'entityId': entity_id
     }
     return http_request('GET', '/getParent', params=params)
 
@@ -257,12 +269,50 @@ def create_human_readable_ip(ip_object, ip_value):
     return hr
 
 
-def query_ipv6(ip):
+def get_range_by_ip_command():
+    ip = demisto.getArg('ip')
+    try:
+        if isinstance(ipaddress.ip_address(ip), ipaddress.IPv6Address) or isinstance(ipaddress.ip_address(ip),
+                                                                                     ipaddress.IPv4Address):
+            range_raw_res = get_range_by_ip(ip)
+
+            if range_raw_res.get('id') in (None, 0, CONF):
+                return_outputs(f'IP range was not found for {ip}.', {}, range_raw_res)
+            else:
+                base_ip_parents = get_entity_parents(range_raw_res.get('id'))
+
+                range_object = {
+                    'ID': range_raw_res.get('id'),
+                    'Name': range_raw_res.get('name'),
+                    'Parents': base_ip_parents,
+                    'Type': range_raw_res.get('type')
+                }
+
+                range_object.update(properties_to_camelized_dict(range_raw_res.get('properties')))
+                ec = {'BlueCat.AddressManager.Range(obj.ID === val.ID)': range_object}
+                hr = create_human_readable_range(range_object, ip)
+                return_outputs(hr, ec, range_raw_res)
+
+    except ipaddress.AddressValueError:
+        return_error(f'Invalid IP: {ip}')
+
+
+def get_range_by_ip(ip):
     params = {
         'containerId': CONF,
+        'type': '',
         'address': ip
     }
-    return http_request('GET', '/getIP6Address', params=params)
+    return http_request('GET', '/getIPRangedByIP', params=params)
+
+
+def create_human_readable_range(range_object, ip_value):
+    range_object_cpy = dict(range_object)
+    reversed_parents = list(reversed(range_object_cpy['Parents']))
+    range_object_cpy.pop('Parents')
+    hr = tblToMd(f'{ip_value} Range Result:', range_object_cpy, headerTransform=pascalToSpace)
+    hr += tblToMd('Parents Details:', reversed_parents, headerTransform=pascalToSpace)
+    return hr
 
 
 def get_response_policies_command():
@@ -357,7 +407,6 @@ def search_response_policy_by_domain(domain):
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-
 try:
     CONF = get_configuration()
 except TokenException as e:
@@ -374,6 +423,8 @@ def main():
             test_module()
         elif command == 'bluecat-am-query-ip':
             query_ip_command()
+        elif command == 'bluecat-am-get-range-by-ip':
+            get_range_by_ip_command()
         elif command == 'bluecat-am-get-response-policies':
             get_response_policies_command()
         elif command == 'bluecat-am-search-response-policies-by-domain':
@@ -388,6 +439,5 @@ def main():
         return_error(str(e))
 
 
-# python2 uses __builtin__ python3 uses builtins
 if __name__ == "__builtin__" or __name__ == "builtins":
     main()

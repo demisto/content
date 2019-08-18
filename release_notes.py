@@ -4,13 +4,11 @@ import json
 import sys
 import yaml
 import os
-import re
 import requests
 import argparse
 
-from Tests.scripts.constants import PACKAGE_SUPPORTING_DIRECTORIES
-from Tests.test_utils import print_error, print_warning, \
-    run_command, server_version_compare, get_release_notes_file_path
+from Tests.test_utils import print_error, print_warning, get_last_release_version, filter_packagify_changes, \
+    run_command, server_version_compare, get_release_notes_file_path, get_latest_release_notes_text
 from Tests.scripts.validate_files import FilesValidator
 
 contentLibPath = "./"
@@ -32,6 +30,7 @@ LAYOUT_TYPE_TO_NAME = {
     "edit": "New/Edit",
     "close": "Close",
     "quickView": "Quick View",
+    "indicatorsDetails": "Indicator Details",
 }
 
 INTEGRATIONS_DIR = "Integrations"
@@ -49,11 +48,9 @@ RELEASE_NOTES_ORDER = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR
                        DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR,
                        CLASSIFIERS_DIR, REPUTATIONS_DIR]
 
-CONTENT_GITHUB_LINK = r'https://raw.githubusercontent.com/demisto/content'
-
 
 def add_dot(text):
-    text = text.strip()
+    text = text.rstrip()
     if text.endswith('.'):
         return text
     return text + '.'
@@ -97,18 +94,7 @@ class Content(object):
         """
         rn_path = get_release_notes_file_path(file_path)
 
-        if not os.path.isfile(rn_path):
-            # releaseNotes were not provided
-            return None
-
-        with open(rn_path) as f:
-            rn = f.read()
-
-        if not rn:
-            # empty releaseNotes is not supported
-            return None
-
-        return rn.strip()
+        return get_latest_release_notes_text(rn_path)
 
     @abc.abstractmethod
     def added_release_notes(self, file_path, data):
@@ -131,7 +117,7 @@ class Content(object):
         """
         rn = self.get_release_notes(file_path, data)
 
-        if rn == IGNORE_RN:
+        if rn and rn.strip() == IGNORE_RN:
             rn = ''
 
         return rn
@@ -549,8 +535,12 @@ def get_release_notes_draft(github_token, asset_id):
     # Disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
-    res = requests.get('https://api.github.com/repos/demisto/content/releases', verify=False,
-                       headers={'Authorization': 'token {}'.format(github_token)})
+    try:
+        res = requests.get('https://api.github.com/repos/demisto/content/releases', verify=False,
+                           headers={'Authorization': 'token {}'.format(github_token)})
+    except requests.exceptions.ConnectionError as e:
+        print_warning('unable to get release draft, reason:\n{}'.format(str(e)))
+        return ''
 
     if res.status_code != 200:
         print_warning('unable to get release draft ({}), reason:\n{}'.format(res.status_code, res.text))
@@ -594,53 +584,6 @@ def create_content_descriptor(version, asset_id, res, github_token):
         outfile.write(release_notes)
 
 
-def filter_packagify_changes(modified_files, added_files, removed_files, tag):
-    # map IDs to removed files
-    packagify_diff = {}  # type: dict
-    for file_path in removed_files:
-        if file_path.split("/")[0] in PACKAGE_SUPPORTING_DIRECTORIES:
-            github_path = os.path.join(CONTENT_GITHUB_LINK, tag, file_path).replace('\\', '/')
-            file_content = requests.get(github_path).content
-            details = yaml.safe_load(file_content)
-            if 404 not in details:
-                uniq_identifier = '_'.join([details['name'],
-                                           details.get('fromversion', '0.0.0'),
-                                           details.get('toversion', '99.99.99')])
-                packagify_diff[uniq_identifier] = file_path
-
-    updated_added_files = set()
-    for file_path in added_files:
-        if file_path.split("/")[0] in PACKAGE_SUPPORTING_DIRECTORIES:
-            with open(file_path) as f:
-                details = yaml.safe_load(f.read())
-
-            uniq_identifier = '_'.join([details['name'],
-                                        details.get('fromversion', '0.0.0'),
-                                        details.get('toversion', '99.99.99')])
-            if uniq_identifier in packagify_diff:
-                # if name appears as added and removed, this is packagify process - treat as modified.
-                removed_files.remove(packagify_diff[uniq_identifier])
-                modified_files.add(file_path)
-                continue
-
-        updated_added_files.add(file_path)
-
-    for file_path in modified_files:
-        if isinstance(file_path, tuple):
-            updated_added_files -= {file_path[1]}
-        else:
-            updated_added_files -= {file_path}
-
-    return modified_files, updated_added_files, removed_files
-
-
-def get_last_release_version():
-    tags = run_command('git tag').split('\n')
-    tags = [tag for tag in tags if re.match(r'\d+\.\d+\.\d+', tag) is not None]
-    tags.sort(cmp=server_version_compare, reverse=True)
-    return tags[0]
-
-
 def main():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('version', help='Release version')
@@ -658,7 +601,7 @@ def main():
     change_log = run_command('git diff --name-status {}'.format(args.git_sha1))
     modified_files, added_files, removed_files, _ = fv.get_modified_files(change_log)
     modified_files, added_files, removed_files = filter_packagify_changes(modified_files, added_files,
-                                                                          removed_files, tag)
+                                                                          removed_files, tag=tag)
     deleted_data = run_command('git diff --diff-filter=D {}'.format(args.git_sha1))
 
     for file_path in added_files:
@@ -678,7 +621,7 @@ def main():
         ans = value.generate_release_notes(args.server_version)
         if ans is None or value.is_missing_release_notes:
             missing_release_notes = True
-        elif len(ans) > 0:
+        if ans:
             res.append(ans)
 
     release_notes = "\n---\n".join(res)
