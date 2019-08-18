@@ -1,0 +1,65 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: dnstwist
+  version: -1
+description: Use the DNSTwist integration to detect typosquatting, phishing, and corporate espionage.
+configuration: []
+display: dnstwist
+name: dnstwist
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The domain name for which to check for variations.
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    - default: true
+      defaultValue: '30'
+      description: Maximum number results to return in the context. This helps manage browser performance. The Markdown entry will display all results.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'no'
+      description: Whether to perform a query for the Whois creation or last updated time (slow).
+      isArray: false
+      name: whois
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
+    deprecated: false
+    description: Checks for variations of a phishing domain name.
+    execution: false
+    name: dnstwist-domain-variations
+    outputs:
+    - contextPath: dnstwist.Domain.Domains.Name
+      description: Domain name variations.
+      type: Unknown
+      type: unknown
+    - contextPath: dnstwist.Domain.Domains.IP
+      description: IP addresses that resolved to domain name variations.
+      type: Unknown
+      type: string
+    - contextPath: dnstwist.Domain.Domains.DNS-MX
+      description: Mail exchange records that resolved to domain name variations.
+      type: string
+    - contextPath: dnstwist.Domain.Domains.DNS-NS
+      description: Server names that resolved to domain name variations.
+      type: string
+    - contextPath: dnstwist.Domain.Domains.WhoisUpdated
+      description: Whois updated for domain name variations.
+      type: string
+    - contextPath: dnstwist.Domain.Domains.WhoisCreated
+      description: Whois created for domain name variations.
+      type: string
+  dockerimage: demisto/dnstwist:1.0
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python

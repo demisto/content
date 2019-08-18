@@ -23,7 +23,7 @@
         "url"
       ],
       "modified": "2019-05-26T16:18:32.000Z",
-      "pattern": "[url:value = 'http://johnson.com']",
+      "pattern": "[url:value = 'http://demisto.com']",
       "score": "None",
       "source": "",
       "type": "indicator",
@@ -144,7 +144,7 @@
         "hostname"
       ],
       "modified": "2019-05-26T16:15:44.000Z",
-      "pattern": "[domain-name:value = 'ip-192-127-5-1']",
+      "pattern": "[domain-name:value = 'ip-8-8-8-8']",
       "score": "Not Specified",
       "source": "",
       "type": "indicator",
