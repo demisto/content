@@ -851,10 +851,10 @@ tasks:
       version: -1
       name: Create Event Group
       description: Create a ThreatConnect group from type Event
-      script: ThreatConnect1|||tc-create-event
+      script: '|||tc-create-event'
       type: regular
       iscommand: true
-      brand: ThreatConnect1
+      brand: ""
     nexttasks:
       '#none#':
       - "31"
