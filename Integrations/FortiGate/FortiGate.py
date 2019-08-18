@@ -485,6 +485,9 @@ def ban_ip(ip_addresses_array, time_to_expire=0):
 def ban_ip_command():
     ip_addresses_string = demisto.args()['ip_address']
     ip_addresses_array = argToList(ip_addresses_string)
+    for ip_address in ip_addresses_array:
+        if not is_ip_valid(ip_address, True):
+            return_error('Error: invalid IP address sent as argument.')
     time_to_expire = demisto.args().get('expiry')
     if time_to_expire:
         time_to_expire = convert_arg_to_int(time_to_expire, 'expiry')
@@ -514,6 +517,9 @@ def unban_ip(ip_addresses_array):
 def unban_ip_command():
     ip_addresses_string = demisto.args()['ip_address']
     ip_addresses_array = argToList(ip_addresses_string)
+    for ip_address in ip_addresses_array:
+        if not is_ip_valid(ip_address, True):
+            return_error('Error: invalid IP address sent as argument.')
     response = unban_ip(ip_addresses_array)
     demisto.results({
         'Type': entryTypes['note'],
@@ -643,7 +649,7 @@ def update_policy_command():
     add_or_remove = demisto.args().get('add_or_remove')
 
     if keep_original_data and keep_original_data.lower() == 'true' and not add_or_remove:
-        return_error("Error: add_or_remove must be specified if keep_original_data is true.")
+        return_error('Error: add_or_remove must be specified if keep_original_data is true.')
 
     update_policy_request(policy_id, policy_field, policy_field_value, keep_original_data, add_or_remove)
     policy = get_policy_request(policy_id)[0]
