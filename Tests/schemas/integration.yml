@@ -70,7 +70,7 @@ mapping:
       longRunning:
         type: bool
       longRunningPort:
-        type: str
+        type: bool
       commands:
         type: seq
         sequence:
