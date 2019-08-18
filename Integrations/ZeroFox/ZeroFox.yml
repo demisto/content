@@ -117,7 +117,7 @@ script:
       type: String
     - contextPath: ZeroFox.Alert.RuleGroupID
       description: ID of the rule group.
-      type: Unknown
+      type: Number
     - contextPath: ZeroFox.Alert.Asset.ID
       description: The Asset ID.
       type: Number
@@ -144,7 +144,7 @@ script:
     - contextPath: ZeroFox.Alert.DarkwebTerm
       description: Information for darkweb term of which alert was created. null if
         alert does not have one.
-      type: Unknown
+      type: String
     - contextPath: ZeroFox.Alert.Reviewed
       description: Alert reviewed or not.
       type: Boolean
@@ -173,7 +173,7 @@ script:
       type: Number
     - contextPath: ZeroFox.Alert.Tags
       description: A list of the alert's tags.
-      type: Unknown
+      type: String
     - contextPath: ZeroFox.Alert.EntityAccount
       description: the account that is associated with the entity
       type: String
@@ -197,10 +197,10 @@ script:
     outputs:
     - contextPath: ZeroFox.Alert.ID
       description: The ID of the alert.
-      type: Unknown
+      type: Number
     - contextPath: ZeroFox.Alert.Assignee
       description: The username of the user being assigned.
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: The ID of the alert. Can be retrived using the command zerofox-list-alerts.
@@ -215,10 +215,10 @@ script:
     outputs:
     - contextPath: ZeroFox.Alert.ID
       description: The ID of the alert.
-      type: Unknown
+      type: Number
     - contextPath: ZeroFox.Alert.Status
       description: The status of the alert.
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: The ID of the alert. Can be retrived using the command zerofox-list-alerts.
@@ -233,9 +233,9 @@ script:
     outputs:
     - contextPath: ZeroFox.Alert.ID
       description: The ID of the alert.
-      type: Unknown
+      type: Number
     - contextPath: ZeroFox.Alert.Status
-      description: The ID of the alert.
+      description: The status of the alert.
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -338,7 +338,7 @@ script:
       type: String
     - contextPath: ZeroFox.Alert.RuleGroupID
       description: ID of the rule group.
-      type: Unknown
+      type: Number
     - contextPath: ZeroFox.Alert.Asset.ID
       description: The Asset ID.
       type: Number
@@ -365,7 +365,7 @@ script:
     - contextPath: ZeroFox.Alert.DarkwebTerm
       description: Information for darkweb term of which alert was created. null if
         alert does not have one.
-      type: Unknown
+      type: String
     - contextPath: ZeroFox.Alert.Reviewed
       description: Alert reviewed or not.
       type: Boolean
@@ -394,7 +394,7 @@ script:
       type: Number
     - contextPath: ZeroFox.Alert.Tags
       description: A list of the alert's tags.
-      type: Unknown
+      type: String
     - contextPath: ZeroFox.Alert.EntityAccount
       description: the account that is associated with the entity
       type: String
@@ -591,8 +591,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Alert status. Possible values are closed, open, takedown_accepted,
-        takedown_denied, takedown_requested, and whitelisted.
+      description: Alert status.
       isArray: false
       name: status
       predefined:
@@ -697,7 +696,7 @@ script:
       type: String
     - contextPath: ZeroFox.Alert.RuleGroupID
       description: ID of the rule group.
-      type: Unknown
+      type: Number
     - contextPath: ZeroFox.Alert.Asset.ID
       description: The Asset ID.
       type: Number
@@ -724,7 +723,7 @@ script:
     - contextPath: ZeroFox.Alert.DarkwebTerm
       description: Information for darkweb term of which alert was created. null if
         alert does not have one.
-      type: Unknown
+      type: String
     - contextPath: ZeroFox.Alert.Reviewed
       description: Alert reviewed or not.
       type: Boolean
@@ -753,7 +752,7 @@ script:
       type: Number
     - contextPath: ZeroFox.Alert.Tags
       description: A list of the alert's tags.
-      type: Unknown
+      type: String
     - contextPath: ZeroFox.Alert.EntityAccount
       description: the account that is associated with the entity
       type: String
@@ -765,34 +764,31 @@ script:
       required: true
       secret: false
     - default: false
-      description: indicating type of string matching for comparing name to impersonators
+      description: Indicating type of string matching for comparing name to impersonators
       isArray: false
       name: strict_name_matching
       required: false
       secret: false
     - default: false
-      description: profile image for entity
-      isArray: false
-      name: image
-      required: false
-      secret: false
-    - default: false
       description: |-
-        List of string labels for tagging the entity.
+        List of string tags for tagging the entity.
         Seperated by a comma, for example:
         label1,label2,label3
       isArray: false
-      name: labels
+      name: tags
       required: false
       secret: false
     - default: false
-      description: The ID of the policy to assign to the new entity
+      description: The ID of the policy to assign to the new entity. Can be retrived
+        using the command zerofox-get-policy-types.
       isArray: false
-      name: policy
+      name: policy_id
+      predefined:
+      - ''
       required: false
       secret: false
     - default: false
-      description: organization name associated with entity
+      description: Organization name associated with entity
       isArray: false
       name: organization
       required: false
@@ -802,9 +798,24 @@ script:
     execution: false
     name: zerofox-create-entity
     outputs:
-    - contextPath: ZeroFox.Entity
-      description: Entity details
-      type: Unknown
+    - contextPath: ZeroFox.Entity.Name
+      description: The Name of the entity.
+      type: String
+    - contextPath: ZeroFox.Entity.ID
+      description: The ID of the entity.
+      type: Number
+    - contextPath: ZeroFox.StrictNameMatching
+      description: Indicating type of string matching for comparing name to impersonators
+      type: Boolean
+    - contextPath: ZeroFox.Entity.Tags
+      description: List of string tags for tagging the entity.
+      type: String
+    - contextPath: ZeroFox.Entity.Policy
+      description: The policy of the entity.
+      type: String
+    - contextPath: ZeroFox.Entity.Organization
+      description: Organization name associated with entity
+      type: String
   - arguments:
     - default: false
       description: The ID of the alert. Can be retrived using the command zerofox-list-alerts.
@@ -819,10 +830,10 @@ script:
     outputs:
     - contextPath: ZeroFox.Alert.ID
       description: The ID of the alert.
-      type: Unknown
+      type: Number
     - contextPath: ZeroFox.Alert.Status
       description: The status of the alert.
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: The ID of the alert. Can be retrived using the command zerofox-list-alerts.
@@ -837,7 +848,7 @@ script:
     outputs:
     - contextPath: ZeroFox.Alert.ID
       description: The ID of the alert.
-      type: Unknown
+      type: Number
     - contextPath: ZeroFox.Alert.Status
       description: The status of the alert.
       type: String
@@ -884,13 +895,14 @@ script:
       secret: false
     - default: false
       description: Filter by an entity policy id. Multiple policy parameters can be
-        provided.
+        provided. Can be retrived using the command zerofox-get-policy-types.
       isArray: false
-      name: policy
+      name: policy_id
       required: false
       secret: false
     - default: false
       description: Filter by an entity type id. Multiple type parameters can be provided.
+        Can be retrived using the command zerofox-get-entity-types.
       isArray: false
       name: type
       required: false
@@ -907,28 +919,49 @@ script:
       description: The name of the entity.
       type: String
     - contextPath: ZeroFox.Entity.EmailAddress
+      description: The email address associated with the entity.
       type: String
     - contextPath: ZeroFox.Entity.Organization
+      description: The organization associated with the entity.
       type: String
-    - contextPath: ZeroFox.Entity.Labels
+    - contextPath: ZeroFox.Entity.Tags
+      description: A list of tags of the entity
       type: String
     - contextPath: ZeroFox.Entity.StrictNameMatching
+      description: Indicating type of string matching for comparing name to impersonators
       type: Boolean
     - contextPath: ZeroFox.Entity.PolicyID
+      description: The policy ID of the entity.
       type: Number
     - contextPath: ZeroFox.Entity.Profile
-      type: Unknown
+      description: Link to profile resource, if applicable
+      type: String
     - contextPath: ZeroFox.Entity.EntityGroupID
+      description: The ID of the entity group.
       type: Number
     - contextPath: ZeroFox.Entity.EntityGroupName
+      description: The name of the entity group.
       type: String
     - contextPath: ZeroFox.Entity.TypeID
+      description: The ID of the type of the entity.
       type: Number
     - contextPath: ZeroFox.Entity.TypeName
+      description: The name of the type of the entity
       type: String
   - deprecated: false
+    description: Fetching incidents.
     execution: false
     name: zerofox-fetch-incidents
+  - deprecated: false
+    description: Shows in the war room a table of all entity type names & IDs
+    execution: false
+    name: zerofox-get-entity-types
+    outputs:
+    - type: Unknown
+  - deprecated: false
+    description: Shows in the war room a table of all policy type names & IDs
+    execution: false
+    name: zerofox-get-policy-types
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
   runonce: false
