@@ -1027,10 +1027,10 @@ tasks:
       version: -1
       name: Delete Group
       description: Delete a Group from ThreatConnect (Incident, Event, Campaign, Threat)
-      script: ThreatConnect1|||tc-delete-group
+      script: '|||tc-delete-group'
       type: regular
       iscommand: true
-      brand: ThreatConnect1
+      brand: ""
     scriptarguments:
       groupID:
         simple: ${TC.Event.ID}
