@@ -5,7 +5,7 @@
   "neverSetAsRequired": false,
   "threshold": 72,
   "defaultRows": null,
-  "id": "incident_osversion",
+  "id": "indicator_osversion",
   "validatedError": "",
   "group": 2,
   "script": "",
