@@ -2,7 +2,7 @@
   "typeId": "accountRep",
   "kind": "indicatorsDetails",
   "layout": {
-    "typeId": "account",
+    "typeId": "accountRep",
     "kind": "indicatorsDetails",
     "name": "",
     "tabs": [

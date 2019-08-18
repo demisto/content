@@ -2,7 +2,7 @@
   "typeId": "hostRep",
   "kind": "indicatorsDetails",
   "layout": {
-    "typeId": "host",
+    "typeId": "hostRep",
     "kind": "indicatorsDetails",
     "name": "",
     "tabs": [
