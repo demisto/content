@@ -22,6 +22,17 @@ FETCH_TIME: str = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT).strip()
 ''' HELPER FUNCTIONS '''
 
 
+def check_id_validity(id_string: str) -> bool:
+    """
+    :param id_string: String representation of the ID
+    :return: The Integer ID
+    """
+    try:
+        return int(id_string)
+    except ValueError:
+        raise Exception('ID Error: Please enter ID using only numbers.')
+
+
 # transforms severity number to string representation
 def severity_num_to_string(severity_num: int) -> str:
     """
@@ -314,7 +325,8 @@ def close_alert(alert_id: int) -> Dict:
 
 
 def close_alert_command():
-    alert_id: int = int(demisto.args().get('alert_id', ''))
+    alert_id: str = demisto.args().get('alert_id', '')
+    alert_id: int = check_id_validity(alert_id)
     close_alert(alert_id)
     contents: Dict = get_updated_contents(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Closed'}}
@@ -336,7 +348,8 @@ def open_alert(alert_id: int) -> Dict:
 
 
 def open_alert_command():
-    alert_id: int = int(demisto.args().get('alert_id', ''))
+    alert_id: str = demisto.args().get('alert_id', '')
+    alert_id: int = check_id_validity(alert_id)
     open_alert(alert_id)
     contents: Dict = get_updated_contents(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Open'}}
@@ -358,7 +371,8 @@ def alert_request_takedown(alert_id: int) -> Dict:
 
 
 def alert_request_takedown_command():
-    alert_id: int = int(demisto.args().get('alert_id', ''))
+    alert_id: str = demisto.args().get('alert_id', '')
+    alert_id: int = check_id_validity(alert_id)
     alert_request_takedown(alert_id)
     contents: Dict = get_updated_contents(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Takedown:Requested'}}
@@ -380,7 +394,8 @@ def alert_cancel_takedown(alert_id: int) -> Dict:
 
 
 def alert_cancel_takedown_command():
-    alert_id: int = int(demisto.args().get('alert_id', ''))
+    alert_id: str = demisto.args().get('alert_id', '')
+    alert_id: int = check_id_validity(alert_id)
     alert_cancel_takedown(alert_id)
     contents: Dict = get_updated_contents(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Open'}}
@@ -406,7 +421,8 @@ def alert_user_assignment(alert_id: int, username: str) -> Dict:
 
 
 def alert_user_assignment_command():
-    alert_id: int = int(demisto.args().get('alert_id', ''))
+    alert_id: str = demisto.args().get('alert_id', '')
+    alert_id: int = check_id_validity(alert_id)
     username: str = demisto.args().get('username', '')
     alert_user_assignment(alert_id, username)
     contents: Dict = get_updated_contents(alert_id)
@@ -440,13 +456,14 @@ def modify_alert_tags(alert_id: int, action: str, tags_list_string: str) -> Dict
 
 
 def modify_alert_tags_command():
-    alert_id: int = int(demisto.args().get('alert_id', ''))
+    alert_id: str = demisto.args().get('alert_id', '')
+    alert_id: int = check_id_validity(alert_id)
     action_string: str = demisto.args().get('action', '')
     action: str = 'added' if action_string == 'add' else 'removed'
     tags_list_string: str = demisto.args().get('tags', '')
     response_content: Dict = modify_alert_tags(alert_id, action, tags_list_string)
     if not response_content.get('changes'):
-        raise Exception(f'Alert with ID `{alert_id}` does not exist')
+        raise Exception(f'Alert with ID {alert_id} does not exist')
     contents: Dict = get_updated_contents(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents}
     return_outputs(
@@ -466,11 +483,12 @@ def get_alert(alert_id: int) -> Dict:
 
 
 def get_alert_command():
-    alert_id: int = int(demisto.args().get('alert_id', ''))
+    alert_id: str = demisto.args().get('alert_id', '')
+    alert_id: int = check_id_validity(alert_id)
     response_content: Dict = get_alert(alert_id)
     alert: Dict = response_content.get('alert', {})
     if not alert or not isinstance(alert, Dict):
-        raise Exception(f'Alert with ID `{alert_id}` does not exist')
+        raise Exception(f'Alert with ID {alert_id} does not exist')
     contents: Dict = get_alert_contents(alert)
     contents_war_room: Dict = get_alert_contents_war_room(contents)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents}
@@ -510,7 +528,8 @@ def create_entity_command():
     strict_name_matching: bool = bool(demisto.args().get('strict_name_matching', ''))
     tags: str = demisto.args().get('tags', '')
     tags: List = argToList(tags, ',')
-    policy_id: int = demisto.args().get('policy_id', '')
+    policy_id: str = demisto.args().get('policy_id', '')
+    policy_id: int = check_id_validity(policy_id)
     organization: str = demisto.args().get('organization', '')
     response_content: Dict = create_entity(name, strict_name_matching, tags, policy_id, organization)
     entity_id: int = response_content.get('id', '')
@@ -542,16 +561,12 @@ def get_entity_types() -> Dict:
 def get_entity_types_command():
     response_content: Dict = get_entity_types()
     entity_types: List = response_content.get('results', [])
-    contents_war_room = {}
-    if entity_types:
-        contents_war_room['Name'] = 'ID'
+    contents_war_room = []
     for entity_type in entity_types:
         type_name: str = entity_type.get('name', '')
         type_id: int = entity_type.get('id', '')
-        contents_war_room[type_name] = type_id
-    headers = []
-    for key in contents_war_room.keys():
-        headers.append(key)
+        contents_war_room.append({'Name': type_name, 'ID': type_id})
+    headers = ['Name', 'ID']
     return_outputs(
         readable_output=tableToMarkdown('ZeroFox Entity Types', contents_war_room, headers=headers, removeNull=True),
         outputs={},
@@ -571,16 +586,12 @@ def get_policy_types() -> Dict:
 def get_policy_types_command():
     response_content: Dict = get_policy_types()
     policy_types: List = response_content.get('policies', [])
-    contents_war_room = {}
-    if policy_types:
-        contents_war_room: Dict = {'Name': 'ID'}
+    contents_war_room = []
     for policy_type in policy_types:
         type_name: str = policy_type.get('name', '')
         type_id: int = policy_type.get('id', '')
-        contents_war_room[type_name] = type_id
-    headers = []
-    for key in contents_war_room.keys():
-        headers.append(key)
+        contents_war_room.append({'Name': type_name, 'ID': type_id})
+    headers = ['Name', 'ID']
     return_outputs(
         readable_output=tableToMarkdown('ZeroFox Policy Types', contents_war_room, headers=headers, removeNull=True),
         outputs={},
@@ -605,6 +616,9 @@ def list_alerts_command():
     if risk_rating_string:
         del params['risk_rating']
         params['severity'] = severity_string_to_num(risk_rating_string)
+    alert_id: str = params.get('alert_id')
+    if alert_id:
+        params['alert_id'] = check_id_validity(alert_id)
     response_content: Dict = list_alerts(params)
     if not response_content:
         return_outputs('No alerts found.', outputs={})
