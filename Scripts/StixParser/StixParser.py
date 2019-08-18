@@ -9,13 +9,14 @@ from stix.core import STIXPackage
 
 """ GLOBAL PARAMS """
 PATTERNS_DICT = {
-    "file:hashes": "File",
+    "file:": "File",
     "ipv6-addr": "IP",
     "ipv4-addr:": "IP",
     "url:": "URL",
     "domain-name:": "Domain",
     "email": "Email",
-    "registry-key:key": "Registry Path Reputation"
+    "registry-key:key": "Registry Path Reputation",
+    "user-account": "Username"
 }
 
 """ HELPER FUNCTIONS"""
@@ -246,7 +247,8 @@ def get_indicators(indicators):
         "Email": list(),
         "URL": list(),
         "Registry Path Reputation": list(),
-        "CVE CVSS Score": list()
+        "CVE CVSS Score": list(),
+        "Username": list()
     }  # type: dict
 
     # Will hold values for package {"KEY": <STIX OBJECT>}
