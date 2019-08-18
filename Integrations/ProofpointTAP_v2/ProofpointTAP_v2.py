@@ -20,6 +20,40 @@ DELIVERED_MESSAGES = "Delivered Messages"
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
 
+""" Helper functions """
+
+
+def get_now():
+    """ A wrapper function of datetime.now
+    helps handle tests
+
+    Returns:
+        datetime: time right now
+    """
+    return datetime.now()
+
+
+def get_fetch_times(last_fetch):
+    """ Get list of every hour since last_fetch
+    Args:
+        last_fetch (datetime or str): last_fetch time
+
+    Returns:
+        List[str]: list of str represents every hour since last_fetch
+    """
+    now = get_now()
+    times = list()
+    time_format = "%Y-%m-%dT%H:%M:%SZ"
+    if isinstance(last_fetch, str):
+        times.append(last_fetch)
+        last_fetch = datetime.strptime(last_fetch, time_format)
+    elif isinstance(last_fetch, datetime):
+        times.append(last_fetch.strftime(time_format))
+    while now - last_fetch > timedelta(hours=1):
+        last_fetch += timedelta(hours=1)
+        times.append(last_fetch.strftime(time_format))
+    return times
+
 
 class Client:
     def __init__(self, proofpoint_url, api_version, verify, service_principal, secret):
@@ -131,75 +165,77 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
         last_fetch, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
 
     incidents = []
-    raw_events = client.get_events(since_time=last_fetch, event_type_filter=event_type_filter,
-                                   threat_status=threat_status, threat_type=threat_type)
+    fetch_times = get_fetch_times(last_fetch)
+    for fetch_time in fetch_times:
+        raw_events = client.get_events(since_time=fetch_time, event_type_filter=event_type_filter,
+                                       threat_status=threat_status, threat_type=threat_type)
 
-    for raw_event in raw_events.get("messagesDelivered", []):
-        raw_event["type"] = "messages delivered"
-        event_guid = raw_events.get("GUID", "")
-        incident = {
-            "name": "Proofpoint - Message Delivered - {}".format(event_guid),
-            "rawJSON": json.dumps(raw_event)
-        }
+        for raw_event in raw_events.get("messagesDelivered", []):
+            raw_event["type"] = "messages delivered"
+            event_guid = raw_events.get("GUID", "")
+            incident = {
+                "name": "Proofpoint - Message Delivered - {}".format(event_guid),
+                "rawJSON": json.dumps(raw_event)
+            }
 
-        if raw_event["messageTime"] > last_fetch:
-            last_fetch = raw_event["messageTime"]
+            if raw_event["messageTime"] > last_fetch:
+                last_fetch = raw_event["messageTime"]
 
-        for threat in raw_event.get("threatsInfoMap", []):
-            if threat["threatTime"] > last_fetch:
-                last_fetch = threat["threatTime"]
+            for threat in raw_event.get("threatsInfoMap", []):
+                if threat["threatTime"] > last_fetch:
+                    last_fetch = threat["threatTime"]
 
-        incidents.append(incident)
+            incidents.append(incident)
 
-    for raw_event in raw_events.get("messagesBlocked", []):
+        for raw_event in raw_events.get("messagesBlocked", []):
 
-        raw_event["type"] = "messages blocked"
-        event_guid = raw_events.get("GUID", "")
-        incident = {
-            "name": "Proofpoint - Message Blocked - {}".format(event_guid),
-            "rawJSON": json.dumps(raw_event)
-        }
+            raw_event["type"] = "messages blocked"
+            event_guid = raw_events.get("GUID", "")
+            incident = {
+                "name": "Proofpoint - Message Blocked - {}".format(event_guid),
+                "rawJSON": json.dumps(raw_event)
+            }
 
-        if raw_event["messageTime"] > last_fetch:
-            last_fetch = raw_event["messageTime"]
+            if raw_event["messageTime"] > last_fetch:
+                last_fetch = raw_event["messageTime"]
 
-        for threat in raw_event.get("threatsInfoMap", []):
-            if threat["threatTime"] > last_fetch:
-                last_fetch = threat["threatTime"]
+            for threat in raw_event.get("threatsInfoMap", []):
+                if threat["threatTime"] > last_fetch:
+                    last_fetch = threat["threatTime"]
 
-        incidents.append(incident)
+            incidents.append(incident)
 
-    for raw_event in raw_events.get("clicksPermitted", []):
-        raw_event["type"] = "clicks permitted"
-        event_guid = raw_events.get("GUID", "")
-        incident = {
-            "name": "Proofpoint - Click Permitted - {}".format(event_guid),
-            "rawJSON": json.dumps(raw_event)
-        }
+        for raw_event in raw_events.get("clicksPermitted", []):
+            raw_event["type"] = "clicks permitted"
+            event_guid = raw_events.get("GUID", "")
+            incident = {
+                "name": "Proofpoint - Click Permitted - {}".format(event_guid),
+                "rawJSON": json.dumps(raw_event)
+            }
 
-        if raw_event["clickTime"] > last_fetch:
-            last_fetch = raw_event["clickTime"]
+            if raw_event["clickTime"] > last_fetch:
+                last_fetch = raw_event["clickTime"]
 
-        if raw_event["threatTime"] > last_fetch:
-            last_fetch = raw_event["threatTime"]
+            if raw_event["threatTime"] > last_fetch:
+                last_fetch = raw_event["threatTime"]
 
-        incidents.append(incident)
+            incidents.append(incident)
 
-    for raw_event in raw_events.get("clicksBlocked", []):
-        raw_event["type"] = "clicks blocked"
-        event_guid = raw_events.get("GUID", "")
-        incident = {
-            "name": "Proofpoint - Click Blocked - {}".format(event_guid),
-            "rawJSON": json.dumps(raw_event)
-        }
+        for raw_event in raw_events.get("clicksBlocked", []):
+            raw_event["type"] = "clicks blocked"
+            event_guid = raw_events.get("GUID", "")
+            incident = {
+                "name": "Proofpoint - Click Blocked - {}".format(event_guid),
+                "rawJSON": json.dumps(raw_event)
+            }
 
-        if raw_event["clickTime"] > last_fetch:
-            last_fetch = raw_event["clickTime"]
+            if raw_event["clickTime"] > fetch_time:
+                last_fetch = raw_event["clickTime"]
 
-        if raw_event["threatTime"] > last_fetch:
-            last_fetch = raw_event["threatTime"]
+            if raw_event["threatTime"] > fetch_time:
+                last_fetch = raw_event["threatTime"]
 
-        incidents.append(incident)
+            incidents.append(incident)
 
     last_fetch_datetime = datetime.strptime(last_fetch, DATE_FORMAT)
     last_fetch_datetime = last_fetch_datetime + timedelta(seconds=1)

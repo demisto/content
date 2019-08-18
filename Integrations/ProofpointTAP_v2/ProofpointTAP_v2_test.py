@@ -1,6 +1,9 @@
-from ProofpointTAP_v2 import fetch_incidents, Client, ALL_EVENTS, ISSUES_EVENTS, get_events_command
 import json
-from unittest.mock import patch
+
+from mock import patch
+
+from ProofpointTAP_v2 import fetch_incidents, Client, ALL_EVENTS, ISSUES_EVENTS, get_events_command
+from datetime import datetime
 
 MOCK_URL = "http://123-fake-api.com"
 MOCK_DELIVERED_MESSAGE = {
@@ -182,6 +185,10 @@ MOCK_ALL_EVENTS = {
 }
 
 
+def get_mocked_time():
+    return datetime.strptime("2010-01-01T00:00:00Z", "%Y-%m-%dT%H:%M:%SZ")
+
+
 def test_command(requests_mock):
     requests_mock.get(MOCK_URL + "/v2/siem/issues?format=json&sinceSeconds=100&threatType=url&threatType=attachment",
                       json=MOCK_ISSUES)
@@ -206,6 +213,7 @@ def test_command(requests_mock):
 
 
 @patch('ProofpointTAP_v2.parse_date_range')
+@patch("ProofpointTAP_v2.get_now", get_mocked_time)
 def test_first_fetch_incidents(mocked_parse_date_range, requests_mock):
     mock_date = "2010-01-01T00:00:00Z"
     mocked_parse_date_range.return_value = (mock_date, "never mind")
@@ -235,7 +243,8 @@ def test_first_fetch_incidents(mocked_parse_date_range, requests_mock):
     assert next_run == {"last_fetch": "2010-01-30T00:01:00.000Z"}
 
 
-def test_next_fetch(requests_mock):
+@patch("ProofpointTAP_v2.get_now", get_mocked_time)
+def test_next_fetch(requests_mock, ):
     mock_date = "2010-01-01T00:00:00Z"
     requests_mock.get(MOCK_URL + "/v2/siem/all?format=json&sinceTime=2010-01-01T00%3A00%3A00Z"
                                  "&threatStatus=active&threatStatus=cleared",
@@ -261,3 +270,13 @@ def test_next_fetch(requests_mock):
     assert len(incidents) == 4
     assert json.loads(incidents[0]['rawJSON'])["messageID"] == "1111@evil.zz"
     assert next_run == {"last_fetch": "2010-01-30T00:01:00.000Z"}
+
+
+def test_get_fetch_times():
+    from datetime import datetime, timedelta
+    from ProofpointTAP_v2 import get_fetch_times
+
+    now = datetime.now()
+    before_two_hours = now - timedelta(hours=2)
+    times = get_fetch_times(before_two_hours)
+    assert len(times) == 3
