@@ -11,7 +11,7 @@ configuration:
   name: bot_password
   required: true
   type: 4
-- display: Team
+- display: Default team
   name: team
   required: true
   type: 0
@@ -54,51 +54,51 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Send messages and notifications to your Microsoft Teams team members.
+description: Send messages and notifications to your team members.
 display: Microsoft Teams
 name: Microsoft Teams
 script:
   commands:
   - arguments:
     - default: false
-      description: Channel to send message to
+      description: Channel to which send messages.
       isArray: false
       name: channel
       required: false
       secret: false
     - default: false
-      description: Message to send
+      description: The message to send to the channel or team member.
       isArray: false
       name: message
       required: false
       secret: false
     - default: false
-      description: Team member to send message to
+      description: The team member to which to send the message.
       isArray: false
       name: team_member
       required: false
       secret: false
     - default: false
-      description: Team in which provided channel is in to send message to
+      description: Team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters.
       isArray: false
       name: team
       required: false
       secret: false
     - default: false
-      description: Microsoft Teams adaptive card to send
+      description: The Microsoft Teams adaptive card to send.
       isArray: false
       name: adaptive_card
       required: false
       secret: false
     deprecated: false
-    description: Send message to Teams
+    description: Sends a message to the specified teams.
     execution: false
     name: send-notification
   - arguments:
     - auto: PREDEFINED
       default: true
       defaultValue: all
-      description: The type of mirroring can be "all" to mirror everything, "chat"
+      description: The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chatting (not commands), or "none", which stops all mirroring.
         to mirror only chatting but not commands, or "none" to stop mirroring.
       isArray: false
       name: mirror_type
@@ -111,7 +111,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Should we auto-close the channel when the incident is closed.
+      description: Whether to auto-close the channel when the incident is closed in Demisto. If "true", the channel will be auto-closed. Default is "true".
       isArray: false
       name: autoclose
       predefined:
@@ -122,8 +122,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: both
-      description: The mirroring direction - Microsoft Teams to Demisto, Demisto to
-        Microsoft Teams or both
+      description: The mirroring direction. Can be "FromDemisto", "ToDemisto", or "Both".
       isArray: false
       name: direction
       predefined:
@@ -133,25 +132,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: Team to mirror investigation in. If not provided, the default team
-        set in integration parameters will be used
+      description: Team in which to mirror the Demisto investigation. If not specified, the default team
+        configured in the integration parameters will be used.
       isArray: false
       name: team
       required: false
       secret: false
     deprecated: false
-    description: Mirror Demisto investigation in Teams
+    description: Mirrors the Demisto investigation to the specified Microsoft Teams channel.
     execution: false
     name: mirror-investigation
   - arguments:
     - default: false
-      description: Channel name to close
+      description: Name of the channel to close.
       isArray: false
       name: channel
       required: false
       secret: false
     deprecated: false
-    description: Delete a Teams channel
+    description: Deletes the specified Microsoft Teams channel.
     execution: false
     name: close-channel
   dockerimage: demisto/teams:1.0.0.1405
