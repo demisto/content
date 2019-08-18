@@ -1301,12 +1301,12 @@ def is_mac_address(mac):
 
 def is_ipv6_valid(address):
     """
-    Checks if the given string represents a valid IPv6 address
+    Checks if the given string represents a valid IPv6 address.
 
     :type address: str
-    :param address: The string to check
+    :param address: The string to check.
 
-    :return: True if the given string represents a valid IPv6 address
+    :return: True if the given string represents a valid IPv6 address.
     :rtype: ``bool``
     """
     try:
