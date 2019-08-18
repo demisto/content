@@ -532,8 +532,8 @@ tasks:
     task:
       id: ecd1cbdd-5a5b-484b-89d0-0e21ab7afaf9
       version: -1
-      name: Pan-OS Commit Configuration
-      playbookName: Pan-OS Commit Configuration
+      name: PAN-OS Commit Configuration
+      playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
       brand: ""
