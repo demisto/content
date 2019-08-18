@@ -1,8 +1,8 @@
 ## [Unreleased]
-- Added 2 commands.
+- Added 5 commands.
   - ***sentinelone-get-events***
   - ***sentinelone-create-query***
   - ***sentinelone-get-processes***
   - ***sentinelone-shutdown-agent***
   - ***sentinelone-uninstall-agent***
-- Fixed agentIds filter in get-activities command.
+- Fixed the *agentIds* filter in the ***get-activities*** command.

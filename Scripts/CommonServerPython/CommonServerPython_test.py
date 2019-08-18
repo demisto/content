@@ -6,6 +6,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
 
 import copy
 import os
+import sys
 import pytest
 
 INFO = {'b': 1,
@@ -439,10 +440,10 @@ def test_get_error_need_raise_error_on_non_error_input():
 
 
 @pytest.mark.parametrize('data,data_expected', [
-                        ("this is a test", b"this is a test"),
-                        (u"עברית", u"עברית".encode('utf-8')),
-                        (b"binary data\x15\x00", b"binary data\x15\x00"),
-                        ])  # noqa: E124
+    ("this is a test", b"this is a test"),
+    (u"עברית", u"עברית".encode('utf-8')),
+    (b"binary data\x15\x00", b"binary data\x15\x00"),
+])  # noqa: E124
 def test_fileResult(mocker, request, data, data_expected):
     mocker.patch.object(demisto, 'uniqueFile', return_value="test_file_result")
     mocker.patch.object(demisto, 'investigation', return_value={'id': '1'})
@@ -480,5 +481,87 @@ def test_is_mac_address():
     mac_address_false = 'AA:BB:CC:00:11'
     mac_address_true = 'AA:BB:CC:00:11:22'
 
-    assert(is_mac_address(mac_address_false) is False)
-    assert(is_mac_address(mac_address_true))
+    assert (is_mac_address(mac_address_false) is False)
+    assert (is_mac_address(mac_address_true))
+
+
+def test_return_error_command(mocker):
+    from CommonServerPython import return_error
+    err_msg = "Testing unicode Ё"
+    outputs = {'output': 'error'}
+    expected_error = {
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'Contents': err_msg,
+        "EntryContext": outputs
+    }
+
+    # Test command that is not fetch-incidents
+    mocker.patch.object(demisto, 'command', return_value="test-command")
+    mocker.patch.object(sys, 'exit')
+    mocker.spy(demisto, 'results')
+    return_error(err_msg, '', outputs)
+    assert str(demisto.results.call_args) == "call({})".format(expected_error)
+
+
+def test_return_error_fetch_incidents(mocker):
+    from CommonServerPython import return_error
+    err_msg = "Testing unicode Ё"
+
+    # Test fetch-incidents
+    mocker.patch.object(demisto, 'command', return_value="fetch-incidents")
+    returned_error = False
+    try:
+        return_error(err_msg)
+    except Exception as e:
+        returned_error = True
+        assert str(e) == err_msg
+    assert returned_error
+
+
+def test_return_error_long_running_execution(mocker):
+    from CommonServerPython import return_error
+    err_msg = "Testing unicode Ё"
+
+    # Test fetch-incidents
+    mocker.patch.object(demisto, 'command', return_value="long-running-execution")
+    returned_error = False
+    try:
+        return_error(err_msg)
+    except Exception as e:
+        returned_error = True
+        assert str(e) == err_msg
+    assert returned_error
+
+
+def test_return_error_script(mocker, monkeypatch):
+    from CommonServerPython import return_error
+    mocker.patch.object(sys, 'exit')
+    mocker.spy(demisto, 'results')
+    monkeypatch.delattr(demisto, 'command')
+    err_msg = "Testing unicode Ё"
+    outputs = {'output': 'error'}
+    expected_error = {
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'Contents': err_msg,
+        "EntryContext": outputs
+    }
+
+    assert not hasattr(demisto, 'command')
+    return_error(err_msg, '', outputs)
+    assert str(demisto.results.call_args) == "call({})".format(expected_error)
+
+
+def test_exception_in_return_error(mocker):
+    from CommonServerPython import return_error, IntegrationLogger
+
+    expected = {'EntryContext': None, 'Type': 4, 'ContentsFormat': 'text', 'Contents': 'Message'}
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(IntegrationLogger, '__call__')
+    with pytest.raises(SystemExit, match='0'):
+        return_error("Message", error=ValueError("Error!"))
+    results = demisto.results.call_args[0][0]
+    assert expected == results
+    # IntegrationLogger = LOG (2 times if exception supplied)
+    assert IntegrationLogger.__call__.call_count == 2

@@ -1,7 +1,8 @@
 ## [Unreleased]
-Added 5 commands.
-  - ***sentinelone-get-events***
-  - ***sentinelone-create-query***
-  - ***sentinelone-get-processes***
-  - ***sentinelone-shutdown-agent***
-  - ***sentinelone-uninstall-agent***
+
+
+## [19.8.0] - 2019-08-06
+Added 3 commands.
+  - ***sentinelone-disconnect-agent***
+  - ***sentinelone-connect-agent***
+  - ***broadcast-message***
