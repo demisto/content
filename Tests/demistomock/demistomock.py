@@ -549,8 +549,5 @@ def handleEntitlementForUser(incidentID, guid, email, content, taskID=""):
     return {}
 
 def demistoVersion():
-    return {
-        'version': '0.0.0',
-        'buildNumber': '00000'
-    }
+    return {}
 

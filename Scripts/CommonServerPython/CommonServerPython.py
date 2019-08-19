@@ -1758,13 +1758,10 @@ def get_demisto_version():
     """
         Returns Demisto version and build number
 
-        :return: Demisto version object
+        :return: Demisto version object if Demisto class has attribute demistoVersion, else raises AttributeError
         :rtype: ``dict``
     """
     if hasattr(demisto, 'demistoVersion'):
         return demisto.demistoVersion()
     else:
-        return {
-            'version': '0.0.0',
-            'buildNumber': '00000'
-        }
+        raise AttributeError('demistoVersion attribute not found.')

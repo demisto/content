@@ -587,12 +587,6 @@ def test_exception_in_return_error(mocker):
 
 def test_get_demisto_version(mocker):
 
-    # verify null server version and build returned in case Demisto class has no attribute demistoVersion
-    assert get_demisto_version() == {
-        'version': '0.0.0',
-        'buildNumber': '00000'
-    }
-
     # verify expected server version and build returned in case Demisto class has attribute demistoVersion
     mocker.patch.object(
         demisto,
