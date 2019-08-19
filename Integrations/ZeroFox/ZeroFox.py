@@ -161,7 +161,7 @@ def get_alert_contents(alert: Dict) -> Dict:
 
 
 # returns the convention for the war room
-def get_alert_contents_war_room(contents: Dict) -> Dict:
+def get_alert_human_readable_outputs(contents: Dict) -> Dict:
     """
     :param contents: Contents is a dictionary
     :return: A dict representation of the war room contents displayed to the user
@@ -202,7 +202,7 @@ def get_entity_contents(entity: Dict) -> Dict:
 
 
 # returns the convention for the war room
-def get_entity_contents_war_room(contents: Dict) -> Dict:
+def get_entity_human_readable_outputs(contents: Dict) -> Dict:
     """
     :param contents: Contents is a dictionary
     :return: A dict representation of the war room contents displayed to the user
@@ -261,6 +261,7 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Dict =
     # A wrapper for requests lib to send our requests and handle requests and responses better
     headers: Dict = {}
     try:
+        err_msg: str
         if api_request:
             token: str = get_authorization_token()
             headers: Dict = {
@@ -289,11 +290,13 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Dict =
                 raise ValueError(err_msg)
         else:
             try:
+                if res.status_code not in {200, 201}:
+                    raise Exception('URL does not resolve')
                 return res.json()
             except ValueError:
                 return res.content
     except requests.exceptions.ConnectTimeout:
-        err_msg: str = 'Connection Timeout Error - potential reasons may be that the Server URL parameter' \
+        err_msg = 'Connection Timeout Error - potential reasons may be that the Server URL parameter' \
                        ' is incorrect or that the Server is not accessible from your host.'
         raise Exception(err_msg)
     except requests.exceptions.SSLError:
@@ -308,9 +311,7 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Dict =
         # Get originating Exception in Exception chain
         while '__context__' in dir(e) and e.__context__:
             e = cast(Any, e.__context__)
-        error_class: str = str(e.__class__)
-        err_type: str = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
-        err_msg: str = f'\nERRTYPE: {err_type}\nERRNO: [{e.errno}]\nMESSAGE: {e.strerror}\n' \
+        err_msg: str = f'\nMESSAGE: {e.strerror}\n' \
                        f'ADVICE: Check that the Server URL parameter is correct and that you' \
                        f' have access to the Server from your host.'
         raise Exception(err_msg)
@@ -488,10 +489,10 @@ def get_alert_command():
     if not alert or not isinstance(alert, Dict):
         raise Exception(f'Alert with ID {alert_id} does not exist')
     contents: Dict = get_alert_contents(alert)
-    contents_war_room: Dict = get_alert_contents_war_room(contents)
+    human_readable: Dict = get_alert_human_readable_outputs(contents)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents}
     return_outputs(
-        tableToMarkdown(f'ZeroFox Alert {alert_id}', contents_war_room, removeNull=True),
+        tableToMarkdown(f'ZeroFox Alert {alert_id}', human_readable, removeNull=True),
         context,
         response_content
     )
@@ -558,14 +559,14 @@ def get_entity_types() -> Dict:
 def get_entity_types_command():
     response_content: Dict = get_entity_types()
     entity_types: List = response_content.get('results', [])
-    contents_war_room = []
+    human_readable = []
     for entity_type in entity_types:
         type_name: str = entity_type.get('name', '')
         type_id: int = entity_type.get('id', '')
-        contents_war_room.append({'Name': type_name, 'ID': type_id})
+        human_readable.append({'Name': type_name, 'ID': type_id})
     headers = ['Name', 'ID']
     return_outputs(
-        readable_output=tableToMarkdown('ZeroFox Entity Types', contents_war_room, headers=headers, removeNull=True),
+        readable_output=tableToMarkdown('ZeroFox Entity Types', human_readable, headers=headers, removeNull=True),
         outputs={},
         raw_response=response_content
     )
@@ -583,14 +584,14 @@ def get_policy_types() -> Dict:
 def get_policy_types_command():
     response_content: Dict = get_policy_types()
     policy_types: List = response_content.get('policies', [])
-    contents_war_room = []
+    human_readable = []
     for policy_type in policy_types:
         type_name: str = policy_type.get('name', '')
         type_id: int = policy_type.get('id', '')
-        contents_war_room.append({'Name': type_name, 'ID': type_id})
+        human_readable.append({'Name': type_name, 'ID': type_id})
     headers = ['Name', 'ID']
     return_outputs(
-        readable_output=tableToMarkdown('ZeroFox Policy Types', contents_war_room, headers=headers, removeNull=True),
+        readable_output=tableToMarkdown('ZeroFox Policy Types', human_readable, headers=headers, removeNull=True),
         outputs={},
         raw_response=response_content
     )
@@ -627,16 +628,19 @@ def list_alerts_command():
         return_outputs('No alerts found.', outputs={})
     elif isinstance(response_content, Dict):
         alerts: List = response_content.get('alerts', [])
-        contents: List = [get_alert_contents(alert) for alert in alerts]
-        contents_war_room: List = [get_alert_contents_war_room(content) for content in contents]
-        context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents}
-        headers: List = ['ID', 'Protected Entity', 'Content Type', 'Alert Date', 'Status', 'Source', 'Rule', 'Policy',
-                         'Content Type', 'Risk Rating', 'Notes', 'Tags']
-        return_outputs(
-            tableToMarkdown('ZeroFox Alerts', contents_war_room, headers=headers, removeNull=True),
-            context,
-            response_content
-        )
+        if not alerts:
+            return_outputs('No alerts found.', outputs={})
+        else:
+            contents: List = [get_alert_contents(alert) for alert in alerts]
+            human_readable: List = [get_alert_human_readable_outputs(content) for content in contents]
+            context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents}
+            headers: List = ['ID', 'Protected Entity', 'Content Type', 'Alert Date', 'Status', 'Source', 'Rule',
+                             'Policy', 'Content Type', 'Risk Rating', 'Notes', 'Tags']
+            return_outputs(
+                tableToMarkdown('ZeroFox Alerts', human_readable, headers=headers, removeNull=True),
+                context,
+                response_content
+            )
     else:
         return_outputs('No alerts found.', outputs={})
 
@@ -661,25 +665,20 @@ def list_entities_command():
         return_outputs('No entities found.', outputs={})
     elif isinstance(response_content, Dict):
         entities: List = response_content.get('entities', [])
-        contents: List = [get_entity_contents(entity) for entity in entities]
-        contents_war_room: List = [get_entity_contents_war_room(content) for content in contents]
-        context: Dict = {'ZeroFox.Entity(val.ID && val.ID === obj.ID)': contents}
-        headers: List = ['Name', 'Type', 'Policy', 'Email', 'Tags', 'ID']
-        return_outputs(
-            tableToMarkdown('ZeroFox Entities', contents_war_room, headers=headers, removeNull=True),
-            context,
-            response_content
-        )
+        if not entities:
+            return_outputs('No alerts found.', outputs={})
+        else:
+            contents: List = [get_entity_contents(entity) for entity in entities]
+            human_readable: List = [get_entity_human_readable_outputs(content) for content in contents]
+            context: Dict = {'ZeroFox.Entity(val.ID && val.ID === obj.ID)': contents}
+            headers: List = ['Name', 'Type', 'Policy', 'Email', 'Tags', 'ID']
+            return_outputs(
+                tableToMarkdown('ZeroFox Entities', human_readable, headers=headers, removeNull=True),
+                context,
+                response_content
+            )
     else:
         return_outputs('No entities found.', outputs={})
-
-
-# TODO: REMEMBER TO DELETE
-def fetch_incidents_command():
-    return_outputs('fetch 1', outputs={})
-    fetch_incidents()
-    return_outputs('fetch 2', outputs={})
-    fetch_incidents()
 
 
 def fetch_incidents():
@@ -716,47 +715,32 @@ def test_module():
     """
     get_authorization_token()
     get_policy_types()
+    demisto.results('ok')
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
 def main():
-    LOG('Command being called is %s' % (demisto.command()))
+    commands = {
+        'test-module': test_module,
+        'zerofox-get-alert': get_alert_command,
+        'zerofox-alert-user-assignment': alert_user_assignment_command,
+        'zerofox-close-alert': close_alert_command,
+        'zerofox-open-alert': open_alert_command,
+        'zerofox-alert-request-takedown': alert_request_takedown_command,
+        'zerofox-alert-cancel-takedown': alert_cancel_takedown_command,
+        'zerofox-modify-alert-tags': modify_alert_tags_command,
+        'zerofox-create-entity': create_entity_command,
+        'zerofox-list-alerts': list_alerts_command,
+        'zerofox-list-entities': list_entities_command,
+        'zerofox-get-entity-types': get_entity_types_command,
+        'zerofox-get-policy-types': get_policy_types_command,
+        'fetch-incidents': fetch_incidents
+    }
     try:
         handle_proxy()
-        if demisto.command() == 'test-module':
-            test_module()
-            demisto.results('ok')
-        elif demisto.command() == 'zerofox-get-alert':
-            get_alert_command()
-        elif demisto.command() == 'zerofox-alert-user-assignment':
-            alert_user_assignment_command()
-        elif demisto.command() == 'zerofox-close-alert':
-            close_alert_command()
-        elif demisto.command() == 'zerofox-alert-request-takedown':
-            alert_request_takedown_command()
-        elif demisto.command() == 'zerofox-modify-alert-tags':
-            modify_alert_tags_command()
-        elif demisto.command() == 'zerofox-create-entity':
-            create_entity_command()
-        elif demisto.command() == 'zerofox-list-alerts':
-            list_alerts_command()
-        elif demisto.command() == 'zerofox-open-alert':
-            open_alert_command()
-        elif demisto.command() == 'zerofox-alert-cancel-takedown':
-            alert_cancel_takedown_command()
-        elif demisto.command() == 'zerofox-list-entities':
-            list_entities_command()
-        elif demisto.command() == 'zerofox-get-entity-types':
-            get_entity_types_command()
-        elif demisto.command() == 'zerofox-get-policy-types':
-            get_policy_types_command()
-        elif demisto.command() == 'fetch-incidents':
-            fetch_incidents()
-        # TODO: REMEMBER TO DELETE
-        elif demisto.command() == 'zerofox-fetch-incidents':
-            fetch_incidents_command()
+        commands[demisto.command()]()
 
     # Log exceptions
     except Exception as e:
