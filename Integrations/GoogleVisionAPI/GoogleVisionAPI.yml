@@ -31,7 +31,7 @@ script:
     deprecated: false
     description: Detects brand logos in the given image
     execution: false
-    name: vision-detect-logos
+    name: google-vision-detect-logos
   dockerimage: demisto/google-vision-api:1.0.0.1388
   isfetch: false
   runonce: false
