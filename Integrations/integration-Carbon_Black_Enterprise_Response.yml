@@ -427,7 +427,7 @@ script:
             processTranslatedData = mapObjFunction(dataMap)(result);
             context = processTranslatedData;
         }
-        humanReadable = tableToMarkdown(title, processTranslatedData, headers, undefined, dotToSpace);
+        let humanReadable = tableToMarkdown(title, processTranslatedData, headers, undefined, dotToSpace);
         entries.push({
             Type: entryTypes.note,
             Contents: result.process,
