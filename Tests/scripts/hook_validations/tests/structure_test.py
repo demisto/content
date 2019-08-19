@@ -102,13 +102,3 @@ def test_invalid_file_examination():
         "Didn't find a problem in the file although it is not valid"
 
     os.remove("Integrations/integration-test.yml")
-
-
-def test_invalid_subtype_file_examination():
-    copyfile("./Tests/setup/integration-test_invalid_subtype.yml", "Integrations/integration-test_invalid_subtype.yml")
-    validator = StructureValidator(file_path="Integrations/integration-test_invalid_subtype.yml")
-
-    assert validator.is_valid_subtype() is False, \
-        "Subtype is pyhotn1, which is not valid"
-
-    os.remove("Integrations/integration-test_invalid_subtype.yml")
