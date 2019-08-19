@@ -30,6 +30,8 @@ def http_request(source, value, command=None, section=None, params=None):
         }
         if params == {}:
             url = f'{BASE_URL}/api/v1/{source}/{value}'
+        elif not command:
+            url = f'{BASE_URL}/api/v1/{source}/{value}'
         else:
             url = f'{BASE_URL}/api/v1/{command}/{source}'
     else:
@@ -126,6 +128,36 @@ def create_passive_dns(passive_dns: list) -> list:
     return [create_passive_dns_by_ec(entry) for entry in passive_dns]
 
 
+def create_url_list(passive_dns: list) -> list:
+    """
+    Rearrange all key in the pulses by entry context definition
+    :param page_entry: list of pulses in a page
+    :return: list of page entry by entry context definition
+    """
+    def create_url_list_by_ec(entry: dict) -> dict:
+        by_ec = {
+            'Data': entry.get('url'),
+        }
+        return remove_none(by_ec)
+
+    return [create_url_list_by_ec(entry) for entry in passive_dns]
+
+
+def create_hash_list(hashes_list: list) -> list:
+    """
+    Rearrange all key in the pulses by entry context definition
+    :param hashes_list: list of hash entries in a page
+    :return: list of hashes list by entry context definition
+    """
+    def create_hashes_list_by_ec(entry: dict) -> dict:
+        by_ec = {
+            'Hash': entry.get('hash'),
+        }
+        return remove_none(by_ec)
+
+    return [create_hashes_list_by_ec(entry) for entry in hashes_list]
+
+
 def remove_none(obj):
     """
     Get objects and remove None or empty strings.
@@ -149,15 +181,16 @@ def test_module():
     """
     Performs basic get request to get item samples
     """
-    pass
+    ip(ip_test='8.8.8.8')
+    demisto.results('ok')
 
 
 # IP commmand
-def ip():
+def ip(ip_test=None):
     api_path = {
         'source': 'indicators',
         'command': 'IPv4',
-        'value': demisto.args().get('ip'),
+        'value': ip_test if ip_test else demisto.args().get('ip'),
         'section': 'general'
     }
 
@@ -243,7 +276,7 @@ def domain():
         'Domain': {
             'Name': raw.get('indicator'),
         },
-        'AlienVaultOtx': {
+        'AlienVaultOTX': {
             'Domain': {
                 'Alexa': raw.get('alexa'),
                 'Whois': raw.get('whois')
@@ -371,10 +404,12 @@ def alienvault_search_hostname():
                        value=api_path['value'],
                        section=api_path['section'])
     ec = {
-        'Hostname': raw.get('indicator'),
-        'AlienVaultOTX': {
-            'Alexa': raw.get('alexa'),
-            'Whois': raw.get('whois')
+        'Endpoint': {
+            'Hostname': raw.get('indicator'),
+            'AlienVaultOTX': {
+                'Alexa': raw.get('alexa'),
+                'Whois': raw.get('whois')
+            }
         },
         'DBotScore': {
             'Indicator': raw.get('indicator'),
@@ -394,13 +429,15 @@ def alienvault_search_hostname_command():
     human_readable = ''
 
     # Table 1
-    human_readable += tableToMarkdown(t=ec.get('AlienVaultOTX'),
-                                      name='Hostname')
-    # Table 2
-    keys_others = ['Hostname']
-    ec_others = {k: ec[k] for k in ec if k in keys_others}
-    human_readable += tableToMarkdown(t=ec_others,
-                                      name='General')
+    if ec.get('Endpoint'):
+        if ec['Endpoint'].get('AlienVaultOTX'):
+            human_readable += tableToMarkdown(t=ec['Endpoint'].get('AlienVaultOTX'),
+                                              name='Other services')
+        # Table 2
+        keys_others = ['Hostname']
+        ec_others = {k: ec['Endpoint'][k] for k in ec['Endpoint'] if k in keys_others}
+        human_readable += tableToMarkdown(t=ec_others,
+                                          name='General')
     # Table 3
     if ec.get('DBotScore'):
         human_readable += tableToMarkdown(t=ec.get('DBotScore'),
@@ -497,8 +534,7 @@ def alienvault_search_cve():
     ec = {
         'CVE': {
             'Id': raw.get('indicator'),
-            # TODO Define
-            'CVSS': '',
+            'CVSS': raw['cvss'].get('Score') if raw.get('cvss') else None,
             'Published': raw.get('date_created'),
             'Modified': raw.get('date_modified'),
             'Description': raw.get('description')
@@ -519,8 +555,6 @@ def alienvault_search_cve():
 def alienvault_search_cve_command():
     raw, ec = alienvault_search_cve()
 
-    # TODO change after define CVSS
-
     human_readable = ''
     # Table 1
     if ec.get('CVE'):
@@ -538,32 +572,96 @@ def alienvault_search_cve_command():
 
 # alienvault-get-related-urls-by-indicator command
 def alienvault_get_related_urls_by_indicator():
-    ec = {
-        'URL': {
-            'Data': ''
-        }
+    api_path = {
+        'source': 'indicators',
+        'command': demisto.args().get('indicator-type'),
+        'value': demisto.args().get('indicator'),
+        'section': 'url_list'
     }
-    return ec
 
+    # raw_data
+    raw = http_request(source=api_path['source'],
+                       command=api_path['command'],
+                       value=api_path['value'],
+                       section=api_path['section'])
 
-def alienvault_get_related_urls_by_indicator_command():
-    pass
-
-
-# alienvault-get-related-hashes-by-indicator command
-def alienvault_get_related_hashes_by_indicator():
     ec = {
         'AlienVaultOTX': {
-            'File': {
-                'Hash': ''
+            'URL': {
+                'Data': create_url_list(raw.get('url_list'))
             }
         }
     }
-    return ec
+    return raw, ec
+
+
+def alienvault_get_related_urls_by_indicator_command():
+    raw, ec = alienvault_get_related_urls_by_indicator()
+
+    human_readable = ''
+    # Add three tables at most by threshold 3, change value for more
+    counter = 1
+    thresh = 3
+    entries = ec['AlienVaultOTX'].get('URL').get('Data')
+    total_num_entries = len(entries)
+    for entry in entries:
+        human_readable += tableToMarkdown(t=entry,
+                                          name=f'Url list entry {counter}/{total_num_entries}')
+        counter += 1
+        if counter > thresh:
+            break
+
+    return_outputs(readable_output=human_readable,
+                   outputs=ec,
+                   raw_response=raw)
+
+
+# alienvault-get-related-hashes-by-indicator
+def alienvault_get_related_hashes_by_indicator():
+    api_path = {
+        'source': 'indicators',
+        'command': demisto.args().get('indicator-type'),
+        'value': demisto.args().get('indicator'),
+        'section': 'malware'
+    }
+
+    # raw_data
+    raw = http_request(source=api_path['source'],
+                       command=api_path['command'],
+                       value=api_path['value'],
+                       section=api_path['section'])
+
+    # Define entry context
+    ec = {
+        'AlienVaultOTX': {
+            'File': {
+                'Hash': create_hash_list(raw.get('data'))
+            }
+        }
+    }
+
+    return raw, ec
 
 
 def alienvault_get_related_hashes_by_indicator_command():
-    pass
+    raw, ec = alienvault_get_related_hashes_by_indicator()
+
+    human_readable = ''
+    # Add three tables at most by threshold 3, change value for more
+    counter = 1
+    thresh = 3
+    pulses = ec['AlienVaultOTX']['File']['Hash']
+    total_num_pulse = len(pulses)
+    for pulse in pulses:
+        human_readable += tableToMarkdown(t=pulse,
+                                          name=f'Hash number {counter}/{total_num_pulse}')
+        counter += 1
+        if counter > thresh:
+            break
+
+    return_outputs(readable_output=human_readable,
+                   outputs=ec,
+                   raw_response=raw)
 
 
 # alienvault-get-passive-dns-data-by-indicator command
@@ -593,10 +691,9 @@ def alienvault_get_passive_dns_data_by_indicator_command():
     raw, ec = alienvault_get_passive_dns_data_by_indicator()
 
     human_readable = ''
-    # Add three tables at most by threshhold 3, change value for more
+    # Add three tables at most by threshold 3, change value for more
     counter = 1
     thresh = 3
-
     entries = ec['AlienVaultOTX'].get('PassiveDNS')
     total_num_entries = len(entries)
     for entry in entries:
@@ -639,11 +736,10 @@ def alienvault_search_pulses_command():
     raw, ec = alienvault_search_pulses()
 
     human_readable = ''
-    # Add three tables at most by threshhold 3, change value for more
+    # Add three tables at most by threshold 3, change value for more
     counter = 1
     thresh = 3
     page_num = demisto.args().get('page')
-
     pulses = ec['AlienVaultOTX'].get('Pulses')
     total_num_pulse = len(pulses)
     for pulse in pulses:
@@ -806,5 +902,3 @@ def main():
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == '__builtin__' or __name__ == 'builtins':
     main()
-
-main()

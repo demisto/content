@@ -249,8 +249,8 @@ script:
       isArray: false
       name: indicator-type
       predefined:
-      - ipv4
-      - ipv6
+      - IPv4
+      - IPv6
       - domain
       - hostname
       - url
@@ -267,37 +267,36 @@ script:
     execution: false
     name: alienvault-get-related-urls-by-indicator
     outputs:
-    - contextPath: AlienValut.URL.Data
+    - contextPath: AlienVaultOTX.URL.Data
       description: the path of the url
-      type: String
+      type: Unknown
   - arguments:
+    - default: false
+      description: the indicator to search related hashes for
+      isArray: false
+      name: indicator
+      required: false
+      secret: false
     - auto: PREDEFINED
       default: false
       description: the type of the indicator
       isArray: false
       name: indicator-type
       predefined:
-      - ipv4
-      - ipv6
+      - IPv4
+      - IPv6
       - domain
       - hostname
-      required: true
-      secret: false
-    - default: false
-      description: the indicator to search related hashes for
-      isArray: false
-      name: indicator
-      required: true
+      required: false
       secret: false
     deprecated: false
-    description: Malware samples analyzed by AlienVault Labs which have been observed
-      on this indicator
+    description: Malwares analyzed by AlienVault Labs on this indicator
     execution: false
     name: alienvault-get-related-hashes-by-indicator
     outputs:
-    - contextPath: AlienValutOTX.File.Hash
+    - contextPath: AlienVaultOTX.File.Hash
       description: the path of the url
-      type: String
+      type: Unknown
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -323,19 +322,21 @@ script:
     execution: false
     name: alienvault-get-passive-dns-data-by-indicator
     outputs:
-    - contextPath: AlienValutOTX.PassiveDNS.Hostname
+    - contextPath: AlienVaultOTX.PassiveDNS.Hostname
       description: the domain value
       type: String
-    - contextPath: AlienValutOTX.PassiveDNS.Ip
-      description: the ip value
+    - contextPath: AlienVaultOTX.PassiveDNS.Ip
       type: String
-    - contextPath: AlienValutOTX.PassiveDNS.Type
+    - contextPath: AlienVaultOTX.PassiveDNS.Domain
+      description: the domain value
+      type: String
+    - contextPath: AlienVaultOTX.PassiveDNS.Type
       description: the asset type
       type: String
-    - contextPath: AlienValutOTX.PassiveDNS.FirstSeen
+    - contextPath: AlienVaultOTX.PassiveDNS.FirstSeen
       description: the first seen date
       type: Date
-    - contextPath: AlienValutOTX.PassiveDNS.LastSeen
+    - contextPath: AlienVaultOTX.PassiveDNS.LastSeen
       description: the last seen date
       type: Date
   - arguments:
