@@ -246,7 +246,6 @@ def main():
         handle_proxy()
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration test button.
             test_module()
         elif demisto.command() == 'vision-detect-logos':
             detect_logos_command()
