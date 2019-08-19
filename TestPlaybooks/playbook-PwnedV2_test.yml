@@ -143,7 +143,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Pwned
+              simple: Have I Been Pwned? V2
     view: |-
       {
         "position": {
@@ -203,7 +203,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Pwned
+              simple: Have I Been Pwned? V2
     view: |-
       {
         "position": {
