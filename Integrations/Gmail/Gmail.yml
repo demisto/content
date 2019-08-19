@@ -1,37 +1,28 @@
+category: Authentication
 commonfields:
   id: Gmail
   version: -1
-name: Gmail
-display: Gmail
-category: Authentication
-description: Gmail API and user management (This integration replaces the Gmail functionality
-  in the GoogleApps API and G Suite integration).
 configuration:
 - display: Email of user with admin capabilities
   name: adminEmail
-  defaultvalue: ""
-  type: 9
   required: true
+  type: 9
 - display: Immutable Google Apps Id
   name: gappsID
-  defaultvalue: ""
-  type: 0
   required: false
+  type: 0
 - display: Events query (e.g. "from:example@demisto.com")
   name: query
-  defaultvalue: ""
-  type: 0
   required: false
+  type: 0
 - display: Events user key (e.g. example@demisto.com)
   name: queryUserKey
-  defaultvalue: ""
-  type: 0
   required: false
+  type: 0
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Trust any certificate (unsecure)
   name: insecure
   required: false
@@ -42,62 +33,88 @@ configuration:
   type: 8
 - display: Incident type
   name: incidentType
-  defaultvalue: ""
-  type: 13
   required: false
+  type: 13
+description: Gmail API and user management (This integration replaces the Gmail functionality
+  in the GoogleApps API and G Suite integration).
+display: Gmail
+name: Gmail
 script:
-  script: ''
-  type: python
   commands:
-  - name: gmail-delete-user
-    arguments:
-    - name: user-id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: The user's email address. The special value me can be used to indicate
         the authenticated user.
+      isArray: false
+      name: user-id
+      required: true
+      secret: false
+    deprecated: false
     description: Delete a User
-  - name: gmail-get-tokens-for-user
-    arguments:
-    - name: user-id
-      required: true
-      default: true
+    execution: false
+    name: gmail-delete-user
+  - arguments:
+    - default: true
       description: The user's email address. The special value me can be used to indicate
         the authenticated user.
+      isArray: false
+      name: user-id
+      required: true
+      secret: false
+    deprecated: false
     description: Returns the set of tokens specified user has issued to 3rd party
       applications.
-  - name: gmail-get-user
-    arguments:
-    - name: user-id
-      required: true
-      default: true
+    execution: false
+    name: gmail-get-tokens-for-user
+  - arguments:
+    - default: true
       description: The user's email address. The special value me can be used to indicate
         the authenticated user.
-    - name: projection
-      auto: PREDEFINED
-      predefined:
-      - basic
-      - custom
-      - full
+      isArray: false
+      name: user-id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: basic
       description: 'What subset of fields to fetch for this user, Acceptable values
         are: "basic": Do not include any custom fields for the user. (default), "custom":
         Include custom fields from schemas requested in customFieldMask, "full": Include
         all fields associated with this user.'
-      defaultValue: basic
-    - name: view-type-public-domain
-      auto: PREDEFINED
+      isArray: false
+      name: projection
       predefined:
-      - admin_view
-      - domain_public
+      - basic
+      - custom
+      - full
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: admin_view
       description: Whether to fetch the administrator-only or domain-wide public view
         of the user, will use admin_view(Results include both administrator-only and
         domain-public fields for the user) by default, if true will use "domain_public"(Results
         only include fields for the user that are publicly visible to other users
         in the domain)
-      defaultValue: admin_view
-    - name: custom-field-mask
+      isArray: false
+      name: view-type-public-domain
+      predefined:
+      - admin_view
+      - domain_public
+      required: false
+      secret: false
+    - default: false
       description: A comma-separated list of schema names. All fields from these schemas
         are fetched. This should only be set when projection=custom.
+      isArray: false
+      name: custom-field-mask
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetch info on specific user
+    execution: false
+    name: gmail-get-user
     outputs:
     - contextPath: Account.Type
       description: Type of account like Google, facebook
@@ -120,14 +137,30 @@ script:
     - contextPath: Account.Email.Address
       description: Email assigned with current account
       type: string
-    description: Fetch info on specific user
-  - name: gmail-get-user-roles
-    arguments:
-    - name: user-id
-      required: true
-      default: true
+    - contextPath: Account.Groups
+      description: Group associated with current account
+      type: String
+    - contextPath: Account.Domain
+      description: Domain of the account
+      type: String
+    - contextPath: Account.Username
+      description: Username of user with current account
+      type: String
+    - contextPath: Account.OrganizationUnit
+      description: OrganizationUnit of the account
+      type: String
+  - arguments:
+    - default: true
       description: The user's email address. The special value me can be used to indicate
         the authenticated user.
+      isArray: false
+      name: user-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a list of all roleAssignments.
+    execution: false
+    name: gmail-get-user-roles
     outputs:
     - contextPath: GoogleApps.Role.RoleAssignmentId
       description: unique id of role assignment
@@ -147,34 +180,41 @@ script:
     - contextPath: GoogleApps.Role.AssignedTo
       description: User Id who was assigned to role
       type: string
-    description: Retrieves a list of all roleAssignments.
-  - name: gmail-get-attachments
-    arguments:
-    - name: message-id
-      required: true
+  - arguments:
+    - default: false
       description: The ID of the message to retrieve
-    - name: user-id
+      isArray: false
+      name: message-id
       required: true
+      secret: false
+    - default: false
       description: The user's email address. The special value me can be used to indicate
         the authenticated user.
+      isArray: false
+      name: user-id
+      required: true
+      secret: false
+    deprecated: false
     description: Gets the all attachments of an Gmail.
-  - name: gmail-get-mail
-    arguments:
-    - name: user-id
-      required: true
-      default: true
+    execution: false
+    name: gmail-get-attachments
+  - arguments:
+    - default: true
       description: The user's email address. The special value me can be used to indicate
         the authenticated user.
-    - name: message-id
+      isArray: false
+      name: user-id
       required: true
+      secret: false
+    - default: false
       description: The ID of the message to retrieve
-    - name: format
-      auto: PREDEFINED
-      predefined:
-      - full
-      - metadata
-      - minimal
-      - raw
+      isArray: false
+      name: message-id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: full
       description: 'The format to return the message in. Acceptable values are: "full":
         Returns the full email message data with body content parsed in the payload
         field; the raw field is not used. (default) / "metadata": Returns only email
@@ -182,7 +222,19 @@ script:
         ID and labels; does not return the email headers, body, or payload / "raw":
         Returns the full email message data with body content in the raw field as
         a base64url encoded string; the payload field is not used'
-      defaultValue: full
+      isArray: false
+      name: format
+      predefined:
+      - full
+      - metadata
+      - minimal
+      - raw
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the specified message.
+    execution: false
+    name: gmail-get-mail
     outputs:
     - contextPath: Gmail.ID
       description: Inner Id of mail in gmail
@@ -223,62 +275,155 @@ script:
     - contextPath: Gmail.Mailbox
       description: The email Mailbox
       type: string
-    description: Gets the specified message.
-  - name: gmail-search
-    arguments:
-    - name: user-id
-      required: true
-      default: true
+    - contextPath: Email.To
+      description: Recipient of the email
+      type: String
+    - contextPath: Email.From
+      description: Sender of the email
+      type: String
+    - contextPath: Email.CC
+      description: Email Addresses that are CC'd
+      type: String
+    - contextPath: Email.BCC
+      description: Email Addresses that are BCC'd
+      type: String
+    - contextPath: Email.Format
+      description: Format of the email
+      type: String
+    - contextPath: Email.Body/HTML
+      description: HTML version of the email
+      type: String
+    - contextPath: Email.Body/Text
+      description: Text version of the email
+      type: String
+    - contextPath: Email.Subject
+      description: Subject of the email
+      type: String
+    - contextPath: Email.Headers
+      description: Hedaers of the email
+      type: String
+    - contextPath: Email.Attachments.entryID
+      description: Attachments ids separated by ','
+      type: Unknown
+    - contextPath: Email.Date
+      description: When the email was recived
+      type: String
+  - arguments:
+    - default: true
       description: The user's email address. The special value me can be used to indicate
         the authenticated user.
-    - name: query
+      isArray: false
+      name: user-id
+      required: true
+      secret: false
+    - default: false
       description: 'Only return messages matching the specified query. Supports the
         same query format as the Gmail search box. For example, "from:someuser@example.com
         rfc822msgid: is:unread" , for syntax see: "https://support.google.com/mail/answer/7190?hl=en"'
-    - name: max-results
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
       description: Maximum number of results to return. Default is 100. Maximum is
         500. Acceptable values are 1 to 500, inclusive.
-      defaultValue: "100"
-    - name: fields
+      isArray: false
+      name: max-results
+      required: false
+      secret: false
+    - default: false
       description: Fields allows partial responses to be retrieved. See https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
         for more information. (comma separated list)
-    - name: labels-ids
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    - default: false
       description: Only return messages with labels that match all of the specified
         label IDs. (comma separated list)
-    - name: page-token
+      isArray: false
+      name: labels-ids
+      required: false
+      secret: false
+    - default: false
       description: Page token to retrieve a specific page of results in the list.
-    - name: include-spam-trash
-      auto: PREDEFINED
-      predefined:
-      - "False"
-      - "True"
+      isArray: false
+      name: page-token
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
       description: 'Include messages from SPAM and TRASH in the results. (Default:
         false)'
-      defaultValue: "False"
-    - name: from
+      isArray: false
+      name: include-spam-trash
+      predefined:
+      - 'False'
+      - 'True'
+      required: false
+      secret: false
+    - default: false
       description: 'Specify the sender. for example: "john"'
-    - name: to
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
       description: 'Specify the receiver. for example: "john"'
-    - name: subject
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
       description: 'Words in the subject line. for example: "alert"'
-    - name: filename
+      isArray: false
+      name: subject
+      required: false
+      secret: false
+    - default: false
       description: 'Attachments with a certain name or file type. for example: "pdf"
         or "report.pdf"'
-    - name: in
+      isArray: false
+      name: filename
+      required: false
+      secret: false
+    - default: false
       description: 'Messages in any folder, including Spam and Trash. for example:
         shopping'
-    - name: after
+      isArray: false
+      name: in
+      required: false
+      secret: false
+    - default: false
       description: 'Search for messages sent during a certain time period. for example:
         2018/05/06'
-    - name: before
+      isArray: false
+      name: after
+      required: false
+      secret: false
+    - default: false
       description: 'Search for messages sent during a certain time period. for example:
         2018/05/09'
-    - name: has-attachments
-      auto: PREDEFINED
-      predefined:
-      - "True"
-      - "False"
+      isArray: false
+      name: before
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Search for messages sent with attachments.
+      isArray: false
+      name: has-attachments
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for messages in the user's mailbox.
+    execution: false
+    name: gmail-search
     outputs:
     - contextPath: Gmail.ID
       description: Inner Id of mail in gmail
@@ -319,57 +464,148 @@ script:
     - contextPath: Gmail.Mailbox
       description: The email Mailbox
       type: string
-    description: Search for messages in the user's mailbox.
-  - name: gmail-search-all-mailboxes
-    arguments:
-    - name: query
+    - contextPath: Email.To
+      description: Recipient of the email
+      type: String
+    - contextPath: Email.From
+      description: Sender of the email
+      type: String
+    - contextPath: Email.CC
+      description: Email Addresses that are CC'd
+      type: String
+    - contextPath: Email.BCC
+      description: Email Addresses that are BCC'd
+      type: String
+    - contextPath: Email.Format
+      description: Format of the email
+      type: String
+    - contextPath: Email.Body/HTML
+      description: HTML version of the email
+      type: String
+    - contextPath: Email.Body/Text
+      description: Text version of the email
+      type: String
+    - contextPath: Email.Subject
+      description: Subject of the email
+      type: String
+    - contextPath: Email.Headers
+      description: Hedaers of the email
+      type: String
+    - contextPath: Email.Attachments.entryID
+      description: Attachments ids separated by ','
+      type: Unknown
+    - contextPath: Email.Date
+      description: When the email was recived
+      type: String
+  - arguments:
+    - default: false
       description: 'Only return messages matching the specified query. Supports the
         same query format as the Gmail search box. For example, "from:someuser@example.com
         rfc822msgid: is:unread" , for syntax see: "https://support.google.com/mail/answer/7190?hl=en"'
-    - name: max-results
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
       description: Maximum number of results to return. Default is 100. Maximum is
         500. Acceptable values are 1 to 500, inclusive.
-      defaultValue: "100"
-    - name: fields
+      isArray: false
+      name: max-results
+      required: false
+      secret: false
+    - default: false
       description: Fields allows partial responses to be retrieved. See https://developers.google.com/gdata/docs/2.0/basics#PartialResponse
         for more information. (comma separated list)
-    - name: labels-ids
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    - default: false
       description: Only return messages with labels that match all of the specified
         label IDs. (comma separated list)
-    - name: page-token
+      isArray: false
+      name: labels-ids
+      required: false
+      secret: false
+    - default: false
       description: Page token to retrieve a specific page of results in the list.
-    - name: include-spam-trash
-      auto: PREDEFINED
-      predefined:
-      - "False"
-      - "True"
+      isArray: false
+      name: page-token
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
       description: 'Include messages from SPAM and TRASH in the results. (Default:
         false)'
-      defaultValue: "False"
-    - name: from
+      isArray: false
+      name: include-spam-trash
+      predefined:
+      - 'False'
+      - 'True'
+      required: false
+      secret: false
+    - default: false
       description: 'Specify the sender. for example: "john"'
-    - name: to
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
       description: 'Specify the receiver. for example: "john"'
-    - name: subject
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
       description: 'Words in the subject line. for example: "alert"'
-    - name: filename
+      isArray: false
+      name: subject
+      required: false
+      secret: false
+    - default: false
       description: 'Attachments with a certain name or file type. for example: "pdf"
         or "report.pdf"'
-    - name: in
+      isArray: false
+      name: filename
+      required: false
+      secret: false
+    - default: false
       description: 'Messages in any folder, including Spam and Trash. for example:
         shopping'
-    - name: after
+      isArray: false
+      name: in
+      required: false
+      secret: false
+    - default: false
       description: 'Search for messages sent during a certain time period. for example:
         2018/05/06'
-    - name: before
+      isArray: false
+      name: after
+      required: false
+      secret: false
+    - default: false
       description: 'Search for messages sent during a certain time period. for example:
         2018/05/09'
-    - name: has-attachments
-      auto: PREDEFINED
-      predefined:
-      - "False"
-      - "True"
+      isArray: false
+      name: before
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: 'Search for messages sent with attachments. '
+      isArray: false
+      name: has-attachments
+      predefined:
+      - 'False'
+      - 'True'
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for messages in all mailboxes.
+    execution: false
+    name: gmail-search-all-mailboxes
     outputs:
     - contextPath: Gmail.ID
       description: Inner Id of mail in gmail
@@ -410,76 +646,155 @@ script:
     - contextPath: Gmail.Mailbox
       description: The email Mailbox
       type: string
-    description: Search for messages in all mailboxes.
-  - name: gmail-list-users
-    arguments:
-    - name: projection
-      auto: PREDEFINED
-      predefined:
-      - basic
-      - custom
-      - full
+    - contextPath: Email.To
+      description: Recipient of the email
+      type: String
+    - contextPath: Email.From
+      description: Sender of the email
+      type: String
+    - contextPath: Email.CC
+      description: Email Addresses that are CC'd
+      type: String
+    - contextPath: Email.BCC
+      description: Email Addresses that are BCC'd
+      type: String
+    - contextPath: Email.Format
+      description: Format of the email
+      type: String
+    - contextPath: Email.Body/HTML
+      description: HTML version of the email
+      type: String
+    - contextPath: Email.Body/Text
+      description: Text version of the email
+      type: String
+    - contextPath: Email.Subject
+      description: Subject of the email
+      type: String
+    - contextPath: Email.Headers
+      description: Hedaers of the email
+      type: String
+    - contextPath: Email.Attachments.entryID
+      description: Attachments ids separated by ','
+      type: Unknown
+    - contextPath: Email.Date
+      description: When the email was recived
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
       description: 'What subset of fields to fetch for this user, Acceptable values
         are: "basic": Do not include any custom fields for the user. (default), "custom":
         Include custom fields from schemas requested in customFieldMask, "full": Include
         all fields associated with this user.'
-    - name: domain
-      default: true
+      isArray: false
+      name: projection
+      predefined:
+      - basic
+      - custom
+      - full
+      required: false
+      secret: false
+    - default: true
       description: The domain name. Use this field to get fields from only one domain.
         To return all domains for a customer account, use the customer query parameter
         instead. Either the customer or the domain parameter must be provided.
-    - name: customer
+      isArray: false
+      name: domain
+      required: false
+      secret: false
+    - default: false
       description: The unique ID for the customers Google account, by default will
         use the value in the integration page. In case of a multi-domain account,
         to fetch all groups for a customer, fill this field instead of domain. As
         an account administrator, you can also use the my_customer alias to represent
         your accounts customerId. The customerId is also returned as part of the Users
         resource. Either the customer or the domain parameter must be provided.
-    - name: event
-      auto: PREDEFINED
+      isArray: false
+      name: customer
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Event sets the optional parameter "event": Event on which subscription
+        is intended (if subscribing), Possible values: add/delete/makeAdmin/undelete/update'
+      isArray: false
+      name: event
       predefined:
       - add
       - delete
       - makeAdmin
       - undelete
       - update
-      description: 'Event sets the optional parameter "event": Event on which subscription
-        is intended (if subscribing), Possible values: add/delete/makeAdmin/undelete/update'
-    - name: max-results
+      required: false
+      secret: false
+    - default: false
       description: Maximum number of results to return. Default is 100. Maximum is
         500. Acceptable values are 1 to 500, inclusive.
-    - name: custom-field-mask
+      isArray: false
+      name: max-results
+      required: false
+      secret: false
+    - default: false
       description: A comma-separated list of schema names. All fields from these schemas
         are fetched. This should only be set when projection=custom.
-    - name: query
+      isArray: false
+      name: custom-field-mask
+      required: false
+      secret: false
+    - default: false
       description: Query string search. Should be of the form "". Complete documentation
         is at https://developers.google.com/admin-sdk/directory/v1/guides/search-users
-    - name: show-deleted
-      auto: PREDEFINED
-      predefined:
-      - "False"
-      - "True"
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: If set to true, retrieves the list of deleted users. Default is
         false.
-    - name: sort-order
-      auto: PREDEFINED
+      isArray: false
+      name: show-deleted
+      predefined:
+      - 'False'
+      - 'True'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether to return results in ascending or descending order. possible
+        values : ASCENDING/DESCENDING'
+      isArray: false
+      name: sort-order
       predefined:
       - ASCENDING
       - DESCENDING
-      description: 'Whether to return results in ascending or descending order. possible
-        values : ASCENDING/DESCENDING'
-    - name: token
+      required: false
+      secret: false
+    - default: false
       description: Token to authorize and authenticate the action
-    - name: view-type-public-domain
-      auto: PREDEFINED
-      predefined:
-      - admin_view
-      - domain_public
+      isArray: false
+      name: token
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Whether to fetch the administrator-only or domain-wide public view
         of the user, will use admin_view(Results include both administrator-only and
         domain-public fields for the user) by default, if true will use "domain_public"(Results
         only include fields for the user that are publicly visible to other users
         in the domain)
+      isArray: false
+      name: view-type-public-domain
+      predefined:
+      - admin_view
+      - domain_public
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a paginated list of either deleted users or all users in
+      a domain
+    execution: false
+    name: gmail-list-users
     outputs:
     - contextPath: Account.Type
       description: Type of account like Google, facebook
@@ -499,35 +814,71 @@ script:
     - contextPath: Account.Group
       description: Group associated with current accout
       type: string
-    description: Retrieves a paginated list of either deleted users or all users in
-      a domain
-  - name: gmail-revoke-user-role
-    arguments:
-    - name: user-id
+    - contextPath: Account.Email.Adderss
+      description: Email assigned with current account
+      type: String
+    - contextPath: Account.Groups
+      description: Group associated with current accout
+      type: String
+    - contextPath: Account.Domain
+      description: Domain of the account
+      type: String
+    - contextPath: Account.Username
+      description: Username of user with current account
+      type: String
+    - contextPath: Account.OrganizationUnit
+      description: OrganizationUnit of the account
+      type: String
+  - arguments:
+    - default: false
       description: The user's email address. The special value me can be used to indicate
         the authenticated user.
-    - name: role-assignment-id
-      required: true
+      isArray: false
+      name: user-id
+      required: false
+      secret: false
+    - default: false
       description: Immutable ID of the role assignment.
-    description: Deletes a role assignment.
-  - name: gmail-create-user
-    arguments:
-    - name: email
+      isArray: false
+      name: role-assignment-id
       required: true
-      default: true
+      secret: false
+    deprecated: false
+    description: Deletes a role assignment.
+    execution: false
+    name: gmail-revoke-user-role
+  - arguments:
+    - default: true
       description: The user's primary email address. The primaryEmail must be unique
         and cannot be an alias of another user.
-    - name: first-name
+      isArray: false
+      name: email
       required: true
+      secret: false
+    - default: false
       description: The user's first name.
-    - name: family-name
+      isArray: false
+      name: first-name
       required: true
+      secret: false
+    - default: false
       description: The user's last name.
-    - name: password
+      isArray: false
+      name: family-name
       required: true
+      secret: false
+    - default: false
       description: Stores the password for the user account. A password can contain
         any combination of ASCII characters. A minimum of 8 characters is required.
         The maximum length is 100 characters.
+      isArray: false
+      name: password
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a user.
+    execution: false
+    name: gmail-create-user
     outputs:
     - contextPath: Account.Type
       description: Type of account like Google, facebook
@@ -547,41 +898,66 @@ script:
     - contextPath: Account.Group
       description: Group associated with current accout
       type: string
-    description: Creates a user.
-  - name: gmail-delete-mail
-    arguments:
-    - name: user-id
-      required: true
-      default: true
+    - contextPath: Account.Email.Address
+      description: Email assigned with current account
+      type: String
+    - contextPath: Account.Username
+      description: Username of user with current account
+      type: String
+    - contextPath: Account.Groups
+      description: Group associated with current accout
+      type: String
+    - contextPath: Account.Domain
+      description: Domain of the account
+      type: String
+    - contextPath: Account.OrganizationUnit
+      description: OrganizationUnit of the account
+      type: String
+  - arguments:
+    - default: true
       description: The user's email address. The special value me can be used to indicate
         the authenticated user.
-    - name: message-id
+      isArray: false
+      name: user-id
       required: true
+      secret: false
+    - default: false
       description: The ID of the message to delete
-    - name: permanent
-      auto: PREDEFINED
-      predefined:
-      - "False"
-      - "True"
-      description: Should move to trash (default) or delete permanently
-    description: Delete a mail in the user's mailbox.
-  - name: gmail-get-thread
-    arguments:
-    - name: user-id
+      isArray: false
+      name: message-id
       required: true
-      default: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Should move to trash (default) or delete permanently
+      isArray: false
+      name: permanent
+      predefined:
+      - 'False'
+      - 'True'
+      required: false
+      secret: false
+    deprecated: false
+    description: Delete a mail in the user's mailbox.
+    execution: false
+    name: gmail-delete-mail
+  - arguments:
+    - default: true
       description: The user's email address. The special value me can be used to indicate
         the authenticated user.
-    - name: thread-id
+      isArray: false
+      name: user-id
       required: true
+      secret: false
+    - default: false
       description: The ID of the thread to retrieve
-    - name: format
-      auto: PREDEFINED
-      predefined:
-      - full
-      - metadata
-      - minimal
-      - raw
+      isArray: false
+      name: thread-id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: full
       description: 'The format to return the message in. Acceptable values are: "full":
         Returns the full email message data with body content parsed in the payload
         field; the raw field is not used. (default) / "metadata": Returns only email
@@ -589,7 +965,19 @@ script:
         ID and labels; does not return the email headers, body, or payload / "raw":
         Returns the full email message data with body content in the raw field as
         a base64url encoded string; the payload field is not used'
-      defaultValue: full
+      isArray: false
+      name: format
+      predefined:
+      - full
+      - metadata
+      - minimal
+      - raw
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets all messages of a thread
+    execution: false
+    name: gmail-get-thread
     outputs:
     - contextPath: Gmail.ID
       description: Inner Id of mail in gmail
@@ -630,23 +1018,69 @@ script:
     - contextPath: Gmail.Mailbox
       description: The email Mailbox
       type: string
-    description: Gets all messages of a thread
-  - name: gmail-move-mail
-    arguments:
-    - name: user-id
-      required: true
-      default: true
+    - contextPath: Email.To
+      description: Recipient of the email
+      type: String
+    - contextPath: Email.From
+      description: Sender of the email
+      type: String
+    - contextPath: Email.CC
+      description: Email Addresses that are CC'd
+      type: String
+    - contextPath: Email.BCC
+      description: Email Addresses that are BCC'd
+      type: String
+    - contextPath: Email.Format
+      description: Format of the email
+      type: String
+    - contextPath: Email.Body/HTML
+      description: HTML version of the email
+      type: String
+    - contextPath: Email.Body/Text
+      description: Text version of the email
+      type: String
+    - contextPath: Email.Subject
+      description: Subject of the email
+      type: String
+    - contextPath: Email.Headers
+      description: Hedaers of the email
+      type: String
+    - contextPath: Email.Attachments.entryID
+      description: Attachments ids separated by ','
+      type: Unknown
+    - contextPath: Email.Date
+      description: When the email was recived
+      type: String
+  - arguments:
+    - default: true
       description: The user's email address. The special value me can be used to indicate
         the authenticated user.
-    - name: message-id
+      isArray: false
+      name: user-id
       required: true
+      secret: false
+    - default: false
       description: The ID of the message to retrieve
-    - name: add-labels
+      isArray: false
+      name: message-id
+      required: true
+      secret: false
+    - default: false
       description: a comma-seperated list of labels to add to the mail
       isArray: true
-    - name: remove-labels
+      name: add-labels
+      required: false
+      secret: false
+    - default: false
       description: a comma-seperated list of labels to remove from the mail
       isArray: true
+      name: remove-labels
+      required: false
+      secret: false
+    deprecated: false
+    description: Move a mail to a different folder
+    execution: false
+    name: gmail-move-mail
     outputs:
     - contextPath: Gmail.ID
       description: Inner Id of mail in gmail
@@ -687,21 +1121,64 @@ script:
     - contextPath: Gmail.Mailbox
       description: The Gmail.Mailbox
       type: string
-    description: Move a mail to a different folder
-  - name: gmail-move-mail-to-mailbox
-    arguments:
-    - name: src-user-id
-      required: true
-      default: true
+    - contextPath: Email.To
+      description: Recipient of the email
+      type: String
+    - contextPath: Email.From
+      description: Sender of the email
+      type: String
+    - contextPath: Email.CC
+      description: Email Addresses that are CC'd
+      type: Unknown
+    - contextPath: Email.BCC
+      description: Email Addresses that are BCC'd
+      type: Unknown
+    - contextPath: Email.Format
+      description: Format of the email
+      type: String
+    - contextPath: Email.Body/HTML
+      description: HTML version of the email
+      type: String
+    - contextPath: Email.Body/Text
+      description: Text version of the email
+      type: String
+    - contextPath: Email.Subject
+      description: Subject of the email
+      type: String
+    - contextPath: Email.Headers
+      description: Hedaers of the email
+      type: String
+    - contextPath: Email.Attachments.entryID
+      description: Attachments ids separated by ','
+      type: Unknown
+    - contextPath: Email.Date
+      description: When the email was recived
+      type: String
+  - arguments:
+    - default: true
       description: The source user's email address. The special value me can be used
         to indicate the authenticated user.
-    - name: message-id
+      isArray: false
+      name: src-user-id
       required: true
+      secret: false
+    - default: false
       description: The ID of the message to retrieve
-    - name: dst-user-id
+      isArray: false
+      name: message-id
       required: true
+      secret: false
+    - default: false
       description: The destination user's email address. The special value me can
         be used to indicate the authenticated user.
+      isArray: false
+      name: dst-user-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Move a mail to a different mailbox
+    execution: false
+    name: gmail-move-mail-to-mailbox
     outputs:
     - contextPath: Gmail.ID
       description: Inner Id of mail in gmail
@@ -742,57 +1219,141 @@ script:
     - contextPath: Gmail.Mailbox
       description: The Gmail.Mailbox
       type: string
-    description: Move a mail to a different mailbox
-  - name: gmail-add-delete-filter
-    arguments:
-    - name: user-id
-      required: true
-      default: true
+    - contextPath: Email.To
+      description: Recipient of the email
+      type: String
+    - contextPath: Email.From
+      description: Sender of the email
+      type: String
+    - contextPath: Email.CC
+      description: Email Addresses that are CC'd
+      type: String
+    - contextPath: Email.BCC
+      description: Email Addresses that are BCC'd
+      type: String
+    - contextPath: Email.Format
+      description: Format of the email
+      type: String
+    - contextPath: Email.Body/HTML
+      description: HTML version of the email
+      type: String
+    - contextPath: Email.Body/Text
+      description: Text version of the email
+      type: String
+    - contextPath: Email.Subject
+      description: Subject of the email
+      type: String
+    - contextPath: Email.Headers
+      description: Hedaers of the email
+      type: String
+    - contextPath: Email.Attachments.entryID
+      description: Attachments ids separated by ','
+      type: Unknown
+    - contextPath: Email.Date
+      description: When the email was recived
+      type: String
+  - arguments:
+    - default: true
       description: The user's email address. The special value me can be used to indicate
         the authenticated user.
-    - name: email-address
+      isArray: false
+      name: user-id
       required: true
+      secret: false
+    - default: false
       description: Email address to block messages from.
-    description: Add a rule for email deletion by address
-  - name: gmail-add-filter
-    arguments:
-    - name: user-id
+      isArray: false
+      name: email-address
       required: true
-      default: true
+      secret: false
+    deprecated: false
+    description: Add a rule for email deletion by address
+    execution: false
+    name: gmail-add-delete-filter
+  - arguments:
+    - default: true
       description: The user's email address. The special value me can be used to indicate
         the authenticated user.
-    - name: from
+      isArray: false
+      name: user-id
+      required: true
+      secret: false
+    - default: false
       description: The sender's display name or email address.
-    - name: to
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
       description: The recipient's display name or email address. Includes recipients
         in the "to", "cc", and "bcc" header fields. You can use simply the local part
         of the email address. For example, "example" and "example@" both match "example@gmail.com".
         This field is case-insensitive.
-    - name: subject
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
       description: The mail subject.
-    - name: query
+      isArray: false
+      name: subject
+      required: false
+      secret: false
+    - default: false
       description: Only return messages matching the specified query. Supports the
         same query format as the Gmail search box. For example, "from:someuser@example.com
         is:unread".
-    - name: has-attachments
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
       description: Whether the message has any attachment.
-    - name: size
+      isArray: false
+      name: has-attachments
+      required: false
+      secret: false
+    - default: false
       description: The size of the entire RFC822 message in bytes, including all headers
         and attachments.
-    - name: add-labels
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    - default: false
       description: Comma-separated list of labels to add to the message.
-    - name: remove-labels
+      isArray: false
+      name: add-labels
+      required: false
+      secret: false
+    - default: false
       description: Comma-separated list of labels to remove from the message.
-    - name: forward
+      isArray: false
+      name: remove-labels
+      required: false
+      secret: false
+    - default: false
       description: Email address that the message should be forwarded to. the email
         needs to be configured as a forwarding address, see https://support.google.com/mail/answer/10957?hl=en#null.
-    - name: size-comparison
-      auto: PREDEFINED
+      isArray: false
+      name: forward
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: How the message size in bytes should be in relation to the size
+        field.
+      isArray: false
+      name: size-comparison
       predefined:
       - larger
       - smaller
-      description: How the message size in bytes should be in relation to the size
-        field.
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a new filter.
+    execution: false
+    name: gmail-add-filter
     outputs:
     - contextPath: GmailFilter.ID
       description: Filter ID
@@ -802,19 +1363,34 @@ script:
       type: string
     - contextPath: GmailFilter.Criteria
       description: Filter Criteria
+      type: Unknown
     - contextPath: GmailFilter.Action
       description: Filter Action
-    description: Add a new filter.
-  - name: gmail-list-filters
-    arguments:
-    - name: user-id
-      required: true
+      type: Unknown
+  - arguments:
+    - default: false
       description: User's email address. The special value "me" can be used to indicate
         the authenticated user.
-    - name: limit
+      isArray: false
+      name: user-id
+      required: true
+      secret: false
+    - default: false
       description: Limit of result list. default is 100.
-    - name: address
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
       description: Show only filters associated with address
+      isArray: false
+      name: address
+      required: false
+      secret: false
+    deprecated: false
+    description: List all filters in a user's mailbox.
+    execution: false
+    name: gmail-list-filters
     outputs:
     - contextPath: GmailFilter.ID
       description: Filter ID
@@ -824,23 +1400,294 @@ script:
       type: string
     - contextPath: GmailFilter.Criteria
       description: Filter Criteria
+      type: Unknown
     - contextPath: GmailFilter.Action
       description: Filter Action
-    description: List all filters in a user's mailbox.
-  - name: gmail-remove-filter
-    arguments:
-    - name: user-id
-      required: true
+      type: Unknown
+  - arguments:
+    - default: false
       description: The user mailbox
-    - name: filter_ids
+      isArray: false
+      name: user-id
       required: true
+      secret: false
+    - default: false
       description: Comma separated list of filter IDs (can be retrieve using `gmail-list-filters`
         command)
       isArray: true
+      name: filter_ids
+      required: true
+      secret: false
+    deprecated: false
     description: Remove a Filter
+    execution: false
+    name: gmail-remove-filter
+  - arguments:
+    - default: false
+      description: The user's email address. The special value me can be used to indicate
+      isArray: false
+      name: user-id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'True'
+      description: Set False to hide the user. Set True to show the user in the global
+      isArray: false
+      name: visible-globally
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Hide a user in the Global Directory
+    execution: false
+    name: gmail-hide-user-in-directory
+    outputs:
+    - contextPath: Account.Type
+      description: Type of account like Google, facebook
+      type: Unknown
+    - contextPath: Account.ID
+      description: Unique Id of current account
+      type: Unknown
+    - contextPath: Account.UserName
+      description: Username of user with current account
+      type: Unknown
+    - contextPath: Account.DisplayName
+      description: Name to display in current account
+      type: Unknown
+    - contextPath: Account.Email.Address
+      description: Email assigned with current account
+      type: Unknown
+    - contextPath: Account.Gmail.Address
+      description: Email assigned with current account
+      type: Unknown
+    - contextPath: Account.Group
+      description: Group associated with current account
+      type: Unknown
+    - contextPath: Account.Domain
+      description: Domain of the account
+      type: Unknown
+    - contextPath: Account.Username
+      description: Username of user with current account
+      type: Unknown
+    - contextPath: Account.OrganizationUnit
+      description: OrganizationUnit of the account
+      type: Unknown
+    - contextPath: Account.VisibleInDirectory
+      description: Is the Account visable in the Global Directory
+      type: Boolean
+    - contextPath: Account.Groups
+      description: Group associated with current account
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The user's email address. The special value me can be used to indicate
+        the authenticated user.
+      isArray: false
+      name: user-id
+      required: true
+      secret: false
+    - default: false
+      description: String formatted password to be set for the user. Depends on the
+        Password Policy of the Organization
+      isArray: false
+      name: password
+      required: true
+      secret: false
+    deprecated: false
+    description: Set password for the user
+    execution: false
+    name: gmail-set-password
+  - arguments:
+    - default: false
+      description: The user's email address. The special value me can be used to indicate
+        the authenticated user.
+      isArray: false
+      name: user-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the auto-reply message set for the user-account
+    execution: false
+    name: gmail-get-autoreply
+    outputs:
+    - contextPath: Autoreply.Type
+      description: The service from which autoreply is set
+      type: String
+    - contextPath: Autoreply.EnableAutoReply
+      description: Flag that controls whether Gmail automatically replies to messages.
+      type: String
+    - contextPath: Autoreply.ResponseBody
+      description: Response body in plain text format.
+      type: String
+    - contextPath: Autoreply.ResponseSubject
+      description: Optional text to prepend to the subject line in vacation responses.
+        In order to enable auto-replies, either the response subject or the response
+        body must be nonempty.
+      type: String
+    - contextPath: Autoreply.RestrictToContact
+      description: Flag that determines whether responses are sent to recipients who
+        are not in the user's list of contacts.
+      type: String
+    - contextPath: Autoreply.RestrcitToDomain
+      description: Flag that determines whether responses are sent to recipients who
+        are outside of the user's domain. This feature is only available for G Suite
+        users.
+      type: String
+  - arguments:
+    - default: false
+      description: The user's email address. The special value me can be used to indicate
+        the authenticated user.
+      isArray: false
+      name: user-id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Flag that controls whether Gmail automatically replies to messages.
+      isArray: false
+      name: enableAutoReply
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - default: false
+      description: Optional text to prepend to the subject line in vacation responses.
+        In order to enable auto-replies, either the response subject or the response
+        body must be nonempty.
+      isArray: false
+      name: responseSubject
+      required: false
+      secret: false
+    - default: false
+      description: Response body in plain text format.
+      isArray: false
+      name: responseBodyPlainText
+      required: false
+      secret: false
+    deprecated: false
+    description: Set auto-reply for the user
+    execution: false
+    name: gmail-set-autoreply
+    outputs:
+    - contextPath: Autoreply.Type
+      description: The service from which autoreply is set
+      type: String
+    - contextPath: Autoreply.EnableAutoReply
+      description: Flag that controls whether Gmail automatically replies to messages.
+      type: String
+    - contextPath: Autoreply.ResponseBody
+      description: Response body in plain text format.
+      type: String
+    - contextPath: Autoreply.ResponseSubject
+      description: Optional text to prepend to the subject line in vacation responses.
+        In order to enable auto-replies, either the response subject or the response
+        body must be nonempty.
+      type: String
+    - contextPath: Autoreply.RestrictToContact
+      description: Flag that determines whether responses are sent to recipients who
+        are not in the user's list of contacts.
+      type: String
+    - contextPath: Autoreply.RestrcitToDomain
+      description: Flag that determines whether responses are sent to recipients who
+        are outside of the user's domain. This feature is only available for G Suite
+        users.
+      type: String
+  - arguments:
+    - default: false
+      description: The user's email address. The special value me can be used to indicate
+        the authenticated user.
+      isArray: false
+      name: user-id
+      required: true
+      secret: false
+    - default: false
+      description: The email address of the delegate or remove
+      isArray: false
+      name: delegateEmail
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'True'
+      description: Set to True to delegate the mail and False to remove it.
+      isArray: false
+      name: delegateToken
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds or removes a delegate to the mailbox, without sending any verification
+      email. The delegate user must be a member of the same G Suite organization as
+      the delegator user.  Note that a delegate user must be referred to by their
+      primary email address, and not an email alias.
+    execution: false
+    name: gmail-delegate-user-mailbox
+  - arguments:
+    - default: false
+      description: The user's email address. The special value me can be used to indicate
+        the authenticated user.
+      isArray: false
+      name: user-id
+      required: true
+      secret: false
+    - default: false
+      description: Recipient email address
+      isArray: false
+      name: emailto
+      required: true
+      secret: false
+    - default: false
+      defaultValue: me
+      description: Email address of the sender. Generally the account setup in the
+        integration. (Default value is me)
+      isArray: false
+      name: emailfrom
+      required: false
+      secret: false
+    - default: false
+      description: Body of the email
+      isArray: false
+      name: body
+      required: false
+      secret: false
+    - default: false
+      description: Subject of the email
+      isArray: false
+      name: subject
+      required: true
+      secret: false
+    - default: false
+      description: Entry ID of the Attachment to be sent in the mail
+      isArray: false
+      name: entryid
+      required: false
+      secret: false
+    deprecated: false
+    description: Send mail using Gmail
+    execution: false
+    name: gmail-send-mail
+    outputs:
+    - contextPath: SentMail.MessageId
+      description: The immutable ID of the message.
+      type: String
+    - contextPath: SentMail.labelIds
+      description: List of IDs of labels applied to this message.
+      type: String
+    - contextPath: SentMail.threadId
+      description: The ID of the thread the message belongs to
+      type: String
   dockerimage: demisto/google-api:1.0
   isfetch: true
   runonce: false
+  script: '-'
+  type: python
 tests:
-  - Gmail Convert Html Test
-  - GmailTest
+- Gmail Convert Html Test
+- GmailTest
