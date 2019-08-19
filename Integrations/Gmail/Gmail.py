@@ -6,6 +6,8 @@ import re
 import json
 import base64
 from datetime import datetime, timedelta
+import httplib2
+import urlparse
 from distutils.util import strtobool
 import sys
 from HTMLParser import HTMLParser, HTMLParseError
@@ -816,24 +818,24 @@ def send_mail(emailto, emailfrom, subject, body, entry_id):
         main_type, sub_type = content_type.split('/', 1)
         if main_type == 'text':
             fp = open(file_path, 'rb')
-            msg = MIMEText(fp.read(), _subtype=sub_type)
+            file_msg = MIMEText(fp.read(), _subtype=sub_type)
             fp.close()
         elif main_type == 'image':
             fp = open(file_path, 'rb')
-            msg = MIMEImage(fp.read(), _subtype=sub_type)
+            file_msg = MIMEImage(fp.read(), _subtype=sub_type)
             fp.close()
         elif main_type == 'audio':
             fp = open(file_path, 'rb')
-            msg = MIMEAudio(fp.read(), _subtype=sub_type)
+            file_msg = MIMEAudio(fp.read(), _subtype=sub_type)
             fp.close()
         else:
             fp = open(file_path, 'rb')
-            msg = MIMEBase(main_type, sub_type)
-            msg.set_payload(fp.read())
+            file_msg = MIMEBase(main_type, sub_type)
+            file_msg.set_payload(fp.read())
             fp.close()
         # filename = os.path.basename(file_path)
-        msg.add_header('Content-Disposition', 'attachment', filename=file_name)
-        message.attach(msg)
+        file_msg.add_header('Content-Disposition', 'attachment', filename=file_name)
+        message.attach(file_msg)
     encoded_message = base64.urlsafe_b64encode(message.as_string())
     command_args = {
         'userId': emailfrom if emailfrom != 'me' else ADMIN_EMAIL,
