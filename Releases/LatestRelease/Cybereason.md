@@ -1,0 +1,1 @@
+- Query malops command using withinLastDays parameter issue fixed.
