@@ -1,7 +1,7 @@
 id: Cortex XDR Blueprint
 inputs: []
 name: Cortex XDR Blueprint
-fromversion: 5.0.0,
+fromversion: 5.0.0
 outputs: []
 starttaskid: "0"
 description: Playbook compares incidents in Palo Alto Networks Cortex XDR and in Demisto and updates the incidents properly. If the incident in Demisto has updated then the XDRSyncScript will update the incident in XDR. If the incident in XDR updated, then XDRSyncScript will update the incident fields in Demisto and rerun the Cortex XDR Blueprint playbook. If you change the name of the playbook/clone it then make sure you update the playbook name in task `Perform Sync`.
