@@ -448,6 +448,10 @@ def test_valid_subtype():
         "type": "python",
         "subtype": "python3"
     }
+    validator.old_script = {
+        "type": "python",
+        "subtype": "python3"
+    }
 
     assert validator.is_valid_subtype(), \
         "found invalid subtype while it is valid"
