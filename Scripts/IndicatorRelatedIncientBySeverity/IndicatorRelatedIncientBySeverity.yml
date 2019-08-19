@@ -13,7 +13,6 @@ commonfields:
 enabled: true
 name: IndicatorRelatedIncientBySeverity
 script: '-'
-system: false
 tags:
 - dynamic-indicator-section
 timeout: '0'
