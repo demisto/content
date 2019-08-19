@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7a4d42b1-3caa-4d58-8c8e-98288a9d17f8
+    taskid: 6db30955-1640-4b01-8217-f72ca111cd89
     type: start
     task:
-      id: 7a4d42b1-3caa-4d58-8c8e-98288a9d17f8
+      id: 6db30955-1640-4b01-8217-f72ca111cd89
       version: -1
       name: ""
       iscommand: false
@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -30,10 +30,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: eddd59af-04cc-4265-882f-ec891970d23b
+    taskid: f2398fc7-b916-4c12-859e-d18d60407e32
     type: title
     task:
-      id: eddd59af-04cc-4265-882f-ec891970d23b
+      id: f2398fc7-b916-4c12-859e-d18d60407e32
       version: -1
       name: Isolate Endpoint
       type: title
@@ -46,8 +46,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2760
+          "x": 480,
+          "y": 2935
         }
       }
     note: false
@@ -55,10 +55,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: e7d7136d-3366-4ac1-86d6-e7604ba08a19
+    taskid: da8f4faa-35d0-4088-8b92-e63553814899
     type: title
     task:
-      id: e7d7136d-3366-4ac1-86d6-e7604ba08a19
+      id: da8f4faa-35d0-4088-8b92-e63553814899
       version: -1
       name: Search for a binary and fetch it
       type: title
@@ -71,8 +71,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3955
+          "x": 480,
+          "y": 4130
         }
       }
     note: false
@@ -80,10 +80,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 41a7a7be-e3aa-4e16-8d6a-716c6caeece0
+    taskid: 40687efe-502e-4fd9-8d91-5b7905d4d977
     type: title
     task:
-      id: 41a7a7be-e3aa-4e16-8d6a-716c6caeece0
+      id: 40687efe-502e-4fd9-8d91-5b7905d4d977
       version: -1
       name: Add hash to blacklist
       type: title
@@ -96,8 +96,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4625
+          "x": 480,
+          "y": 4800
         }
       }
     note: false
@@ -105,10 +105,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: db409fa9-5f45-4580-8a96-0b3198e5f6f2
+    taskid: f1fc334e-8e2e-468c-829b-be57553ab200
     type: regular
     task:
-      id: db409fa9-5f45-4580-8a96-0b3198e5f6f2
+      id: f1fc334e-8e2e-468c-829b-be57553ab200
       version: -1
       name: List available sensors
       script: carbonblack-v2|||cb-sensor-info
@@ -128,8 +128,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3080
+          "x": 480,
+          "y": 3255
         }
       }
     note: false
@@ -137,10 +137,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 980e97c9-7439-41c6-8f3f-c0d795706d0c
+    taskid: c0465d88-1763-4d1f-8bac-acd07755721e
     type: regular
     task:
-      id: 980e97c9-7439-41c6-8f3f-c0d795706d0c
+      id: c0465d88-1763-4d1f-8bac-acd07755721e
       version: -1
       name: Isolate (quarantine) sensor (endpoint)
       script: carbonblack-v2|||cb-quarantine-device
@@ -157,8 +157,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3430
+          "x": 480,
+          "y": 3605
         }
       }
     note: false
@@ -166,10 +166,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 97ad49aa-16fb-4e94-86d5-07b95f8ad51c
+    taskid: 1b2edf0a-a497-427d-83e5-889838e9ba80
     type: regular
     task:
-      id: 97ad49aa-16fb-4e94-86d5-07b95f8ad51c
+      id: 1b2edf0a-a497-427d-83e5-889838e9ba80
       version: -1
       name: Check that sensor was blocked
       scriptName: VerifyContext
@@ -189,8 +189,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3605
+          "x": 480,
+          "y": 3780
         }
       }
     note: false
@@ -198,10 +198,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: d1dc3b9e-82b4-4f67-8361-86fedf84ae8f
+    taskid: dea50d4a-a2bb-46ce-816c-1df1c7c42044
     type: regular
     task:
-      id: d1dc3b9e-82b4-4f67-8361-86fedf84ae8f
+      id: dea50d4a-a2bb-46ce-816c-1df1c7c42044
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -219,8 +219,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2905
+          "x": 480,
+          "y": 3080
         }
       }
     note: false
@@ -228,10 +228,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: d5042e6b-ca69-4cbe-846a-305cc9e8a9f5
+    taskid: 83693315-95f7-4052-8629-ddd5ea92c8ad
     type: regular
     task:
-      id: d5042e6b-ca69-4cbe-846a-305cc9e8a9f5
+      id: 83693315-95f7-4052-8629-ddd5ea92c8ad
       version: -1
       name: Get binaries by query
       script: carbonblack-v2|||cb-binary
@@ -251,8 +251,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4275
+          "x": 480,
+          "y": 4450
         }
       }
     note: false
@@ -260,10 +260,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 712cafdf-8de7-4e43-8950-31307f5b733a
+    taskid: 42c4730c-74d9-4a42-8632-c6ac4d0819f8
     type: regular
     task:
-      id: 712cafdf-8de7-4e43-8950-31307f5b733a
+      id: 42c4730c-74d9-4a42-8632-c6ac4d0819f8
       version: -1
       name: cb-block-hash
       script: carbonblack-v2|||cb-block-hash
@@ -282,8 +282,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5295
+          "x": 480,
+          "y": 5470
         }
       }
     note: false
@@ -291,10 +291,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: c803858e-bc80-4c8e-8b50-c1aa1823e3d9
+    taskid: 6550edab-5ae1-49f5-8e26-122b246ccd13
     type: regular
     task:
-      id: c803858e-bc80-4c8e-8b50-c1aa1823e3d9
+      id: 6550edab-5ae1-49f5-8e26-122b246ccd13
       version: -1
       name: cb-unblock-hash
       script: carbonblack-v2|||cb-unblock-hash
@@ -313,8 +313,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5120
+          "x": 480,
+          "y": 5295
         }
       }
     note: false
@@ -322,10 +322,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: ea344124-647e-4501-8cde-5ecdda57b867
+    taskid: c2787c01-5afb-4f45-8f8a-61a0c028f878
     type: regular
     task:
-      id: ea344124-647e-4501-8cde-5ecdda57b867
+      id: c2787c01-5afb-4f45-8f8a-61a0c028f878
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -343,8 +343,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4100
+          "x": 480,
+          "y": 4275
         }
       }
     note: false
@@ -352,10 +352,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: c5d8586a-50c7-4069-831a-3d7dc8565247
+    taskid: 10793127-d960-4f11-85f8-f6f87fca815f
     type: regular
     task:
-      id: c5d8586a-50c7-4069-831a-3d7dc8565247
+      id: 10793127-d960-4f11-85f8-f6f87fca815f
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -373,8 +373,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4770
+          "x": 480,
+          "y": 4945
         }
       }
     note: false
@@ -382,10 +382,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: 6f687990-c87b-44e1-8df2-ab534e712f43
+    taskid: f6316f74-77e2-48c0-8f0a-9a602ab6d956
     type: regular
     task:
-      id: 6f687990-c87b-44e1-8df2-ab534e712f43
+      id: f6316f74-77e2-48c0-8f0a-9a602ab6d956
       version: -1
       name: Get hash blacklist and choose an item to unblock and block
       script: carbonblack-v2|||cb-get-hash-blacklist
@@ -402,8 +402,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4945
+          "x": 480,
+          "y": 5120
         }
       }
     note: false
@@ -411,10 +411,10 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: 253fc2d4-e013-41c7-8b3d-6c032d693719
+    taskid: 7e89e11c-31a5-4b14-8df5-5a0b4d2d0f74
     type: title
     task:
-      id: 253fc2d4-e013-41c7-8b3d-6c032d693719
+      id: 7e89e11c-31a5-4b14-8df5-5a0b4d2d0f74
       version: -1
       name: Update alert's status
       type: title
@@ -427,8 +427,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1915
+          "x": 480,
+          "y": 2090
         }
       }
     note: false
@@ -436,10 +436,10 @@ tasks:
     ignoreworker: false
   "28":
     id: "28"
-    taskid: 96548d44-5a51-435d-809b-8321512952d4
+    taskid: 419968f1-0648-435d-83a4-cc7984c0df9f
     type: regular
     task:
-      id: 96548d44-5a51-435d-809b-8321512952d4
+      id: 419968f1-0648-435d-83a4-cc7984c0df9f
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -457,8 +457,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2060
+          "x": 480,
+          "y": 2235
         }
       }
     note: false
@@ -466,10 +466,10 @@ tasks:
     ignoreworker: false
   "29":
     id: "29"
-    taskid: afa2e97c-ad29-43e1-8da3-e6b932cede87
+    taskid: b60b905d-9b88-406e-821c-5b7d8f0ddac2
     type: regular
     task:
-      id: afa2e97c-ad29-43e1-8da3-e6b932cede87
+      id: b60b905d-9b88-406e-821c-5b7d8f0ddac2
       version: -1
       name: List alerts
       script: carbonblack-v2|||cb-alert
@@ -489,8 +489,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2235
+          "x": 480,
+          "y": 2410
         }
       }
     note: false
@@ -498,10 +498,10 @@ tasks:
     ignoreworker: false
   "30":
     id: "30"
-    taskid: d2978116-53aa-463f-8bcb-961f37c8d50f
+    taskid: f18bcfa6-bc1e-4a4b-8baf-26b5e417982c
     type: regular
     task:
-      id: d2978116-53aa-463f-8bcb-961f37c8d50f
+      id: f18bcfa6-bc1e-4a4b-8baf-26b5e417982c
       version: -1
       name: Update alert status to Unresolved
       script: carbonblack-v2|||cb-alert-update
@@ -521,8 +521,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2410
+          "x": 480,
+          "y": 2585
         }
       }
     note: false
@@ -530,10 +530,10 @@ tasks:
     ignoreworker: false
   "31":
     id: "31"
-    taskid: ecfc5fb3-e457-4c48-861e-2947d3a3c046
+    taskid: 094627a1-a035-447e-8d28-fda1755edece
     type: regular
     task:
-      id: ecfc5fb3-e457-4c48-861e-2947d3a3c046
+      id: 094627a1-a035-447e-8d28-fda1755edece
       version: -1
       name: Update alert status to False Positive
       script: carbonblack-v2|||cb-alert-update
@@ -553,8 +553,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2585
+          "x": 480,
+          "y": 2760
         }
       }
     note: false
@@ -562,10 +562,10 @@ tasks:
     ignoreworker: false
   "32":
     id: "32"
-    taskid: 6822d541-f955-4faa-899e-aac1aabcd22e
+    taskid: 74492384-1ff1-4323-8991-40f96cc83f33
     type: regular
     task:
-      id: 6822d541-f955-4faa-899e-aac1aabcd22e
+      id: 74492384-1ff1-4323-8991-40f96cc83f33
       version: -1
       name: Fetch binary
       script: carbonblack-v2|||cb-binary-get
@@ -584,8 +584,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4450
+          "x": 480,
+          "y": 4625
         }
       }
     note: false
@@ -593,10 +593,10 @@ tasks:
     ignoreworker: false
   "33":
     id: "33"
-    taskid: 49162ed5-ee36-474a-8438-44a15d8258fe
+    taskid: cf70861b-1855-4998-8bcd-b981148b1e2b
     type: regular
     task:
-      id: 49162ed5-ee36-474a-8438-44a15d8258fe
+      id: cf70861b-1855-4998-8bcd-b981148b1e2b
       version: -1
       name: Unquarantine sensor (endpoint)
       script: carbonblack-v2|||cb-unquarantine-device
@@ -613,8 +613,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3780
+          "x": 480,
+          "y": 3955
         }
       }
     note: false
@@ -622,10 +622,10 @@ tasks:
     ignoreworker: false
   "34":
     id: "34"
-    taskid: b7d12a2b-7e2e-4d80-8816-d3241b50b87b
+    taskid: 29780a39-9b9f-4d52-823f-920eeab6a359
     type: title
     task:
-      id: b7d12a2b-7e2e-4d80-8816-d3241b50b87b
+      id: 29780a39-9b9f-4d52-823f-920eeab6a359
       version: -1
       name: Get processes info
       type: title
@@ -638,7 +638,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1070
         }
       }
@@ -647,10 +647,10 @@ tasks:
     ignoreworker: false
   "35":
     id: "35"
-    taskid: 26389b53-9cf3-4ff1-8ef5-9d3984b500a4
+    taskid: 10b53555-1536-4e65-8740-b5b4dc8153e6
     type: regular
     task:
-      id: 26389b53-9cf3-4ff1-8ef5-9d3984b500a4
+      id: 10b53555-1536-4e65-8740-b5b4dc8153e6
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -669,7 +669,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1215
         }
       }
@@ -678,10 +678,10 @@ tasks:
     ignoreworker: false
   "36":
     id: "36"
-    taskid: 1918c453-e213-4ec3-8887-59df593f1708
+    taskid: 99fe33b5-afac-44c2-8a6a-214a753c101d
     type: regular
     task:
-      id: 1918c453-e213-4ec3-8887-59df593f1708
+      id: 99fe33b5-afac-44c2-8a6a-214a753c101d
       version: -1
       name: Fetch list of processes
       script: carbonblack-v2|||cb-get-processes
@@ -701,7 +701,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 1390
         }
       }
@@ -710,10 +710,10 @@ tasks:
     ignoreworker: false
   "37":
     id: "37"
-    taskid: c5d4dd82-254c-4e9d-87e5-4c4599881543
+    taskid: 6bbd9f03-7468-4421-8153-08b8bd07ee86
     type: regular
     task:
-      id: c5d4dd82-254c-4e9d-87e5-4c4599881543
+      id: 6bbd9f03-7468-4421-8153-08b8bd07ee86
       version: -1
       name: Get event info on a process
       script: carbonblack-v2|||cb-process-events
@@ -732,8 +732,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1740
+          "x": 480,
+          "y": 1915
         }
       }
     note: false
@@ -741,20 +741,22 @@ tasks:
     ignoreworker: false
   "38":
     id: "38"
-    taskid: 2fd14b6f-5c76-41cb-8d78-f25a7bb39efc
+    taskid: f76a589b-f9aa-40bd-82d1-f1ee04c1163a
     type: regular
     task:
-      id: 2fd14b6f-5c76-41cb-8d78-f25a7bb39efc
+      id: f76a589b-f9aa-40bd-82d1-f1ee04c1163a
       version: -1
-      name: Get process by pid/segid
+      name: Get process with relations by pid/segid
       script: carbonblack-v2|||cb-get-process
       type: regular
       iscommand: true
       brand: carbonblack-v2
     nexttasks:
       '#none#':
-      - "37"
+      - "50"
     scriptarguments:
+      get_related:
+        simple: "true"
       pid:
         simple: ${Process.[0].CbID}
       segid:
@@ -763,7 +765,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 1565
         }
       }
@@ -772,10 +774,10 @@ tasks:
     ignoreworker: false
   "39":
     id: "39"
-    taskid: 2ed9bccb-e177-4849-8818-5f61241132ac
+    taskid: c05a8379-d6ba-4e14-8ad0-4768ac48624c
     type: regular
     task:
-      id: 2ed9bccb-e177-4849-8818-5f61241132ac
+      id: c05a8379-d6ba-4e14-8ad0-4768ac48624c
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -793,7 +795,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
@@ -802,10 +804,10 @@ tasks:
     ignoreworker: false
   "40":
     id: "40"
-    taskid: 53c5ff8a-b55b-4250-87ae-d4304bed9622
+    taskid: 6ade2e2c-c17f-45fe-89aa-cce96084a88a
     type: regular
     task:
-      id: 53c5ff8a-b55b-4250-87ae-d4304bed9622
+      id: 6ade2e2c-c17f-45fe-89aa-cce96084a88a
       version: -1
       name: Create a new watchlist
       script: carbonblack-v2|||cb-watchlist-new
@@ -824,7 +826,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
         }
       }
@@ -833,10 +835,10 @@ tasks:
     ignoreworker: false
   "41":
     id: "41"
-    taskid: b114fafa-a9c5-485f-84fa-1006b4aa2642
+    taskid: a838d522-e3e3-4709-886c-26a85498bb06
     type: regular
     task:
-      id: b114fafa-a9c5-485f-84fa-1006b4aa2642
+      id: a838d522-e3e3-4709-886c-26a85498bb06
       version: -1
       name: Set (update) watchlist name
       script: carbonblack-v2|||cb-watchlist-set
@@ -857,7 +859,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 545
         }
       }
@@ -866,10 +868,10 @@ tasks:
     ignoreworker: false
   "42":
     id: "42"
-    taskid: c26065f7-54fb-4803-8efb-f0eb99776bce
+    taskid: daa3a6e3-5e42-4102-8f7a-46ec0f4ad2e8
     type: regular
     task:
-      id: c26065f7-54fb-4803-8efb-f0eb99776bce
+      id: daa3a6e3-5e42-4102-8f7a-46ec0f4ad2e8
       version: -1
       name: Delete the created watchlist
       script: carbonblack-v2|||cb-watchlist-del
@@ -886,7 +888,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 895
         }
       }
@@ -895,10 +897,10 @@ tasks:
     ignoreworker: false
   "43":
     id: "43"
-    taskid: c716e307-227b-494a-81f9-177ab5f4d874
+    taskid: 766ce0c3-aa54-44a8-831d-b4ebeeec0e5b
     type: regular
     task:
-      id: c716e307-227b-494a-81f9-177ab5f4d874
+      id: 766ce0c3-aa54-44a8-831d-b4ebeeec0e5b
       version: -1
       name: Check that watchlist name was changed
       scriptName: VerifyContext
@@ -918,7 +920,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 720
         }
       }
@@ -927,13 +929,13 @@ tasks:
     ignoreworker: false
   "44":
     id: "44"
-    taskid: d5d19ec2-6f37-4152-8193-9d6e5dd5b950
+    taskid: 2807aa29-a811-4368-8feb-0ffb891590fb
     type: regular
     task:
-      id: d5d19ec2-6f37-4152-8193-9d6e5dd5b950
+      id: 2807aa29-a811-4368-8feb-0ffb891590fb
       version: -1
       name: Get Online Sensors
-      script: CarbonBlackResponseFilterSensors
+      scriptName: CarbonBlackResponseFilterSensors
       type: regular
       iscommand: false
       brand: ""
@@ -949,8 +951,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3255
+          "x": 480,
+          "y": 3430
         }
       }
     note: false
@@ -958,10 +960,10 @@ tasks:
     ignoreworker: false
   "45":
     id: "45"
-    taskid: 6d4ca1bf-1ca1-4874-8967-ba837b9ba2cc
+    taskid: 39130ac0-9cf0-49f7-8a02-7aabd1a9594b
     type: regular
     task:
-      id: 6d4ca1bf-1ca1-4874-8967-ba837b9ba2cc
+      id: 39130ac0-9cf0-49f7-8a02-7aabd1a9594b
       version: -1
       name: Get md5 processes
       description: Query processes based on given parameters
@@ -989,7 +991,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
+          "x": 50,
           "y": 1390
         }
       }
@@ -998,10 +1000,10 @@ tasks:
     ignoreworker: false
   "48":
     id: "48"
-    taskid: ce3cab3a-8c0f-417d-84f9-1a81cfb18bb3
+    taskid: 5a8aebf9-d96a-4834-8392-cf1081383802
     type: condition
     task:
-      id: ce3cab3a-8c0f-417d-84f9-1a81cfb18bb3
+      id: 5a8aebf9-d96a-4834-8392-cf1081383802
       version: -1
       name: Check results
       description: Gets basic process information for segment (segment_id) of process
@@ -1027,7 +1029,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
+          "x": 50,
           "y": 1565
         }
       }
@@ -1036,10 +1038,10 @@ tasks:
     ignoreworker: false
   "49":
     id: "49"
-    taskid: 40d056a5-7a2b-48f7-8305-364a9190d425
+    taskid: 030903e7-4247-4527-8287-7093de41570f
     type: title
     task:
-      id: 40d056a5-7a2b-48f7-8305-364a9190d425
+      id: 030903e7-4247-4527-8287-7093de41570f
       version: -1
       name: Done
       type: title
@@ -1049,7 +1051,45 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
+          "x": 50,
+          "y": 1755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "50":
+    id: "50"
+    taskid: 5ebe4ebb-fec7-4392-892e-5fc7811fedbf
+    type: condition
+    task:
+      id: 5ebe4ebb-fec7-4392-892e-5fc7811fedbf
+      version: -1
+      name: Verify siblings were fetched
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Process
+                accessor: Siblings.[0].PID
+            iscontext: true
+          right:
+            value:
+              simple: "340"
+    view: |-
+      {
+        "position": {
+          "x": 480,
           "y": 1740
         }
       }
@@ -1061,8 +1101,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5340,
-        "width": 880,
+        "height": 5515,
+        "width": 810,
         "x": 50,
         "y": 50
       }
