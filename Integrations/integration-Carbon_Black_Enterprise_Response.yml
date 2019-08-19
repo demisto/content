@@ -404,7 +404,6 @@ script:
         let headers = dataMap.map(cn => cn.to);
         let result;
         let processTranslatedData;
-        let humanReadable;
         let context;
 
         if (args.get_related === 'true') {
@@ -419,7 +418,6 @@ script:
             for (var i = 0; i < result.children.length; i++) {
                 childrenProcessTranslatedData.push(mapObjFunction(dataMap)(result.children[i]));
             }
-            humanReadable = tableToMarkdown(title, processTranslatedData, headers, undefined, dotToSpace);
             context = processTranslatedData;
             context.Siblings = siblingsProcessTranslatedData
             context.Parent = parentProcessTranslatedData
@@ -427,9 +425,9 @@ script:
         } else {
             result = getProcessRequest(args.pid, args.segid);
             processTranslatedData = mapObjFunction(dataMap)(result);
-            humanReadable = tableToMarkdown(title, processTranslatedData, headers, undefined, dotToSpace);
             context = processTranslatedData;
         }
+        humanReadable = tableToMarkdown(title, processTranslatedData, headers, undefined, dotToSpace);
         entries.push({
             Type: entryTypes.note,
             Contents: result.process,
