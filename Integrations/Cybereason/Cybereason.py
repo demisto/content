@@ -11,7 +11,7 @@ import sys
 
 # Define utf8 as default encoding
 reload(sys)
-sys.setdefaultencoding('utf8')
+sys.setdefaultencoding('utf8')  # pylint: disable=maybe-no-member
 
 if not demisto.params()['proxy']:
     del os.environ['HTTP_PROXY']
