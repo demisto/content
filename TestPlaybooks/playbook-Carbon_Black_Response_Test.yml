@@ -1060,10 +1060,10 @@ tasks:
     ignoreworker: false
   "50":
     id: "50"
-    taskid: 5ebe4ebb-fec7-4392-892e-5fc7811fedbf
+    taskid: d895f891-20ea-4d1f-8ed6-ba9b52d297ab
     type: condition
     task:
-      id: 5ebe4ebb-fec7-4392-892e-5fc7811fedbf
+      id: d895f891-20ea-4d1f-8ed6-ba9b52d297ab
       version: -1
       name: Verify siblings were fetched
       type: condition
@@ -1076,16 +1076,27 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
               complex:
                 root: Process
-                accessor: Siblings.[0].PID
+                accessor: Siblings
             iscontext: true
-          right:
+      - - operator: isExists
+          left:
             value:
-              simple: "340"
+              complex:
+                root: Process
+                accessor: Parent
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Process
+                accessor: Children
+            iscontext: true
     view: |-
       {
         "position": {
