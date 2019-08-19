@@ -41,17 +41,17 @@ configuration:
   name: proxy
   required: false
   type: 0
-- display: Timezone of Splunk server in minutes e.g. for gmt +3 set +180 (set only
-    if different than Demisto server), relevent for fetch notable events only
+- display: Timezone of the Splunk server, in minutes. For example, GMT is gmt +3, set +180 (set only
+    if different than Demisto server). Relevant only for fetching notable events.
   name: timezone
   required: false
   type: 0
 - defaultvalue: 'false'
-  display: Parse Raw of notable events
+  display: Parse Raw part of notable events
   name: parseNotableEventsRaw
   required: false
   type: 8
-- display: Extract Fields - comma separated fields that will be parsed out of _raw
+- display: Extract Fields - CSV fields that will be parsed out of _raw
     notable events
   name: extractFields
   required: false
@@ -66,26 +66,26 @@ configuration:
   name: unsecure
   required: false
   type: 8
-description: Run queries on Splunk servers
+description: Run queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
 script:
   commands:
   - arguments:
     - default: true
-      description: search id
+      description: ID of the search for which to return results.
       isArray: false
       name: sid
       required: true
       secret: false
     deprecated: false
-    description: fetch splunk search results, can be used in conjunction with splunk-job-create
+    description: Returns the results of a previous Splunk search. You can use this command in conjunction with the splunk-job-create command.
     execution: false
     name: splunk-results
   - arguments:
     - default: true
-      description: The splunk search language string to execute, example :"index=*
-        | head 3"
+      description: 'The Splunk search language string to execute. For example: "index=*
+        | head 3". '
       isArray: false
       name: query
       required: true
@@ -93,93 +93,92 @@ script:
     - default: false
       description: 'Specifies the earliest time in the time range to search. The time
         string can be a UTC time (with fractional seconds), a relative time specifier
-        (to now), or a formatted time string. Default is 1 week ago, in this format
-        "-7d", also possible to do time as: 2014-06-19T12:00:00.000-07:00"'
+        (to now), or a formatted time string. Default is 1 week ago, in the format
+        "-7d". You can also specify time in the format: 2014-06-19T12:00:00.000-07:00"'
       isArray: false
       name: earliest_time
       required: false
       secret: false
     - default: false
-      description: Specifies the latest time in the time range to search. The time
+      description: ' Specifies the latest time in the time range to search. The time
         string can be a UTC time (with fractional seconds), a relative time specifier
-        (to now), or a formatted time string, example "2014-06-19T12:00:00.000-07:00"
-        or "-3d" (for time 3 days before now)
+        (to now), or a formatted time string. For example: "2014-06-19T12:00:00.000-07:00"
+        or "-3d" (for time 3 days before now)'
       isArray: false
       name: latest_time
       required: false
       secret: false
     - default: false
-      description: Limit the amount of events to return, Default is 100, put 0 for
-        unlimited
+      description: Maximum number of events to return. Default is 100. If "0", all results are returned.
       isArray: false
       name: event_limit
       required: false
       secret: false
     deprecated: false
-    description: Search Splunk for events
+    description: Searches Splunk for events.
     execution: false
     name: splunk-search
     outputs:
     - contextPath: Splunk.Result
-      description: The splunk search result, json array where each item is a splunk
-        event
+      description: The results of the Splunk search. The results are a JSON array, in which each item is a Splunk
+        event.
       type: Unknown
   - arguments:
     - default: false
-      description: Splunk index to push data to, run splunk-get-indexes to get all
-        indexes
+      description: Splunk index to which to push data. Run the splunk-get-indexes command to get all
+        indexes.
       isArray: false
       name: index
       required: true
       secret: false
     - default: true
-      description: The new event data to push, can be any string
+      description: The new event data to push, can be any string.
       isArray: false
       name: data
       required: true
       secret: false
     - default: false
-      description: Event sourcetype
+      description: Event source type.
       isArray: false
       name: sourcetype
       required: true
       secret: false
     - default: false
-      description: Event host, can be 'Local' or '120.0.0.1' for example
+      description: Event host. Can be "Local" or "120.0.0.1".
       isArray: false
       name: host
       required: true
       secret: false
     deprecated: false
-    description: Create new event in splunk
+    description: Creates a new event in Splunk.
     execution: false
     name: splunk-submit-event
   - deprecated: false
-    description: Print all Splunk index names
+    description: Prints all Splunk index names.
     execution: false
     name: splunk-get-indexes
   - arguments:
     - default: false
-      description: 'The notable events event_id, comma separated for a list '
+      description: 'A CSV list of event IDs of notable events.s'
       isArray: false
       name: eventIDs
       required: true
       secret: false
     - default: false
-      description: Splunk user to assign to notable event
+      description: A Splunk user to assign to the notable event.
       isArray: false
       name: owner
       required: false
       secret: false
     - default: false
-      description: Comment to add to notable event
+      description: Comment to add to the notable event.
       isArray: false
       name: comment
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Notable Event urgency
+      description: Notable event urgency.
       isArray: false
       name: urgency
       predefined:
@@ -191,8 +190,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Notable event status- 0 for Unassigned,1 for Assigned, 2 for In
-        Progress, 3 for pending, 4 for Resolved, 5 for Closed
+      description: Notable event status. 0 - Unassigned, 1 - Assigned, 2 - In
+        Progress, 3 - Pending, 4 - Resolved, 5 - Closed.
       isArray: false
       name: status
       required: false
@@ -203,35 +202,35 @@ script:
     name: splunk-notable-event-edit
   - arguments:
     - default: false
-      description: The splunk search language string to execute, example :"index=*
-        | head 3"
+      description: 'The Splunk search language string to execute. For example :"index=*
+        | head 3".'
       isArray: false
       name: query
       required: true
       secret: false
     deprecated: false
-    description: Create new search job in Splunk
+    description: Creates a new search job in Splunk.
     execution: false
     name: splunk-job-create
     outputs:
     - contextPath: Splunk.Job
-      description: The created job SID
+      description: The SID of the created job.
       type: Unknown
   - arguments:
     - default: true
       defaultValue: ${Splunk.Result._raw}
-      description: The Raw data of splunk event, in string format
+      description: The raw data of the Splunk event (string).
       isArray: false
       name: raw
       required: false
       secret: false
     deprecated: false
-    description: Parse the Raw part of the event
+    description: Parses the raw part of the event.
     execution: false
     name: splunk-parse-raw
     outputs:
     - contextPath: Splunk.Raw.Parsed
-      description: The raw event data parsed
+      description: The raw event data (parsed).
       type: unknown
   dockerimage: demisto/splunksdk:1.0
   isfetch: true
