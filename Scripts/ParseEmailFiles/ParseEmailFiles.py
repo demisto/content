@@ -37,6 +37,7 @@ from olefile import OleFileIO, isOleFile
 # coding=utf-8
 from datetime import datetime, timedelta
 from struct import unpack
+import chardet
 
 reload(sys)
 sys.setdefaultencoding('utf8')  # pylint: disable=no-member
@@ -190,7 +191,8 @@ class DataModel(object):
     def PtypString(data_value):
         if data_value:
             try:
-                data_value = data_value.decode('ascii', errors='ignore').replace('\x00', '')
+                encoding = chardet.detect(data_value)
+                data_value = data_value.decode(encoding['encoding'], errors='ignore').replace('\x00', '')
             except UnicodeDecodeError:
                 data_value = data_value.decode("utf-16-le", errors="ignore").replace('\x00', '')
 
@@ -3444,9 +3446,11 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                                                                           max_depth=max_depth - 1)
                             attached_emails.append(inner_eml)
                             attached_emails.extend(inner_attached_emails)
-
-                            return_outputs(readable_output=data_to_md(inner_eml, attachment_file_name, file_name),
-                                           outputs=None)
+                            # if we are outter email is a singed attachment it is a wrapper and we don't return the output of
+                            # this inner email as it will be returned as part of the main result
+                            if 'multipart/signed' not in eml.get_content_type():
+                                return_outputs(readable_output=data_to_md(inner_eml, attachment_file_name, file_name),
+                                               outputs=None)
                         finally:
                             os.remove(f.name)
 
@@ -3490,21 +3494,39 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
             elif part.get_content_type() == 'text/plain':
                 text = get_utf_string(part.get_payload(decode=True), 'TEXT')
 
-        email_data = {
-            'To': extract_address_eml(eml, 'to'),
-            'CC': extract_address_eml(eml, 'cc'),
-            'From': extract_address_eml(eml, 'from'),
-            'Subject': convert_to_unicode(eml['Subject']),
-            'HTML': convert_to_unicode(html),
-            'Text': convert_to_unicode(text),
-            'Headers': header_list,
-            'HeadersMap': headers_map,
-            'Attachments': ','.join(attachment_names) if attachment_names else '',
-            'Format': eml.get_content_type(),
-            'Depth': MAX_DEPTH_CONST - max_depth
-        }
+        email_data = None
+        # if we are parsing a singed attachment it is a wrapper and we can ignore the outter "email"
+        if 'multipart/signed' not in eml.get_content_type():
+            email_data = {
+                'To': extract_address_eml(eml, 'to'),
+                'CC': extract_address_eml(eml, 'cc'),
+                'From': extract_address_eml(eml, 'from'),
+                'Subject': convert_to_unicode(eml['Subject']),
+                'HTML': convert_to_unicode(html),
+                'Text': convert_to_unicode(text),
+                'Headers': header_list,
+                'HeadersMap': headers_map,
+                'Attachments': ','.join(attachment_names) if attachment_names else '',
+                'Format': eml.get_content_type(),
+                'Depth': MAX_DEPTH_CONST - max_depth
+            }
 
         return email_data, attached_emails
+
+
+def create_email_output(email_data, attached_emails):
+    # for backward compatibility if there are no attached files we return single dict
+    # if there are attached files then we will return array of all the emails
+    res = []
+    if email_data:
+        res.append(email_data)
+    if len(attached_emails) > 0:
+        res.extend(attached_emails)
+    if len(res) == 0:
+        return None
+    if len(res) == 1:
+        return res[0]
+    return res
 
 
 def main():
@@ -3547,19 +3569,14 @@ def main():
         if 'composite document file v2 document' in file_type_lower \
                 or 'cdfv2 microsoft outlook message' in file_type_lower:
             email_data, attached_emails = handle_msg(file_path, file_name, parse_only_headers, max_depth)
+            output = create_email_output(email_data, attached_emails)
 
-            # for backward compatibility if there are no attached files we return single dict
-            # if there are attached files then we will return array of all the emails
-            output = email_data if len(attached_emails) == 0 else [email_data] + attached_emails
-
-        elif 'rfc 822 mail' in file_type_lower or 'smtp mail' in file_type_lower:
+        elif 'rfc 822 mail' in file_type_lower or 'smtp mail' in file_type_lower or 'multipart/signed' in file_type_lower:
             email_data, attached_emails = handle_eml(file_path, False, file_name, parse_only_headers, max_depth)
+            output = create_email_output(email_data, attached_emails)
 
-            # for backward compatibility if there are no attached files we return single dict
-            # if there are attached files then we will return array of all the emails
-            output = email_data if len(attached_emails) == 0 else [email_data] + attached_emails
-
-        elif 'ascii text' in file_type_lower or 'unicode text' in file_type_lower:
+        elif ('ascii text' in file_type_lower or 'unicode text' in file_type_lower
+              or ('data' == file_type_lower and file_name and file_name.lower().endswith('.eml'))):
             try:
                 # Try to open the email as-is
                 with open(file_path, 'rb') as f:
@@ -3568,10 +3585,7 @@ def main():
                 if 'Content-Type:'.lower() in file_contents.lower():
                     email_data, attached_emails = handle_eml(file_path, b64=False, file_name=file_name,
                                                              parse_only_headers=parse_only_headers, max_depth=max_depth)
-
-                    # for backward compatibility if there are no attached files we return single dict
-                    # if there are attached files then we will return array of all the emails
-                    output = email_data if len(attached_emails) == 0 else [email_data] + attached_emails
+                    output = create_email_output(email_data, attached_emails)
                 else:
                     # Try a base64 decode
                     b64decode(file_contents)
@@ -3579,10 +3593,7 @@ def main():
                         email_data, attached_emails = handle_eml(file_path, b64=True, file_name=file_name,
                                                                  parse_only_headers=parse_only_headers,
                                                                  max_depth=max_depth)
-
-                        # for backward compatibility if there are no attached files we return single dict
-                        # if there are attached files then we will return array of all the emails
-                        output = email_data if len(attached_emails) == 0 else [email_data] + attached_emails
+                        output = create_email_output(email_data, attached_emails)
                     else:
                         return_error("Could not extract email from file. Base64 decode did not include rfc 822 strings")
 
@@ -3592,9 +3603,11 @@ def main():
         else:
             return_error("Unknown file format: " + file_type)
         output = recursive_convert_to_unicode(output)
-        email_data = recursive_convert_to_unicode(email_data)
+        email = output  # output may be a single email
+        if isinstance(output, list) and len(output) > 0:
+            email = output[0]
         return_outputs(
-            readable_output=data_to_md(email_data, file_name, print_only_headers=parse_only_headers),
+            readable_output=data_to_md(email, file_name, print_only_headers=parse_only_headers),
             outputs={
                 'Email': output
             },
