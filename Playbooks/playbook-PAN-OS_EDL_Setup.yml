@@ -1,7 +1,7 @@
 id: PAN-OS EDL Setup
 version: -1
 name: PAN-OS EDL Setup
-fromversion: 4.5.0
+fromversion: 4.0.0
 description: Sets up external dynamic list in PAN-OS.\nin case file exists in web server it will sync it to demisto. then it will create an EDL object and a matching rule.
 starttaskid: "0"
 tasks:
