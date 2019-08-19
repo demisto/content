@@ -186,11 +186,13 @@ class StructureValidator(object):
         file_extension = os.path.splitext(self.file_path)[1]
         if file_extension == '.yml':
             yaml_dict = get_yaml(self.file_path)
-            subtype = yaml_dict.get('subtype')
-            if not subtype or subtype not in ['python3', 'python2']:
-                print_error("The subtype for our yml files should be either python2 or python3, "
-                            "please update the file {}.".format(self.file_path))
-                self._is_valid = False
+            type_ = yaml_dict.get('type')
+            if type_ == ' python':
+                subtype = yaml_dict.get('subtype')
+                if not subtype or subtype not in ['python3', 'python2']:
+                    print_error("The subtype for our yml files should be either python2 or python3, "
+                                "please update the file {}.".format(self.file_path))
+                    self._is_valid = False
 
         return self._is_valid
 
