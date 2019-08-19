@@ -1,1 +1,1 @@
-Support fetching incidents from Splunk ES, and query of results by sid.
+Use the SplunkPy integration to fetch incidents from Splunk ES, and query results by SID.
