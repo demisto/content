@@ -11,6 +11,7 @@ args:
   name: file
   required: false
   secret: false
+  deprecated: true
 - default: false
   description: The column number that contains IP Addresses. (First column is column
     0)
@@ -87,4 +88,4 @@ type: python
 runas: DBotWeakRole
 runonce: false
 tests:
-- TestParseCSV
+- No tests
