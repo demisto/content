@@ -1,6 +1,6 @@
-id: Pwned test
-version: 14
-name: Pwned test
+id: Pwned v2 test
+version: -1
+name: Pwned v2 test
 starttaskid: "0"
 tasks:
   "0":
@@ -36,10 +36,10 @@ tasks:
       version: -1
       name: Get email
       description: Checks if an email has been compromised, as part of previous breaches.
-      script: Pwned-V2|||email
+      script: Have I Been Pwned? V2|||email
       type: regular
       iscommand: true
-      brand: Pwned-V2
+      brand: Have I Been Pwned? V2
     nexttasks:
       '#none#':
       - "6"
@@ -66,10 +66,10 @@ tasks:
       version: -1
       name: Get domain
       description: Checks if domain has been compromised.
-      script: Pwned-V2|||domain
+      script: Have I Been Pwned? V2|||domain
       type: regular
       iscommand: true
-      brand: Pwned-V2
+      brand: Have I Been Pwned? V2
     nexttasks:
       '#none#':
       - "4"
@@ -379,10 +379,10 @@ tasks:
       version: -1
       name: Get Email2
       description: Checks if an email has been compromised, as part of previous breaches.
-      script: Pwned-V2|||email
+      script: Have I Been Pwned? V2|||email
       type: regular
       iscommand: true
-      brand: Pwned-V2
+      brand: Have I Been Pwned? V2
     nexttasks:
       '#none#':
       - "13"

@@ -181,6 +181,7 @@ script:
   type: javascript
   commands:
   - name: pwned-email
+    deprecated: true
     arguments:
     - name: email
       required: true
@@ -221,6 +222,7 @@ script:
       related: ""
     description: Checks if an email has been compromised, as part of previous breaches.
   - name: pwned-domain
+    deprecated: true
     arguments:
     - name: domain
       required: true
@@ -261,6 +263,7 @@ script:
       related: ""
     description: Checks if domain has been compromised.
   - name: email
+    deprecated: true
     arguments:
     - name: email
       required: true
@@ -300,6 +303,7 @@ script:
       related: ""
     description: Checks if an email has been compromised, as part of previous breaches.
   - name: domain
+    deprecated: true
     arguments:
     - name: domain
       required: true
@@ -339,5 +343,6 @@ script:
       related: ""
     description: Checks if a domain has been compromised.
   runonce: false
+deprecated: true
 tests:
   - Pwned test

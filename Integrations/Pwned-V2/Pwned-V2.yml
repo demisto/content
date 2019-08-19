@@ -1,6 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+fromversion: 4.1.0
 commonfields:
-  id: Pwned-V2
+  id: Have I Been Pwned? V2
   version: -1
 configuration:
 - display: API Key
@@ -8,25 +9,17 @@ configuration:
   required: true
   type: 4
 - defaultvalue: SUSPICIOUS
-  display: 'Email Severity: The DBot reputation for compromised emails'
+  display: 'Email Severity: The DBot reputation for compromised emails (SUSPICIOUS or MALICIOUS)'
   name: default_dbot_score_email
-  options:
-  - SUSPICIOUS
-  - MALICIOUS
   required: false
-  type: 15
+  type: 0
 - defaultvalue: SUSPICIOUS
-  display: 'Domain Severity: The DBot reputation for compromised domains'
+  display: 'Domain Severity: The DBot reputation for compromised domains (SUSPICIOUS or MALICIOUS)'
   name: default_dbot_score_domain
-  options:
-  - SUSPICIOUS
-  - MALICIOUS
   required: false
-  type: 15
-- defaultvalue: 'true'
-  display: Trust any certificate (insecure)
+  type: 0
+- display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 - display: Use system proxy
   name: proxy
@@ -34,8 +27,8 @@ configuration:
   type: 8
 description: Checks whether emails or domains have been compromised in recent breaches,
   using the Have I Been Pwned? service.
-display: Pwned-V2
-name: Pwned-V2
+display: Have I Been Pwned? V2
+name: Have I Been Pwned? V2
 script:
   commands:
   - arguments:

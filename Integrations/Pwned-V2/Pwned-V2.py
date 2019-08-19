@@ -12,6 +12,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
+VENDOR = 'Have I Been Pwned? V2'
 API_KEY = demisto.params().get('api_key')
 USE_SSL = not demisto.params().get('insecure', False)
 BASE_URL = 'https://haveibeenpwned.com/api/v3'
@@ -21,11 +22,6 @@ HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
 }
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 DEFAULT_DBOT_SCORE_EMAIL = 2 if demisto.params().get('default_dbot_score_email') == 'SUSPICIOUS' else 3
 DEFAULT_DBOT_SCORE_DOMAIN = 2 if demisto.params().get('default_dbot_score_domain') == 'SUSPICIOUS' else 3
@@ -79,7 +75,7 @@ def html_description_to_human_readable(breach_description):
     return breach_description
 
 
-def data_to_markdown(query_type, query_arg, hibp_res, hibp_psate_res):
+def data_to_markdown(query_type, query_arg, hibp_res, hibp_paste_res=None):
     records_found = False
 
     md = '### Have I Been Pwned query for ' + query_type.lower() + ': *' + query_arg + '*\n'
@@ -90,19 +86,19 @@ def data_to_markdown(query_type, query_arg, hibp_res, hibp_psate_res):
             verified_breach = 'Verified' if breach['IsVerified'] else 'Unverified'
             md += '#### ' + breach['Title'] + ' (' + breach['Domain'] + '): ' + str(breach['PwnCount']) + \
                   ' records breached [' + verified_breach + ' breach]\n'
-            md += 'Date: **' + breach['BreachDate'] + '**\n'
+            md += 'Date: **' + breach['BreachDate'] + '**\n\n'
             md += html_description_to_human_readable(breach['Description']) + '\n'
             md += 'Data breached: **' + ','.join(breach['DataClasses']) + '**\n'
 
-    if hibp_psate_res and len(hibp_psate_res) > 0:
+    if hibp_paste_res and len(hibp_paste_res) > 0:
         records_found = True
         pastes_list = []
-        for paste_breach in hibp_psate_res:
+        for paste_breach in hibp_paste_res:
             paste_entry = \
                 {
                     'Source': paste_breach['Source'],
                     'Title': paste_breach['Title'],
-                    'Id': paste_breach['Id'],
+                    'ID': paste_breach['Id'],
                     'Date': '',
                     'Amount of emails in paste': str(paste_breach['EmailCount'])
                 }
@@ -114,7 +110,7 @@ def data_to_markdown(query_type, query_arg, hibp_res, hibp_psate_res):
 
         md += tableToMarkdown('The email address was found in the following "Pastes":',
                               pastes_list,
-                              ['Source', 'Title', 'Id', 'Date', 'Amount of emails in paste'])
+                              ['ID', 'Title', 'Date', 'Source', 'Amount of emails in paste'])
 
     if not records_found:
         md += 'No records found'
@@ -126,7 +122,7 @@ def create_dbot_score_dictionary(indicator_value, indicator_type, dbot_score):
     return {
         'Indicator': indicator_value,
         'Type': indicator_type,
-        'Vendor': 'Pwned',
+        'Vendor': VENDOR,
         'Score': dbot_score
     }
 
@@ -139,10 +135,9 @@ def create_context_entry(context_type, context_main_value, comp_sites, comp_past
     else:
         context_dict['Name'] = context_main_value
 
-    context_dict['Compromised'] = \
-        {
-            'Vendor': 'Pwned',
-            'Reporters': ', '.join(comp_sites + comp_pastes)
+    context_dict['Compromised'] = {
+        'Vendor': VENDOR,
+        'Reporters': ', '.join(comp_sites + comp_pastes)
     }
 
     if malicious_score == 3:
@@ -153,18 +148,16 @@ def create_context_entry(context_type, context_main_value, comp_sites, comp_past
 
 def add_malicious_to_context(malicious_type):
     return {
-        'Vendor': 'Pwned',
+        'Vendor': VENDOR,
         'Description': 'The ' + malicious_type + ' has been compromised'
     }
 
 
 def email_to_entry_context(email, hibp_email_res, hibp_paste_res):
-    comp_sites = [item['Title'] for item in hibp_email_res]
-    comp_sites = sorted(comp_sites)
-    comp_pastes = set(item['Source'] for item in hibp_paste_res)
-    comp_pastes = sorted(comp_pastes)
-    comp_email = dict()  # type: dict
     dbot_score = 0
+    comp_email = dict()  # type: dict
+    comp_sites = sorted([item['Title'] for item in hibp_email_res])
+    comp_pastes = sorted(set(item['Source'] for item in hibp_paste_res))
 
     if len(comp_sites) > 0:
         dbot_score = DEFAULT_DBOT_SCORE_EMAIL
@@ -223,7 +216,7 @@ def pwned_domain_command():
 
 def pwned_domain(domain, suffix):
     hibp_res = http_request('GET', suffix)
-    md = data_to_markdown('Domain', domain, hibp_res, None)
+    md = data_to_markdown('Domain', domain, hibp_res)
     ec = domain_to_entry_context(domain, hibp_res or [])
     return_outputs(md, ec, hibp_res)
 
@@ -233,20 +226,14 @@ def pwned_domain(domain, suffix):
 LOG('Command being called is %s' % (demisto.command()))
 
 try:
+    handle_proxy()
     if demisto.command() == 'test-module':
         test_module()
-    elif demisto.command() == 'pwned-email':
+    elif demisto.command() in ['pwned-email', 'email']:
         pwned_email_command()
-    elif demisto.command() == 'email':
-        pwned_email_command()
-    elif demisto.command() == 'pwned-domain':
+    elif demisto.command() in ['pwned-domain', 'domain']:
         pwned_domain_command()
-    elif demisto.command() == 'domain':
-        pwned_domain_command()
-
 
 # Log exceptions
-except Exception, e:
-    LOG(e.message)
-    LOG.print_log()
-    raise
+except Exception as e:
+    return_error(str(e))
