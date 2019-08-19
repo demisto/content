@@ -41,8 +41,8 @@ def get_credentials():
         json_keyfile = json.loads(PRIVATE_KEY_CONTENT)
         if not isinstance(json_keyfile, dict):
             json_keyfile = json.loads(json_keyfile)
-        else:
-            raise Exception('Something is wrong with your provided auth_json parameter. Please follow the instructions to obtain a credentials JSON file.')
+            if not isinstance(json_keyfile, dict):
+                raise Exception('Something is wrong with your provided auth_json parameter. Please follow the instructions to obtain a credentials JSON file.')
         return service_account.ServiceAccountCredentials.from_json_keyfile_dict(json_keyfile, scopes=SERVICE_SCOPES)
     except Exception as e:
         err_msg = 'An error occurred while trying to construct an OAuth2 ' \
@@ -116,13 +116,12 @@ def convert_to_output(result):
     output = {}
     output['GoogleVisionAPI'] = {}
     output['GoogleVisionAPI']['Logo'] = []
-    if len(result['responses']) > 0:
-        responses = result['responses']
-        for res in responses:
-            if res['logoAnnotations']:
-                logos = res['logoAnnotations']
-                if len(logos) > 0:
-                    output['GoogleVisionAPI']['Logo'].extend(logos)
+    
+    for res in result.get('responses', []):
+        logos = res.get('logoAnnotations', [])
+        if logos:
+            output['GoogleVisionAPI']['Logo'].extend(logos)
+
     return output
 
 
@@ -239,7 +238,7 @@ def main():
 
         if demisto.command() == 'test-module':
             test_module()
-        elif demisto.command() == 'vision-detect-logos':
+        elif demisto.command() == 'google-vision-detect-logos':
             detect_logos_command()
 
     except Exception as e:
