@@ -23,7 +23,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The entryId of the image to be processed
+      description: The entry ID of the image to be processed
       isArray: true
       name: entry_id
       required: true
