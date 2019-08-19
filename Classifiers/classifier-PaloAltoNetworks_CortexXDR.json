@@ -1,0 +1,138 @@
+{
+	"brandName": "Cortex XDR - IR",
+	"defaultIncidentType": "",
+	"fromVersion": "5.0.0",
+	"id": "32f26072-9a69-41a5-8db8-0d1226431078",
+	"custom": true,
+	"keyTypeMap": {
+		"XDR Incident": "Cortex XDR Incident"
+	},
+	"mapping": {
+		"Cortex XDR Incident": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"XDR Alert Count": {
+					"complex": null,
+					"simple": "alert_count"
+				},
+				"XDR Assigned User Email": {
+					"complex": null,
+					"simple": "assigned_user_mail"
+				},
+				"XDR Assigned User Pretty Name": {
+					"complex": null,
+					"simple": "assigned_user_pretty_name"
+				},
+				"XDR Description": {
+					"complex": null,
+					"simple": "description"
+				},
+				"XDR Detection Time": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "detection_time",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "TimeStampToDate"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"XDR High Severity Alert Count": {
+					"complex": null,
+					"simple": "high_severity_alert_count"
+				},
+				"XDR Incident ID": {
+					"complex": null,
+					"simple": "incident_id"
+				},
+				"XDR Low Severity Alert Count": {
+					"complex": null,
+					"simple": "low_severity_alert_count"
+				},
+				"XDR Medium Severity Alert Count": {
+					"complex": null,
+					"simple": "med_severity_alert_count"
+				},
+				"XDR Notes": {
+					"complex": null,
+					"simple": "notes"
+				},
+				"XDR Resolve Comment": {
+					"complex": null,
+					"simple": "resolve_comment"
+				},
+				"XDR Severity": {
+					"complex": null,
+					"simple": "severity"
+				},
+				"XDR Status": {
+					"complex": null,
+					"simple": "status"
+				},
+				"XDR URL": {
+					"complex": null,
+					"simple": "xdr_url"
+				},
+				"XDR User Count": {
+					"complex": null,
+					"simple": "user_count"
+				},
+				"occurred": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "creation_time",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "TimeStampToDate"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"severity": {
+					"complex": null,
+					"simple": "severity"
+				}
+			}
+		},
+		"CortextXDRIncident": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"XDR Severity": {
+					"complex": null,
+					"simple": "severity"
+				}
+			}
+		}
+	},
+	"transformer": {
+		"complex": {
+			"accessor": "",
+			"filters": [],
+			"root": "severity",
+			"transformers": [
+				{
+					"args": {
+						"dt": {
+							"isContext": false,
+							"value": {
+								"complex": null,
+								"simple": ".=\"XDR Incident\""
+							}
+						}
+					},
+					"operator": "DT"
+				}
+			]
+		},
+		"simple": ""
+	},
+	"unclassifiedCases": {},
+	"version": -1
+}
