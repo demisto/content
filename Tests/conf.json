@@ -290,6 +290,13 @@
         },
         {
             "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "playbookID": "Panorama Query Logs - Test",
+            "timeout": 1000,
+            "nightly": true
+        },
+        {
+            "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "palo_alto_firewall_test_pb",
             "timeout": 1000,
