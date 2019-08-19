@@ -1752,3 +1752,19 @@ def remove_nulls_from_dictionary(dict):
     for key in list_of_keys:
         if dict[key] in ('', None, [], {}, ()):
             del dict[key]
+
+
+def get_demisto_version():
+    """
+        Returns Demisto version and build number
+
+        :return: Demisto version object
+        :rtype: ``dict``
+    """
+    if hasattr(demisto, 'demistoVersion'):
+        return demisto.demistoVersion()
+    else:
+        return {
+            'version': '0.0.0',
+            'buildNumber': '00000'
+        }
