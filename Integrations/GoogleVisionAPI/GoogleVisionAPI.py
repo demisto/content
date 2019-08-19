@@ -139,9 +139,6 @@ def detect_logos(file_id):
 def detect_logos_command():
     entry_id = demisto.args().get('entry_id', '')
 
-    if len(entry_id) == 0 or not entry_id:
-        raise ValueError('You must specify: entry_id.')
-
     results = detect_logos(entry_id)
 
     output = convert_to_output(results)
