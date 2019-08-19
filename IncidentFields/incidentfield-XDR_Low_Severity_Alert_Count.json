@@ -26,7 +26,6 @@
 	"script": "",
 	"selectValues": null,
 	"sla": 0,
-	"sortValues": null,
 	"system": false,
 	"systemAssociatedTypes": null,
 	"threshold": 72,
@@ -34,7 +33,6 @@
 	"unmapped": false,
 	"unsearchable": false,
 	"useAsKpi": false,
-	"validatedError": "",
 	"validationRegex": "",
 	"version": -1,
 	"fromVersion": "5.0.0"
