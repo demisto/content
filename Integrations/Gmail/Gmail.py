@@ -1041,8 +1041,8 @@ def search_command(mailbox=None):
                       fields, label_ids, max_results, page_token, include_spam_trash, has_attachments)
 
     res = emails_to_entry('Search in %s:\nquery: "%s"' % (mailbox, q, ), mails, 'full', mailbox)
-
     return res
+
 
 def search(user_id, subject='', _from='', to='', before='', after='', filename='', _in='', query='',
            fields=None, label_ids=None, max_results=100, page_token=None, include_spam_trash=False,
