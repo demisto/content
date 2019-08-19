@@ -468,7 +468,7 @@ def query_malops_command():
             'filterType': 'GreaterThan'
         })
 
-    response = query_malops(total_result_limit, per_group_limit, template_context, None, guid_list=guid_list)
+    response = query_malops(total_result_limit, per_group_limit, template_context, filters, guid_list=guid_list)
     data = response['data']
     malops_map = data.get('resultIdToElementDataMap')
     if not data or not malops_map:
