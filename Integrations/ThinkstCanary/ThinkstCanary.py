@@ -65,11 +65,14 @@ def http_request(method, url, params=None):
         try:
             res_json = res.json()
             if 'message' in res_json:
-                demisto.debug(res_json['message'])
-                return_error(res_json['message'])
+                LOG(str(res.text))
+                LOG(res_json.get('message'))
+                return_error(res_json.get('message'))
         except ValueError:
-            return_error(res.text)
+            LOG(str(res.text))
+            return_error(str(res.text))
         except Exception as ex:
+            LOG(res.text)
             return_error(str(ex))
 
     try:
