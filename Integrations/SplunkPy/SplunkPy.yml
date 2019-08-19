@@ -24,8 +24,8 @@ configuration:
   name: fetchQuery
   required: false
   type: 0
-- defaultvalue: '200'
-  display: Fetch Limit
+- defaultvalue: '50'
+  display: Fetch Limit (No more than 50)
   name: fetch_limit
   required: false
   type: 0
