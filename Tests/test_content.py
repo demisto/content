@@ -118,20 +118,23 @@ def get_memory_data():
     return stdout, stderr
 
 
+def send_slack_message(slack, chanel, text, user_name, as_user):
+    sc = SlackClient(slack)
+    sc.api_call(
+        "chat.postMessage",
+        channel=chanel,
+        username=user_name,
+        as_user=as_user,
+        text=text
+    )
+
+
 def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
                    circle_ci, build_number, server_url, build_name, is_mock_run=False):
     status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run)
     stdout, stderr = get_memory_data()
-    text = stdout
-    if not stderr:
-        sc = SlackClient(slack)
-        sc.api_call(
-            "chat.postMessage",
-            channel=SLACK_CHANNEL_ID,
-            username="Content CircleCI",
-            as_user="False",
-            text=text
-        )
+    text = stdout if not stderr else stderr
+    send_slack_message(slack, SLACK_CHANNEL_ID, text, 'Content CircleCI', 'False')
 
     if status == PB_Status.COMPLETED:
         print_color('PASS: {} succeed'.format(test_message), LOG_COLORS.GREEN)
@@ -556,6 +559,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     else:  # In case of a non AMI run we don't want to use the mocking mechanism
         mockless_tests = tests
 
+    send_slack_message(slack, SLACK_CHANNEL_ID, 'Build Number: {}'.format(build_number))
     # first run the mock tests to avoid mockless side effects in container
     if is_ami and mock_tests:
         proxy.configure_proxy_in_demisto(proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
