@@ -288,6 +288,19 @@ def test_tbl_to_md_dict_with_special_character():
     assert table_with_character == expected_string_with_special_character
 
 
+def test_tbl_to_md_header_with_special_character():
+    data = {
+        'header_1': u'foo'
+    }
+    table_with_character = tableToMarkdown('tableToMarkdown test with special character Ù', data)
+    expected_string_with_special_character = '''### tableToMarkdown test with special character Ù
+|header_1|
+|---|
+|foo|
+'''
+    assert table_with_character == expected_string_with_special_character
+
+
 def test_flatten_cell():
     # sanity
     utf8_to_flatten = b'abcdefghijklmnopqrstuvwxyz1234567890!'.decode('utf8')
