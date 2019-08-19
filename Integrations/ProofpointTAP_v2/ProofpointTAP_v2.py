@@ -45,6 +45,8 @@ def get_fetch_times(last_fetch):
     times = list()
     time_format = "%Y-%m-%dT%H:%M:%SZ"
     if isinstance(last_fetch, str):
+        if last_fetch[-5] == '.':
+            last_fetch = last_fetch[:-6] + 'Z'
         times.append(last_fetch)
         last_fetch = datetime.strptime(last_fetch, time_format)
     elif isinstance(last_fetch, datetime):
