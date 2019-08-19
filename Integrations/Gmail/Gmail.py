@@ -218,8 +218,8 @@ def time_reformat(timestamp_date):
     return day + " " + mon + " " + year + " " + exact_time
 
 
-def utc_extract(base_time):
-    utc = base_time[-5:]
+def utc_extract(time_from_mail):
+    utc = time_from_mail[-5:]
     if utc[0] != '-' and utc[0] != '+':
         return '-0000', 0
     for ch in utc[1:]:
@@ -237,12 +237,16 @@ def get_email_context(email_data, mailbox):
     body = demisto.get(email_data, 'payload.body.data')
     body = body.encode('ascii') if body is not None else ''
     parsed_body = base64.urlsafe_b64decode(body)
-
-    utc, delta_in_seconds = utc_extract(str(headers.get('date', '')))
-    base_time = datetime.fromtimestamp((int(str(email_data.get('internalDate'))[:10]))) + timedelta(seconds=delta_in_seconds)
-    day = days_of_the_week(int(base_time.isoweekday()))  # gets day of week from date
-    base_time = day + ", " + time_reformat(str(base_time)) + " " + utc
+    context_email = {}
+    if email_data.get('internalDate') is not None:
+        utc, delta_in_seconds = utc_extract(str(headers.get('date', '')))
+        base_time = datetime.fromtimestamp((int(str(email_data.get('internalDate'))[:10]))) + timedelta(seconds=delta_in_seconds)
+        day = days_of_the_week(int(base_time.isoweekday()))  # gets day of week from date
+        base_time = day + ", " + time_reformat(str(base_time)) + " " + utc
     # return_error(str(headers.get('date', ''))+" ### "+base_time)
+    else:
+        base_time = None
+
     context_gmail = {
         'Type': 'Gmail',
         'Mailbox': ADMIN_EMAIL if mailbox == 'me' else mailbox,
@@ -339,6 +343,7 @@ def create_incident_labels(parsed_msg, headers):
 
 def emails_to_entry(title, raw_emails, format_data, mailbox):
     emails = []
+    context_email = {}
     for email_data in raw_emails:
         context_gmail, _, context_email = get_email_context(email_data, mailbox)
         emails.append(context_gmail)
@@ -1035,8 +1040,9 @@ def search_command(mailbox=None):
     mails, q = search(user_id, subject, _from, to, before, after, filename, _in, query,
                       fields, label_ids, max_results, page_token, include_spam_trash, has_attachments)
 
-    return emails_to_entry('Search in %s:\nquery: "%s"' % (mailbox, q, ), mails, 'full', mailbox)
+    res = emails_to_entry('Search in %s:\nquery: "%s"' % (mailbox, q, ), mails, 'full', mailbox)
 
+    return res
 
 def search(user_id, subject='', _from='', to='', before='', after='', filename='', _in='', query='',
            fields=None, label_ids=None, max_results=100, page_token=None, include_spam_trash=False,
