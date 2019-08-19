@@ -353,3 +353,4 @@ script:
   runonce: false
 tests:
   - ArcSight ESM v2 Test
+releaseNotes: Limit fetch to 50 incidents at a time
