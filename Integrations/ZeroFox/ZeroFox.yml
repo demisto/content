@@ -812,8 +812,8 @@ script:
     - contextPath: ZeroFox.Entity.Tags
       description: List of string tags for tagging the entity.
       type: String
-    - contextPath: ZeroFox.Entity.Policy
-      description: The policy of the entity.
+    - contextPath: ZeroFox.Entity.PolicyID
+      description: The policy id of the entity.
       type: String
     - contextPath: ZeroFox.Entity.Organization
       description: Organization name associated with entity
@@ -899,7 +899,7 @@ script:
       description: Filter by an entity policy id. Multiple policy parameters can be
         provided. Can be retrived using the command zerofox-get-policy-types.
       isArray: false
-      name: policy_id
+      name: policy
       required: false
       secret: false
     - default: false
@@ -951,10 +951,6 @@ script:
       description: The name of the type of the entity
       type: String
   - deprecated: false
-    description: Fetching incidents.
-    execution: false
-    name: zerofox-fetch-incidents
-  - deprecated: false
     description: Shows in the war room a table of all entity type names & IDs
     execution: false
     name: zerofox-get-entity-types
@@ -964,6 +960,8 @@ script:
     name: zerofox-get-policy-types
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   type: python
