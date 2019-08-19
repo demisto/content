@@ -539,7 +539,7 @@ def create_entity_command():
                 'StrictNameMatching': strict_name_matching,
                 'Name': name,
                 'Tags': tags,
-                'Policy': policy_id,
+                'PolicyID': policy_id,
                 'Organization': organization
             }
         },

@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 203f2f62-9831-4b9d-8706-9c16c706e0c7
+    taskid: 556675c7-b312-429e-854f-f2c5cb6018ad
     type: start
     task:
-      id: 203f2f62-9831-4b9d-8706-9c16c706e0c7
+      id: 556675c7-b312-429e-854f-f2c5cb6018ad
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 169d047a-4fd4-4b10-8519-4664065f34e1
+    taskid: f9809f04-e5e2-4f8c-8080-e5a19c5ac2fa
     type: regular
     task:
-      id: 169d047a-4fd4-4b10-8519-4664065f34e1
+      id: f9809f04-e5e2-4f8c-8080-e5a19c5ac2fa
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -63,10 +63,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 955accac-e54d-4416-8007-0a8281acb634
+    taskid: cf2d95cb-ece6-4ced-8efd-86e218052fca
     type: regular
     task:
-      id: 955accac-e54d-4416-8007-0a8281acb634
+      id: cf2d95cb-ece6-4ced-8efd-86e218052fca
       version: -1
       name: zerofox-list-alerts
       description: Returns alerts matching given/default filters and parameters. By
@@ -77,7 +77,7 @@ tasks:
       brand: ZeroFox
     nexttasks:
       '#none#':
-        - "3"
+      - "3"
     scriptarguments:
       account: {}
       alert_id: {}
@@ -121,10 +121,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 70226c2e-ec08-420e-8990-17a3f5b8da3e
+    taskid: 70095228-35a6-4c74-8381-9aa3aeb4e61a
     type: regular
     task:
-      id: 70226c2e-ec08-420e-8990-17a3f5b8da3e
+      id: 70095228-35a6-4c74-8381-9aa3aeb4e61a
       version: -1
       name: GenerateRandomString
       description: Generates random string
@@ -134,7 +134,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "4"
+      - "4"
     scriptarguments:
       Digits:
         simple: "False"
@@ -159,10 +159,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 87dfd0ff-632c-4165-8e22-59d3467f53ed
+    taskid: 7b05a4cb-421c-487a-86ea-04bf22e5a3d7
     type: regular
     task:
-      id: 87dfd0ff-632c-4165-8e22-59d3467f53ed
+      id: 7b05a4cb-421c-487a-86ea-04bf22e5a3d7
       version: -1
       name: zerofox-alert-user-assignment
       description: Assigns an alert to a user
@@ -172,7 +172,7 @@ tasks:
       brand: ZeroFox
     nexttasks:
       '#none#':
-        - "5"
+      - "5"
     scriptarguments:
       alert_id:
         complex:
@@ -181,6 +181,9 @@ tasks:
       subject_email:
         simple: kkk@gmail.com #disable-secrets-detection
       subject_name:
+        complex:
+          root: RandomString
+      username:
         complex:
           root: RandomString
     separatecontext: false
@@ -196,10 +199,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: c02e3cd5-058e-45f8-8a4a-bf750d9bcf0c
+    taskid: 52d91681-1743-490a-8fe7-8e7e12c74f6a
     type: regular
     task:
-      id: c02e3cd5-058e-45f8-8a4a-bf750d9bcf0c
+      id: 52d91681-1743-490a-8fe7-8e7e12c74f6a
       version: -1
       name: zerofox-get-alert
       description: Fetches an alert by ID
@@ -209,7 +212,7 @@ tasks:
       brand: ZeroFox
     nexttasks:
       '#none#':
-        - "6"
+      - "6"
     scriptarguments:
       alert_id:
         complex:
@@ -228,10 +231,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 62be83a8-93b9-486b-81a9-12ad95f886b5
+    taskid: 444c9201-659a-436f-82c6-a881bf41d2a2
     type: condition
     task:
-      id: 62be83a8-93b9-486b-81a9-12ad95f886b5
+      id: 444c9201-659a-436f-82c6-a881bf41d2a2
       version: -1
       name: Verify Asignee
       type: condition
@@ -268,10 +271,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 815f5a52-72c4-4001-800e-b218cf3ca85d
+    taskid: 96738ebc-05c1-4d00-87b4-f76df5ddc85e
     type: regular
     task:
-      id: 815f5a52-72c4-4001-800e-b218cf3ca85d
+      id: 96738ebc-05c1-4d00-87b4-f76df5ddc85e
       version: -1
       name: zerofox-modify-alert-tags
       description: adds/removes tags to/from a specific alert
@@ -303,10 +306,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: d0cf3d24-0be6-44d5-89c5-e2cd7632ce59
+    taskid: fc9e9bb9-4f43-4ff7-8c88-2d342b5e54b5
     type: regular
     task:
-      id: d0cf3d24-0be6-44d5-89c5-e2cd7632ce59
+      id: fc9e9bb9-4f43-4ff7-8c88-2d342b5e54b5
       version: -1
       name: zerofox-get-alert
       description: Fetches an alert by ID
@@ -335,10 +338,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: b32dc659-5728-4f9e-877e-2c416d89f08c
+    taskid: 54d83825-988d-4dac-8854-c9460a479f3e
     type: condition
     task:
-      id: b32dc659-5728-4f9e-877e-2c416d89f08c
+      id: 54d83825-988d-4dac-8854-c9460a479f3e
       version: -1
       name: Verify Tags
       type: condition
@@ -395,10 +398,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 1ff18085-2573-4238-8792-b424bf378129
+    taskid: afa29df6-3350-401f-8959-6ee2d111f7e3
     type: regular
     task:
-      id: 1ff18085-2573-4238-8792-b424bf378129
+      id: afa29df6-3350-401f-8959-6ee2d111f7e3
       version: -1
       name: zerofox-modify-alert-tags
       description: adds/removes tags to/from a specific alert
@@ -431,10 +434,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 25fefc69-5e3b-46c1-875b-98ca95e253c1
+    taskid: 4da3a5a3-23e5-46e9-85fd-a76d6303e67c
     type: regular
     task:
-      id: 25fefc69-5e3b-46c1-875b-98ca95e253c1
+      id: 4da3a5a3-23e5-46e9-85fd-a76d6303e67c
       version: -1
       name: zerofox-get-alert
       description: Fetches an alert by ID
@@ -463,10 +466,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 644206c5-f5b5-4a21-84ea-029c7c026640
+    taskid: 21209b7d-9ffa-4a14-87fa-63773dac6e09
     type: condition
     task:
-      id: 644206c5-f5b5-4a21-84ea-029c7c026640
+      id: 21209b7d-9ffa-4a14-87fa-63773dac6e09
       version: -1
       name: Verify Tags
       type: condition
@@ -515,10 +518,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 07892f52-79c7-4500-8332-7630b8466b8d
+    taskid: 7af9a6b9-d564-4cef-8133-a3384a9dc9be
     type: regular
     task:
-      id: 07892f52-79c7-4500-8332-7630b8466b8d
+      id: 7af9a6b9-d564-4cef-8133-a3384a9dc9be
       version: -1
       name: zerofox-alert-request-takedown
       description: Requests takedown of a specific alert
@@ -547,10 +550,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: ba0ec7c7-de78-4ce0-84eb-d33da6454c17
+    taskid: 0effc821-3efa-40b4-8763-f1173b565bb9
     type: regular
     task:
-      id: ba0ec7c7-de78-4ce0-84eb-d33da6454c17
+      id: 0effc821-3efa-40b4-8763-f1173b565bb9
       version: -1
       name: zerofox-get-alert
       description: Fetches an alert by ID
@@ -579,10 +582,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 951e6aac-5560-48ba-8654-05f732f3608f
+    taskid: 7c878b0d-2369-45d4-86a1-ba8026b67e79
     type: regular
     task:
-      id: 951e6aac-5560-48ba-8654-05f732f3608f
+      id: 7c878b0d-2369-45d4-86a1-ba8026b67e79
       version: -1
       name: zerofox-alert-cancel-takedown
       description: Cancels takedown of a specific alert
@@ -611,10 +614,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: d76ac182-290f-49bc-8a44-2532d1d78c47
+    taskid: b50d700e-8bcf-4bb5-8a9a-efcff92dc1dc
     type: regular
     task:
-      id: d76ac182-290f-49bc-8a44-2532d1d78c47
+      id: b50d700e-8bcf-4bb5-8a9a-efcff92dc1dc
       version: -1
       name: zerofox-get-alert
       description: Fetches an alert by ID
@@ -643,10 +646,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 90cb0240-c1a4-44c1-8178-f9d2b6bef803
+    taskid: f885ce55-034b-4dbc-8753-78edb81c7909
     type: condition
     task:
-      id: 90cb0240-c1a4-44c1-8178-f9d2b6bef803
+      id: f885ce55-034b-4dbc-8753-78edb81c7909
       version: -1
       name: Verify Open
       type: condition
@@ -681,10 +684,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 83188e31-63a1-447a-8f30-58d4caf2190f
+    taskid: 0cd9ec7a-3257-4fdb-8405-0f301998eca2
     type: regular
     task:
-      id: 83188e31-63a1-447a-8f30-58d4caf2190f
+      id: 0cd9ec7a-3257-4fdb-8405-0f301998eca2
       version: -1
       name: zerofox-close-alert
       description: Closes an alert
@@ -713,10 +716,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: fe74431d-e40d-4198-896c-87e9908ca2c0
+    taskid: adc02c74-6a93-410b-85db-73d5892d5236
     type: regular
     task:
-      id: fe74431d-e40d-4198-896c-87e9908ca2c0
+      id: adc02c74-6a93-410b-85db-73d5892d5236
       version: -1
       name: zerofox-get-alert
       description: Fetches an alert by ID
@@ -745,10 +748,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 26600e7d-0056-4714-8be4-99edde5da543
+    taskid: a98bf8eb-5b11-42f7-8e02-2a027d51d9ab
     type: condition
     task:
-      id: 26600e7d-0056-4714-8be4-99edde5da543
+      id: a98bf8eb-5b11-42f7-8e02-2a027d51d9ab
       version: -1
       name: Verify Closed
       type: condition
@@ -783,10 +786,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 8098978b-301e-4fa4-8d6a-1899d80f4b45
+    taskid: feeb2d17-c88f-4e81-8c76-f7f3793a5e0c
     type: regular
     task:
-      id: 8098978b-301e-4fa4-8d6a-1899d80f4b45
+      id: feeb2d17-c88f-4e81-8c76-f7f3793a5e0c
       version: -1
       name: zerofox-open-alert
       description: Opens an alert'
@@ -815,10 +818,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: 11708655-06e8-4d51-85c0-513ba7388c38
+    taskid: eab07206-c1f6-4060-8981-35273892fd62
     type: regular
     task:
-      id: 11708655-06e8-4d51-85c0-513ba7388c38
+      id: eab07206-c1f6-4060-8981-35273892fd62
       version: -1
       name: zerofox-get-alert
       description: Fetches an alert by ID
@@ -847,10 +850,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: 404a717c-2775-4e40-8a57-5ec8f000247e
+    taskid: 8ded6457-c88c-45e2-836d-c00d421c0ae7
     type: condition
     task:
-      id: 404a717c-2775-4e40-8a57-5ec8f000247e
+      id: 8ded6457-c88c-45e2-836d-c00d421c0ae7
       version: -1
       name: Verify Open
       type: condition
@@ -885,10 +888,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: e7955643-7629-4209-8d14-94301496f1d7
+    taskid: e00f232f-9bff-4931-8a7e-c4ce740cca60
     type: regular
     task:
-      id: e7955643-7629-4209-8d14-94301496f1d7
+      id: e00f232f-9bff-4931-8a7e-c4ce740cca60
       version: -1
       name: Fetch Incidents Test
       scriptName: FetchFromInstance
@@ -897,42 +900,21 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "25"
+      - "26"
     scriptarguments:
       instance_name:
         complex:
           root: modules
           filters:
-            - - operator: isEqualString
-                left:
-                  value:
-                    simple: modules.brand
-                  iscontext: true
-                right:
-                  value:
-                    simple: ZeroFox
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: ZeroFox
           accessor: name
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-  "25":
-    id: "25"
-    taskid: 3bac869e-c9bf-492f-855b-d7ef6591a7a5
-    type: title
-    task:
-      id: 3bac869e-c9bf-492f-855b-d7ef6591a7a5
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
     separatecontext: false
     view: |-
       {
@@ -944,12 +926,135 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "25":
+    id: "25"
+    taskid: d7e52928-6e30-4f63-8f66-0cef0f83636b
+    type: title
+    task:
+      id: d7e52928-6e30-4f63-8f66-0cef0f83636b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 3c5dc9e4-1637-460b-8c96-704069aff496
+    type: regular
+    task:
+      id: 3c5dc9e4-1637-460b-8c96-704069aff496
+      version: -1
+      name: zerofox-get-policy-types
+      description: Shows in the war room a table of all policy type names & IDs
+      script: ZeroFox|||zerofox-get-policy-types
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 78f91ae1-bc16-4bc1-85e1-9732d5cf75fc
+    type: regular
+    task:
+      id: 78f91ae1-bc16-4bc1-85e1-9732d5cf75fc
+      version: -1
+      name: zerofox-create-entity
+      description: Creates a new entity on the company of the authorized user.
+      script: ZeroFox|||zerofox-create-entity
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      name:
+        simple: pb_test
+      organization: {}
+      policy_id:
+        simple: "34778"
+      strict_name_matching: {}
+      tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 306867ae-9d66-4be3-86b6-4a1d92840e05
+    type: regular
+    task:
+      id: 306867ae-9d66-4be3-86b6-4a1d92840e05
+      version: -1
+      name: zerofox-list-entities
+      description: Lists all entities on the company of the authorized user.
+      script: ZeroFox|||zerofox-list-entities
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      email_address: {}
+      group: {}
+      label: {}
+      network: {}
+      networks: {}
+      page: {}
+      policy:
+        complex:
+          root: ZeroFox
+          accessor: Entity.PolicyID
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4235,
+        "height": 4935,
         "width": 380,
         "x": 50,
         "y": 50
