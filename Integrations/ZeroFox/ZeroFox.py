@@ -35,7 +35,7 @@ def dict_value_to_integer(params: Dict, key: str):
                 params[key] = int(value)
                 return params[key]
     except ValueError:
-        raise Exception(f'{key} should contain only numbers. Please enter a valid Integer.')
+        raise Exception(f'This value for {key} must be an integer.')
 
 
 # transforms severity number to string representation
@@ -336,7 +336,7 @@ def close_alert_command():
     contents: Dict = get_updated_contents(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Closed'}}
     return_outputs(
-        f'Alert: {alert_id} has been closed successfully.',
+        f'Alert {alert_id} was closed successfully.',
         context,
         raw_response=contents
     )
@@ -358,7 +358,7 @@ def open_alert_command():
     contents: Dict = get_updated_contents(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Open'}}
     return_outputs(
-        f'Alert: {alert_id} has been opened successfully.',
+        f'Alert {alert_id} was opened successfully.',
         context,
         raw_response=contents
     )
@@ -380,7 +380,7 @@ def alert_request_takedown_command():
     contents: Dict = get_updated_contents(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Takedown:Requested'}}
     return_outputs(
-        f'Alert: {alert_id} has been requested to be taken down successfully.',
+        f'Alert {alert_id} has been requested to be taken down successfully.',
         context,
         raw_response=contents
     )
@@ -402,7 +402,7 @@ def alert_cancel_takedown_command():
     contents: Dict = get_updated_contents(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Open'}}
     return_outputs(
-        f'Alert: {alert_id} has canceled takedown successfully.',
+        f'Alert {alert_id} was cancelled takedown successfully.',
         context,
         raw_response=contents
     )
