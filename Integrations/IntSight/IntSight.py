@@ -4,7 +4,10 @@ from CommonServerUserPython import *
 import requests
 import json
 import base64
+import sys
 from datetime import datetime
+reload(sys)
+sys.setdefaultencoding('utf-8')  # pylint: disable=E1101
 
 requests.packages.urllib3.disable_warnings()
 
