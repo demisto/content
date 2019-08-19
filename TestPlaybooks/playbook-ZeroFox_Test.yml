@@ -42,7 +42,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "2"
     scriptarguments:
       all:
         simple: "yes"
@@ -61,155 +61,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 62be83a8-93b9-486b-81a9-12ad95f886b5
-    type: condition
-    task:
-      id: 62be83a8-93b9-486b-81a9-12ad95f886b5
-      version: -1
-      name: Verify Asignee
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "11"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: ZeroFox
-                accessor: Alert.Assignee
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: RandomString
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 87dfd0ff-632c-4165-8e22-59d3467f53ed
-    type: regular
-    task:
-      id: 87dfd0ff-632c-4165-8e22-59d3467f53ed
-      version: -1
-      name: zerofox-alert-user-assignment
-      description: Assigns an alert to a user
-      script: ZeroFox|||zerofox-alert-user-assignment
-      type: regular
-      iscommand: true
-      brand: ZeroFox
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      alert_id:
-        complex:
-          root: ZeroFox
-          accessor: Alert.ID
-      subject_email:
-        simple: gf@gmail.com #disable-secrets-detection
-      subject_name:
-        complex:
-          root: RandomString
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: c02e3cd5-058e-45f8-8a4a-bf750d9bcf0c
-    type: regular
-    task:
-      id: c02e3cd5-058e-45f8-8a4a-bf750d9bcf0c
-      version: -1
-      name: zerofox-get-alert
-      description: Fetches an alert by ID
-      script: ZeroFox|||zerofox-get-alert
-      type: regular
-      iscommand: true
-      brand: ZeroFox
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      alert_id:
-        complex:
-          root: ZeroFox
-          accessor: Alert.ID
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: 70226c2e-ec08-420e-8990-17a3f5b8da3e
-    type: regular
-    task:
-      id: 70226c2e-ec08-420e-8990-17a3f5b8da3e
-      version: -1
-      name: GenerateRandomString
-      description: Generates random string
-      scriptName: GenerateRandomString
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      Digits:
-        simple: "False"
-      Length:
-        simple: "12"
-      Lowercase:
-        simple: "False"
-      Punctuation:
-        simple: "False"
-      Uppercase:
-        simple: "True"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "10":
-    id: "10"
+  "2":
+    id: "2"
     taskid: 955accac-e54d-4416-8007-0a8281acb634
     type: regular
     task:
@@ -224,7 +77,7 @@ tasks:
       brand: ZeroFox
     nexttasks:
       '#none#':
-      - "9"
+        - "3"
     scriptarguments:
       account: {}
       alert_id: {}
@@ -266,8 +119,155 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "11":
-    id: "11"
+  "3":
+    id: "3"
+    taskid: 70226c2e-ec08-420e-8990-17a3f5b8da3e
+    type: regular
+    task:
+      id: 70226c2e-ec08-420e-8990-17a3f5b8da3e
+      version: -1
+      name: GenerateRandomString
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "4"
+    scriptarguments:
+      Digits:
+        simple: "False"
+      Length:
+        simple: "12"
+      Lowercase:
+        simple: "False"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 87dfd0ff-632c-4165-8e22-59d3467f53ed
+    type: regular
+    task:
+      id: 87dfd0ff-632c-4165-8e22-59d3467f53ed
+      version: -1
+      name: zerofox-alert-user-assignment
+      description: Assigns an alert to a user
+      script: ZeroFox|||zerofox-alert-user-assignment
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+        - "5"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: ZeroFox
+          accessor: Alert.ID
+      subject_email:
+        simple: kkk@gmail.com #disable-secrets-detection
+      subject_name:
+        complex:
+          root: RandomString
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: c02e3cd5-058e-45f8-8a4a-bf750d9bcf0c
+    type: regular
+    task:
+      id: c02e3cd5-058e-45f8-8a4a-bf750d9bcf0c
+      version: -1
+      name: zerofox-get-alert
+      description: Fetches an alert by ID
+      script: ZeroFox|||zerofox-get-alert
+      type: regular
+      iscommand: true
+      brand: ZeroFox
+    nexttasks:
+      '#none#':
+        - "6"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: ZeroFox
+          accessor: Alert.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 62be83a8-93b9-486b-81a9-12ad95f886b5
+    type: condition
+    task:
+      id: 62be83a8-93b9-486b-81a9-12ad95f886b5
+      version: -1
+      name: Verify Asignee
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ZeroFox
+                accessor: Alert.Assignee
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: RandomString
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
     taskid: 815f5a52-72c4-4001-800e-b218cf3ca85d
     type: regular
     task:
@@ -281,7 +281,7 @@ tasks:
       brand: ZeroFox
     nexttasks:
       '#none#':
-      - "12"
+      - "8"
     scriptarguments:
       addition: {}
       alert_id:
@@ -301,8 +301,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "12":
-    id: "12"
+  "8":
+    id: "8"
     taskid: d0cf3d24-0be6-44d5-89c5-e2cd7632ce59
     type: regular
     task:
@@ -316,7 +316,7 @@ tasks:
       brand: ZeroFox
     nexttasks:
       '#none#':
-      - "13"
+      - "9"
     scriptarguments:
       alert_id:
         complex:
@@ -333,8 +333,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "13":
-    id: "13"
+  "9":
+    id: "9"
     taskid: b32dc659-5728-4f9e-877e-2c416d89f08c
     type: condition
     task:
@@ -346,7 +346,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "14"
+      - "10"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -393,8 +393,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "14":
-    id: "14"
+  "10":
+    id: "10"
     taskid: 1ff18085-2573-4238-8792-b424bf378129
     type: regular
     task:
@@ -408,7 +408,7 @@ tasks:
       brand: ZeroFox
     nexttasks:
       '#none#':
-      - "15"
+      - "11"
     scriptarguments:
       addition:
         simple: "false"
@@ -429,8 +429,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "15":
-    id: "15"
+  "11":
+    id: "11"
     taskid: 25fefc69-5e3b-46c1-875b-98ca95e253c1
     type: regular
     task:
@@ -444,7 +444,7 @@ tasks:
       brand: ZeroFox
     nexttasks:
       '#none#':
-      - "16"
+      - "12"
     scriptarguments:
       alert_id:
         complex:
@@ -461,8 +461,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "16":
-    id: "16"
+  "12":
+    id: "12"
     taskid: 644206c5-f5b5-4a21-84ea-029c7c026640
     type: condition
     task:
@@ -474,7 +474,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "17"
+      - "13"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -513,8 +513,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "17":
-    id: "17"
+  "13":
+    id: "13"
     taskid: 07892f52-79c7-4500-8332-7630b8466b8d
     type: regular
     task:
@@ -528,7 +528,7 @@ tasks:
       brand: ZeroFox
     nexttasks:
       '#none#':
-      - "18"
+      - "14"
     scriptarguments:
       alert_id:
         complex:
@@ -545,8 +545,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "18":
-    id: "18"
+  "14":
+    id: "14"
     taskid: ba0ec7c7-de78-4ce0-84eb-d33da6454c17
     type: regular
     task:
@@ -560,7 +560,7 @@ tasks:
       brand: ZeroFox
     nexttasks:
       '#none#':
-      - "19"
+      - "15"
     scriptarguments:
       alert_id:
         complex:
@@ -577,8 +577,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "19":
-    id: "19"
+  "15":
+    id: "15"
     taskid: 951e6aac-5560-48ba-8654-05f732f3608f
     type: regular
     task:
@@ -592,7 +592,7 @@ tasks:
       brand: ZeroFox
     nexttasks:
       '#none#':
-      - "20"
+      - "16"
     scriptarguments:
       alert_id:
         complex:
@@ -609,8 +609,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "20":
-    id: "20"
+  "16":
+    id: "16"
     taskid: d76ac182-290f-49bc-8a44-2532d1d78c47
     type: regular
     task:
@@ -624,7 +624,7 @@ tasks:
       brand: ZeroFox
     nexttasks:
       '#none#':
-      - "21"
+      - "17"
     scriptarguments:
       alert_id:
         complex:
@@ -641,8 +641,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "21":
-    id: "21"
+  "17":
+    id: "17"
     taskid: 90cb0240-c1a4-44c1-8178-f9d2b6bef803
     type: condition
     task:
@@ -654,7 +654,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "22"
+      - "18"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -679,8 +679,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "22":
-    id: "22"
+  "18":
+    id: "18"
     taskid: 83188e31-63a1-447a-8f30-58d4caf2190f
     type: regular
     task:
@@ -694,7 +694,7 @@ tasks:
       brand: ZeroFox
     nexttasks:
       '#none#':
-      - "23"
+      - "19"
     scriptarguments:
       alert_id:
         complex:
@@ -711,8 +711,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "23":
-    id: "23"
+  "19":
+    id: "19"
     taskid: fe74431d-e40d-4198-896c-87e9908ca2c0
     type: regular
     task:
@@ -726,7 +726,7 @@ tasks:
       brand: ZeroFox
     nexttasks:
       '#none#':
-      - "24"
+      - "20"
     scriptarguments:
       alert_id:
         complex:
@@ -743,8 +743,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "24":
-    id: "24"
+  "20":
+    id: "20"
     taskid: 26600e7d-0056-4714-8be4-99edde5da543
     type: condition
     task:
@@ -756,7 +756,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "25"
+      - "21"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -781,8 +781,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "25":
-    id: "25"
+  "21":
+    id: "21"
     taskid: 8098978b-301e-4fa4-8d6a-1899d80f4b45
     type: regular
     task:
@@ -796,7 +796,7 @@ tasks:
       brand: ZeroFox
     nexttasks:
       '#none#':
-      - "26"
+      - "22"
     scriptarguments:
       alert_id:
         complex:
@@ -813,8 +813,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "26":
-    id: "26"
+  "22":
+    id: "22"
     taskid: 11708655-06e8-4d51-85c0-513ba7388c38
     type: regular
     task:
@@ -828,7 +828,7 @@ tasks:
       brand: ZeroFox
     nexttasks:
       '#none#':
-      - "27"
+      - "23"
     scriptarguments:
       alert_id:
         complex:
@@ -845,8 +845,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "27":
-    id: "27"
+  "23":
+    id: "23"
     taskid: 404a717c-2775-4e40-8a57-5ec8f000247e
     type: condition
     task:
@@ -858,7 +858,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "28"
+      - "24"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -883,8 +883,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "28":
-    id: "28"
+  "24":
+    id: "24"
     taskid: 3bac869e-c9bf-492f-855b-d7ef6591a7a5
     type: title
     task:
@@ -900,61 +900,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 4220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "29":
-    id: "29"
-    taskid: 88f5ee37-a229-4abd-80eb-3279488da7bd
-    type: regular
-    task:
-      id: 88f5ee37-a229-4abd-80eb-3279488da7bd
-      version: -1
-      name: zerofox-list-alerts
-      description: Returns alerts matching given/default filters and parameters. By
-        default, no filters are applied and results are sorted by timestamp.
-      script: ZeroFox|||zerofox-list-alerts
-      type: regular
-      iscommand: true
-      brand: ZeroFox
-    scriptarguments:
-      account: {}
-      alert_id: {}
-      alert_type: {}
-      assignee: {}
-      entity: {}
-      entity_search: {}
-      entity_term: {}
-      escalated: {}
-      last_modified: {}
-      limit:
-        simple: "1"
-      max_timestamp: {}
-      min_timestamp: {}
-      network: {}
-      offset: {}
-      page_id: {}
-      page_url: {}
-      pages: {}
-      perpetrator_search: {}
-      post: {}
-      pro_social_obj_search: {}
-      rule_id: {}
-      rule_name: {}
-      severity: {}
-      sort_direction: {}
-      sort_field: {}
-      status:
-        simple: open
-      tags: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 550
         }
       }
     note: false
