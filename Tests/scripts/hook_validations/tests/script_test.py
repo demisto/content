@@ -445,10 +445,8 @@ def test_configuration_extraction():
 def test_valid_subtype():
     validator = ScriptValidator("temp_file", check_git=False)
     validator.current_script = {
-        "script": {
-            "type": "python",
-            "subtype": "python3"
-        }
+        "type": "python",
+        "subtype": "python3"
     }
 
     assert validator.is_valid_subtype(), \

@@ -85,7 +85,7 @@ class ScriptValidator(object):
     def is_valid_subtype(self):
         """Validate that the subtype self.file_path is -1."""
         type_ = self.current_script.get('type')
-        if type_ == ' python':
+        if type_ == 'python':
             subtype = self.current_script.get('subtype')
             if not subtype or subtype not in ['python3', 'python2']:
                 print_error("The subtype for our yml files should be either python2 or python3, "
