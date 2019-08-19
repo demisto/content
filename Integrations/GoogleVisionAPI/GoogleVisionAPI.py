@@ -41,6 +41,8 @@ def get_credentials():
         json_keyfile = json.loads(PRIVATE_KEY_CONTENT)
         if not isinstance(json_keyfile, dict):
             json_keyfile = json.loads(json_keyfile)
+        else:
+            raise Exception('Something is wrong with your provided auth_json parameter. Please follow the instructions to obtain a credentials JSON file.')
         return service_account.ServiceAccountCredentials.from_json_keyfile_dict(json_keyfile, scopes=SERVICE_SCOPES)
     except Exception as e:
         err_msg = 'An error occurred while trying to construct an OAuth2 ' \
