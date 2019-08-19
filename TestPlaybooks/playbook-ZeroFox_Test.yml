@@ -885,6 +885,45 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
+    taskid: e7955643-7629-4209-8d14-94301496f1d7
+    type: regular
+    task:
+      id: e7955643-7629-4209-8d14-94301496f1d7
+      version: -1
+      name: Fetch Incidents Test
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "25"
+    scriptarguments:
+      instance_name:
+        complex:
+          root: modules
+          filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: modules.brand
+                  iscontext: true
+                right:
+                  value:
+                    simple: ZeroFox
+          accessor: name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+  "25":
+    id: "25"
     taskid: 3bac869e-c9bf-492f-855b-d7ef6591a7a5
     type: title
     task:
