@@ -79,6 +79,7 @@ class StructureValidator(object):
         """
         self.is_valid_scheme()
         self.is_valid_version()
+        self.is_valid_subtype()
 
         if not self.is_added_file:  # In case the file is modified
             self.is_id_not_modified()
@@ -177,6 +178,19 @@ class StructureValidator(object):
             print_error("The version for our files should always be -1, "
                         "please update the file {}.".format(self.file_path))
             self._is_valid = False
+
+        return self._is_valid
+
+    def is_valid_subtype(self):
+        """Validate that the subtype self.file_path is -1."""
+        file_extension = os.path.splitext(self.file_path)[1]
+        if file_extension == '.yml':
+            yaml_dict = get_yaml(self.file_path)
+            subtype = yaml_dict.get('subtype')
+            if not subtype or subtype not in ['python3', 'python2']:
+                print_error("The subtype for our yml files should be either python2 or python3, "
+                            "please update the file {}.".format(self.file_path))
+                self._is_valid = False
 
         return self._is_valid
 
