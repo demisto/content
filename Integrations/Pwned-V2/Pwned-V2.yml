@@ -59,16 +59,16 @@ script:
     - contextPath: Email.Malicious.Description
       description: For malicious emails, the reason that the vendor made the decision.
       type: String
-    - contextPath: Email.DBotScore.Indicator
+    - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
-    - contextPath: Email.DBotScore.Type
+    - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
-    - contextPath: Email.DBotScore.Vendor
+    - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score.
       type: String
-    - contextPath: Email.DBotScore.Score
+    - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
   - arguments:
@@ -99,16 +99,16 @@ script:
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason that the vendor made the decision.
       type: String
-    - contextPath: Domain.DBotScore.Indicator
+    - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
-    - contextPath: Domain.DBotScore.Type
+    - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
-    - contextPath: Domain.DBotScore.Vendor
+    - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score.
       type: String
-    - contextPath: Domain.DBotScore.Score
+    - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
   - arguments:
@@ -142,16 +142,16 @@ script:
     - contextPath: Email.Malicious.Description
       description: For malicious emails, the reason that the vendor made the decision.
       type: String
-    - contextPath: Email.DBotScore.Indicator
+    - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
-    - contextPath: Email.DBotScore.Type
+    - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
-    - contextPath: Email.DBotScore.Vendor
+    - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score.
       type: String
-    - contextPath: Email.DBotScore.Score
+    - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
   - arguments:
@@ -185,19 +185,20 @@ script:
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason that the vendor made the decision.
       type: String
-    - contextPath: Domain.DBotScore.Indicator
+    - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
-    - contextPath: Domain.DBotScore.Type
+    - contextPath: DBotScore.Type
       description: The indicator type.
       type: String
-    - contextPath: Domain.DBotScore.Vendor
+    - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score.
       type: String
-    - contextPath: Domain.DBotScore.Score
+    - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
   isfetch: false
   runonce: false
   script: '-'
   type: python
+  subtype: python2
