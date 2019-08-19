@@ -21,7 +21,6 @@ from apiclient import discovery
 from oauth2client import service_account
 
 
-
 ''' GLOBAL VARS '''
 ADMIN_EMAIL = None
 PRIVATE_KEY_CONTENT = None
@@ -214,12 +213,12 @@ def time_reformat(timestamp_date):
     year = date[0]
     mon = month_abbr(int(date[1]))
     day = date[2]
-    return day+" "+mon+" "+year+" "+exact_time
+    return day + " " + mon + " " + year + " " + exact_time
 
 
 def utc_extract(base_time):
     utc = base_time[-5:]
-    if utc[0] is not '-' and utc[0] is not '+':
+    if utc[0] != '-' and utc[0] != '+':
         return '-0000', 0
     for ch in utc[1:]:
         if not ch.isdigit():
@@ -241,7 +240,7 @@ def get_email_context(email_data, mailbox):
     base_time = datetime.fromtimestamp((int(str(email_data.get('internalDate'))[:10]))) + timedelta(seconds=delta_in_seconds)
     day = days_of_the_week(int(base_time.isoweekday()))  # gets day of week from date
     base_time = day + ", " + time_reformat(str(base_time)) + " " + utc
-    #return_error(str(headers.get('date', ''))+" ### "+base_time)
+    # return_error(str(headers.get('date', ''))+" ### "+base_time)
     context_gmail = {
         'Type': 'Gmail',
         'Mailbox': ADMIN_EMAIL if mailbox == 'me' else mailbox,
@@ -264,7 +263,7 @@ def get_email_context(email_data, mailbox):
         'Cc': headers.get('cc', []),
         'Bcc': headers.get('bcc', []),
         'Date': unicode(base_time),
-        #'Date': headers.get('date', ''),
+        # 'Date': headers.get('date', ''),
         'Html': None,
     }
 
@@ -284,7 +283,7 @@ def get_email_context(email_data, mailbox):
         'CC': headers.get('cc', []),
         'BCC': headers.get('bcc', []),
         'Date': unicode(base_time),
-        #'Date': headers.get('date', ''),
+        # 'Date': headers.get('date', ''),
         'Body/HTML': None,
     }
 
@@ -393,7 +392,7 @@ def mail_to_incident(msg, service, user_key):
         'details': parsed_msg['Body'],
         'labels': create_incident_labels(parsed_msg, headers),
         'occurred': datetime.strptime(parsed_msg['Date'][:-6], '%a, %d %b %Y %H:%M:%S').isoformat() + 'Z',
-        #'occurred': parse_time(parsed_msg['Date']),
+        # 'occurred': parse_time(parsed_msg['Date']),
         'attachment': file_names,
         'rawJSON': json.dumps(parsed_msg),
     }
@@ -766,19 +765,22 @@ def delegate_user_mailbox_command():
 def delegate_user_mailbox(user_id, delegate_email, delegate_token):
     credentials = get_credentials(additional_scopes=['https://www.googleapis.com/auth/gmail.settings.sharing'])
     service = discovery.build('gmail', 'v1', credentials=credentials)
-    if delegate_token == 'True':
+    if delegate_token == 'True':  # guardrails-disable-line
         command_args = {
             'userId': user_id if user_id != 'me' else ADMIN_EMAIL,
             'body': {
                 'delegateEmail': delegate_email,
-            }}
+            }
+        }
+
         service.users().settings().delegates().create(**command_args).execute()
         return 'Email %s has been delegated' % delegate_email
     else:
         command_args = {
             'userId': user_id if user_id != 'me' else ADMIN_EMAIL,
             'delegateEmail': delegate_email
-            }
+        }
+
         service.users().settings().delegates().delete(**command_args).execute()
         return 'Email %s has been removed from delegation' % delegate_email
 
