@@ -20,7 +20,7 @@ from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
 SERVER_URL = "https://{}"
 INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
-FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the "\
+FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the " \
                             "instance_name argument in conf.json. The options are:\n{}"
 
 AMI_NAMES = ["Demisto GA", "Server Master", "Demisto one before GA", "Demisto two before GA"]
@@ -559,7 +559,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     else:  # In case of a non AMI run we don't want to use the mocking mechanism
         mockless_tests = tests
 
-    send_slack_message(slack, SLACK_CHANNEL_ID, 'Build Number: {}'.format(build_number))
+    send_slack_message(slack, SLACK_CHANNEL_ID, 'Build Number: {}'.format(build_number), 'Content CircleCI', 'False')
     # first run the mock tests to avoid mockless side effects in container
     if is_ami and mock_tests:
         proxy.configure_proxy_in_demisto(proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
