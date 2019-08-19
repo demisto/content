@@ -195,3 +195,5 @@ view: |-
       }
     }
   }
+tests:
+  - No test
