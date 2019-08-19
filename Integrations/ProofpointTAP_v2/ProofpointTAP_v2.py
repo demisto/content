@@ -18,7 +18,7 @@ PERMITTED_CLICKS = "Permitted Clicks"
 BLOCKED_MESSAGES = "Blocked Messages"
 DELIVERED_MESSAGES = "Delivered Messages"
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 """ Helper functions """
 
@@ -45,8 +45,6 @@ def get_fetch_times(last_fetch):
     times = list()
     time_format = "%Y-%m-%dT%H:%M:%SZ"
     if isinstance(last_fetch, str):
-        if last_fetch[-5] == '.':
-            last_fetch = last_fetch[:-6] + 'Z'
         times.append(last_fetch)
         last_fetch = datetime.strptime(last_fetch, time_format)
     elif isinstance(last_fetch, datetime):
@@ -163,14 +161,20 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
 
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
-        # date format 2016-05-01T12:00:00Z
         last_fetch, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
 
     incidents = []
     fetch_times = get_fetch_times(last_fetch)
-    for fetch_time in fetch_times:
-        raw_events = client.get_events(since_time=fetch_time, event_type_filter=event_type_filter,
-                                       threat_status=threat_status, threat_type=threat_type)
+    fetch_time_count = len(fetch_times)
+    for index, fetch_time in enumerate(fetch_times):
+
+        if index < fetch_time_count - 1:
+            raw_events = client.get_events(interval=fetch_time + "/" + fetch_times[index + 1],
+                                           event_type_filter=event_type_filter,
+                                           threat_status=threat_status, threat_type=threat_type)
+        else:
+            raw_events = client.get_events(since_time=fetch_time, event_type_filter=event_type_filter,
+                                           threat_status=threat_status, threat_type=threat_type)
 
         for raw_event in raw_events.get("messagesDelivered", []):
             raw_event["type"] = "messages delivered"
@@ -239,9 +243,8 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
 
             incidents.append(incident)
 
-    last_fetch_datetime = datetime.strptime(last_fetch, DATE_FORMAT)
-    last_fetch_datetime = last_fetch_datetime + timedelta(seconds=1)
-    next_run = {'last_fetch': last_fetch_datetime.strftime(DATE_FORMAT)}
+    last_fetch_datetime = get_now().strftime(DATE_FORMAT)
+    next_run = {'last_fetch': last_fetch_datetime}
 
     return next_run, incidents
 

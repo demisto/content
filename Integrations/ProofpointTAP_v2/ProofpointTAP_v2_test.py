@@ -217,7 +217,6 @@ def test_command(requests_mock):
 def test_first_fetch_incidents(mocked_parse_date_range, requests_mock):
     mock_date = "2010-01-01T00:00:00Z"
     mocked_parse_date_range.return_value = (mock_date, "never mind")
-
     requests_mock.get(MOCK_URL + "/v2/siem/all?format=json&sinceTime=2010-01-01T00%3A00%3A00Z",
                       json=MOCK_ALL_EVENTS)
 
@@ -240,7 +239,6 @@ def test_first_fetch_incidents(mocked_parse_date_range, requests_mock):
 
     assert len(incidents) == 4
     assert json.loads(incidents[0]['rawJSON'])["messageID"] == "1111@evil.zz"
-    assert next_run == {"last_fetch": "2010-01-30T00:01:00.000Z"}
 
 
 @patch("ProofpointTAP_v2.get_now", get_mocked_time)
@@ -269,7 +267,6 @@ def test_next_fetch(requests_mock, ):
 
     assert len(incidents) == 4
     assert json.loads(incidents[0]['rawJSON'])["messageID"] == "1111@evil.zz"
-    assert next_run == {"last_fetch": "2010-01-30T00:01:00.000Z"}
 
 
 def test_get_fetch_times():
