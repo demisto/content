@@ -228,7 +228,6 @@ def test_module():
             demisto.results('ok')
         else:
             return_error(str(response))
-        sys.exit(0)
     except Exception as ex:
         if 'Quota exceeded for quota metric' in str(ex):
             return_error('Quota for Google Vision API exceeded')
