@@ -1,3 +1,5 @@
+import socket
+
 import demistomock as demisto
 # Common functions script
 # =======================
@@ -1297,26 +1299,50 @@ def is_mac_address(mac):
         return False
 
 
-def is_ip_valid(s):
+def is_ipv6_valid(address):
     """
-       Checks if the given string represents a valid IPv4 address
+    Checks if the given string represents a valid IPv6 address.
+
+    :type address: str
+    :param address: The string to check.
+
+    :return: True if the given string represents a valid IPv6 address.
+    :rtype: ``bool``
+    """
+    try:
+        socket.inet_pton(socket.AF_INET6, address)
+    except socket.error:  # not a valid address
+        return False
+    return True
+
+
+def is_ip_valid(s, accept_v6_ips=False):
+    """
+       Checks if the given string represents a valid IP address.
+       By default, will only return 'True' for IPv4 addresses.
 
        :type s: ``str``
        :param s: The string to be checked (required)
+       :type accept_v6_ips: ``bool``
+       :param accept_v6_ips: A boolean determining whether the
+       function should accept IPv6 addresses
 
        :return: True if the given string represents a valid IP address, False otherwise
        :rtype: ``bool``
     """
     a = s.split('.')
-    if len(a) != 4:
+    if accept_v6_ips and is_ipv6_valid(s):
+        return True
+    elif len(a) != 4:
         return False
-    for x in a:
-        if not x.isdigit():
-            return False
-        i = int(x)
-        if i < 0 or i > 255:
-            return False
-    return True
+    else:
+        for x in a:
+            if not x.isdigit():
+                return False
+            i = int(x)
+            if i < 0 or i > 255:
+                return False
+        return True
 
 
 def return_outputs(readable_output, outputs, raw_response=None):
@@ -1359,7 +1385,7 @@ def return_error(message, error='', outputs=None):
         :type message: ``str``
         :param message: The message to return in the entry (required)
 
-        :type error: ``str``
+        :type error: ``str`` or Exception
         :param error: The raw error message to log (optional)
 
         :type outputs: ``dict or None``
@@ -1370,15 +1396,59 @@ def return_error(message, error='', outputs=None):
     """
     LOG(message)
     if error:
-        LOG(error)
+        LOG(str(error))
     LOG.print_log()
+    if not isinstance(message, str):
+        message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
+
+    if hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents', 'long-running-execution'):
+        raise Exception(message)
+    else:
+        demisto.results({
+            'Type': entryTypes['error'],
+            'ContentsFormat': formats['text'],
+            'Contents': message,
+            'EntryContext': outputs
+        })
+        sys.exit(0)
+
+
+def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_extract=False):
+    """
+        Returns an error entry with the specified message, and exits the script.
+
+        :type message: ``str``
+        :param message: The message to return in the entry (required).
+
+        :type exit: ``bool``
+        :param exit: Determines if the program will terminate after the command is executed. Default is False.
+
+        :type warning: ``str``
+        :param warning: The warning message (raw) to log (optional).
+
+        :type outputs: ``dict or None``
+        :param outputs: The outputs that will be returned to playbook/investigation context (optional).
+
+        :type ignore_auto_extract: ``bool``
+        :param ignore_auto_extract: Determines if the War Room entry will be auto-enriched. Default is false.
+
+        :return: Warning entry object
+        :rtype: ``dict``
+    """
+    LOG(message)
+    if warning:
+        LOG(warning)
+    LOG.print_log()
+
     demisto.results({
-        'Type': entryTypes['error'],
+        'Type': 11,
         'ContentsFormat': formats['text'],
+        'IgnoreAutoExtract': ignore_auto_extract,
         'Contents': str(message),
         "EntryContext": outputs
     })
-    sys.exit(0)
+    if exit:
+        sys.exit(0)
 
 
 def camelize(src, delim=' '):
