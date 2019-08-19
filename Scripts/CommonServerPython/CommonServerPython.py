@@ -830,7 +830,10 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
                                    True, True) for h in headers]
             mdResult += '|'
             if len(vals) == 1:
-                mdResult += vals[0]
+                try:
+                    mdResult += vals[0]
+                except UnicodeDecodeError:
+                    mdResult += vals[0].encode('utf-8')
             else:
                 try:
                     mdResult += '|'.join(vals)
