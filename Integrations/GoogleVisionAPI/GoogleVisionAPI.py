@@ -1,5 +1,3 @@
-from asyncore import file_dispatcher
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -8,14 +6,13 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 
+from asyncore import file_dispatcher
 import requests
-
 import json
 import base64
 import httplib2
 import urllib.parse
 import sys
-
 from apiclient import discovery
 from oauth2client import service_account
 
