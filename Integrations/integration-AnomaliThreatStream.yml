@@ -248,7 +248,7 @@ script:
                 var mapEntry = createMapEntry(output);
             }
         } else {
-            contextKey = 'ThreatStream.' + commandTitle + 'Reputation.';
+            contextKey = 'ThreatStream.' + commandTitle + 'Reputation';
             entry.EntryContext[contextKey] = contexts;
         }
         var dbotScore = 1;
