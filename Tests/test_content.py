@@ -5,6 +5,7 @@ import string
 import random
 import argparse
 import requests
+import subprocess
 from time import sleep
 from datetime import datetime
 
@@ -26,6 +27,8 @@ AMI_NAMES = ["Demisto GA", "Server Master", "Demisto one before GA", "Demisto tw
 
 SERVICE_RESTART_TIMEOUT = 300
 SERVICE_RESTART_POLLING_INTERVAL = 5
+
+SLACK_CHANNEL_ID = 'CM55V7J8K'
 
 
 def options_handler():
@@ -109,9 +112,27 @@ def has_unmockable_integration(integrations, unmockable_integrations):
     return list(set(x['name'] for x in integrations).intersection(unmockable_integrations.keys()))
 
 
+def get_memory_data():
+    process = subprocess.Popen(['free', '-m'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    stdout, stderr = process.communicate()
+    return stdout, stderr
+
+
 def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
                    circle_ci, build_number, server_url, build_name, is_mock_run=False):
     status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run)
+    stdout, stderr = get_memory_data()
+    text = stdout
+    if not stderr:
+        sc = SlackClient(slack)
+        sc.api_call(
+            "chat.postMessage",
+            channel=SLACK_CHANNEL_ID,
+            username="Content CircleCI",
+            as_user="False",
+            text=text
+        )
+
     if status == PB_Status.COMPLETED:
         print_color('PASS: {} succeed'.format(test_message), LOG_COLORS.GREEN)
         succeed_playbooks.append(playbook_id)
