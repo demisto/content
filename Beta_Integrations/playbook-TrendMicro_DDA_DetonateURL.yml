@@ -1,6 +1,6 @@
-id: Detonate URL - Trend Micro Deep Discovery Analyzer
+id: Detonate URL - Trend Micro Deep Discovery Analyzer Beta
 version: -1
-name: Detonate URL - Trend Micro Deep Discovery Analyzer
+name: Detonate URL - Trend Micro Deep Discovery Analyzer Beta
 fromversion: 4.0.0
 description: Detonates a URL using the Trend Micro Deep Discovery Analyzer sandbox.
 starttaskid: "0"
@@ -368,5 +368,6 @@ outputs:
 - contextPath: File.Name
   description: File name
   type: string
+beta: true
 tests:
 - No Test - run "Test Playbook TrendMicroDDA" manually

@@ -1,0 +1,339 @@
+id: Slack Test Playbook
+version: -1
+name: Slack Test Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c25af2be-e919-4909-830e-09fcc9ebd572
+    type: start
+    task:
+      id: c25af2be-e919-4909-830e-09fcc9ebd572
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 21872fd2-9c5c-4ac4-8055-fb0dd31d0ad3
+    type: regular
+    task:
+      id: 21872fd2-9c5c-4ac4-8055-fb0dd31d0ad3
+      version: -1
+      name: Mirror investigation
+      description: Mirror the investigation in slack
+      script: SlackV2|||mirror-investigation
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      autoclose: {}
+      channelName:
+        simple: ${TimeNow}
+      direction:
+        simple: FromDemisto
+      mirrorTo: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 59ae8cfd-0d20-48e9-865a-1f5f4db93085
+    type: regular
+    task:
+      id: 59ae8cfd-0d20-48e9-865a-1f5f4db93085
+      version: -1
+      name: Send a message
+      description: Send a message to a slack user, group or channel.
+      script: SlackV2|||send-notification
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      channel:
+        simple: incident-${incident.id}
+      entry: {}
+      ignoreAddURL: {}
+      message: {}
+      threadID: {}
+      to: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: c83f267e-157b-47ed-8ee1-ece93a26bc6b
+    type: regular
+    task:
+      id: c83f267e-157b-47ed-8ee1-ece93a26bc6b
+      version: -1
+      name: FileCreateAndUpload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      data:
+        simple: this is a test
+      entryId: {}
+      filename:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 3aae9361-2eb3-42a6-86bb-d686ffe7bf66
+    type: regular
+    task:
+      id: 3aae9361-2eb3-42a6-86bb-d686ffe7bf66
+      version: -1
+      name: Send a file
+      description: Send a file to a slack user, channel or group.
+      script: SlackV2|||slack-send-file
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      channel: {}
+      comment: {}
+      file:
+        simple: ${File.EntryID}
+      group: {}
+      threadID: {}
+      to: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 9d3be335-45fe-4f02-816f-29434e408b2c
+    type: regular
+    task:
+      id: 9d3be335-45fe-4f02-816f-29434e408b2c
+      version: -1
+      name: Close the channel
+      description: Close the mirrored Slack channel for this incident.
+      script: SlackV2|||close-channel
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 353b78ef-5ccd-4703-865a-aad9be67377a
+    type: regular
+    task:
+      id: 353b78ef-5ccd-4703-865a-aad9be67377a
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: Message sent to Slack successfully
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: ed3d7ac8-0cf5-45de-82cd-674e1989b49d
+    type: regular
+    task:
+      id: ed3d7ac8-0cf5-45de-82cd-674e1989b49d
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: File sent to Slack successfully.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 53ba130f-9e4d-4423-896d-82a35ac489f0
+    type: regular
+    task:
+      id: 53ba130f-9e4d-4423-896d-82a35ac489f0
+      version: -1
+      name: GetTime
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat: {}
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 508aa793-fb07-4f44-8cef-49dde8b4bdd8
+    type: regular
+    task:
+      id: 508aa793-fb07-4f44-8cef-49dde8b4bdd8
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1640,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
