@@ -60,7 +60,7 @@ class ScriptValidator(object):
             self.is_added_required_args(),
             self.is_arg_changed(),
             self.is_there_duplicates_args(),
-            self.is_valid_subtype()
+            self.is_invalid_subtype()
         ])
 
         return is_bc_broke
@@ -82,7 +82,7 @@ class ScriptValidator(object):
 
         return arg_to_required
 
-    def is_valid_subtype(self):
+    def is_invalid_subtype(self):
         """Validate that the subtype is python2 or python3."""
         type_ = self.current_script.get('type')
         if type_ == 'python':
