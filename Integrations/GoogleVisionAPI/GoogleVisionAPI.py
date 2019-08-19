@@ -245,8 +245,6 @@ def main():
     try:
         handle_proxy()
 
-        # @@@@@@@@ DEMISTO COMMANDS @@@@@@@@
-
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
             test_module()
