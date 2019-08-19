@@ -18,7 +18,7 @@ configuration:
   type: 8
 description: Image processing with Google Vision API
 display: Google Vision AI
-name: google-vision-api
+name: Google Vision AI
 script:
   commands:
   - arguments:
