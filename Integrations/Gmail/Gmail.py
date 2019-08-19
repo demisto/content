@@ -6,15 +6,20 @@ import re
 import json
 import base64
 from datetime import datetime, timedelta
-import httplib2
-import urlparse
 from distutils.util import strtobool
 import sys
 from HTMLParser import HTMLParser, HTMLParseError
 from htmlentitydefs import name2codepoint
+from email.mime.audio import MIMEAudio
+from email.mime.base import MIMEBase
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import mimetypes
 
 from apiclient import discovery
 from oauth2client import service_account
+
 
 
 ''' GLOBAL VARS '''
@@ -157,6 +162,72 @@ def parse_mail_parts(parts):
     return body, html, attachments
 
 
+def days_of_the_week(day):
+    if day == 1:
+        return 'Mon'
+    elif day == 2:
+        return 'Tue'
+    elif day == 3:
+        return 'Wed'
+    elif day == 4:
+        return 'Thu'
+    elif day == 5:
+        return 'Fri'
+    elif day == 6:
+        return 'Sat'
+    elif day == 7:
+        return 'Sun'
+
+
+def month_abbr(mon_num):
+    if mon_num == 1:
+        return 'Jan'
+    elif mon_num == 2:
+        return 'Feb'
+    elif mon_num == 3:
+        return 'Mar'
+    elif mon_num == 4:
+        return 'Apr'
+    elif mon_num == 5:
+        return 'May'
+    elif mon_num == 6:
+        return 'Jun'
+    elif mon_num == 7:
+        return 'Jul'
+    elif mon_num == 8:
+        return 'Aug'
+    elif mon_num == 9:
+        return 'Sep'
+    elif mon_num == 10:
+        return 'Oct'
+    elif mon_num == 11:
+        return 'Nov'
+    elif mon_num == 12:
+        return 'Dec'
+
+
+def time_reformat(timestamp_date):
+    timestamp_date = timestamp_date.split(' ')
+    exact_time = timestamp_date[1]
+    date = timestamp_date[0]
+    date = date.split('-')
+    year = date[0]
+    mon = month_abbr(int(date[1]))
+    day = date[2]
+    return day+" "+mon+" "+year+" "+exact_time
+
+
+def utc_extract(base_time):
+    utc = base_time[-5:]
+    if utc[0] is not '-' and utc[0] is not '+':
+        return '-0000', 0
+    for ch in utc[1:]:
+        if not ch.isdigit():
+            return '-0000', 0
+    delta_in_seconds = int(utc[0] + utc[1:3]) * 3600 + int(utc[0] + utc[3:]) * 60
+    return utc, delta_in_seconds
+
+
 def get_email_context(email_data, mailbox):
     context_headers = email_data.get('payload', {}).get('headers', [])
     context_headers = [{'Name': v['name'], 'Value':v['value']}
@@ -166,7 +237,12 @@ def get_email_context(email_data, mailbox):
     body = body.encode('ascii') if body is not None else ''
     parsed_body = base64.urlsafe_b64decode(body)
 
-    context = {
+    utc, delta_in_seconds = utc_extract(str(headers.get('date', '')))
+    base_time = datetime.fromtimestamp((int(str(email_data.get('internalDate'))[:10]))) + timedelta(seconds=delta_in_seconds)
+    day = days_of_the_week(int(base_time.isoweekday()))  # gets day of week from date
+    base_time = day + ", " + time_reformat(str(base_time)) + " " + utc
+    #return_error(str(headers.get('date', ''))+" ### "+base_time)
+    context_gmail = {
         'Type': 'Gmail',
         'Mailbox': ADMIN_EMAIL if mailbox == 'me' else mailbox,
         'ID': email_data['id'],
@@ -187,21 +263,42 @@ def get_email_context(email_data, mailbox):
         # only for incident
         'Cc': headers.get('cc', []),
         'Bcc': headers.get('bcc', []),
-        'Date': headers.get('date', ''),
+        'Date': unicode(base_time),
+        #'Date': headers.get('date', ''),
         'Html': None,
     }
 
-    if 'text/html' in context['Format']:  # type: ignore
-        context['Html'] = context['Body']
-        context['Body'] = html_to_text(context['Body'])
+    context_email = {
+        'Headers': context_headers,
+        'Attachments': {'entryID': email_data.get('payload', {}).get('filename', '')},
+        # only for format 'raw'
+        'RawData': email_data.get('raw'),
+        # only for format 'full' and 'metadata'
+        'Format': headers.get('content-type', '').split(';')[0],
+        'Subject': headers.get('subject'),
+        'From': headers.get('from'),
+        'To': headers.get('to'),
+        # only for format 'full'
+        'Body/Text': unicode(parsed_body, 'utf-8'),
 
-    if 'multipart' in context['Format']:  # type: ignore
-        context['Body'], context['Html'], context['Attachments'] = parse_mail_parts(
+        'CC': headers.get('cc', []),
+        'BCC': headers.get('bcc', []),
+        'Date': unicode(base_time),
+        #'Date': headers.get('date', ''),
+        'Body/HTML': None,
+    }
+
+    if 'text/html' in context_gmail['Format']:  # type: ignore
+        context_gmail['Html'] = context_gmail['Body']
+        context_gmail['Body'] = html_to_text(context_gmail['Body'])
+
+    if 'multipart' in context_gmail['Format']:  # type: ignore
+        context_gmail['Body'], context_gmail['Html'], context_gmail['Attachments'] = parse_mail_parts(
             email_data.get('payload', {}).get('parts', []))
-        context['Attachment Names'] = ', '.join(
-            [attachment['Name'] for attachment in context['Attachments']])  # type: ignore
+        context_gmail['Attachment Names'] = ', '.join(
+            [attachment['Name'] for attachment in context_gmail['Attachments']])  # type: ignore
 
-    return context, headers
+    return context_gmail, headers, context_email
 
 
 TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')
@@ -210,7 +307,6 @@ TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$
 def parse_time(t):
     # there is only one time refernce is the string
     base_time, _, sign, hours, minutes = TIME_REGEX.findall(t)[0]
-
     if all([sign, hours, minutes]):
         seconds = int(sign + hours) * 3600 + int(sign + minutes) * 60
         parsed_time = datetime.strptime(
@@ -243,8 +339,8 @@ def create_incident_labels(parsed_msg, headers):
 def emails_to_entry(title, raw_emails, format_data, mailbox):
     emails = []
     for email_data in raw_emails:
-        context, _ = get_email_context(email_data, mailbox)
-        emails.append(context)
+        context_gmail, _, context_email = get_email_context(email_data, mailbox)
+        emails.append(context_gmail)
 
     headers = {
         'minimal': ['Mailbox', 'ID', 'Labels', 'Attachment Names', ],
@@ -259,12 +355,13 @@ def emails_to_entry(title, raw_emails, format_data, mailbox):
         'Contents': emails,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(title, emails, headers[format_data]),
-        'EntryContext': {'Gmail(val.ID && val.ID == obj.ID)': emails}
+        'EntryContext': {'Gmail(val.ID && val.ID == obj.ID)': emails,
+                         'Email(val.Date == obj.Date && val.Subject == obj.Subject)': context_email}
     }
 
 
 def mail_to_incident(msg, service, user_key):
-    parsed_msg, headers = get_email_context(msg, user_key)
+    parsed_msg, headers, _ = get_email_context(msg, user_key)
 
     file_names = []
     command_args = {
@@ -295,7 +392,8 @@ def mail_to_incident(msg, service, user_key):
         'name': parsed_msg['Subject'],
         'details': parsed_msg['Body'],
         'labels': create_incident_labels(parsed_msg, headers),
-        'occurred': parse_time(parsed_msg['Date']),
+        'occurred': datetime.strptime(parsed_msg['Date'][:-6], '%a, %d %b %Y %H:%M:%S').isoformat() + 'Z',
+        #'occurred': parse_time(parsed_msg['Date']),
         'attachment': file_names,
         'rawJSON': json.dumps(parsed_msg),
     }
@@ -315,9 +413,18 @@ def users_to_entry(title, response):
             'Gmail': {'Address': user_data.get('primaryEmail')},
             'Group': user_data.get('kind'),
             'CustomerId': user_data.get('customerId'),
+            'Groups': user_data.get('kind'),
+            'Domain': user_data.get('primaryEmail').split('@')[1],
+            'Username': (user_data.get('name').get('givenName')
+                         if user_data.get('name') and 'givenName' in user_data.get('name') else None),
+            'OrganizationUnit': (user_data.get('organizations')[0].get('name')
+                                 if (user_data.get('organizations') and len(user_data.get('organizations')) > 0
+                                     and 'name' in user_data.get('organizations')[0]) else None)
+
         })
     headers = ['Type', 'ID', 'UserName',
-               'DisplayName', 'Email', 'Group', 'CustomerId']
+               'DisplayName', 'Email', 'Group', 'CustomerId', 'Email',
+               'Groups', 'Domain', 'Username', 'OrganizationUnit']
 
     return {
         'ContentsFormat': formats['json'],
@@ -326,6 +433,91 @@ def users_to_entry(title, response):
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(title, context, headers),
         'EntryContext': {'Account(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': context}
+    }
+
+
+def hide_users_to_entry(title, response):
+    context = []
+    for user_data in response:
+        context.append({
+            'Type': 'Google',
+            'ID': user_data.get('id'),
+            'UserName': (user_data.get('name').get('givenName')
+                         if user_data.get('name') and 'givenName' in user_data.get('name') else None),
+            'DisplayName': (user_data.get('name').get('fullName')
+                            if user_data.get('name') and 'fullName' in user_data.get('name') else None),
+            'Email': {'Address': user_data.get('primaryEmail')},
+            'Gmail': {'Address': user_data.get('primaryEmail')},
+            'Group': user_data.get('kind'),
+            'CustomerId': user_data.get('customerId'),
+            'VisibleInDirectory': user_data.get('includeInGlobalAddressList'),
+            'Groups': user_data.get('kind'),
+            'Domain': user_data.get('primaryEmail').split('@')[1],
+            'Username': (user_data.get('name').get('givenName')
+                         if user_data.get('name') and 'givenName' in user_data.get('name') else None),
+            'OrganizationUnit': (user_data.get('organizations')[0].get('name')
+                                 if (user_data.get('organizations') and len(user_data.get('organizations')) > 0
+                                     and 'name' in user_data.get('organizations')[0]) else None)
+
+        })
+    headers = ['Type', 'ID', 'UserName',
+               'DisplayName', 'Email', 'Group', 'CustomerId', 'Visible In Directory', 'CustomerId',
+               'Groups', 'Domain', 'Username', 'OrganizationUnit']
+
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': context,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(title, context, headers),
+        'EntryContext': {'Account(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': context}
+    }
+
+
+def autoreply_to_entry(title, response):
+    context = []
+    for autoreply_data in response:
+        context.append({
+            'Type': 'Google',
+            'EnableAutoReply': autoreply_data.get('enableAutoReply'),
+            'ResponseBody': autoreply_data.get('responseBodyPlainText'),
+            'ResponseSubject': autoreply_data.get('responseSubject'),
+            'RestrictToContact': autoreply_data.get('restrictToContacts'),
+            'RestrcitToDomain': autoreply_data.get('restrictToDomain'),
+
+        })
+    headers = ['Type', 'EnableAutoReply', 'ResponseBody',
+               'ResponseSubject', 'RestrictToContact', 'RestrcitToDomain']
+
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': context,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(title, context, headers),
+        'EntryContext': {'Autoreply(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': context}
+    }
+
+
+def mail_results_to_entry(title, response):
+    context = []
+    for mail_results_data in response:
+        context.append({
+            'Type': 'Google',
+            'MessageId': mail_results_data.get('id'),
+            'Label': mail_results_data.get('labelIds'),
+            'ThreadId': mail_results_data.get('threadId'),
+        })
+    headers = ['Type', 'MessageId', 'Label',
+               'ThreadId']
+
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': context,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(title, context, headers),
+        'EntryContext': {'SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': context}
     }
 
 
@@ -465,6 +657,192 @@ def get_user(user_key, view_type, projection, customer_field_mask=None):
     service = get_service('admin', 'directory_v1')
     result = service.users().get(**command_args).execute()
 
+    return result
+
+
+def hide_user_command():
+    args = demisto.args()
+    user_key = args.get('user-id')
+    hide_value = args.get('visible-globally')
+    result = hide_user(user_key, hide_value)
+
+    return hide_users_to_entry('User %s:' % (user_key,), [result])
+
+
+def hide_user(user_key, hide_value):
+    command_args = {
+        'userKey': user_key if user_key != 'me' else ADMIN_EMAIL,
+        'body': {
+            'includeInGlobalAddressList': hide_value,
+        }}
+    credentials = get_credentials(additional_scopes=['https://www.googleapis.com/auth/admin.directory.user'])
+    service = discovery.build('admin', 'directory_v1', credentials=credentials)
+    result = service.users().update(**command_args).execute()
+
+    return result
+
+
+def set_user_password_command():
+    args = demisto.args()
+    user_key = args.get('user-id')
+    password = args.get('password')
+    result = set_user_password(user_key, password)
+    return result
+
+
+def set_user_password(user_key, password):
+    command_args = {
+        'userKey': user_key if user_key != 'me' else ADMIN_EMAIL,
+        'body': {
+            'password': password,
+        }}
+    credentials = get_credentials(additional_scopes=['https://www.googleapis.com/auth/admin.directory.user'])
+    service = discovery.build('admin', 'directory_v1', credentials=credentials)
+    service.users().update(**command_args).execute()
+
+    return 'User %s password has been set.' % (command_args['userKey'],)
+
+
+def get_autoreply_command():
+    args = demisto.args()
+    user_id = args.get('user-id', ADMIN_EMAIL)
+
+    autoreply_message = get_autoreply(user_id)
+
+    return autoreply_to_entry('User %s:' % user_id, [autoreply_message])
+
+
+def get_autoreply(user_id):
+    command_args = {
+        'userId': user_id
+    }
+
+    credentials = get_credentials(
+        ['https://mail.google.com', 'https://www.googleapis.com/auth/gmail.modify',
+         'https://www.googleapis.com/auth/gmail.readonly', 'https://www.googleapis.com/auth/gmail.settings.basic'],
+        delegated_user=user_id)
+    service = discovery.build('gmail', 'v1', credentials=credentials)
+    result = service.users().settings().getVacation(**command_args).execute()
+
+    return result
+
+
+def set_autoreply_command():
+    args = demisto.args()
+
+    user_id = args.get('user-id')
+    enable_autoreply = args.get('enableAutoReply')
+    response_subject = args.get('responseSubject')
+    response_body_plain_text = args.get('responseBodyPlainText')
+
+    autoreply_message = set_autoreply(user_id, enable_autoreply, response_subject, response_body_plain_text)
+
+    return autoreply_to_entry('User %s:' % user_id, [autoreply_message])
+
+
+def set_autoreply(user_id, enable_autoreply, response_subject, response_body_plain_text):
+    command_args = {
+        'userId': user_id if user_id != 'me' else ADMIN_EMAIL,
+        'body': {
+            'enableAutoReply': enable_autoreply,
+            'responseSubject': response_subject,
+            'responseBodyPlainText': response_body_plain_text,
+        }}
+
+    credentials = get_credentials(additional_scopes=['https://www.googleapis.com/auth/gmail.settings.basic'])
+    service = discovery.build('gmail', 'v1', credentials=credentials)
+    result = service.users().settings().updateVacation(**command_args).execute()
+    return result
+
+
+def delegate_user_mailbox_command():
+    args = demisto.args()
+    user_id = args.get('user-id')
+    delegate_email = args.get('delegateEmail')
+    delegate_token = args.get('delegateToken')
+    return delegate_user_mailbox(user_id, delegate_email, delegate_token)
+
+
+def delegate_user_mailbox(user_id, delegate_email, delegate_token):
+    credentials = get_credentials(additional_scopes=['https://www.googleapis.com/auth/gmail.settings.sharing'])
+    service = discovery.build('gmail', 'v1', credentials=credentials)
+    if delegate_token == 'True':
+        command_args = {
+            'userId': user_id if user_id != 'me' else ADMIN_EMAIL,
+            'body': {
+                'delegateEmail': delegate_email,
+            }}
+        service.users().settings().delegates().create(**command_args).execute()
+        return 'Email %s has been delegated' % delegate_email
+    else:
+        command_args = {
+            'userId': user_id if user_id != 'me' else ADMIN_EMAIL,
+            'delegateEmail': delegate_email
+            }
+        service.users().settings().delegates().delete(**command_args).execute()
+        return 'Email %s has been removed from delegation' % delegate_email
+
+
+def send_mail_command():
+    args = demisto.args()
+    emailto = args.get('emailto')
+    emailfrom = args.get('emailfrom')
+    body = args.get('body')
+    subject = args.get('subject')
+    entry_id = args.get('entryid')
+
+    result = send_mail(emailto, emailfrom, subject, body, entry_id)
+    return mail_results_to_entry('User %s:' % (emailfrom,), [result])
+
+
+def send_mail(emailto, emailfrom, subject, body, entry_id):
+    # message = MIMEText(body)
+    message = MIMEMultipart()
+    message['to'] = emailto
+    message['from'] = emailfrom
+    message['subject'] = subject
+    msg = MIMEText(body)
+    message.attach(msg)
+    if entry_id:
+        file = demisto.getFilePath(entry_id)
+        # demisto.log(str(file_path))
+        file_path = file['path']
+        file_name = file['name']
+        content_type, encoding = mimetypes.guess_type(file_path)
+        if content_type is None or encoding is not None:
+            content_type = 'application/octet-stream'
+        main_type, sub_type = content_type.split('/', 1)
+        if main_type == 'text':
+            fp = open(file_path, 'rb')
+            msg = MIMEText(fp.read(), _subtype=sub_type)
+            fp.close()
+        elif main_type == 'image':
+            fp = open(file_path, 'rb')
+            msg = MIMEImage(fp.read(), _subtype=sub_type)
+            fp.close()
+        elif main_type == 'audio':
+            fp = open(file_path, 'rb')
+            msg = MIMEAudio(fp.read(), _subtype=sub_type)
+            fp.close()
+        else:
+            fp = open(file_path, 'rb')
+            msg = MIMEBase(main_type, sub_type)
+            msg.set_payload(fp.read())
+            fp.close()
+        # filename = os.path.basename(file_path)
+        msg.add_header('Content-Disposition', 'attachment', filename=file_name)
+        message.attach(msg)
+    encoded_message = base64.urlsafe_b64encode(message.as_string())
+    command_args = {
+        'userId': emailfrom if emailfrom != 'me' else ADMIN_EMAIL,
+        'body': {
+            'raw': encoded_message,
+        }}
+
+    credentials = get_credentials(additional_scopes=['https://www.googleapis.com/auth/gmail.compose',
+                                                     'https://www.googleapis.com/auth/gmail.send'])
+    service = discovery.build('gmail', 'v1', credentials=credentials)
+    result = service.users().messages().send(**command_args).execute()
     return result
 
 
@@ -821,7 +1199,6 @@ def move_mail_to_mailbox(src_mailbox, message_id, dst_mailbox):
 
 def delete_mail_command():
     args = demisto.args()
-
     user_id = args['user-id']
     _id = args['message-id']
     permanent = bool(strtobool(args.get('permanent', 'false')))
@@ -1035,7 +1412,6 @@ def fetch_incidents():
     query = '' if params['query'] is None else params['query']
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
-
     # handle first time fetch
     if last_fetch is None:
         last_fetch = datetime.now() - timedelta(days=1)
@@ -1066,7 +1442,6 @@ def fetch_incidents():
         incident = mail_to_incident(msg_result, service, user_key)
         temp_date = datetime.strptime(
             incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
-
         # update last run
         if temp_date > last_fetch:
             last_fetch = temp_date + timedelta(seconds=1)
@@ -1105,6 +1480,12 @@ def main():
         'gmail-add-delete-filter': add_delete_filter_command,
         'gmail-list-filters': list_filters_command,
         'gmail-remove-filter': remove_filter_command,
+        'gmail-hide-user-in-directory': hide_user_command,
+        'gmail-set-password': set_user_password_command,
+        'gmail-get-autoreply': get_autoreply_command,
+        'gmail-set-autoreply': set_autoreply_command,
+        'gmail-delegate-user-mailbox': delegate_user_mailbox_command,
+        'gmail-send-mail': send_mail_command,
     }
     command = demisto.command()
     LOG('GMAIL: command is %s' % (command, ))
@@ -1113,7 +1494,6 @@ def main():
             list_users(ADMIN_EMAIL.split('@')[1])
             demisto.results('ok')
             sys.exit(0)
-
         if command == 'fetch-incidents':
             demisto.incidents(fetch_incidents())
             sys.exit(0)
