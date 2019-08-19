@@ -25,39 +25,38 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Checks whether emails or domains have been compromised in recent breaches,
-  using the Have I Been Pwned? service.
+description: Uses the Have I Been Pwned? service to check whether email addresses or domains were compromised in previous breaches.
 display: Have I Been Pwned? V2
 name: Have I Been Pwned? V2
 script:
   commands:
   - arguments:
     - default: true
-      description: Email to check.
+      description: The email address to check.
       isArray: false
       name: email
       required: true
       secret: false
     deprecated: false
-    description: Checks if an email has been compromised, as part of previous breaches.
+    description: Checks if an email address was compromised.
     execution: false
     name: pwned-email
     outputs:
     - contextPath: Account.Email.Compromised.Vendor
-      description: For compromised emails, the vendor that made the decision.
+      description: For compromised email addresses, the vendor that made the decision.
       type: String
     - contextPath: Account.Email.Compromised.Reporters
-      description: For compromised emails, the reporters for the vendor to make the
+      description: For compromised email addresses, the reporters for the vendor to make the
         compromised decision.
       type: String
     - contextPath: Account.Email.Address
-      description: Email address.
+      description: The email address.
       type: String
     - contextPath: Email.Malicious.Vendor
-      description: For malicious emails, the vendor that made the decision.
+      description: For malicious email addresses, the vendor that made the decision.
       type: String
     - contextPath: Email.Malicious.Description
-      description: For malicious emails, the reason that the vendor made the decision.
+      description: For malicious email addresses, the reason that the vendor made the decision.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -73,13 +72,13 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: Domain to check.
+      description: The domain to check.
       isArray: false
       name: domain
       required: true
       secret: false
     deprecated: false
-    description: Checks if domain has been compromised.
+    description: Checks if a domain was compromised.
     execution: false
     name: pwned-domain
     outputs:
@@ -113,34 +112,34 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: Email to check.
+      description: The email address to check.
       isArray: false
       name: email
       required: true
       secret: false
     deprecated: false
-    description: Checks if an email has been compromised, as part of previous breaches.
+    description: Checks if an email address was compromised.
     execution: false
     name: email
     outputs:
     - contextPath: Account.Email.Compromised.Vendor
-      description: For compromised emails, the vendor that made the decision.
+      description: For compromised email addresses, the vendor that made the decision.
       type: String
     - contextPath: Account.Email.Compromised.Reporters
-      description: For compromised emails, the reporters for the vendor to make the
+      description: For compromised email addresses, the reporters for the vendor to make the
         compromised decision.
       type: String
     - contextPath: Account.Email.Reason
-      description: For compromised emails, the reason that the vendor made the decision.
+      description: For compromised email addresses, the reason that the vendor made the decision.
       type: String
     - contextPath: Account.Email.Address
-      description: Email address.
+      description: The email address.
       type: String
     - contextPath: Email.Malicious.Vendor
-      description: For malicious emails, the vendor that made the decision.
+      description: For malicious email addresses, the vendor that made the decision.
       type: String
     - contextPath: Email.Malicious.Description
-      description: For malicious emails, the reason that the vendor made the decision.
+      description: For malicious email addresses, the reason that the vendor made the decision.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -156,13 +155,13 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: Domain to check.
+      description: The domain to check.
       isArray: false
       name: domain
       required: true
       secret: false
     deprecated: false
-    description: Checks if domain has been compromised.
+    description: Checks if a domain was compromised.
     execution: false
     name: domain
     outputs:
@@ -177,7 +176,7 @@ script:
       description: For compromised domains, the reason that the vendor made the decision.
       type: String
     - contextPath: Domain.Name
-      description: Domain name.
+      description: The domain name.
       type: String
     - contextPath: Domain.Malicious.Vendor
       description: For malicious domains, the vendor that made the decision.
