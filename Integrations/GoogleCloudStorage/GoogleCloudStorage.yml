@@ -1,0 +1,133 @@
+category: IT Services
+commonfields:
+  id: Google Cloud Storage
+  version: -1
+configuration:
+- display: Service Account Private Key file contents (JSON)
+  name: service_account_json
+  required: true
+  type: 4
+- display: Use system proxy settings
+  name: use_proxy
+  required: false
+  type: 8
+description: Google Cloud Storage is a RESTful online file storage web service for
+  storing and accessing data on Google Cloud Platform infrastructure.
+display: Google Cloud Storage
+name: Google Cloud Storage
+script:
+  commands:
+  - deprecated: false
+    description: Retrieves the list of buckets in the project
+    execution: false
+    name: gcs-list-buckets
+    outputs:
+    - contextPath: GCP.Bucket.Name
+      description: Bucket name (which is also its ID)
+      type: String
+    - contextPath: GCP.Bucket.TimeCreated
+      description: Bucket creation time
+      type: Date
+    - contextPath: GCP.Bucket.TimeUpdated
+      description: Last bucket modification time
+      type: Date
+    - contextPath: GCP.Bucket.OwnerID
+      description: Bucket owner ID
+      type: String
+  - arguments:
+    - default: true
+      description: Bucket name (which is also its ID)
+      isArray: false
+      name: bucket_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves bucket information
+    execution: false
+    name: gcs-get-bucket
+    outputs:
+    - contextPath: GCP.Bucket.Name
+      description: Bucket name (which is also its ID)
+      type: String
+    - contextPath: GCP.Bucket.TimeCreated
+      description: Bucket creation time
+      type: Date
+    - contextPath: GCP.Bucket.TimeUpdated
+      description: Last bucket modification time
+      type: Date
+    - contextPath: GCP.Bucket.OwnerID
+      description: Bucket owner ID
+      type: String
+  - arguments:
+    - default: true
+      description: Bucket name (which is also its ID)
+      isArray: false
+      name: bucket_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the list of objects in a bucket
+    execution: false
+    name: gcs-list-bucket-objects
+    outputs:
+    - contextPath: GCP.BucketObject.Name
+      description: Object name
+      type: String
+    - contextPath: GCP.BucketObject.Bucket
+      description: Name of the bucket containing this object
+      type: String
+    - contextPath: GCP.BucketObject.ContentType
+      description: Content-Type of the object data
+      type: String
+    - contextPath: GCP.BucketObject.TimeCreated
+      description: Object creation time
+      type: Date
+    - contextPath: GCP.BucketObject.TimeUpdated
+      description: Last object modification time
+      type: Date
+    - contextPath: GCP.BucketObject.TimeDeleted
+      description: Object deletion time (available if the object is archived)
+      type: Date
+    - contextPath: GCP.BucketObject.Size
+      description: Object size in bytes
+      type: Number
+    - contextPath: GCP.BucketObject.MD5
+      description: MD5 hash of the data, in Base64
+      type: String
+    - contextPath: GCP.BucketObject.OwnerID
+      description: Object owner ID
+      type: String
+    - contextPath: GCP.BucketObject.CRC32c
+      description: CRC32c checksum (as described in RFC 4960, Appendix B), encoded
+        using Base64 in big-endian byte order
+      type: String
+    - contextPath: GCP.BucketObject.EncryptionAlgorithm
+      description: Encryption algorithm
+      type: String
+    - contextPath: GCP.BucketObject.EncryptionKeySHA256
+      description: SHA256 hash value of the encryption key
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the bucket in which the object resides
+      isArray: false
+      name: bucket_name
+      required: true
+      secret: false
+    - default: true
+      description: Name of the object to download
+      isArray: false
+      name: object_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Downloads an object
+    execution: false
+    name: gcs-download-file
+  dockerimage: google_cloud_storage
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
