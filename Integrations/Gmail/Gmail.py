@@ -818,24 +818,30 @@ def send_mail(emailto, emailfrom, subject, body, entry_id):
         main_type, sub_type = content_type.split('/', 1)
         if main_type == 'text':
             fp = open(file_path, 'rb')
-            file_msg = MIMEText(fp.read(), _subtype=sub_type)
+            file_txt = MIMEText(fp.read(), _subtype=sub_type)
             fp.close()
+            file_txt.add_header('Content-Disposition', 'attachment', filename=file_name)
+            message.attach(file_txt)
         elif main_type == 'image':
             fp = open(file_path, 'rb')
-            file_msg = MIMEImage(fp.read(), _subtype=sub_type)
+            file_img = MIMEImage(fp.read(), _subtype=sub_type)
             fp.close()
+            file_img.add_header('Content-Disposition', 'attachment', filename=file_name)
+            message.attach(file_img)
         elif main_type == 'audio':
             fp = open(file_path, 'rb')
-            file_msg = MIMEAudio(fp.read(), _subtype=sub_type)
+            file_aud = MIMEAudio(fp.read(), _subtype=sub_type)
             fp.close()
+            file_aud.add_header('Content-Disposition', 'attachment', filename=file_name)
+            message.attach(file_aud)
         else:
             fp = open(file_path, 'rb')
             file_msg = MIMEBase(main_type, sub_type)
             file_msg.set_payload(fp.read())
             fp.close()
         # filename = os.path.basename(file_path)
-        file_msg.add_header('Content-Disposition', 'attachment', filename=file_name)
-        message.attach(file_msg)
+            file_msg.add_header('Content-Disposition', 'attachment', filename=file_name)
+            message.attach(file_msg)
     encoded_message = base64.urlsafe_b64encode(message.as_string())
     command_args = {
         'userId': emailfrom if emailfrom != 'me' else ADMIN_EMAIL,
