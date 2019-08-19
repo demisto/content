@@ -83,7 +83,7 @@ class ScriptValidator(object):
         return arg_to_required
 
     def is_valid_subtype(self):
-        """Validate that the subtype self.file_path is -1."""
+        """Validate that the subtype is python2 or python3."""
         type_ = self.current_script.get('type')
         if type_ == 'python':
             subtype = self.current_script.get('subtype')

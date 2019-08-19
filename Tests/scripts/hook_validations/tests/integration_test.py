@@ -580,4 +580,4 @@ def test_valid_subtype():
     }
 
     assert validator.is_valid_subtype(), \
-        "The integration validator did not find invalid subtype although there is"
+        "The integration validator found invalid subtype while it is valid"

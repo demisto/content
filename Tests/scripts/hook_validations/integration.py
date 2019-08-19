@@ -57,7 +57,7 @@ class IntegrationValidator(object):
         return self._is_valid
 
     def is_valid_subtype(self):
-        """Validate that the subtype self.file_path is -1."""
+        """Validate that the subtype is python2 or python3."""
         type_ = self.current_integration.get('script', {}).get('type')
         if type_ == 'python':
             subtype = self.current_integration.get('script', {}).get('subtype')
@@ -70,7 +70,7 @@ class IntegrationValidator(object):
                 print_error("Possible backwards compatibility break, You've changed the subtype"
                             " of the file {}".format(self.file_path))
                 self._is_valid = False
-        return not self._is_valid
+        return self._is_valid
 
     def is_there_duplicate_args(self):
         """Check if a command has the same arg more than once

@@ -450,4 +450,4 @@ def test_valid_subtype():
     }
 
     assert validator.is_valid_subtype(), \
-        "The script validator did not find invalid subtype although there is"
+        "found invalid subtype while it is valid"
