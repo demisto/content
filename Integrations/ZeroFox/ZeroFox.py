@@ -22,15 +22,20 @@ FETCH_TIME: str = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT).strip()
 ''' HELPER FUNCTIONS '''
 
 
-def check_id_validity(id_string: str) -> bool:
+def dict_value_to_integer(params: Dict, key: str):
     """
-    :param id_string: String representation of the ID
-    :return: The Integer ID
+    :param params: A dictionary which has the key param
+    :param key: The key that we need to convert it's value to integer
+    :return: The integer representation of the key's value in the dict params
     """
     try:
-        return int(id_string)
+        if params:
+            value: str = params.get(key, '')
+            if value:
+                params[key] = int(value)
+                return params[key]
     except ValueError:
-        raise Exception('ID Error: Please enter ID using only numbers.')
+        raise Exception(f'{key} should contain only numbers. Please enter a valid Integer.')
 
 
 # transforms severity number to string representation
@@ -185,7 +190,7 @@ def get_entity_contents(entity: Dict) -> Dict:
         'Name': entity.get('name'),
         'EmailAddress': entity.get('email_address'),
         'Organization': entity.get('organization'),
-        'Labels': entity.get('labels'),
+        'Tags': entity.get('labels'),
         'StrictNameMatching': entity.get('strict_name_matching'),
         'PolicyID': entity.get('policy_id'),
         'Profile': entity.get('profile'),
@@ -204,10 +209,10 @@ def get_entity_contents_war_room(contents: Dict) -> Dict:
     """
     return {
         'Name': contents.get('Name'),
-        'Type': contents.get('Type'),
-        'Policy': contents.get('Policy'),
+        'Type': contents.get('TypeName'),
+        'Policy': contents.get('PolicyID'),
         'Email': contents.get('EmailAddress'),
-        'Tags': contents.get('Labels'),
+        'Tags': contents.get('Tags'),
         'ID': contents.get('ID')
     }
 
@@ -325,8 +330,7 @@ def close_alert(alert_id: int) -> Dict:
 
 
 def close_alert_command():
-    alert_id: str = demisto.args().get('alert_id', '')
-    alert_id: int = check_id_validity(alert_id)
+    alert_id: int = dict_value_to_integer(demisto.args(), 'alert_id')
     close_alert(alert_id)
     contents: Dict = get_updated_contents(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Closed'}}
@@ -348,8 +352,7 @@ def open_alert(alert_id: int) -> Dict:
 
 
 def open_alert_command():
-    alert_id: str = demisto.args().get('alert_id', '')
-    alert_id: int = check_id_validity(alert_id)
+    alert_id: int = dict_value_to_integer(demisto.args(), 'alert_id')
     open_alert(alert_id)
     contents: Dict = get_updated_contents(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Open'}}
@@ -371,8 +374,7 @@ def alert_request_takedown(alert_id: int) -> Dict:
 
 
 def alert_request_takedown_command():
-    alert_id: str = demisto.args().get('alert_id', '')
-    alert_id: int = check_id_validity(alert_id)
+    alert_id: int = dict_value_to_integer(demisto.args(), 'alert_id')
     alert_request_takedown(alert_id)
     contents: Dict = get_updated_contents(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Takedown:Requested'}}
@@ -394,8 +396,7 @@ def alert_cancel_takedown(alert_id: int) -> Dict:
 
 
 def alert_cancel_takedown_command():
-    alert_id: str = demisto.args().get('alert_id', '')
-    alert_id: int = check_id_validity(alert_id)
+    alert_id: int = dict_value_to_integer(demisto.args(), 'alert_id')
     alert_cancel_takedown(alert_id)
     contents: Dict = get_updated_contents(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Open'}}
@@ -421,8 +422,7 @@ def alert_user_assignment(alert_id: int, username: str) -> Dict:
 
 
 def alert_user_assignment_command():
-    alert_id: str = demisto.args().get('alert_id', '')
-    alert_id: int = check_id_validity(alert_id)
+    alert_id: int = dict_value_to_integer(demisto.args(), 'alert_id')
     username: str = demisto.args().get('username', '')
     alert_user_assignment(alert_id, username)
     contents: Dict = get_updated_contents(alert_id)
@@ -456,8 +456,7 @@ def modify_alert_tags(alert_id: int, action: str, tags_list_string: str) -> Dict
 
 
 def modify_alert_tags_command():
-    alert_id: str = demisto.args().get('alert_id', '')
-    alert_id: int = check_id_validity(alert_id)
+    alert_id: int = dict_value_to_integer(demisto.args(), 'alert_id')
     action_string: str = demisto.args().get('action', '')
     action: str = 'added' if action_string == 'add' else 'removed'
     tags_list_string: str = demisto.args().get('tags', '')
@@ -483,8 +482,7 @@ def get_alert(alert_id: int) -> Dict:
 
 
 def get_alert_command():
-    alert_id: str = demisto.args().get('alert_id', '')
-    alert_id: int = check_id_validity(alert_id)
+    alert_id: int = dict_value_to_integer(demisto.args(), 'alert_id')
     response_content: Dict = get_alert(alert_id)
     alert: Dict = response_content.get('alert', {})
     if not alert or not isinstance(alert, Dict):
@@ -528,8 +526,7 @@ def create_entity_command():
     strict_name_matching: bool = bool(demisto.args().get('strict_name_matching', ''))
     tags: str = demisto.args().get('tags', '')
     tags: List = argToList(tags, ',')
-    policy_id: str = demisto.args().get('policy_id', '')
-    policy_id: int = check_id_validity(policy_id)
+    policy_id: int = dict_value_to_integer(demisto.args(), 'policy_id')
     organization: str = demisto.args().get('organization', '')
     response_content: Dict = create_entity(name, strict_name_matching, tags, policy_id, organization)
     entity_id: int = response_content.get('id', '')
@@ -611,14 +608,20 @@ def list_alerts(params: Dict) -> Dict:
 
 def list_alerts_command():
     params: Dict = remove_none_dict(demisto.args())
-    # handle severity/risk_rating parameter
+    # handle all integer query params
+    for key in ['entity', 'entity_term', 'last_modified', 'offset', 'page_id', 'rule_id']:
+        dict_value_to_integer(params, key)
+    # handle severity/risk_rating parameter - special case
     risk_rating_string: str = params.get('risk_rating', '')
     if risk_rating_string:
         del params['risk_rating']
         params['severity'] = severity_string_to_num(risk_rating_string)
-    alert_id: str = params.get('alert_id')
-    if alert_id:
-        params['alert_id'] = check_id_validity(alert_id)
+    # handle limit parameter - special case
+    limit: str = params.get('limit')
+    if limit:
+        limit = dict_value_to_integer(params, 'limit')
+        if limit < 0 or limit > 100:
+            raise Exception('Limit should be 0 <= x <= 100')
     response_content: Dict = list_alerts(params)
     if not response_content:
         return_outputs('No alerts found.', outputs={})
@@ -627,8 +630,10 @@ def list_alerts_command():
         contents: List = [get_alert_contents(alert) for alert in alerts]
         contents_war_room: List = [get_alert_contents_war_room(content) for content in contents]
         context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents}
+        headers: List = ['ID', 'Protected Entity', 'Content Type', 'Alert Date', 'Status', 'Source', 'Rule', 'Policy',
+                         'Content Type', 'Risk Rating', 'Notes', 'Tags']
         return_outputs(
-            tableToMarkdown('ZeroFox Alerts', contents_war_room, removeNull=True),
+            tableToMarkdown('ZeroFox Alerts', contents_war_room, headers=headers, removeNull=True),
             context,
             response_content
         )
@@ -648,6 +653,9 @@ def list_entities(params: Dict) -> Dict:
 
 def list_entities_command():
     params: Dict = remove_none_dict(demisto.args())
+    # handle all integer query params
+    for key in ['group', 'label', 'network', 'page', 'policy', 'type']:
+        dict_value_to_integer(params, key)
     response_content: Dict = list_entities(params)
     if not response_content:
         return_outputs('No entities found.', outputs={})
@@ -656,8 +664,9 @@ def list_entities_command():
         contents: List = [get_entity_contents(entity) for entity in entities]
         contents_war_room: List = [get_entity_contents_war_room(content) for content in contents]
         context: Dict = {'ZeroFox.Entity(val.ID && val.ID === obj.ID)': contents}
+        headers: List = ['Name', 'Type', 'Policy', 'Email', 'Tags', 'ID']
         return_outputs(
-            tableToMarkdown('ZeroFox Entities', contents_war_room, removeNull=True),
+            tableToMarkdown('ZeroFox Entities', contents_war_room, headers=headers, removeNull=True),
             context,
             response_content
         )
