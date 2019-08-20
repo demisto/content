@@ -1,4 +1,4 @@
-category: Authentication
+category: Case Management
 commonfields:
   id: CaseManagement
   version: -1
@@ -41,24 +41,44 @@ script:
   commands:
   - arguments:
     - default: false
-      description: 'This is a list argument, please provide comma separated list (example:
-        "1,2,3"). This item is mandatory so it must be provided in order to use the
-        command.'
-      isArray: true
-      name: item_ids
+      description: ID of ticket to get
+      isArray: false
+      name: ticket_id
       required: true
       secret: false
     deprecated: false
-    description: Get items from service.
+    description: Get ticket from integration
     execution: false
-    name: example-get-items
+    name: case-management-get-ticket
     outputs:
-    - contextPath: Example.Item.ID
-      description: Item ID
-      type: number
-    - contextPath: Example.Item.Name
-      description: Item name
-      type: string
+    - contextPath: CaseManagement.Ticket.ID
+      description: Ticket ID
+      type: String
+    - contextPath: CaseManagement.Ticket.Title
+      description: Ticket title
+      type: String
+    - contextPath: CaseManagement.Ticket.CreatedAt
+      description: Time of created ticket.
+      type: Date
+    - contextPath: CaseManagement.Ticket.Description
+      description: Description of ticket
+      type: String
+  - deprecated: false
+    description: Lists all tickets
+    execution: false
+    name: case-management-list-tickets
+  - deprecated: false
+    description: Creates a new ticket
+    execution: false
+    name: case-management-create-ticket
+  - deprecated: false
+    description: Closes a ticket
+    execution: false
+    name: case-management-close-ticket
+  - deprecated: false
+    description: Assign ticket to user
+    execution: false
+    name: case-management-assign-ticket
   isfetch: false
   longRunning: false
   longRunningPort: false

@@ -69,7 +69,7 @@ def test_module():
     """
     Performs basic get request to get item samples
     """
-    http_request('GET', 'items/samples')
+    http_request('GET', 'tickets/all')
 
 
 def get_ticket_command():
@@ -89,11 +89,11 @@ def get_ticket_command():
         context_entry = {
             'ID': ticket.get('id'),
             'Description': ticket.get('description'),
-            'Name': ticket.get('name'),
+            'Title': ticket.get('title'),
             'CreatedDate': ticket.get('createdDate')
         }
 
-        context['CaseManagement.Event(val.ID && val.ID === obj.ID)'] = context_entry
+        context['CaseManagement.Ticket(val.ID && val.ID === obj.ID)'] = context_entry
         # Creating human readable for War room
         human_readable = tableToMarkdown(title, context_entry, removeNull=True)
         # Return data to Demisto
@@ -181,7 +181,7 @@ def main():
             create_ticket_command()
         elif command == 'case-management-close-ticket':
             close_ticket_command()
-        elif command == 'case-managment-assign-ticket':
+        elif command == 'case-management-assign-ticket':
             assign_ticket_command()
     # Log exceptions
     except Exception as e:

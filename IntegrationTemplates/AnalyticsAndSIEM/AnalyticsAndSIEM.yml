@@ -32,38 +32,13 @@ script:
         "1,2,3"). This item is mandatory so it must be provided in order to use the
         command.'
       isArray: true
-      name: event_ids
+      name: item_ids
       required: true
       secret: false
     deprecated: false
-    description: Get event from integration
+    description: Get items from service.
     execution: false
-    name: analytics-and-siem-get-event
-    outputs:
-    - contextPath: AnalyticsAndSIEM.Event.ID
-      description: Event ID
-      type: String
-    - contextPath: AnalyticsAndSIEM.Event.Description
-      description: Event description
-      type: String
-    - contextPath: AnalyticsAndSIEM.Event.Name
-      description: Event name
-      type: String
-    - contextPath: AnalyticsAndSIEM.Event.CreatedDate
-      description: Date of creation
-      type: Date
-  - deprecated: false
-    description: list all events
-    execution: false
-    name: analytics-and-siem-list-events
-  - deprecated: false
-    description: Creates an event
-    execution: false
-    name: analytics-and-siem-create-event
-  - deprecated: false
-    description: Closes an event
-    execution: false
-    name: analytics-and-siem-close-event
+    name: example-get-items
   isfetch: false
   longRunning: false
   longRunningPort: false

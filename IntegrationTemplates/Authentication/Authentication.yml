@@ -36,13 +36,13 @@ script:
         "1,2,3"). This item is mandatory so it must be provided in order to use the
         command.'
       isArray: true
-      name: account_id
+      name: item_ids
       required: true
       secret: false
     deprecated: false
-    description: Locks an account
+    description: Get items from service.
     execution: false
-    name: authentication-example-lock-account
+    name: example-get-items
     outputs:
     - contextPath: AuthenticationExample.Account.ID
       description: Account ID
@@ -50,10 +50,6 @@ script:
     - contextPath: AuthenticationExample.Account.IsLocked
       description: Locked status of account
       type: Boolean
-  - deprecated: false
-    description: Lock the entire vault
-    execution: true
-    name: authentication-example-lock-vault
   isfetch: false
   longRunning: false
   longRunningPort: false
