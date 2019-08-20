@@ -326,6 +326,7 @@ script:
       description: the domain value
       type: String
     - contextPath: AlienVaultOTX.PassiveDNS.Ip
+      description: Ip passive dns
       type: String
     - contextPath: AlienVaultOTX.PassiveDNS.Domain
       description: the domain value
@@ -458,5 +459,5 @@ script:
   runonce: false
   script: '-'
   type: python
-  test:
-    - Alienvault_OTX_v2-test
+tests:
+  - Alienvault_OTX_v2-test
