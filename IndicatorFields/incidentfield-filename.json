@@ -1,11 +1,11 @@
 {
   "sortValues": null,
   "closeForm": false,
-  "cliName": "filename",
+  "cliName": "filenamefield",
   "neverSetAsRequired": false,
   "threshold": 0,
   "defaultRows": null,
-  "id": "incident_filenamefield",
+  "id": "indicator_filenamefield",
   "validatedError": "",
   "group": 2,
   "script": "",
@@ -26,8 +26,8 @@
   "shouldPublish": false,
   "associatedTypes": [
     "Malware",
-    "XDR Malware",
-    "Traps"
+    "Traps",
+    "Crowdstrike"
   ],
   "caseInsensitive": false,
   "columns": null,
@@ -41,9 +41,10 @@
   "name": "File Name",
   "ownerOnly": false,
   "required": false,
-  "modified": "2019-07-23T15:34:36.81061208Z",
+  "modified": "2019-07-29T10:37:51.8616535Z",
   "fieldCalcScript": "",
   "selectValues": null,
   "validationRegex": "",
-  "sla": 0
+  "sla": 0,
+  "fromVersion": "5.0.0"
 }
