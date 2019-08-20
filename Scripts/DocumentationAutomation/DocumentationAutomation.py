@@ -213,13 +213,21 @@ def generate_commands_section(yaml_data, example_dict):
         'After you successfully execute a command, a DBot message appears in the War Room with the command details.'
     ]
     commands = yaml_data['script']['commands']
-    command_list = ['{}. {}'.format(i + 1, cmd['name']) for i, cmd in enumerate(commands)]
+    command_list = []
+    for i, cmd in enumerate(commands):
+        if cmd.get('deprecated') is not True:
+            command_list.append('{}. {}'.format(i + 1, cmd['name']))
+        else:
+            i -= 1
     section.extend(command_list)
 
     for i, cmd in enumerate(commands):
-        cmd_section, cmd_errors = generate_single_command_section(i, cmd, example_dict)
-        section.extend(cmd_section)
-        errors.extend(cmd_errors)
+        if cmd.get('deprecated') is not True:
+            cmd_section, cmd_errors = generate_single_command_section(i, cmd, example_dict)
+            section.extend(cmd_section)
+            errors.extend(cmd_errors)
+        else:
+            i -= 1
 
     return section, errors
 
