@@ -135,7 +135,7 @@ def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playb
     status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run)
     stdout, stderr = get_memory_data()
     text = stdout if not stderr else stderr
-    if is_nightly:
+    if not is_nightly:
         send_slack_message(slack, SLACK_CHANNEL_ID, text, 'Content CircleCI', 'False')
 
     if status == PB_Status.COMPLETED:
@@ -565,7 +565,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                                                     nightly_integrations)
     else:  # In case of a non AMI run we don't want to use the mocking mechanism
         mockless_tests = tests
-    if is_nightly:
+    if not is_nightly:
         send_slack_message(slack, SLACK_CHANNEL_ID,
                            'Build Number: {0}\n Server Address: {1}'.format(build_number, server),
                            'Content CircleCI', 'False')
