@@ -655,7 +655,7 @@ def fetch_incidents():
             return
         else:
             minutes_of_generation = MAX_NUM_OF_INCIDENTS / float(INCIDENTS_PER_MINUTE)
-            if minutes_of_generation > FREQUENCY:
+            if minutes_of_generation < FREQUENCY:
                 err_msg = 'The maximum number of incidents divided by the incidents to generate per minute'
                 err_msg += ' exceeds every how often incidents should be generated. Please increase the value'
                 err_msg += ' entered for how often the integration should generate incidents.'
