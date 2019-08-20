@@ -91,11 +91,12 @@ class ScriptValidator(object):
                 print_error("The subtype for our yml files should be either python2 or python3, "
                             "please update the file {}.".format(self.current_script.get('name')))
                 return True
-            old_subtype = self.old_script.get('subtype', "")
-            if len(old_subtype) > 0 and old_subtype != subtype:
-                print_error("Possible backwards compatibility break, You've changed the subtype"
-                            " of the file {}".format(self.file_path))
-                return True
+            if self.old_script:
+                old_subtype = self.old_script.get('subtype', "")
+                if len(old_subtype) > 0 and old_subtype != subtype:
+                    print_error("Possible backwards compatibility break, You've changed the subtype"
+                                " of the file {}".format(self.file_path))
+                    return True
         return False
 
     def is_added_required_args(self):

@@ -597,12 +597,6 @@ def test_valid_subtype_lies():
             "subtype": "lies"
         }
     }
-    validator.old_integration = {
-        "script": {
-            "type": "python",
-            "subtype": "lies"
-        }
-    }
 
     assert validator.is_valid_subtype() is False, \
         "The integration validator found valid subtype while it is invalid"
