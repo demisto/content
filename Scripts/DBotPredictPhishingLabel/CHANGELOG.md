@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Bug fix regarding usage of demisto.args().
+Fixed an issue regarding usage of demisto.args().
