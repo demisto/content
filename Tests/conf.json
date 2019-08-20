@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "AlienVault_OTX_v2",
+            "playbookID": "Alienvault_OTX_v2-test"
+        },
+        {
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook",
             "fromversion": "4.1.0"

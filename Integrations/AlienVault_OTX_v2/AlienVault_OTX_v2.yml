@@ -455,8 +455,8 @@ script:
       type: String
   dockerimage: demisto/python3:3.7.4.1150
   isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   type: python
+  test:
+    - Alienvault_OTX_v2-test
