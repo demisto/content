@@ -135,9 +135,11 @@ def create_context_entry(context_type, context_main_value, comp_sites, comp_past
     else:
         context_dict['Name'] = context_main_value
 
-    context_dict['Compromised'] = {
-        'Vendor': VENDOR,
-        'Reporters': ', '.join(comp_sites + comp_pastes)
+    context_dict['Pwned-V2'] = {
+        'Compromised': {
+            'Vendor': VENDOR,
+            'Reporters': ', '.join(comp_sites + comp_pastes)
+        }
     }
 
     if malicious_score == 3:

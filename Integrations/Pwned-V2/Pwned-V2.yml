@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-fromversion: 4.1.0
 commonfields:
   id: Have I Been Pwned? V2
   version: -1
@@ -21,7 +20,7 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -42,10 +41,10 @@ script:
     execution: false
     name: pwned-email
     outputs:
-    - contextPath: Account.Email.Compromised.Vendor
+    - contextPath: Account.Email.Pwned-V2.Compromised.Vendor
       description: For compromised email addresses, the vendor that made the decision.
       type: String
-    - contextPath: Account.Email.Compromised.Reporters
+    - contextPath: Account.Email.Pwned-V2.Compromised.Reporters
       description: For compromised email addresses, the reporters for the vendor to make the
         compromised decision.
       type: String
@@ -82,10 +81,10 @@ script:
     execution: false
     name: pwned-domain
     outputs:
-    - contextPath: Domain.Compromised.Vendor
+    - contextPath: Domain.Pwned-V2.Compromised.Vendor
       description: For compromised domains, the vendor that made the decision.
       type: String
-    - contextPath: Domain.Compromised.Reporters
+    - contextPath: Domain.Pwned-V2.Compromised.Reporters
       description: For compromised domains, the reporters for the vendor to make the
         compromised decision.
       type: String
@@ -122,15 +121,12 @@ script:
     execution: false
     name: email
     outputs:
-    - contextPath: Account.Email.Compromised.Vendor
+    - contextPath: Account.Email.Pwned-V2.Compromised.Vendor
       description: For compromised email addresses, the vendor that made the decision.
       type: String
-    - contextPath: Account.Email.Compromised.Reporters
+    - contextPath: Account.Email.Pwned-V2.Compromised.Reporters
       description: For compromised email addresses, the reporters for the vendor to make the
         compromised decision.
-      type: String
-    - contextPath: Account.Email.Reason
-      description: For compromised email addresses, the reason that the vendor made the decision.
       type: String
     - contextPath: Account.Email.Address
       description: The email address.
@@ -165,15 +161,12 @@ script:
     execution: false
     name: domain
     outputs:
-    - contextPath: Domain.Compromised.Vendor
+    - contextPath: Domain.Pwned-V2.Compromised.Vendor
       description: For compromised domains, the vendor that made the decision.
       type: String
-    - contextPath: Domain.Compromised.Reporters
+    - contextPath: Domain.Pwned-V2.Compromised.Reporters
       description: For compromised domains, the reporters for the vendor to make the
         compromised decision.
-      type: String
-    - contextPath: Domain.Compromised.Reason
-      description: For compromised domains, the reason that the vendor made the decision.
       type: String
     - contextPath: Domain.Name
       description: The domain name.

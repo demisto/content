@@ -423,7 +423,7 @@ tasks:
             value:
               complex:
                 root: Account
-                accessor: Email.Compromised.Reporters
+                accessor: Email.Pwned-V2.Compromised.Reporters
             iscontext: true
           right:
             value:
@@ -493,7 +493,7 @@ tasks:
       - - operator: containsString
           left:
             value:
-              simple: Account.Email.Compromised.Reporters
+              simple: Account.Email.Pwned-V2.Compromised.Reporters
             iscontext: true
           right:
             value:
