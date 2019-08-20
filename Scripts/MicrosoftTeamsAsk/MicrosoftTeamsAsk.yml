@@ -1,0 +1,72 @@
+args:
+- default: false
+  description: Question message to send to the team member
+  isArray: false
+  name: message
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: false
+  description: Indicates whether to use one-time entitlement or a persistent one
+  isArray: false
+  name: persistent
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- default: false
+  defaultValue: 'yes'
+  description: First option for the team member reply.
+  isArray: false
+  name: option1
+  required: false
+  secret: false
+- default: false
+  defaultValue: 'no'
+  description: Second option for the team member reply.
+  isArray: false
+  name: option2
+  required: false
+  secret: false
+- default: false
+  description: A comma delimited list of additional options (in case more than 2 options
+    are needed)
+  isArray: false
+  name: additional_options
+  required: false
+  secret: false
+- default: true
+  description: Team member to ask
+  isArray: false
+  name: team_member
+  required: true
+  secret: false
+- default: false
+  description: Playbook Task ID close with the reply. If none provide, no playbook
+    task will be closed.
+  isArray: false
+  name: task_id
+  required: false
+  secret: false
+comment: Ask a user a question on Microsoft Teams and expect a response. The response
+  can also close a task (might be conditional) in a playbook.
+commonfields:
+  id: MicrosoftTeamsAsk
+  version: -1
+enabled: false
+name: MicrosoftTeamsAsk
+script: '-'
+system: false
+tags:
+- microsoftteams
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.7.4.1150
+tests:
+- No test
+dependson:
+  must:
+  - Microsoft Teams|||send-notification
+subtype: python3
+fromversion: 5.0.0
