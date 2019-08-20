@@ -6,6 +6,7 @@ import requests
 import functools
 import json
 from datetime import datetime
+from requests import cookies
 
 
 # disable insecure warnings
@@ -21,12 +22,16 @@ if not demisto.params().get('proxy', False):
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 VERIFY_SSL = not demisto.params().get('unsecure', False)
+
+MAX_REQUEST_RETRIES = 3
+
 FETCH_TIME_DEFAULT = '3 days'
 FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
 FETCH_TIME = FETCH_TIME if FETCH_TIME and FETCH_TIME.strip() else FETCH_TIME_DEFAULT
+
 SESSION = Session()
-COOKIE = demisto.getIntegrationContext().get('cookie')
 TOKEN = demisto.getIntegrationContext().get('token')
+COOKIE = demisto.getIntegrationContext().get('cookie')
 
 
 def get_server_url():
@@ -51,7 +56,7 @@ ACTION_TYPE_TO_VALUE = {
 ''' HELPER FUNCTIONS '''
 
 
-def send_request(path, method='get', body=None, params=None, headers=None):
+def send_request(path, method='get', body=None, params=None, headers=None, try_number=1):
     body = body if body is not None else {}
     params = params if params is not None else {}
     headers = headers if headers is not None else get_headers()
@@ -59,30 +64,33 @@ def send_request(path, method='get', body=None, params=None, headers=None):
     headers['X-SecurityCenter'] = TOKEN
     url = '{}/{}'.format(SERVER_URL, path)
 
-    session_cookie = requests.cookies.create_cookie('TNS_SESSIONID', COOKIE)
-    SESSION.cookies.set_cookie(session_cookie)
+    session_cookie = cookies.create_cookie('TNS_SESSIONID', COOKIE)
+    SESSION.cookies.set_cookie(session_cookie)  # type: ignore
 
     res = SESSION.request(method, url, data=json.dumps(body), params=params, headers=headers, verify=VERIFY_SSL)
 
-    if res.status_code == 403:
+    if res.status_code == 403 and try_number <= MAX_REQUEST_RETRIES:
         login()
-        headers['X-SecurityCenter'] = TOKEN
-        return send_request(path, method, body, params, headers)
+        headers['X-SecurityCenter'] = TOKEN  # The Token is being updated in the login
+        return send_request(path, method, body, params, headers, try_number + 1)
+
     elif res.status_code < 200 or res.status_code >= 300:
         try:
             error = res.json()
         except Exception:
             return_error('Error: Got status code {} with url {} with body {} with headers {}'.format(
                 str(res.status_code), url, res.content, str(res.headers)))
-        return_error('Error: Got an error from TenableSC, code: {}, details: {}'.format(
-            error['error_code'], error['error_msg']))
+
+        return_error('Error: Got an error from TenableSC, code: {}, details: {}'.format(error['error_code'],
+                                                                                        error['error_msg']))
     return res.json()
 
 
 def get_headers():
-    headers = {}
-    headers['Accept'] = 'application/json'
-    headers['Content-Type'] = 'application/json'
+    headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    }
 
     return headers
 
@@ -97,6 +105,7 @@ def send_login_request(login_body):
     if res.status_code < 200 or res.status_code >= 300:
         return_error('Error: Got status code {} with url {} with body {} with headers {}'.format(
             str(res.status_code), url, res.content, str(res.headers)))
+
     global COOKIE
     COOKIE = res.cookies.get('TNS_SESSIONID', COOKIE)
     demisto.setIntegrationContext({'cookie': COOKIE})
@@ -123,6 +132,7 @@ def login():
         if 'response' not in login_response or 'token' not in login_response['response']:
             return_error('Error: Could not retrieve login token')
         token = login_response['response']['token']
+
     global TOKEN
     TOKEN = str(token)
     demisto.setIntegrationContext({'token': TOKEN})
@@ -1677,7 +1687,7 @@ def fetch_incidents():
                 'rawJSON': json.dumps(alert)
             })
 
-            if(int(alert['lastTriggered']) > max_timestamp):
+            if int(alert['lastTriggered']) > max_timestamp:
                 max_timestamp = int(alert['lastTriggered'])
 
     demisto.incidents(incidents)
@@ -1702,8 +1712,8 @@ def get_all_scan_results_command():
 
     elements = get_elements(res['response'], manageable)
 
-    headers = ['ID', 'Name', 'Description', 'Policy', 'Group', 'Owner', 'ScannedIPs',
-               'StartTime', 'EndTime', 'Duration', 'Checks', 'ImportTime', 'RepositoryName', 'Status']
+    headers = ['ID', 'Name', 'Status', 'Description', 'Policy', 'Group', 'Owner', 'ScannedIPs',
+               'StartTime', 'EndTime', 'Duration', 'Checks', 'ImportTime', 'RepositoryName']
 
     scan_results = [{
         'ID': elem['id'],
@@ -1722,7 +1732,8 @@ def get_all_scan_results_command():
         'RepositoryName': elem['repository'].get('name')
     } for elem in elements]
 
-    hr = tableToMarkdown('Tenable.sc Scan results', scan_results, headers, removeNull=True)
+    hr = tableToMarkdown('Tenable.sc Scan results', scan_results, headers, removeNull=True,
+                         metadata='Total number of elements is {}'.format(len(elements)))
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1753,10 +1764,11 @@ def scan_duration_to_demisto_format(duration, default_returned_value=''):
 
 LOG('Executing command ' + demisto.command())
 
-if not TOKEN or not COOKIE:
-    login()
 
 try:
+    if not TOKEN or not COOKIE:
+        login()
+
     if demisto.command() == 'test-module':
         demisto.results('ok')
     elif demisto.command() == 'fetch-incidents':
@@ -1812,6 +1824,6 @@ try:
 except Exception as e:
     LOG(e)
     LOG.print_log(False)
-    return_error(e)
+    return_error(str(e))
 finally:
     logout()
