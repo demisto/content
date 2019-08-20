@@ -451,7 +451,7 @@ script:
 
 
     // create the context, different between file and url context
-    function createQuickScanContext(response, scanners, dbotScore, indicatorType, whitelist){
+    function createQuickScanContext(response, scanners, dbotScore, whitelist){
 
         var baseContext = {
             'ID': response.id,
@@ -462,38 +462,49 @@ script:
         };
 
         var DbotContext = {
-        'Indicator': response.sha256,
-        'Vendor': "Hybrid Analysis",
-        'Score': dbotScore,
+            'Indicator': response.sha256,
+            'Vendor': 'Hybrid Analysis',
+            'Score': dbotScore,
+            'Type': 'URL'
         }
 
-        var res = {};
+        var url = getIntegrationContext()[response.id];
+        var urlContext = {'Data' : url};
+
         if (dbotScore == 3){
-            res.Malicious = {
+            var malicious_context = {
                 Vendor: 'Hybrid Analysis',
                 Description: 'DBotScore is 3' // need a better description here
             };
+            urlContext.Malicious = malicious_context;
         }
 
         var context = {};
 
-        if (indicatorType == 'File') {
-            res.EntryID = response.id;
-            res.SHA256 = response.sha256;
-            DbotContext.Type = 'File';
-            context= {
-                'HybridAnalysis.File(val.SHA256 && val.SHA256 == obj.SHA256)' : baseContext,
-                'File(val.SHA256 && val.SHA256 == obj.SHA256)' : res,
-                'DBotScore' : DbotContext
+        if (getIntegrationContext()[url] == 'file_url') {
+
+        var fileName = url.replace(/^.*[\\\/]/, '');
+            // create file context
+            var fileContext = {
+                'Name': fileName,
+                'SHA256': response.sha256
             };
+            if (dbotScore == 3) {
+                fileContext.Malicious = malicious_context;
+            }
+
+            context= {
+                'HybridAnalysis.URL(val.ID && val.ID == obj.ID)' : baseContext,
+                'URL(val.Data && val.Data == obj.Data)' : urlContext,
+                'File(val.SHA256 && val.SHA256 == obj.SHA256)' : fileContext,
+                'DBotScore' : DbotContext
+            }
         }
 
         else {
-            res.Data = getIntegrationContext()[response.id];
-            DbotContext.Type = 'URL';
             context= {
                 'HybridAnalysis.URL(val.ID && val.ID == obj.ID)' : baseContext,
-                'URL(val.Data && val.Data == obj.Data)' : res,
+                'URL(val.Data && val.Data == obj.Data)' : urlContext,
                 'DBotScore' : DbotContext
             }
         }
@@ -512,14 +523,12 @@ script:
     }
 
 
-    //create table entry from response after 'quick-scan-url/file-results' command
-    function quickScanResultToEntry(response, indicatorType, minMaliciousScanners) {
-
-        var unknownCounter = 0 ;
-        var maliciousCounter = 0 ;
-
         // create scanners entry context and calculate counters
+    function createScannersContext (response) {
+        var unknownCounter = 0;
+        var maliciousCounter = 0;
         var scannersContext = [];
+
         response.scanners.forEach(function(key) {
             scannersContext.push(
                 {
@@ -527,11 +536,28 @@ script:
                     'Status': key.status,
                     'Positives': key.positives
                 });
-            if (key.status == 'unknown' || key.status =='no-result' )
+            if (key.status == 'unknown' || key.status =='no-result' || key.status == 'not-supported')
                 unknownCounter++;
             else if (key.status == 'malicious')
                 maliciousCounter++;
         });
+
+        var res = {
+            'scannersContext' : scannersContext,
+            'unknownCounter' : unknownCounter,
+            'maliciousCounter' : maliciousCounter
+        }
+
+        return res;
+    }
+
+
+    //create table entry from response after 'quick-scan-url-results' command
+    function quickScanResultToEntry(response, minMaliciousScanners) {
+
+        var scannersContext = createScannersContext (response)['scannersContext'];
+        var unknownCounter = createScannersContext (response)['unknownCounter'];
+        var maliciousCounter = createScannersContext (response)['maliciousCounter'];
 
         var whitelist = {
             'ID': response.whitelist[0].id,
@@ -540,7 +566,7 @@ script:
 
         var dbotScore = calculateDbotScore(unknownCounter, maliciousCounter, minMaliciousScanners, response.scanners.lenght);
 
-        var context = createQuickScanContext (response, scannersContext, dbotScore, indicatorType, whitelist);
+        var context = createQuickScanContext (response, scannersContext, dbotScore, whitelist);
         var hr = createQuickScanHumanReadable (response, scannersContext, whitelist);
 
         return {
@@ -553,47 +579,61 @@ script:
         };
     }
 
-
-    //create table entry from response after 'quick-scan-url/file' command
-    function quickScanToEntry(response, indicatorType, url) {
-        var id = response.id;
-        var result = {
-            'ID':  response.id,
-            'SHA256': response.sha256,
-            'Finished': response.finished
-        };
-
-        if (indicatorType == 'File') {
-            result['Name'] = url ;
+    function createContext (response, hybrid_context) {
+        var url = hybrid_context.Url;
+        if (response.submission_type == 'page_url') {
             var context = {
-                'HybridAnalysis.File(val.id && val.id == obj.id)': result,
-                'File(val.id && val.id == obj.id)' : {
-                    'SHA256': response.sha256,
-                    'Name': url
-                }
-            };
-        }
-
-        else {
-            // adding { ID : url } to the context for future use
-            var add_to_context = {};
-            add_to_context[id] = url;
-            setIntegrationContext(add_to_context);
-
-            result['Data'] = url ;
-            var context = {
-                'HybridAnalysis.URL(val.id && val.id == obj.id)': result,
+                'HybridAnalysis.URL(val.id && val.id == obj.id)': hybrid_context,
                 'URL(val.Data && val.Data == obj.Data)':{
                     'Data': url
                 }
-            };
-         }
+            }
+        }
+
+        else {
+            var filename = url.replace(/^.*[\\\/]/, '');
+            var context = {
+                'HybridAnalysis.URL(val.id && val.id == obj.id)': hybrid_context,
+                'URL(val.Data && val.Data == obj.Data)':{
+                    'Data': url
+                },
+                'File(val.id && val.id == obj.id)' : {
+                    'SHA256': response.sha256,
+                    'Name': filename,
+                }
+            }
+        }
+
+        return context;
+    }
+
+
+    //create table entry from response after 'quick-scan-url/file' command
+    function quickScanToEntry(response, url) {
+        var id = response.id;
+        var hybrid_context = {
+            'Url': url,
+            'ID': response.id,
+            'SHA256': response.sha256,
+            'Finished': response.finished,
+            'SubmissionType' : response.submission_type
+        };
+
+        var context = createContext(response, hybrid_context)
+
+        // adding { ID : url } to the integration context for future use
+        var add_to_context = {};
+        add_to_context[id] = url;
+        add_to_context[url] = response.submission_type;
+        setIntegrationContext(add_to_context);
 
         return createTableEntry('Scan information:', response,
         {
             'ID':  response.id,
             'SHA256': response.sha256,
-            'Finished': response.finished
+            'Finished': response.finished,
+            'SubmissionType' : response.submission_type
+
         }, context);
     }
 
@@ -662,26 +702,17 @@ script:
         case 'hybrid-analysis-get-report-status':
             return reportState();
         //Quick Scan commands
-        case 'hybrid-analysis-quick-scan-file':
-            var res = quickScanUrl(args.scan_type, args.url, '/api/v2/quick-scan/url-to-file');
-            return quickScanToEntry(res, 'File', args.url);
         case 'hybrid-analysis-quick-scan-url':
-            var res = quickScanUrl(args.scan_type, args.url, '/api/v2/quick-scan/url-for-analysis');
-            return quickScanToEntry(res, 'Url', args.url);
-        case 'hybrid-analysis-quick-scan-file-results':
-            var res = quickScanId(args.ID);
-            return quickScanResultToEntry(res, 'File', args.min_malicious_scanners);
+            var res = quickScanUrl(args.scan_type, args.url, '/api/v2/quick-scan/url');
+            return quickScanToEntry(res, args.url);
         case 'hybrid-analysis-quick-scan-url-results':
             var res = quickScanId(args.ID);
-            return quickScanResultToEntry(res, 'Url', args.min_malicious_scanners);
+            return quickScanResultToEntry(res, args.min_malicious_scanners);
         case 'hybrid-analysis-list-scanners':
             return scanStates();
         //Sandbox Submission commands
-        case 'hybrid-analysis-submit-url-to-file':
-            var response = submitUrl(args.url, args.environmentID, '/api/v2/submit/url-to-file' );
-            return submitFileMsg(response);
-        case 'hybrid-analysis-submit-url-for-analysis':
-            var response = submitUrl(args.url, args.environmentID, '/api/v2/submit/url-for-analysis');
+        case 'hybrid-analysis-submit-url':
+            var response = submitUrl(args.url, args.environmentID, '/api/v2/submit/url' );
             return submitFileMsg(response);
     }
 
@@ -920,48 +951,6 @@ script:
       description: The environmentID of the submission
       type: string
     description: Get the state of the file submission
-  - name: hybrid-analysis-quick-scan-file-results
-    arguments:
-    - name: ID
-      required: true
-      description: ID of the File scanned
-    - name: min_malicious_scanners
-      default: true
-      description: Number of scanners returned Malicious to determine if the file
-        is Malicious
-      defaultValue: "2"
-    outputs:
-    - contextPath: HybridAnalysis.File.ID
-      description: Scan ID result
-      type: string
-    - contextPath: HybridAnalysis.File.SHA256
-      description: SHA256 of the File
-      type: string
-    - contextPath: HybridAnalysis.File.Finished
-      description: True if the process is finished
-      type: boolean
-    - contextPath: HybridAnalysis.File.Scanners.Name
-      description: The scanner name
-      type: string
-    - contextPath: HybridAnalysis.File.Scanner.Positives
-      description: Number of positive results
-      type: number
-    - contextPath: HybridAnalysis.File.Scanner.Status
-      description: The status of the file
-      type: string
-    - contextPath: HybridAnalysis.File.Whitelist.ID
-      description: Type of ID
-      type: string
-    - contextPath: HybridAnalysis.File.Whitelist.Value
-      description: True if the indicator is in the whitelist
-      type: boolean
-    - contextPath: File.EntryID
-      description: War-room entry ID of the file
-      type: string
-    - contextPath: File.SHA256
-      description: SHA256 of the File
-      type: string
-    description: Get the scan results of given file ID
   - name: hybrid-analysis-quick-scan-url
     arguments:
     - name: scan_type
@@ -971,7 +960,7 @@ script:
       defaultValue: all
     - name: url
       required: true
-      description: Url for analyze
+      description: Website’s url or url with file to submit
     outputs:
     - contextPath: HybridAnalysis.URL.Data
       description: The url
@@ -985,42 +974,39 @@ script:
     - contextPath: HybridAnalysis.URL.Finished
       description: Is the scan finished
       type: boolean
-    - contextPath: Url.Data
+    - contextPath: File.Name
       description: The url
       type: string
-    description: Scan a url for analysis
-  - name: hybrid-analysis-submit-url-to-file
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: string
+    - contextPath: HybridAnalysis.URL.SubmissionType
+      description: The type of the submission - file or url
+      type: string
+    description: Submit a website's url or url with file for analysis
+  - name: hybrid-analysis-submit-url
     arguments:
     - name: url
       required: true
       description: Url of file to submit
+      defaultValue: Website’s url or url with file to submit
     - name: environmentID
       required: true
       description: Environment ID to submit file to (get all IDs via vx-get-environments)
     outputs:
     - contextPath: HybridAnalysis.Submit.JobID
       description: JobID of the submission
+      type: string
     - contextPath: HybridAnalysis.Submit.SHA256
       description: SHA of the submission
+      type: string
     - contextPath: HybridAnalysis.Submit.EnvironmentID
       description: EnvironmentID of the submission
-    description: Submit a file by url for analysis
-  - name: hybrid-analysis-submit-url-for-analysis
-    arguments:
-    - name: url
-      required: true
-      description: Url to submit
-    - name: environmentID
-      required: true
-      description: Environment ID to submit file to (get all IDs via vx-get-environments)
-    outputs:
-    - contextPath: HybridAnalysis.Submit.JobID
-      description: JobID of the submission
-    - contextPath: HybridAnalysis.Submit.SHA256
-      description: SHA of the submission
-    - contextPath: HybridAnalysis.Submit.EnvironmentID
-      description: EnvironmentID of the submission
-    description: Submit a url for analysis
+      type: number
+    - contextPath: HybridAnalysis.Submit.SubmissionType
+      description: The type of the submission - file or url
+      type: string
+    description: Submit a website's url or url with file for analysis
   - name: hybrid-analysis-list-scanners
     arguments: []
     outputs:
@@ -1031,36 +1017,6 @@ script:
     - contextPath: HybridAnalysis.Scanner.Description
       description: The scanner description
     description: ' Get a list of available scanners'
-  - name: hybrid-analysis-quick-scan-file
-    arguments:
-    - name: scan_type
-      default: true
-      description: Type of scan. please see !hybrid-analysis-scan-states to see available
-        scanners
-      defaultValue: all
-    - name: url
-      required: true
-      description: Url of file to submit
-    outputs:
-    - contextPath: File.Name
-      description: File name
-      type: string
-    - contextPath: File.SHA256
-      description: SHA256 hash of the file
-      type: string
-    - contextPath: HybridAnalysis.File.Name
-      description: File name
-      type: string
-    - contextPath: HybridAnalysis.File.SHA256
-      description: SHA256 hash of the file
-      type: string
-    - contextPath: HybridAnalysis.File.ID
-      description: The file ID
-      type: string
-    - contextPath: HybridAnalysis.File.Finished
-      description: Is the scan finished
-      type: boolean
-    description: Scan a file by url for analysis
   - name: hybrid-analysis-quick-scan-url-results
     arguments:
     - name: ID
@@ -1096,6 +1052,9 @@ script:
     - contextPath: HybridAnalysis.URL.Whitelist.Value
       description: True if the indicator is in the whitelist
       type: boolean
+    - contextPath: File.SHA256
+      description: SHA256 of the File
+      type: string
     description: Get the scan results of given url ID
   runonce: false
 tests:
