@@ -472,7 +472,7 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
 
     run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id,
              succeed_playbooks, test_message, test_options, slack, circle_ci,
-             build_number, server, build_name, is_nightly, is_ami)
+             build_number, server, build_name, is_ami)
 
 
 def restart_demisto_service(ami, c):
