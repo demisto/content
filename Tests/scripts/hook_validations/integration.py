@@ -52,7 +52,25 @@ class IntegrationValidator(object):
         self.is_changed_command_name_or_arg()
         self.is_there_duplicate_args()
         self.is_there_duplicate_params()
+        self.is_valid_subtype()
 
+        return self._is_valid
+
+    def is_valid_subtype(self):
+        """Validate that the subtype is python2 or python3."""
+        type_ = self.current_integration.get('script', {}).get('type')
+        if type_ == 'python':
+            subtype = self.current_integration.get('script', {}).get('subtype')
+            if not subtype or subtype not in ['python3', 'python2']:
+                print_error("The subtype for our yml files should be either python2 or python3, "
+                            "please update the file {}.".format(self.current_integration.get('name')))
+                self._is_valid = False
+            if self.old_integration:
+                old_subtype = self.old_integration.get('script', {}).get('subtype', "")
+                if len(old_subtype) > 0 and old_subtype != subtype:
+                    print_error("Possible backwards compatibility break, You've changed the subtype"
+                                " of the file {}".format(self.file_path))
+                    self._is_valid = False
         return self._is_valid
 
     def is_there_duplicate_args(self):
