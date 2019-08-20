@@ -245,7 +245,7 @@ def get_authorization_token() -> str:
     return token
 
 
-def http_request(method: str, url_suffix: str, params: Dict = None, data: Dict = None, continue_err: bool = False,
+def http_request(method: str, url_suffix: str, params: Dict = None, data: Union[Dict,str] = None, continue_err: bool = False,
                  api_request: bool = True) -> Union[Dict, str]:
     """
     :param method: HTTP request type
@@ -417,9 +417,7 @@ def alert_user_assignment(alert_id: int, username: str) -> Dict:
     :return: HTTP request content.
     """
     url_suffix: str = f'/alerts/{alert_id}/assign/'
-    request_body: Dict = {
-        'subject': username
-    }
+    request_body: Dict = json.dumps({'subject': username})
     response_content: Dict = http_request('POST', url_suffix, data=request_body)
     return response_content
 
@@ -519,7 +517,7 @@ def create_entity(name: str, strict_name_matching: bool = None, tags: list = Non
         'policy_id': policy,
         'organization': organization
     }
-    request_body: Dict = remove_none_dict(request_body)
+    request_body= remove_none_dict(request_body)
     response_content: Dict = http_request('POST', url_suffix, data=json.dumps(request_body))
     return response_content
 
