@@ -237,7 +237,7 @@ def get_email_context(email_data, mailbox):
     body = demisto.get(email_data, 'payload.body.data')
     body = body.encode('ascii') if body is not None else ''
     parsed_body = base64.urlsafe_b64decode(body)
-    context_email = {}
+    context_email = {}  # type: Dict
     if email_data.get('internalDate') is not None:
         utc, delta_in_seconds = utc_extract(str(headers.get('date', '')))
         base_time = datetime.fromtimestamp((int(str(email_data.get('internalDate'))[:10]))) + timedelta(seconds=delta_in_seconds)
@@ -343,7 +343,7 @@ def create_incident_labels(parsed_msg, headers):
 
 def emails_to_entry(title, raw_emails, format_data, mailbox):
     emails = []
-    context_email = {}
+    context_email = {}  # type: Dict
     for email_data in raw_emails:
         context_gmail, _, context_email = get_email_context(email_data, mailbox)
         emails.append(context_gmail)
