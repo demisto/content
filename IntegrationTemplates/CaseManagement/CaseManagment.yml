@@ -1,17 +1,25 @@
 category: Authentication
 commonfields:
-  id: AnalyticsAndSIEM
+  id: CaseManagement
   version: -1
 configuration:
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
 - defaultvalue: https://example.com
   display: Server URL (e.g. https://example.com)
   name: url
   required: true
   type: 0
+- display: API Token
+  name: token
+  required: true
+  type: 4
 - defaultvalue: 'true'
   display: Trust any certificate (insecure)
   name: insecure
@@ -21,9 +29,14 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
 description: Integration Template
-display: AnalyticsAndSIEM
-name: AnalyticsAndSIEM
+display: CaseManagement
+name: CaseManagement
 script:
   commands:
   - arguments:
@@ -32,38 +45,20 @@ script:
         "1,2,3"). This item is mandatory so it must be provided in order to use the
         command.'
       isArray: true
-      name: event_ids
+      name: item_ids
       required: true
       secret: false
     deprecated: false
-    description: Get event from integration
+    description: Get items from service.
     execution: false
-    name: analytics-and-siem-get-event
+    name: example-get-items
     outputs:
-    - contextPath: AnalyticsAndSIEM.Event.ID
-      description: Event ID
-      type: String
-    - contextPath: AnalyticsAndSIEM.Event.Description
-      description: Event description
-      type: String
-    - contextPath: AnalyticsAndSIEM.Event.Name
-      description: Event name
-      type: String
-    - contextPath: AnalyticsAndSIEM.Event.CreatedDate
-      description: Date of creation
-      type: Date
-  - deprecated: false
-    description: list all events
-    execution: false
-    name: analytics-and-siem-list-events
-  - deprecated: false
-    description: Creates an event
-    execution: false
-    name: analytics-and-siem-create-event
-  - deprecated: false
-    description: Closes an event
-    execution: false
-    name: analytics-and-siem-close-event
+    - contextPath: Example.Item.ID
+      description: Item ID
+      type: number
+    - contextPath: Example.Item.Name
+      description: Item name
+      type: string
   isfetch: false
   longRunning: false
   longRunningPort: false

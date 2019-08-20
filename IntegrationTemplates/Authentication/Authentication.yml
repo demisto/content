@@ -1,0 +1,62 @@
+category: Authentication
+commonfields:
+  id: Authentication
+  version: -1
+configuration:
+- defaultvalue: https://example.com
+  display: Server URL (e.g. https://example.com)
+  name: url
+  required: true
+  type: 0
+- display: Authorization
+  name: authorization
+  required: true
+  type: 9
+- defaultvalue: 'true'
+  display: Trust any certificate (insecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- display: Fetches credentials
+  name: isFetchCredentials
+  required: false
+  type: 8
+description: Integration Template
+display: Authentication
+name: Authentication
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: 'This is a list argument, please provide comma separated list (example:
+        "1,2,3"). This item is mandatory so it must be provided in order to use the
+        command.'
+      isArray: true
+      name: account_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Locks an account
+    execution: false
+    name: authentication-example-lock-account
+    outputs:
+    - contextPath: AuthenticationExample.Account.ID
+      description: Account ID
+      type: String
+    - contextPath: AuthenticationExample.Account.IsLocked
+      description: Locked status of account
+      type: Boolean
+  - deprecated: false
+    description: Lock the entire vault
+    execution: true
+    name: authentication-example-lock-vault
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
