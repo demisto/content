@@ -297,7 +297,7 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Dict =
                 return res.content
     except requests.exceptions.ConnectTimeout:
         err_msg = 'Connection Timeout Error - potential reasons may be that the Server URL parameter' \
-                       ' is incorrect or that the Server is not accessible from your host.'
+                  ' is incorrect or that the Server is not accessible from your host.'
         raise Exception(err_msg)
     except requests.exceptions.SSLError:
         err_msg: str = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' in' \
@@ -534,13 +534,13 @@ def create_entity_command():
     return_outputs(
         f'Entity has been created successfully. ID: {entity_id}',
         {'ZeroFox.Entity(val.ID && val.ID === obj.ID)': {
-                'ID': entity_id,
-                'StrictNameMatching': strict_name_matching,
-                'Name': name,
-                'Tags': tags,
-                'PolicyID': policy_id,
-                'Organization': organization
-            }},
+            'ID': entity_id,
+            'StrictNameMatching': strict_name_matching,
+            'Name': name,
+            'Tags': tags,
+            'PolicyID': policy_id,
+            'Organization': organization
+        }},
         response_content
     )
 
