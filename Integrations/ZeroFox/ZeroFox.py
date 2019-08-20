@@ -619,7 +619,7 @@ def list_alerts_command():
     # handle limit parameter - special case
     limit: str = params.get('limit')
     if limit:
-        limit = dict_value_to_integer(params, 'limit')
+        limit: int = dict_value_to_integer(params, 'limit')
         if limit < 0 or limit > 100:
             raise Exception('Limit should be 0 <= x <= 100')
     response_content: Dict = list_alerts(params)
