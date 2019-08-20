@@ -1,0 +1,121 @@
+commonfields:
+  id: ListHandlingViaAPI
+  version: 1
+name: ListHandlingViaAPI
+script: |+
+  import requests
+  import json
+  import urllib
+
+  requests.packages.urllib3.disable_warnings()
+
+  BASE_URL = "<https://demisto-url.com/lists/>" #ChangeAPIUrl
+  API_KEY = "<API_KEY_HERE>" #InsertAPIKey
+
+  HEADERS = {
+              'Accept': 'application/json',
+              'Authorization': API_KEY,
+              'Content-Type': 'application/json'
+  }
+
+  def deleteList(listname):
+      '''
+      Deletes a list via API using name of the list
+      '''
+      try:
+          fullurl = '{}{}{}'.format(BASE_URL,"delete/", urllib.parse.quote(listname))
+          print(fullurl)
+          res = requests.delete(url=fullurl, verify=False, headers=HEADERS)
+          print(res)
+      except:
+          print("An error occurred in deleteList. Please check the URL, listname and your connection.")
+
+
+
+
+  def createNewList(listname,content):
+      '''
+      Creates new list with content supplied
+      '''
+      try:
+          fullurl = '{}{}'.format(BASE_URL,"save")
+          print(fullurl)
+          body = {
+                  "data": content,
+                  "name" : listname,
+                  #"truncated": False
+          }
+          res = requests.post(url =fullurl, verify=False, headers=HEADERS, data=json.dumps(body))
+      except:
+          print("An error occurred in createNewList. Please check the URL, listname, content and your connection.")
+
+
+  def rewriteList(listname,content):
+      '''
+      Rewrites the content of an already existing list using URL
+      '''
+      try:
+          fullurl = '{}{}'.format(BASE_URL,"save")
+          print(fullurl)
+          body = {
+          #"modified":"2019-08-13T19:54:01.778112429Z",
+          #"locked":True,
+          "data":content,
+          "name":listname,
+          #"system":False,
+          #"nameLocked":True,
+          "version":-1,
+          "id":listname,
+          "truncated":False
+          }
+
+          res = requests.post(url =fullurl, verify=False, headers=HEADERS, data=json.dumps(body))
+          print(res.text, res.status_code)
+      except:
+          print("An error occurred in rewriteList. Please check the URL, listname, content and your connection.")
+
+  def getList(listname):
+      '''
+      Gets a list and contents via API from the listname and returns it
+      '''
+      try:
+          fullurl = '{}'.format(BASE_URL)
+          res = requests.get(url=fullurl, verify=False, headers=HEADERS)
+
+          list_info = json.loads(res.text)
+          list_data = ""
+          for elem in list_info:
+              if listname == elem['name']:
+                  list_data = elem['data']
+                  break
+
+          return [listname, list_data]
+      except:
+          print("An error occurred in getList. Please check the URL, listname and your connection.")
+          return ["",""]
+
+  def appendToList(listname,content):
+      '''
+      Appends to the contents of an existing list via API using listname
+      '''
+      list_data = getList(listname)
+      new_content = content + " " + list_data[1]
+      rewriteList(listname,new_content)
+
+  #appendToList("New","appended content")
+  #print(getList("New"))
+  #deleteList("New List 2")
+  #createNewList("New3", "test for create")
+  #rewriteList("New4","namelocked and locked")
+  #deleteList("New4")
+
+
+type: python
+tags:
+- DemistoAPI
+- list
+- Utility
+comment: 'This script has the functions which can be used to create, delete, rewrite
+  and append content to lists. This is not meant to run on the Demisto UI but directly
+  from a terminal with the command "python3 ListHandlingViaAPI.py" . '
+scripttarget: 0
