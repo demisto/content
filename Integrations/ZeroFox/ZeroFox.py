@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import requests
-from typing import Dict, List, Any, cast
+from typing import Dict, List, Any, cast, Union
 from datetime import datetime, timedelta
 
 # Disable insecure warnings
@@ -14,7 +14,7 @@ requests.packages.urllib3.disable_warnings()
 
 USERNAME: str = demisto.params().get('credentials', {}).get('identifier')
 PASSWORD: str = demisto.params().get('credentials', {}).get('password')
-USE_SSL: str = not demisto.params().get('insecure', False)
+USE_SSL: bool = not demisto.params().get('insecure', False)
 BASE_URL: str = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
 FETCH_TIME_DEFAULT = '3 days'
 FETCH_TIME: str = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT).strip()
@@ -54,6 +54,7 @@ def severity_num_to_string(severity_num: int) -> str:
         return 'High'
     elif severity_num == 5:
         return 'Critical'
+    return ''
 
 
 def severity_string_to_num(severity_str: str) -> int:
@@ -71,6 +72,7 @@ def severity_string_to_num(severity_str: str) -> int:
         return 4
     elif severity_str == 'Critical':
         return 5
+    return -1
 
 
 # transforms an alert to incident convention
@@ -119,30 +121,30 @@ def get_alert_contents(alert: Dict) -> Dict:
     return {
         'AlertType': alert.get('alert_type'),
         'OffendingContentURL': alert.get('offending_content_url'),
-        'AssetTermID': alert.get('asset_term').get('id') if alert.get('asset_term') else None,
-        'AssetTermName': alert.get('asset_term').get('name') if alert.get('asset_term') else None,
-        'AssetTermDeleted': alert.get('asset_term').get('deleted') if alert.get('asset_term') else None,
+        'AssetTermID': alert.get('asset_term', {}).get('id') if alert.get('asset_term') else None,
+        'AssetTermName': alert.get('asset_term', {}).get('name') if alert.get('asset_term') else None,
+        'AssetTermDeleted': alert.get('asset_term', {}).get('deleted') if alert.get('asset_term') else None,
         'Assignee': alert.get('assignee'),
-        'EntityID': alert.get('entity').get('id') if alert.get('entity') else None,
-        'EntityName': alert.get('entity').get('name') if alert.get('entity') else None,
-        'EntityImage': alert.get('entity').get('image') if alert.get('entity') else None,
-        'EntityTermID': alert.get('entity_term').get('id') if alert.get('entity_term') else None,
-        'EntityTermName': alert.get('entity_term').get('name') if alert.get('entity_term') else None,
-        'EntityTermDeleted': alert.get('entity_term').get('deleted') if alert.get('entity_term') else None,
+        'EntityID': alert.get('entity', {}).get('id') if alert.get('entity') else None,
+        'EntityName': alert.get('entity', {}).get('name') if alert.get('entity') else None,
+        'EntityImage': alert.get('entity', {}).get('image') if alert.get('entity') else None,
+        'EntityTermID': alert.get('entity_term', {}).get('id') if alert.get('entity_term') else None,
+        'EntityTermName': alert.get('entity_term', {}).get('name') if alert.get('entity_term') else None,
+        'EntityTermDeleted': alert.get('entity_term', {}).get('deleted') if alert.get('entity_term') else None,
         'ContentCreatedAt': alert.get('content_created_at'),
         'ID': alert.get('id'),
         'ProtectedAccount': alert.get('protected_account'),
-        'RiskRating': severity_num_to_string(alert.get('severity')),
-        'PerpetratorName': alert.get('perpetrator').get('name') if alert.get('perpetrator') else None,
-        'PerpetratorURL': alert.get('perpetrator').get('url') if alert.get('perpetrator') else None,
-        'PerpetratorTimeStamp': alert.get('perpetrator').get('timestamp') if alert.get('perpetrator') else None,
-        'PerpetratorType': alert.get('perpetrator').get('type') if alert.get('perpetrator') else None,
-        'PerpetratorID': alert.get('perpetrator').get('id') if alert.get('perpetrator') else None,
-        'PerpetratorNetwork': alert.get('perpetrator').get('network') if alert.get('perpetrator') else None,
+        'RiskRating': severity_num_to_string(int(alert.get('severity'))),
+        'PerpetratorName': alert.get('perpetrator', {}).get('name') if alert.get('perpetrator') else None,
+        'PerpetratorURL': alert.get('perpetrator', {}).get('url') if alert.get('perpetrator') else None,
+        'PerpetratorTimeStamp': alert.get('perpetrator', {}).get('timestamp') if alert.get('perpetrator') else None,
+        'PerpetratorType': alert.get('perpetrator', {}).get('type') if alert.get('perpetrator') else None,
+        'PerpetratorID': alert.get('perpetrator', {}).get('id') if alert.get('perpetrator') else None,
+        'PerpetratorNetwork': alert.get('perpetrator', {}).get('network') if alert.get('perpetrator') else None,
         'RuleGroupID': alert.get('rule_group_id'),
-        'AssetID': alert.get('asset').get('id') if alert.get('asset') else None,
-        'AssetName': alert.get('asset').get('name') if alert.get('asset') else None,
-        'AssetImage': alert.get('asset').get('image') if alert.get('asset') else None,
+        'AssetID': alert.get('asset', {}).get('id') if alert.get('asset') else None,
+        'AssetName': alert.get('asset', {}).get('name') if alert.get('asset') else None,
+        'AssetImage': alert.get('asset', {}).get('image') if alert.get('asset') else None,
         'Status': alert.get('status'),
         'Timestamp': alert.get('timestamp'),
         'RuleName': alert.get('rule_name'),
@@ -232,7 +234,7 @@ def get_authorization_token() -> str:
     }
     response_content: Dict = http_request('POST', url_suffix, data=data_for_request, continue_err=True,
                                           api_request=False)
-    token: str = response_content.get('token', '')
+    token = response_content.get('token', '')
     if not token:
         error_msg_list: List = response_content.get('non_field_errors', [])
         if not error_msg_list or not isinstance(error_msg_list, List):
@@ -244,7 +246,7 @@ def get_authorization_token() -> str:
 
 
 def http_request(method: str, url_suffix: str, params: Dict = None, data: Dict = None, continue_err: bool = False,
-                 api_request: bool = True) -> Dict:
+                 api_request: bool = True) -> Union[Dict, str]:
     """
     :param method: HTTP request type
     :param url_suffix: The suffix of the URL
@@ -264,7 +266,7 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Dict =
         err_msg: str
         if api_request:
             token: str = get_authorization_token()
-            headers: Dict = {
+            headers = {
                 'Authorization': f'Token {token}',
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
@@ -279,13 +281,13 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Dict =
         )
         # Handle error responses gracefully
         if res.status_code not in {200, 201} and not continue_err:
-            err_msg: str = f'Error in ZeroFox Integration API call [{res.status_code}] - {res.reason}\n'
+            err_msg = f'Error in ZeroFox Integration API call [{res.status_code}] - {res.reason}\n'
             try:
                 res_json = res.json()
                 if 'error' in res_json:
                     err_msg += res_json.get('error', '')
             except ValueError:
-                err_msg += res.content
+                err_msg += str(res.content)
             finally:
                 raise ValueError(err_msg)
         else:
@@ -300,18 +302,18 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Dict =
                   ' is incorrect or that the Server is not accessible from your host.'
         raise Exception(err_msg)
     except requests.exceptions.SSLError:
-        err_msg: str = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' in' \
+        err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' in' \
                        ' the integration configuration.'
         raise Exception(err_msg)
     except requests.exceptions.ProxyError:
-        err_msg: str = 'Proxy Error - if \'Use system proxy\' in the integration configuration has been' \
+        err_msg = 'Proxy Error - if \'Use system proxy\' in the integration configuration has been' \
                        ' selected, try deselecting it.'
         raise Exception(err_msg)
     except requests.exceptions.ConnectionError as e:
         # Get originating Exception in Exception chain
         while '__context__' in dir(e) and e.__context__:
             e = cast(Any, e.__context__)
-        err_msg: str = f'\nMESSAGE: {e.strerror}\n' \
+        err_msg = f'\nMESSAGE: {e.strerror}\n' \
                        f'ADVICE: Check that the Server URL parameter is correct and that you' \
                        f' have access to the Server from your host.'
         raise Exception(err_msg)
@@ -418,7 +420,7 @@ def alert_user_assignment(alert_id: int, username: str) -> Dict:
     request_body: Dict = {
         'subject': username
     }
-    response_content: Dict = http_request('POST', url_suffix, data=json.dumps(request_body))
+    response_content: Dict = http_request('POST', url_suffix, data=request_body)
     return response_content
 
 
