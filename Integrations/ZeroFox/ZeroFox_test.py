@@ -1,6 +1,3 @@
-import pytest
-
-import demistomock as demisto
 import json
 
 
@@ -13,11 +10,12 @@ def test_get_alert_contents():
         expected_output = json.load(f)
     assert expected_output == result
 
+
 def test_get_alert_contents_war_room():
-    from ZeroFox import get_alert_contents_war_room
+    from ZeroFox import get_alert_human_readable_outputs
     with open('./TestData/alert_result.json') as f:
         contents_input = json.load(f)
-    result = get_alert_contents_war_room(contents_input)
+    result = get_alert_human_readable_outputs(contents_input)
     with open('./TestData/contents_result.json') as f:
         expected_output = json.load(f)
     assert expected_output == result
