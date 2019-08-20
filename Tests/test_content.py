@@ -559,7 +559,9 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     else:  # In case of a non AMI run we don't want to use the mocking mechanism
         mockless_tests = tests
 
-    send_slack_message(slack, SLACK_CHANNEL_ID, 'Build Number: {}'.format(build_number), 'Content CircleCI', 'False')
+    send_slack_message(slack, SLACK_CHANNEL_ID,
+                       '### Build Number: {0}\n ### Server Address: {1}'.format(build_number, server),
+                       'Content CircleCI', 'False')
     # first run the mock tests to avoid mockless side effects in container
     if is_ami and mock_tests:
         proxy.configure_proxy_in_demisto(proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
