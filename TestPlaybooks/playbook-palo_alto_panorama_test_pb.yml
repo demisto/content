@@ -1459,7 +1459,7 @@ tasks:
       element_to_change:
         simple: log-forwarding
       element_value:
-        simple: log_forwarding_101
+        simple: log_forwading_101
       pre_post:
         simple: post-rulebase
       rulename:
