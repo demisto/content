@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 152.5,
+          "x": 807.5,
           "y": 50
         }
       }
@@ -42,7 +42,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "13"
     scriptarguments:
       all:
         simple: "yes"
@@ -54,7 +54,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 152.5,
+          "x": 807.5,
           "y": 195
         }
       }
@@ -63,19 +63,27 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 0913b524-b5c7-464d-8873-c14fa44d93f0
+    taskid: c77d4092-498f-4e65-8d41-670b1a2d38a4
     type: playbook
     task:
-      id: 0913b524-b5c7-464d-8873-c14fa44d93f0
+      id: c77d4092-498f-4e65-8d41-670b1a2d38a4
       version: -1
       name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
       playbookName: GenericPolling
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "20"
     scriptarguments:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
@@ -101,8 +109,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1245
+          "x": 265,
+          "y": 1420
         }
       }
     note: false
@@ -132,8 +140,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1070
+          "x": 265,
+          "y": 1245
         }
       }
     note: false
@@ -154,8 +162,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 152.5,
-          "y": 1945
+          "x": 807.5,
+          "y": 2470
         }
       }
     note: false
@@ -163,10 +171,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 2d584458-e17c-453d-8307-5086b4490b3b
+    taskid: 9ffe7883-9e27-4376-8932-5bcb23c8ed14
     type: regular
     task:
-      id: 2d584458-e17c-453d-8307-5086b4490b3b
+      id: 9ffe7883-9e27-4376-8932-5bcb23c8ed14
       version: -1
       name: hybrid-analysis-scan
       description: Get summary information for a given MD5, SHA1 or SHA256 and all
@@ -180,14 +188,16 @@ tasks:
       - "6"
     scriptarguments:
       file:
-        simple: dd014af5ed6b38d9130e3f466f850e46d21b951199d53a18ef29ee9341614eaf
+        complex:
+          root: File
+          accessor: SHA256
       malicious_threat_levels: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 152.5,
-          "y": 370
+          "x": 695,
+          "y": 545
         }
       }
     note: false
@@ -195,10 +205,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 35b5e8e3-51a9-48a0-809e-29a608bfbccf
+    taskid: 82d1869a-a384-4f04-886c-bd9a7f3d2744
     type: condition
     task:
-      id: 35b5e8e3-51a9-48a0-809e-29a608bfbccf
+      id: 82d1869a-a384-4f04-886c-bd9a7f3d2744
       version: -1
       name: verify-scan
       type: condition
@@ -206,7 +216,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
+      - "16"
       "yes":
       - "11"
     separatecontext: false
@@ -229,19 +239,11 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: File.SHA1
-            iscontext: true
-          right:
-            value:
-              simple: 0032c5e2337370e1db1ba5aa5af93685937cbb81
-      - - operator: isEqualString
-          left:
-            value:
               simple: File.submitname
             iscontext: true
           right:
             value:
-              simple: http://www.google.com/
+              simple: test_file.pdf
       - - operator: isEqualNumber
           left:
             value:
@@ -249,12 +251,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "120"
+              simple: "100"
     view: |-
       {
         "position": {
-          "x": 152.5,
-          "y": 545
+          "x": 695,
+          "y": 720
         }
       }
     note: false
@@ -262,14 +264,14 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 78c79b9c-ca7b-4852-8265-b0762a6350e8
+    taskid: 33a74522-fb29-4501-8be5-597f5243aaab
     type: regular
     task:
-      id: 78c79b9c-ca7b-4852-8265-b0762a6350e8
+      id: 33a74522-fb29-4501-8be5-597f5243aaab
       version: -1
-      name: hybrid-analysis-submit-url-for-analysis
-      description: Submit a url for analysis
-      script: '|||hybrid-analysis-submit-url-for-analysis'
+      name: hybrid-analysis-submit-url
+      description: Submit a website's url or url with file for analysis
+      script: '|||hybrid-analysis-submit-url'
       type: regular
       iscommand: true
       brand: ""
@@ -285,8 +287,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1420
+          "x": 50,
+          "y": 1945
         }
       }
     note: false
@@ -317,8 +319,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1595
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
@@ -350,8 +352,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1770
+          "x": 50,
+          "y": 2295
         }
       }
     note: false
@@ -399,8 +401,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 720
+          "x": 480,
+          "y": 895
         }
       }
     note: false
@@ -418,6 +420,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "17"
       "yes":
       - "3"
     separatecontext: false
@@ -443,8 +447,282 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 127b7109-71c8-4162-8738-42b14cd68bc3
+    type: regular
+    task:
+      id: 127b7109-71c8-4162-8738-42b14cd68bc3
+      version: -1
+      name: Create sample file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+      - "5"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/pdfworking.pdf
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 95dd4a7c-4f4b-42e1-8ba4-19ee130346d0
+    type: regular
+    task:
+      id: 95dd4a7c-4f4b-42e1-8ba4-19ee130346d0
+      version: -1
+      name: hybrid-analysis-submit-sample
+      description: Submit a file from investigation to analysis server  (NOTE - minimum
+        required authorization is `default`)
+      script: '|||hybrid-analysis-submit-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      entryId:
+        complex:
+          root: File
+          accessor: EntryID
+      environmentID:
+        simple: "100"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 0146e801-7563-41a3-83ce-e3382bd0cf4d
+    type: condition
+    task:
+      id: 0146e801-7563-41a3-83ce-e3382bd0cf4d
+      version: -1
+      name: verify-submission
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: HybridAnalysis.Submit.EnvironmentID
+            iscontext: true
+          right:
+            value:
+              simple: "100"
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: bc8f396b-c95e-4417-8cac-698331be2522
+    type: regular
+    task:
+      id: bc8f396b-c95e-4417-8cac-698331be2522
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: scan failed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
           "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: d34b87e7-b45a-4fe5-84d7-7dac891f51a1
+    type: regular
+    task:
+      id: d34b87e7-b45a-4fe5-84d7-7dac891f51a1
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: search failed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 96802709-c424-4ea7-839c-ce48ca76b19f
+    type: condition
+    task:
+      id: 96802709-c424-4ea7-839c-ce48ca76b19f
+      version: -1
+      name: verify quick-scan results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HybridAnalysis.URL.SubmissionType
+            iscontext: true
+          right:
+            value:
+              simple: page_url
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 4c290456-9fd0-48b8-8796-7c01e5ee31d4
+    type: regular
+    task:
+      id: 4c290456-9fd0-48b8-8796-7c01e5ee31d4
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: quick-scan failed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 26ae2955-2d5e-4bc1-88d7-c9e577c54ac8
+    type: regular
+    task:
+      id: 26ae2955-2d5e-4bc1-88d7-c9e577c54ac8
+      version: -1
+      name: hybrid-analysis-quick-scan-url-results
+      description: Get the scan results of given url ID
+      script: Hybrid Analysis_copy_copy|||hybrid-analysis-quick-scan-url-results
+      type: regular
+      iscommand: true
+      brand: Hybrid Analysis_copy_copy
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      ID:
+        simple: ${HybridAnalysis.URL.ID}
+      min_malicious_scanners: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
         }
       }
     note: false
@@ -453,13 +731,14 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "12_3_yes": 0.65
+      "12_3_yes": 0.65,
+      "6_11_yes": 0.35
     },
     "paper": {
       "dimensions": {
-        "height": 1960,
-        "width": 707.5,
-        "x": 152.5,
+        "height": 2485,
+        "width": 1465,
+        "x": 50,
         "y": 50
       }
     }
