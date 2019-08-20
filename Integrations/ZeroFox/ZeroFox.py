@@ -533,16 +533,14 @@ def create_entity_command():
     entity_id: int = response_content.get('id', '')
     return_outputs(
         f'Entity has been created successfully. ID: {entity_id}',
-        {'ZeroFox.Entity(val.ID && val.ID === obj.ID)':
-            {
+        {'ZeroFox.Entity(val.ID && val.ID === obj.ID)': {
                 'ID': entity_id,
                 'StrictNameMatching': strict_name_matching,
                 'Name': name,
                 'Tags': tags,
                 'PolicyID': policy_id,
                 'Organization': organization
-            }
-        },
+            }},
         response_content
     )
 
