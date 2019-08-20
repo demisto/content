@@ -588,7 +588,14 @@ script:
         {to: 'ProductName', from: 'product_name'},
         {to: 'OS', from: 'os_type'},
         {to: 'DigSig.Result', from: 'digsig_result'},
-        {to: 'DigSig.Publisher', from: 'digsig_publisher'}
+        {to: 'DigSig.Publisher', from: 'digsig_publisher'},
+        {to: 'Company', from: 'company_name'},
+        {to: 'DigitalSignature.Publisher', from: 'digsig_publisher'},
+        {to: 'Name', from: 'original_filename'},
+        {to: 'Signature.OriginalName', from: 'original_filename'},
+        {to: 'Signature.InternalName', from: 'internal_name'},
+        {to: 'Signature.FileVersion', from: 'file_version'},
+        {to: 'Signature.Description', from: 'file_desc'}
     ];
 
     function getBinariesRequest(query, rows, start, sort, facets) {
@@ -1306,6 +1313,27 @@ script:
       description: The OS
     - contextPath: File.MD5
       description: Binary MD5
+    - contextPath: File.Company
+      description: Name of the company that released a binary
+      type: string
+    - contextPath: File.DigitalSignature.Publisher
+      description: Publisher of the digital signature for the file.
+      type: string
+    - contextPath: File.Name
+      description: Full Filename e.g. data.xls.
+      type: string
+    - contextPath: File.Signature.OriginalName
+      description: File's original name.
+      type: string
+    - contextPath: File.Signature.InternalName
+      description: File's internal name.
+      type: string
+    - contextPath: File.Signature.FileVersion
+      description: File version.
+      type: string
+    - contextPath: File.Signature.Description
+      description: Description of the signature.
+      type: string
     description: Query for binaries based on given parameters
   - name: cb-binary-get
     arguments:
@@ -1348,6 +1376,27 @@ script:
       description: The OS
     - contextPath: File.MD5
       description: Binary MD5
+    - contextPath: File.Company
+      description: Name of the company that released a binary
+      type: string
+    - contextPath: File.DigitalSignature.Publisher
+      description: Publisher of the digital signature for the file.
+      type: string
+    - contextPath: File.Name
+      description: Full Filename e.g. data.xls.
+      type: string
+    - contextPath: File.Signature.OriginalName
+      description: File's original name.
+      type: string
+    - contextPath: File.Signature.InternalName
+      description: File's internal name.
+      type: string
+    - contextPath: File.Signature.FileVersion
+      description: File version.
+      type: string
+    - contextPath: File.Signature.Description
+      description: Description of the signature.
+      type: string
     description: Retrieve a binary from CarbonBlack based on hash. Returned file will
       be places in the war room.
   - name: cb-block-hash
