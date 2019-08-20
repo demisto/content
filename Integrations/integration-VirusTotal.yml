@@ -288,7 +288,8 @@ script:
                 if (ec[outputPaths.file]){
                     scans_ec = {
                         Scans: scansTable,
-                        ScanID: r[i].scan_id
+                        ScanID: r[i].scan_id,
+                        vtLink: r[i].permalink
                     };
                     if (typeof ec[outputPaths.file][i] === 'object') { // malicous
                         ec[outputPaths.file][i].VirusTotal = scans_ec;
@@ -309,7 +310,8 @@ script:
                         SHA256: r[i].sha256,
                         VirusTotal: {
                             Scans: scansTable,
-                            ScanID: r[i].scan_id
+                            ScanID: r[i].scan_id,
+                            vtLink: r[i].permalink
                         },
                         PositiveDetections: r[i].positives,
                         DetectionEngines: Object.keys(r[i].scans).length
@@ -319,7 +321,8 @@ script:
             } else { // short format
                 if (ec[outputPaths.file]){
                     scans_ec = {
-                        ScanID: r[i].scan_id
+                        ScanID: r[i].scan_id,
+                        vtLink: r[i].permalink
                     };
                     if (typeof ec[outputPaths.file][i] === 'object') { // malicious
                         ec[outputPaths.file][i].VirusTotal = scans_ec;
@@ -339,7 +342,8 @@ script:
                         SHA1: r[i].sha1,
                         MD5: r[i].md5,
                         VirusTotal: {
-                            ScanID: r[i].scan_id
+                            ScanID: r[i].scan_id,
+                            vtLink: r[i].permalink
                         },
                         PositiveDetections: r[i].positives,
                         DetectionEngines: Object.keys(r[i].scans).length
@@ -557,7 +561,8 @@ script:
                 if (ec[outputPaths.url]){ // malicious
                     scans_ec = {
                         Scans: scansTable,
-                        ScanID: o.scan_id
+                        ScanID: o.scan_id,
+                        vtLink: o.permalink
                     };
                     ec[outputPaths.url].VirusTotal = scans_ec;
                 } else { // not malicious
@@ -565,7 +570,8 @@ script:
                         Data: url,
                         "VirusTotal": {
                             Scans: scansTable,
-                            ScanID: o.scan_id
+                            ScanID: o.scan_id,
+                            vtLink: o.permalink
                         },
                         DetectionEngines: Object.keys(o.scans).length,
                         PositiveDetections: o.positives
@@ -576,12 +582,14 @@ script:
                 if (ec[outputPaths.url]){ // malicious
                     ec[outputPaths.url]['VirusTotal'] = {
                         ScanID: o.scan_id,
+                        vtLink: o.permalink
                     };
                 } else { // not malicious
                     ec[outputPaths.url] = {
                         Data: url,
                         VirusTotal: {
                             ScanID: o.scan_id,
+                            vtLink: o.permalink
                         },
                         DetectionEngines: Object.keys(o.scans).length,
                         PositiveDetections: o.positives
@@ -785,11 +793,12 @@ script:
             r = [res.obj];
         }
         var md = '';
-        var ec = {vtScanID: []};
+        var ec = {vtScanID: [], vtLink: []};
         for (var i=0; i<r.length; i++) {
             md += '## VirusTotal URL scan for: [' + r[i].url + '](' + r[i].permalink + ')\n';
             md += 'Scan ID: **' + r[i].scan_id + '**\n';
             ec.vtScanID.push(r[i].scan_id);
+            ec.vtLink.push(r[i].permalink);
             md += 'Scan Date: **' + r[i].scan_date + '**\n\n';
         }
         return {
@@ -832,6 +841,7 @@ script:
         }
         var ec = {};
         ec.vtScanID = obj.scan_id;
+        ec.vtLink = obj.permalink;
         var md = '## VirusTotal scan file for [' + entry + '](' + obj.permalink + ')\n';
         md += 'Resource: **' + obj.resource + '**\n';
         md += 'MD5 / SHA1 / SHA256: **' + obj.md5 + ' / ' + obj.sha1 + ' / ' + obj.sha256 + '**\n';
@@ -852,11 +862,12 @@ script:
             r = [res.obj];
         }
         var md = '';
-        var ec = {vtScanID: []};
+        var ec = {vtScanID: [], vtLink: []};
         for (var i=0; i<r.length; i++) {
             md += '## VirusTotal File Rescan for: [' + r[i].resource + '](' + r[i].permalink + ')\n';
             md += 'Scan ID: **' + r[i].scan_id + '**\n';
             ec.vtScanID.push(r[i].scan_id);
+            ec.vtLink.push(r[i].permalink);
             md += 'MD5 / SHA1 / SHA256: **' + r[i].md5 + ' / ' + r[i].sha1 + ' / ' + r[i].sha256 + '**\n\n';
         }
         return {
@@ -1009,6 +1020,9 @@ script:
     - contextPath: File.DetectionEngines
       description: Total number of engines that checked the indicator.
       type: number
+    - contextPath: File.VirusTotal.vtLink
+      description: Virus Total permanent link.
+      type: string
     description: Checks the file reputation of the specified hash.
   - name: ip
     arguments:
@@ -1141,6 +1155,12 @@ script:
     - contextPath: URL.PositiveDetections
       description: Number of engines that positively detected the indicator as malicious.
       type: number
+    - contextPath: url.VirusTotal.ScanID
+      description: Scan ID for this URL.
+      type: string
+    - contextPath: File.VirusTotal.vtLink
+      description: Virus Total permanent link.
+      type: string
     description: Checks the reputation of a URL.
   - name: domain
     arguments:
@@ -1229,6 +1249,9 @@ script:
     outputs:
     - contextPath: vtScanID
       description: Scan IDs of the submitted files.
+    - contextPath: vtLink
+      description: Virus Total permanent link.
+      type: string
     description: Submits a file for scanning.
   - name: file-rescan
     arguments:
@@ -1239,6 +1262,9 @@ script:
     outputs:
     - contextPath: vtScanID
       description: Scan IDs of the submitted files.
+    - contextPath: vtLink
+      description: Virus Total permanent link.
+      type: string
     description: Re-scans an already submitted file. This avoids having to upload the file again.
   - name: url-scan
     arguments:
@@ -1249,6 +1275,9 @@ script:
     outputs:
     - contextPath: vtScanID
       description: Scan IDs of the submitted URLs.
+    - contextPath: vtLink
+      description: Virus Total permanent link.
+      type: string
     description: Scans a specified URL.
   - name: vt-comments-add
     arguments:
