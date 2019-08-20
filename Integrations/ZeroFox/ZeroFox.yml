@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://api.zerofox.com/1.0
-  display: URL
+  display: URL (e.g. https://api.zerofox.com/1.0)
   name: url
   required: true
   type: 0
@@ -961,8 +961,6 @@ script:
     name: zerofox-get-policy-types
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   type: python
