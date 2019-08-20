@@ -30,7 +30,8 @@ configuration:
   name: fetch_limit
   required: true
   type: 0
-description: ZeroFox Integration
+description: ZeroFox Integration - Cloud-based SaaS to detect risks found on social
+  media and digital channels.
 display: ZeroFox
 name: ZeroFox
 script:
