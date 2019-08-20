@@ -17,7 +17,7 @@ class FixGetPass():
             try:
                 if self.getpass_getuser_org:
                     user = self.getpass_getuser_org()
-            except KeyError:
+            except (NameError, KeyError):
                 pass
             return user
         getpass.getuser = getuser_no_fail

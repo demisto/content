@@ -7,15 +7,16 @@ category: Data Enrichment & Threat Intelligence
 image: data:image/png;base64,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
 description: Analyze suspicious hashes, URLs, domains and IP addresses
 detaileddescription: |-
-  Don’t have a Virustotal key?
-  Register at https://www.virustotal.com
-  After signing in click on your user name (top right) and go to “My API Key”
-
-  Indicators thresholds:
+  ## Get a VirusTotal API Key
+  To use this integration, you need a VirusTotal API key.
+  1. Log in to your VirusTotal console.
+  2. Click your username, and select **My API Key**.
+  
+  ## Indicator Thresholds
   Configure the default threshold for each indicator type in the instance settings.
-  Note that it is also possible to specify the threshold when runing the command.
-  Indicators with positive results equal or bigger than the threshold will be considered malicious.
-  Indicators with positive results equal or bigger than half of the threshold value, and lower than the threshold, will be considered suspicious.
+  You can also specify the threshold as an argument when running relevant commands.
+  Indicators with positive results equal to or higher than the threshold will be considered malicious.
+  Indicators with positive results equal to or higher than half of the threshold value, and lower than the threshold, will be considered suspicious.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: Server
@@ -61,14 +62,13 @@ configuration:
   defaultvalue: "10"
   type: 0
   required: false
-- display: Preferred Vendors List. List of vendors which are considered more trustworthy,
-    comma separated.
+- display: Preferred Vendors List. CSV list of vendors which are considered more trustworthy.
   name: preferredVendors
   defaultvalue: ""
   type: 12
   required: false
-- display: 'Preferred Vendor Threshold. The minimal number of highly trusted vendors
-    needed to consider a domain, IP, URL or file malicious. '
+- display: 'Preferred Vendor Threshold. The minimum number of highly trusted vendors
+    required to consider a domain, IP address, URL, or file as malicious. '
   name: preferredVendorsThreshold
   defaultvalue: ""
   type: 0
@@ -87,7 +87,6 @@ script:
     if (serverUrl[serverUrl.length - 1] !== '/') {
         serverUrl += '/';
     }
-
     //THRESHOLDS PARAMETERS
     var FILE_THRESHOLD = params.fileThreshold;
     var IP_THRESHOLD = params.ipThreshold;
@@ -99,10 +98,7 @@ script:
     if (isNaN(FILE_THRESHOLD) || isNaN(IP_THRESHOLD) || isNaN(URL_THRESHOLD) || isNaN(DOMAIN_THRESHOLD)) {
         throw 'Threshold parameters must be numbers.\n';
     }
-
-
     function isEnoughPreferredVendors(scanResults) {
-
         if (!(PREFERRED_VENDORS && PREFERRED_VENDORS_THRESHOLD)) {
             return false;
         }
@@ -115,36 +111,27 @@ script:
         counter = 0;
         vendorsScansDict = scanResults["scans"];
         listOfPrefferedVendors = PREFERRED_VENDORS.split(',');
-
         for (var i=0; i < listOfPrefferedVendors.length; i++) {
             listOfPrefferedVendors[i] = listOfPrefferedVendors[i].toLowerCase();
         }
         for (var vendorName in vendorsScansDict) {
             if (vendorsScansDict.hasOwnProperty(vendorName)) {
-
                 curVendorScan = vendorsScansDict[vendorName];
                 vendorNameLowercase = vendorName.toLowerCase();
-
                 if (listOfPrefferedVendors.indexOf(vendorNameLowercase) != -1) {
                     if ("detected" in curVendorScan && curVendorScan["detected"]) {
                         counter++;
                     }
                 }
-
             }
         }
-
         return (parseInt(PREFERRED_VENDORS_THRESHOLD) <= counter);
     }
-
-
     function createScansTable(scans){
         // Returns a table with the scan result for each vendor
-
         scans_table = [];
         positives_scans_table = [];
         negative_scans_table = [];
-
         for (var scan in scans) {
             dict_for_table = {};
             dict_for_table['Source'] = scan;
@@ -160,25 +147,20 @@ script:
             if (scans[scan]['detail']){
                 dict_for_table['Details'] = scans[scan]['detail'];
             }
-
             if (dict_for_table['Detected'] && dict_for_table['Detected'] === true)
                 positives_scans_table.push(dict_for_table);
             else
                 negative_scans_table.push(dict_for_table);
         }
-
         positives_scans_table.sort(function(a, b){
           return a.Source > b.Source;
         });
         negative_scans_table.sort(function(a, b){
           return a.Source > b.Source;
         });
-
         scans_table = positives_scans_table.concat(negative_scans_table);
         return scans_table;
     }
-
-
     function doReq(method, path, parameters) {
         if (!parameters) {
             parameters = {};
@@ -194,7 +176,6 @@ script:
             params.insecure,
             params.useproxy
         );
-
         if (result.StatusCode == 401) {
             throw '401 Unauthorized - Wrong or invalid API key.';
         }
@@ -228,7 +209,6 @@ script:
             statusCode: result.StatusCode
         };
     }
-
     function withRetries(waitForRateLimit, retries, reqCall) {
         if (waitForRateLimit) {
             waitForRateLimit = parseInt(waitForRateLimit);
@@ -254,8 +234,6 @@ script:
         }
         return res;
     }
-
-
     function doFile(hash, longFormat, threshold, waitForRateLimit, retries) {
         if (!threshold) {
             threshold = FILE_THRESHOLD || 10;
@@ -284,7 +262,6 @@ script:
             md += 'Positives / Total: **' + r[i].positives + '/' + r[i].total + '**\n';
             md += 'VT Link: [' + r[i].resource + '](' + r[i].permalink + ')\n';
             var dbotScore = 0;
-
             if (r[i].positives >= threshold || isEnoughPreferredVendors(r[i])) {
                 dbotScore = 3;
                 var malFile = {};
@@ -292,6 +269,8 @@ script:
                     MD5: r[i].md5,
                     SHA1: r[i].sha1,
                     SHA256: r[i].sha256,
+                    PositiveDetections: r[i].positives,
+                    DetectionEngines: Object.keys(r[i].scans).length,
                     Malicious: {Vendor: 'VirusTotal', Detections: r[i].positives, TotalEngines: r[i].total}
                 });
                 ec[outputPaths.file].push(malFile[outputPaths.file]);
@@ -309,14 +288,19 @@ script:
                 if (ec[outputPaths.file]){
                     scans_ec = {
                         Scans: scansTable,
-                        ScanID: r[i].scan_id
+                        ScanID: r[i].scan_id,
+                        vtLink: r[i].permalink
                     };
                     if (typeof ec[outputPaths.file][i] === 'object') { // malicous
                         ec[outputPaths.file][i].VirusTotal = scans_ec;
                     } else { // not malicious
                         ec[outputPaths.file][i] = {
+                            SHA256: r[i].sha256,
+                            SHA1: r[i].sha1,
                             MD5: r[i].md5,
-                            VirusTotal: scans_ec
+                            VirusTotal: scans_ec,
+                            PositiveDetections: r[i].positives,
+                            DetectionEngines: Object.keys(r[i].scans).length
                         };
                     }
                 } else {
@@ -326,30 +310,43 @@ script:
                         SHA256: r[i].sha256,
                         VirusTotal: {
                             Scans: scansTable,
-                            ScanID: r[i].scan_id
-                        }
+                            ScanID: r[i].scan_id,
+                            vtLink: r[i].permalink
+                        },
+                        PositiveDetections: r[i].positives,
+                        DetectionEngines: Object.keys(r[i].scans).length
                     };
                     ec[outputPaths.file] = scans_ec;
                 }
             } else { // short format
                 if (ec[outputPaths.file]){
                     scans_ec = {
-                        ScanID: r[i].scan_id
+                        ScanID: r[i].scan_id,
+                        vtLink: r[i].permalink
                     };
                     if (typeof ec[outputPaths.file][i] === 'object') { // malicious
                         ec[outputPaths.file][i].VirusTotal = scans_ec;
                     } else { // not malicious
                         ec[outputPaths.file][i] = {
+                            SHA256: r[i].sha256,
+                            SHA1: r[i].sha1,
                             MD5: r[i].md5,
-                            VirusTotal: scans_ec
+                            VirusTotal: scans_ec,
+                            PositiveDetections: r[i].positives,
+                            DetectionEngines: Object.keys(r[i].scans).length
                         };
                     }
                 } else {
                     scans_ec = {
+                        SHA256: r[i].sha256,
+                        SHA1: r[i].sha1,
                         MD5: r[i].md5,
                         VirusTotal: {
-                            ScanID: r[i].scan_id
-                        }
+                            ScanID: r[i].scan_id,
+                            vtLink: r[i].permalink
+                        },
+                        PositiveDetections: r[i].positives,
+                        DetectionEngines: Object.keys(r[i].scans).length
                     };
                     ec[outputPaths.file] = scans_ec;
                 }
@@ -364,8 +361,6 @@ script:
             EntryContext: ec
         };
     }
-
-
     function calcRecentDownloads(checks) {
         var badDownloads = 0;
         var now = Date.now();
@@ -383,8 +378,6 @@ script:
         }
         return badDownloads;
     }
-
-
     function doIP(ip, longFormat, threshold, sampleSize, waitForRateLimit, retries, fullResponse) {
         if (!isValidIP(ip)) {
             return {Type: entryTypes.error, Contents: 'IP - ' + ip + ' is not valid IP', ContentsFormat: formats.text};
@@ -410,7 +403,6 @@ script:
         } else {
             maxLen = 50;
         }
-
         // Calculate score based on recently found downloads
         var badDownloads = calcRecentDownloads([o.detected_downloaded_samples, o.undetected_downloaded_samples]);
         var dbotScore = 0;
@@ -432,7 +424,6 @@ script:
         md += (o.asn) ? 'ASN: **' + o.asn + ' (' + o.as_owner + ')**\n' : 'ASN: N/A\n';
         md += 'Country: **' + o.country + '**\n';
         md += 'VT Link: [' + ip + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(ip) + ')\n';
-
         var detectedUrls = o.detected_urls || [];
         var detectedDownloadedSamples = o.detected_downloaded_samples || [];
         var undetectedDownloadedSamples = o.undetected_downloaded_samples || [];
@@ -441,7 +432,6 @@ script:
         var detectedReferrerSamples = o.detected_referrer_samples || [];
         var undetectedReferrerSamples = o.undetected_referrer_samples || [];
         var resolutions = o.resolutions || [];
-
         var arrTitle = [{a: detectedUrls, t: 'Detected URL'}, {a: detectedDownloadedSamples, t: 'Detected downloaded sample'},
             {a: undetectedDownloadedSamples, t: 'Undetected downloaded sample'}, {a: detectedCommunicatingSamples, t: 'Detected communicating sample'},
             {a: undetectedCommunicatingSamples, t: 'Undetected communicating sample'},{a: detectedReferrerSamples, t: 'Detected referrer sample'},
@@ -474,7 +464,9 @@ script:
                     'Resolutions': resolutions.slice(0,maxLen),
                     'ReferrerHashes': detectedReferrerSamples.slice(0,maxLen),
                     'UnAVDetectedReferrerHashes': undetectedReferrerSamples.slice(0,maxLen)
-                }
+                },
+                'ASN': o.asn,
+                'Geo': {Country: o.country}
             };
         }
         longFormat = FULL_RESPONSE? 'true': longFormat;
@@ -499,8 +491,6 @@ script:
             EntryContext: ec
         };
     }
-
-
     function doURL(url, threshold, longFormat, sampleSize, submitWait, waitForRateLimit, retries) {
         //lowercase the URL protocol
         //Example: https://www.demisto.com --> https://www.demisto.com, Http://www.demisto.com --> http://www.demisto.com, www.demisto.com --> www.demisto.com
@@ -510,7 +500,6 @@ script:
           var not_protocol = url.replace(/(^\w+:|^)\/\//, '');
           url = protocol + '://' + not_protocol;
         }
-
         if (!submitWait) {
             submitWait = 0;
         }
@@ -529,9 +518,7 @@ script:
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                 HumanReadable: 'VirusTotal does not have details about ' + url + '\n' + res.obj.verbose_msg};
         }
-
         var md = '## VirusTotal URL Reputation for: ' + url + '\n';
-
         if (!o.scans && submitWait>0) {
             wait(parseInt(submitWait));
             res = doReq('GET', 'url/report', {resource: url});
@@ -543,20 +530,23 @@ script:
                 Data: url,
                 VirusTotal: {
                     ScanID: o.scan_id
-                }
+                },
+                DetectionEngines: 0,
+                PositiveDetections: 0
             };
         } else {
             md += 'Last scan date: *' + o.scan_date + '*\n';
             md += 'Total scans: **' + o.total + '**\n';
             md += 'Positive scans: **' + o.positives + '**\n';
             md += 'VT Link: [' + url + '](' + o.permalink + ')\n';
-
             var dbotScore = 0;
             if (o.positives >= threshold  || isEnoughPreferredVendors(o)) {
                 dbotScore = 3;
                 addMalicious(ec, outputPaths.url, {
                     Data: url,
-                    Malicious: {Vendor: 'VirusTotal', Description: 'Positives / Total: ' + o.positives + ' / ' + o.total}
+                    Malicious: {Vendor: 'VirusTotal', Description: 'Positives / Total: ' + o.positives + ' / ' + o.total},
+                    DetectionEngines: Object.keys(o.scans).length,
+                    PositiveDetections: o.positives
                 });
             } else if (o.positives >= threshold / 2) {
                 dbotScore = 2;
@@ -564,7 +554,6 @@ script:
                 dbotScore = 1;
             }
             ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'VirusTotal', Score: dbotScore};
-
             longFormat = FULL_RESPONSE? 'true': longFormat;
             if (longFormat === 'true') { // add scans table
                 scansTable = createScansTable(o.scans);
@@ -572,7 +561,8 @@ script:
                 if (ec[outputPaths.url]){ // malicious
                     scans_ec = {
                         Scans: scansTable,
-                        ScanID: o.scan_id
+                        ScanID: o.scan_id,
+                        vtLink: o.permalink
                     };
                     ec[outputPaths.url].VirusTotal = scans_ec;
                 } else { // not malicious
@@ -580,8 +570,11 @@ script:
                         Data: url,
                         "VirusTotal": {
                             Scans: scansTable,
-                            ScanID: o.scan_id
-                        }
+                            ScanID: o.scan_id,
+                            vtLink: o.permalink
+                        },
+                        DetectionEngines: Object.keys(o.scans).length,
+                        PositiveDetections: o.positives
                     };
                     ec[outputPaths.url] = scans_ec;
                 }
@@ -589,18 +582,21 @@ script:
                 if (ec[outputPaths.url]){ // malicious
                     ec[outputPaths.url]['VirusTotal'] = {
                         ScanID: o.scan_id,
+                        vtLink: o.permalink
                     };
                 } else { // not malicious
                     ec[outputPaths.url] = {
                         Data: url,
                         VirusTotal: {
                             ScanID: o.scan_id,
-                        }
+                            vtLink: o.permalink
+                        },
+                        DetectionEngines: Object.keys(o.scans).length,
+                        PositiveDetections: o.positives
                     };
                 }
             }
         }
-
         return {
             Type: entryTypes.note,
             Contents: res.body,
@@ -609,8 +605,6 @@ script:
             EntryContext: ec
         };
     }
-
-
     function doDomain(domain, threshold, longFormat, sampleSize, waitForRateLimit, retries, fullResponse) {
         if (!sampleSize) {
             sampleSize = 10;
@@ -646,11 +640,9 @@ script:
             dbotScore = 1;
         }
         ec.DBotScore = {Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: dbotScore};
-
         var md = '## VirusTotal Domain Reputation for: ' + domain + '\n';
         md += '#### Domain categories: *' + o.categories + "*\n";
         md += 'VT Link: [' + domain + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(domain) + ')\n';
-
         var detectedUrls = o.detected_urls || [];
         var detectedDownloadedSamples = o.detected_downloaded_samples || [];
         var undetectedDownloadedSamples = o.undetected_downloaded_samples || [];
@@ -659,12 +651,10 @@ script:
         var detectedReferrerSamples = o.detected_referrer_samples || [];
         var undetectedReferrerSamples = o.undetected_referrer_samples || [];
         var resolutions = o.resolutions || [];
-
         var arrTitle = [{a: detectedUrls, t: 'Detected URL'}, {a: detectedDownloadedSamples, t: 'Detected downloaded sample'},
             {a: undetectedDownloadedSamples, t: 'Undetected downloaded sample'}, {a: detectedCommunicatingSamples, t: 'Detected communicating sample'},
             {a: undetectedCommunicatingSamples, t: 'Undetected communicating sample'},{a: detectedReferrerSamples, t: 'Detected referrer sample'},
             {a: undetectedReferrerSamples, t: 'Undetected referrer sample'}, {a: resolutions, t: 'Resolutions'}];
-
         for (var i = 0; i<arrTitle.length; i++) {
             if (arrTitle[i].a) {
                 md += arrTitle[i].t + ' count: **' + arrTitle[i].a.length + '**\n';
@@ -684,7 +674,6 @@ script:
                 }
             }
         }
-
         if (o.domain_siblings && o.domain_siblings.length > 0) {
             md += "### Observed subdomains\n";
             for (i = 0; i < o.domain_siblings.length; i++) {
@@ -702,28 +691,24 @@ script:
                 }
             }
         }
-
         var detected_downloaded_samples = o.detected_downloaded_samples;
         if (detected_downloaded_samples === undefined) {
             detected_downloaded_samples = [];
         } else {
             detected_downloaded_samples = detected_downloaded_samples.slice(0,maxLen);
         }
-
         var undetected_downloaded_samples = o.undetected_downloaded_samples;
         if (undetected_downloaded_samples === undefined) {
             undetected_downloaded_samples = [];
         } else {
             undetected_downloaded_samples = undetected_downloaded_samples.slice(0,maxLen);
         }
-
         var detected_urls = o.detected_urls;
         if (detected_urls === undefined) {
             detected_urls = [];
         } else {
             detected_urls = detected_urls.slice(0,maxLen);
         }
-
         var detected_communicating_samples = o.detected_communicating_samples;
         if (detected_communicating_samples === undefined) {
             detected_communicating_samples = [];
@@ -791,7 +776,6 @@ script:
         } else { // not malicious
             ec[outputPaths.domain] = domain_ec;
         }
-
         return {
             Type: entryTypes.note,
             Contents: res.body,
@@ -800,8 +784,6 @@ script:
             EntryContext: ec
         };
     }
-
-
     function scanURL(url) {
         var res = doReq('POST', 'url/scan', {url: url});
         var r = [];
@@ -811,11 +793,12 @@ script:
             r = [res.obj];
         }
         var md = '';
-        var ec = {vtScanID: []};
+        var ec = {vtScanID: [], vtLink: []};
         for (var i=0; i<r.length; i++) {
             md += '## VirusTotal URL scan for: [' + r[i].url + '](' + r[i].permalink + ')\n';
             md += 'Scan ID: **' + r[i].scan_id + '**\n';
             ec.vtScanID.push(r[i].scan_id);
+            ec.vtLink.push(r[i].permalink);
             md += 'Scan Date: **' + r[i].scan_date + '**\n\n';
         }
         return {
@@ -826,8 +809,6 @@ script:
             EntryContext: ec
         };
     }
-
-
     function scanFile(entry, uploadURL) {
         var url = uploadURL ? uploadURL : serverUrl + 'file/scan';
         var fileName = dq(invContext, "File(val.EntryID == '" + entry + "').Name");
@@ -860,10 +841,10 @@ script:
         }
         var ec = {};
         ec.vtScanID = obj.scan_id;
+        ec.vtLink = obj.permalink;
         var md = '## VirusTotal scan file for [' + entry + '](' + obj.permalink + ')\n';
         md += 'Resource: **' + obj.resource + '**\n';
         md += 'MD5 / SHA1 / SHA256: **' + obj.md5 + ' / ' + obj.sha1 + ' / ' + obj.sha256 + '**\n';
-
         return {
             Type: entryTypes.note,
             Contents: result.Body,
@@ -872,8 +853,6 @@ script:
             EntryContext: ec
         };
     }
-
-
     function rescanFile(hash) {
         var res = doReq('POST', 'file/rescan', {resource: hash});
         var r = [];
@@ -883,11 +862,12 @@ script:
             r = [res.obj];
         }
         var md = '';
-        var ec = {vtScanID: []};
+        var ec = {vtScanID: [], vtLink: []};
         for (var i=0; i<r.length; i++) {
             md += '## VirusTotal File Rescan for: [' + r[i].resource + '](' + r[i].permalink + ')\n';
             md += 'Scan ID: **' + r[i].scan_id + '**\n';
             ec.vtScanID.push(r[i].scan_id);
+            ec.vtLink.push(r[i].permalink);
             md += 'MD5 / SHA1 / SHA256: **' + r[i].md5 + ' / ' + r[i].sha1 + ' / ' + r[i].sha256 + '**\n\n';
         }
         return {
@@ -898,8 +878,6 @@ script:
             EntryContext: ec
         };
     }
-
-
     function doComments(resource, comment) {
         var res = doReq('POST', 'comments/put', {resource: resource, comment: comment});
         return {
@@ -909,8 +887,6 @@ script:
             HumanReadable: res.obj.verbose_msg
         };
     }
-
-
     function getComments(resource, before) {
         var params = {resource: resource};
         if (before) {
@@ -924,8 +900,6 @@ script:
             HumanReadable: arrToMd(res.obj.comments)
         };
     }
-
-
     function fileScanUploadURL() {
         var res = doReq('GET', 'file/scan/upload_url');
         return {
@@ -936,8 +910,6 @@ script:
             EntryContext: {vtUploadURL: res.obj.upload_url}
         };
     }
-
-
     function test() {
         // if getting "No content received. Possible API rate limit reached." it's means that the api key use not usable right now, but it's working
         try
@@ -952,8 +924,6 @@ script:
         }
         return true;
     }
-
-
     try {
         switch (command) {
             case 'test-module':
@@ -996,323 +966,345 @@ script:
     - name: file
       required: true
       default: true
-      description: Hash of the file to query. Supports MD5, SHA1 and SHA256. Notice
-        that you can pass comma-separated multiple values to efficiently retrieve
-        multiple responses.
+      description: A CSV list of hashes of the file to query. Supports MD5, SHA1, and SHA256.
     - name: long
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Should we return full response with scans
+      description: Whether to return full response for scans. Default is "false".
       defaultValue: "false"
     - name: threshold
-      description: If the number of positives is bigger than the threshold the file
-        will be considered malicious. If threshold is not specified, the default file
+      description: If the number of positives is higher than the threshold, the file
+        will be considered malicious. If the threshold is not specified, the default file
         threshold, as configured in the instance settings, will be used.
     - name: wait
-      description: Wait time between tries if we reach the API rate limit in seconds
+      description: Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60".
       defaultValue: "60"
     - name: retries
-      description: Number of retries for API rate limit
+      description: Number of retries for the API rate limit. Default is "0".
       defaultValue: "0"
     outputs:
     - contextPath: File.MD5
-      description: Bad hash found
+      description: Bad MD5 hash.
     - contextPath: File.SHA1
-      description: Bad hash SHA1
+      description: Bad SHA1 hash.
     - contextPath: File.SHA256
-      description: Bad hash SHA256
+      description: Bad SHA256 hash.
     - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
+      description: For malicious files, the vendor that made the decision.
     - contextPath: File.Malicious.Detections
-      description: For malicious files. Total detections.
+      description: For malicious files, the total number of detections.
     - contextPath: File.Malicious.TotalEngines
-      description: For malicious files. Total engines
+      description: For malicious files, the total number of engines that checked the file hash.
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
       description: The type of the indicator
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
     - contextPath: File.VirusTotal.Scans.Source
-      description: Scan vendor for this hash
+      description: Vendor used to scan the hash.
     - contextPath: File.VirusTotal.Scans.Detected
-      description: Scan detection for this hash (True,False)
+      description: Scan detection for this hash (True or False).
     - contextPath: File.VirusTotal.Scans.Result
-      description: Scan result for this hash - signature, etc.
+      description: Scan result for this hash, for example, signature.
     - contextPath: File.VirusTotal.ScanID
-      description: Scan ID for this hash
+      description: Scan ID for this hash.
       type: string
-    description: Check file reputation of the given hash
+    - contextPath: File.PositiveDetections
+      description: Number of engines that positively detected the indicator as malicious.
+      type: number
+    - contextPath: File.DetectionEngines
+      description: Total number of engines that checked the indicator.
+      type: number
+    - contextPath: File.VirusTotal.vtLink
+      description: Virus Total permanent link.
+      type: string
+    description: Checks the file reputation of the specified hash.
   - name: ip
     arguments:
     - name: ip
       required: true
       default: true
-      description: IP address to check
+      description: IP address to check.
     - name: long
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Should we return full response with detected URLs
+      description: Whether to return full response for detected URLs. Default is "false".
       defaultValue: "false"
     - name: threshold
-      description: If the number of positives is bigger than the threshold the IP
-        will be considered malicious. If threshold is not specified, the default IP
+      description: If the number of positives is higher than the threshold, the IP address
+        will be considered malicious. If the threshold is not specified, the default IP
         threshold, as configured in the instance settings, will be used.
     - name: sampleSize
       description: The number of samples from each type (resolutions, detections,
-        etc.) to display for long format
+        etc.) to display for long format. Default is "10".
       defaultValue: "10"
     - name: wait
-      description: Wait time between tries if we reach the API rate limit in seconds
+      description: Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60".
       defaultValue: "60"
     - name: retries
-      description: Number of retries for API rate limit
+      description: Number of retries for API rate limit. Default is "0".
       defaultValue: "0"
     - name: fullResponse
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Return all of the results, note that it can be thousands of results.
-        Prefer not to use in playbooks. The default value is "false"
+      description: Whether to return all results, which can be thousands. Default is "false". We recommend that you don't return full results in playbooks.
       defaultValue: "false"
     outputs:
     - contextPath: IP.Address
-      description: Bad IP Address found
+      description: Bad IP address.
     - contextPath: IP.ASN
-      description: Bad IP ASN
+      description: Bad IP ASN.
     - contextPath: IP.Geo.Country
-      description: Bad IP Country
+      description: Bad IP country.
     - contextPath: IP.Malicious.Vendor
-      description: For malicious IPs, the vendor that made the decision
+      description: For malicious IPs, the vendor that made the decision.
     - contextPath: IP.Malicious.Description
-      description: For malicious IPs, the reason for the vendor to make the decision
+      description: For malicious IPs, the reason that the vendor made the decision.
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: Indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
     - contextPath: IP.VirusTotal.DownloadedHashes
-      description: Latest files that are detected by at least one antivirus solution
-        and were downloaded by VirusTotal from the IP address
+      description: Latest files that were detected by at least one antivirus solution,
+        and were downloaded by VirusTotal from the IP address.
     - contextPath: IP.VirusTotal.UnAVDetectedDownloadedHashes
-      description: Latest files that are not detected by any antivirus solution and
-        were downloaded by VirusTotal from the IP address provided
+      description: Latest files that were not detected by any antivirus solution, and
+        were downloaded by VirusTotal from the specified IP address.
     - contextPath: IP.VirusTotal.DetectedURLs
-      description: Latest URLs hosted in this IP address detected by at least one
-        URL scanner
+      description: Latest URLs hosted in this IP address that were detected by at least one
+        URL scanner.
     - contextPath: IP.VirusTotal.CommunicatingHashes
-      description: Latest detected files that communicate with this IP address
+      description: Latest detected files that communicate with this IP address.
     - contextPath: IP.VirusTotal.UnAVDetectedCommunicatingHashes
-      description: Latest undetected files that communicate with this IP address
+      description: Latest undetected files that communicate with this IP address.
     - contextPath: IP.VirusTotal.Resolutions.hostname
-      description: The following domains resolved to the given IP
+      description: Domains that resolved to the specified IP address.
     - contextPath: IP.VirusTotal.ReferrerHashes
-      description: Latest detected files that embed this IP address in their strings
+      description: Latest detected files that embed this IP address in their strings.
     - contextPath: IP.VirusTotal.UnAVDetectedReferrerHashes
-      description: Latest undetected files that embed this IP address in their strings
+      description: Latest undetected files that embed this IP address in their strings.
     - contextPath: IP.VirusTotal.Resolutions.last_resolved
-      description: Last resolution times of the following domains resolved to the
-        given IP
-    description: Check IP Reputation
+      description: Last resolution times of the domains that resolved to the specified IP address.
+    description: Checks the reputation of an IP address.
   - name: url
     arguments:
     - name: url
       required: true
-      description: URL to be checked
+      description: The URL to check.
     - name: sampleSize
       description: The number of samples from each type (resolutions, detections,
-        etc.) to display for long format
+        etc.) to display for long format.
       defaultValue: "10"
     - name: long
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Should we return full response with detected URLs
+      description: Whether to return the full response for the detected URLs.
       defaultValue: "false"
     - name: threshold
-      description: If the number of positives is bigger than the threshold the URL
-        will be considered malicious. If threshold is not specified, the default URL
+      description: If the number of positives is higher than the threshold, the URL
+        will be considered malicious. If the threshold is not specified, the default URL
         threshold, as configured in the instance settings, will be used.
     - name: submitWait
-      description: Seconds to wait if the URL does not exist and is submitted to be
-        scanned
+      description: Time (in seconds) to wait if the URL does not exist and is submitted for scanning. Default is "0".
       defaultValue: "0"
     - name: wait
-      description: Wait time between tries if we reach the API rate limit in seconds
+      description: Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60".
       defaultValue: "60"
     - name: retries
-      description: Number of retries for API rate limit
+      description: Number of retries for API rate limit. Default is "0".
       defaultValue: "0"
     outputs:
     - contextPath: URL.Data
-      description: Bad URLs found
+      description: Bad URLs found.
     - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision
+      description: For malicious URLs, the vendor that made the decision.
     - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason for the vendor to make the decision
+      description: For malicious URLs, the reason that the vendor made the decision.
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: Indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
     - contextPath: URL.VirusTotal.Scans.Source
-      description: Scan vendor for this URL
+      description: Vendor that scanned this URL.
     - contextPath: URL.VirusTotal.Scans.Detected
-      description: Scan detection for this URL (True/False)
+      description: Scan detection for this URL (True or False).
     - contextPath: URL.VirusTotal.Scans.Result
-      description: Scan result for this URL - signature, etc.
-    description: Check URL Reputation
+      description: Scan result for this URL, for example, signature.
+    - contextPath: URL.DetectionEngines
+      description: Total number of engines that checked the indicator.
+      type: number
+    - contextPath: URL.PositiveDetections
+      description: Number of engines that positively detected the indicator as malicious.
+      type: number
+    - contextPath: url.VirusTotal.ScanID
+      description: Scan ID for this URL.
+      type: string
+    - contextPath: File.VirusTotal.vtLink
+      description: Virus Total permanent link.
+      type: string
+    description: Checks the reputation of a URL.
   - name: domain
     arguments:
     - name: domain
       required: true
       default: true
-      description: Domain name to check reputation
+      description: Domain name to check.
     - name: long
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Should we return full response with detected URLs
+      description: Whether to return the full response for detected URLs. Default is "false".
       defaultValue: "false"
     - name: sampleSize
       description: The number of samples from each type (resolutions, detections,
-        etc.) to display for long format
+        etc.) to display for long format.
       defaultValue: "10"
     - name: threshold
-      description: If the number of positives is bigger than the threshold the domain
-        will be considered malicious. If threshold is not specified, the default domain
+      description: If the number of positives is higher than the threshold, the domain
+        will be considered malicious. If the threshold is not specified, the default domain
         threshold, as configured in the instance settings, will be used.
     - name: wait
-      description: Wait time between tries if we reach the API rate limit in seconds
+      description: Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60".
       defaultValue: "60"
     - name: retries
-      description: Number of retries for API rate limit
+      description: Number of retries for API rate limit. Default is "0".
       defaultValue: "0"
     - name: fullResponse
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Return all of the results, note that it can be thousands of results.
-        Prefer not to use in playbooks. The default value is "false"
+      description: Whether to return all results, which can be thousands. Default is "false". We recommend that you don't return full results in playbooks.
       defaultValue: "false"
     outputs:
     - contextPath: Domain.Name
-      description: Bad domain found
+      description: Bad domain found.
     - contextPath: Domain.Malicious.Vendor
-      description: For malicious domains, the vendor that made the decision
+      description: For malicious domains, the vendor that made the decision.
     - contextPath: Domain.Malicious.Description
-      description: For malicious domains, the reason for the vendor to make the decision
+      description: For malicious domains, the reason that the vendor made the decision.
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: Indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
     - contextPath: Domain.VirusTotal.DownloadedHashes
-      description: Hashes of files who were downloaded from this domain
+      description: Hashes of files that were downloaded from this domain.
     - contextPath: Domain.VirusTotal.CommunicatingHashes
-      description: Hashes of files who communicated with this domain in a sandbox
+      description: Hashes of files that communicated with this domain in a sandbox.
     - contextPath: Domain.VirusTotal.Resolutions.ip_address
-      description: IPs who resolved to this domain
+      description: IP addresses that resolved to this domain.
     - contextPath: Domain.VirusTotal.Whois
-      description: Whois report
+      description: Whois report.
     - contextPath: Domain.VirusTotal.Subdomains
-      description: Subdomains
+      description: Subdomains.
     - contextPath: Domain.VirusTotal.UnAVDetectedDownloadedHashes
-      description: Latest files that are not detected by any antivirus solution and
-        were downloaded by VirusTotal from the IP address provided
+      description: Latest files that were not detected by any antivirus solution, and
+        were downloaded by VirusTotal from the specified IP address.
     - contextPath: Domain.VirusTotal.DetectedURLs
-      description: Latest URLs hosted in this Domain address detected by at least
-        one URL scanner
+      description: Latest URLs hosted in this domain address that were detected by at least
+        one URL scanner.
     - contextPath: Domain.VirusTotal.ReferrerHashes
-      description: Latest detected files that embed this Domain address in their strings
+      description: Latest detected files that embed this domain address in their strings.
     - contextPath: Domain.VirusTotal.UnAVDetectedReferrerHashes
-      description: Latest undetected files that embed this Domain address in their
-        strings
+      description: Latest undetected files that embed this domain address in their
+        strings.
     - contextPath: Domain.VirusTotal.UnAVDetectedCommunicatingHashes
-      description: Latest undetected files who communicated with this domain in a
-        sandbox
+      description: Latest undetected files that communicated with this domain in a
+        sandbox.
     - contextPath: Domain.VirusTotal.Resolutions.last_resolved
-      description: Last resolutions time of the IPs who resolve to this domain
-    description: Check domain reputation
+      description: Last resolution times of the IP addresses that resolve to this domain.
+    description: Checks the reputation of a domain.
   - name: file-scan
     arguments:
     - name: entryID
       required: true
       default: true
-      description: The file entry ID to submit
+      description: The file entry ID to submit.
     - name: uploadURL
-      description: Private API extension. Special upload URL for files bigger than
-        32M.
+      description: Private API extension. Special upload URL for files larger than 32 MB.
     outputs:
     - contextPath: vtScanID
-      description: Scan IDs of the submitted files
-    description: Submit a file for scanning
+      description: Scan IDs of the submitted files.
+    - contextPath: vtLink
+      description: Virus Total permanent link.
+      type: string
+    description: Submits a file for scanning.
   - name: file-rescan
     arguments:
     - name: file
       required: true
       default: true
-      description: Hash of the file to re-scan. Supports MD5, SHA1 and SHA256.
+      description: Hash of the file to re-scan. Supports MD5, SHA1, and SHA256.
     outputs:
     - contextPath: vtScanID
-      description: Scan IDs of the submitted files
-    description: Rescan an already submitted file to save time and not upload
+      description: Scan IDs of the submitted files.
+    - contextPath: vtLink
+      description: Virus Total permanent link.
+      type: string
+    description: Re-scans an already submitted file. This avoids having to upload the file again.
   - name: url-scan
     arguments:
     - name: url
       required: true
       default: true
-      description: The URL to scan
+      description: The URL to scan.
     outputs:
     - contextPath: vtScanID
-      description: Scan IDs of the submitted URLs
-    description: Scan a given URL
+      description: Scan IDs of the submitted URLs.
+    - contextPath: vtLink
+      description: Virus Total permanent link.
+      type: string
+    description: Scans a specified URL.
   - name: vt-comments-add
     arguments:
     - name: resource
       required: true
       default: true
-      description: The hash (md5/sha1/sha256) or URL you're commenting on
+      description: The file hash (MD5, SHA1, or SHA256) or URL on which you're commenting.
     - name: comment
       required: true
-      description: 'The actual review, you can tag it using the "#" twitter-like syntax
-        (e.g. #disinfection #zbot) and reference users using the "@" syntax (e.g.
-        @VirusTotalTeam).'
-    description: Add comments for files and URLs
+      description: 'The actual review, which you can tag by using the "#" twitter-like syntax, for example,
+        #disinfection #zbot, and reference users using the "@" syntax, for example, @VirusTotalTeam).'
+    description: Adds comments to files and URLs.
   - name: vt-file-scan-upload-url
     arguments: []
     outputs:
     - contextPath: vtUploadURL
-      description: The special upload URL for large files
-    description: Private API. Get a special URL for files above 32M.
+      description: The special upload URL for large files.
+    description: Private API. Get a special URL for files larger than 32 MB.
   - name: vt-comments-get
     arguments:
     - name: resource
       required: true
       default: true
-      description: The hash (md5/sha1/sha256) or URL you're retrieving comments for
+      description: The file hash (MD5, SHA1, orSHA256) or URL from which you're retrieving comments.
     - name: before
-      description: Datetime token in format YYYYMMDDHHMISS that can be used for paging
-    description: Private API. Retrieve comments for a given resource
+      description: Datetime token in the format YYYYMMDDHHMISS. You can use this for paging.
+    description: Private API. Retrieves comments for a given resource.
   runonce: false
 tests:
 - virusTotal-test-playbook
