@@ -5,6 +5,7 @@ import string
 import random
 import argparse
 import requests
+import subprocess
 from time import sleep
 from datetime import datetime
 
@@ -19,13 +20,15 @@ from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
 SERVER_URL = "https://{}"
 INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
 
-FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the "\
+FAILED_MATCH_INSTANCE_MSG = "{} Failed to run.\n There are {} instances of {}, please select one of them by using the " \
                             "instance_name argument in conf.json. The options are:\n{}"
 
 AMI_NAMES = ["Demisto GA", "Server Master", "Demisto one before GA", "Demisto two before GA"]
 
 SERVICE_RESTART_TIMEOUT = 300
 SERVICE_RESTART_POLLING_INTERVAL = 5
+
+SLACK_CHANNEL_ID = 'CM55V7J8K'
 
 
 def options_handler():
@@ -109,9 +112,33 @@ def has_unmockable_integration(integrations, unmockable_integrations):
     return list(set(x['name'] for x in integrations).intersection(unmockable_integrations.keys()))
 
 
+def get_memory_data():
+    process = subprocess.Popen(['free', '-m'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    stdout, stderr = process.communicate()
+    return stdout, stderr
+
+
+def send_slack_message(slack, chanel, text, user_name, as_user):
+    sc = SlackClient(slack)
+    sc.api_call(
+        "chat.postMessage",
+        channel=chanel,
+        username=user_name,
+        as_user=as_user,
+        text=text,
+        mrkdwn='true'
+    )
+
+
 def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
                    circle_ci, build_number, server_url, build_name, is_mock_run=False):
     status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run)
+    options = options_handler()
+    stdout, stderr = get_memory_data()
+    text = stdout if not stderr else stderr
+    if options.nightly:
+        send_slack_message(slack, SLACK_CHANNEL_ID, text, 'Content CircleCI', 'False')
+
     if status == PB_Status.COMPLETED:
         print_color('PASS: {} succeed'.format(test_message), LOG_COLORS.GREEN)
         succeed_playbooks.append(playbook_id)
@@ -534,7 +561,10 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                                                     nightly_integrations)
     else:  # In case of a non AMI run we don't want to use the mocking mechanism
         mockless_tests = tests
-
+    if options.nightly:
+        send_slack_message(slack, SLACK_CHANNEL_ID,
+                           'Build Number: {0}\n Server Address: {1}'.format(build_number, server),
+                           'Content CircleCI', 'False')
     # first run the mock tests to avoid mockless side effects in container
     if is_ami and mock_tests:
         proxy.configure_proxy_in_demisto(proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
