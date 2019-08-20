@@ -6,7 +6,7 @@
   "Status": "Closed",
   "Source": "Youtube",
   "Rule": "NFFC",
-  "Severity": 5,
+  "Risk Rating": "Critical",
   "Notes": "I am adding a note.",
   "Tags": []
 }
