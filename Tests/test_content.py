@@ -125,7 +125,8 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
         channel=chanel,
         username=user_name,
         as_user=as_user,
-        text=text
+        text=text,
+        mrkdwn='true'
     )
 
 
