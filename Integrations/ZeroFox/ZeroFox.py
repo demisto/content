@@ -617,7 +617,7 @@ def list_alerts_command():
         del params['risk_rating']
         params['severity'] = severity_string_to_num(risk_rating_string)
     # handle limit parameter - special case
-    limit_str: str = params.get('limit')
+    limit_str = params.get('limit')
     if limit_str:
         limit: int = dict_value_to_integer(params, 'limit')
         if limit < 0 or limit > 100:
@@ -690,7 +690,7 @@ def fetch_incidents():
     incidents = []
     limit: int = int(demisto.params().get('fetch_limit', ''))
     response_content = list_alerts({'sort_direction': 'asc', 'limit': limit, 'min_timestamp': last_update_time})
-    alerts: [] = response_content.get('alerts', [])
+    alerts: List = response_content.get('alerts', [])
     for alert in alerts:
         incident = alert_to_incident(alert)
         incidents.append(incident)
