@@ -131,7 +131,7 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
 
 
 def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
-                   circle_ci, build_number, server_url, build_name, is_nightly, is_mock_run=False):
+                   circle_ci, build_number, server_url, build_name, is_mock_run=False):
     status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run)
     options = options_handler()
     stdout, stderr = get_memory_data()
@@ -161,12 +161,11 @@ def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playb
 
 # run the test using a real instance, record traffic.
 def run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-                   test_message, test_options, slack, circle_ci, build_number, server_url, build_name, is_nightly):
+                   test_message, test_options, slack, circle_ci, build_number, server_url, build_name):
     proxy.set_tmp_folder()
     proxy.start(playbook_id, record=True)
     succeed = run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message,
-                             test_options, slack, circle_ci, build_number, server_url, build_name, is_nightly,
-                             is_mock_run=True)
+                             test_options, slack, circle_ci, build_number, server_url, build_name, is_mock_run=True)
     proxy.stop()
     if succeed:
         proxy.move_mock_file_to_repo(playbook_id)
@@ -176,8 +175,7 @@ def run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succee
 
 
 def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-             test_message, test_options, slack, circle_ci, build_number, server_url, build_name, start_message,
-             is_nightly):
+             test_message, test_options, slack, circle_ci, build_number, server_url, build_name, start_message):
     rerecord = False
 
     if proxy.has_mock_file(playbook_id):
@@ -209,8 +207,7 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
 
     # Mock recording - no mock file or playback failure.
     succeed = run_and_record(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-                             test_message, test_options, slack, circle_ci, build_number, server_url, build_name,
-                             is_nightly)
+                             test_message, test_options, slack, circle_ci, build_number, server_url, build_name)
 
     if rerecord and succeed:
         proxy.rerecorded_tests.append(playbook_id)
@@ -218,21 +215,19 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
 
 
 def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id, succeed_playbooks,
-             test_message, test_options, slack, circle_ci, build_number, server_url, build_name, is_nightly,
-             is_ami=True):
+             test_message, test_options, slack, circle_ci, build_number, server_url, build_name, is_ami=True):
     start_message = '------ Test %s start ------' % (test_message,)
 
     if not is_ami or (not integrations or has_unmockable_integration(integrations, unmockable_integrations)):
         print(start_message + ' (Mock: Disabled)')
         run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options,
-                       slack, circle_ci, build_number, server_url, build_name, is_nightly)
+                       slack, circle_ci, build_number, server_url, build_name)
         print('------ Test %s end ------\n' % (test_message,))
 
         return
 
     mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_playbooks,
-             test_message, test_options, slack, circle_ci, build_number, server_url, build_name, start_message,
-             is_nightly)
+             test_message, test_options, slack, circle_ci, build_number, server_url, build_name, start_message)
 
 
 def http_request(url, params_dict=None):
