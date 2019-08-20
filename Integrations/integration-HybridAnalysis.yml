@@ -684,8 +684,8 @@ script:
 
     switch (command) {
         case 'test-module':
-            var res = scan('dd014af5ed6b38d9130e3f466f850e46d21b951199d53a18ef29ee9341614eaf')[0]; // google's SHA256
-            if (res != null && res.state == 'SUCCESS') {
+            var res = quickScanUrl('all', 'www.google.com', '/api/v2/quick-scan/url');
+            if (res != null && res.sha256 == 'd2edef8e43054be586d17ddcc761e7a1f4a6946c39e653d7e095a826ef34b6a1') {
                return 'ok';
             }
             return false;
