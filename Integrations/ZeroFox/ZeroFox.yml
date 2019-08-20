@@ -961,6 +961,8 @@ script:
     name: zerofox-get-policy-types
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   type: python
