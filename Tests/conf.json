@@ -7,6 +7,11 @@
             "playbookID": "ZeroFox-Test"
         },
         {
+            "integrations": "SlackV2",
+            "playbookID": "Slack Test Playbook",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook",
             "fromversion": "4.1.0"
