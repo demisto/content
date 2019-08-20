@@ -617,8 +617,8 @@ def list_alerts_command():
         del params['risk_rating']
         params['severity'] = severity_string_to_num(risk_rating_string)
     # handle limit parameter - special case
-    limit: str = params.get('limit')
-    if limit:
+    limit_str: str = params.get('limit')
+    if limit_str:
         limit: int = dict_value_to_integer(params, 'limit')
         if limit < 0 or limit > 100:
             raise Exception('Limit should be 0 <= x <= 100')
