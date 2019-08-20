@@ -941,12 +941,16 @@ COMMANDS = {
 }
 
 
-'''EXECUTION'''
+def main():
+    try:
+        if demisto.command() == 'test-module':
+            demisto.results('ok')
+        elif demisto.command() in COMMANDS.keys():
+            COMMANDS[demisto.command()]()
+    except Exception as e:
+        return_error(str(e))
 
-try:
-    if demisto.command() == 'test-module':
-        demisto.results('ok')
-    elif demisto.command() in COMMANDS.keys():
-        COMMANDS[demisto.command()]()
-except Exception as e:
-    return_error(str(e))
+
+# python2 uses __builtin__ python3 uses builtin s
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
