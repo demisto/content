@@ -138,7 +138,7 @@ def get_events_command(client, args):
     threat_type = argToList(args.get("threatType"))
     threat_status = args.get("threatStatus")
     since_time = args.get("sinceTime")
-    since_seconds = int(args.get("sinceSeconds"))
+    since_seconds = int(args.get("sinceSeconds")) if args.get("sinceSeconds") else None
     event_type_filter = args.get("eventTypes")
 
     raw_events = client.get_events(interval, since_time, since_seconds, threat_type, threat_status, event_type_filter)
