@@ -1,5 +1,5 @@
 commonfields:
-  id: a85a213b-2c41-40d7-8d31-ccef5008e980
+  id: GetByIncidentId
   version: -1
 name: GetByIncidentId
 script: |-
