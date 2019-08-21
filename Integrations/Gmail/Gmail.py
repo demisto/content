@@ -309,17 +309,16 @@ def get_email_context(email_data, mailbox):
 TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')
 
 
-def parse_time(t):
+def move_to_gmt(t):
     # there is only one time refernce is the string
     base_time, _, sign, hours, minutes = TIME_REGEX.findall(t)[0]
     if all([sign, hours, minutes]):
-        seconds = int(sign + hours) * 3600 + int(sign + minutes) * 60
+        seconds = -1 * (int(sign + hours) * 3600 + int(sign + minutes) * 60)
         parsed_time = datetime.strptime(
             base_time, '%a, %d %b %Y %H:%M:%S') + timedelta(seconds=seconds)
-        return parsed_time.isoformat() + 'Z'
+        return (-1 * seconds), parsed_time.isoformat() + 'Z'
     else:
-        return datetime.strptime(base_time, '%a, %d %b %Y %H:%M:%S').isoformat() + 'Z'
-
+        return 0, datetime.strptime(base_time, '%a, %d %b %Y %H:%M:%S').isoformat() + 'Z'
 
 def create_incident_labels(parsed_msg, headers):
     labels = [
@@ -392,17 +391,19 @@ def mail_to_incident(msg, service, user_key):
             'path': file_result['FileID'],
             'name': attachment['Name'],
         })
+    # date in the incident itself is set to GMT time, the correction to local time is done in Demisto
+    second_delta, gmt_time = move_to_gmt(parsed_msg['Date'])
 
-    return {
+    incident = {
         'type': 'Gmail',
         'name': parsed_msg['Subject'],
         'details': parsed_msg['Body'],
         'labels': create_incident_labels(parsed_msg, headers),
-        'occurred': datetime.strptime(parsed_msg['Date'][:-6], '%a, %d %b %Y %H:%M:%S').isoformat() + 'Z',
-        # 'occurred': parse_time(parsed_msg['Date']),
+        'occurred': gmt_time,
         'attachment': file_names,
         'rawJSON': json.dumps(parsed_msg),
     }
+    return second_delta, incident
 
 
 def users_to_entry(title, response):
@@ -1435,7 +1436,6 @@ def fetch_incidents():
         last_fetch = datetime.strptime(
             last_fetch, '%Y-%m-%dT%H:%M:%SZ')
     current_fetch = last_fetch
-
     service = get_service(
         'gmail',
         'v1',
@@ -1455,15 +1455,18 @@ def fetch_incidents():
     for msg in result.get('messages', []):
         msg_result = service.users().messages().get(
             id=msg['id'], userId=user_key).execute()
-        incident = mail_to_incident(msg_result, service, user_key)
-        temp_date = datetime.strptime(
-            incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
+        delta_seconds, incident = mail_to_incident(msg_result, service, user_key)
+        # due to a previous mistake the last fetch time take into account the UTC correction *twice*
+        # in order to prevent missing incidents we implement the same correction in the internal date
+        internal_date = datetime.strptime(
+            incident['occurred'], '%Y-%m-%dT%H:%M:%SZ') + timedelta(seconds=2 * delta_seconds)
+
         # update last run
-        if temp_date > last_fetch:
-            last_fetch = temp_date + timedelta(seconds=1)
+        if internal_date > last_fetch:
+            last_fetch = internal_date + timedelta(seconds=1)
 
         # avoid duplication due to weak time query
-        if temp_date > current_fetch:
+        if internal_date > current_fetch:
             incidents.append(incident)
     demisto.info('extract {} incidents'.format(len(incidents)))
     demisto.setLastRun({'time': last_fetch.isoformat().split('.')[0] + 'Z'})
@@ -1513,7 +1516,6 @@ def main():
         if command == 'fetch-incidents':
             demisto.incidents(fetch_incidents())
             sys.exit(0)
-
         cmd_func = COMMANDS.get(command)
         if cmd_func is None:
             raise NotImplementedError(
