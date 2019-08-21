@@ -1,0 +1,2 @@
+## [Unreleased]
+Added channel argument
