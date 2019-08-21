@@ -1,2 +1,3 @@
 ## [Unreleased]
-Added channel argument
+ - Added the *channel* argument.
+ - Improved script descriptions.
