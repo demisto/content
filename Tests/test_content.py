@@ -147,7 +147,7 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
 def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
                    circle_ci, build_number, server_url, build_name, is_mock_run=False):
     status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run)
-    options = options_handler()
+    # options = options_handler()
     stdout, stderr = get_docker_memory_data()
     text = stdout if not stderr else stderr
     # if options.nightly:
