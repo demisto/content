@@ -390,6 +390,56 @@ script:
     description: Moves a client to a group.
     execution: false
     name: sep-move-client-to-group
+  - arguments:
+    - default: false
+      description: The columns to display.
+      isArray: false
+      name: columns
+      required: false
+      secret: false
+    - default: false
+      description: Filter by computer host name (for wild cards, use '*')
+      isArray: false
+      name: computerName
+      required: false
+      secret: false
+    - default: false
+      description: Indicates when a computer's status was last updated (default is
+        0, which returns all the results)
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    - default: false
+      description: Operating system to filter by
+      isArray: false
+      name: os
+      required: false
+      secret: false
+    - default: false
+      description: The number of results to include on each page (default is 20)
+      isArray: false
+      name: pageSize
+      required: false
+      secret: false
+    - default: false
+      description: The name of the endpoint's group (use '*' for wildcards at the
+        end)
+      isArray: false
+      name: groupName
+      required: false
+      secret: false
+    - default: false
+      description: desiredVersion
+      isArray: false
+      name: desiredVersion
+      required: false
+      secret: false
+    deprecated: false
+    description: Get endpoints with a running version that isnt the same as the target
+      version or isn't consistent with the desired version (if specified).
+    execution: false
+    name: sep-identify-old-clients
   isfetch: false
   runonce: false
   script: '-'

@@ -364,8 +364,8 @@ def get_endpoints_info(token, computer_name, last_update, os, page_size, columns
     entry_context = []
     for content in filtered_json_response:
         group = content.get('group', {'name': ''})
-        bool_start = group.get('name').startswith(group_name[:-1]) if group_name[-1] == '*' else False
-        if not group_name or group.get('name') == group_name or bool_start:  # No group name filter
+        bool_start = group.get('name').startswith(group_name[:-1]) if group_name and group_name[-1] == '*' else False
+        if (not group_name) or group.get('name') == group_name or bool_start:  # No group name filter
             # used `set` on the mac address list as it sometimes contained duplicated values
             content['macAddresses'] = list(set(content.get('macAddresses')))
             entry_context.append({
@@ -391,11 +391,12 @@ def get_endpoints_info(token, computer_name, last_update, os, page_size, columns
     return final_json, entry_context
 
 
-def create_endpints_filter_string(computer_name, last_update, os, page_size):
+def create_endpints_filter_string(computer_name, last_update, os, page_size, group_name=None):
     md = '## Endpoints Information'
     md += ', filtered for last updated status: {}'.format(last_update) if last_update else ''
     md += ', filtered for hostname: {}'.format(computer_name) if computer_name else ''
     md += ', filtered for os: {}'.format(os) if os else ''
+    md += ', filtered for group name: {}'.format(group_name) if group_name else ''
     md += ', page size: {}'.format(page_size) if page_size else ''
     md += '\n'
     return md
@@ -470,6 +471,18 @@ def update_endpoint_content(token, endpoint):
     return command_id
 
 
+def filter_only_old_clients(filtered_json_response, desired_version):
+    filtered = []
+    for content in filtered_json_response:
+        RunningVersion = content.get('deploymentRunningVersion')
+        TargetVersion = content.get('deploymentTargetVersion')
+
+        if (desired_version and RunningVersion != desired_version) or \
+                (not desired_version and RunningVersion != TargetVersion):
+            filtered.append(content)
+    return filtered
+
+
 '''COMMANDS'''
 
 
@@ -494,6 +507,29 @@ def system_info_command(token):
         'EntryContext': {
             'SEPM.ServerAVDefVersion': context
         }
+    })
+
+
+def old_clients_command(token):
+
+    computer_name = demisto.getArg('computerName')
+    last_update = demisto.getArg('lastUpdate')
+    os = demisto.getArg('os')
+    page_size = demisto.getArg('pageSize')
+    columns = demisto.getArg('columns')
+    group_name = demisto.getArg('groupName')
+    desired_version = demisto.getArg('desiredVersion')
+    filtered_json_response, entry_context = get_endpoints_info(token, computer_name, last_update, os, page_size,
+                                                               columns, group_name)
+    columns_list = choose_columns(columns, ENDPOINTS_INFO_DEFAULT_COLUMNS)
+    filtered_json_response = filter_only_old_clients(filtered_json_response, desired_version)
+    md = create_endpints_filter_string(computer_name, last_update, os, page_size, group_name)
+    md += tableToMarkdown('Old Endpoints', filtered_json_response, columns_list)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': filtered_json_response,
+        'HumanReadable': md
     })
 
 
@@ -524,7 +560,7 @@ def endpoints_info_command(token):
     filtered_json_response, entry_context = get_endpoints_info(token, computer_name, last_update, os, page_size,
                                                                columns, group_name)
     columns_list = choose_columns(columns, ENDPOINTS_INFO_DEFAULT_COLUMNS)
-    md = create_endpints_filter_string(computer_name, last_update, os, page_size)
+    md = create_endpints_filter_string(computer_name, last_update, os, page_size, group_name)
     md += tableToMarkdown('Endpoints', filtered_json_response, columns_list)
     demisto.results({
         'Type': entryTypes['note'],
@@ -763,5 +799,7 @@ try:
         update_endpoint_content_command(token)
     if current_command == 'sep-move-client-to-group':
         move_client_to_group_command(token)
+    if current_command == 'sep-identify-old-clients':
+        old_clients_command(token)
 except Exception, ex:
     demisto.results('Cannot perform the command: {}. Error: {}'.format(current_command, ex))
