@@ -94,6 +94,14 @@ script:
       name: pageSize
       required: false
       secret: false
+    - default: false
+      description: The name of the endpoint's group (use '*' for wildcards at the
+        end)
+      isArray: false
+      name: groupName
+      required: false
+      secret: false
+    deprecated: false
     description: Returns information about endpoints.
     execution: false
     name: sep-endpoints-info
@@ -128,6 +136,12 @@ script:
     - contextPath: SEPM.Endpoint.LastScanTime
       description: Endpoint's last scan time
       type: String
+    - contextPath: SEPM.Endpoint.RunningVersion
+      description: The endpoint's running version
+      type: Unknown
+    - contextPath: SEPM.Endpoint.TargetVersion
+      description: The endpoint's target version
+      type: Unknown
   - arguments:
     - default: false
       description: The columns to display
@@ -135,6 +149,7 @@ script:
       name: columns
       required: false
       secret: false
+    deprecated: false
     description: Returns information about groups.
     execution: false
     name: sep-groups-info
@@ -163,7 +178,8 @@ script:
     - contextPath: SEPM.Groups.policySerialNumber
       description: Policy serial number
       type: number
-  - description: Returns information about the system (version, AV definition)
+  - deprecated: false
+    description: Returns information about the system (version, AV definition)
     execution: false
     name: sep-system-info
     outputs:
@@ -177,6 +193,7 @@ script:
       name: commandId
       required: true
       secret: false
+    deprecated: false
     description: Retrieves the status of a command.
     execution: false
     name: sep-command-status
@@ -187,7 +204,8 @@ script:
     - contextPath: SEPM.LastCommand.CommandId
       description: Command ID
       type: string
-  - description: Retrieves the client content.
+  - deprecated: false
+    description: Retrieves the client content.
     execution: false
     name: sep-client-content
     outputs:
@@ -197,7 +215,8 @@ script:
     - contextPath: SEPM.LastUpdated
       description: The last-updated date
       type: string
-  - description: Retrieve a list of existing policies
+  - deprecated: false
+    description: Retrieve a list of existing policies
     execution: false
     name: sep-list-policies
     outputs:
@@ -254,6 +273,7 @@ script:
       name: policyID
       required: true
       secret: false
+    deprecated: false
     description: Assigns an existing policy to a specified location.
     execution: false
     name: sep-assign-policy
@@ -264,6 +284,7 @@ script:
       name: groupID
       required: true
       secret: false
+    deprecated: false
     description: Retrieves a list of location IDs for a specified group.
     execution: false
     name: sep-list-locations
@@ -288,6 +309,7 @@ script:
       - Remove
       required: true
       secret: false
+    deprecated: false
     description: Quarantines an endpoint according to its policy.
     execution: false
     name: sep-endpoint-quarantine
@@ -319,6 +341,7 @@ script:
       - ScanNow_Custom
       required: true
       secret: false
+    deprecated: false
     description: Scans an endpoint.
     execution: false
     name: sep-scan-endpoint
@@ -339,6 +362,7 @@ script:
       name: endpoint
       required: true
       secret: false
+    deprecated: false
     description: Updates the content of a specified client.
     execution: false
     name: sep-update-endpoint-content
@@ -362,12 +386,13 @@ script:
       name: hardwareKey
       required: true
       secret: false
+    deprecated: false
     description: Moves a client to a group.
     execution: false
     name: sep-move-client-to-group
   isfetch: false
   runonce: false
-  script: ''
+  script: '-'
   type: python
   subtype: python2
 tests:
