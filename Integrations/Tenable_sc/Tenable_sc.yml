@@ -241,7 +241,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get a report with a Tenable.sc scan results
+    description: Get a single report with Tenable.sc scan results
     execution: false
     name: tenable-sc-get-scan-report
     outputs:
