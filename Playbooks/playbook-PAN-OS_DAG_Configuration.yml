@@ -169,17 +169,17 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 3b6960c6-2d5f-4417-876e-86aced2808cc
+    taskid: 4b656ae4-3cbb-4da3-8964-3d773b436d2d
     type: regular
     task:
-      id: 3b6960c6-2d5f-4417-876e-86aced2808cc
+      id: 4b656ae4-3cbb-4da3-8964-3d773b436d2d
       version: -1
-      name: Register IP addresses to a tag
+      name: Register IP address to a tag
       description: Registers IP addresses to a tag.
-      script: Panorama|||panorama-register-ip-tag
+      script: '|||panorama-register-ip-tag'
       type: regular
       iscommand: true
-      brand: Panorama
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
@@ -225,17 +225,17 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: bd80e411-5bc3-48b1-850b-362bc9d508a1
+    taskid: 27618a8f-d6e1-4ba8-821c-37dfa0e19acf
     type: regular
     task:
-      id: bd80e411-5bc3-48b1-850b-362bc9d508a1
+      id: 27618a8f-d6e1-4ba8-821c-37dfa0e19acf
       version: -1
       name: Create Address Group
       description: Creates an address group. Can be "static" or "dynamic".
-      script: Panorama|||panorama-create-address-group
+      script: '|||panorama-create-address-group'
       type: regular
       iscommand: true
-      brand: Panorama
+      brand: ""
     nexttasks:
       '#none#':
       - "7"
@@ -261,24 +261,25 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: bcc6e979-2515-4aa2-8a8d-5c95f4b26b42
+    taskid: 43bfffc7-9406-492c-8f3a-b6c8a23f764e
     type: regular
     task:
-      id: bcc6e979-2515-4aa2-8a8d-5c95f4b26b42
+      id: 43bfffc7-9406-492c-8f3a-b6c8a23f764e
       version: -1
       name: Create block rule
       description: Creates a custom block policy rule.
-      script: Panorama|||panorama-custom-block-rule
+      script: '|||panorama-custom-block-rule'
       type: regular
       iscommand: true
-      brand: Panorama
+      brand: ""
     nexttasks:
       '#none#':
       - "17"
     scriptarguments:
       direction:
         simple: both
-      log_forwarding: {}
+      log_forwarding:
+        simple: ${inputs.log-forwarding-object-name}
       object_type:
         simple: address-group
       object_value:
@@ -431,4 +432,8 @@ inputs:
     simple: "Yes"
   required: false
   description: Whether the rule will be committed automatically.
+- key: log-forwarding-object-name
+  value: {}
+  required: false
+  description: The server address to which to forward logs.
 outputs: []
