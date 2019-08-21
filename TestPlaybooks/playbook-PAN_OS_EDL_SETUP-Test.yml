@@ -36,10 +36,10 @@ tasks:
       version: -1
       name: find external file
       description: Gets metadata for an external file.
-      script: palo_alto_networks_pan_os_edl_management2|||pan-os-edl-get-external-file-metadata
+      script: '|||pan-os-edl-get-external-file-metadata'
       type: regular
       iscommand: true
-      brand: palo_alto_networks_pan_os_edl_management2
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
@@ -143,10 +143,10 @@ tasks:
       name: Dump internal list content to context
       description: Dumps (copies) instance context to either the incident context
         or a file.
-      script: palo_alto_networks_pan_os_edl_management2|||pan-os-edl-dump-internal-list
+      script: '|||pan-os-edl-dump-internal-list'
       type: regular
       iscommand: true
-      brand: palo_alto_networks_pan_os_edl_management2
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
@@ -292,10 +292,10 @@ tasks:
       name: Dump internal list content to context
       description: Dumps (copies) instance context to either the incident context
         or a file.
-      script: palo_alto_networks_pan_os_edl_management2|||pan-os-edl-dump-internal-list
+      script: '||pan-os-edl-dump-internal-list'
       type: regular
       iscommand: true
-      brand: palo_alto_networks_pan_os_edl_management2
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
