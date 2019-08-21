@@ -665,7 +665,7 @@ def list_entities_command():
     elif isinstance(response_content, Dict):
         entities: List = response_content.get('entities', [])
         if not entities:
-            return_outputs('No alerts found.', outputs={})
+            return_outputs('No entities found.', outputs={})
         else:
             contents: List = [get_entity_contents(entity) for entity in entities]
             human_readable: List = [get_entity_human_readable_outputs(content) for content in contents]
