@@ -3,7 +3,8 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
+import json
 import requests
 import urllib3
 
@@ -23,7 +24,7 @@ PROXIES: dict or None = None
 
 
 def http_request(method: str, url_suffix: str, params: dict = None, data: dict = None, proxies: list = None,
-                 headers: dict = None):
+                 headers: dict = None, file_obj: Tuple = None):
     """Basic HTTP Request wrapper
 
     Args:
@@ -33,12 +34,13 @@ def http_request(method: str, url_suffix: str, params: dict = None, data: dict =
         data: body of request
         proxies: list of proxies to use
         headers: dict of headers
+        file_obj: Tuple of (`file name`. file_obj)
 
     Returns:
         Response.json
     """
     # A wrapper for requests lib to send our requests and handle requests and responses better
-    err_msg = 'Error in API call to CaseManagement Integration [{}] - {}'
+    err_msg = 'Error in API call to DataEnrichmentThreatIntelligence Integration [{}] - {}'
     if proxies is None:
         proxies = PROXIES
     if headers is None:
@@ -51,7 +53,8 @@ def http_request(method: str, url_suffix: str, params: dict = None, data: dict =
         params=params,
         data=data,
         headers=headers,
-        proxies=proxies
+        proxies=proxies,
+        file=file_obj
     )
     # Handle error responses gracefully
     if res.status_code not in {200}:
@@ -69,82 +72,90 @@ def test_module():
     """
     Performs basic get request to get item samples
     """
-    http_request('GET', 'tickets/all')
+    http_request('GET', 'items/samples')
 
 
-def get_ticket_command():
+def upload_file_request(file_name: str, file_path: str, is_public: bool) -> Dict:
+    """Uploads file
+
+    Args:
+        file_path: path to file
+        file_name: name of file
+        is_public: is public flag
+
+    Returns:
+        Dict: response data
+    """
+    # The service endpoint to request from
+    suffix: str = 'upload'
+    # Dictionary of params for the request
+    params = {
+        'publish': is_public
+    }
+    # Send a request using our http_request wrapper
+    response = http_request('POST', suffix, params, file_obj=(file_name, file_path))
+    # Return results
+    return response.get('results')
+
+
+def upload_file_command():
     """
     Gets details about a raw_response using IDs or some other filters
     """
     # Initialize main vars
     context: dict = dict()
     # Get arguments from user
-    ticket_id: str = demisto.args().get('ticket_id')
+    entry_id: str = demisto.args().get('entry_id')
+    is_public: bool = demisto.args().get('is_public') == 'true'
+    # Get file from entry
+    file_obj = demisto.getFilePath(entry_id)
+    file_path = file_obj['path']
+    file_name = file_obj['name']
     # Make request and get raw response
-    ticket: dict = get_ticket_request(ticket_id)
+    raw_response: Dict = upload_file_request(file_name, file_path, is_public)
     # Parse response into context & content entries
-    if ticket:
-        title = 'CaseManagement - Getting Ticket Details'
+    if raw_response:
+        title = f'DataEnrichmentThreatIntelligence - Uploading file {file_name}'
 
-        context_entry = {
-            'ID': ticket.get('id'),
-            'Description': ticket.get('description'),
-            'Title': ticket.get('title'),
-            'CreatedDate': ticket.get('createdDate')
-        }
+        context_entries = [
+            {
+                'ID': item.get('id'),
+                'Description': item.get('description'),
+                'Name': item.get('name'),
+                'CreatedDate': item.get('createdDate')
+            } for item in raw_response
+        ]
 
-        context['CaseManagement.Ticket(val.ID && val.ID === obj.ID)'] = context_entry
+        context['DataEnrichmentThreatIntelligence.Event(val.ID && val.ID === obj.ID)'] = context_entries
         # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry, removeNull=True)
+        human_readable = tableToMarkdown(title, context_entries, removeNull=True)
         # Return data to Demisto
-        return_outputs(human_readable, context, ticket)
+        return_outputs(human_readable, context, raw_response)
     else:
-        return_error(f'CaseManagement: Could not find get ticket ID: {ticket_id}')
+        err_msg = f'CaseManagement: Could not upload file with entry ID: {entry_id}'
+        return_error(err_msg)
 
 
-def get_ticket_request(ticket_id: str) -> Dict:
-    """
-
-    Args:
-        ticket_id: ID of ticket to get
-
-    Returns:
-        Dict: response data
-    """
-    # The service endpoint to request from
-    suffix: str = 'ticket'
-    # Dictionary of params for the request
-    params = {
-        'ticket_id': ticket_id
-    }
-    # Send a request using our http_request wrapper
-    response = http_request('GET', suffix, params)
-    # Check if response contains any data to parse
-    if 'results' in response:
-        return response.get('results')
-    # If neither was found, return back empty results
-    return {}
+def list_events_request(limit: int) -> Dict:
+    suffix = 'event'
 
 
-def list_tickets_command():
+def list_events_command():
+    limit: int = int(demisto.args().get('limit', 50))
+    raw_response = list_events_request(limit)
+
+
+def create_event_command():
     pass
 
 
-def create_ticket_command():
-    pass
-
-
-def close_ticket_command():
+def close_event_command():
     pass
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
-
-
-def assign_ticket_command():
-    pass
 
 
 def main():
@@ -172,20 +183,17 @@ def main():
             # This is the call made when pressing the integration test button.
             test_module()
             demisto.results('ok')
-        elif command == 'case-management-get-ticket':
-            # An CaseManagement command, fully structured command
-            get_ticket_command()
-        elif command == 'case-management-list-tickets':
-            list_tickets_command()
-        elif command == 'case-management-create-ticket':
-            create_ticket_command()
-        elif command == 'case-management-close-ticket':
-            close_ticket_command()
-        elif command == 'case-management-assign-ticket':
-            assign_ticket_command()
+        elif command == 'data-enrichment-threat-intelligence-upload-file':
+            upload_file_command()
+        elif command == 'data-enrichment-threat-intelligence-list-events':
+            list_events_command()
+        elif command == 'data-enrichment-threat-intelligence-create-event':
+            create_event_command()
+        elif command == 'data-enrichment-threat-intelligence-close-event':
+            close_event_command()
     # Log exceptions
     except Exception as e:
-        err_msg = f'Error in CaseManagement Integration [{e}]'
+        err_msg = f'Error in DataEnrichmentThreatIntelligence Integration [{e}]'
         return_error(err_msg, error=str(e))
 
 

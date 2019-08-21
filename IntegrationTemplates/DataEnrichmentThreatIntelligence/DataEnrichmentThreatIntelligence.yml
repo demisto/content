@@ -1,0 +1,75 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: DataEnrichmentThreatIntelligence
+  version: -1
+configuration:
+- defaultvalue: https://example.com
+  display: Server URL (e.g. https://example.com)
+  name: url
+  required: true
+  type: 0
+- display: API Token
+  name: token
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  display: Trust any certificate (insecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+description: Integration Template
+display: DataEnrichmentThreatIntelligence
+name: DataEnrichmentThreatIntelligence
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: 'This is a list argument, please provide comma separated list (example:
+        "1,2,3"). This item is mandatory so it must be provided in order to use the
+        command.'
+      isArray: true
+      name: item_ids
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Get only active items, acts as boolean
+      isArray: false
+      name: is_active
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: limit number of returned results, to avoid flooding context
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get items from service.
+    execution: false
+    name: example-get-items
+    outputs:
+    - contextPath: Example.Item.ID
+      description: Item ID
+      type: number
+    - contextPath: Example.Item.Name
+      description: Item name
+      type: string
+    - contextPath: Example.Item.CreatedDate
+      description: Item creation date
+      type: date
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python

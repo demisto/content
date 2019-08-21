@@ -3,10 +3,6 @@ commonfields:
   id: AnalyticsAndSIEM
   version: -1
 configuration:
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 - defaultvalue: https://example.com
   display: Server URL (e.g. https://example.com)
   name: url

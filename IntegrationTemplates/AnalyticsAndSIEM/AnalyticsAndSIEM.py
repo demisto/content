@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from typing import Any, Dict
+from typing import Any, Dict, List
 import json
 import requests
 import urllib3
@@ -118,7 +118,7 @@ def get_event_command():
     return_outputs(human_readable, context, raw_response)
 
 
-def get_events_request(item_ids: Any[list, str], is_active: Any[bool, None], timestamp: str = None) -> Dict:
+def get_events_request(item_ids: Any[list, str], is_active: Any[bool, None], timestamp: str = None) -> List:
     """
 
     Args:
@@ -143,7 +143,7 @@ def get_events_request(item_ids: Any[list, str], is_active: Any[bool, None], tim
     if 'data' in response:
         return response.get('data')
     # If neither was found, return back empty results
-    return {}
+    return list()
 
 
 def fetch_incidents():
