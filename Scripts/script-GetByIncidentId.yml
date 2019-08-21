@@ -1,6 +1,6 @@
 commonfields:
   id: a85a213b-2c41-40d7-8d31-ccef5008e980
-  version: 16
+  version: -1
 name: GetByIncidentId
 script: |-
   incident_id = demisto.args().get('id', demisto.incidents()[0]['id'])
