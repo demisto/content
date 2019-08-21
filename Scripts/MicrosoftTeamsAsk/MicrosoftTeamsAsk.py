@@ -5,6 +5,16 @@ from CommonServerUserPython import *
 
 def main():
     script_arguments: dict = demisto.args()
+
+    team_member: str = script_arguments.get('team_member', '')
+    channel: str = script_arguments.get('channel', '')
+
+    if not (team_member or channel):
+        raise ValueError('Either team member or channel must be provided.')
+
+    if team_member and channel:
+        raise ValueError('Either team member or channel should be provided, not both.')
+
     persistent: bool = script_arguments.get('persistent', '') == 'true'
     response: list = demisto.executeCommand('addEntitlement', {'persistent': persistent})
     if isError(response[0]):
@@ -31,10 +41,14 @@ def main():
     }
 
     command_arguments: dict = {
-        'team_member': script_arguments.get('team_member'),
         'message': json.dumps(message),
         'using-brand': 'Microsoft Teams'
     }
+
+    if channel:
+        command_arguments['channel'] = channel
+    elif team_member:
+        command_arguments['team_member'] = team_member
 
     demisto.results(demisto.executeCommand('send-notification', command_arguments))
 

@@ -40,13 +40,19 @@ args:
   description: Team member to ask
   isArray: false
   name: team_member
-  required: true
+  required: false
   secret: false
 - default: false
   description: Playbook Task ID close with the reply. If none provide, no playbook
     task will be closed.
   isArray: false
   name: task_id
+  required: false
+  secret: false
+- default: false
+  description: Channel to send question in
+  isArray: false
+  name: channel
   required: false
   secret: false
 comment: Ask a user a question on Microsoft Teams and expect a response. The response
