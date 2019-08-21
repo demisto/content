@@ -2,32 +2,32 @@ type: map
 mapping:
   commonfields:
     type: map
-    required: yes
+    required: true
     mapping:
       id:
         type: str
-        required: yes
+        required: true
       version:
         type: int
-        required: yes
+        required: true
   name:
     type: str
-    required: yes
+    required: true
   script:
     type: str
-    required: yes
+    required: true
   type:
     type: str
-    required: yes
+    required: true
     enum: ['javascript', 'python']
   tags:
     type: seq
-    required: yes
+    required: true
     sequence:
       - type: str
   comment:
     type: str
-    required: yes
+    required: true
   enabled:
     type: bool
   system:
@@ -83,10 +83,10 @@ schema;argument_schema:
   mapping:
     name:
       type: str
-      required: yes
+      required: true
     description:
       type: str
-      required: yes
+      required: true
     defaultValue:
       type: str
     required:
@@ -117,7 +117,7 @@ schema;output_schema:
       type: scalar
     description:
       type: str
-      required: yes
+      required: true
     type:
       type: str
 
@@ -127,9 +127,9 @@ schema;important_schema:
   mapping:
     contextPath:
       type: str
-      required: yes
+      required: true
     description:
       type: str
-      required: yes
+      required: true
     related:
       type: str

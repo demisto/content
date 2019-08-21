@@ -80,3 +80,26 @@ def test_extract_command():
     assert len(expected) == len(args)
     for k, v in expected.items():
         assert args[k] == v
+
+
+def test_add_lines():
+    from DocumentationAutomation import add_lines
+
+    outputs = [
+        add_lines('this is some free text.'),
+        add_lines('1.this is numbered text.'),
+        add_lines('this is multi line\nwithout numbers'),
+        add_lines('1.this is multi line\n2.with numbers'),
+        add_lines('12.this is multi line\n1234.with large numbers'),
+    ]
+
+    expected_values = [
+        ['this is some free text.'],
+        ['1.this is numbered text.'],
+        ['this is multi line\nwithout numbers'],
+        ['1.this is multi line', '2.with numbers'],
+        ['12.this is multi line', '1234.with large numbers']
+    ]
+
+    for expected, out in zip(expected_values, outputs):
+        assert out == expected
