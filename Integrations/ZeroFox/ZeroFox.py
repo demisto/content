@@ -691,20 +691,22 @@ def fetch_incidents():
     limit: int = int(demisto.params().get('fetch_limit', ''))
     response_content = list_alerts({'sort_direction': 'asc', 'limit': limit, 'min_timestamp': last_update_time})
     alerts: List = response_content.get('alerts', [])
-    for alert in alerts:
-        incident = alert_to_incident(alert)
-        incidents.append(incident)
-    # max_update_time is the timestamp of the last alert in alerts (alerts is a sorted list)
-    last_alert_timestamp: str = str(alerts[-1].get('timestamp', ''))
-    # ZeroFox is using full timestamp ISO 8061 format which includes the GMT field i.e (+00:00/-00:00)
-    # The option to refine the search of alerts in the API is by the ISO 8061 format without the GMT field.
-    if '+' in last_alert_timestamp:
-        max_update_time = last_alert_timestamp.split('+')[0]
-    else:
-        max_update_time = last_alert_timestamp.split('-')[0]
-    # add 1 second to last alert timestamp, in order to prevent duplicated alerts
-    max_update_time = (datetime.strptime(max_update_time, date_format) + timedelta(seconds=1)).isoformat()
-    demisto.setLastRun({'last_fetched_event_timestamp': max_update_time})
+    if alerts:
+        for alert in alerts:
+            incident = alert_to_incident(alert)
+            incidents.append(incident)
+        # max_update_time is the timestamp of the last alert in alerts (alerts is a sorted list)
+        last_alert_timestamp: str = str(alerts[-1].get('timestamp', ''))
+        # ZeroFox is using full timestamp ISO 8061 format which includes the GMT field i.e (+00:00/-00:00)
+        # The option to refine the search of alerts in the API is by the ISO 8061 format without the GMT field.
+        if '+' in last_alert_timestamp:
+            max_update_time = last_alert_timestamp.split('+')[0]
+        else:
+            max_update_time = last_alert_timestamp.split('-')[0]
+        # add 1 second to last alert timestamp, in order to prevent duplicated alerts
+        max_update_time = (datetime.strptime(max_update_time, date_format) + timedelta(seconds=1)).isoformat()
+        max_update_time = last_update_time
+        demisto.setLastRun({'last_fetched_event_timestamp': max_update_time})
     demisto.incidents(incidents)
 
 
