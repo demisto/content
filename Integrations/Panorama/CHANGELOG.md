@@ -4,8 +4,9 @@
     - ***panorama-check-logs-status***
     - ***panorama-get-logs***
   - Added the **Panorama Query Logs** playbook.
-  - Improved handling of errors in cases of trying to refresh an EDL object on a Panorama instance.
-  - Handle error trying to refresh an EDL object on a Panorama instance error gracefully
+  - Added *log-forwarding* as an option for the *element_to_change* argument in the ***panorama-edit-rule*** command.
+  - Improved error handling in cases of trying to refresh an EDL object on a Panorama instance.
+  
 
 ## [19.8.0] - 2019-08-06
   - Improved error handling for URL filtering licensing.
