@@ -112,6 +112,8 @@ class FilesValidator(object):
                 deleted_files.add(file_path)
             elif file_status.lower().startswith('r') and checked_type(file_path):
                 modified_files_list.add((file_data[1], file_data[2]))
+            elif checked_type(file_path, [SCHEMA_REGEX]):
+                modified_files_list.add(file_path)
             elif file_status.lower() not in KNOWN_FILE_STATUSES:
                 print_error(file_path + " file status is an unknown known one, "
                                         "please check. File status was: " + file_status)
@@ -175,6 +177,31 @@ class FilesValidator(object):
         Args:
             modified_files (set): A set of the modified files in the current branch.
         """
+        # In case schema was changed - check all relevant files to schema
+        modified_files_copy = list(modified_files)
+        for file_path in modified_files_copy:
+            if re.match(SCHEMA_REGEX, file_path, re.IGNORECASE):
+                # Remove schema file from modified files
+                modified_files.remove(file_path)
+                schema = os.path.splitext(os.path.basename(file_path))[0]
+                regex_tupple = SCHEMA_TO_REGEXES_TUPLE_DICT.get(schema)
+                for regex in regex_tupple:
+                    splitted_regex = regex.split(".*")
+                    directory = splitted_regex[0]
+                    for root, dirs, files in os.walk(directory):
+                        if root not in DIR_LIST:  # Skipping in case we entered a package
+                            continue
+                        for file_name in files:
+                            file_path_ = os.path.join(root, file_name)
+                            # skipping hidden files
+                            if file_name.startswith('.') or file_name.endswith('.md'):
+                                continue
+                            structure_validator = StructureValidator(file_path_,
+                                                                     is_added_file=False,
+                                                                     is_renamed=False)
+                            print("Validating {}".format(file_path_))
+                            if not structure_validator.is_valid_scheme():
+                                self._is_valid = False
         for file_path in modified_files:
             old_file_path = None
             if isinstance(file_path, tuple):
