@@ -56,7 +56,8 @@ SECURITY_RULE_ARGS = {
     'disable_server_response_inspection': 'DisableServerResponseInspection',
     'description': 'Description',
     'target': 'Target',
-    'log_forwarding': 'LogForwarding'
+    'log_forwarding': 'LogForwarding',
+    'log-setting': 'LogForwarding'
 }
 
 PAN_OS_ERROR_DICT = {
@@ -2279,6 +2280,8 @@ def panorama_edit_rule_command():
     """
     rulename = demisto.args()['rulename']
     element_to_change = demisto.args()['element_to_change']
+    if element_to_change == 'log-forwarding':
+        element_to_change = 'log-setting'
     element_value = demisto.args()['element_value']
     target = demisto.args().get('target')
 
@@ -2291,9 +2294,9 @@ def panorama_edit_rule_command():
         'key': API_KEY
     }
 
-    if element_to_change in ['action', 'description']:
+    if element_to_change in ['action', 'description', 'log-setting']:
         params['element'] = add_argument_open(element_value, element_to_change, False)
-    elif element_to_change in ['source', 'destination', 'application', 'categry', 'source-user', 'service']:
+    elif element_to_change in ['source', 'destination', 'application', 'category', 'source-user', 'service']:
         params['element'] = add_argument_open(element_value, element_to_change, True)
     else:  # element_to_change in ['negate_source', 'negate_destination', 'disable']
         params['element'] = add_argument_yes_no(element_value, element_to_change)
@@ -2303,14 +2306,14 @@ def panorama_edit_rule_command():
 
     if DEVICE_GROUP:
         if 'pre_post' not in demisto.args():
-            return_error('please provide the pre_post argument when moving a rule in Panorama instance.')
+            return_error('please provide the pre_post argument when editing a rule in Panorama instance.')
         else:
             params['xpath'] = XPATH_SECURITY_RULES + demisto.args()[
                 'pre_post'] + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
     else:
         params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
 
-    params['xpath'] = params['xpath'] + '/' + element_to_change
+    params['xpath'] += '/' + element_to_change
 
     result = http_request(
         URL,
