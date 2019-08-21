@@ -7,20 +7,30 @@ import warnings
 import traceback
 
 import getpass
-getpass_getuser = getpass.getuser
 
 
 # work arround for bug in exchangelib: https://github.com/ecederstrand/exchangelib/issues/448
-def getuser_no_fail():
-    try:
-        user = getpass_getuser()
-    except KeyError:
-        # getuser() fails on some systems. Provide a sane default.
-        user = 'exchangelib'
-    return user
+class FixGetPass(object):
+    def __init__(self):
+        self.getpass_getuser_org = getpass.getuser
+
+        def getuser_no_fail():
+            # getuser() fails on some systems. Provide a sane default.
+            user = 'ews'
+            try:
+                if self.getpass_getuser_org:
+                    user = self.getpass_getuser_org()
+            except KeyError:
+                pass
+            return user
+        getpass.getuser = getuser_no_fail
+
+    def __del__(self):
+        if self.getpass_getuser_org and getpass:
+            getpass.getuser = self.getpass_getuser_org
 
 
-getpass.getuser = getuser_no_fail
+_fix_getpass = FixGetPass()
 
 warnings.filterwarnings("ignore")
 
