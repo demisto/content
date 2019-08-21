@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "AlienVault_OTX_v2",
+            "playbookID": "Alienvault_OTX_v2-test"
+        },
+        {
             "integrations": "SlackV2",
             "playbookID": "Slack Test Playbook",
             "fromversion": "5.0.0"
