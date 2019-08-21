@@ -368,7 +368,5 @@ outputs:
 - contextPath: File.Name
   description: File name
   type: string
-releaseNotes: "-"
 tests:
-- Test Playbook TrendMicroDDA
-- detonate_url_-_generic_test
+- No Test - run "Test Playbook TrendMicroDDA" manually

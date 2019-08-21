@@ -429,10 +429,13 @@ def test_get_error_need_raise_error_on_non_error_input():
             "Contents": "this is not an error"
         }
     ]
-    with pytest.raises(ValueError) as exception:
+    try:
         get_error(execute_command_results)
+    except ValueError as exception:
+        assert "execute_command_result has no error entry. before using get_error use is_error" in str(exception)
+        return
 
-    assert "execute_command_result has no error entry. before using get_error use is_error" in str(exception)
+    assert False
 
 
 @pytest.mark.parametrize('data,data_expected', [

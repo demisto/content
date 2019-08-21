@@ -6,10 +6,12 @@ import socket
 import sys
 from codecs import encode, decode
 
+ENTRY_TYPE = entryTypes['error'] if demisto.params().get('with_error', False) else entryTypes['warning']
+
 # flake8: noqa
 
 """
-    This integration is built using the joepie91 "Whois" module. For more information regarding this package please see 
+    This integration is built using the joepie91 "Whois" module. For more information regarding this package please see
     the following - https://github.com/joepie91/python-whois
 """
 
@@ -7203,28 +7205,70 @@ def get_root_server(domain):
 
     if ext in tlds.keys():
         entry = tlds[ext]
-        return entry["host"]
+        try:
+            host = entry["host"]
+        except KeyError:
+            context = ({
+                outputPaths['domain']: {
+                    'Name': domain,
+                    'Whois': {
+                        'QueryStatus': 'Failed'
+                    }
+                },
+            })
+            demisto.results({
+                'ContentsFormat': 'text',
+                'Type': ENTRY_TYPE,
+                'Contents': 'The domain - {} - is not supported by the Whois service'.format(domain),
+                'EntryContext': context
+            })
+            sys.exit(-1)
+
+        return host
+
     else:
         raise WhoisException("No root WHOIS server found for domain.")
 
 
 def whois_request(domain, server, port=43):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((server, port))
-    sock.send(("%s\r\n" % domain).encode("utf-8"))
-    buff = b""
-    while True:
-        data = sock.recv(1024)
-        if len(data) == 0:
-            break
-        buff += data
-    sock.close()
     try:
-        d = buff.decode("utf-8")
-    except UnicodeDecodeError:
-        d = buff.decode("latin-1")
+        sock.connect((server, port))
+    except socket.error as msg:
+        context = ({
+            outputPaths['domain']: {
+                'Name': domain,
+                'Whois': {
+                    'QueryStatus': 'Failed'
+                }
+            },
+        })
 
-    return d
+        demisto.results(
+            {
+                'ContentsFormat': 'text',
+                'Type': ENTRY_TYPE,
+                'Contents': 'Whois returned - Couldnt connect with the socket-server: {}'.format(msg),
+                'EntryContext': context
+            }
+        )
+        sys.exit(-1)
+
+    else:
+        sock.send(("%s\r\n" % domain).encode("utf-8"))
+        buff = b""
+        while True:
+            data = sock.recv(1024)
+            if len(data) == 0:
+                break
+            buff += data
+        sock.close()
+        try:
+            d = buff.decode("utf-8")
+        except UnicodeDecodeError:
+            d = buff.decode("latin-1")
+
+        return d
 
 
 airports = {} # type: dict
@@ -8198,8 +8242,11 @@ def get_whois(domain, normalized=None):
 
 
 def whois_command():
+
     domain = demisto.args().get('query')
+
     whois_result = get_whois(domain)
+
     md = {'Name': domain}
     ec = {'Name': domain}
     if 'status' in whois_result:
@@ -8210,6 +8257,7 @@ def whois_command():
     if 'nameservers' in whois_result:
         ec['NameServers'] = whois_result.get('nameservers')
         md['NameServers'] = whois_result.get('nameservers')
+
     try:
         if 'creation_date' in whois_result:
             ec['CreationDate'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
@@ -8246,11 +8294,14 @@ def whois_command():
         ec['Emails'] = whois_result.get('emails')
         md['Emails'] = whois_result.get('emails')
 
+    ec['QueryStatus'] = 'Success'
+    md['QueryStatus'] = 'Success'
+
     context = ({
-        'Domain': {
-            'Name': domain
+        outputPaths['domain']: {
+            'Name': domain,
+            'Whois': ec
         },
-        'Domain.Whois(val.Name && val.Name == obj.Name)': ec
     })
 
     demisto.results({
@@ -8274,10 +8325,11 @@ def test_command():
 ''' EXECUTION CODE '''
 LOG('command is {}'.format(str(demisto.command())))
 try:
+    handle_proxy()
     if demisto.command() == 'test-module':
         test_command()
     elif demisto.command() == 'whois':
         whois_command()
 except Exception as e:
     LOG(e)
-    return_error(e.message)
+    return_error(str(e))

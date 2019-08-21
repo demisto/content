@@ -448,7 +448,5 @@ outputs:
 - contextPath: IP.Address
   description: IPs relevant to the submission
   type: string
-releaseNotes: "-"
 tests:
-- Test Playbook TrendMicroDDA
-- detonate_file_-_generic_test
+- No Test - run "Test Playbook TrendMicroDDA" manually

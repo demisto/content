@@ -121,7 +121,7 @@ def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playb
         succeed_playbooks.append(playbook_id)
 
     else:
-        print('Failed: {} failed'.format(test_message))
+        print_error('Failed: {} failed'.format(test_message))
         playbook_id_with_mock = playbook_id
         if not is_mock_run:
             playbook_id_with_mock += " (Mock Disabled)"
@@ -161,14 +161,14 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
         if status == PB_Status.COMPLETED:
             print_color('PASS: {} succeed'.format(test_message), LOG_COLORS.GREEN)
             succeed_playbooks.append(playbook_id)
-            print('------ Test {} end ------'.format(test_message))
+            print('------ Test {} end ------\n'.format(test_message))
 
             return
 
         elif status == PB_Status.NOT_SUPPORTED_VERSION:
             print('PASS: {} skipped - not supported version'.format(test_message))
             succeed_playbooks.append(playbook_id)
-            print('------ Test {} end ------'.format(test_message))
+            print('------ Test {} end ------\n'.format(test_message))
 
             return
 
@@ -184,7 +184,7 @@ def mock_run(c, proxy, failed_playbooks, integrations, playbook_id, succeed_play
 
     if rerecord and succeed:
         proxy.rerecorded_tests.append(playbook_id)
-    print('------ Test {} end ------'.format(test_message))
+    print('------ Test {} end ------\n'.format(test_message))
 
 
 def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id, succeed_playbooks,
@@ -195,7 +195,7 @@ def run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, 
         print(start_message + ' (Mock: Disabled)')
         run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options,
                        slack, circle_ci, build_number, server_url, build_name)
-        print('------ Test %s end ------' % (test_message,))
+        print('------ Test %s end ------\n' % (test_message,))
 
         return
 
@@ -404,7 +404,7 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
     if skip_nightly_test:
         print('\n------ Test {} start ------'.format(test_message))
         print('Skip test')
-        print('------ Test {} end ------'.format(test_message))
+        print('------ Test {} end ------\n'.format(test_message))
 
         return
 
@@ -431,7 +431,7 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
         print_warning('Test {} ignored due to version mismatch (test versions: {}-{})'.format(test_message,
                                                                                               test_from_version,
                                                                                               test_to_version))
-        print('------ Test {} end ------'.format(test_message))
+        print('------ Test {} end ------\n'.format(test_message))
         return
 
     are_params_set = set_integration_params(demisto_api_key, integrations,

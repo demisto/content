@@ -1036,6 +1036,5 @@ script:
       defaultValue: "1"
     description: Retrieves a brief XML report of a given submission
   runonce: false
-releaseNotes: "member to also add tasks to the generic detonation playbooks."
 tests:
-- No Test - beta integration
+- No Test - run "Test Playbook TrendMicroDDA" manually

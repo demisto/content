@@ -349,6 +349,5 @@ script:
       description: Expiration of the hash
     description: Block hash
   runonce: false
-releaseNotes: DO NOT RELEASE
 tests:
   - No test - beta_integration

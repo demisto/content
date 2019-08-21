@@ -88,7 +88,9 @@ script:
                 Headers: {'Content-Type': ['application/json']},
                 Method: method,
                 Body: ''
-            }
+            },
+            params.insecure,
+            params.proxy
         );
         if (result.StatusCode < 200 && result.StatusCode > 299) {
             throw 'Failed to perform request ' + url + encodeToURLQuery(parameters) + ', request status code: ' + result.StatusCode;

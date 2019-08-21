@@ -150,10 +150,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: be6f6daf-0497-423e-8a48-d669ccad567f
+    taskid: d6f90ffe-1111-447a-8755-65189ec1f6d5
     type: condition
     task:
-      id: be6f6daf-0497-423e-8a48-d669ccad567f
+      id: d6f90ffe-1111-447a-8755-65189ec1f6d5
       version: -1
       name: Is there an HTML label in the email?
       description: ""
@@ -176,6 +176,11 @@ tasks:
                 root: Email
                 accessor: HTML
             iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Email.HTML
+            iscontext: true
     view: |-
       {
         "position": {
@@ -188,10 +193,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: c18ef7a3-f278-4255-86ac-5b127f991302
+    taskid: 3a4baebb-0463-442c-8971-3f681d240366
     type: regular
     task:
-      id: c18ef7a3-f278-4255-86ac-5b127f991302
+      id: 3a4baebb-0463-442c-8971-3f681d240366
       version: -1
       name: Render HTML to an image
       description: ""

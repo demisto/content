@@ -878,6 +878,5 @@ script:
     description: Remove a user from the watchlist. You must provide either id or title.
     execution: true
   runonce: false
-releaseNotes: "New integration"
 tests:
 - No test

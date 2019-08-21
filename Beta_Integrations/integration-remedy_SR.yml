@@ -580,6 +580,5 @@ script:
     arguments: []
     description: Update a ticket
   runonce: false
-releaseNotes: "New Remedy SR integration. supports remedy-create-ticket, remedy-get-ticket commands"
 tests:
   - No Test

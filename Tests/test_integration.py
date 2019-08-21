@@ -249,9 +249,8 @@ def configure_proxy_unsecure(integration_params):
         integration_params: dict of the integration parameters.
     """
     integration_params_copy = copy.deepcopy(integration_params)
-    if integration_params_copy:
-        for param in ('proxy', 'useProxy', 'insecure', 'unsecure'):
-            integration_params[param] = True
+    for param in ('proxy', 'useProxy', 'insecure', 'unsecure'):
+        integration_params[param] = True
 
     return integration_params_copy
 
@@ -292,6 +291,7 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
     if investigation_id is None or len(investigation_id) == 0:
         print_error('Failed to get investigation id of incident:' + incident)
         return False, -1
+    print('Investigation ID: {}'.format(investigation_id))
 
     timeout_amount = options['timeout'] if 'timeout' in options else DEFAULT_TIMEOUT
     timeout = time.time() + timeout_amount

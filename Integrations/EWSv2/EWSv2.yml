@@ -1,0 +1,1049 @@
+category: Messaging
+commonfields:
+  id: EWS v2
+  version: -1
+configuration:
+- display: Email address
+  name: credentials
+  required: true
+  type: 9
+- display: Email address to fetch incidents from
+  name: defaultTargetMailbox
+  required: true
+  type: 0
+- defaultvalue: Inbox
+  display: Folder name to fetch incidents from (Supports Exchange Folder ID and sub-folders
+    e.g. Inbox/Phishing)
+  name: folder
+  required: true
+  type: 0
+- defaultvalue: 'false'
+  display: Public Folder
+  name: isPublicFolder
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Has impersonation rights.
+  name: impersonation
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: |-
+    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+
+    ‎                                           Manual Mode
+
+    Exchange Server Hostname or IP address
+  name: ewsServer
+  required: false
+  type: 0
+- display: DOMAIN\USERNAME (e.g. DEMISTO.INT\admin)
+  name: domainAndUserman
+  required: false
+  type: 0
+- display: 'Exchange Server Version (On-Premise only. Supported versions: 2007,2010,2010_SP2,2013,2016)'
+  name: defaultServerVersion
+  required: false
+  type: 0
+- defaultvalue: 'true'
+  display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- display: |-
+    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+
+    ‎                                         Advanced Mode
+
+    Override Authentication Type (NTLM or Basic or Digest).
+  name: authType
+  required: false
+  type: 0
+- defaultvalue: '120'
+  display: HTTP requests to exchange server timeout
+  name: requestTimeout
+  required: false
+  type: 0
+description: Exchange Web Services and Office 365 (mail)
+display: EWS v2
+name: EWS v2
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The ID of the email message to get the attachments.
+      isArray: false
+      name: item-id
+      required: true
+      secret: false
+    - default: false
+      description: The mailbox where this attachment was found. Use the default mailbox
+        if empty, otherwise user might has to be with impersonation rights to this
+        mailbox.
+      isArray: false
+      name: target-mailbox
+      required: false
+      secret: false
+    - default: false
+      description: The attachments ids to get. If none - all attachments will be retrieve
+        from the message. Support multiple attachments with comma-separated value
+        or array.
+      isArray: true
+      name: attachment-ids
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the actual attachments from an item (email message). Usually
+      use only item-id argument to get all the attachment of a message.
+    execution: false
+    name: ews-get-attachment
+    outputs:
+    - contextPath: EWS.Items.FileAttachments.attachmentId
+      description: The attachment ID. Used for file attachments only.
+      type: string
+    - contextPath: EWS.Items.FileAttachments.attachmentName
+      description: The attachment name. Used for file attachments only.
+      type: string
+    - contextPath: EWS.Items.FileAttachments.attachmentSHA256
+      description: The attached file SHA256.
+      type: string
+    - contextPath: EWS.Items.FileAttachments.attachmentLastModifiedTime
+      description: The attachment last modified time. Used for file attachments only.
+      type: date
+    - contextPath: EWS.Items.ItemAttachments.datetimeCreated
+      description: The attached email created time.
+      type: date
+    - contextPath: EWS.Items.ItemAttachments.datetimeReceived
+      description: The attached email received time.
+      type: date
+    - contextPath: EWS.Items.ItemAttachments.datetimeSent
+      description: The attached email sent time.
+      type: date
+    - contextPath: EWS.Items.ItemAttachments.receivedBy
+      description: The attached email received by address.
+      type: string
+    - contextPath: EWS.Items.ItemAttachments.subject
+      description: The attached email subject.
+      type: string
+    - contextPath: EWS.Items.ItemAttachments.textBody
+      description: The attached email body (as text).
+      type: string
+    - contextPath: EWS.Items.ItemAttachments.headers
+      description: The attached email headers.
+      type: Unknown
+    - contextPath: EWS.Items.ItemAttachments.hasAttachments
+      description: Is attached email has attachments?
+      type: boolean
+    - contextPath: EWS.Items.ItemAttachments.itemId
+      description: The attached email item id.
+      type: string
+    - contextPath: EWS.Items.ItemAttachments.toRecipients
+      description: The attached email to recipients addresses (list)
+      type: Unknown
+    - contextPath: EWS.Items.ItemAttachments.body
+      description: The attached email body (as HTML).
+      type: string
+    - contextPath: EWS.Items.ItemAttachments.attachmentSHA256
+      description: The attached email SHA256 (as EML file).
+      type: string
+    - contextPath: EWS.Items.ItemAttachments.FileAttachments.attachmentSHA256
+      description: SHA256 of the attached files inside of the attached email.
+      type: string
+    - contextPath: EWS.Items.ItemAttachments.ItemAttachments.attachmentSHA256
+      description: SHA256 of the attached emails inside of the attached email.
+      type: string
+  - arguments:
+    - default: false
+      description: The ID of the email message to get the attachments.
+      isArray: false
+      name: item-id
+      required: true
+      secret: false
+    - default: false
+      description: The mailbox where this attachment was found. Use the default mailbox
+        if empty, otherwise user might has to be with impersonation rights to this
+        mailbox.
+      isArray: false
+      name: target-mailbox
+      required: false
+      secret: false
+    - default: false
+      description: The attachment id to delete. If none - all attachments will be
+        delete from the message. Support multiple attachments with comma-separated
+        value or array.
+      isArray: true
+      name: attachment-ids
+      required: false
+      secret: false
+    deprecated: false
+    description: Delete attachments for an item (email message).
+    execution: false
+    name: ews-delete-attachment
+    outputs:
+    - contextPath: EWS.Items.FileAttachments.attachmentId
+      description: The id of the deleted attachment in case of file attachment.
+      type: string
+    - contextPath: EWS.Items.ItemAttachments.attachmentId
+      description: The id of the deleted attachment in case of other attachment (like
+        "email").
+      type: string
+    - contextPath: EWS.Items.FileAttachments.action
+      description: 'The deletion action in case of file attachment, constant value:
+        ''deleted''.'
+      type: string
+    - contextPath: EWS.Items.ItemAttachments.action
+      description: 'The deletion action in case of other attachment (like "email"),
+        constant value: ''deleted''.'
+      type: string
+  - deprecated: false
+    description: Get searchable mailboxes. Notice that this command requires eDiscovery
+      permissions to the exchange - read EWSv2 documentation for more information.
+    execution: false
+    name: ews-get-searchable-mailboxes
+    outputs:
+    - contextPath: EWS.Mailboxes.mailbox
+      description: Searchable mailboxes addresses.
+      type: string
+    - contextPath: EWS.Mailboxes.mailboxId
+      description: Searchable mailboxes ids.
+      type: string
+    - contextPath: EWS.Mailboxes.displayName
+      description: Searchable mailboxes - display name of the email.
+      type: string
+    - contextPath: EWS.Mailboxes.isExternal
+      description: Searchable mailboxes - is mailbox external?
+      type: boolean
+    - contextPath: EWS.Mailboxes.externalEmailAddress
+      description: Searchable mailboxes - external email address.
+      type: string
+  - arguments:
+    - default: false
+      description: The filter query to search.
+      isArray: false
+      name: filter
+      required: true
+      secret: false
+    - default: false
+      description: The mailboxes ids to search for. If empty - search in all searchable
+        mailboxes.
+      isArray: true
+      name: mailbox-search-scope
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '250'
+      description: Maximum number of results.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Email addresses - support comma separated values or array.
+      isArray: true
+      name: email_addresses
+      required: false
+      secret: false
+    deprecated: false
+    description: Search over multiple mailboxes or all exchange mailboxes. Use one
+      of mailbox-search-scope or email-addresses to search in specific mailboxes.
+      Notice that this command requires eDiscovery permissions to the exchange - read
+      EWSv2 documentation for more information.
+    execution: false
+    name: ews-search-mailboxes
+    outputs:
+    - contextPath: EWS.Items.itemId
+      description: The item id.
+      type: string
+    - contextPath: EWS.Items.mailbox
+      description: The mailbox address where the item has been found.
+      type: string
+    - contextPath: EWS.Items.subject
+      description: Email subject.
+      type: string
+    - contextPath: EWS.Items.toRecipients
+      description: Email to recipients addresses (list).
+      type: Unknown
+    - contextPath: EWS.Items.sender
+      description: Sender email address
+      type: string
+    - contextPath: EWS.Items.hasAttachments
+      description: Does email has attachments?
+      type: boolean
+    - contextPath: EWS.Items.datetimeSent
+      description: Email sent time
+      type: date
+    - contextPath: EWS.Items.datetimeReceived
+      description: Email receive time
+      type: date
+  - arguments:
+    - default: false
+      description: The item id to move.
+      isArray: false
+      name: item-id
+      required: true
+      secret: false
+    - default: false
+      description: The target folder to move the item to. Complex path can be used,
+        e.g. Inbox\Phishing.
+      isArray: false
+      name: target-folder-path
+      required: true
+      secret: false
+    - default: false
+      description: The mailbox to apply the command on.
+      isArray: false
+      name: target-mailbox
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Is the target folder a Public Folder?
+      isArray: false
+      name: is-public
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Move an item to another folder in the mailbox.
+    execution: false
+    name: ews-move-item
+    outputs:
+    - contextPath: EWS.Items.newItemID
+      description: The new item id after move.
+      type: string
+    - contextPath: EWS.Items.messageID
+      description: The item message id.
+      type: string
+    - contextPath: EWS.Items.itemId
+      description: The original item id.
+      type: string
+    - contextPath: EWS.Items.action
+      description: The action, value will be 'moved'.
+      type: string
+  - arguments:
+    - default: false
+      description: The item ids to delete.
+      isArray: false
+      name: item-ids
+      required: true
+      secret: false
+    - default: false
+      defaultValue: soft
+      description: 'Deletion type, choose one of: trash, soft, hard.'
+      isArray: false
+      name: delete-type
+      required: true
+      secret: false
+    - default: false
+      description: The mailbox to apply the command on.
+      isArray: false
+      name: target-mailbox
+      required: false
+      secret: false
+    deprecated: false
+    description: Delete items from mailbox.
+    execution: false
+    name: ews-delete-items
+    outputs:
+    - contextPath: EWS.Items.itemId
+      description: The deleted item id.
+      type: string
+    - contextPath: EWS.Items.messageId
+      description: The deleted message id.
+      type: string
+    - contextPath: EWS.Items.action
+      description: 'The deletion action, one of the following: ''trash-deleted'',
+        ''soft-deleted'', ''hard-deleted''.'
+      type: string
+  - arguments:
+    - default: false
+      description: 'The search query string. Syntax here: https://msdn.microsoft.com/en-us/library/ee693615.aspx'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: The folder path to search in. If empty - search over all the folders
+        in the mailbox.
+      isArray: false
+      name: folder-path
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Maximum number of results.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The mailbox to apply the search on.
+      isArray: false
+      name: target-mailbox
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Is the folder a Public Folder?
+      isArray: false
+      name: is-public
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: The message id of email. Will be ignored if query argument is provided.
+      isArray: false
+      name: message-id
+      required: false
+      secret: false
+    deprecated: false
+    description: Search items in a specific mailbox. Notice that a proper permissions
+      needed for this operation to search in another target mailbox than the default.
+    execution: false
+    name: ews-search-mailbox
+    outputs:
+    - contextPath: EWS.Items.itemId
+      description: The email item id.
+      type: string
+    - contextPath: EWS.Items.hasAttachments
+      description: Does email has attachments.
+      type: boolean
+    - contextPath: EWS.Items.datetimeReceived
+      description: Email received time.
+      type: date
+    - contextPath: EWS.Items.datetimeSent
+      description: Email sent time.
+      type: date
+    - contextPath: EWS.Items.headers
+      description: Email headers (list).
+      type: Unknown
+    - contextPath: EWS.Items.sender
+      description: Email sender mail address.
+      type: string
+    - contextPath: EWS.Items.subject
+      description: Email subject
+      type: string
+    - contextPath: EWS.Items.textBody
+      description: Email body (as text)
+      type: string
+    - contextPath: EWS.Items.size
+      description: Email size.
+      type: number
+    - contextPath: EWS.Items.toRecipients
+      description: Email recipients addresses (list).
+      type: Unknown
+    - contextPath: EWS.Items.receivedBy
+      description: Email received by address.
+      type: Unknown
+    - contextPath: EWS.Items.messageId
+      description: Email message id.
+      type: string
+    - contextPath: EWS.Items.body
+      description: Email HTML body.
+      type: string
+    - contextPath: EWS.Items.FileAttachments.attachmentId
+      description: Attachment id for file attachment.
+      type: unknown
+    - contextPath: EWS.Items.ItemAttachments.attachmentId
+      description: Attachment id for item attachment.
+      type: unknown
+    - contextPath: EWS.Items.FileAttachments.attachmentName
+      description: Attachment name for file attachment.
+      type: unknown
+    - contextPath: EWS.Items.ItemAttachments.attachmentName
+      description: Attachment name for item attachment.
+      type: unknown
+  - arguments:
+    - default: false
+      description: The mailbox to get the contacts from.
+      isArray: false
+      name: target-mailbox
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Maximum number of results to fetch
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get contacts for mailbox.
+    execution: false
+    name: ews-get-contacts
+    outputs:
+    - contextPath: Account.Email.EwsContacts.displayName
+      description: The contact name.
+      type: Unknown
+    - contextPath: Account.Email.EwsContacts.lastModifiedTime
+      description: The contact last modified time.
+      type: Unknown
+    - contextPath: Account.Email.EwsContacts.emailAddresses
+      description: The contact phone numbers.
+      type: Unknown
+    - contextPath: Account.Email.EwsContacts.physicalAddresses
+      description: The contact physical addresses.
+      type: Unknown
+    - contextPath: Account.Email.EwsContacts.phoneNumbers.phoneNumber
+      description: The contact email addresses.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The mailbox to get out-of-office status.
+      isArray: false
+      name: target-mailbox
+      required: true
+      secret: false
+    deprecated: false
+    description: Get out-of-office status for a mailbox.
+    execution: false
+    name: ews-get-out-of-office
+    outputs:
+    - contextPath: Account.Email.OutOfOffice.state
+      description: 'Out-of-office state. Result can be: Enabled, Scheduled, Disabled.'
+      type: Unknown
+    - contextPath: Account.Email.OutOfOffice.externalAudience
+      description: 'Out-of-office external audience. Result can be: None, Known, All.'
+      type: Unknown
+    - contextPath: Account.Email.OutOfOffice.start
+      description: Out-of-office start date.
+      type: Unknown
+    - contextPath: Account.Email.OutOfOffice.end
+      description: Out-of-office end date.
+      type: Unknown
+    - contextPath: Account.Email.OutOfOffice.internalReply
+      description: Out-of-office internal replay.
+      type: Unknown
+    - contextPath: Account.Email.OutOfOffice.externalReply
+      description: Out-of-office external replay.
+      type: Unknown
+    - contextPath: Account.Email.OutOfOffice.mailbox
+      description: Out-of-office mailbox.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The messages ids. Comma-separate value. Usually use the output
+        of py-ews-delete-items.
+      isArray: false
+      name: message-ids
+      required: true
+      secret: false
+    - default: false
+      defaultValue: Inbox
+      description: The folder path to recover the messages to.
+      isArray: false
+      name: target-folder-path
+      required: true
+      secret: false
+    - default: false
+      description: The mailbox where the messages found. Use the default mailbox if
+        empty, otherwise user might has to be with impersonation rights to this mailbox.
+      isArray: false
+      name: target-mailbox
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Is the target folder a Public Folder?
+      isArray: false
+      name: is-public
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Recover messages that has beed soft-deleted.
+    execution: false
+    name: ews-recover-messages
+    outputs:
+    - contextPath: EWS.Items.itemId
+      description: The recovered item id.
+      type: Unknown
+    - contextPath: EWS.Items.messageId
+      description: The recovered message id.
+      type: Unknown
+    - contextPath: EWS.Items.action
+      description: The value will be 'recovered'.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The new folder name.
+      isArray: false
+      name: new-folder-name
+      required: true
+      secret: false
+    - default: false
+      defaultValue: Inbox
+      description: Path to locate the new folder. Exchange folder ID is also supported.
+      isArray: false
+      name: folder-path
+      required: true
+      secret: false
+    - default: false
+      description: The mailbox.
+      isArray: false
+      name: target-mailbox
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new folder in a mailbox.
+    execution: false
+    name: ews-create-folder
+  - arguments:
+    - default: false
+      description: The item id to mark as junk.
+      isArray: false
+      name: item-id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'yes'
+      description: Move the item from the original folder to junk folder.
+      isArray: false
+      name: move-items
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
+    - default: false
+      description: 'Use the default mailbox if empty, otherwise user might has to
+        be with impersonation rights to this mailbox. '
+      isArray: false
+      name: target-mailbox
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Mark an item as junk - usually use to block an email address, as
+      described here: https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx'
+    execution: false
+    name: ews-mark-item-as-junk
+  - arguments:
+    - default: false
+      description: The mailbox to apply the command on.
+      isArray: false
+      name: target-mailbox
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Find Public Folders
+      isArray: false
+      name: is-public
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Get folders information for a mailbox. Only folders with read permissions
+      will be return as a result. Notice that your visual folders on the mailbox (like
+      Inbox, etc) is under the folder "Top of Information Store".
+    execution: false
+    name: ews-find-folders
+    outputs:
+    - contextPath: EWS.Folders.name
+      description: Folder name
+      type: string
+    - contextPath: EWS.Folders.id
+      description: Folder id
+      type: string
+    - contextPath: EWS.Folders.totalCount
+      description: Number of items in folder
+      type: Unknown
+    - contextPath: EWS.Folders.unreadCount
+      description: Number of unread items in folder
+      type: number
+    - contextPath: EWS.Folders.changeKey
+      description: Folder change key
+      type: number
+    - contextPath: EWS.Folders.childrenFolderCount
+      description: Number of sub-folders
+      type: number
+  - arguments:
+    - default: false
+      description: The folder path to get the items from.
+      isArray: false
+      name: folder-path
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Maximum number of items to fetch.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The mailbox to apply the command on.
+      isArray: false
+      name: target-mailbox
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Is the folder a Public Folder?
+      isArray: false
+      name: is-public
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Get items from a specific folder in a mailbox. The items will return
+      order by created time, first item is the most recent item.
+    execution: false
+    name: ews-get-items-from-folder
+    outputs:
+    - contextPath: EWS.Items.itemId
+      description: The email item id.
+      type: string
+    - contextPath: EWS.Items.hasAttachments
+      description: Does email has attachments.
+      type: boolean
+    - contextPath: EWS.Items.datetimeReceived
+      description: Email received time.
+      type: date
+    - contextPath: EWS.Items.datetimeSent
+      description: Email sent time.
+      type: date
+    - contextPath: EWS.Items.headers
+      description: Email headers (list).
+      type: Unknown
+    - contextPath: EWS.Items.sender
+      description: Email sender mail address.
+      type: string
+    - contextPath: EWS.Items.subject
+      description: Email subject
+      type: string
+    - contextPath: EWS.Items.textBody
+      description: Email body (as text)
+      type: string
+    - contextPath: EWS.Items.size
+      description: Email size.
+      type: number
+    - contextPath: EWS.Items.toRecipients
+      description: Email recipients addresses (list).
+      type: Unknown
+    - contextPath: EWS.Items.receivedBy
+      description: Email received by address.
+      type: Unknown
+    - contextPath: EWS.Items.messageId
+      description: Email message id.
+      type: string
+    - contextPath: EWS.Items.body
+      description: Email HTML body.
+      type: string
+    - contextPath: EWS.Items.FileAttachments.attachmentId
+      description: Attachment id for file attachment.
+      type: unknown
+    - contextPath: EWS.Items.ItemAttachments.attachmentId
+      description: Attachment id for item attachment.
+      type: unknown
+    - contextPath: EWS.Items.FileAttachments.attachmentName
+      description: Attachment name for file attachment.
+      type: unknown
+    - contextPath: EWS.Items.ItemAttachments.attachmentName
+      description: Attachment name for item attachment.
+      type: unknown
+  - arguments:
+    - default: false
+      description: The item ids. List or comma-separated value are supported.
+      isArray: true
+      name: item-ids
+      required: true
+      secret: false
+    - default: false
+      description: The mailbox to apply the command on.
+      isArray: false
+      name: target-mailbox
+      required: false
+      secret: false
+    deprecated: false
+    description: Get items by id.
+    execution: false
+    name: ews-get-items
+    outputs:
+    - contextPath: EWS.Items.itemId
+      description: The email item id.
+      type: string
+    - contextPath: EWS.Items.hasAttachments
+      description: Does email has attachments.
+      type: boolean
+    - contextPath: EWS.Items.datetimeReceived
+      description: Email received time.
+      type: date
+    - contextPath: EWS.Items.datetimeSent
+      description: Email sent time.
+      type: date
+    - contextPath: EWS.Items.headers
+      description: Email headers (list).
+      type: Unknown
+    - contextPath: EWS.Items.sender
+      description: Email sender mail address.
+      type: string
+    - contextPath: EWS.Items.subject
+      description: Email subject
+      type: string
+    - contextPath: EWS.Items.textBody
+      description: Email body (as text)
+      type: string
+    - contextPath: EWS.Items.size
+      description: Email size.
+      type: number
+    - contextPath: EWS.Items.toRecipients
+      description: Email recipients addresses (list).
+      type: Unknown
+    - contextPath: EWS.Items.receivedBy
+      description: Email received by address.
+      type: Unknown
+    - contextPath: EWS.Items.messageId
+      description: Email message id.
+      type: string
+    - contextPath: EWS.Items.body
+      description: Email HTML body.
+      type: string
+    - contextPath: EWS.Items.FileAttachments.attachmentId
+      description: Attachment id for file attachment.
+      type: unknown
+    - contextPath: EWS.Items.ItemAttachments.attachmentId
+      description: Attachment id for item attachment.
+      type: unknown
+    - contextPath: EWS.Items.FileAttachments.attachmentName
+      description: Attachment name for file attachment.
+      type: unknown
+    - contextPath: EWS.Items.ItemAttachments.attachmentName
+      description: Attachment name for item attachment.
+      type: unknown
+  - arguments:
+    - default: false
+      description: The item id to move.
+      isArray: false
+      name: item-id
+      required: true
+      secret: false
+    - default: false
+      description: The folder in the destination mailbox to move the item to. Complex
+        path can be used, e.g. Inbox\Phishing.
+      isArray: false
+      name: destination-folder-path
+      required: true
+      secret: false
+    - default: false
+      description: The mailbox to move the item to.
+      isArray: false
+      name: destination-mailbox
+      required: true
+      secret: false
+    - default: false
+      description: The mailbox to move the item from (conventionally called "target-mailbox"
+        - the target mailbox to apply the command on).
+      isArray: false
+      name: source-mailbox
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Is the destination folder a Public Folder?
+      isArray: false
+      name: is-public
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Move an item from one mailbox to another.
+    execution: false
+    name: ews-move-item-between-mailboxes
+    outputs:
+    - contextPath: EWS.Items.movedToMailbox
+      description: The mailbox that the item was moved to.
+      type: string
+    - contextPath: EWS.Items.movedToFolder
+      description: The folder that the item was moved to.
+      type: string
+    - contextPath: EWS.Items.action
+      description: The action, value will be 'moved'.
+      type: string
+  - arguments:
+    - default: false
+      description: The mailbox to apply the search on.
+      isArray: false
+      name: target-mailbox
+      required: false
+      secret: false
+    - default: true
+      defaultValue: AllItems
+      description: The folder path to get. If empty - will get the folder 'AllItems'.
+      isArray: false
+      name: folder-path
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Is the folder a Public Folder?
+      isArray: false
+      name: is-public
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a single specific folder.
+    execution: false
+    name: ews-get-folder
+    outputs:
+    - contextPath: EWS.Folders.id
+      description: Folder id.
+      type: string
+    - contextPath: EWS.Folders.name
+      description: Folder name.
+      type: string
+    - contextPath: EWS.Folders.changeKey
+      description: Folder change key
+      type: string
+    - contextPath: EWS.Folders.totalCount
+      description: Total count of emails in the folder.
+      type: number
+    - contextPath: EWS.Folders.childrenFolderCount
+      description: Number of sub-folders.
+      type: number
+    - contextPath: EWS.Folders.unreadCount
+      description: Unread emails in the folder.
+      type: number
+  - arguments:
+    - default: true
+      description: Query to use for finding mails
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: Start compliance search
+    execution: false
+    name: ews-o365-start-compliance-search
+    outputs:
+    - contextPath: EWS.ComplianceSearch.Name
+      description: The name of the compliance search
+      type: string
+    - contextPath: EWS.ComplianceSearch.Status
+      description: The status of the compliance search
+      type: string
+  - arguments:
+    - default: true
+      description: Name of the compliance search
+      isArray: false
+      name: search-name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get compliance search status and results
+    execution: false
+    name: ews-o365-get-compliance-search
+    outputs:
+    - contextPath: EWS.ComplianceSearch.Status
+      description: The status of the compliance search
+      type: Unknown
+  - arguments:
+    - default: true
+      description: Name of the compliance search
+      isArray: false
+      name: search-name
+      required: true
+      secret: false
+    deprecated: false
+    description: Purges the results found by the compliance search
+    execution: false
+    name: ews-o365-purge-compliance-search-results
+    outputs:
+    - contextPath: EWS.ComplianceSearch.Status
+      description: The status of the compliance search
+      type: string
+  - arguments:
+    - default: true
+      description: Name of the compliance search
+      isArray: false
+      name: search-name
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove the compliance search
+    execution: false
+    name: ews-o365-remove-compliance-search
+    outputs:
+    - contextPath: EWS.ComplianceSearch.Status
+      description: The status of the compliance search
+      type: string
+  - arguments:
+    - default: true
+      description: Name of the compliance search
+      isArray: false
+      name: search-name
+      required: true
+      secret: false
+    deprecated: false
+    description: Check the status of the purge operation on the compliance search.
+    execution: false
+    name: ews-o365-get-compliance-search-purge-status
+    outputs:
+    - contextPath: EWS.ComplianceSearch.Status
+      description: The status of the compliance search
+      type: Unknown
+  - deprecated: false
+    description: Returns the auto-discovery information. Can be used to configurate
+      Exchange server manually.
+    execution: false
+    name: ews-get-autodiscovery-config
+  - arguments:
+    - default: false
+      description: Email address of the group to expand
+      isArray: false
+      name: email-address
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: Recursive expansion. By default is set to false.
+      isArray: false
+      name: recursive-expansion
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Expands a distribution list to display all members. By default expands
+      only first layer of the distribution list. If recursive-expansion is True, the
+      command expands nested distribution lists and returns all the members.
+    execution: false
+    name: ews-expand-group
+  dockerimage: demisto/py-ews:2.0
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+tests:
+- pyEWS_Test
+- EWS search-mailbox test
