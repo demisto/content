@@ -30,6 +30,7 @@ LAYOUT_TYPE_TO_NAME = {
     "edit": "New/Edit",
     "close": "Close",
     "quickView": "Quick View",
+    "indicatorsDetails": "Indicator Details",
 }
 
 INTEGRATIONS_DIR = "Integrations"
