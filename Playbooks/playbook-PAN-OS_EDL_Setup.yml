@@ -326,18 +326,18 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 6aa68a47-b642-489c-8bbc-f38b9415d565
+    taskid: 5f239117-5490-4ffc-8649-9185d6270f04
     type: regular
     task:
-      id: 6aa68a47-b642-489c-8bbc-f38b9415d565
+      id: 5f239117-5490-4ffc-8649-9185d6270f04
       version: -1
       name: Create EDL Object
       description: Creates an external dynamic list in PAN-OS and connects it to the
-        external file.
-      script: Panorama|||panorama-create-edl
+         external file.
+      script: '|||panorama-create-edl'
       type: regular
       iscommand: true
-      brand: Panorama
+      brand: ""
     nexttasks:
       '#none#':
       - "23"
@@ -482,17 +482,17 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: b80ed68d-a068-433b-8010-ab79bfcc1681
+    taskid: db834220-178b-4182-852c-33ecf7a8a12a
     type: regular
     task:
-      id: b80ed68d-a068-433b-8010-ab79bfcc1681
+      id: db834220-178b-4182-852c-33ecf7a8a12a
       version: -1
       name: Create EDL object rule
       description: Creates a policy rule in PAN-OS and uses the EDL as a destination.
-      script: Panorama|||panorama-create-rule
+      script: '|||panorama-create-rule'
       type: regular
       iscommand: true
-      brand: Panorama
+      brand: ""
     nexttasks:
       '#none#':
       - "22"
@@ -555,17 +555,17 @@ tasks:
     ignoreworker: false
   "28":
     id: "28"
-    taskid: cdabffd7-29db-44b5-8f85-e387eb4cf130
+    taskid: 17c460aa-11f5-4387-89c6-7c4aac7a7eb4
     type: regular
     task:
-      id: cdabffd7-29db-44b5-8f85-e387eb4cf130
+      id: 17c460aa-11f5-4387-89c6-7c4aac7a7eb4
       version: -1
       name: Create EDL object rule
       description: Creates a policy rule in PAN-OS and uses the EDL as a destination.
-      script: Panorama|||panorama-create-rule
+      script: '|||panorama-create-rule'
       type: regular
       iscommand: true
-      brand: Panorama
+      brand: ""
     nexttasks:
       '#none#':
       - "27"
@@ -636,14 +636,13 @@ inputs:
   required: true
   description: |-
     The action that will be defined in the rule:
-
     allow/deny/drop
 - key: auto-commit
   value:
     simple: "No"
   required: false
   description: Whether to commit the configuration automatically.
-- key: log-forwarding-server
+- key: log-forwarding-object-name
   value: {}
   required: false
   description: The server address to which to forward logs.
@@ -657,5 +656,3 @@ inputs:
   required: true
   description: Either pre-rulebase or post-rulebase,  according to the rule structure.
 outputs: []
-tests:
-  - No test - requires a web server to run
