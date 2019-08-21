@@ -320,6 +320,7 @@ def move_to_gmt(t):
     else:
         return 0, datetime.strptime(base_time, '%a, %d %b %Y %H:%M:%S').isoformat() + 'Z'
 
+
 def create_incident_labels(parsed_msg, headers):
     labels = [
         {'type': 'Email/ID', 'value': parsed_msg['ID']},
