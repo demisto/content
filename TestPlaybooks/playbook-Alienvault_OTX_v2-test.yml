@@ -1,0 +1,1669 @@
+id: Alienvault_OTX_v2-test
+version: 29
+name: Alienvault_OTX_v2-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b8173d39-f928-4a24-8a5a-79c70fcf0ba8
+    type: start
+    task:
+      id: b8173d39-f928-4a24-8a5a-79c70fcf0ba8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 214c41c5-fca1-4581-8294-0514a8f84c75
+    type: regular
+    task:
+      id: 214c41c5-fca1-4581-8294-0514a8f84c75
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: b109063f-83fb-48d8-886c-5401da5714c5
+    type: regular
+    task:
+      id: b109063f-83fb-48d8-886c-5401da5714c5
+      version: -1
+      name: ip command
+      description: Checks the reputation of an IP address.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        simple: 8.8.8.8
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: c40bdd7d-a28e-4820-8434-6f2f768b7f64
+    type: condition
+    task:
+      id: c40bdd7d-a28e-4820-8434-6f2f768b7f64
+      version: -1
+      name: Validate ip command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: IP.Geo.Country
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: f1258ef0-9b6a-4e33-8888-43c8f3890f68
+    type: regular
+    task:
+      id: f1258ef0-9b6a-4e33-8888-43c8f3890f68
+      version: -1
+      name: PrintContext
+      description: Pretty-print the contents of the playbook context
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      outputformat:
+        simple: ${#2}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: a1b94f4e-694f-40d9-8fed-ab0d2b104683
+    type: regular
+    task:
+      id: a1b94f4e-694f-40d9-8fed-ab0d2b104683
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      message:
+        simple: ${#2}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 3624a38c-204f-4597-83b2-18bd83c1acae
+    type: regular
+    task:
+      id: 3624a38c-204f-4597-83b2-18bd83c1acae
+      version: -1
+      name: domain command
+      description: Checks the reputation of a domain.
+      script: '|||domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      domain:
+        simple: rghost.net
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 8d1f8dd1-9110-4f7d-8fb0-4139b366043b
+    type: condition
+    task:
+      id: 8d1f8dd1-9110-4f7d-8fb0-4139b366043b
+      version: -1
+      name: Validate domain command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AlienVaultOTX.Domain.Alexa
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: c904969a-c6d7-4a6b-8a96-72226b01524c
+    type: regular
+    task:
+      id: c904969a-c6d7-4a6b-8a96-72226b01524c
+      version: -1
+      name: PrintContext
+      description: Pretty-print the contents of the playbook context
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      outputformat: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: a9a97521-b70d-49c4-8fc5-fed8e699f8fb
+    type: regular
+    task:
+      id: a9a97521-b70d-49c4-8fc5-fed8e699f8fb
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      message: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 063d9c7c-b3bd-45f4-8f53-7a2f028b0deb
+    type: regular
+    task:
+      id: 063d9c7c-b3bd-45f4-8f53-7a2f028b0deb
+      version: -1
+      name: alienvault-search-ipv6 command
+      description: Query IP in AlienVault OTX
+      script: '|||alienvault-search-ipv6'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      ip:
+        simple: 2001:4860:4860::8888
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: f7590fe2-b3ef-400c-8eba-4746c0f2f87a
+    type: condition
+    task:
+      id: f7590fe2-b3ef-400c-8eba-4746c0f2f87a
+      version: -1
+      name: Validate alienvault-search-ipv6 command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: IP.AlienVaultOTX.Reputation
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: a61cce9b-e4a3-4602-85c0-6d9c1c933cf9
+    type: regular
+    task:
+      id: a61cce9b-e4a3-4602-85c0-6d9c1c933cf9
+      version: -1
+      name: PrintContext
+      description: Pretty-print the contents of the playbook context
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      outputformat:
+        simple: ${#10}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 94e90294-1272-42bb-88a5-32170c14d52a
+    type: regular
+    task:
+      id: 94e90294-1272-42bb-88a5-32170c14d52a
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      message:
+        simple: ${#10}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: df8056e4-5171-4414-8316-8d6430a40838
+    type: regular
+    task:
+      id: df8056e4-5171-4414-8316-8d6430a40838
+      version: -1
+      name: alienvault-search-hostname command
+      description: Query hostname in AlienVault OTX
+      script: '|||alienvault-search-hostname'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      hostname:
+        simple: otx.alienvault.com
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 3fb3e509-6ea8-48a8-8cb0-e7f6adf02373
+    type: condition
+    task:
+      id: 3fb3e509-6ea8-48a8-8cb0-e7f6adf02373
+      version: -1
+      name: Validate alienvault-search-hostname
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Endpoint.Hostname
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Endpoint.AlienVaultOTX.Alexa
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: fd50931b-74c6-470a-89b2-66f694b9a6f8
+    type: regular
+    task:
+      id: fd50931b-74c6-470a-89b2-66f694b9a6f8
+      version: -1
+      name: PrintContext
+      description: Pretty-print the contents of the playbook context
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      outputformat:
+        simple: ${#14}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: b05a7133-0dac-4f4f-8846-4159c5877d67
+    type: regular
+    task:
+      id: b05a7133-0dac-4f4f-8846-4159c5877d67
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      message:
+        simple: ${#14}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 8606a894-e79b-4d09-897b-d07bc9d27a82
+    type: regular
+    task:
+      id: 8606a894-e79b-4d09-897b-d07bc9d27a82
+      version: -1
+      name: file command
+      description: Checks the file reputation of the specified hash.
+      script: '|||file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      file:
+        simple: 6c5360d41bd2b14b1565f5b18e5c203cf512e493
+      long: {}
+      retries: {}
+      threshold: {}
+      wait: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 72daf801-4925-44ec-806b-4b898f5e3f9b
+    type: condition
+    task:
+      id: 72daf801-4925-44ec-806b-4b898f5e3f9b
+      version: -1
+      name: Validate file command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: a9cc92d8-6a4f-4b35-8a4a-68d8a4ab6709
+    type: regular
+    task:
+      id: a9cc92d8-6a4f-4b35-8a4a-68d8a4ab6709
+      version: -1
+      name: PrintContext
+      description: Pretty-print the contents of the playbook context
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      outputformat:
+        simple: ${#18}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 3d7b7973-04db-46fc-898e-e4f27d92b153
+    type: regular
+    task:
+      id: 3d7b7973-04db-46fc-898e-e4f27d92b153
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      message:
+        simple: ${#18}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 0167a964-a1fd-4d9a-843e-f8ba2d1087f5
+    type: regular
+    task:
+      id: 0167a964-a1fd-4d9a-843e-f8ba2d1087f5
+      version: -1
+      name: alienvault-search-cve command
+      description: Query CVE in AlienVault OTX
+      script: '|||alienvault-search-cve'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      cve-id:
+        simple: CVE-2014-0160
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: b6302bd5-0ce3-4d17-83e3-99e55730a4d9
+    type: condition
+    task:
+      id: b6302bd5-0ce3-4d17-83e3-99e55730a4d9
+      version: -1
+      name: Validate alienvault-search-cve command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CVE.Id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 64b791ec-c625-4b32-87ab-4030f78e087c
+    type: regular
+    task:
+      id: 64b791ec-c625-4b32-87ab-4030f78e087c
+      version: -1
+      name: PrintContext
+      description: Pretty-print the contents of the playbook context
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      outputformat:
+        simple: ${#22}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: f3d392b7-a2c0-466c-83cc-dafa2f817582
+    type: regular
+    task:
+      id: f3d392b7-a2c0-466c-83cc-dafa2f817582
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      message:
+        simple: ${#22}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 45af5865-b562-4b0a-8730-695267d16a39
+    type: regular
+    task:
+      id: 45af5865-b562-4b0a-8730-695267d16a39
+      version: -1
+      name: alienvault-get-related-urls-by-indicator command
+      description: URLs analyzed by AlienVault Labs on this indicator
+      script: '|||alienvault-get-related-urls-by-indicator'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      indicator:
+        simple: 8.8.8.8
+      indicator-type:
+        simple: IPv4
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 8ea056a3-fcc0-4db0-8dd4-88457f427cbe
+    type: condition
+    task:
+      id: 8ea056a3-fcc0-4db0-8dd4-88457f427cbe
+      version: -1
+      name: Validate alienvault-get-related-urls-by-indicator command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AlienVaultOTX.URL.Data
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 9c944706-03ee-465d-88be-6fb324f9ad9a
+    type: regular
+    task:
+      id: 9c944706-03ee-465d-88be-6fb324f9ad9a
+      version: -1
+      name: PrintContext
+      description: Pretty-print the contents of the playbook context
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      outputformat:
+        simple: ${#26}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 06a9f382-348d-4f83-8604-b77f30ceb31c
+    type: regular
+    task:
+      id: 06a9f382-348d-4f83-8604-b77f30ceb31c
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      message:
+        simple: ${#26}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: fc88df87-44bf-40a6-85dd-87ef107b5054
+    type: regular
+    task:
+      id: fc88df87-44bf-40a6-85dd-87ef107b5054
+      version: -1
+      name: alienvault-get-passive-dns-data-by-indicator command
+      description: Passive dns records observed by AlienVault Labs pointing to this
+        indicator
+      script: '|||alienvault-get-passive-dns-data-by-indicator'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      indicator:
+        simple: 8.8.8.8
+      indicator-type:
+        simple: IPv4
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: 4ffa42ce-f359-45df-8a7e-7295af084dc5
+    type: condition
+    task:
+      id: 4ffa42ce-f359-45df-8a7e-7295af084dc5
+      version: -1
+      name: Validate alienvault-get-passive-dns-data-by-indicator command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: AlienVaultOTX.PassiveDNS
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: 960dfae7-c165-4c97-8934-59bd2caf5b82
+    type: regular
+    task:
+      id: 960dfae7-c165-4c97-8934-59bd2caf5b82
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      message:
+        simple: ${#30}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "33":
+    id: "33"
+    taskid: c1b9b017-1227-44db-892b-81ea78ecc157
+    type: regular
+    task:
+      id: c1b9b017-1227-44db-892b-81ea78ecc157
+      version: -1
+      name: PrintContext
+      description: Pretty-print the contents of the playbook context
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      outputformat:
+        simple: ${#30}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "34":
+    id: "34"
+    taskid: b6fb478f-8e30-465c-8ba7-82b9853b27a2
+    type: regular
+    task:
+      id: b6fb478f-8e30-465c-8ba7-82b9853b27a2
+      version: -1
+      name: alienvault-search-pulses command
+      description: Search for pulses in AlienVault OTX
+      script: '|||alienvault-search-pulses'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      page:
+        simple: "1"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "35":
+    id: "35"
+    taskid: ebba1102-a0d9-4720-869c-d4547632d573
+    type: condition
+    task:
+      id: ebba1102-a0d9-4720-869c-d4547632d573
+      version: -1
+      name: Validate alienvault-search-pulses
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: AlienVaultOTX.Pulses
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "36":
+    id: "36"
+    taskid: 6d68e717-233b-47f1-8a06-ee3457efb839
+    type: regular
+    task:
+      id: 6d68e717-233b-47f1-8a06-ee3457efb839
+      version: -1
+      name: PrintContext
+      description: Pretty-print the contents of the playbook context
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      outputformat:
+        simple: ${#34}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "37":
+    id: "37"
+    taskid: 4715f31f-5496-4ed7-8e49-3f6d72214b61
+    type: regular
+    task:
+      id: 4715f31f-5496-4ed7-8e49-3f6d72214b61
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      message:
+        simple: ${#34}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "38":
+    id: "38"
+    taskid: 2bc4d99d-8476-4397-886f-9b84a714ab3b
+    type: regular
+    task:
+      id: 2bc4d99d-8476-4397-886f-9b84a714ab3b
+      version: -1
+      name: alienvault-get-pulse-details command
+      description: Get pulse details (pulse are alian vault's entities)
+      script: '|||alienvault-get-pulse-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      pulse-id:
+        simple: 57204e9b3c4c3e015d93cb12
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "39":
+    id: "39"
+    taskid: 0e3938d9-faf8-4384-8ec1-77c603a6c908
+    type: condition
+    task:
+      id: 0e3938d9-faf8-4384-8ec1-77c603a6c908
+      version: -1
+      name: Validate alienvault-get-pulse-details command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "41"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: AlienVaultOTX.Pulses.Created
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "40":
+    id: "40"
+    taskid: 46735f94-7416-49f2-820a-71a2bca9512b
+    type: regular
+    task:
+      id: 46735f94-7416-49f2-820a-71a2bca9512b
+      version: -1
+      name: PrintContext
+      description: Pretty-print the contents of the playbook context
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      outputformat:
+        simple: ${#38}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "41":
+    id: "41"
+    taskid: 61961cbf-b5a0-4dcb-8943-cc73b640b92b
+    type: regular
+    task:
+      id: 61961cbf-b5a0-4dcb-8943-cc73b640b92b
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      message:
+        simple: ${#38}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "42":
+    id: "42"
+    taskid: 1923e0f4-afc8-47f2-8303-fe066477b2b3
+    type: regular
+    task:
+      id: 1923e0f4-afc8-47f2-8303-fe066477b2b3
+      version: -1
+      name: url command
+      description: Checks the reputation of a URL.
+      script: '|||url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      long: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      url:
+        simple: http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list
+      wait: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "43":
+    id: "43"
+    taskid: f351f938-cc9a-40ee-8674-3e4d77f781e7
+    type: condition
+    task:
+      id: f351f938-cc9a-40ee-8674-3e4d77f781e7
+      version: -1
+      name: Validate url command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "45"
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "44":
+    id: "44"
+    taskid: fa76eac3-c926-40fe-85e8-49173c30a9dd
+    type: regular
+    task:
+      id: fa76eac3-c926-40fe-85e8-49173c30a9dd
+      version: -1
+      name: PrintContext
+      description: Pretty-print the contents of the playbook context
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      outputformat:
+        simple: ${#42}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "45":
+    id: "45"
+    taskid: 277c3e8f-8008-4d79-88a3-14c607462fc5
+    type: regular
+    task:
+      id: 277c3e8f-8008-4d79-88a3-14c607462fc5
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      message:
+        simple: ${#42}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "46":
+    id: "46"
+    taskid: 51912dee-1f8f-45f0-8b6e-76d3b557dedc
+    type: regular
+    task:
+      id: 51912dee-1f8f-45f0-8b6e-76d3b557dedc
+      version: -1
+      name: alienvault-get-related-hashes-by-indicator command
+      description: Malwares analyzed by AlienVault Labs on this indicator
+      script: '|||alienvault-get-related-hashes-by-indicator'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      indicator:
+        simple: 8.8.8.8
+      indicator-type:
+        simple: IPv4
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "47":
+    id: "47"
+    taskid: 2d459f2b-5dd6-4691-862b-73788d054283
+    type: condition
+    task:
+      id: 2d459f2b-5dd6-4691-862b-73788d054283
+      version: -1
+      name: Validate alienvault-get-related-hashes-by-indicator command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "49"
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: AlienVaultOTX.File.Hash
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "48":
+    id: "48"
+    taskid: 91a3145b-981c-4453-8b42-205e23c3e500
+    type: regular
+    task:
+      id: 91a3145b-981c-4453-8b42-205e23c3e500
+      version: -1
+      name: PrintContext
+      description: Pretty-print the contents of the playbook context
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      outputformat:
+        simple: ${#46}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "49":
+    id: "49"
+    taskid: a6579fe1-895c-4558-80d3-932f14b5024d
+    type: regular
+    task:
+      id: a6579fe1-895c-4558-80d3-932f14b5024d
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: ${#46}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_12_#default#": 0.9,
+      "11_13_yes": 0.9,
+      "7_8_yes": 0.79
+    },
+    "paper": {
+      "dimensions": {
+        "height": 6540,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
