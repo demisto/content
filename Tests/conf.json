@@ -119,6 +119,10 @@
             "playbookID": "Fidelis-Test"
         },
         {
+            "integrations": "AWS - ACM",
+            "playbookID": "ACM-Test"
+        },
+        {
             "integrations": "Thinkst Canary",
             "playbookID": "CanaryTools Test"
         },
@@ -136,6 +140,10 @@
             "integrations": "Pwned",
             "playbookID": "Pwned test",
             "nightly": true
+        },
+        {
+            "integrations": "Have I Been Pwned? V2",
+            "playbookID": "Pwned v2 test"
         },
         {
             "integrations": "Alexa Rank Indicator",
@@ -281,6 +289,13 @@
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
             "playbookID": "palo_alto_panorama_test_pb",
+            "timeout": 1000,
+            "nightly": true
+        },
+        {
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "playbookID": "Panorama Query Logs - Test",
             "timeout": 1000,
             "nightly": true
         },
@@ -1394,7 +1409,8 @@
             "nightly": true
         },
         {
-            "playbookID": "Autoextract - Test"
+            "playbookID": "Autoextract - Test",
+            "fromversion": "4.1.0"
         },
         {
             "playbookID": "FilterByList - Test",
@@ -1457,7 +1473,8 @@
         },
         {
             "playbookID": "Extract Indicators From File - Generic v2 - Test",
-            "integrations": "Image OCR"
+            "integrations": "Image OCR",
+            "timeout": 300
         },
         {
             "playbookID": "Endpoint Enrichment - Generic v2 - Test",
@@ -1735,11 +1752,11 @@
         }
     ],
     "skipped_tests": {
+        "CheckpointFW-test": "Test is not stable (Issue 18643)",
         "LogRhythm REST test": "A command's response doesnt match the expected results (issue #18385)",
         "search_endpoints_by_hash_-_tie_-_test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
         "McAfee-TIE Test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
         "CreatePhishingClassifierMLTest": "Test is unstable and fails with no reason from time to time (issue ##18349)",
-        "Autoextract - Test": "See issue #18343 for further information",
         "rsa_packets_and_logs_test": "A command searches for a session ID which doesn't exist on our local server - asked RSA to help (issue #18332)",
         "TestUptycs": "There is not enough data in uptycs instance in order the test to pass. Data need to be generated like open connections",
         "LogRhythmRest": "Unstable environment Adi is checking",
@@ -1781,7 +1798,9 @@
         "Detonate File - FireEye AX - Test": "No instance",
         "Cofense Triage Test": "Creds only works on demo4",
         "Intezer Testing": "Old test for old version of inteze",
-        "Test - Windows Defender Advanced Threat Protection": "One of the commands has an internal server error. Check again 20/08/2019. Issue - #18552"
+        "Test - Windows Defender Advanced Threat Protection": "One of the commands has an internal server error. Check again 20/08/2019. Issue - #18552",
+        "CarbonBlackLiveResponseTest": "Task: cb-session-create-and-wait fails (issue 18691)",
+        "nexpose_test": "Failed to create site (issue 18694)"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1840,7 +1859,7 @@
         "Tenable.io": "Unstable instance (issue 16115)",
 
       "_comment": "~~~ OTHER ~~~",
-        "Pwned": "Changes in API - may require integration rewrite (issue #18102)",
+        "Pwned": "Old API is deprecated",
         "SumoLogic": "Shelly working on fixing it",
         "iDefense": "DevOps investigation",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
