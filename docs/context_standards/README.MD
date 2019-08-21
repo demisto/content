@@ -21,7 +21,6 @@ The following is the format for a file.
         "SHA1": "STRING, SHA1 Hash of the file",
         "SHA256": "STRING, SHA256 hash of the file",
         "SHA512": "STRING SHA512 hash of the file",
-        "Blocked": "BOOLEAN Whether the indicator is blocked, for example, in the firewall or blacklisted",
         "SSDeep": "STRING, The ssdeep value for the file (same as we display in file entries)",
         "Extension": "STRING, the file extension e.g. xls",
         "Type": "STRING, File type as determined by libmagic (same as we display in file entries)",
@@ -72,7 +71,6 @@ The following is the format for an IP entity
     },
     "Address": "STRING, IP address",
     "ASN": "STRING, Autonomous System name for the IP. E.g. AS8948",
-    "Blocked": "BOOLEAN Whether the indicator is blocked, for example, in the firewall or blacklisted",
     "Hostname": "STRING, hostname mapped to this IP",
     "Geo":{
         "Location": "STRING, in format latitude, longitude",
@@ -143,7 +141,6 @@ The following is the format for a Domain. Please note that for WHOIS, the entity
     "DNS": "STRING, IPs resolved by DNS. List of IP objects",
     "DetectionEngines": "NUMBER, Total number of engines that checked the indicator",
     "PositiveDetections": "NUMBER of engines that positively detected the indicator as malicious",
-    "Blocked": "BOOLEAN Whether the indicator is blocked, for example, in the firewall or blacklisted",
     "CreationDate": "DATE, Creation date of the domain",
     "DomainStatus": "STRING, Status of the domain",
     "ExpirationDate": "DATE, Expiration date of the domain",
@@ -204,7 +201,6 @@ The following is the format for a URL entity.
     },
     "DetectionEngines": "NUMBER, Total number of engines that checked the indicator",
     "PositiveDetections": "Number of engines that positively detected the indicator as malicious",
-    "Blocked": "BOOLEAN Whether the indicator is blocked, for example, in the firewall or blacklisted",
 }
 ```
 
@@ -226,7 +222,6 @@ The following is the format for an Account entity.
 "Account": {
     "Type": "STRING, most common value is AD. but can be LocalOS, Google, AppleID, ... ",
     "ID": "STRING, integration-specific unique ID for the account. For AD accounts this is the Distinguished Name.",
-    "Blocked": "BOOLEAN Whether the indicator is blocked, for example, in the firewall or blacklisted",
     "Email": "STRING, email for the account e.g. johnd@acme.com",
     "Username": "STRING, username in the relevant system, e.g. johnd",
     "DisplayName": "STRING, e.g. 'John Doe'",
@@ -318,7 +313,6 @@ The following is the format for a host.
     "Domain": "STRING, Domain of the host.",
     "Hostname": "STRING, Name of the host.",
     "BIOVersion": "STRING, BIOS version of the host.",
-    "Blocked": "BOOLEAN, Whether the indicator is blocked, for example, in the firewall or blacklisted.",
     "ID": "STRING, The unique ID within the tool retrieving the host.",
     "DHCPServer": "STRING, DHCP Server.",
     "IP": "STRING, IP Address of the host.",
