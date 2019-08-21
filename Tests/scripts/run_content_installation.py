@@ -29,7 +29,7 @@ def main():
         instance_file.write('\n'.join(instance_ids_nonami))
 
     print("Waiting 60 Seconds for SSH to start\n")
-    sleep(60)
+    sleep(90)
     threads_list = []
     for instance_ip in id_to_ip.values():
         t = Thread(target=run_command,
