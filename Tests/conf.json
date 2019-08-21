@@ -162,9 +162,6 @@
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
         },
         {
-            "playbookID": "ParseCSVnullbytesTest"
-        },
-        {
             "integrations": "CVE Search",
             "playbookID": "cveReputation Test"
         },
@@ -568,9 +565,6 @@
         {
             "playbookID": "Gmail Convert Html Test",
             "integrations": "Gmail"
-        },
-        {
-            "playbookID": "TestParseCSV"
         },
         {
             "playbookID": "reputations.json Test"
