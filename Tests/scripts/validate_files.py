@@ -205,7 +205,7 @@ class FilesValidator(object):
                     self._is_valid = False
 
             elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
-                script_validator = ScriptValidator(file_path)
+                script_validator = ScriptValidator(file_path, old_file_path=old_file_path)
                 if is_backward_check and not script_validator.is_backward_compatible():
                     self._is_valid = False
 
@@ -214,7 +214,7 @@ class FilesValidator(object):
                     re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
 
                 yml_path, _ = get_script_package_data(os.path.dirname(file_path))
-                script_validator = ScriptValidator(yml_path)
+                script_validator = ScriptValidator(yml_path, old_file_path=old_file_path)
                 if is_backward_check and not script_validator.is_backward_compatible():
                     self._is_valid = False
 

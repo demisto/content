@@ -154,12 +154,19 @@ def http_request(method, url_suffix, json=None, params=None):
         verify=USE_SSL
     )
     if r.status_code not in {200, 201}:
-        error = r.json().get('error')
-        msg = error['message'] if 'message' in error else r.reason
-        return_error('Error in API call to ATP [%d] - %s' % (r.status_code, msg))
+        try:
+            error = r.json().get('error')
+            msg = error['message'] if 'message' in error else r.reason
+            return_error('Error in API call to ATP [%d] - %s' % (r.status_code, msg))
+        except ValueError:
+            msg = r.text if r.text else r.reason
+            return_error('Error in API call to ATP [%d] - %s' % (r.status_code, msg))
     if not r.text:
         return {}
-    return r.json()
+    try:
+        return r.json()
+    except ValueError:
+        return {}
 
 
 def alert_to_incident(alert):
