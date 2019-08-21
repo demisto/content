@@ -148,6 +148,36 @@ script:
     - contextPath: IP.Host
       description: IP Host
       type: Unknown
+    - contextPath: Enpoint.Hostname
+      description: The endpoint's hostname
+      type: Unknown
+    - contextPath: Endpoint.MACAddress
+      description: The endpoint's MAC
+      type: Unknown
+    - contextPath: Endpoint.Domain
+      description: The endpoint's Domain
+      type: Unknown
+    - contextPath: Endpoint.IPAddress
+      description: The endpoint's IP
+      type: Unknown
+    - contextPath: Endpoint.DHCPServer
+      description: DHCPServer
+      type: Unknown
+    - contextPath: Endpoint.OS
+      description: OS
+      type: Unknown
+    - contextPath: Endpoint.OSVersion
+      description: OSVersion
+      type: Unknown
+    - contextPath: Endpoint.BIOSVersion
+      description: BIOSVersion
+      type: Unknown
+    - contextPath: Endpoint.Memory
+      description: Memory
+      type: Unknown
+    - contextPath: Endpoint.Processors
+      description: Processors
+      type: Unknown
   - arguments:
     - default: false
       description: The columns to display

@@ -53,17 +53,45 @@ EPOCH_HOUR = 60 * EPOCH_MINUTE
 def fix_url(base):
     return base if base.endswith('/') else (base + '/')
 
-def endpoint_extract_indicators(raw_json):
+def endpoint_ip_extract(raw_json):
     IPs=[]
     for content in raw_json:
         ip={}
         if content.get('ipAddresses'):
             ip['Address'] = content.get('ipAddresses')[0]
-        if content.get('computerName'):
-            ip['Host'] = content.get('computerName')
+        if content.get('macAddresses'):
+            ip['Mac'] = content.get('computerName')
         if ip != {}:
             IPs.append(ip)
     return IPs
+
+def endpoint_endpoint_extract(raw_json):
+    Endpoints = []
+    for content in raw_json:
+        endpoint = {}
+        if content.get('computerName'):
+            endpoint['Hostname'] = content.get('computerName')
+        if content.get('macAddresses'):
+            endpoint['MACAddress'] = content.get('macAddresses')[0]
+        if content.get('domainOrWorkgroup'):
+            endpoint['Domain'] = content.get('domainOrWorkgroup')
+        if content.get('ipAddresses'):
+            endpoint['IPAddress'] = content.get('ipAddresses')[0]
+        if content.get('dhcpServer'):
+            endpoint['DHCPServer'] = content.get('dhcpServer')
+        if content.get('operatingSystem'):
+            endpoint['OS'] = content.get('operatingSystem')
+        if content.get('osVersion'):
+            endpoint['OSVersion'] = content.get('osVersion')
+        if content.get('biosVersion'):
+            endpoint['BIOSVersion'] = content.get('biosVersion')
+        if content.get('memory'):
+            endpoint['Memory'] = content.get('memory')
+        if content.get('processorType'):
+            endpoint['Processors'] = content.get('processorType')
+        if endpoint != {}:
+            Endpoints.append(endpoint)
+    return Endpoints
 
 
 def build_query_params(params):
@@ -574,7 +602,6 @@ def endpoints_info_command(token):
     columns_list = choose_columns(columns, ENDPOINTS_INFO_DEFAULT_COLUMNS)
     md = create_endpints_filter_string(computer_name, last_update, os, page_size, group_name)
     md += tableToMarkdown('Endpoints', filtered_json_response, columns_list)
-    res = dict((k, entry_context[k]) for k in ['nikhil', 'akshat'] if k in entry_context)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -583,8 +610,8 @@ def endpoints_info_command(token):
         'IgnoreAutoExtract': True,
         'EntryContext': {
             'SEPM.Endpoint(val.Hostname == obj.Hostname)': createContext(entry_context, removeNull=True),
-            'IP(val.Address === obj.Address)': endpoint_extract_indicators(filtered_json_response),
-            'Endpoint(val.Hostname == obj.Hostname)': createContext(entry_context, removeNull=True)
+            'IP(val.Address === obj.Address)': endpoint_ip_extract(filtered_json_response),
+            'Endpoint(val.Hostname == obj.Hostname)': endpoint_endpoint_extract(filtered_json_response)
         }
     })
 
