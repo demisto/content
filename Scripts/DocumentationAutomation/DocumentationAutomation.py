@@ -212,22 +212,14 @@ def generate_commands_section(yaml_data, example_dict):
         'You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.',
         'After you successfully execute a command, a DBot message appears in the War Room with the command details.'
     ]
-    commands = yaml_data['script']['commands']
-    command_list = []
-    for i, cmd in enumerate(commands):
-        if cmd.get('deprecated') is not True:
-            command_list.append('{}. {}'.format(i + 1, cmd['name']))
-        else:
-            i -= 1
+    commands = filter(lambda cmd: not cmd.get('deprecated', False), yaml_data['script']['commands'])
+    command_list = ['{}. {}'.format(i + 1, cmd['name']) for i, cmd in enumerate(commands)]
     section.extend(command_list)
 
     for i, cmd in enumerate(commands):
-        if cmd.get('deprecated') is not True:
-            cmd_section, cmd_errors = generate_single_command_section(i, cmd, example_dict)
-            section.extend(cmd_section)
-            errors.extend(cmd_errors)
-        else:
-            i -= 1
+        cmd_section, cmd_errors = generate_single_command_section(i, cmd, example_dict)
+        section.extend(cmd_section)
+        errors.extend(cmd_errors)
 
     return section, errors
 
