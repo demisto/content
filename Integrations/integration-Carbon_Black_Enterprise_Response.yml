@@ -310,6 +310,7 @@ script:
         {from: 'id', to: 'CbID'},
         {from: 'segment_id', to: 'CbSegmentID'},
         {from: 'group', to: 'Group'},
+        {from: 'start', to: 'StartTime'}
     ];
 
     function getProcessesRequest(query, rows, start, sort, facets) {
@@ -1535,6 +1536,9 @@ script:
       description: The sibling Process Path
     - contextPath: Process.Siblings.PID
       description: The sibling Process PID
+    - contextPath: Process.StartTime
+      description: Start time of the process.
+      type: date
     description: Gets basic process information for segment (segment_id) of process
       (process_id)
   - name: cb-get-processes
@@ -1587,6 +1591,9 @@ script:
       description: Process Parent PID
     - contextPath: Process.Parent.Name
       description: Process Parent Name
+    - contextPath: Process.StartTime
+      description: Start time of the process.
+      type: date
     description: Query processes based on given parameters
   - name: cb-list-sensors
     arguments: []
