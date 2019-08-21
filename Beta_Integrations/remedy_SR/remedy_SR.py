@@ -1,14 +1,11 @@
+import base64
+import hashlib
+import json
+import os
 import demistomock as demisto
+import requests
 from CommonServerPython import *
 from CommonServerUserPython import *
-import datetime
-from datetime import datetime
-import os
-import json
-import hashlib
-import base64
-import random
-import requests
 
 if not demisto.params().get('proxy', False):
     del os.environ['HTTP_PROXY']
@@ -29,11 +26,16 @@ HEADERS = {
 
 GET_TICKET_BODY = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="{xml_ns}">
            <soapenv:Header>
-           <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+           <wsse:Security soapenv:mustUnderstand="1"
+            xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+            xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
            <wsse:UsernameToken wsu:Id=\"\">
            <wsse:Username>sams</wsse:Username>
-           <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest">{password_digest}</wsse:Password>
-           <wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">{base64_binary}</wsse:Nonce>
+           <wsse:Password
+            Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest">
+            {password_digest}</wsse:Password>
+           <wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#
+           Base64Binary">{base64_binary}</wsse:Nonce>
            <wsu:Created>{req_time}</wsu:Created>
            </wsse:UsernameToken>
            </wsse:Security>
@@ -72,12 +74,15 @@ GET_TICKET_BODY = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org
         </soapenv:Envelope>"""
 
 CREATE_TICKET_BODY = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="{xml_ns}">
-       <soapenv:Header>
-       <wsse:Security soapenv:mustUnderstand="1" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+       <soapenv:Header> <wsse:Security soapenv:mustUnderstand="1"
+       xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+       xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
        <wsse:UsernameToken wsu:Id=\"\">
        <wsse:Username>sams</wsse:Username>
-       <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordDigest">{password_digest}</wsse:Password>
-       <wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary">{base64_binary}</wsse:Nonce>
+       <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0
+       #PasswordDigest">{password_digest}</wsse:Password>
+       <wsse:Nonce EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0
+       #Base64Binary">{base64_binary}</wsse:Nonce>
        <wsu:Created>{req_time}</wsu:Created>
        </wsse:UsernameToken>
        </wsse:Security>
@@ -172,34 +177,36 @@ CREATE_TICKET_BODY = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.
     </soapenv:Envelope>"""
 
 
-def http_request(url, body = ''):
+def http_request(body=''):
     ''' Makes an API call with the given arguments '''
-    response = requests.post(URL, data = body, headers = HEADERS, verify = VERIFY_CERTIFICATE)
+    response = requests.post(URL, data=body, headers=HEADERS, verify=VERIFY_CERTIFICATE)
 
     if response.status_code < 200 or response.status_code >= 300:
         if response.status_code == 404:
             return_error('Request Failed. with status: 404. Cannot find the requested resource. Check your Server URL')
         elif response.status_code == 500:
-            jres = json.loads(xml2json(response.content))
-            return_error('Request Failed. with status: ' + str(response.status_code) + '. Reason is: ' + str(jres['Envelope']['Body']['Fault']['faultstring']))
+            json_result = json.loads(xml2json(response.content))
+            return_error('Request Failed. with status: ' + str(response.status_code) + '. Reason is: ' + str(
+                json_result['Envelope']['Body']['Fault']['faultstring']))
         else:
-            return_error('Request Failed. with status: ' + str(response.status_code) + '. Reason is: ' + str(response.reason))
+            return_error(
+                'Request Failed. with status: ' + str(response.status_code) + '. Reason is: ' + str(response.reason))
 
-    jres = json.loads(xml2json(response.content))
+    json_result = json.loads(xml2json(response.content))
 
-    if 'Envelope' in jres:
-        if 'Body' in jres['Envelope']:
-            if 'Fault' in jres['Envelope']['Body']:
-                return_error('Request Failed. Reason is: ' + jres['Envelope']['Body']['Fault']['faultstring'])
+    if 'Envelope' in json_result:
+        if 'Body' in json_result['Envelope']:
+            if 'Fault' in json_result['Envelope']['Body']:
+                return_error('Request Failed. Reason is: ' + json_result['Envelope']['Body']['Fault']['faultstring'])
 
-    return jres
+    return json_result
 
 
-def prettify_get_ticket(jres):
-    ticket = jres['Envelope']['Body']['getResponse']['return']['Body']
+def prettify_get_ticket(json_result):
+    ticket = json_result['Envelope']['Body']['getResponse']['return']['Body']
 
     if not ticket:
-        return_error(jres['Envelope']['Body']['getResponse']['return']['Header'])
+        return_error(json_result['Envelope']['Body']['getResponse']['return']['Header'])
 
     pretty_ticket = {
         'ServiceRequestId': ticket['ServiceRequestId'],
@@ -233,11 +240,14 @@ def prettify_get_ticket(jres):
 
         if 'ContactInformation' in ticket['RequesterContactInformation']:
             if 'ContactEmail' in ticket['RequesterContactInformation']['ContactInformation']:
-                pretty_ticket['ContactEmail'] = ticket['RequesterContactInformation']['ContactInformation']['ContactEmail']
+                pretty_ticket['ContactEmail'] = ticket['RequesterContactInformation']['ContactInformation'][
+                    'ContactEmail']
             if 'ContactPhone' in ticket['RequesterContactInformation']['ContactInformation']:
-                pretty_ticket['ContactPhone'] = ticket['RequesterContactInformation']['ContactInformation']['ContactPhone']
+                pretty_ticket['ContactPhone'] = ticket['RequesterContactInformation']['ContactInformation'][
+                    'ContactPhone']
             if 'ContactName' in ticket['RequesterContactInformation']['ContactInformation']:
-                pretty_ticket['ContactName'] = ticket['RequesterContactInformation']['ContactInformation']['ContactName']
+                pretty_ticket['ContactName'] = ticket['RequesterContactInformation']['ContactInformation'][
+                    'ContactName']
 
     return pretty_ticket
 
@@ -256,10 +266,10 @@ def remedy_get_ticket(service_request_id):
     digest_string = hash_object.digest()
     password_digest = base64.b64encode(digest_string).decode("ascii")
 
-    body = GET_TICKET_BODY.format(xml_ns = XML_NS, password_digest = password_digest, base64_binary = base64_binary,
-                                req_time = str(req_time), date = date, time = time,
-                                service_request_id = service_request_id)
-    response = http_request(URL, body)
+    body = GET_TICKET_BODY.format(xml_ns=XML_NS, password_digest=password_digest, base64_binary=base64_binary,
+                                  req_time=str(req_time), date=date, time=time,
+                                  service_request_id=service_request_id)
+    response = http_request(body)
 
     return response
 
@@ -274,18 +284,20 @@ def remedy_get_ticket_command():
         'ContentsFormat': formats['json'],
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Ticket:', pretty_ticket, ['ServiceRequestId', 'Priority', 'ServiceRequestStatus', 'RequesterEmail', 'RequesterName', 'RequesterPhone']),
+        'HumanReadable': tableToMarkdown('Ticket:', pretty_ticket,
+                                         ['ServiceRequestId', 'Priority', 'ServiceRequestStatus', 'RequesterEmail',
+                                          'RequesterName', 'RequesterPhone']),
         'EntryContext': {
-              "Remedy.Ticket(val.ServiceRequestId == obj.ServiceRequestId)": pretty_ticket
+            "Remedy.Ticket(val.ServiceRequestId == obj.ServiceRequestId)": pretty_ticket
         }
     })
 
 
-def prettify_create_ticket(jres, requester_phone, requester_name, requester_email):
-    ticket = jres['Envelope']['Body']['createResponse']['return']['Body']
+def prettify_create_ticket(json_result, requester_phone, requester_name, requester_email):
+    ticket = json_result['Envelope']['Body']['createResponse']['return']['Body']
 
     if not ticket:
-        return_error(jres['Envelope']['Body']['createResponse']['return']['Header'])
+        return_error(json_result['Envelope']['Body']['createResponse']['return']['Header'])
 
     pretty_ticket = {'ServiceRequestId': ticket['ServiceRequestId']}
     pretty_ticket['RequesterPhone'] = requester_phone
@@ -297,9 +309,9 @@ def prettify_create_ticket(jres, requester_phone, requester_name, requester_emai
 
 @logger
 def remedy_create_ticket(details, requester_ntid, requester_email, requester_name,
-                        requester_phone, requester_work_city, requester_work_location,
-                        requester_work_street, requester_pernr = '?',
-                        contact_email = '?', contact_name = '?', contact_phone = '?'):
+                         requester_phone, requester_work_city, requester_work_location,
+                         requester_work_street, requester_pernr='?',
+                         contact_email='?', contact_name='?', contact_phone='?'):
     now = datetime.utcnow()
     req_time = now.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
     date = now.strftime('%Y-%m-%d')
@@ -312,14 +324,16 @@ def remedy_create_ticket(details, requester_ntid, requester_email, requester_nam
     digest_string = hash_object.digest()
     password_digest = base64.b64encode(digest_string).decode("ascii")
 
-    body = CREATE_TICKET_BODY.format(xml_ns = XML_NS, password_digest = password_digest, base64_binary = base64_binary,
-                                req_time = str(req_time), date = date, time = time, details = details,
-                                requester_ntid = requester_ntid, requester_email = requester_email,
-                                requester_name = requester_name, requester_phone = requester_phone,
-                                requester_work_city = requester_work_city, requester_work_location = requester_work_location,
-                                requester_work_street = requester_work_street, requester_pernr = requester_pernr,
-                                contact_email = contact_email, contact_name = contact_name, contact_phone = contact_phone)
-    response = http_request(URL, body)
+    body = CREATE_TICKET_BODY.format(xml_ns=XML_NS, password_digest=password_digest, base64_binary=base64_binary,
+                                     req_time=str(req_time), date=date, time=time, details=details,
+                                     requester_ntid=requester_ntid, requester_email=requester_email,
+                                     requester_name=requester_name, requester_phone=requester_phone,
+                                     requester_work_city=requester_work_city,
+                                     requester_work_location=requester_work_location,
+                                     requester_work_street=requester_work_street, requester_pernr=requester_pernr,
+                                     contact_email=contact_email, contact_name=contact_name,
+                                     contact_phone=contact_phone)
+    response = http_request(body)
 
     return response
 
@@ -367,11 +381,13 @@ def remedy_create_ticket_command():
         'ContentsFormat': formats['json'],
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Ticket:', pretty_ticket, ['ServiceRequestId', 'RequesterEmail', 'RequesterName', 'RequesterPhone']),
+        'HumanReadable': tableToMarkdown('Ticket:', pretty_ticket,
+                                         ['ServiceRequestId', 'RequesterEmail', 'RequesterName', 'RequesterPhone']),
         'EntryContext': {
-              "Remedy.Ticket(val.ServiceRequestId == obj.ServiceRequestId)": ec_create
+            "Remedy.Ticket(val.ServiceRequestId == obj.ServiceRequestId)": ec_create
         }
     })
+
 
 def remedy_update_ticket_command():
     demisto.log('TODO')
