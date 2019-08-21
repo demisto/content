@@ -1,5 +1,5 @@
 import json
-
+import requests_mock
 from unittest.mock import patch
 
 from ProofpointTAP_v2 import fetch_incidents, Client, ALL_EVENTS, ISSUES_EVENTS, get_events_command
@@ -198,7 +198,8 @@ def test_command(requests_mock):
         api_version="v2",
         service_principal="user1",
         secret="123",
-        verify=False
+        verify=False,
+        proxies=None
     )
 
     args = {
@@ -225,7 +226,8 @@ def test_first_fetch_incidents(mocked_parse_date_range, requests_mock):
         api_version="v2",
         service_principal="user1",
         secret="123",
-        verify=False
+        verify=False,
+        proxies=None
     )
 
     next_run, incidents = fetch_incidents(
@@ -253,7 +255,8 @@ def test_next_fetch(requests_mock, ):
         api_version="v2",
         service_principal="user1",
         secret="123",
-        verify=False
+        verify=False,
+        proxies=None
     )
 
     next_run, incidents = fetch_incidents(

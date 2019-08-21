@@ -56,11 +56,12 @@ def get_fetch_times(last_fetch):
 
 
 class Client:
-    def __init__(self, proofpoint_url, api_version, verify, service_principal, secret):
+    def __init__(self, proofpoint_url, api_version, verify, service_principal, secret, proxies):
         self.base_url = "{}/{}/siem".format(proofpoint_url, api_version)
         self.verify = verify
         self.service_principal = service_principal
         self.secret = secret
+        self.proxies = proxies
 
     def http_request(self, method, url_suffix, params=None, data=None):
         full_url = self.base_url + url_suffix
@@ -71,7 +72,8 @@ class Client:
             verify=self.verify,
             params=params,
             json=data,
-            auth=(self.service_principal, self.secret)
+            auth=(self.service_principal, self.secret),
+            proxies=self.proxies
         )
 
         if res.status_code not in [200, 204]:
@@ -276,12 +278,12 @@ def main():
     event_type_filter = demisto.params().get('events_type')
 
     # Remove proxy if not set to true in params
-    handle_proxy()
+    proxies = handle_proxy()
 
     LOG('Command being called is %s' % (demisto.command()))
 
     try:
-        client = Client(server_url, api_version, verify_certificate, service_principal, secret)
+        client = Client(server_url, api_version, verify_certificate, service_principal, secret, proxies)
 
         if demisto.command() == 'test-module':
             results = test_module(client, fetch_time, event_type_filter)
