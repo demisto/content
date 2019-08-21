@@ -328,7 +328,7 @@ The following is the format for a host.
     "OS": "STRING, Host operating system.",
     "OSVersion": "STRING, Host operating system version.",
     "Processor": "STRING, Host processor.",
-    "Processors": "STRING, Host processors" 
+    "Processors": "INT, Number of processors the host is using.' 
 }
 ```
 ## InfoFile
