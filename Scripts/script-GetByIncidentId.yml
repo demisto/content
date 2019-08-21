@@ -1,0 +1,41 @@
+commonfields:
+  id: a85a213b-2c41-40d7-8d31-ccef5008e980
+  version: 16
+name: GetByIncidentId
+script: |-
+  incident_id = demisto.args().get('id', demisto.incidents()[0]['id'])
+  key = demisto.args()['getKey']
+  set_key = demisto.args().get('setKey', key)
+
+  keys = key.split('.')
+
+  try:
+      context = demisto.executeCommand("getContext", {"id":incident_id})[0]['Contents']['context']
+      res = reduce(lambda x,y: x[y], keys, context)
+  except:
+      res = "Cannot find {} in Incident #{}".format(key, incident_id)
+
+  entry_context = {set_key: res}
+
+  demisto.results({'Type' : entryTypes['note'],
+                   'ContentsFormat': formats['text'],
+                   'EntryContext' : entry_context,
+                   'Contents': res
+  })
+type: python
+tags:
+- DemistoAPI
+comment: Gets a value from the given incident's context.
+enabled: true
+args:
+- name: id
+  default: true
+  description: Incident to get context values from (Default is current incident)
+- name: getKey
+  required: true
+  description: The key to get
+- name: setKey
+  description: The key to set (will default to getKey)
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
