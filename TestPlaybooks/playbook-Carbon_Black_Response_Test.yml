@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 50
         }
       }
@@ -46,8 +46,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2935
+          "x": 50,
+          "y": 2760
         }
       }
     note: false
@@ -71,8 +71,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 4130
+          "x": 50,
+          "y": 3955
         }
       }
     note: false
@@ -96,8 +96,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 4800
+          "x": 50,
+          "y": 4625
         }
       }
     note: false
@@ -128,8 +128,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3255
+          "x": 50,
+          "y": 3080
         }
       }
     note: false
@@ -157,8 +157,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3605
+          "x": 50,
+          "y": 3430
         }
       }
     note: false
@@ -189,8 +189,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3780
+          "x": 50,
+          "y": 3605
         }
       }
     note: false
@@ -219,8 +219,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3080
+          "x": 50,
+          "y": 2905
         }
       }
     note: false
@@ -251,8 +251,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 4450
+          "x": 50,
+          "y": 4275
         }
       }
     note: false
@@ -282,8 +282,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 5470
+          "x": 50,
+          "y": 5295
         }
       }
     note: false
@@ -313,8 +313,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 5295
+          "x": 50,
+          "y": 5120
         }
       }
     note: false
@@ -343,8 +343,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 4275
+          "x": 50,
+          "y": 4100
         }
       }
     note: false
@@ -373,8 +373,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 4945
+          "x": 50,
+          "y": 4770
         }
       }
     note: false
@@ -402,8 +402,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 5120
+          "x": 50,
+          "y": 4945
         }
       }
     note: false
@@ -427,8 +427,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2090
+          "x": 50,
+          "y": 1915
         }
       }
     note: false
@@ -457,8 +457,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2235
+          "x": 50,
+          "y": 2060
         }
       }
     note: false
@@ -489,8 +489,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2410
+          "x": 50,
+          "y": 2235
         }
       }
     note: false
@@ -521,8 +521,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2585
+          "x": 50,
+          "y": 2410
         }
       }
     note: false
@@ -553,8 +553,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2760
+          "x": 50,
+          "y": 2585
         }
       }
     note: false
@@ -584,8 +584,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 4625
+          "x": 50,
+          "y": 4450
         }
       }
     note: false
@@ -613,8 +613,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3955
+          "x": 50,
+          "y": 3780
         }
       }
     note: false
@@ -638,7 +638,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 1070
         }
       }
@@ -669,7 +669,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 1215
         }
       }
@@ -691,6 +691,7 @@ tasks:
     nexttasks:
       '#none#':
       - "38"
+      - "51"
     scriptarguments:
       facet: {}
       query: {}
@@ -701,7 +702,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 265,
           "y": 1390
         }
       }
@@ -732,8 +733,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1915
+          "x": 50,
+          "y": 1740
         }
       }
     note: false
@@ -753,7 +754,7 @@ tasks:
       brand: carbonblack-v2
     nexttasks:
       '#none#':
-      - "50"
+      - "37"
     scriptarguments:
       get_related:
         simple: "true"
@@ -765,7 +766,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 1565
         }
       }
@@ -795,7 +796,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 195
         }
       }
@@ -826,7 +827,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 370
         }
       }
@@ -859,7 +860,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 545
         }
       }
@@ -888,7 +889,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 895
         }
       }
@@ -920,7 +921,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 480,
           "y": 720
         }
       }
@@ -951,8 +952,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 3430
+          "x": 50,
+          "y": 3255
         }
       }
     note: false
@@ -991,7 +992,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 910,
           "y": 1390
         }
       }
@@ -1029,7 +1030,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 910,
           "y": 1565
         }
       }
@@ -1051,50 +1052,38 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 910,
           "y": 1755
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "50":
-    id: "50"
-    taskid: 4269a6c6-d9ff-4b6c-89fb-4704c1f758c5
-    type: condition
+  "51":
+    id: "51"
+    taskid: b8606deb-9177-49c4-82ca-af033d092d10
+    type: regular
     task:
-      id: 4269a6c6-d9ff-4b6c-89fb-4704c1f758c5
+      id: b8606deb-9177-49c4-82ca-af033d092d10
       version: -1
-      name: Verify family was fetched
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "37"
+      name: Get process without relations by pid/segid
+      script: carbonblack-v2|||cb-get-process
+      type: regular
+      iscommand: true
+      brand: carbonblack-v2
+    scriptarguments:
+      get_related:
+        simple: "false"
+      pid:
+        simple: ${Process.[0].CbID}
+      segid:
+        simple: ${Process.[0].CbSegmentID}
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: Process
-                accessor: Siblings
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: Process
-                accessor: Parent
-            iscontext: true
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1740
+          "y": 1565
         }
       }
     note: false
@@ -1105,8 +1094,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5515,
-        "width": 810,
+        "height": 5340,
+        "width": 1240,
         "x": 50,
         "y": 50
       }
