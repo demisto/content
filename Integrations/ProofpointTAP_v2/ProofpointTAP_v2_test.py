@@ -1,5 +1,4 @@
 import json
-import requests_mock
 from unittest.mock import patch
 
 from ProofpointTAP_v2 import fetch_incidents, Client, ALL_EVENTS, ISSUES_EVENTS, get_events_command
