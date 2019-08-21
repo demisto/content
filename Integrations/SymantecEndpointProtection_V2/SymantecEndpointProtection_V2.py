@@ -53,6 +53,18 @@ EPOCH_HOUR = 60 * EPOCH_MINUTE
 def fix_url(base):
     return base if base.endswith('/') else (base + '/')
 
+def endpoint_extract_indicators(raw_json):
+    IPs=[]
+    for content in raw_json:
+        ip={}
+        if content.get('ipAddresses'):
+            ip['Address'] = content.get('ipAddresses')[0]
+        if content.get('computerName'):
+            ip['Host'] = content.get('computerName')
+        if ip != {}:
+            IPs.append(ip)
+    return IPs
+
 
 def build_query_params(params):
     list_params = map(lambda key: key + '=' + str(params[key]), params.keys())
@@ -562,6 +574,7 @@ def endpoints_info_command(token):
     columns_list = choose_columns(columns, ENDPOINTS_INFO_DEFAULT_COLUMNS)
     md = create_endpints_filter_string(computer_name, last_update, os, page_size, group_name)
     md += tableToMarkdown('Endpoints', filtered_json_response, columns_list)
+    res = dict((k, entry_context[k]) for k in ['nikhil', 'akshat'] if k in entry_context)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
@@ -569,7 +582,9 @@ def endpoints_info_command(token):
         'HumanReadable': md,
         'IgnoreAutoExtract': True,
         'EntryContext': {
-            'SEPM.Endpoint(val.Hostname == obj.Hostname)': createContext(entry_context, removeNull=True)
+            'SEPM.Endpoint(val.Hostname == obj.Hostname)': createContext(entry_context, removeNull=True),
+            'IP(val.Address === obj.Address)': endpoint_extract_indicators(filtered_json_response),
+            'Endpoint(val.Hostname == obj.Hostname)': createContext(entry_context, removeNull=True)
         }
     })
 
