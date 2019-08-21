@@ -30,7 +30,6 @@ mapping:
     required: yes
   enabled:
     type: bool
-    required: yes
   system:
     type: bool
   deprecated:
