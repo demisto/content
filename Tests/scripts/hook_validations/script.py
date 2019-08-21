@@ -63,7 +63,7 @@ class ScriptValidator(object):
             self.is_invalid_subtype()
         ])
 
-        return is_bc_broke
+        return not is_bc_broke
 
     @classmethod
     def _get_arg_to_required_dict(cls, script_json):
