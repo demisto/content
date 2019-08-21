@@ -184,24 +184,8 @@ class FilesValidator(object):
                 # Remove schema file from modified files
                 modified_files.remove(file_path)
                 schema = os.path.splitext(os.path.basename(file_path))[0]
-                regex_tupple = SCHEMA_TO_REGEXES_TUPLE_DICT.get(schema)
-                for regex in regex_tupple:
-                    splitted_regex = regex.split(".*")
-                    directory = splitted_regex[0]
-                    for root, dirs, files in os.walk(directory):
-                        if root not in DIR_LIST:  # Skipping in case we entered a package
-                            continue
-                        for file_name in files:
-                            file_path_ = os.path.join(root, file_name)
-                            # skipping hidden files
-                            if file_name.startswith('.') or file_name.endswith('.md'):
-                                continue
-                            structure_validator = StructureValidator(file_path_,
-                                                                     is_added_file=False,
-                                                                     is_renamed=False)
-                            print("Validating {}".format(file_path_))
-                            if not structure_validator.is_valid_scheme():
-                                self._is_valid = False
+                self.validate_files_relevant_to_schema(schema)
+
         for file_path in modified_files:
             old_file_path = None
             if isinstance(file_path, tuple):
@@ -249,6 +233,31 @@ class FilesValidator(object):
                 image_validator = ImageValidator(file_path)
                 if not image_validator.is_valid():
                     self._is_valid = False
+
+    def validate_files_relevant_to_schema(self, schema):
+        """Validate files relevant to the provided schema
+
+        Args:
+            schema (str): name of schema to validate its files
+        """
+        regex_tupple = SCHEMA_TO_REGEXES_TUPLE_DICT.get(schema)
+        for regex in regex_tupple:
+            splitted_regex = regex.split(".*")
+            directory = splitted_regex[0]
+            for root, dirs, files in os.walk(directory):
+                if root not in DIR_LIST:  # Skipping in case we entered a package
+                    continue
+                for file_name in files:
+                    file_path = os.path.join(root, file_name)
+                    # skipping hidden files
+                    if file_name.startswith('.') or file_name.endswith('.md'):
+                        continue
+                    structure_validator = StructureValidator(file_path,
+                                                             is_added_file=False,
+                                                             is_renamed=False)
+                    print("Validating {}".format(file_path))
+                    if not structure_validator.is_valid_scheme():
+                        self._is_valid = False
 
     def validate_added_files(self, added_files):
         """Validate the added files from your branch.
