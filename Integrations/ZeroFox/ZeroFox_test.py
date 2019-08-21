@@ -1,6 +1,5 @@
 import json
 import demistomock as demisto
-import pytest
 
 
 def test_get_alert_contents(mocker):
