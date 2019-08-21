@@ -62,15 +62,15 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 0efbff75-ecee-436b-8f18-65d443236bb4
+    taskid: 26e3395b-a98f-49b9-861c-323774f97e2b
     type: regular
     task:
-      id: 0efbff75-ecee-436b-8f18-65d443236bb4
+      id: 26e3395b-a98f-49b9-861c-323774f97e2b
       version: -1
-      name: sumLIst
+      name: sumList
       description: "Sums a List\ne.g. [\"25\", \"10\", \"25\"] =>  \"60\"\n\nThis
         is an example for number transformer.\n "
-      scriptName: SumList
+      scriptName: SumArray
       type: regular
       iscommand: false
       brand: ""
@@ -104,7 +104,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "6"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -143,7 +143,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1595
         }
       }
     note: false
@@ -151,10 +151,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 3aa0a22a-1194-45f5-8c9e-23b86ed9909e
+    taskid: ca286c3c-048d-44cd-88fa-f58e2b728da1
     type: regular
     task:
-      id: 3aa0a22a-1194-45f5-8c9e-23b86ed9909e
+      id: ca286c3c-048d-44cd-88fa-f58e2b728da1
       version: -1
       name: commetnstocontext
       description: "Takes the comments of a given entry ID and stores them in the
@@ -170,7 +170,7 @@ tasks:
       - "3"
     scriptarguments:
       contextKey:
-        simple: my_sum
+        simple: my_list_sum
       entryId:
         simple: ${lastCompletedTaskEntries.[0]}
       listSeperator: {}
@@ -185,12 +185,148 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 6558b8ff-8bd0-46b4-8b56-221a76a77982
+    type: regular
+    task:
+      id: 6558b8ff-8bd0-46b4-8b56-221a76a77982
+      version: -1
+      name: Set int
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append: {}
+      key:
+        simple: my_int
+      value:
+        simple: "42"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 784914c3-cbd9-40eb-8aed-7d363a6ddac1
+    type: regular
+    task:
+      id: 784914c3-cbd9-40eb-8aed-7d363a6ddac1
+      version: -1
+      name: sumList
+      description: "Sums a List\ne.g. [\"25\", \"10\", \"25\"] =>  \"60\"\n\nThis
+        is an example for number transformer.\n "
+      scriptName: SumArray
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      value:
+        simple: ${my_int}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: acdbdaa7-cfb5-453a-821f-727be0bbec2b
+    type: regular
+    task:
+      id: acdbdaa7-cfb5-453a-821f-727be0bbec2b
+      version: -1
+      name: commetnstocontext
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      append: {}
+      key:
+        simple: my_int_sum
+      value:
+        simple: ${lastCompletedTaskEntries.[0]}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 0c15cd5f-d6bc-4158-857e-91d1a4d9c182
+    type: condition
+    task:
+      id: 0c15cd5f-d6bc-4158-857e-91d1a4d9c182
+      version: -1
+      name: Sanity check - int
+      description: "Sums a List\ne.g. [\"25\", \"10\", \"25\"] =>  \"60\"\n\nThis
+        is an example for number transformer.\n "
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: my_int_sum
+            iscontext: true
+          right:
+            value:
+              simple: "42"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
+        "height": 1610,
         "width": 380,
         "x": 50,
         "y": 50

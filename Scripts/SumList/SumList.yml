@@ -17,6 +17,7 @@ system: false
 tags:
 - transformer
 - number
+- entirelist
 timeout: '0'
 type: python
 runas: DBotWeakRole
