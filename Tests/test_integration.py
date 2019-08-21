@@ -12,9 +12,6 @@ DEFAULT_TIMEOUT = 60
 DEFAULT_INTERVAL = 20
 ENTRY_TYPE_ERROR = 4
 
-INC_CREATION_ERR = 'Failed to create incident. Possible reasons are:\nMismatch between playbookID in conf.json and ' \
-                   'the id of the real playbook you were trying to use, or schema problems in the TestPlaybook.'
-
 
 # ----- Functions ----- #
 
@@ -150,7 +147,7 @@ def __disable_integrations_instances(client, module_instances):
 
 
 # create incident with given name & playbook, and then fetch & return the incident
-def __create_incident_with_playbook(client, name, playbook_id):
+def __create_incident_with_playbook(client, name, playbook_id, integrations):
     # create incident
     kwargs = {'createInvestigation': True, 'playbookId': playbook_id}
     response_json = {}
@@ -162,7 +159,11 @@ def __create_incident_with_playbook(client, name, playbook_id):
 
     inc_id = response_json.get('id', 'incCreateErr')
     if inc_id == 'incCreateErr':
-        print_error(INC_CREATION_ERR)
+        integration_names = [integration['name'] for integration in integrations if 'name' in integration]
+        print_error('Failed to create incident for integration names: {} and playbookID: {}.'
+                    'Possible reasons are:\nMismatch between playbookID in conf.json and '
+                    'the id of the real playbook you were trying to use,'
+                    'or schema problems in the TestPlaybook.'.format(str(integration_names), playbook_id))
         return False, -1
 
     # get incident
@@ -284,7 +285,7 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
         print('Create integration %s succeed' % (integration_name, ))
 
     # create incident with playbook
-    incident, inc_id = __create_incident_with_playbook(client, 'inc_%s' % (playbook_id, ), playbook_id)
+    incident, inc_id = __create_incident_with_playbook(client, 'inc_%s' % (playbook_id, ), playbook_id, integrations)
 
     if not incident:
         return False, -1
