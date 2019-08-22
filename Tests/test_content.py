@@ -594,6 +594,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                               filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
                               unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                               build_name, server_numeric_version)
+            print('test index: {}'.format(test_index))
             if test_index % 10 == 0:
                 stdout, stderr = get_docker_processes_data()
                 text = stdout if not stderr else stderr
@@ -613,6 +614,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                           filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
                           unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                           build_name, server_numeric_version, is_ami)
+        print('test index: {}'.format(test_index))
         if test_index % 10 == 0:
             stdout, stderr = get_docker_processes_data()
             text = stdout if not stderr else stderr
