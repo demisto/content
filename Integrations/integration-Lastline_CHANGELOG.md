@@ -1,1 +1,3 @@
-Added File.Type output to file, lastline-get-report commands
+Added the *File.Type* output to the following commands:
+  - ***file***
+  - ***lastline-get-report commands***
