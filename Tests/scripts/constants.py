@@ -90,19 +90,6 @@ SPELLCHECK_FILE_TYPES = [
     SCRIPT_YML_REGEX
 ]
 
-SCHEMA_TO_REGEXES_TUPLE_DICT = {
-    "integration": (INTEGRATION_REGEX, INTEGRATION_YML_REGEX),
-    "playbook": (PLAYBOOK_REGEX, ),
-    "script": (SCRIPT_REGEX, SCRIPT_YML_REGEX),
-    "widget": (WIDGETS_REGEX,),
-    "dashboard": (DASHBOARD_REGEX,),
-    "canvas-context-connections": (CONNECTIONS_REGEX,),
-    "classifier": (CLASSIFIER_REGEX,),
-    "layout": (LAYOUT_REGEX,),
-    "incidentfields": (INCIDENT_FIELDS_REGEX,),
-    "incidentfield": (INCIDENT_FIELD_REGEX,),
-}
-
 KNOWN_FILE_STATUSES = ['a', 'm', 'd', 'r'] + ['r{:03}'.format(i) for i in range(101)]
 
 CODE_FILES_REGEX = [INTEGRATION_JS_REGEX, INTEGRATION_PY_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX]
