@@ -84,7 +84,7 @@ tasks:
         complex:
           root: my_list
           transformers:
-          - operator: sumList
+          - operator: SumList
     separatecontext: false
     view: |-
       {
@@ -211,7 +211,7 @@ tasks:
         complex:
           root: my_int
           transformers:
-          - operator: sumList
+          - operator: SumList
     separatecontext: false
     view: |-
       {
@@ -353,7 +353,7 @@ tasks:
         complex:
           root: my_str
           transformers:
-          - operator: sumList
+          - operator: SumList
     separatecontext: false
     view: |-
       {
@@ -459,7 +459,7 @@ tasks:
         complex:
           root: my_single_str_arr
           transformers:
-          - operator: ad8a9546-846f-4694-8108-8f51dd0df661
+          - operator: SumList
     separatecontext: false
     view: |-
       {
