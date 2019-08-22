@@ -1,18 +1,13 @@
 version: 2
-experimental:
-  notify:
-    branches:
-      only:
-        - master
 jobs:
   build:
     docker:
-      - image: devdemisto/content-build-2and3:2.0.0.295  # disable-secrets-detection
+      - image: devdemisto/content-build-2and3:2.0.0.877  # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.6.1"
-      SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "2b79070447764c60c574ca5cdfa07bffc64d39c1" # guardrails-disable-line disable-secrets-detection
+      CONTENT_VERSION: "19.8.0"
+      SERVER_VERSION: "4.5.0"
+      GIT_SHA1: "7287efb0b98767b20b4f65ffb8041520988305ff" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
@@ -65,6 +60,10 @@ jobs:
               [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
               python ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
       - run:
+          name: Spell Checks
+          command: |
+            python ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
+      - run:
           name: Build Content Descriptor
           when: always
           command: python release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION $GITHUB_TOKEN
@@ -109,13 +108,22 @@ jobs:
           name: Create Instance
           when: always
           command: |
+            pip install --upgrade awscli
+            pip install ansible ansible-runner rsa paramiko boto3 requests
+
             if ./Tests/scripts/is_ami.sh ;
               then
-                [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-                python ./Tests/scripts/create_instances.py -n $IS_NIGHTLY -b $CIRCLE_BRANCH
+                if [ -n "${NIGHTLY}" ] ;
+                  then
+                    export IFRA_ENV_TYPE=Content-Master
+
+                  else
+                    export IFRA_ENV_TYPE=Content-Env
+                fi
+                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType $IFRA_ENV_TYPE
 
               else
-                ./Tests/lastest_server_build_scripts/create_instance.sh instance.json
+                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild
             fi
       - run:
           name: Setup Instance
@@ -124,11 +132,11 @@ jobs:
             if ./Tests/scripts/is_ami.sh ;
               then
                 python ./Tests/scripts/run_content_installation.py
-                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path)
+                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION
 
               else
                 ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
-                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) --non-ami
+                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION --non-ami
             fi
       - run:
           name: Run Tests - Latest GA

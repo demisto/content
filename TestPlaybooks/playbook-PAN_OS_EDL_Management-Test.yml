@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 745f5a0b-cbd2-41e9-8ad0-c737134f93ce
+    taskid: 49467be0-c856-4650-89f3-786b1abfa8ed
     type: start
     task:
-      id: 745f5a0b-cbd2-41e9-8ad0-c737134f93ce
+      id: 49467be0-c856-4650-89f3-786b1abfa8ed
       version: -1
       name: ""
       iscommand: false
@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -30,10 +30,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 776655d3-cc6a-45ef-837d-a7f8ebba5b65
+    taskid: 361fc3ee-2093-41ee-8421-548e4a76c584
     type: regular
     task:
-      id: 776655d3-cc6a-45ef-837d-a7f8ebba5b65
+      id: 361fc3ee-2093-41ee-8421-548e4a76c584
       version: -1
       name: pan-os-edl-update
       description: Updates the instance context with the list name and items given
@@ -45,6 +45,7 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+      - "10"
     scriptarguments:
       add_or_remove:
         simple: add
@@ -60,7 +61,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
         }
       }
@@ -69,12 +70,12 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: ea8abdca-211f-4e06-8433-f5bb2198d5f4
+    taskid: c7bc97d7-d056-42e3-8f8f-ae99de0628e5
     type: regular
     task:
-      id: ea8abdca-211f-4e06-8433-f5bb2198d5f4
+      id: c7bc97d7-d056-42e3-8f8f-ae99de0628e5
       version: -1
-      name: pan-os-edl-dump-internal-list
+      name: pan-os-edl-dump-internal-list to incident context
       description: Dump instance context to either incident context or file
       script: '|||pan-os-edl-dump-internal-list'
       type: regular
@@ -101,10 +102,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: f30bee0c-3940-44aa-8d8c-8bfe8e657686
+    taskid: c9ad0acd-e6d9-41b0-8fb3-fdfaf726b7f7
     type: condition
     task:
-      id: f30bee0c-3940-44aa-8d8c-8bfe8e657686
+      id: c9ad0acd-e6d9-41b0-8fb3-fdfaf726b7f7
       version: -1
       name: test internal list commands
       type: condition
@@ -128,7 +129,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 720
         }
       }
@@ -137,10 +138,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: a8748816-0ffd-427e-82e6-14cd3c138e49
+    taskid: 4ff43909-41f5-492e-88b3-52dfa30fd895
     type: regular
     task:
-      id: a8748816-0ffd-427e-82e6-14cd3c138e49
+      id: 4ff43909-41f5-492e-88b3-52dfa30fd895
       version: -1
       name: pan-os-edl-print-internal-list
       description: Display internal list data in the war-room
@@ -158,7 +159,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 895
         }
       }
@@ -167,10 +168,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 2bbeab5b-a547-4846-8737-5f2b1cf3e2b5
+    taskid: 763fb656-6ef3-4b90-83e1-978bb512a3aa
     type: regular
     task:
-      id: 2bbeab5b-a547-4846-8737-5f2b1cf3e2b5
+      id: 763fb656-6ef3-4b90-83e1-978bb512a3aa
       version: -1
       name: pan-os-edl-search-external-file
       description: Search a string on external file
@@ -190,7 +191,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1070
         }
       }
@@ -199,10 +200,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 7e03334c-79cd-40ba-896c-d2dfe9f6df15
+    taskid: ced737a7-0f32-48bb-8141-4836ebf8ca93
     type: regular
     task:
-      id: 7e03334c-79cd-40ba-896c-d2dfe9f6df15
+      id: ced737a7-0f32-48bb-8141-4836ebf8ca93
       version: -1
       name: pan-os-edl-get-external-file
       description: Display external file content in the war-room
@@ -212,7 +213,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "11"
     scriptarguments:
       file_path:
         simple: test_playbook_list4.txt
@@ -220,7 +221,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1245
         }
       }
@@ -229,10 +230,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 33566099-3d30-445b-8e30-80d4d1b1f2df
+    taskid: 6582f7e3-ef2f-4a36-80b7-644b6ef9428e
     type: title
     task:
-      id: 33566099-3d30-445b-8e30-80d4d1b1f2df
+      id: 6582f7e3-ef2f-4a36-80b7-644b6ef9428e
       version: -1
       name: Done
       description: Delete external file
@@ -243,8 +244,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1420
+          "x": 265,
+          "y": 1770
         }
       }
     note: false
@@ -252,10 +253,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: f0582d22-1a3d-4e50-8cf4-d49eb27a69bd
+    taskid: e09cab8c-5c8d-485b-8a76-5a0d24458f09
     type: regular
     task:
-      id: f0582d22-1a3d-4e50-8cf4-d49eb27a69bd
+      id: e09cab8c-5c8d-485b-8a76-5a0d24458f09
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -277,8 +278,109 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: da7cb9ab-0947-4339-8beb-b38079721bc2
+    type: regular
+    task:
+      id: da7cb9ab-0947-4339-8beb-b38079721bc2
+      version: -1
+      name: pan-os-edl-dump-internal-list to file
+      description: Dumps (copies) instance context to either the incident context
+        or a file.
+      script: '|||pan-os-edl-dump-internal-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      destination:
+        simple: file
+      list_name:
+        simple: test_playbook_list4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 1bcbc41f-da7d-4a78-8ea7-fde354e8e525
+    type: regular
+    task:
+      id: 1bcbc41f-da7d-4a78-8ea7-fde354e8e525
+      version: -1
+      name: pan-os-edl-get-external-file-metadata
+      description: Gets external file metadata.
+      script: '|||pan-os-edl-get-external-file-metadata'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      file_path:
+        simple: test_playbook_list4.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 45ddeef2-45cb-4692-8258-908a68d55bd6
+    type: condition
+    task:
+      id: 45ddeef2-45cb-4692-8258-908a68d55bd6
+      version: -1
+      name: Test pan-os-edl-get-external-file-metadata
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PANOSEDL
+                accessor: FileName
+            iscontext: true
+          right:
+            value:
+              simple: test_playbook_list4.txt
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
         }
       }
     note: false
@@ -289,8 +391,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
-        "width": 380,
+        "height": 1785,
+        "width": 810,
         "x": 50,
         "y": 50
       }

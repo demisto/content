@@ -4,7 +4,7 @@ import sys
 
 from Tests.scripts.constants import *
 from Tests.test_utils import print_error, print_warning, run_command, get_yaml, get_json, checked_type, \
-    get_release_notes_file_path
+    get_release_notes_file_path, get_latest_release_notes_text
 
 try:
     from pykwalify.core import Core
@@ -43,10 +43,8 @@ class StructureValidator(object):
         REPORT_REGEX,
         SCRIPT_PY_REGEX,
         SCRIPT_JS_REGEX,
-        SCRIPT_PS_REGEX,
         INTEGRATION_JS_REGEX,
         INTEGRATION_PY_REGEX,
-        INTEGRATION_PS_REGEX,
         REPUTATION_REGEX
     ]
     REGEXES_TO_SCHEMA_DICT = {
@@ -228,9 +226,11 @@ class StructureValidator(object):
 
         if os.path.isfile(self.file_path):
             rn_path = get_release_notes_file_path(self.file_path)
+            rn = get_latest_release_notes_text(rn_path)
+
             # check rn file exists and contain text
-            if not os.path.isfile(rn_path) or os.stat(rn_path).st_size == 0:
-                print_error('File {} is missing releaseNotes, please add.'.format(self.file_path))
+            if rn is None:
+                print_error('File {} is missing releaseNotes, Please add it under {}'.format(self.file_path, rn_path))
                 self._is_valid = False
 
     def is_id_not_modified(self, change_string=None):
