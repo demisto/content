@@ -8,23 +8,27 @@ configuration:
   required: true
   type: 4
 - defaultvalue: SUSPICIOUS
-  display: 'Email Severity: The DBot reputation for compromised emails (SUSPICIOUS or MALICIOUS)'
+  display: 'Email Severity: The DBot reputation for compromised emails (SUSPICIOUS
+    or MALICIOUS)'
   name: default_dbot_score_email
   required: false
   type: 0
 - defaultvalue: SUSPICIOUS
-  display: 'Domain Severity: The DBot reputation for compromised domains (SUSPICIOUS or MALICIOUS)'
+  display: 'Domain Severity: The DBot reputation for compromised domains (SUSPICIOUS
+    or MALICIOUS)'
   name: default_dbot_score_domain
   required: false
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
+  required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-description: Uses the Have I Been Pwned? service to check whether email addresses or domains were compromised in previous breaches.
+description: Uses the Have I Been Pwned? service to check whether email addresses
+  or domains were compromised in previous breaches.
 display: Have I Been Pwned? V2
 name: Have I Been Pwned? V2
 script:
@@ -34,7 +38,7 @@ script:
       description: The email address to check.
       isArray: false
       name: email
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Checks if an email address was compromised.
@@ -45,8 +49,8 @@ script:
       description: For compromised email addresses, the vendor that made the decision.
       type: String
     - contextPath: Account.Email.Pwned-V2.Compromised.Reporters
-      description: For compromised email addresses, the reporters for the vendor to make the
-        compromised decision.
+      description: For compromised email addresses, the reporters for the vendor to
+        make the compromised decision.
       type: String
     - contextPath: Account.Email.Address
       description: The email address.
@@ -55,7 +59,8 @@ script:
       description: For malicious email addresses, the vendor that made the decision.
       type: String
     - contextPath: Email.Malicious.Description
-      description: For malicious email addresses, the reason that the vendor made the decision.
+      description: For malicious email addresses, the reason that the vendor made
+        the decision.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -74,7 +79,7 @@ script:
       description: The domain to check.
       isArray: false
       name: domain
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Checks if a domain was compromised.
@@ -114,7 +119,7 @@ script:
       description: The email address to check.
       isArray: false
       name: email
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Checks if an email address was compromised.
@@ -125,8 +130,8 @@ script:
       description: For compromised email addresses, the vendor that made the decision.
       type: String
     - contextPath: Account.Email.Pwned-V2.Compromised.Reporters
-      description: For compromised email addresses, the reporters for the vendor to make the
-        compromised decision.
+      description: For compromised email addresses, the reporters for the vendor to
+        make the compromised decision.
       type: String
     - contextPath: Account.Email.Address
       description: The email address.
@@ -135,7 +140,8 @@ script:
       description: For malicious email addresses, the vendor that made the decision.
       type: String
     - contextPath: Email.Malicious.Description
-      description: For malicious email addresses, the reason that the vendor made the decision.
+      description: For malicious email addresses, the reason that the vendor made
+        the decision.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -154,7 +160,7 @@ script:
       description: The domain to check.
       isArray: false
       name: domain
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Checks if a domain was compromised.
