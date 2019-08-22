@@ -2,9 +2,15 @@ import inspect
 import json
 import sys
 import yaml
+import os
 from parinx import parser
-
 from package_creator import clean_python_code
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
+sys.path.append(CONTENT_DIR + '/Tests/demistomock')
+
+import demistomock  # noqa: E402
 
 jsPrivateFuncs = ["dqQueryBuilder", "toArray", "indent", "formatTableValuesRecursive", "string_to_array",
                   "array_to_hex_string", "SHA256_init", "SHA256_write", "SHA256_finalize", "SHA256_hash",
@@ -131,13 +137,13 @@ def createPyDocumentation(path, origin, language):
         pyScript = clean_python_code(file.read())
 
     code = compile(pyScript, '<string>', 'exec')
-    ns = {}
+    ns = {'demisto': demistomock}
     exec(code, ns)  # guardrails-disable-line
 
     x = []
 
     for a in ns:
-        if callable(ns.get(a)) and a not in pyPrivateFuncs:
+        if a != 'demisto' and callable(ns.get(a)) and a not in pyPrivateFuncs:
             docstring = inspect.getdoc(ns.get(a))
             if not docstring:
                 print("docstring for function " + a + " is empty")
