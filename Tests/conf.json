@@ -4,7 +4,8 @@
     "tests": [
         {
             "integrations": "ZeroFox",
-            "playbookID": "ZeroFox-Test"
+            "playbookID": "ZeroFox-Test",
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "SlackV2",
