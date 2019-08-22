@@ -171,12 +171,11 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
     for index, fetch_time in enumerate(fetch_times):
 
         if index < fetch_time_count - 1:
-            raw_events = client.get_events(interval=fetch_time + "/" + fetch_times[index + 1],
-                                           event_type_filter=event_type_filter,
-                                           threat_status=threat_status, threat_type=threat_type)
+            raw_events = client.get_events(interval=fetch_time+"/"+fetch_times[index+1], event_type_filter=event_type_filter,
+                                        threat_status=threat_status, threat_type=threat_type)
         else:
-            raw_events = client.get_events(since_time=fetch_time, event_type_filter=event_type_filter,
-                                           threat_status=threat_status, threat_type=threat_type)
+            raw_events = client.get_events(interval=fetch_time+"/"+datetime.now().strftime(DATE_FORMAT), event_type_filter=event_type_filter,
+                                        threat_status=threat_status, threat_type=threat_type)
 
         for raw_event in raw_events.get("messagesDelivered", []):
             raw_event["type"] = "messages delivered"
@@ -244,8 +243,7 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
                 last_fetch = raw_event["threatTime"]
 
             incidents.append(incident)
-
-    last_fetch_datetime = get_now().strftime(DATE_FORMAT)
+    last_fetch_datetime = get_now()
     next_run = {'last_fetch': last_fetch_datetime}
 
     return next_run, incidents
