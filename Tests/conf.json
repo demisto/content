@@ -1713,6 +1713,10 @@
         {
             "integrations": "VulnDB",
             "playbookID": "Test-VulnDB"
+        },
+        {
+            "integrations": "ThreatCrowd",
+            "playbookID": "ThreatCrowd - Test"
         }
     ],
     "skipped_tests": {
