@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0d4e6af2-8ad5-4cd9-8327-68ebe3e4c1fb
+    taskid: 8f3bf4f7-228a-40e9-8af5-2bd4928e7656
     type: start
     task:
-      id: 0d4e6af2-8ad5-4cd9-8327-68ebe3e4c1fb
+      id: 8f3bf4f7-228a-40e9-8af5-2bd4928e7656
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: fb5537fd-8481-41c2-89f1-7bb7c2a7d4c4
+    taskid: 730b7a3e-fc5e-4887-8f94-be34ff9f41b5
     type: regular
     task:
-      id: fb5537fd-8481-41c2-89f1-7bb7c2a7d4c4
+      id: 730b7a3e-fc5e-4887-8f94-be34ff9f41b5
       version: -1
       name: Get email
       description: Checks if an email has been compromised, as part of previous breaches.
@@ -59,10 +59,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: fe9d2d47-dfb0-4659-8206-d32abfdd5d34
+    taskid: 80200149-caca-4734-8d89-91e9c1e5b62e
     type: regular
     task:
-      id: fe9d2d47-dfb0-4659-8206-d32abfdd5d34
+      id: 80200149-caca-4734-8d89-91e9c1e5b62e
       version: -1
       name: Get domain
       description: Checks if domain has been compromised.
@@ -96,10 +96,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: dc5779b1-a53c-466a-80fa-91f0e0a2e701
+    taskid: 343b5246-f49d-4bc1-8af0-3ab9ffe6699b
     type: condition
     task:
-      id: dc5779b1-a53c-466a-80fa-91f0e0a2e701
+      id: 343b5246-f49d-4bc1-8af0-3ab9ffe6699b
       version: -1
       name: Check domain dBot score
       type: condition
@@ -156,10 +156,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: af10f55b-a6f5-4892-8318-5ffa0df94da5
+    taskid: f724acea-c746-451b-8081-4bd40bfbae17
     type: condition
     task:
-      id: af10f55b-a6f5-4892-8318-5ffa0df94da5
+      id: f724acea-c746-451b-8081-4bd40bfbae17
       version: -1
       name: Check email dBot score
       type: condition
@@ -216,10 +216,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 8bbeca10-250e-470b-8ae7-145ed1bece21
+    taskid: f5811346-51d6-4f88-89b8-4f51f0b78519
     type: title
     task:
-      id: 8bbeca10-250e-470b-8ae7-145ed1bece21
+      id: f5811346-51d6-4f88-89b8-4f51f0b78519
       version: -1
       name: Done
       type: title
@@ -238,10 +238,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: b0d7ffad-a22e-4ce8-84fd-38a3a8f0ac45
+    taskid: c9198559-f18d-4717-84ab-1905d631ca5c
     type: regular
     task:
-      id: b0d7ffad-a22e-4ce8-84fd-38a3a8f0ac45
+      id: c9198559-f18d-4717-84ab-1905d631ca5c
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -271,10 +271,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 743ce635-ba7a-43e8-8c57-8e1afa96da09
+    taskid: b56879b0-0831-45c7-8dcf-3dd78ed837f1
     type: regular
     task:
-      id: 743ce635-ba7a-43e8-8c57-8e1afa96da09
+      id: b56879b0-0831-45c7-8dcf-3dd78ed837f1
       version: -1
       name: check email indicator regex (auto enrich)
       description: Prints text to war room (Markdown supported)
@@ -287,7 +287,7 @@ tasks:
       - "11"
     scriptarguments:
       value:
-        simple: bt53h6htyj8j57k9k=organization.org@ozzy.qwer.de
+        simple: '"bt53h6htyj8j57k9k=organization.org@ozzy.qwer.de"'
     reputationcalc: 2
     separatecontext: false
     view: |-
@@ -302,10 +302,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 3befd983-c29d-461e-83b7-3296f39e86b5
+    taskid: 27349677-d92d-4a62-8b09-d3b7dcceadcd
     type: regular
     task:
-      id: 3befd983-c29d-461e-83b7-3296f39e86b5
+      id: 27349677-d92d-4a62-8b09-d3b7dcceadcd
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -336,10 +336,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 1b522bc0-5cc9-4e90-8b70-9ddb16e11570
+    taskid: 48b9ce3f-2ccf-48eb-8623-d2e6bf995f4b
     type: condition
     task:
-      id: 1b522bc0-5cc9-4e90-8b70-9ddb16e11570
+      id: 48b9ce3f-2ccf-48eb-8623-d2e6bf995f4b
       version: -1
       name: Check email with `=` in DBotScore
       type: condition
@@ -372,10 +372,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 8164e7b0-79e9-4cba-893b-42fc21d28642
+    taskid: 18fb6772-b685-4420-8f97-f1d40ca82038
     type: regular
     task:
-      id: 8164e7b0-79e9-4cba-893b-42fc21d28642
+      id: 18fb6772-b685-4420-8f97-f1d40ca82038
       version: -1
       name: Get Email2
       description: Checks if an email has been compromised, as part of previous breaches.
@@ -402,10 +402,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 639b63b6-722a-4775-81c1-d25b5038cc57
+    taskid: 80b09703-6aed-489e-897f-da6d4fece1e1
     type: condition
     task:
-      id: 639b63b6-722a-4775-81c1-d25b5038cc57
+      id: 80b09703-6aed-489e-897f-da6d4fece1e1
       version: -1
       name: Check email domains
       type: condition
@@ -440,10 +440,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 73e85f67-f7b8-4b4a-8959-a4c32ebb9237
+    taskid: 65ace2d8-12bd-40fa-8e75-126b8d1716ab
     type: regular
     task:
-      id: 73e85f67-f7b8-4b4a-8959-a4c32ebb9237
+      id: 65ace2d8-12bd-40fa-8e75-126b8d1716ab
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -474,10 +474,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 4665fc0d-ec8f-43b7-833e-eb11e4741b54
+    taskid: f0d8c50d-a757-4c42-871e-7ac8f9abd757
     type: condition
     task:
-      id: 4665fc0d-ec8f-43b7-833e-eb11e4741b54
+      id: f0d8c50d-a757-4c42-871e-7ac8f9abd757
       version: -1
       name: Check paste
       type: condition
@@ -510,10 +510,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: dbebd156-11b7-479f-8c27-47ed2a24f77a
+    taskid: cb8199ea-2282-44bd-8f58-9d43afdc23c6
     type: regular
     task:
-      id: dbebd156-11b7-479f-8c27-47ed2a24f77a
+      id: cb8199ea-2282-44bd-8f58-9d43afdc23c6
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -540,10 +540,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 7691ff78-60a1-4d3f-8d2f-e0212673f569
+    taskid: d9c5e5a8-2125-44d9-82a6-708d3da18db4
     type: regular
     task:
-      id: 7691ff78-60a1-4d3f-8d2f-e0212673f569
+      id: d9c5e5a8-2125-44d9-82a6-708d3da18db4
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -556,7 +556,7 @@ tasks:
       - "12"
     scriptarguments:
       seconds:
-        simple: "2"
+        simple: "6"
     separatecontext: false
     view: |-
       {
@@ -570,10 +570,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 29ce6857-e198-41f3-8348-df68ced374c0
+    taskid: 7c893400-4536-4b11-80dd-545539d8fe4c
     type: regular
     task:
-      id: 29ce6857-e198-41f3-8348-df68ced374c0
+      id: 7c893400-4536-4b11-80dd-545539d8fe4c
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -600,10 +600,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 241c0980-9b62-4e61-83b9-a6eb857e707a
+    taskid: f508a71b-6801-4cb1-8273-52298cf101e7
     type: regular
     task:
-      id: 241c0980-9b62-4e61-83b9-a6eb857e707a
+      id: f508a71b-6801-4cb1-8273-52298cf101e7
       version: -1
       name: Sleep
       description: Sleep for X seconds
