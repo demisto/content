@@ -21,6 +21,7 @@ HEADERS: dict = dict()
 PROXIES: dict or None = None
 
 ''' HELPER FUNCTIONS '''
+FILE_HASHES: tuple = ('md5', 'ssdeep', 'sha1', 'sha256')  # hashes as described in API
 
 
 def http_request(method: str, url_suffix: str, params: dict = None, data: dict = None, proxies: list = None,
@@ -37,7 +38,7 @@ def http_request(method: str, url_suffix: str, params: dict = None, data: dict =
         file_obj: Tuple of (`file name`. file_obj)
 
     Returns:
-        Response.json
+        Response.json: Response from API
     """
     # A wrapper for requests lib to send our requests and handle requests and responses better
     err_msg = 'Error in API call to DataEnrichmentThreatIntelligence Integration [{}] - {}'
@@ -72,7 +73,7 @@ def test_module():
     """
     Performs basic get request to get item samples
     """
-    http_request('GET', 'items/samples')
+    http_request('GET', 'analysis')
 
 
 def upload_file_request(file_name: str, file_path: str, is_public: bool) -> Dict:
@@ -115,38 +116,92 @@ def upload_file_command():
     raw_response: Dict = upload_file_request(file_name, file_path, is_public)
     # Parse response into context & content entries
     if raw_response:
-        title = f'DataEnrichmentThreatIntelligence - Uploading file {file_name}'
+        title = f'DataEnrichmentThreatIntelligence - Uploading file: {file_name}'
 
-        context_entries = [
-            {
-                'ID': item.get('id'),
-                'Description': item.get('description'),
-                'Name': item.get('name'),
-                'CreatedDate': item.get('createdDate')
-            } for item in raw_response
-        ]
+        context_entries = {
+            'ID': raw_response.get('id'),  # ID of job,
+            'IsFinished': raw_response.get('is_finished'),
+            'CreatedDate': raw_response.get('createdDate'),
+            'Analysis': raw_response.get('analysis')
+        }
 
-        context['DataEnrichmentThreatIntelligence.Event(val.ID && val.ID === obj.ID)'] = context_entries
+        context['DataEnrichmentThreatIntelligence.Job(val.ID && val.ID === obj.ID)'] = context_entries
         # Creating human readable for War room
         human_readable = tableToMarkdown(title, context_entries, removeNull=True)
         # Return data to Demisto
         return_outputs(human_readable, context, raw_response)
     else:
-        err_msg = f'CaseManagement: Could not upload file with entry ID: {entry_id}'
+        err_msg = f'DataEnrichmentThreatIntelligence: Could not upload file with entry ID: {entry_id}'
         return_error(err_msg)
 
 
-def list_events_request(limit: int) -> Dict:
-    suffix = 'event'
+def get_job_request(job_id: str) -> Dict:
+    suffix = 'job'
+    params = {
+        'job_id': job_id
+    }
+    return http_request('GET', suffix, params=params).get('results')
 
 
-def list_events_command():
-    limit: int = int(demisto.args().get('limit', 50))
-    raw_response = list_events_request(limit)
+def get_job_command():
+    """Gets job from API. Used mostly for polling playbook
+
+    """
+    job_id: str = demisto.args().get('job_id')
+    raw_response = get_job_request(job_id)
+    if raw_response:
+        title = f'DataEnrichmentThreatIntelligence - Job results for job ID: {job_id}'
+        context_entry = {
+            'ID': raw_response.get('job_id'),
+            'IsFinished': raw_response.get('is_finished')
+        }
+        context = {
+            'DataEnrichmentThreatIntelligence.Job(val.ID && val.ID === obj.ID)': context_entry
+        }
+        human_readable = tableToMarkdown(title, context_entry, removeNull=True)
+        return_outputs(human_readable, context, raw_response)
+    else:
+        return_error(f'DataEnrichmentThreatIntelligence: Could not get job from job ID: {job_id}')
 
 
-def create_event_command():
-    pass
+def get_analysis_request(analysis_id: str):
+    suffix: str = 'analysis'
+    params = {
+        'analysis_id': analysis_id
+    }
+    return http_request('GET', suffix, params=params).get('results')
+
+
+def get_analysis_command():
+    analysis_id = demisto.args().get('analysis_id')
+    raw_response = get_analysis_request(analysis_id)
+    if raw_response:
+        title = f'DataEnrichmentThreatIntelligence - Analysis results for analysis ID: {analysis_id}'
+        context_entry = {
+            'ID': raw_response.get('id'),
+            'Severity': raw_response.get('severity'),
+            'MD5': raw_response.get('md5'),
+            'SHA1': raw_response.get('sha1'),
+            'SHA256': raw_response.get('sha256'),
+            'SSDeep': raw_response.get('ssdeep')
+        }
+        # Building a score for DBot
+        dbot_score = [
+            {
+                'Indicator': raw_response.get(hash_name),
+                'Type': 'hash',
+                'Vendor': 'DataEnrichmentThreatIntelligence',
+                'Score': raw_response.get('Severity', 0),  # If severity is equal to out DBotScore
+            } for hash_name in FILE_HASHES if raw_response.get(hash_name)
+        ]
+        context = {
+            outputPaths['dbotscore']: dbot_score,
+            'DataEnrichmentThreatIntelligence.Analysis(val.ID && val.ID === obj.ID)': context_entry
+        }
+        human_readable = tableToMarkdown(title, context_entry, removeNull=True)
+        return_outputs(human_readable, context, raw_response)
+    else:
+        return_error(f'DataEnrichmentThreatIntelligence: Could not get analysis ID: {analysis_id}')
 
 
 def close_event_command():
@@ -185,10 +240,10 @@ def main():
             demisto.results('ok')
         elif command == 'data-enrichment-threat-intelligence-upload-file':
             upload_file_command()
-        elif command == 'data-enrichment-threat-intelligence-list-events':
-            list_events_command()
-        elif command == 'data-enrichment-threat-intelligence-create-event':
-            create_event_command()
+        elif command == 'data-enrichment-threat-intelligence-get-job':
+            get_job_command()
+        elif command == 'data-enrichment-threat-intelligence-get-analysis':
+            get_analysis_command()
         elif command == 'data-enrichment-threat-intelligence-close-event':
             close_event_command()
     # Log exceptions
