@@ -287,7 +287,7 @@ tasks:
       - "11"
     scriptarguments:
       value:
-        simple: '"bt53h6htyj8j57k9k=organization.org@ozzy.qwer.de"'
+        simple: "'bt53h6htyj8j57k9k=organization.org@ozzy.qwer.de'"
     reputationcalc: 2
     separatecontext: false
     view: |-
