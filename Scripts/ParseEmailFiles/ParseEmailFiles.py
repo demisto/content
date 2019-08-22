@@ -3189,6 +3189,49 @@ def is_valid_header_to_parse(header):
     return len(header) > 0 and not header == ' ' and 'From nobody' not in header
 
 
+def create_headers_map(msg_dict_headers):
+    headers = []
+    headers_map = dict()  # type: dict
+    header_key = 'initial key'
+    header_value = 'initial header'
+
+    for header in msg_dict_headers.split('\n'):
+        if is_valid_header_to_parse(header):
+            if not header[0] == ' ' and not header[0] == '\t':
+                if header_value != 'initial header':
+                    header_value = convert_to_unicode(header_value)
+                    headers.append(
+                        {
+                            'name': header_key,
+                            'value': header_value
+                        }
+                    )
+
+                    if header_key in headers_map:
+                        # in case there is already such header
+                        # then add that header value to value array
+                        if not isinstance(headers_map[header_key], list):
+                            # convert the existing value to array
+                            headers_map[header_key] = [headers_map[header_key]]
+
+                        # add the new value to the value array
+                        headers_map[header_key].append(header_value)
+                    else:
+                        headers_map[header_key] = header_value
+
+                header_words = header.split(' ', 1)
+
+                header_key = header_words[0][:-1]
+                header_value = ' '.join(header_words[1:])
+                header_value = header_value[:-1] if header_value[-1] == ' ' \
+                    else header_value
+
+            else:
+                header_value += header[:-1] if header[-1:] == ' ' else header
+
+    return headers, headers_map
+
+
 ########################################################################################################################
 ENCODINGS_TYPES = set(['utf-8', 'iso8859-1'])
 REGEX_EMAIL = r"\b[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+\b"
@@ -3237,8 +3280,8 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
     if 'HTML' in email_data:
         md += u"* {0}:\t{1}\n".format('Body/HTML', email_data['HTML'] or "")
 
-    md += u"* {0}:\t{1}\n".format('Attachments', email_data['Attachments'] or "")
-    md += u"\n\n" + tableToMarkdown("HeadersMap", email_data['HeadersMap'])
+    md += u"* {0}:\t{1}\n".format('Attachments', email_data.get('Attachments') or "")
+    md += u"\n\n" + tableToMarkdown('HeadersMap', email_data['HeadersMap'])
     return md
 
 
@@ -3323,46 +3366,8 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
         raise Exception("Could not parse msg file!")
 
     msg_dict = msg.as_dict(max_depth)
-    format_string = get_msg_mail_format(msg_dict)
-
-    headers = []
-    headers_map = dict()  # type: dict
-    header_key = 'initial key'
-    header_value = 'initial header'
-
-    for header in msg_dict['Headers'].split('\n'):
-        if is_valid_header_to_parse(header):
-            if not header[0] == ' ' and not header[0] == '\t':
-                if header_value != 'initial header':
-                    header_value = convert_to_unicode(header_value)
-                    headers.append(
-                        {
-                            'name': header_key,
-                            'value': header_value
-                        }
-                    )
-
-                    if header_key in headers_map:
-                        # in case there is already such header
-                        # then add that header value to value array
-                        if not isinstance(headers_map[header_key], list):
-                            # convert the existing value to array
-                            headers_map[header_key] = [headers_map[header_key]]
-
-                        # add the new value to the value array
-                        headers_map[header_key].append(header_value)
-                    else:
-                        headers_map[header_key] = header_value
-
-                header_words = header.split(' ')
-
-                header_key = header_words[0][:-1]
-                header_value = ' '.join(header_words[1:])
-                header_value = header_value[:-1] if header_value[-1:] == ' ' \
-                    else header_value
-
-            else:
-                header_value += header[:-1] if header[-1:] == ' ' else header
+    mail_format_type = get_msg_mail_format(msg_dict)
+    headers, headers_map = create_headers_map(msg_dict['Headers'])
 
     email_data = {
         'To': msg_dict['To'],
@@ -3374,12 +3379,12 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
         'Headers': headers,
         'HeadersMap': headers_map,
         'Attachments': '',
-        'Format': format_string,
+        'Format': mail_format_type,
         'Depth': MAX_DEPTH_CONST - max_depth
     }
 
     if parse_only_headers:
-        return {"HeadersMap": email_data["HeadersMap"]}, []
+        return {"HeadersMap": email_data.get("HeadersMap")}, []
 
     attached_emails_emls = save_attachments(msg.get_all_attachments(), file_name, max_depth - 1)
     # add eml attached emails
