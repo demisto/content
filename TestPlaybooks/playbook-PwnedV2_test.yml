@@ -1,14 +1,14 @@
 id: Pwned v2 test
-version: -1
+version: 4
 name: Pwned v2 test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0c3c6dab-ed55-4460-8cf0-e8a53d470f3b
+    taskid: 0d4e6af2-8ad5-4cd9-8327-68ebe3e4c1fb
     type: start
     task:
-      id: 0c3c6dab-ed55-4460-8cf0-e8a53d470f3b
+      id: 0d4e6af2-8ad5-4cd9-8327-68ebe3e4c1fb
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: a5afa136-0219-42c8-8122-5b40c9f6e6a8
+    taskid: fb5537fd-8481-41c2-89f1-7bb7c2a7d4c4
     type: regular
     task:
-      id: a5afa136-0219-42c8-8122-5b40c9f6e6a8
+      id: fb5537fd-8481-41c2-89f1-7bb7c2a7d4c4
       version: -1
       name: Get email
       description: Checks if an email has been compromised, as part of previous breaches.
@@ -51,7 +51,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -59,10 +59,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: be74dd22-19ca-46fe-81c6-9e55177facd5
+    taskid: fe9d2d47-dfb0-4659-8206-d32abfdd5d34
     type: regular
     task:
-      id: be74dd22-19ca-46fe-81c6-9e55177facd5
+      id: fe9d2d47-dfb0-4659-8206-d32abfdd5d34
       version: -1
       name: Get domain
       description: Checks if domain has been compromised.
@@ -96,10 +96,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 121daf83-c97e-40b8-8ac4-b1ebf6ae1df1
+    taskid: dc5779b1-a53c-466a-80fa-91f0e0a2e701
     type: condition
     task:
-      id: 121daf83-c97e-40b8-8ac4-b1ebf6ae1df1
+      id: dc5779b1-a53c-466a-80fa-91f0e0a2e701
       version: -1
       name: Check domain dBot score
       type: condition
@@ -156,10 +156,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 5ba5454f-de13-4dec-8e39-1c21a3d7d488
+    taskid: af10f55b-a6f5-4892-8318-5ffa0df94da5
     type: condition
     task:
-      id: 5ba5454f-de13-4dec-8e39-1c21a3d7d488
+      id: af10f55b-a6f5-4892-8318-5ffa0df94da5
       version: -1
       name: Check email dBot score
       type: condition
@@ -208,7 +208,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -216,10 +216,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 7d64cb58-a1b2-4bee-8aa8-6c3e04c50671
+    taskid: 8bbeca10-250e-470b-8ae7-145ed1bece21
     type: title
     task:
-      id: 7d64cb58-a1b2-4bee-8aa8-6c3e04c50671
+      id: 8bbeca10-250e-470b-8ae7-145ed1bece21
       version: -1
       name: Done
       type: title
@@ -230,7 +230,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2820
         }
       }
     note: false
@@ -238,10 +238,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: b7330d83-10e4-4ca2-80f9-98a30728ed6b
+    taskid: b0d7ffad-a22e-4ce8-84fd-38a3a8f0ac45
     type: regular
     task:
-      id: b7330d83-10e4-4ca2-80f9-98a30728ed6b
+      id: b0d7ffad-a22e-4ce8-84fd-38a3a8f0ac45
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -250,7 +250,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "16"
     scriptarguments:
       all:
         simple: "yes"
@@ -271,10 +271,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 6b479ba5-23e3-4357-8af4-5f2b5954c434
+    taskid: 743ce635-ba7a-43e8-8c57-8e1afa96da09
     type: regular
     task:
-      id: 6b479ba5-23e3-4357-8af4-5f2b5954c434
+      id: 743ce635-ba7a-43e8-8c57-8e1afa96da09
       version: -1
       name: check email indicator regex (auto enrich)
       description: Prints text to war room (Markdown supported)
@@ -294,7 +294,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2470
         }
       }
     note: false
@@ -302,10 +302,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: dde72d12-ec88-42f3-8699-c27255b8d900
+    taskid: 3befd983-c29d-461e-83b7-3296f39e86b5
     type: regular
     task:
-      id: dde72d12-ec88-42f3-8699-c27255b8d900
+      id: 3befd983-c29d-461e-83b7-3296f39e86b5
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -315,7 +315,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "17"
     scriptarguments:
       all:
         simple: "yes"
@@ -328,7 +328,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -336,10 +336,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 5c36f7bc-e6a4-4896-816f-e30d53db7eeb
+    taskid: 1b522bc0-5cc9-4e90-8b70-9ddb16e11570
     type: condition
     task:
-      id: 5c36f7bc-e6a4-4896-816f-e30d53db7eeb
+      id: 1b522bc0-5cc9-4e90-8b70-9ddb16e11570
       version: -1
       name: Check email with `=` in DBotScore
       type: condition
@@ -364,7 +364,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2645
         }
       }
     note: false
@@ -372,10 +372,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 9859673b-4eae-460c-8203-debfbb14a986
+    taskid: 8164e7b0-79e9-4cba-893b-42fc21d28642
     type: regular
     task:
-      id: 9859673b-4eae-460c-8203-debfbb14a986
+      id: 8164e7b0-79e9-4cba-893b-42fc21d28642
       version: -1
       name: Get Email2
       description: Checks if an email has been compromised, as part of previous breaches.
@@ -394,7 +394,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1595
         }
       }
     note: false
@@ -402,10 +402,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: d177600d-60b6-4343-8b26-efdc549d77c9
+    taskid: 639b63b6-722a-4775-81c1-d25b5038cc57
     type: condition
     task:
-      id: d177600d-60b6-4343-8b26-efdc549d77c9
+      id: 639b63b6-722a-4775-81c1-d25b5038cc57
       version: -1
       name: Check email domains
       type: condition
@@ -432,7 +432,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1770
         }
       }
     note: false
@@ -440,10 +440,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 95bb0cef-ce6b-43fe-8f45-06426e6afe08
+    taskid: 73e85f67-f7b8-4b4a-8959-a4c32ebb9237
     type: regular
     task:
-      id: 95bb0cef-ce6b-43fe-8f45-06426e6afe08
+      id: 73e85f67-f7b8-4b4a-8959-a4c32ebb9237
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -453,7 +453,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "18"
     scriptarguments:
       all:
         simple: "yes"
@@ -466,7 +466,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2120
         }
       }
     note: false
@@ -474,10 +474,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: f8482073-9d86-472b-8576-35d93e9db0f9
+    taskid: 4665fc0d-ec8f-43b7-833e-eb11e4741b54
     type: condition
     task:
-      id: f8482073-9d86-472b-8576-35d93e9db0f9
+      id: 4665fc0d-ec8f-43b7-833e-eb11e4741b54
       version: -1
       name: Check paste
       type: condition
@@ -502,7 +502,97 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: dbebd156-11b7-479f-8c27-47ed2a24f77a
+    type: regular
+    task:
+      id: dbebd156-11b7-479f-8c27-47ed2a24f77a
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 7691ff78-60a1-4d3f-8d2f-e0212673f569
+    type: regular
+    task:
+      id: 7691ff78-60a1-4d3f-8d2f-e0212673f569
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 29ce6857-e198-41f3-8348-df68ced374c0
+    type: regular
+    task:
+      id: 29ce6857-e198-41f3-8348-df68ced374c0
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
         }
       }
     note: false
@@ -515,7 +605,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2310,
+        "height": 2835,
         "width": 380,
         "x": 50,
         "y": 50
