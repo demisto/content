@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 
 import json
@@ -14,7 +15,6 @@ import hashlib
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-
 
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = demisto.params()['url'][:-1] \
@@ -85,7 +85,6 @@ timestamp = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
 auth_key = "%s%s%s" % (API_KEY, nonce, timestamp)
 auth_key = auth_key.encode("utf-8")
 api_key_hash = hashlib.sha256(auth_key).hexdigest()
-
 
 HEADERS = {
     "x-xdr-timestamp": timestamp,
@@ -165,6 +164,14 @@ def get_incidents_command():
 
     page = int(demisto.args().get('page', 0))
     limit = int(demisto.args().get('limit', 100))
+
+    # If no filters were given, a default query will be generated
+    if (not lte_modification_time and not gte_modification_time and not since_modification_time
+            and not lte_creation_time and not gte_creation_time and not since_creation_time):
+        since_creation_time = "1 year"
+        gte_creation_time, _ = parse_date_range(since_creation_time, TIME_FORMAT)
+        if not sort_by_creation_time:
+            sort_by_creation_time = "desc"
 
     raw_incidents = get_incidents(
         incident_id_list=incident_id_list,
@@ -363,7 +370,8 @@ def update_incident_command():
     return_outputs('Incident {} has been updated'.format(incident_id), outputs=None)
 
 
-def update_incident(incident_id, assigned_user_mail, assigned_user_pretty_name, status, severity, resolve_comment, unassign_user):
+def update_incident(incident_id, assigned_user_mail, assigned_user_pretty_name, status, severity, resolve_comment,
+                    unassign_user):
     update_data = {}
 
     if unassign_user and (assigned_user_mail or assigned_user_pretty_name):
