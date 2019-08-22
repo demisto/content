@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.8.2] - 2019-08-22
   - Handle error trying to refresh an EDL object on a Panorama instance error gracefully
 
 ## [19.8.0] - 2019-08-06
