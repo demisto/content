@@ -1,4 +1,5 @@
 ## [Unreleased]
+  - IntegrationLogger improvements
   - Added return_warning command
 
 

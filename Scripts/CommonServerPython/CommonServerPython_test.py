@@ -2,7 +2,8 @@
 import demistomock as demisto
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
-    remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid
+    remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, \
+    IntegrationLogger
 
 import copy
 import os
@@ -491,6 +492,22 @@ def test_logger():
     LOG(u'€')
     LOG(Exception(u'€'))
     LOG(SpecialErr(12))
+
+
+def test_logger_write(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'credentials': {'password': 'my_password'},
+    })
+    mocker.patch.object(demisto, 'info')
+    ilog = IntegrationLogger()
+    ilog.write("This is a test with my_password")
+    ilog.print_log()
+    # assert that the print doesn't contain my_password
+    # call_args is tuple (args list, kwargs). we only need the args
+    args = demisto.info.call_args[0]
+    assert 'This is a test' in args[0]
+    assert 'my_password' not in args[0]
+    assert '<XX_REPLACED>' in args[0]
 
 
 def test_is_mac_address():
