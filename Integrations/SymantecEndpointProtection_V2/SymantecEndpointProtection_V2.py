@@ -53,10 +53,11 @@ EPOCH_HOUR = 60 * EPOCH_MINUTE
 def fix_url(base):
     return base if base.endswith('/') else (base + '/')
 
+
 def endpoint_ip_extract(raw_json):
-    IPs=[]
+    IPs = []
     for content in raw_json:
-        ip={}
+        ip = {}
         if content.get('ipAddresses'):
             ip['Address'] = content.get('ipAddresses')[0]
         if content.get('macAddresses'):
@@ -64,6 +65,7 @@ def endpoint_ip_extract(raw_json):
         if ip != {}:
             IPs.append(ip)
     return IPs
+
 
 def endpoint_endpoint_extract(raw_json):
     Endpoints = []
