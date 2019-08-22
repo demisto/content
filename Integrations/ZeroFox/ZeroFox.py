@@ -92,7 +92,7 @@ def alert_to_incident(alert: Dict) -> Dict:
 
 
 # return updated contents of an alert
-def get_updated_contents(alert_id: int) -> Dict:
+def alert_contents_request(alert_id: int) -> Dict:
     """
     :param alert_id: The ID of the alert - Integer
     :return: Dict of the contents of the alert
@@ -135,7 +135,7 @@ def get_alert_contents(alert: Dict) -> Dict:
         'ContentCreatedAt': alert.get('content_created_at'),
         'ID': alert.get('id'),
         'ProtectedAccount': alert.get('protected_account'),
-        'RiskRating': severity_num_to_string(int(alert.get('severity'))),  # type: ignore
+        'RiskRating': severity_num_to_string(int(alert['severity'])) if alert.get('severity') else None,  # type: ignore
         'PerpetratorName': alert.get('perpetrator', {}).get('name') if alert.get('perpetrator') else None,
         'PerpetratorURL': alert.get('perpetrator', {}).get('url') if alert.get('perpetrator') else None,
         'PerpetratorTimeStamp': alert.get('perpetrator', {}).get('timestamp') if alert.get('perpetrator') else None,
@@ -336,7 +336,7 @@ def close_alert(alert_id: int) -> Dict:
 def close_alert_command():
     alert_id: int = dict_value_to_integer(demisto.args(), 'alert_id')
     close_alert(alert_id)
-    contents: Dict = get_updated_contents(alert_id)
+    contents: Dict = alert_contents_request(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Closed'}}
     return_outputs(
         f'Alert {alert_id} was closed successfully.',
@@ -358,7 +358,7 @@ def open_alert(alert_id: int) -> Dict:
 def open_alert_command():
     alert_id: int = dict_value_to_integer(demisto.args(), 'alert_id')
     open_alert(alert_id)
-    contents: Dict = get_updated_contents(alert_id)
+    contents: Dict = alert_contents_request(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Open'}}
     return_outputs(
         f'Alert {alert_id} was opened successfully.',
@@ -380,7 +380,7 @@ def alert_request_takedown(alert_id: int) -> Dict:
 def alert_request_takedown_command():
     alert_id: int = dict_value_to_integer(demisto.args(), 'alert_id')
     alert_request_takedown(alert_id)
-    contents: Dict = get_updated_contents(alert_id)
+    contents: Dict = alert_contents_request(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Takedown:Requested'}}
     return_outputs(
         f'Alert {alert_id} has been requested to be taken down successfully.',
@@ -402,7 +402,7 @@ def alert_cancel_takedown(alert_id: int) -> Dict:
 def alert_cancel_takedown_command():
     alert_id: int = dict_value_to_integer(demisto.args(), 'alert_id')
     alert_cancel_takedown(alert_id)
-    contents: Dict = get_updated_contents(alert_id)
+    contents: Dict = alert_contents_request(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Open'}}
     return_outputs(
         f'Alert {alert_id} was cancelled takedown successfully.',
@@ -427,7 +427,7 @@ def alert_user_assignment_command():
     alert_id: int = dict_value_to_integer(demisto.args(), 'alert_id')
     username: str = demisto.args().get('username', '')
     alert_user_assignment(alert_id, username)
-    contents: Dict = get_updated_contents(alert_id)
+    contents: Dict = alert_contents_request(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Assignee': username}}
     return_outputs(
         f'{username} has been assigned to alert {alert_id} successfully.',
@@ -465,7 +465,7 @@ def modify_alert_tags_command():
     response_content: Dict = modify_alert_tags(alert_id, action, tags_list_string)
     if not response_content.get('changes'):
         raise Exception(f'Alert with ID {alert_id} does not exist')
-    contents: Dict = get_updated_contents(alert_id)
+    contents: Dict = alert_contents_request(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents}
     return_outputs(
         'Tags were modified successfully.',
