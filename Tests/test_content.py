@@ -582,7 +582,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                                                                                                mem_lim),
                            'Content CircleCI', 'False')
     # first run the mock tests to avoid mockless side effects in container
-    test_index = 0
+    # test_index = 0
     if is_ami and mock_tests:
         proxy.configure_proxy_in_demisto(proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
         for t in mock_tests:
@@ -592,7 +592,6 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                               filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
                               unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                               build_name, server_numeric_version)
-            print('test index: {}'.format(test_index))
             # if test_index % 10 == 0:
             # stdout, stderr = get_docker_processes_data()
             # text = stdout if not stderr else stderr
@@ -613,7 +612,6 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                           filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
                           unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                           build_name, server_numeric_version, is_ami)
-        print('test index: {}'.format(test_index))
         # if test_index % 10 == 0:
         # stdout, stderr = get_docker_processes_data()
         # text = stdout if not stderr else stderr
