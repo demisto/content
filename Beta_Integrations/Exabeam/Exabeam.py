@@ -1,6 +1,6 @@
-import demistomock as demisto
+import demisto
+
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import requests
@@ -30,7 +30,7 @@ if demisto.params()['insecure']:
 
 
 def convert_unix_to_date(d):
-    ''' Convert millise since epoch to date formatted MM/DD/YYYY HH:MI:SS '''
+    """ Convert millise since epoch to date formatted MM/DD/YYYY HH:MI:SS """
     if d:
         dt = datetime.utcfromtimestamp(d / 1000)
         return dt.strftime('%m/%d/%Y %H:%M:%S')
@@ -38,12 +38,12 @@ def convert_unix_to_date(d):
 
 
 def convert_date_to_unix(d):
-    ''' Convert a given date to millis since epoch '''
+    """ Convert a given date to millis since epoch """
     return int((d - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
 
 
 def login():
-    ''' Login using the credentials and store the cookie '''
+    """ Login using the credentials and store the cookie """
     http_request('POST', URL_LOGIN + 'auth/login', data={
         'username': demisto.params()['credentials']['identifier'],
         'password': demisto.params()['credentials']['password']
@@ -51,32 +51,32 @@ def login():
 
 
 def logout():
-    ''' Logout from the session '''
+    """ Logout from the session """
     http_request('GET', URL_LOGIN + 'auth/logout', None)
 
 
 def http_request(method, path, data):
-    ''' Do the actual HTTP request '''
+    """ Do the actual HTTP request """
     if method == 'GET':
-        respone = SESSION.get(path, params=data)
+        response = SESSION.get(path, params=data)
     else:
-        respone = SESSION.post(path, data=data)
-    if respone.status_code != requests.codes.ok:
-        text = respone.text
+        response = SESSION.post(path, data=data)
+    if response.status_code != requests.codes.ok:
+        text = response.text
         if text:
             try:
-                res = respone.json()
+                res = response.json()
                 text = 'Code: [%s], Error: [%s]' % (res.get('_apiErrorCode'), res.get('internalError'))
             except Exception:
                 pass
-        return_error('Error in API call to Exabeam [%d] - %s' % (respone.status_code, text))
-    if not respone.text:
+        return_error('Error in API call to Exabeam [%d] - %s' % (response.status_code, text))
+    if not response.text:
         return {}
-    return respone.json()
+    return response.json()
 
 
 def get_watchlist_id():
-    ''' Return watchlist id based on given parameters '''
+    """ Return watchlist id based on given parameters """
     if not demisto().args['id'] and not demisto.args()['title']:
         logout()
         return_error('Please provide either ID or title')
@@ -97,7 +97,7 @@ def get_watchlist_id():
 
 
 def exabeam_users():
-    ''' Return user statistics '''
+    """ Return user statistics """
     res = http_request('GET', URL_UBA + 'kpi/count/users', None)
     demisto.results({
         'Type': entryTypes['note'],
@@ -108,7 +108,7 @@ def exabeam_users():
 
 
 def exabeam_assets():
-    ''' Return asset statistics '''
+    """ Return asset statistics """
     res = http_request('GET', URL_UBA + 'kpi/count/assets', None)
     demisto.results({
         'Type': entryTypes['note'],
@@ -119,7 +119,7 @@ def exabeam_assets():
 
 
 def exabeam_sessions():
-    ''' Return session statistics '''
+    """ Return session statistics """
     res = http_request('GET', URL_UBA + 'kpi/count/sessions', None)
     demisto.results({
         'Type': entryTypes['note'],
@@ -130,7 +130,7 @@ def exabeam_sessions():
 
 
 def exabeam_events():
-    ''' Return event statistics '''
+    """ Return event statistics """
     res = http_request('GET', URL_UBA + 'kpi/count/events', None)
     demisto.results({
         'Type': entryTypes['note'],
@@ -151,7 +151,7 @@ def exabeam_anomalies():
 
 
 def exabeam_notable():
-    ''' Return notable users in a specific period of time '''
+    """ Return notable users in a specific period of time """
     res = http_request(
         'GET',
         URL_UBA + 'users/notable',
@@ -189,7 +189,7 @@ def exabeam_notable():
 
 
 def exabeam_lockouts():
-    ''' Return lockouts '''
+    """ Return lockouts """
     res = http_request(
         'GET',
         URL_UBA + 'lockouts/accountLockouts',
@@ -228,7 +228,7 @@ def exabeam_lockouts():
 
 
 def exabeam_timeline():
-    ''' Returns session, triggered rules and events of a user '''
+    """ Returns session, triggered rules and events of a user """
     res = http_request('GET', URL_UBA + 'user/%s/timeline/entities/all' % demisto.args()['username'], None)
     risk_score = 0
     session = ''
@@ -311,7 +311,7 @@ def exabeam_timeline():
 
 
 def exabeam_session_entities():
-    ''' Returns session entities for a given user, can be filtered by container-type, container-id '''
+    """ Returns session entities for a given user, can be filtered by container-type, container-id """
     res = http_request(
         'GET',
         URL_UBA + 'user/%s/timeline/entities' % demisto.args()['username'],
@@ -332,7 +332,7 @@ def exabeam_session_entities():
 
 
 def exabeam_user_info():
-    ''' Returns user info '''
+    """ Returns user info """
     username = demisto.args()['username']
     res = http_request('GET', URL_UBA + 'user/%s/info' % username, None)
     if res.get('username'):
@@ -414,7 +414,7 @@ def exabeam_user_info():
 
 
 def exabeam_triggered_rules():
-    ''' Return triggered rules for a given container '''
+    """ Return triggered rules for a given container """
     res = http_request(
         'GET',
         URL_UBA + 'triggeredRules',
@@ -432,7 +432,7 @@ def exabeam_triggered_rules():
 
 
 def exabeam_watchlists():
-    ''' Retrieve current list of watchlists '''
+    """ Retrieve current list of watchlists """
     res = http_request('GET', URL_UBA + 'watchlist', None)
 
     demisto.results({
@@ -469,7 +469,7 @@ def exabeam_watchlist():
 
 
 def exabeam_watchlist_add():
-    ''' Adds a user to a given watchlist '''
+    """ Adds a user to a given watchlist """
     watchlist_id = get_watchlist_id()
     username = demisto.args()['username']
     res = http_request(
@@ -574,7 +574,7 @@ try:
         return_error('Unrecognized command: ' + demisto.command())
 
 
-except Exception, e:
+except Exception as e:
     LOG(e.message)
     LOG.print_log()
     return_error(e.message)
