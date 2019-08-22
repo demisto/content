@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 660f31df-9fe6-4fad-81dc-d214e0709301
+    taskid: d72305c8-a58b-43f8-8abb-62c639b8660e
     type: regular
     task:
-      id: 660f31df-9fe6-4fad-81dc-d214e0709301
+      id: d72305c8-a58b-43f8-8abb-62c639b8660e
       version: -1
       name: find external file
       description: Gets metadata for an external file.
@@ -135,10 +135,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: b6c0bd67-b747-438d-8b90-14b4a0d6fff8
+    taskid: 0f82e89f-b1cf-4f81-8ebf-4abf6966b9e3
     type: regular
     task:
-      id: b6c0bd67-b747-438d-8b90-14b4a0d6fff8
+      id: 0f82e89f-b1cf-4f81-8ebf-4abf6966b9e3
       version: -1
       name: Dump internal list content to context
       description: Dumps (copies) instance context to either the incident context
@@ -284,15 +284,15 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 7a683b90-2296-4f44-8985-b782661b6c16
+    taskid: 2767000c-6685-4759-8302-b87433c0edfd
     type: regular
     task:
-      id: 7a683b90-2296-4f44-8985-b782661b6c16
+      id: 2767000c-6685-4759-8302-b87433c0edfd
       version: -1
       name: Dump internal list content to context
       description: Dumps (copies) instance context to either the incident context
         or a file.
-      script: '||pan-os-edl-dump-internal-list'
+      script: '|||pan-os-edl-dump-internal-list'
       type: regular
       iscommand: true
       brand: ""
