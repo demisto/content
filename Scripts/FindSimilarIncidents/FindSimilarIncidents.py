@@ -140,7 +140,7 @@ def get_incidents_by_keys(similar_incident_keys, incident_time, incident_id, hou
                           max_number_of_results, extra_query, applied_condition):
     condition_string = ' %s ' % applied_condition.lower()
     similar_keys_query = condition_string.join(
-        map(lambda t: '%s:"%s"' % (t[0], t[1].replace('"', r'\"').replace("\n", "\\n").replace("\r","\\r")),
+        map(lambda t: '%s:"%s"' % (t[0], t[1].replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r")),
             similar_incident_keys.items()))
     incident_time = parse_datetime(incident_time)
     max_date = incident_time
