@@ -710,7 +710,7 @@ def get_search_results_command():
     search_id = demisto.args().get('search_id')
     raw_search_results = get_search_results(search_id, demisto.args().get('range'))
     result_key = raw_search_results.keys()[0]
-    title = 'QRadar Search Results from ' + result_key
+    title = 'QRadar Search Results from {}'.format(convert_to_str(result_key))
     context_key = demisto.args().get('output_path') if demisto.args().get(
         'output_path') else 'QRadar.Search(val.ID === "{0}").Result.{1}'.format(search_id, result_key)
     context_obj = unicode_to_str_recur(raw_search_results[result_key])
