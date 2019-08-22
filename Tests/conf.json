@@ -567,9 +567,6 @@
             "integrations": "Gmail"
         },
         {
-            "playbookID": "TestParseCSV"
-        },
-        {
             "playbookID": "reputations.json Test"
         },
         {
