@@ -1,0 +1,1425 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: ThreatQ
+  version: -1
+configuration:
+- display: TQ SERVER URL E.g. https://192.168.1.136
+  name: serverUrl
+  required: true
+  type: 0
+- display: TQ Client ID
+  name: client_id
+  required: true
+  type: 0
+- display: Email
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'false'
+  display: Insecure
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: '8'
+  display: Indicator threshold. Minimum TQ score to consider the indicator malicious.
+  name: threshold
+  required: false
+  type: 0
+description: ThreatQ Integration
+display: ThreatQ
+name: ThreatQ
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: keyword
+      isArray: false
+      name: keyword
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Search ThreatQ repository by keywords. Search result default limit
+      is 10 records.
+    execution: false
+    name: threatq-search-by-name
+    outputs:
+    - contextPath: ThreatQ.ID
+      description: Object's ID
+      type: Number
+    - contextPath: ThreatQ.Value
+      description: Object's value
+      type: String
+    - contextPath: ThreatQ.Type
+      description: Object's type
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: 8.8.8.8
+      description: IP address
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Run ip check against ThreatQ
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: Indicator value
+      type: String
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Indicator vendor
+      type: String
+    - contextPath: DBotScore.Score
+      description: Indicator DBot Score
+      type: Number
+    - contextPath: IP.Address
+      description: IP Address
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: IP Vendor
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: IP Malicious description
+      type: String
+    - contextPath: ThreatQ.Type
+      description: Object type
+      type: String
+    - contextPath: ThreatQ.ID
+      description: Object ID
+      type: Number
+    - contextPath: ThreatQ.Value
+      description: Object value
+      type: String
+    - contextPath: ThreatQ.Sources.ID
+      description: Object source ID
+      type: Number
+    - contextPath: ThreatQ.Sources.Name
+      description: Object source name
+      type: String
+    - contextPath: ThreatQ.Attributes.ID
+      description: Object attribute ID
+      type: Number
+    - contextPath: ThreatQ.Attributes.Value
+      description: Object attribute value
+      type: String
+    - contextPath: ThreatQ.Attributes.Name
+      description: Object attribute name
+      type: String
+    - contextPath: ThreatQ.CreatedAt
+      description: Object creation date
+      type: Date
+    - contextPath: ThreatQ.UpdatedAt
+      description: Object last update date
+      type: Date
+    - contextPath: ThreatQ.Status
+      description: Object status
+      type: String
+    - contextPath: ThreatQ.TQScore
+      description: Object ThreatQ score
+      type: Number
+    - contextPath: ThreatQ.Description
+      description: Object description
+      type: String
+    - contextPath: ThreatQ.IndicatorType
+      description: Indicator type
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: www.google.com
+      description: URL or FQDN
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: Run url check against ThreatQ
+    execution: false
+    name: url
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: Indicator value
+      type: String
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Indicator vendor
+      type: String
+    - contextPath: DBotScore.Score
+      description: Indicator DBot Score
+      type: Number
+    - contextPath: URL.Data
+      description: URL
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: URL vendor
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: URL Malicious description
+      type: String
+    - contextPath: ThreatQ.Type
+      description: Object's type
+      type: String
+    - contextPath: ThreatQ.ID
+      description: Object's ID
+      type: Number
+    - contextPath: ThreatQ.Value
+      description: Object's value
+      type: String
+    - contextPath: ThreatQ.Sources.ID
+      description: Object's source ID
+      type: Number
+    - contextPath: ThreatQ.Sources.Name
+      description: Object's source name
+      type: String
+    - contextPath: ThreatQ.Attributes.ID
+      description: Object's attribute ID
+      type: Number
+    - contextPath: ThreatQ.Attributes.Name
+      description: Object's attribute name
+      type: String
+    - contextPath: ThreatQ.Attributes.Value
+      description: Object's attribute value
+      type: String
+    - contextPath: ThreatQ.UpdatedAt
+      description: Object's update date
+      type: Date
+    - contextPath: ThreatQ.CreatedAt
+      description: Object's creation date
+      type: Date
+    - contextPath: ThreatQ.Description
+      description: Object's description
+      type: String
+    - contextPath: ThreatQ.Status
+      description: Object's status
+      type: String
+    - contextPath: ThreatQ.IndicatorType
+      description: Indicator type
+      type: String
+    - contextPath: ThreatQ.TQScore
+      description: Indicator's ThreatQ score
+      type: Number
+  - arguments:
+    - default: false
+      defaultValue: google.exe
+      description: File name, MD5 or SHA
+      isArray: false
+      name: file
+      required: false
+      secret: false
+    deprecated: false
+    description: Run file check against ThreatQ
+    execution: false
+    name: file
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: Indicator value
+      type: String
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Indicator vendor
+      type: String
+    - contextPath: DBotScore.Score
+      description: Indicator DBot Score
+      type: Number
+    - contextPath: File.Name
+      description: File name
+      type: String
+    - contextPath: File.MD5
+      description: File MD5
+      type: String
+    - contextPath: File.SHA1
+      description: File SHA1
+      type: String
+    - contextPath: File.SHA256
+      description: File SHA256
+      type: String
+    - contextPath: File.SHA512
+      description: File SHA512
+      type: String
+    - contextPath: File.Path
+      description: File path
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: File vendor
+      type: String
+    - contextPath: File.Malicious.Malicious
+      description: File Malicious description
+      type: String
+    - contextPath: ThreatQ.Type
+      description: Object's type
+      type: String
+    - contextPath: ThreatQ.ID
+      description: Object's ID
+      type: Number
+    - contextPath: ThreatQ.Value
+      description: Object's value
+      type: String
+    - contextPath: ThreatQ.Sources.ID
+      description: Object's source ID
+      type: Number
+    - contextPath: ThreatQ.Sources.Name
+      description: Object's source name
+      type: String
+    - contextPath: ThreatQ.Attributes.ID
+      description: Object's attribute ID
+      type: Number
+    - contextPath: ThreatQ.Attributes.Name
+      description: Object's attribute name
+      type: String
+    - contextPath: ThreatQ.Attributes.Value
+      description: Object's attribute value
+      type: String
+    - contextPath: ThreatQ.UpdatedAt
+      description: Object's last update date
+      type: Date
+    - contextPath: ThreatQ.CreatedAt
+      description: Object's creation date
+      type: Date
+    - contextPath: ThreatQ.Description
+      description: Object's description
+      type: String
+    - contextPath: ThreatQ.Status
+      description: Object's status
+      type: String
+    - contextPath: ThreatQ.IndicatorType
+      description: Indicator type
+      type: String
+    - contextPath: ThreatQ.TQScore
+      description: Object's ThreatQ score
+      type: Number
+  - arguments:
+    - default: false
+      defaultValue: example@gmail.com
+      description: pre-commit
+      isArray: false
+      name: email
+      required: true
+      secret: false
+    deprecated: false
+    description: Run email check against ThreatQ
+    execution: false
+    name: email
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: Indicator value
+      type: String
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Indicator vendor
+      type: String
+    - contextPath: DBotScore.Score
+      description: Indicator DBot Score
+      type: Number
+    - contextPath: Account.Email.Address
+      description: Email Address
+      type: String
+    - contextPath: Account.Malicious.Vendor
+      description: Account malicious vendor
+      type: String
+    - contextPath: Account.Malicious.Description
+      description: Account Malicious description
+      type: String
+    - contextPath: ThreatQ.Type
+      description: Object's type
+      type: String
+    - contextPath: ThreatQ.ID
+      description: Object's ID
+      type: Number
+    - contextPath: ThreatQ.Value
+      description: Object's value
+      type: String
+    - contextPath: ThreatQ.Sources.ID
+      description: Object's source ID
+      type: Number
+    - contextPath: ThreatQ.Sources.Name
+      description: Object's source name
+      type: String
+    - contextPath: ThreatQ.Attributes.ID
+      description: Object's attribute ID
+      type: Number
+    - contextPath: ThreatQ.Attributes.Name
+      description: Object's attribute name
+      type: String
+    - contextPath: ThreatQ.Attributes.Value
+      description: Object's attribute value
+      type: String
+    - contextPath: ThreatQ.UpdatedAt
+      description: Object's last update date
+      type: Date
+    - contextPath: ThreatQ.CreatedAt
+      description: Object's creation date
+      type: Date
+    - contextPath: ThreatQ.Description
+      description: Object's description
+      type: String
+    - contextPath: ThreatQ.Status
+      description: Object's status
+      type: String
+    - contextPath: ThreatQ.IndicatorType
+      description: Indicator type
+      type: String
+    - contextPath: ThreatQ.TQScore
+      description: Indicator ThreatQ score
+      type: Number
+  - arguments:
+    - default: false
+      description: pre-commit
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Run domain check against ThreatQ
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: Indicator value
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Indicator vendor
+      type: String
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: String
+    - contextPath: DBotScore.Score
+      description: Indicator DBot Score
+      type: Number
+    - contextPath: Domain.Name
+      description: Domain name
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: Domain vendor
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: Domain Malicious description
+      type: String
+    - contextPath: ThreatQ.Type
+      description: Object's type
+      type: String
+    - contextPath: ThreatQ.ID
+      description: Object's ID
+      type: Number
+    - contextPath: ThreatQ.Value
+      description: Object's value
+      type: String
+    - contextPath: ThreatQ.Sources.ID
+      description: Object's source ID
+      type: Number
+    - contextPath: ThreatQ.Sources.Name
+      description: Object's source name
+      type: String
+    - contextPath: ThreatQ.Attributes.ID
+      description: Object's attribute ID
+      type: Number
+    - contextPath: ThreatQ.Attributes.Name
+      description: Object's attribute name
+      type: String
+    - contextPath: ThreatQ.Attributes.Value
+      description: Object's attribute value
+      type: String
+    - contextPath: ThreatQ.UpdatedAt
+      description: Object's last update date
+      type: Date
+    - contextPath: ThreatQ.CreatedAt
+      description: Object's creation date
+      type: Date
+    - contextPath: ThreatQ.Description
+      description: Object's description
+      type: String
+    - contextPath: ThreatQ.Status
+      description: Object's status
+      type: String
+    - contextPath: ThreatQ.IndicatorType
+      description: Indicator type
+      type: String
+    - contextPath: ThreatQ.TQScore
+      description: Indicator ThreatQ score
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Indicator type
+      isArray: false
+      name: ioc_type
+      predefined:
+      - Binary String
+      - CIDR Block
+      - CVE
+      - Email Address
+      - Email Attachment
+      - Email Subject
+      - File Mapping
+      - File Path
+      - Filename
+      - FQDN
+      - Fuzzy Hash
+      - GOST Hash
+      - Hash ION
+      - IP Address
+      - IPv6 Address
+      - MD5
+      - Mutex
+      - Password
+      - Registry Key
+      - Service Name
+      - SHA-1
+      - SHA-256
+      - SHA-384
+      - SHA-512
+      - String
+      - x509 Serial
+      - x509 Subject
+      - URL
+      - URL Path
+      - User-agent
+      - Username
+      - X-Mailer
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicator status
+      isArray: false
+      name: status
+      predefined:
+      - Active
+      - Expired
+      - Indirect
+      - Review
+      - Whitelisted
+      required: true
+      secret: false
+    - default: false
+      description: Indicator value
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: Source(s) name(s)
+      isArray: true
+      name: source_lst
+      required: false
+      secret: false
+    - default: false
+      description: Add attributes
+      isArray: true
+      name: attr_lst
+      required: false
+      secret: false
+    - default: false
+      description: Attributes values
+      isArray: true
+      name: attr_vals
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new indicator in ThreatQ
+    execution: false
+    name: threatq-create-ioc
+    outputs:
+    - contextPath: ThreatQ.ID
+      description: Object's ID
+      type: number
+    - contextPath: ThreatQ.Sources.ID
+      description: Object's source ID
+      type: number
+    - contextPath: ThreatQ.Sources.Name
+      description: Object's source name
+      type: string
+    - contextPath: ThreatQ.Attributes.ID
+      description: Object's attribute ID
+      type: number
+    - contextPath: ThreatQ.Attributes.Name
+      description: Object's attribute name
+      type: string
+    - contextPath: ThreatQ.Attributes.Value
+      description: Object's attribute value
+      type: string
+    - contextPath: ThreatQ.CreatedAt
+      description: Object's creation date
+      type: date
+    - contextPath: ThreatQ.UpdatedAt
+      description: Object's last update date
+      type: date
+    - contextPath: ThreatQ.Description
+      description: Description about the object
+      type: string
+    - contextPath: ThreatQ.Value
+      description: The indicator's value
+      type: string
+    - contextPath: ThreatQ.Status
+      description: The indicator's status - Active/Expired/Indirect/Review/Whitelisted
+      type: string
+    - contextPath: ThreatQ.Type
+      description: The object's type - indicator/adversary/event
+      type: string
+    - contextPath: ThreatQ.IndicatorType
+      description: The indicator's type, e.g IP Address
+      type: string
+    - contextPath: ThreatQ.TQScore
+      description: The indicator's ThreatQ Score
+      type: number
+  - arguments:
+    - default: false
+      description: The attribute name
+      isArray: false
+      name: attr_name
+      required: true
+      secret: false
+    - default: false
+      description: The Attribute value
+      isArray: false
+      name: attr_value
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Object's type
+      isArray: false
+      name: obj_type
+      predefined:
+      - indicator
+      - event
+      - adversary
+      required: true
+      secret: false
+    - default: false
+      description: Object's ID
+      isArray: false
+      name: obj_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Add an attribute to an object in ThreatQ
+    execution: false
+    name: threatq-add-attr
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Object's type
+      isArray: false
+      name: obj_type
+      predefined:
+      - indicator
+      - adversary
+      - event
+      required: true
+      secret: false
+    - default: false
+      description: Object's ID
+      isArray: false
+      name: obj_id
+      required: true
+      secret: false
+    - default: false
+      description: Attribute id
+      isArray: false
+      name: attr_id
+      required: true
+      secret: false
+    - default: false
+      description: New attribute's value
+      isArray: false
+      name: attr_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Modify an attribute on an object in ThreatQ
+    execution: false
+    name: threatq-modify-attr
+  - arguments:
+    - default: false
+      description: First object's ID
+      isArray: false
+      name: obj1_id
+      required: true
+      secret: false
+    - default: false
+      description: Second object's ID
+      isArray: false
+      name: obj2_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: First object's type
+      isArray: false
+      name: obj1_type
+      predefined:
+      - indicator
+      - adversary
+      - event
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Second object's type
+      isArray: false
+      name: obj2_type
+      predefined:
+      - indicator
+      - adversary
+      - event
+      required: true
+      secret: false
+    deprecated: false
+    description: Link between two objects in ThreatQ
+    execution: false
+    name: threatq-link-objects
+  - arguments:
+    - default: false
+      description: Adversary name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Source(s) name(s)
+      isArray: true
+      name: source_lst
+      required: false
+      secret: false
+    - default: false
+      description: Add attributes
+      isArray: true
+      name: attr_lst
+      required: false
+      secret: false
+    - default: false
+      description: Attributes values
+      isArray: true
+      name: attr_vals
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new adversary in ThreatQ
+    execution: false
+    name: threatq-create-adversary
+    outputs:
+    - contextPath: ThreatQ.Name
+      description: The adversary's name
+      type: string
+    - contextPath: ThreatQ.Type
+      description: The object type - adversary
+      type: string
+    - contextPath: ThreatQ.ID
+      description: The adversary's ID
+      type: number
+    - contextPath: ThreatQ.Sources.ID
+      description: The adversary's source ID
+      type: number
+    - contextPath: ThreatQ.Sources.Name
+      description: The adversary's source name
+      type: string
+    - contextPath: ThreatQ.Attributes.ID
+      description: The adversary's attribute ID
+      type: number
+    - contextPath: ThreatQ.Attributes.Name
+      description: The adversary's attribute name
+      type: string
+    - contextPath: ThreatQ.Attributes.Value
+      description: The adversary's attribute value
+      type: string
+    - contextPath: ThreatQ.UpdatedAt
+      description: The creation date of the adversary
+      type: date
+    - contextPath: ThreatQ.CreatedAt
+      description: The last update date of the adversary
+      type: date
+  - arguments:
+    - default: false
+      description: Event title
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Event type
+      isArray: false
+      name: event_type
+      predefined:
+      - Spearphish
+      - Watering Hole
+      - SQL Injection Attack
+      - DoS Attack
+      - Malware
+      - Watchlist
+      - Command and Control
+      - Anonymization
+      - Exfiltration
+      - Host Characteristics
+      - Compromised PKI Certificate
+      - Login Compromise
+      - Incident
+      required: true
+      secret: false
+    - default: false
+      description: 'Date of Occurrence. Valid formats: YYYY/dd/mm HH:MM:SS, YY/dd/mm'
+      isArray: false
+      name: date
+      required: true
+      secret: false
+    - default: false
+      description: Add sources
+      isArray: true
+      name: source_lst
+      required: false
+      secret: false
+    - default: false
+      description: List of attribute names, seperated by comma
+      isArray: true
+      name: attr_names_lst
+      required: false
+      secret: false
+    - default: false
+      description: Attributes values list, seperated by comma. The i-th element in
+        this list is the value of the i-th attribute in attr_names_lst
+      isArray: true
+      name: attr_values_lst
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new event in ThreatQ
+    execution: false
+    name: threatq-create-event
+    outputs:
+    - contextPath: ThreatQ.ID
+      description: The event's ID
+      type: number
+    - contextPath: ThreatQ.Sources.ID
+      description: The event's source ID
+      type: number
+    - contextPath: ThreatQ.Sources.Name
+      description: The event's source name
+      type: string
+    - contextPath: ThreatQ.Attributes.ID
+      description: The event's attribute ID
+      type: number
+    - contextPath: ThreatQ.Attributes.Name
+      description: The event's attribute name
+      type: string
+    - contextPath: ThreatQ.Attributes.Value
+      description: The event's attribute value
+      type: string
+    - contextPath: ThreatQ.UpdatedAt
+      description: The last update date of the event
+      type: date
+    - contextPath: ThreatQ.CreatedAt
+      description: The creation date of the event
+      type: date
+    - contextPath: ThreatQ.Type
+      description: The object's type - event
+      type: string
+    - contextPath: ThreatQ.Description
+      description: Description about the event
+      type: string
+    - contextPath: ThreatQ.Title
+      description: The event's title
+      type: string
+    - contextPath: ThreatQ.Occurred
+      description: The date the event happened
+      type: date
+    - contextPath: ThreatQ.EventType
+      description: The type of the event, e.g Spearphish
+      type: string
+  - arguments:
+    - default: false
+      description: Object's ID
+      isArray: false
+      name: obj_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Object's type
+      isArray: false
+      name: obj_type
+      predefined:
+      - indicator
+      - event
+      - adversary
+      required: true
+      secret: false
+    deprecated: false
+    description: Get related Indicators in ThreatQ
+    execution: false
+    name: threatq-get-related-ioc
+    outputs:
+    - contextPath: ThreatQ.Related.ID
+      description: Related indicator's ID
+      type: number
+    - contextPath: ThreatQ.Related.Sources.ID
+      description: Related indicator's source ID
+      type: number
+    - contextPath: ThreatQ.Related.Sources.Name
+      description: Related indicator's source name
+      type: string
+    - contextPath: ThreatQ.Related.Attributes.ID
+      description: Related indicator's attribute ID
+      type: number
+    - contextPath: ThreatQ.Related.Attributes.Name
+      description: Related indicator's attribute name
+      type: string
+    - contextPath: ThreatQ.Related.Attributes.Value
+      description: Related indicator's attribute value
+      type: string
+    - contextPath: ThreatQ.Related.UpdatedAt
+      description: Related indicator's last update date
+      type: date
+    - contextPath: ThreatQ.Related.CreatedAt
+      description: Related indicator's creation date
+      type: date
+    - contextPath: ThreatQ.Related.Type
+      description: Related object type - indicator
+      type: string
+    - contextPath: ThreatQ.Related.Description
+      description: Description about the related indicator
+      type: string
+    - contextPath: ThreatQ.Related.Value
+      description: Related indicator value
+      type: string
+    - contextPath: ThreatQ.Related.Status
+      description: Related indicator status
+      type: string
+    - contextPath: ThreatQ.Related.IndicatorType
+      description: Related indicator type
+      type: string
+    - contextPath: ThreatQ.Related.TQScore
+      description: Related indicator ThreatQ score
+      type: number
+    - contextPath: ThreatQ.ID
+      description: Object ID
+      type: number
+    - contextPath: ThreatQ.Type
+      description: Object type
+      type: string
+  - arguments:
+    - default: false
+      description: Indicator's ID
+      isArray: false
+      name: ioc_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicator's new Status
+      isArray: false
+      name: status
+      predefined:
+      - Active
+      - Expired
+      - Indirect
+      - Review
+      - Whitelisted
+      required: true
+      secret: false
+    deprecated: false
+    description: Update an Indicator status in ThreatQ
+    execution: false
+    name: threatq-update-status
+  - arguments:
+    - default: false
+      description: Object's ID
+      isArray: false
+      name: obj_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Object's type
+      isArray: false
+      name: obj_type
+      predefined:
+      - indicator
+      - event
+      - adversary
+      required: true
+      secret: false
+    deprecated: false
+    description: Get related Events in ThreatQ
+    execution: false
+    name: threatq-get-related-events
+    outputs:
+    - contextPath: ThreatQ.Related.ID
+      description: Related event ID
+      type: number
+    - contextPath: ThreatQ.Related.Sources.ID
+      description: Related event source ID
+      type: number
+    - contextPath: ThreatQ.Related.Sources.Name
+      description: Related event source name
+      type: string
+    - contextPath: ThreatQ.Related.Attributes.ID
+      description: Related event attribute ID
+      type: number
+    - contextPath: ThreatQ.Related.Attributes.Name
+      description: Related event attribute name
+      type: string
+    - contextPath: ThreatQ.Related.Attributes.Value
+      description: Related event attribute value
+      type: string
+    - contextPath: ThreatQ.Related.UpdatedAt
+      description: Related event last update date
+      type: date
+    - contextPath: ThreatQ.Related.CreatedAt
+      description: Related event creation date
+      type: date
+    - contextPath: ThreatQ.Related.Description
+      description: Description about the related event
+      type: string
+    - contextPath: ThreatQ.Related.Title
+      description: Related event title
+      type: string
+    - contextPath: ThreatQ.Related.Occurred
+      description: Related event date of occurrence
+      type: date
+    - contextPath: ThreatQ.Related.EventType
+      description: Related event type
+      type: string
+    - contextPath: ThreatQ.Related.Type
+      description: Related object type - event
+      type: string
+    - contextPath: ThreatQ.ID
+      description: Object ID
+      type: number
+    - contextPath: ThreatQ.Type
+      description: Object type
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Object's ID
+      isArray: false
+      name: obj_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Object type
+      isArray: false
+      name: obj_type
+      predefined:
+      - indicator
+      - event
+      - adversary
+      required: true
+      secret: false
+    deprecated: false
+    description: Get related Adversaries in ThreatQ
+    execution: false
+    name: threatq-get-related-adversaries
+    outputs:
+    - contextPath: ThreatQ.Related.ID
+      description: Related adversary ID
+      type: number
+    - contextPath: ThreatQ.Related.Sources.ID
+      description: Related adversary source ID
+      type: number
+    - contextPath: ThreatQ.Related.Sources.Name
+      description: Related adversary source name
+      type: string
+    - contextPath: ThreatQ.Related.Attributes.ID
+      description: Related adversary attribute ID
+      type: number
+    - contextPath: ThreatQ.Related.Attributes.Name
+      description: Related adversary attribute name
+      type: string
+    - contextPath: ThreatQ.Related.Attributes.Value
+      description: Related adversary attribute value
+      type: string
+    - contextPath: ThreatQ.Related.UpdatedAt
+      description: Related adversary last update date
+      type: date
+    - contextPath: ThreatQ.Related.CreatedAt
+      description: Related adversary creation date
+      type: date
+    - contextPath: ThreatQ.Related.Name
+      description: Related adversary name
+      type: string
+    - contextPath: ThreatQ.Related.Type
+      description: Related adversary type - adversary
+      type: string
+    - contextPath: ThreatQ.ID
+      description: Object ID
+      type: number
+    - contextPath: ThreatQ.Type
+      description: Object type
+      type: string
+  - deprecated: false
+    description: Uplad a file in ThreatQ
+    execution: false
+    name: threatq-upload-file
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Object's type
+      isArray: false
+      name: obj_type
+      predefined:
+      - indicator
+      - adversary
+      - event
+      required: true
+      secret: false
+    - default: false
+      description: Object's ID
+      isArray: false
+      name: obj_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Search for an object by it's type and ID. When possible, generic
+      and DBotScore contexts will be generated as well.
+    execution: false
+    name: threatq-search-by-id
+    outputs:
+    - contextPath: ThreatQ.ID
+      description: Object's ID
+      type: number
+    - contextPath: ThreatQ.Sources.ID
+      description: Object's source ID
+      type: number
+    - contextPath: ThreatQ.Sources.Name
+      description: Object's source name
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: Indicator value
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Indicator vendor
+      type: string
+    - contextPath: DBotScore.Score
+      description: Indicator DBot Score
+      type: date
+    - contextPath: ThreatQ.Attributes.ID
+      description: Object's attribute ID
+      type: number
+    - contextPath: ThreatQ.Attributes.Name
+      description: Object's attribute name
+      type: string
+    - contextPath: ThreatQ.Attributes.Value
+      description: Object's attribute value
+      type: string
+    - contextPath: ThreatQ.UpdatedAt
+      description: Object's last update date
+      type: date
+    - contextPath: ThreatQ.CreatedAt
+      description: Object's creation date
+      type: date
+    - contextPath: ThreatQ.Type
+      description: Object's type
+      type: string
+    - contextPath: ThreatQ.Description
+      description: Description about the object
+      type: string
+    - contextPath: ThreatQ.Value
+      description: Indicator's value
+      type: string
+    - contextPath: ThreatQ.Status
+      description: Indicator's status
+      type: string
+    - contextPath: ThreatQ.IndicatorType
+      description: Indicator's type, e.g IP Address
+      type: string
+    - contextPath: ThreatQ.TQScore
+      description: Indicator's ThreatQ Score
+      type: number
+    - contextPath: ThreatQ.Name
+      description: Adversary's name
+      type: string
+    - contextPath: ThreatQ.Title
+      description: Event's title
+      type: string
+    - contextPath: ThreatQ.Occurred
+      description: Event's occurrence date
+      type: date
+    - contextPath: ThreatQ.EventType
+      description: Event's type
+      type: string
+    - contextPath: IP.Address
+      description: An IP address
+      type: string
+    - contextPath: URL.Data
+      description: A URL data
+      type: string
+    - contextPath: File.Name
+      description: A file name
+      type: string
+    - contextPath: File.MD5
+      description: A file MD5
+      type: string
+    - contextPath: File.Path
+      description: A file path
+      type: string
+    - contextPath: File.SHA1
+      description: A file SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: A file SHA256
+      type: string
+    - contextPath: File.SHA512
+      description: A file SHA512
+      type: string
+    - contextPath: Email.From
+      description: An email address
+      type: string
+    - contextPath: Email.Subject
+      description: An email subject
+      type: string
+    - contextPath: Email.Attachments
+      description: An email attachment
+      type: string
+    - contextPath: Domain.Name
+      description: A domain name
+      type: string
+    - contextPath: Account.Username
+      description: An account username
+      type: string
+    - contextPath: CVE.ID
+      description: A CVE ID
+      type: string
+    - contextPath: Service.Name
+      description: A service name
+      type: string
+    - contextPath: RegistryKey.Path
+      description: A registry key path
+      type: string
+    - contextPath: Event.Type
+      description: An event type, e.g Spearphish
+      type: string
+    - contextPath: Event.ID
+      description: An event ID
+      type: number
+    - contextPath: Event.Name
+      description: An event title
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: IP vendor
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: IP Malicious description
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: URL vendor
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: URL Malicious description
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: File vendor
+      type: string
+    - contextPath: File.Malicious.Description
+      description: File Malicious description
+      type: string
+    - contextPath: Email.Malicious.Vendor
+      description: Email vendor
+      type: string
+    - contextPath: Email.Malicious.Description
+      description: Email Malicious description
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: Domain vendor
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: Domain Malicious description
+      type: string
+    - contextPath: Account.Malicious.Vendor
+      description: Account vendor
+      type: string
+    - contextPath: Account.Malicious.Description
+      description: Account Malicious description
+      type: string
+    - contextPath: RegistryKey.Malicious.Vendor
+      description: Registry key vendor
+      type: string
+    - contextPath: RegistryKey.Malicious.Description
+      description: Registry key Malicious description
+      type: string
+    - contextPath: CVE.Malicious.Vendor
+      description: CVE vendor
+      type: string
+    - contextPath: CVE.Malicious.Description
+      description: CVE Malicious description
+      type: string
+    - contextPath: Service.Malicious.Vendor
+      description: Service vendor
+      type: string
+    - contextPath: Service.Malicious.Description
+      description: Service Malicious description
+      type: string
+  - arguments:
+    - default: false
+      description: First object's ID
+      isArray: false
+      name: obj1_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: First object's type
+      isArray: false
+      name: obj1_type
+      predefined:
+      - adversary
+      - indicator
+      - event
+      required: true
+      secret: false
+    - default: false
+      description: Second object's ID
+      isArray: false
+      name: obj2_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Second object's type
+      isArray: false
+      name: obj2_type
+      predefined:
+      - adversary
+      - indicator
+      - event
+      required: true
+      secret: false
+    deprecated: false
+    description: Unlink two objects in ThreatQ
+    execution: false
+    name: threatq-unlink-objects
+  - arguments:
+    - default: false
+      description: Object's ID
+      isArray: false
+      name: obj_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Object's type
+      isArray: false
+      name: obj_type
+      predefined:
+      - indicator
+      - event
+      - adversary
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an object in ThreatQ
+    execution: false
+    name: threatq-delete-object
+  - arguments:
+    - default: false
+      description: Object ID
+      isArray: false
+      name: obj_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Object type
+      isArray: false
+      name: obj_type
+      predefined:
+      - indicator
+      - adversary
+      - event
+      required: true
+      secret: false
+    - default: false
+      description: Source name
+      isArray: false
+      name: source
+      required: true
+      secret: false
+    deprecated: false
+    description: Add a source to an object in ThreatQ
+    execution: false
+    name: threatq-add-source
+  - arguments:
+    - default: false
+      description: Source name
+      isArray: false
+      name: source
+      required: true
+      secret: false
+    - default: false
+      description: Object ID
+      isArray: false
+      name: obj_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Object type
+      isArray: false
+      name: obj_type
+      predefined:
+      - indicator
+      - adversary
+      - event
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a source from an object in ThreatQ
+    execution: false
+    name: threatq-delete-source
+  - arguments:
+    - default: false
+      description: Attribute ID
+      isArray: false
+      name: attr_id
+      required: true
+      secret: false
+    - default: false
+      description: Object ID
+      isArray: false
+      name: obj_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Object type
+      isArray: false
+      name: obj_type
+      predefined:
+      - indicator
+      - adversary
+      - event
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an attribute from an object in ThreatQ
+    execution: false
+    name: threatq-delete-attr
+  dockerimage: demisto/python3:3.7.4.977
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
