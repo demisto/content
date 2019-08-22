@@ -305,7 +305,7 @@ def main():
     global SERVER
     FROM = demisto.getParam('from')
     FQDN = demisto.params().get('fqdn')
-    stderr_org = smtplib.stderr
+    stderr_org = smtplib.stderr  # type: ignore
     try:
         if demisto.command() == 'test-module':
             smtplib.stderr = LOG  # type: ignore
@@ -319,7 +319,7 @@ def main():
             SERVER.login(demisto.getParam('credentials')['identifier'], demisto.getParam('credentials')['password'])
     except Exception as e:
         # also reset at the bottom finally
-        smtplib.stderr = stderr_org
+        smtplib.stderr = stderr_org  # type: ignore
         smtplib.SMTP.debuglevel = 0
         return_error_mail_sender(e)
         return  # so mypy knows that we don't continue after this
@@ -346,7 +346,7 @@ def main():
     except Exception as e:
         return_error_mail_sender(e)
     finally:
-        smtplib.stderr = stderr_org
+        smtplib.stderr = stderr_org  # type: ignore
         smtplib.SMTP.debuglevel = 0
 
 
