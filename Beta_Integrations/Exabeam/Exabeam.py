@@ -1,6 +1,6 @@
-import demisto
-
+import demistomock as demisto
 from CommonServerPython import *
+from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import requests
