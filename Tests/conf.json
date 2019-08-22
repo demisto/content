@@ -162,9 +162,6 @@
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
         },
         {
-            "playbookID": "ParseCSVnullbytesTest"
-        },
-        {
             "integrations": "CVE Search",
             "playbookID": "cveReputation Test"
         },
