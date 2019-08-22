@@ -39,9 +39,9 @@ def dict_value_to_integer(params: Dict, key: str):
         raise Exception(f'This value for {key} must be an integer.')
 
 
-# transforms severity number to string representation
 def severity_num_to_string(severity_num: int) -> str:
     """
+    transforms severity number to string representation
     :param severity_num: Severity score as Integer
     :return: Returns the String representation of the severity score
     """
@@ -76,9 +76,9 @@ def severity_string_to_num(severity_str: str) -> int:
     return -1
 
 
-# transforms an alert to incident convention
 def alert_to_incident(alert: Dict) -> Dict:
     """
+    transforms an alert to incident convention
     :param alert: alert is a dictionary
     :return: Incident - dictionary
     """
@@ -91,9 +91,9 @@ def alert_to_incident(alert: Dict) -> Dict:
     return incident
 
 
-# return updated contents of an alert
 def alert_contents_request(alert_id: int) -> Dict:
     """
+    returns updated contents of an alert
     :param alert_id: The ID of the alert - Integer
     :return: Dict of the contents of the alert
     """
@@ -105,9 +105,9 @@ def alert_contents_request(alert_id: int) -> Dict:
     return contents
 
 
-# removes all none values from a dict
 def remove_none_dict(input_dict: Dict) -> Dict:
     """
+    removes all none values from a dict
     :param input_dict: any dictionary in the world is OK
     :return: same dictionary but without None values
     """
@@ -163,9 +163,9 @@ def get_alert_contents(alert: Dict) -> Dict:
     }
 
 
-# returns the convention for the war room
 def get_alert_human_readable_outputs(contents: Dict) -> Dict:
     """
+    returns the convention for the war room
     :param contents: Contents is a dictionary
     :return: A dict representation of the war room contents displayed to the user
     """
@@ -204,9 +204,9 @@ def get_entity_contents(entity: Dict) -> Dict:
     }
 
 
-# returns the convention for the war room
 def get_entity_human_readable_outputs(contents: Dict) -> Dict:
     """
+    returns the convention for the war room
     :param contents: Contents is a dictionary
     :return: A dict representation of the war room contents displayed to the user
     """
@@ -714,7 +714,6 @@ def test_module():
     """
     Performs basic get request to get item samples
     """
-    get_authorization_token()
     get_policy_types()
     demisto.results('ok')
 
