@@ -4,7 +4,7 @@ from CommonServerPython import *
 
 reload(sys)  # type: ignore
 sys.setdefaultencoding('utf8')  # pylint: disable=E1101
-codec_type = demisto.args().get('codec')
+codec_type = demisto.args().get('codec', 'utf-8')
 
 
 def remove_non_printable_chars(s):
@@ -84,7 +84,7 @@ def unicode_dict_reader(csv_data, **kwargs):
     return arr
 
 
-def get_entry_by_file_name(file):
+def get_entry_by_file_name(file_name):
     entries = demisto.executeCommand('getEntries', {})
     for entry in reversed(entries):
         fn = demisto.get(entry, 'File')
@@ -92,154 +92,179 @@ def get_entry_by_file_name(file):
         if type(fn) not in [unicode, str]:
             continue
 
-        if file.lower() == fn.lower():
+        if file_name.lower() == fn.lower():
             return entry
-    raise ValueError('Was unable to find "{}" in the war room. Please ensure the file was uploaded.'.format(file))
+    raise ValueError('Was unable to find "{}" in the war room. Please ensure the file was uploaded.'.format(file_name))
 
 
-csvEntry = None
+csv_entry = None
+ip_count = 0
+domain_count = 0
+hash_count = 0
 
-iplist = []
-domainlist = []
-hashlist = []
 
-ipcount = 0
-domaincount = 0
-hashcount = 0
+def is_one_dimension_list(all_csv):
+    """ Checks if given list is one dimensional
 
-dArgs = demisto.args()
+    Args:
+        all_csv (list): list of csv entries
 
-entryID = dArgs['entryID'] if 'entryID' in dArgs else None
-file = dArgs['file'] if 'file' in dArgs else None  # file arg deprecated
-parseip = int(dArgs['ips']) if 'ips' in dArgs else -1
-parsedomain = int(dArgs['domains']) if 'domains' in dArgs else -1
-parsehash = int(dArgs['hashes']) if 'hashes' in dArgs else -1
-parse_all = True if dArgs['parseAll'] == 'yes' else False
+    Returns:
+        bool: True if all strings (one dimension list) or False if not
+    """
+    return all(isinstance(entry, STRING_TYPES) for entry in all_csv) or not all_csv
 
-if parseip == -1 and parsedomain == -1 and parsehash == -1 and not parse_all:
-    return_error('Select a field to extract or set parseAll=yes to parse the whole CSV file')
 
-if file is None and entryID is None:
-    return_error('Please provide entryID.')
+def main():
+    ip_list = []
+    domain_list = []
+    hash_list = []
+    d_args = demisto.args()
 
-if entryID is None:
-    # search entry by file name
-    try:
-        entry = get_entry_by_file_name(file)
-        entryID = entry['ID']
-    except ValueError as e:
-        return_error(e.message)
+    entry_id = d_args['entryID'] if 'entryID' in d_args else None
+    file_name = d_args['file'] if 'file' in d_args else None  # file arg deprecated
+    parse_ip = int(d_args['ips']) if 'ips' in d_args else -1
+    parse_domain = int(d_args['domains']) if 'domains' in d_args else -1
+    parse_hash = int(d_args['hashes']) if 'hashes' in d_args else -1
+    parse_all = True if d_args['parseAll'] == 'yes' else False
 
-res = demisto.getFilePath(entryID)
-if not res:
-    return_error("Entry {} not found".format(entryID))
+    if parse_ip == -1 and parse_domain == -1 and parse_hash == -1 and not parse_all:
+        return_error('Select a field to extract or set parseAll=yes to parse the whole CSV file')
 
-filePath = res['path']
-fileName = res['name']
-if not fileName.lower().endswith('.csv'):
-    return_error(
-        '"{}" is not in csv format. Please ensure the file is in correct format and has a ".csv" extention'.format(
-            fileName))
+    if file_name is None and entry_id is None:
+        return_error('Please provide entryID.')
 
-if parse_all:
-    all_csv = []
-    with open(filePath, mode='r') as f:
-        records = unicode_dict_reader(f)
-        for row in records:
-            all_csv.append(row)
+    if entry_id is None:
+        # search entry by file name
+        try:
+            entry = get_entry_by_file_name(file_name)
+            entry_id = entry['ID']
+        except ValueError as e:
+            return_error(e.message)
 
-    output = {
-        'ParseCSV.ParsedCSV': all_csv
-    }
+    res = demisto.getFilePath(entry_id)
+    if not res:
+        return_error("Entry {} not found".format(entry_id))
 
-    human_readable = tableToMarkdown(fileName, all_csv)
-    demisto.results({
-        "Type": entryTypes["note"],
-        "ContentsFormat": formats["json"],
-        "ReadableContentsFormat": formats["markdown"],
-        "Contents": all_csv,
-        "EntryContext": output,
-        "HumanReadable": human_readable
-    })
-    sys.exit(0)
+    file_path = res['path']
+    file_name = res['name']
+    if not file_name.lower().endswith('.csv'):
+        return_error(
+            '"{}" is not in csv format. Please ensure the file is in correct format and has a ".csv" extension'.format(
+                file_name))
 
-if parseip == -1 and parsedomain == -1 and parsehash == -1:
-    # stop the script if no need to parse ips,domains or hashes
-    sys.exit(0)
+    if parse_all:
+        all_csv = []
+        with open(file_path) as f:
+            records = unicode_dict_reader(f)
+            # `records` is a list contains CSV rows (without headers)
+            # so if it doesn't exists - it can be empty or one-lined CSV
+            if records:
+                for row in records:
+                    all_csv.append(row)
+            else:  # Can be one-line csv
+                f.seek(0)
+                line = f.read()
+                all_csv = line.split(',')
 
-with open(filePath, 'rU') as f:
-    has_header = csv.Sniffer().has_header(f.read(1024))
-    f.seek(0)
+        output = {
+            'ParseCSV.ParsedCSV': all_csv
+        }
+        if is_one_dimension_list(all_csv):
+            human_readable = tableToMarkdown(file_name, all_csv, headers=["CSV list"])
+        else:
+            human_readable = tableToMarkdown(file_name, all_csv)
+        demisto.results({
+            "Type": entryTypes["note"],
+            "ContentsFormat": formats["json"],
+            "ReadableContentsFormat": formats["markdown"],
+            "Contents": all_csv,
+            "EntryContext": output,
+            "HumanReadable": human_readable
+        })
 
-    csvdata = csv.reader(f)
+    elif not (parse_ip == -1 and parse_domain == -1 and parse_hash == -1):
+        # if need to parse ips/domains/hashes, keep the script running
+        if sum(1 for line in open(file_path)) <= 1:  # checks if there are less than one line
+            return_error('No data to parse. CSV file might be empty or one-lined. try the `ParseAll=yes` argument.')
 
-    if has_header:
-        next(csvdata)
+        with open(file_path, 'rU') as f:
+            has_header = csv.Sniffer().has_header(f.read(1024))
+            f.seek(0)
+            csv_data = csv.reader(f)
 
-    md = '### Parsed Data Table\n' + ('IPs |' if 'ips' in dArgs else '') + (
-        'Domains |' if 'domains' in dArgs else '') + ('Hashes |' if 'hashes' in dArgs else '') + '\n'
-    md += ('- |' if 'ips' in dArgs else '') + ('- |' if 'domains' in dArgs else '') + (
-        '- |' if 'hashes' in dArgs else '') + '\n'
-    content = ''
+            if has_header:
+                next(csv_data)
 
-    for row in csvdata:
-        content += ','.join(row) + '\n'
-        if parseip != -1:
-            md += (row[parseip] + '|' if row[parseip] else ' |')
-            is_ip = re.search(r'([0-9]{1,3}\.){3}[0-9]{1,3}', row[parseip])
-            is_valid = is_ip_valid(row[parseip])
-            if is_ip and is_valid:
-                iplist.append(row[parseip])
+            md = '### Parsed Data Table\n' + ('IPs |' if 'ips' in d_args else '') + (
+                'Domains |' if 'domains' in d_args else '') + ('Hashes |' if 'hashes' in d_args else '') + '\n'
+            md += ('- |' if 'ips' in d_args else '') + ('- |' if 'domains' in d_args else '') + (
+                '- |' if 'hashes' in d_args else '') + '\n'
+            content = ''
 
-        if parsedomain != -1:
-            md += (row[parsedomain] + '|' if row[parsedomain] else ' |')
-            has_dot = '.' in row[parsedomain]
-            no_spaces = ' ' not in row[parsedomain]
-            if has_dot and no_spaces:
-                domainlist.append(row[parsedomain])
+            for row in csv_data:
+                content += ','.join(row) + '\n'
+                if parse_ip != -1:
+                    md += (row[parse_ip] + '|' if row[parse_ip] else ' |')
+                    is_ip = re.search(r'([0-9]{1,3}\.){3}[0-9]{1,3}', row[parse_ip])
+                    is_valid = is_ip_valid(row[parse_ip])
+                    if is_ip and is_valid:
+                        ip_list.append(row[parse_ip])
 
-        if parsehash != -1:
-            md += (row[parsehash] + '|' if row[parsehash] else ' |')
-            is_hash = re.search(r'[0-9A-Fa-f]{32,128}', row[parsehash])
-            if is_hash:
-                hashlist.append(row[parsehash])
-        md += '\n'
+                if parse_domain != -1:
+                    md += (row[parse_domain] + '|' if row[parse_domain] else ' |')
+                    has_dot = '.' in row[parse_domain]
+                    no_spaces = ' ' not in row[parse_domain]
+                    if has_dot and no_spaces:
+                        domain_list.append(row[parse_domain])
 
-context = {}  # type: dict
-if iplist:
-    old_iplist = list(demisto.get(demisto.context(), 'ips')) if demisto.get(demisto.context(), 'ips') else []
-    iplist = list(set(iplist) - set(old_iplist))
-    if len(iplist) > 0:
-        context["IP"] = []
-        for ip in iplist:
-            context["IP"].append({"Address": ip})
+                if parse_hash != -1:
+                    md += (row[parse_hash] + '|' if row[parse_hash] else ' |')
+                    is_hash = re.search(r'[0-9A-Fa-f]{32,128}', row[parse_hash])
+                    if is_hash:
+                        hash_list.append(row[parse_hash])
+                md += '\n'
 
-if domainlist:
-    old_domainlist = list(demisto.get(demisto.context(), 'domains')) if demisto.get(demisto.context(),
-                                                                                    'domains') else []
-    domainlist = list(set(domainlist) - set(old_domainlist))
-    if len(domainlist) > 0:
-        context["Domain"] = []
-        for domain in domainlist:
-            context["Domain"].append({"Name": domain})
+        context = {}  # type: dict
+        if ip_list:
+            old_ip_list = list(demisto.get(demisto.context(), 'ips')) if demisto.get(demisto.context(), 'ips') else []
+            ip_list = list(set(ip_list) - set(old_ip_list))
+            if len(ip_list) > 0:
+                context["IP"] = []
+                for ip in ip_list:
+                    context["IP"].append({"Address": ip})
 
-if hashlist:
-    old_hashlist = list(demisto.get(demisto.context(), 'hashes')) if demisto.get(demisto.context(), 'hashes') else []
-    hashlist = list(set(hashlist) - set(old_hashlist))
-    if len(hashlist) > 0:
-        context["File"] = []
-        for hash_string in hashlist:
-            if len(hash_string) == 32:
-                context["File"].append({"MD5": hash_string})
-            if len(hash_string) == 64:
-                context["File"].append({"SHA256": hash_string})
-            if len(hash_string) == 40:
-                context["File"].append({"SHA1": hash_string})
+        if domain_list:
+            old_domain_list = list(demisto.get(demisto.context(), 'domains')) if demisto.get(demisto.context(),
+                                                                                             'domains') else []
+            domain_list = list(set(domain_list) - set(old_domain_list))
+            if len(domain_list) > 0:
+                context["Domain"] = []
+                for domain in domain_list:
+                    context["Domain"].append({"Name": domain})
 
-demisto.results({
-    "Type": entryTypes["note"],
-    "ContentsFormat": formats["text"],
-    "Contents": content,
-    "HumanReadable": md,
-    "EntryContext": context
-})
+        if hash_list:
+            old_hash_list = list(demisto.get(demisto.context(), 'hashes')) if demisto.get(demisto.context(),
+                                                                                          'hashes') else []
+            hash_list = list(set(hash_list) - set(old_hash_list))
+            if len(hash_list) > 0:
+                context["File"] = []
+                for hash_string in hash_list:
+                    if len(hash_string) == 32:
+                        context["File"].append({"MD5": hash_string})
+                    if len(hash_string) == 64:
+                        context["File"].append({"SHA256": hash_string})
+                    if len(hash_string) == 40:
+                        context["File"].append({"SHA1": hash_string})
+
+        demisto.results({
+            "Type": entryTypes["note"],
+            "ContentsFormat": formats["text"],
+            "Contents": content,
+            "HumanReadable": md,
+            "EntryContext": context
+        })
+
+
+if __name__ in ('__builtin__', 'builtins'):
+    main()

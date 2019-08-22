@@ -1,5 +1,8 @@
 ## [Unreleased]
-* Fixed a bug where sometimes fetch-incidents would fail due to a non-ASCII character in the data.
-* Fixed a bug where fetch-incident would ignore filter if the max amount of offenses set in the instance configuration were fetched in a single fetch.
-* Made fetch-incidents error messages more informative.
-* Added *Required Permissions* section in detailed description
+  - Fixed an issue in which users would receive an error message for missing SEC headers.
+
+## [19.8.0] - 2019-08-06
+  - Fixed an issue in which the fetch incidents function would fail when there were non-ASCII characters in the data.
+  - Fixed an issue in which the fetch incidents function would ignore the filter if the maximum number of offenses set in the instance configuration were fetched in a single fetch.
+  - Improved error messages for fetch-incidents.
+  - Added the *Required Permissions* information in the detailed description section.

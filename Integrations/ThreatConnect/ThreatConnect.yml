@@ -1,0 +1,2005 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: ThreatConnect
+  version: -1
+configuration:
+- display: Access ID
+  name: accessId
+  required: true
+  type: 0
+- display: Secret Key
+  name: secretKey
+  required: true
+  type: 4
+- defaultvalue: https://api.threatconnect.com
+  display: baseUrl
+  name: baseUrl
+  required: true
+  type: 0
+- display: Default Organization
+  name: defaultOrg
+  required: false
+  type: 0
+- display: ProxyIP  (or http://${ip} )
+  name: proxyIp
+  required: false
+  type: 0
+- display: ProxyPort
+  name: proxyPort
+  required: false
+  type: 0
+- defaultvalue: '3'
+  display: Rating threshold for Malicious Indicators
+  name: rating
+  required: false
+  type: 0
+- defaultvalue: '50'
+  display: Confidence threshold for Malicious Indicators
+  name: confidence
+  required: false
+  type: 0
+- defaultvalue: '7'
+  display: Indicator Reputation Freshness (in days)
+  name: freshness
+  required: false
+  type: 0
+description: Threat Intelligence platform
+display: ThreatConnect
+name: ThreatConnect
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: IPv4 or IPv6 address.
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    - default: false
+      description: 'A CSV list of client organizations, or any sources or communities to which a
+        client’s API user has been granted permission. For example: owner1,owner2,owner3.'
+      isArray: false
+      name: owners
+      required: false
+      secret: false
+    - default: false
+      description: Filter results by indicators whose rating is greater than the specified value (0-5).
+      isArray: false
+      name: ratingThreshold
+      required: false
+      secret: false
+    - default: false
+      description: Filter results by indicators whose confidence is greater than the specified value (0-100).
+      isArray: false
+      name: confidenceThreshold
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches for an IP address indicator.
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: TC.Indicator.Name
+      description: Indicator name.
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type.
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID.
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator description.
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator owner.
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator creation time.
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator last modified date.
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator rating.
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator confidence.
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: Indicator value.
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type.
+      type: string
+    - contextPath: DBotScore.Score
+      description: Actual score of the indicator.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: string
+    - contextPath: IP.Address
+      description: IP address of the indicator.
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IP addresses, the vendor that made the decision.
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IP addresses, the full Description.
+      type: string
+  - arguments:
+    - default: true
+      description: A URL for which to search, for example, "www.demisto.com".
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    - default: false
+      description: 'A CSV list of client organizations, or any sources or communities to which a
+        client’s API user has been granted permission. For example: owner1,owner2,owner3.'
+      isArray: false
+      name: owners
+      required: false
+      secret: false
+    - default: false
+      description: Filter results by indicators whose rating is greater than the specified value (0-5).
+      isArray: false
+      name: ratingThreshold
+      required: false
+      secret: false
+    - default: false
+      description: Filter results by indicators whose confidence is greater than the specified value (0-100).
+      isArray: false
+      name: confidenceThreshold
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches for a URL indicator.
+    execution: false
+    name: url
+    outputs:
+    - contextPath: TC.Indicator.Name
+      description: Indicator name.
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type.
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID.
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator description.
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator owner.
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator creation time.
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator last modified date.
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator rating.
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator confidence.
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: Indicator value.
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type.
+      type: string
+    - contextPath: DBotScore.Score
+      description: Actual score of the indicator.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: string
+    - contextPath: URL.Data
+      description: URL indicator data.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the full description.
+      type: string
+  - arguments:
+    - default: true
+      description: Hash of the file. Can be "MD5", "SHA-1", or "SHA-256".
+      isArray: false
+      name: file
+      required: true
+      secret: false
+    - default: false
+      description: 'A CSV list of client organizations, or any sources or communities to which a
+        client’s API user has been granted permission. For example: owner1,owner2,owner3.'
+      isArray: false
+      name: owners
+      required: false
+      secret: false
+    - default: false
+      description: Filter results by indicators whose rating is greater than the specified value (0-5).
+      isArray: false
+      name: ratingThreshold
+      required: false
+      secret: false
+    - default: false
+      description: Filter results by indicators whose confidence is greater than the specified value (0-100).
+      isArray: false
+      name: confidenceThreshold
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches for a file indicator.
+    execution: false
+    name: file
+    outputs:
+    - contextPath: TC.Indicator.Name
+      description: Indicator name.
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type.
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID.
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator description.
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator owner.
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator creation time.
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator last modified date.
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator rating.
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator confidence.
+      type: number
+    - contextPath: TC.Indicator.File.MD5
+      description: MD5 hash of the file indicator.
+      type: string
+    - contextPath: TC.Indicator.File.SHA1
+      description: SHA1 hash of the file indicator.
+      type: string
+    - contextPath: TC.Indicator.File.SHA256
+      description: SHA256 hash of the file indicator.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: Indicator value.
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type.
+      type: string
+    - contextPath: DBotScore.Score
+      description: Actual score of the indicator.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file indicator.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file indicator.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file indicator.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the full description.
+      type: string
+  - deprecated: false
+    description: Retrieves all owners for the current account.
+    execution: false
+    name: tc-owners
+    outputs:
+    - contextPath: TC.Owner.Name
+      description: Owner name.
+      type: string
+    - contextPath: TC.Owner.ID
+      description: Owner ID.
+      type: string
+    - contextPath: TC.Owner.Type
+      description: Owner type.
+      type: string
+  - arguments:
+    - default: false
+      description: Filter results by the owner of the indicator.
+      isArray: false
+      name: owner
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of results to return. Default is "500".
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of all indicators.
+    execution: false
+    name: tc-indicators
+    outputs:
+    - contextPath: TC.Indicator.Name
+      description: Indicator name.
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type.
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID.
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator description.
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator owner.
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator creation time.
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator last modified date.
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator rating.
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator confidence.
+      type: number
+    - contextPath: TC.Indicator.WhoisActive
+      description: Indicator Whois active (for domains only).
+      type: string
+    - contextPath: TC.Indicator.File.MD5
+      description: MD5 hash of the file indicator.
+      type: string
+    - contextPath: TC.Indicator.File.SHA1
+      description: SHA1 hash of the file indicator.
+      type: string
+    - contextPath: TC.Indicator.File.SHA256
+      description: SHA256 hash of the file indicator.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: Indicator value.
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type.
+      type: string
+    - contextPath: DBotScore.Score
+      description: Actual score of the indicator.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: string
+    - contextPath: IP.Address
+      description: IP address of the indicator.
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision.
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IP addresses, the full description.
+      type: string
+    - contextPath: URL.Data
+      description: URL indicator data.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the full description.
+      type: string
+    - contextPath: Domain.Name
+      description: Domain indicator name.
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the full description.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file indicator.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file indicator.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file indicator.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the full description.
+      type: string
+  - deprecated: false
+    description: Returns a list of all ThreatConnect tags.
+    execution: false
+    name: tc-get-tags
+    outputs:
+    - contextPath: TC.Tags
+      description: A list of tag names
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Tag value
+      isArray: false
+      name: tag
+      required: true
+      secret: false
+    - default: false
+      description: Indicator to tag, for example "ip", "file", "hash", or "url".
+      isArray: false
+      name: indicator
+      required: true
+      secret: false
+    - default: false
+      description: Filter by owner.
+      isArray: false
+      name: owner
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds a tag to an exiting indicator.
+    execution: false
+    name: tc-tag-indicator
+  - arguments:
+    - default: true
+      description: Indicator value by which to search. Can be an IP address, URL, or file hash. The command retrieves from all owners.
+      isArray: false
+      name: indicator
+      required: true
+      secret: false
+    - default: false
+      description: Filter results by indicators whose rating is greater than the specified value (0-5).
+      isArray: false
+      name: ratingThreshold
+      required: false
+      secret: false
+    - default: false
+      description: Filter results by indicators whose confidence is greater than the specified value (0-100).
+      isArray: false
+      name: confidenceThreshold
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves information about a specific indicator.
+    execution: false
+    name: tc-get-indicator
+    outputs:
+    - contextPath: TC.Indicator.Name
+      description: Indicator name.
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type.
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID.
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator description.
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator owner.
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator creation time.
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator last modified date.
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator rating.
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator confidence.
+      type: number
+    - contextPath: TC.Indicator.WhoisActive
+      description: Indicator Whois active (for domains only).
+      type: string
+    - contextPath: TC.Indicator.File.MD5
+      description: MD5 hash of the file indicator.
+      type: string
+    - contextPath: TC.Indicator.File.SHA1
+      description: SHA1 hash of the file indicator.
+      type: string
+    - contextPath: TC.Indicator.File.SHA256
+      description: SHA256 hash of the file indicator.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: Indicator value.
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type.
+      type: string
+    - contextPath: DBotScore.Score
+      description: Actual score of the indicator.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: string
+    - contextPath: IP.Address
+      description: IP address of the indicator.
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision.
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the full description.
+      type: string
+    - contextPath: URL.Data
+      description: URL indicator data.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the full description.
+      type: string
+    - contextPath: Domain.Name
+      description: Domain indicator name.
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the full description.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file indicator.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file indicator.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file indicator.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the full description.
+      type: string
+  - arguments:
+    - default: true
+      description: Tag value by which to filter.
+      isArray: false
+      name: tag
+      required: true
+      secret: false
+    - default: false
+      description: Filter by owner.
+      isArray: false
+      name: owner
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetches all indicators that have the specified tag.
+    execution: false
+    name: tc-get-indicators-by-tag
+    outputs:
+    - contextPath: TC.Indicator.Name
+      description: Indicator name.
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type.
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID.
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator description.
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator owner.
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator creation time.
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator last modified date.
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator rating.
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator confidence.
+      type: number
+    - contextPath: TC.Indicator.WhoisActive
+      description: Indicator Whois active (for domains only).
+      type: string
+    - contextPath: TC.Indicator.File.MD5
+      description: MD5 hash of the file indicator.
+      type: string
+    - contextPath: TC.Indicator.File.SHA1
+      description: SHA1 hash of the file indicator.
+      type: string
+    - contextPath: TC.Indicator.File.SHA256
+      description: SHA256 hash of the file indicator.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: Indicator value.
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type.
+      type: string
+    - contextPath: DBotScore.Score
+      description: Actual score of the indicator.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: string
+    - contextPath: IP.Address
+      description: IP address of the indicator.
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision.
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the full description.
+      type: string
+    - contextPath: URL.Data
+      description: URL indicator data.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the full description.
+      type: string
+    - contextPath: Domain.Name
+      description: Domain indicator name.
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the full description.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file indicator.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file indicator.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file indicator.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the full description.
+      type: string
+  - arguments:
+    - default: false
+      description: The indicator to add to ThreatConnect, for example "hash", "ip", "domain", "url", "email address", and so on.
+      isArray: false
+      name: indicator
+      required: true
+      secret: false
+    - default: false
+      description: 'Indicator rating (0-5).'
+      isArray: false
+      name: rating
+      required: false
+      secret: false
+    - default: false
+      description: Confidence of the indicator (1-100).
+      isArray: false
+      name: confidence
+      required: false
+      secret: false
+    - default: false
+      description: Owner of new indicator. Default will be the defaultOrg parameter.
+      isArray: false
+      name: owner
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds a new indicator to ThreatConnect.
+    execution: false
+    name: tc-add-indicator
+    outputs:
+    - contextPath: TC.Indicator.Name
+      description: Indicator name.
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type.
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID.
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator description.
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator owner.
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator creation time.
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator last modified date.
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator rating.
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator confidence.
+      type: number
+    - contextPath: TC.Indicator.WhoisActive
+      description: Indicator Whois active (for domains only).
+      type: string
+    - contextPath: TC.Indicator.File.MD5
+      description: MD5 hash of the file indicator.
+      type: string
+    - contextPath: TC.Indicator.File.SHA1
+      description: SHA1 hash of the file indicator.
+      type: string
+    - contextPath: TC.Indicator.File.SHA256
+      description: SHA256 hash of the file indicator.
+      type: string
+    - contextPath: IP.Address
+      description: IP indicator address.
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision.
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IP addresses, the full description.
+      type: string
+    - contextPath: URL.Data
+      description: URL indicator data.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the full description.
+      type: string
+    - contextPath: Domain.Name
+      description: Domain Indicator's name
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the full description.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file indicator.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file indicator.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file indicator.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the full description.
+      type: string
+  - arguments:
+    - default: false
+      description: Owner of the new incident. Default will be the defaultOrg parameter.
+      isArray: false
+      name: owner
+      required: false
+      secret: false
+    - default: true
+      description: Incident group name.
+      isArray: false
+      name: incidentName
+      required: true
+      secret: false
+    - default: false
+      description: 'Incident creation time, in the format: "2017-03-21T00:00:00Z".'
+      isArray: false
+      name: eventDate
+      required: false
+      secret: false
+    - default: false
+      description: Tag to apply to the incident.
+      isArray: false
+      name: tag
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Security label to apply to the incident. Can be "TLP:RED", "TLP:GREEN", "TLP:AMBER", or "TLP:WHITE".
+      isArray: false
+      name: securityLabel
+      predefined:
+      - TLP:RED
+      - TLP:GREEN
+      - TLP:AMBER
+      - TLP:WHITE
+      required: false
+      secret: false
+    - default: false
+      description: A description of the incident.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new incident group.
+    execution: false
+    name: tc-create-incident
+    outputs:
+    - contextPath: TC.Incident.Name
+      description: Incident group name.
+      type: string
+    - contextPath: TC.Incident.Owner
+      description: Incident owner.
+      type: string
+    - contextPath: TC.Incident.EventDate
+      description: Event date.
+      type: date
+    - contextPath: TC.Incident.Tag
+      description: Tag name.
+      type: string
+    - contextPath: TC.Incident.SecurityLabel
+      description: Incident security label.
+      type: string
+    - contextPath: TC.Incident.ID
+      description: Incident ID.
+      type: Unknown
+  - arguments:
+    - default: true
+      description: Filter by incident ID.
+      isArray: false
+      name: incidentId
+      required: false
+      secret: false
+    - default: false
+      description: Filter by owner.
+      isArray: false
+      name: owner
+      required: false
+      secret: false
+    - default: false
+      description: Filter by incident name.
+      isArray: false
+      name: incidentName
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetches incidents from ThreatConnect.
+    execution: false
+    name: tc-fetch-incidents
+    outputs:
+    - contextPath: TC.Incident
+      description: Incident group name.
+      type: string
+    - contextPath: TC.Incident.ID
+      description: Incident ID.
+      type: string
+    - contextPath: TC.Incident.Owner
+      description: Incident owner.
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Indicator type. Can be "ADDRESSES", "EMAIL_ADDRESSES", "URLS", "HOSTS", "FILES", or "CUSTOM_INDICATORS".
+      isArray: false
+      name: indicatorType
+      predefined:
+      - ADDRESSES
+      - EMAIL_ADDRESSES
+      - URLS
+      - HOSTS
+      - FILES
+      - CUSTOM_INDICATORS
+      required: true
+      secret: false
+    - default: false
+      description: Incident ID to which to associate the indicator.
+      isArray: false
+      name: incidentId
+      required: true
+      secret: false
+    - default: true
+      description: 'Indicator value, for example: "hash", "ip", "url", and so on.'
+      isArray: false
+      name: indicator
+      required: true
+      secret: false
+    - default: false
+      description: Filter by owner.
+      isArray: false
+      name: owner
+      required: false
+      secret: false
+    deprecated: false
+    description: Associates an indicator to an existing incident. The indicator
+      must exist before running this command. To add an indicator, run the tc-add-indicator command.
+    execution: false
+    name: tc-incident-associate-indicator
+    outputs:
+    - contextPath: TC.Indicator.Name
+      description: Indicator name.
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type.
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID.
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator description.
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator owner.
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator creation time.
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator last modified date.
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator rating.
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator confidence.
+      type: number
+    - contextPath: TC.Indicator.WhoisActive
+      description: Indicator Whois active (for domains only).
+      type: string
+    - contextPath: TC.Indicator.File.MD5
+      description: MD5 hash of the file indicator.
+      type: string
+    - contextPath: TC.Indicator.File.SHA1
+      description: SHA1 of the file indicator.
+      type: string
+    - contextPath: TC.Indicator.File.SHA256
+      description: SHA256 of the file indicator.
+      type: string
+    - contextPath: IP.Address
+      description: IP address of the indicator.
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IP addresses, the vendor that made the decision.
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the full description.
+      type: string
+    - contextPath: URL.Data
+      description: URL indicator data.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the full description.
+      type: string
+    - contextPath: Domain.Name
+      description: Domain indicator name.
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the full description.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file indicator.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file indicator.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 of the file indicator.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the full description.
+      type: string
+  - arguments:
+    - default: false
+      description: Domain name.
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    - default: false
+      description: 'A CSV list of client organizations, or any sources or communities to which a
+        client’s API user has been granted permission. For example: owner1,owner2,owner3.'
+      isArray: false
+      name: owners
+      required: false
+      secret: false
+    - default: false
+      description: Filter results by indicators whose rating is greater than the specified value (0-5).
+      isArray: false
+      name: ratingThreshold
+      required: false
+      secret: false
+    - default: false
+      description: Filter results by indicators whose confidence is greater than the specified value (0-100).
+      isArray: false
+      name: confidenceThreshold
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches for a domain indicator.
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: TC.Indicator.Name
+      description: Indicator name.
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type.
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID.
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator description.
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator owner.
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator creation time.
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator last modified date.
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator rating.
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator confidence.
+      type: number
+    - contextPath: TC.Indicator.WhoisActive
+      description: Indicator Whois active (for domains only).
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: Indicator value.
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type.
+      type: string
+    - contextPath: DBotScore.Score
+      description: Actual score of the indicator.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: string
+    - contextPath: Domain.Name
+      description: Domain indicator name.
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the full description.
+      type: string
+  - arguments:
+    - default: true
+      description: Incident ID.
+      isArray: false
+      name: incidentId
+      required: true
+      secret: false
+    - default: false
+      description: Filter indicators by owner.
+      isArray: false
+      name: owner
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns indicators that are related to a specific incident.
+    execution: false
+    name: tc-get-incident-associate-indicators
+    outputs:
+    - contextPath: TC.Indicator.Name
+      description: Indicator name.
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type.
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID.
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator description.
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator owner.
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator creation time.
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator last modified date.
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator rating.
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator confidence.
+      type: number
+    - contextPath: TC.Indicator.WhoisActive
+      description: Indicator Whois active (for domains only).
+      type: string
+    - contextPath: TC.Indicator.File.MD5
+      description: MD5 hash of the file indicator.
+      type: string
+    - contextPath: TC.Indicator.File.SHA1
+      description: SHA1 hash of the file indicator.
+      type: string
+    - contextPath: TC.Indicator.File.SHA256
+      description: SHA256 hash of the file indicator.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: Indicator value.
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type.
+      type: string
+    - contextPath: DBotScore.Score
+      description: Indicator actual score.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: string
+    - contextPath: IP.Address
+      description: IP address of the indicator.
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IP adddresses, the vendor that made the decision.
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IP addresses, the full description.
+      type: string
+    - contextPath: URL.Data
+      description: URL indicator data.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the full description.
+      type: string
+    - contextPath: Domain.Name
+      description: Domain indicator name.
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the full description.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file indicator.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file indicator.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file indicator.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the full description.
+      type: string
+  - arguments:
+    - default: false
+      description: Indicator name.
+      isArray: false
+      name: indicator
+      required: true
+      secret: false
+    - default: false
+      description: Indicator rating.
+      isArray: false
+      name: rating
+      required: false
+      secret: false
+    - default: false
+      description: Indicator confidence.
+      isArray: false
+      name: confidence
+      required: false
+      secret: false
+    - default: false
+      description: Indicator size (only for files).
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    - default: false
+      description: Indicator dnsActive (only for hosts).
+      isArray: false
+      name: dnsActive
+      required: false
+      secret: false
+    - default: false
+      description: Indicator whoisActive (only for hosts).
+      isArray: false
+      name: whoisActive
+      required: false
+      secret: false
+    - default: false
+      description: 'A CSV list of field:value pairs to update. For example:
+        "rating=3,confidence=42,description=helloWorld"'
+      isArray: false
+      name: updatedValues
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: mark indicator as false positive
+      isArray: false
+      name: falsePositive
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: Number observations on this indicator.
+      isArray: false
+      name: observations
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Security label to apply to the incident. Can be "TLP:RED", "TLP:GREEN", "TLP:AMBER", or "TLP:WHITE".
+      isArray: false
+      name: securityLabel
+      predefined:
+      - TLP:RED
+      - TLP:GREEN
+      - TLP:AMBER
+      - TLP:WHITE
+      required: false
+      secret: false
+    - default: false
+      description: Assess confidence.
+      isArray: false
+      name: threatAssessConfidence
+      required: false
+      secret: false
+    - default: false
+      description: Assess rating.
+      isArray: false
+      name: threatAssessRating
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates a ThreatConnect indicator.
+    execution: false
+    name: tc-update-indicator
+    outputs:
+    - contextPath: TC.Indicator.Name
+      description: Indicator name.
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type.
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID.
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator description.
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator owner.
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator creation time.
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator last modified date.
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator rating.
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator confidence.
+      type: number
+    - contextPath: TC.Indicator.WhoisActive
+      description: Indicator Whois active (for domains only).
+      type: string
+    - contextPath: TC.Indicator.File.MD5
+      description: MD5 hash of the file indicator.
+      type: string
+    - contextPath: TC.Indicator.File.SHA1
+      description: SHA1 hash of the file indicator.
+      type: string
+    - contextPath: TC.Indicator.File.SHA256
+      description: SHA256 of the file indicator.
+      type: string
+    - contextPath: IP.Address
+      description: IP address of the indicator.
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IP addresses, the vendor that made the decision.
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IP addresses, the full description.
+      type: string
+    - contextPath: URL.Data
+      description: URL indicator data.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the full description.
+      type: string
+    - contextPath: Domain.Name
+      description: Domain indicator name.
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the full description.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file indicator.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file indicator.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file indicator.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the full description.
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the indicator from which to remove a tag.
+      isArray: false
+      name: indicator
+      required: true
+      secret: false
+    - default: false
+      description: Name of the tag to remove from the indicator.
+      isArray: false
+      name: tag
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes a tag from a specified indicator.
+    execution: false
+    name: tc-delete-indicator-tag
+    outputs:
+    - contextPath: TC.Indicator.Name
+      description: Indicator name.
+      type: string
+    - contextPath: TC.Indicator.Type
+      description: Indicator type.
+      type: string
+    - contextPath: TC.Indicator.ID
+      description: Indicator ID.
+      type: string
+    - contextPath: TC.Indicator.Description
+      description: Indicator description.
+      type: string
+    - contextPath: TC.Indicator.Owner
+      description: Indicator owner.
+      type: string
+    - contextPath: TC.Indicator.CreateDate
+      description: Indicator creation time.
+      type: date
+    - contextPath: TC.Indicator.LastModified
+      description: Indicator last modified. date
+      type: date
+    - contextPath: TC.Indicator.Rating
+      description: Indicator rating.
+      type: number
+    - contextPath: TC.Indicator.Confidence
+      description: Indicator confidence.
+      type: number
+    - contextPath: TC.Indicator.WhoisActive
+      description: Indicator Whois active (for domains only).
+      type: string
+    - contextPath: TC.Indicator.File.MD5
+      description: MD5 hash for the file indicator.
+      type: string
+    - contextPath: TC.Indicator.File.SHA1
+      description: SHA1 hash of the file indicator.
+      type: string
+    - contextPath: TC.Indicator.File.SHA256
+      description: SHA256 hash of the file indicator.
+      type: string
+    - contextPath: IP.Address
+      description: IP address of the indicator.
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IP addresses, the vendor that made the decision.
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IP addresses, the full description.
+      type: string
+    - contextPath: URL.Data
+      description: URL indicator data.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the full description.
+      type: string
+    - contextPath: Domain.Name
+      description: Domain indicator name.
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the full description.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file indicator.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file indicator.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file indicator.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the full description.
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the indicator to delete.
+      isArray: false
+      name: indicator
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes an indicator from ThreatConnect.
+    execution: false
+    name: tc-delete-indicator
+  - arguments:
+    - default: false
+      description: Name for the new campaign.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: First seen date of the campaign.
+      isArray: false
+      name: firstSeen
+      required: false
+      secret: false
+    - default: false
+      description: Owner of new incident. default will be the defaultOrg parameter.
+      isArray: false
+      name: owner
+      required: false
+      secret: false
+    - default: false
+      description: A description for the campaign.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: A tag to apply to the campaign.
+      isArray: false
+      name: tag
+      required: false
+      secret: false
+    - default: false
+      description: Security label for the campaign, for example, "TLP Green".
+      isArray: false
+      name: securityLabel
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a ThreatConnect group from type Campaign.
+    execution: false
+    name: tc-create-campaign
+    outputs:
+    - contextPath: TC.Campaign.Name
+      description: Campaign name.
+      type: string
+    - contextPath: TC.Campaign.Owner
+      description: Campaign owner.
+      type: string
+    - contextPath: TC.Campaign.FirstSeen
+      description: First seen date of the campaign.
+      type: date
+    - contextPath: TC.Campaign.Tag
+      description: Campaign tag.
+      type: string
+    - contextPath: TC.Campaign.SecurityLevel
+      description: Campaign security label.
+      type: string
+    - contextPath: TC.Campaign.ID
+      description: Campaign ID.
+      type: string
+  - arguments:
+    - default: false
+      description: event Name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Event Date. if not specified, will use current date
+      isArray: false
+      name: eventDate
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Event's status
+      isArray: false
+      name: status
+      predefined:
+      - Needs Review
+      - False Positive
+      - No Further Action
+      - Escalated
+      required: false
+      secret: false
+    - default: false
+      description: Event's owner
+      isArray: false
+      name: owner
+      required: false
+      secret: false
+    - default: false
+      description: Event description
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Tag the event
+      isArray: false
+      name: tag
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a ThreatConnect group from type Event.
+    execution: false
+    name: tc-create-event
+    outputs:
+    - contextPath: TC.Event.Name
+      description: Event name.
+      type: string
+    - contextPath: TC.Event.Date
+      description: Event date.
+      type: date
+    - contextPath: TC.Event.Status
+      description: Event status.
+      type: string
+    - contextPath: TC.Event.Owner
+      description: Event owner.
+      type: string
+    - contextPath: TC.Event.Tag
+      description: Event tag.
+      type: string
+    - contextPath: TC.Event.ID
+      description: Event ID.
+      type: string
+  - arguments:
+    - default: false
+      description: Threat group name.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a ThreatConnect group from type Threats
+    execution: false
+    name: tc-create-threat
+    outputs:
+    - contextPath: TC.Threat.Name
+      description: Threat name.
+      type: string
+    - contextPath: TC.Threat.ID
+      description: Threat ID.
+      type: string
+  - arguments:
+    - default: false
+      description: Group ID.
+      isArray: false
+      name: groupID
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Group type to delete. Can be "Incidents", "Events", "Campaigns", or "Threats".
+      isArray: false
+      name: type
+      predefined:
+      - Incidents
+      - Events
+      - Campaigns
+      - Threats
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a group from ThreatConnect.
+    execution: false
+    name: tc-delete-group
+  - arguments:
+    - default: false
+      description: The ID of the group to which to add attributes. To get the ID, run the tc-get-groups command.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    - default: false
+      description: The attribute type to add to the group. Can be found in the UI within a specific
+        group or under organization settings.
+      isArray: false
+      name: attribute_type
+      required: true
+      secret: false
+    - default: false
+      description: The attribute value.
+      isArray: false
+      name: attribute_value
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The group type. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
+      isArray: false
+      name: group_type
+      predefined:
+      - adversaries
+      - campaigns
+      - documents
+      - emails
+      - events
+      - incidents
+      - intrusionSets
+      - reports
+      - signatures
+      - threats
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds an attribute to a specific event.
+    execution: false
+    name: tc-add-group-attribute
+    outputs:
+    - contextPath: TC.Group.DateAdded
+      description: The date that the attribute was added.
+      type: Date
+    - contextPath: TC.Group.ID
+      description: Group ID to which the attribute was added.
+      type: Number
+    - contextPath: TC.Group.LastModified
+      description: The date that the attribute was last modified.
+      type: Date
+    - contextPath: TC.Group.Type
+      description: The group type.
+      type: String
+    - contextPath: TC.Group.Value
+      description: The attribute value.
+      type: String
+  - deprecated: false
+    description: Returns a list of events.
+    execution: false
+    name: tc-get-events
+    outputs:
+    - contextPath: TC.Event.DateAdded
+      description: The date that the event was added.
+      type: Date
+    - contextPath: TC.Event.EventDate
+      description: Event date.
+      type: Date
+    - contextPath: TC.Event.ID
+      description: Event ID.
+      type: Number
+    - contextPath: TC.Event.OwnerName
+      description: Owner name.
+      type: String
+    - contextPath: TC.Event.Status
+      description: Event status.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'The group type to return. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".'
+      isArray: false
+      name: group_type
+      predefined:
+      - adversaries
+      - campaigns
+      - documents
+      - emails
+      - events
+      - incidents
+      - intrusionSets
+      - reports
+      - signatures
+      - threats
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns all groups by group type.
+    execution: false
+    name: tc-get-groups
+    outputs:
+    - contextPath: TC.Group.DateAdded
+      description: The date that the group was added.
+      type: Date
+    - contextPath: TC.Group.EventDate
+      description: Event date.
+      type: Date
+    - contextPath: TC.Group.ID
+      description: Group ID.
+      type: Number
+    - contextPath: TC.Group.Name
+      description: Group name.
+      type: String
+    - contextPath: TC.Group.OwnerName
+      description: Group owner name.
+      type: String
+    - contextPath: TC.Group.Status
+      description: Group status.
+      type: String
+  - arguments:
+    - default: false
+      description: The group ID. To get the ID, run the tc-get-groups command.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The group type. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
+      isArray: false
+      name: group_type
+      predefined:
+      - adversaries
+      - campaigns
+      - documents
+      - emails
+      - events
+      - incidents
+      - intrusionSets
+      - reports
+      - signatures
+      - threats
+      required: true
+      secret: false
+    - default: false
+      description: The name of the security label to add to the group, for example, "TLP:GREEN".
+      isArray: false
+      name: security_label_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds a security label to a specific group.
+    execution: false
+    name: tc-add-group-security-label
+  - arguments:
+    - default: false
+      description: The group ID. To get the ID, run the tc-get-groups command.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The group type. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
+      isArray: false
+      name: group_type
+      predefined:
+      - adversaries
+      - campaigns
+      - documents
+      - emails
+      - events
+      - incidents
+      - intrusionSets
+      - reports
+      - signatures
+      - threats
+      required: true
+      secret: false
+    - default: false
+      description: Name of the tag to add to the group.
+      isArray: false
+      name: tag_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds tags to a specific group.
+    execution: false
+    name: tc-add-group-tag
+  - deprecated: false
+    description: Returns all indicator types available on your instance of ThreatConnect.
+    execution: false
+    name: tc-get-indicator-types
+    outputs:
+    - contextPath: TC.IndicatorType.ApiBranch
+      description: API branch.
+      type: String
+    - contextPath: TC.IndicatorType.ApiEntity
+      description: API entity.
+      type: String
+    - contextPath: TC.IndicatorType.CasePreference
+      description: Indicator case preference.
+      type: String
+    - contextPath: TC.IndicatorType.Custom
+      description: Custom indicator.
+      type: Boolean
+    - contextPath: TC.IndicatorType.Parsable
+      description: Whether the indicator is parsable.
+      type: Boolean
+    - contextPath: TC.IndicatorType.Value1Type
+      description: Indicator value.
+      type: String
+    - contextPath: TC.IndicatorType.Value1Label
+      description: Indicator value label.
+      type: String
+  - arguments:
+    - default: false
+      description: The indicator type. To get the available types, run the tc-get-indicator-types command (API branch column).
+      isArray: false
+      name: indicator_type
+      required: true
+      secret: false
+    - default: false
+      description: 'The indicator to associate to the group, for example: "indicator_type=emailAddresses".
+        indicator=a@a.co.il)'
+      isArray: false
+      name: indicator
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The group type. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
+      isArray: false
+      name: group_type
+      predefined:
+      - adversaries
+      - campaigns
+      - documents
+      - emails
+      - events
+      - incidents
+      - intrusionSets
+      - reports
+      - signatures
+      - threats
+      required: true
+      secret: false
+    - default: false
+      description: Group ID. To get the group ID, run the tc-get-groups command.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Associates an indicator to a group.
+    execution: false
+    name: tc-group-associate-indicator
+    outputs:
+    - contextPath: TC.Group.GroupID
+      description: The group ID.
+      type: Number
+    - contextPath: TC.Group.GroupType
+      description: Group type.
+      type: String
+    - contextPath: TC.Group.Indicator
+      description: Indicator value.
+      type: String
+    - contextPath: TC.Group.IndicatorType
+      description: Indicator type.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the file to display in the UI.
+      isArray: false
+      name: file_name
+      required: true
+      secret: false
+    - default: false
+      description: File name.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether the file is malware. If "true", creates a password-protected ZIP file
+        on your local machine that contains the sample, and then uploads the ZIP file.
+      isArray: false
+      name: malware
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The password for the malware ZIP file.
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    - default: false
+      description: Security label for the group.
+      isArray: false
+      name: security_label
+      required: false
+      secret: false
+    - default: false
+      description: Group description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Entry ID of the file, as displayed in the War Room.
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a document group.
+    execution: false
+    name: tc-create-document-group
+    outputs:
+    - contextPath: TC.Group.ID
+      description: Group ID.
+      type: Number
+    - contextPath: TC.Group.Name
+      description: Group name.
+      type: String
+    - contextPath: TC.Group.Owner
+      description: Group owner.
+      type: String
+    - contextPath: TC.Group.EventDate
+      description: Event date.
+      type: Date
+    - contextPath: TC.Group.Description
+      description: Group description.
+      type: String
+    - contextPath: TC.Group.SecurityLabel
+      description: Group security label.
+      type: String
+  dockerimage: demisto/threatconnect-sdk
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+tests:
+- test-ThreatConnect
