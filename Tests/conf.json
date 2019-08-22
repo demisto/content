@@ -162,9 +162,6 @@
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
         },
         {
-            "playbookID": "ParseCSVnullbytesTest"
-        },
-        {
             "integrations": "CVE Search",
             "playbookID": "cveReputation Test"
         },
@@ -568,9 +565,6 @@
         {
             "playbookID": "Gmail Convert Html Test",
             "integrations": "Gmail"
-        },
-        {
-            "playbookID": "TestParseCSV"
         },
         {
             "playbookID": "reputations.json Test"
@@ -1512,6 +1506,18 @@
             "integrations": "palo_alto_networks_pan_os_edl_management"
         },
         {
+            "playbookID": "PAN-OS DAG Configuration Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "timeout": 1000
+        },
+        {
+            "playbookID": "PAN-OS EDL Setup Test",
+            "integrations": ["Panorama","palo_alto_networks_pan_os_edl_management"],
+            "instance_names": "palo_alto_panorama",
+            "timeout": 1000
+        },
+        {
             "integrations": "Snowflake",
             "playbookID": "Snowflake-Test"
         },
@@ -1756,7 +1762,7 @@
         "LogRhythm REST test": "A command's response doesnt match the expected results (issue #18385)",
         "search_endpoints_by_hash_-_tie_-_test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
         "McAfee-TIE Test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
-        "CreatePhishingClassifierMLTest": "Test is unstable and fails with no reason from time to time (issue ##18349)",
+        "Autoextract - Test": "See issue #18343 for further information",
         "rsa_packets_and_logs_test": "A command searches for a session ID which doesn't exist on our local server - asked RSA to help (issue #18332)",
         "TestUptycs": "There is not enough data in uptycs instance in order the test to pass. Data need to be generated like open connections",
         "LogRhythmRest": "Unstable environment Adi is checking",
@@ -1818,6 +1824,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "vmray": "VMRay license expired (Issue 18752)",
         "Anomali ThreatStream v2": "Credentials are invalid (issue 18561)",
         "Anomali ThreatStream": "Credentials are invalid (issue 18561)",
         "RSA Archer": "Instance does not seem to be working, Arian is checking",
