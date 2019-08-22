@@ -8,13 +8,13 @@ IMPORTS
 
 """
 from datetime import datetime, timedelta
+
 import requests
 import json
 import re
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
 
 """
 
@@ -110,7 +110,7 @@ USE_SSL = not demisto.params()['insecure']
 VERSION = demisto.params()['version']
 IS_FETCH = demisto.params()['isFetch']
 FETCH_TIME = demisto.params().get('fetch_time', '1 days')
-TOKEN = get_token()
+TOKEN = None
 DEFAULT_HEADERS = {
     'Content-Type': 'application/json;charset=UTF-8',
     'Accept': 'application/json; charset=UTF-8',
@@ -124,8 +124,8 @@ COMMAND HANDLERS
 """
 
 
-def http_request(method, url, body=None, headers={}, url_params=None):
-    '''
+def http_request(method, url, body=None, headers=None, url_params=None):
+    """
     returns the http response body
 
     uses TOKEN global var to send requests to RSA end (this enables using a token for multiple requests and avoiding
@@ -133,8 +133,10 @@ def http_request(method, url, body=None, headers={}, url_params=None):
     catches and handles token expiration: in case of 'request timeout' the  token will be renewed and the request
     will be resent once more.
 
-    '''
+    """
 
+    if headers is None:
+        headers = {}
     global TOKEN
 
     # add token to headers
@@ -267,7 +269,6 @@ def get_incidents_request(since=None, until=None, page_number=None, page_size=10
         headers=DEFAULT_HEADERS,
         url_params=url_params
     )
-
     return response
 
 
@@ -565,21 +566,49 @@ def get_alerts():
     demisto.results(entry)
 
 
+def get_timestamp(timestamp):
+    """Gets a timestamp and parse it
+
+    Args:
+        timestamp (str): timestamp
+
+    Returns:
+        datetime
+
+    Examples:
+        ("2019-08-13T09:56:02.000000Z", "2019-08-13T09:56:02.440")
+
+    """
+    new_timestamp = timestamp
+    iso_format = "%Y-%m-%dT%H:%M:%S.%fZ"
+    if not new_timestamp.endswith('Z'):  # Adds Z if somehow previous task didn't
+        new_timestamp += 'Z'
+    timestamp_min_four_position = new_timestamp[-4]
+    if timestamp_min_four_position == ':':  # if contains no milisecs
+        new_timestamp = new_timestamp[:-1] + '.00000Z'
+    elif timestamp_min_four_position == '.':  # if contains only 3 milisecs
+        new_timestamp = new_timestamp[:-1] + '000Z'
+    try:
+        return datetime.strptime(new_timestamp, iso_format)
+    except ValueError:
+        raise ValueError("Could not parse timestamp [{}]".format(timestamp))
+
+
 def fetch_incidents():
     """
     fetch is limited to 100 results
     """
-    lastRun = demisto.getLastRun()
+    last_run = demisto.getLastRun()
 
     # if last timestamp was recorded- use it, else generate timestamp for one day prior to current date
-    if lastRun and lastRun.get('timestamp'):
-        timestamp = lastRun.get('timestamp')
+    if last_run and last_run.get('timestamp'):
+        timestamp = last_run.get('timestamp')
     else:
         last_fetch, _ = parse_date_range(FETCH_TIME)
         # convert to ISO 8601 format and add Z suffix
         timestamp = last_fetch.isoformat() + 'Z'
 
-    LOG('Fetching incidents since ' + timestamp)
+    LOG('Fetching incidents since {}'.format(timestamp))
     netwitness_incidents = get_all_incidents(
         since=timestamp,
         limit=100
@@ -588,14 +617,13 @@ def fetch_incidents():
     demisto_incidents = []
     iso_format = "%Y-%m-%dT%H:%M:%S.%fZ"
 
-    last_incident_datetime = datetime.strptime(timestamp, iso_format)
+    last_incident_datetime = get_timestamp(timestamp)
     last_incident_timestamp = timestamp
 
     # set boolean flag for fetching alerts per incident
     import_alerts = demisto.params().get('importAlerts')
 
     for incident in netwitness_incidents:
-
         incident_timestamp = incident.get('created')
         if incident_timestamp == timestamp:
             continue
@@ -874,15 +902,6 @@ def parse_event_to_md_representation(event):
     return md_content
 
 
-def return_error_entry(message):
-    error_entry = {
-        'Type': entryTypes['error'],
-        'Contents': message,
-        'ContentsFormat': formats['text']
-    }
-    demisto.results(error_entry)
-
-
 def header_transformer(header):
     """
     e.g. input: 'someHeader' output: 'Some Header '
@@ -941,27 +960,36 @@ def test_module():
 EXECUTION
 
 """
-command = demisto.command()
-try:
-    handle_proxy()
-    if command == 'test-module':
-        demisto.results(test_module())
-    elif command == 'fetch-incidents':
-        fetch_incidents()
-    elif command == 'netwitness-get-incident':
-        get_incident()
-        get_alerts()
-    elif command == 'netwitness-get-incidents':
-        get_incidents()
-    elif command == 'netwitness-update-incident':
-        update_incident()
-    elif command == 'netwitness-delete-incident':
-        delete_incident()
-    elif command == 'netwitness-get-alerts':
-        get_alerts()
-    sys.exit(0)
-except ValueError as e:
-    LOG(e.message)
-    LOG.print_log()
-    return_error_entry(e.message)
-    sys.exit(1)
+
+
+def main():
+    global TOKEN
+    TOKEN = get_token()
+    command = demisto.command()
+    try:
+        handle_proxy()
+        if command == 'test-module':
+            demisto.results(test_module())
+        elif command == 'fetch-incidents':
+            fetch_incidents()
+        elif command == 'netwitness-get-incident':
+            get_incident()
+            get_alerts()
+        elif command == 'netwitness-get-incidents':
+            get_incidents()
+        elif command == 'netwitness-update-incident':
+            update_incident()
+        elif command == 'netwitness-delete-incident':
+            delete_incident()
+        elif command == 'netwitness-get-alerts':
+            get_alerts()
+    except ValueError as e:
+        if command == 'fetch-incidents':  # fetch-incidents supports only raising exceptions
+            LOG(e.message)
+            LOG.print_log()
+            raise
+        return_error(str(e))
+
+
+if __name__ in ('__builtin__', 'builtins'):
+    main()
