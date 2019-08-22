@@ -1,12 +1,14 @@
+from CommonServerPython import *
+
 import os
 import demistomock as demisto
 
 
-RETURN_ERROR_TARGET = 'DocumentationAutomation.return_error'
+RETURN_ERROR_TARGET = 'HTMLDocsAutomation.return_error'
 
 
 def test_get_yaml_obj(mocker):
-    from DocumentationAutomation import get_yaml_obj
+    from HTMLDocsAutomation import get_yaml_obj
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
 
     # sanity
@@ -38,7 +40,7 @@ def test_get_yaml_obj(mocker):
 
 
 def test_extract_command():
-    from DocumentationAutomation import extract_command
+    from HTMLDocsAutomation import extract_command
 
     # no args
     cmd, args = extract_command('!no-args-command')
@@ -82,7 +84,7 @@ def test_extract_command():
 
 
 def test_generate_commands_section():
-    from DocumentationAutomation import generate_commands_section
+    from HTMLDocsAutomation import generate_commands_section
 
     yml_data = {
         'script': {
@@ -111,7 +113,7 @@ def test_generate_commands_section():
 
 
 def test_add_lines():
-    from DocumentationAutomation import add_lines
+    from HTMLDocsAutomation import add_lines
 
     outputs = [
         add_lines('this is some free text.'),
@@ -131,3 +133,63 @@ def test_add_lines():
 
     for expected, out in zip(expected_values, outputs):
         assert out == expected
+
+def test_to_html_table():
+    from HTMLDocsAutomation import to_html_table
+    data = [
+        {
+            'header1': 'hello',
+            'header2': 'hello',
+            'header3': 'hello',
+        },
+        {
+            'header1': 'world',
+            'header2': 'world',
+            'header3': 'world',
+        },
+        {
+            'header1': '!',
+            'header2': '!',
+            'header3': '!',
+        }
+    ]
+    print(to_html_table(['header1', 'header2', 'header3'], data))
+
+
+def test_human_readable_example_to_html():
+    from HTMLDocsAutomation import human_readable_example_to_html
+    data = [
+        {
+            'header1': 'hello',
+            'header2': 'hello',
+            'header3': 'hello',
+        },
+        {
+            'header1': 'world',
+            'header2': 'world',
+            'header3': 'world',
+        },
+        {
+            'header1': '!',
+            'header2': '!',
+            'header3': '!',
+        }
+    ]
+
+    md = tableToMarkdown('Title', data, headers=['header1', 'header2', 'header3'])
+    print(human_readable_example_to_html(md))
+
+    md = '''Key | Value
+- | -
+city | Mountain View
+country | US
+hostname | dns.google
+ip | 8.8.8.8
+loc | 37.3860,-122.0838
+org | AS15169 Google LLC
+postal | 94035
+readme | https://ipinfo.io/missingauth
+region | California
+{"lat": 37.386, "lng": -122.0838}'''
+
+    print(human_readable_example_to_html(md))

@@ -9,49 +9,12 @@ CMD_ARGS_REGEX = re.compile(r'([\w_-]+)=((?:\"[^"]+\")|(?:`.+`)|(?:\"\"\".+\"\"\
 
 
 """STRING TEMPLATES"""
-OVERVIEW: str = '''
-<p>
+OVERVIEW: str = '''<p>
   Overview description in this section without a header.
 </p>
 '''
 
-USE_CASES_SINGLE: str = '''
-<h2>Use Cases</h2>
-<p>Single use case.</p>
-'''
-
-USE_CASES_MULTIPLE: str = '''
-<h2>Use Cases</h2>
-<ul>
-  <li>Multiple 1</li>
-  <li>Multiple 2</li>
-  <li>Multiple 3</li>
-</ul>
-'''
-
-GENERAL_SECTION: str = '''
-<h2>{title}</h2>
-<p>
-{data}
-</p>
-'''
-
-DETAILED_DESCRIPTION: str = '''
-<h2>Detailed Description</h2>
-<p>
-{detailed_description}
-</p>
-'''
-
-FETCH_INCIDENT: str = '''
-<h2>Fetch Incidents</h2>
-<p>
-{fetch_data}
-</p>
-'''
-
-SETUP_CONFIGURATION: str = '''
-<h2>Configure {integration_name} on Demisto</h2>
+SETUP_CONFIGURATION: str = '''<h2>Configure {integration_name} on Demisto</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>&nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
   <li>Search for {integration_name}.</li>
@@ -69,24 +32,20 @@ SETUP_CONFIGURATION: str = '''
 </ol>
 '''
 
-COMMANDS_HEADER: str = '''
-<h2>Commands</h2>
+COMMANDS_HEADER: str = '''<h2>Commands</h2>
 <p>
   You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. 
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
-  {command_list}
+{command_list}
 </ol>
 '''
 
-COMMAND_LIST: str = '''
-<li>{command_hr}: {command}</li>
-'''
+COMMAND_LIST: str = '  <li>{command_hr}: {command}</li>'
 
-SINGLE_COMMAND: str = '''
-<h3>{index}. {command_hr}</h3>
-<hr>
+SINGLE_COMMAND: str = '''<h3>{index}. {command_hr}</h3>
+<!-- <hr> -->
 <p>{command_description}</p>
 <h5>Base Command</h5>
 <p>
@@ -108,15 +67,17 @@ SINGLE_COMMAND: str = '''
 <p>
   <code>{command_example}</code>
 </p>
-<h5>Context Example</h5>
-<pre>
-  {context_example}
-</pre>
+{context_example}
 <h5>Human Readable Output</h5>
 <p>
   {hr_example}
 </p>
 '''
+
+CONTEXT_EXAMPLE: str = '''<h5>Context Example</h5>
+<pre>
+{context}
+</pre>'''
 
 ARG_TABLE: str = '''
 <table style="width:750px" border="2" cellpadding="6">
@@ -134,18 +95,16 @@ ARG_TABLE: str = '''
     </tr>
   </thead>
   <tbody>
-{arg_records}
+{records}
   </tbody>
 </table>
 '''
 
-ARG_RECORD: str = '''
-    <tr>
-      <td>{arg_name}</td>
-      <td>{arg_description}</td>
-      <td>{arg_required}</td>
-    </tr>
-'''
+ARG_RECORD: str = '''    <tr>
+      <td>{name}</td>
+      <td>{description}</td>
+      <td>{required}</td>
+    </tr>'''
 
 CONTEXT_TABLE: str = '''
 <table style="width:750px" border="2" cellpadding="6">
@@ -163,18 +122,35 @@ CONTEXT_TABLE: str = '''
     </tr>
   </thead>
   <tbody>
-    {context_records}
+{records}
   </tbody>
 </table>
 '''
 
-CONTEXT_RECORD: str = '''
-  <tr>
-    <td>{path}</td>
-    <td>{type}</td>
-    <td>{description}</td>
-  </tr>
+CONTEXT_RECORD: str = '''    <tr>
+      <td>{path}</td>
+      <td>{type}</td>
+      <td>{description}</td>
+    </tr>'''
+
+HTML_GENERIC_TABLE: str = '''
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+{headers}
+    </tr>
+  </thead>
+  <tbody>
+{records}
+  </tbody>
+</table>
 '''
+
+GENERIC_HEADER: str = '      <th><strong>{}</strong></th>'
+
+GENERIC_RECORD: str = '''    <tr>
+{data_fields}
+    </tr>'''
 
 
 def get_yaml_obj(entry_id):
@@ -186,8 +162,8 @@ def get_yaml_obj(entry_id):
         if not isinstance(data, dict):
             raise ValueError()
 
-    except (ValueError, yaml.YAMLError):
-        return_error('Failed to open integration file')
+    except (ValueError, yaml.YAMLError) as e:
+        return_error('Failed to open integration file: {}'.format(e))
 
     return data
 
@@ -290,32 +266,46 @@ def add_lines(line):
     return output if output else [line]
 
 
-def to_html_table(object=None, headers=None, data=None):
-    pass
+def to_html_table(headers: list, data: iter):
+    records: list = []
+    for d in data:
+        records.append(GENERIC_RECORD.format(data_fields='\n'.join(map(lambda field: '      <td>{}</td>'.format(field),
+                                                                       d))))
+
+    return HTML_GENERIC_TABLE.format(headers='\n'.join(GENERIC_HEADER.format(h) for h in headers),
+                                     records='\n'.join(records))
 
 
 def human_readable_example_to_html(hr_sample):
-    table_regex = re.compile(r'(\|(.*\|)+\s\|(?:---\|)+\s(\|(?:.*\|)+\s?)+)')
-    hr_html = []
+    table_regex = re.compile(r'(\|(.*\|)+\s\|(?:---\|)+\s((?:\|(?:.*\|)+\s?)+))')
+    hr_html: list = []
     while hr_sample:
-        truncate = 0
         if hr_sample.startswith('#'):
-            title = hr_sample.split('\n', 1)[0]
-
-            while title[truncate:].startswith('#'):
-                truncate += 1
-
-            hr_html.append('<h{0}>{1}</h{0}>'.format(truncate, title[truncate + 1:]))
-            truncate = len(hr_sample.split('\n', 1)[0])
+            title, hr_sample = hr_sample.split('\n', 1)
+            heading_size = len(title) - len(title.lstrip('#'))
+            hr_html.append('<h{0}>{1}</h{0}>'.format(heading_size, title[heading_size + 1:]))
+            continue
 
         table = table_regex.match(hr_sample)
         if table:
-            headers = table.group(2)
-            data = map(lambda l: l.split('|')[1:-1], table.group(3).split('\n'))
-            hr_html.append(to_html_table(headers=headers, data=data))
+            headers = table.group(2).split('|')[:-1]
+            data = map(lambda fields: fields.split('|')[1:-1], table.group(3).strip().split('\n'))
+            hr_html.append(to_html_table(headers, data))
             truncate = len(table.group(0))
+            hr_sample = hr_sample[truncate:]
+            continue
 
-        hr_sample = hr_sample[truncate:]
+        paragraph: list = []
+        while hr_sample and not hr_sample.startswith('#') and not hr_sample.startswith('|'):
+            if '\n' in hr_sample:
+                p, hr_sample = hr_sample.split('\n', 1)
+            else:
+                p, hr_sample = hr_sample, ''
+            paragraph.append(p)
+        if paragraph:
+            hr_html.append('<p>\n{}\n</p>'.format('\n'.join(paragraph)))
+
+    return '\n'.join(hr_html)
 
 
 def addErrorLines(scriptToScan, scriptType):
@@ -384,14 +374,14 @@ def generate_section(title, data):
     ]
 
     if data:
-        if os.linesep in data:
+        if '\n' in data:
             html_section.append('<ul>')
-            html_section.extend('<li>{}</li>'.format(s) for s in data.split(os.linesep))
+            html_section.extend('<li>{}</li>'.format(s) for s in data.split('\n'))
             html_section.append('</ul>')
         else:
-            html_section.append('<p>{}</p>'.format(data))
+            html_section.append('<p>{}</p>\n'.format(data))
 
-    return os.linesep.join(html_section)
+    return '\n'.join(html_section)
 
 
 # Setup integration on Demisto
@@ -422,14 +412,14 @@ def generate_commands_section(yaml_data, example_dict):
 
     for i, cmd in enumerate(commands):
         cmd_section, cmd_errors = generate_single_command_section(i, cmd, example_dict)
-        command_sections.extend(cmd_section)
+        command_sections.append(cmd_section)
         errors.extend(cmd_errors)
 
-    return (COMMANDS_HEADER.format(command_list=''.join(command_list) + '\n'.join(command_sections))), errors
+    return (COMMANDS_HEADER.format(command_list='\n'.join(command_list)) + '\n'.join(command_sections)), errors
 
 
 def generate_single_command_section(index, cmd, example_dict):
-    cmd_example: str = example_dict.get(cmd['name'], '')
+    cmd_example: str = example_dict.get(cmd['name'])
     errors: list = []
     template: dict = {
         'index': index,
@@ -482,7 +472,7 @@ def generate_command_example(cmd, cmd_example=None):
     errors: list = []
     context_example = None
     md_example: str = ''
-    if cmd_example is not None:
+    if cmd_example:
         cmd_example, md_example, context_example = cmd_example
     else:
         cmd_example = ' '
@@ -490,10 +480,9 @@ def generate_command_example(cmd, cmd_example=None):
 
     example = {
         'command_example': cmd_example,
-        'hr_example': human_readable_example_to_html(md_example)
+        'hr_example': human_readable_example_to_html(md_example),
+        'context_example': CONTEXT_EXAMPLE.format(context=context_example) if context_example else '',
     }
-    if context_example:
-        example['context_example'] = context_example
 
     return example, errors
 
@@ -507,7 +496,7 @@ def generate_html_docs(args, yml_data, example_dict, errors):
 
     # Playbooks
     docs += generate_section('{} Playbook'.format(yml_data['name']),
-                             'Populate this section with relevant playbook names.'),
+                             'Populate this section with relevant playbook names.')
 
     # Use Cases
     docs += generate_section('Use Cases',
@@ -561,7 +550,7 @@ def main():
 
     docs: str = generate_html_docs(args, yml_data, example_dict, errors)
 
-    filename = '{}-documentation.txt'.format(yml_data['name'])
+    filename = '{}-documentation.html'.format(yml_data['name'])
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -576,5 +565,5 @@ def main():
         return_error('\n'.join('* {}'.format(e) for e in errors))
 
 
-if __name__ == '__builtin__':
+if __name__ == 'builtins':
     main()
