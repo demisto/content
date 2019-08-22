@@ -1756,7 +1756,7 @@ def remove_nulls_from_dictionary(dict):
 
 def get_demisto_version():
     """
-        Returns Demisto version and build number
+        Returns the Demisto version and build number.
 
         :return: Demisto version object if Demisto class has attribute demistoVersion, else raises AttributeError
         :rtype: ``dict``
