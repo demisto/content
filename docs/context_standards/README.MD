@@ -315,7 +315,7 @@ The following is the format for a host.
     "BIOVersion": "STRING, BIOS version of the host.",
     "ID": "STRING, The unique ID within the tool retrieving the host.",
     "DHCPServer": "STRING, DHCP Server.",
-    "IP": "STRING, IP Address of the host.",
+    "IP": "STRING, IP address of the host.",
     "MACAddress": "STRING, Host MAC Address.",
     "Memory": "STRING, Host memory.",
     "Model": "STRING, Host model.",
