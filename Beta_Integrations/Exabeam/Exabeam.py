@@ -1,7 +1,6 @@
 import demistomock as demisto
-from CommonServerUserPython import *
-
 from CommonServerPython import *
+from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import requests
