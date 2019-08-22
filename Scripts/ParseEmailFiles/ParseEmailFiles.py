@@ -3223,8 +3223,8 @@ def create_headers_map(msg_dict_headers):
 
                 header_key = header_words[0][:-1]
                 header_value = ' '.join(header_words[1:])
-                header_value = header_value[:-1] if header_value[-1] == ' ' \
-                    else header_value
+                if not header_value == '' and header_value[-1] == ' ':
+                    header_value = header_value[:-1]
 
             else:
                 header_value += header[:-1] if header[-1:] == ' ' else header
