@@ -478,12 +478,11 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
         return
 
     test_message = update_test_msg(integrations, test_message)
-    # options = options_handler()
+    options = options_handler()
     stdout, stderr = get_docker_memory_data()
     text = 'Memory Usage: {}'.format(stdout) if not stderr else stderr
-    # if options.nightly:
-    #     send_slack_message(slack, SLACK_CHANNEL_ID, text, 'Content CircleCI', 'False')
-    send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
+    if options.nightly:
+        send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
 
     run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id,
              succeed_playbooks, test_message, test_options, slack, circle_ci,
@@ -576,13 +575,12 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                                                     nightly_integrations)
     else:  # In case of a non AMI run we don't want to use the mocking mechanism
         mockless_tests = tests
-    # if options.nightly:
-    #     send_slack_message(slack, SLACK_CHANNEL_ID,
-    mem_lim, err = get_docker_limit()
-    send_slack_message(slack, SLACK_MEM_CHANNEL_ID,
-                       'Build Number: {0}\n Server Address: {1}\nMemory Limit: {2}'.format(build_number, server,
-                                                                                           mem_lim), 'Content CircleCI',
-                       'False')
+    if options.nightly:
+        mem_lim, err = get_docker_limit()
+        send_slack_message(slack, SLACK_MEM_CHANNEL_ID,
+                           'Build Number: {0}\n Server Address: {1}\nMemory Limit: {2}'.format(build_number, server,
+                                                                                               mem_lim),
+                           'Content CircleCI', 'False')
     # first run the mock tests to avoid mockless side effects in container
     test_index = 0
     if is_ami and mock_tests:
@@ -595,12 +593,12 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                               unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                               build_name, server_numeric_version)
             print('test index: {}'.format(test_index))
-            if test_index % 10 == 0:
-                # stdout, stderr = get_docker_processes_data()
-                # text = stdout if not stderr else stderr
-                # send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
-                print(test_index)
-            test_index += 1
+            # if test_index % 10 == 0:
+            # stdout, stderr = get_docker_processes_data()
+            # text = stdout if not stderr else stderr
+            # send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
+            # print(test_index)
+            # test_index += 1
 
         print("\nRunning mock-disabled tests")
         proxy.configure_proxy_in_demisto('')
@@ -616,12 +614,12 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                           unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                           build_name, server_numeric_version, is_ami)
         print('test index: {}'.format(test_index))
-        if test_index % 10 == 0:
-            # stdout, stderr = get_docker_processes_data()
-            # text = stdout if not stderr else stderr
-            # send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
-            print(test_index)
-        test_index += 1
+        # if test_index % 10 == 0:
+        # stdout, stderr = get_docker_processes_data()
+        # text = stdout if not stderr else stderr
+        # send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
+        # print(test_index)
+        # test_index += 1
 
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, unmockable_integrations,
                        proxy, is_ami)
