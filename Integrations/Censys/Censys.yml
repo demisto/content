@@ -1,0 +1,82 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Censys
+  version: -1
+configuration:
+- defaultvalue: https://censys.io/api/v1/
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Censys API ID
+  name: apiid
+  required: true
+  type: 0
+- display: Censys API Secret
+  name: secret
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: true
+  type: 8
+description: Censys is a search engine that allows computer scientists to ask questions
+  about the devices and networks that compose the Internet. Driven by Internet-wide
+  scanning, Censys lets researchers find specific hosts and create aggregate reports
+  on how devices, websites, and certificates are configured and deployed.
+display: Censys
+name: Censys
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: IP Address to search for
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Which index to retrieve data from
+      isArray: false
+      name: index
+      predefined:
+      - ipv4
+      - websites
+      - certificates
+      required: true
+      secret: false
+    deprecated: false
+    description: Detailed view
+    execution: false
+    name: cen-view
+  - arguments:
+    - default: false
+      description: The attribute you're searching for, JSON format
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The index to search on
+      isArray: false
+      name: index
+      predefined:
+      - ipv4
+      - websites
+      - certificates
+      required: true
+      secret: false
+    deprecated: false
+    description: Attribute search
+    execution: false
+    name: cen-search
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python2
+system: true
+tests:
+- No test

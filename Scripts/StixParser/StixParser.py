@@ -9,16 +9,34 @@ from stix.core import STIXPackage
 
 """ GLOBAL PARAMS """
 PATTERNS_DICT = {
-    "file:hashes": "File",
+    "file:": "File",
     "ipv6-addr": "IP",
     "ipv4-addr:": "IP",
     "url:": "URL",
     "domain-name:": "Domain",
-    "email:": "Email",
-    "email-message": "Email"
+    "email": "Email",
+    "registry-key:key": "Registry Path Reputation",
+    "user-account": "Username"
 }
 
 """ HELPER FUNCTIONS"""
+
+
+def ip_parser(ip):
+    """IP can be in the form of `ip-x-x-x-x`.
+    function will return it to `x.x.x.x` format
+
+    if it's not an ip, will return `ip` arg back.
+
+    Args:
+        ip (str): ip to parse
+
+    Returns:
+        str: parsed ip indicator
+    """
+    if ip.lower().startswith("ip-"):
+        return ip.lower().replace("ip-", "").replace("-", ".")
+    return ip
 
 
 def convert_to_json(string):
@@ -118,7 +136,7 @@ def get_score(description):
     return 0
 
 
-def dscore(score):
+def dbot_score(score):
     if score == "High":
         return 3
     if score == "Medium":
@@ -152,7 +170,7 @@ def build_entry(indicators_dict, stix_indicators_dict, pkg_id):
                 timestamp = obj.get("created")
 
                 score = (
-                    dscore(obj.get("score"))
+                    dbot_score(obj.get("score"))
                     if "score" in obj
                     else get_score(obj.get("description"))
                 )
@@ -178,16 +196,26 @@ def get_indicators(indicators):
         indicators (dict or list): STIX-formatted entry
 
     Returns:
-        dict: in the format of:
+        (dict, dict): in the format of:
+        (
             {
                 "File": [],
                 "IP": [],
                 "Domain": [],
                 "URL": []
+            },
+            {
+                "<key>": "<stix entry>"
             }
+        )
     """
 
     def indicators_parser(stix_indicator):
+        # type: (dict) -> None
+        """
+        Args:
+            stix_indicator (dict):
+        """
         pattern = stix_indicator.get("pattern")
         if pattern:
             groups = regex.findall(pattern)
@@ -195,12 +223,21 @@ def get_indicators(indicators):
                 for key, value in PATTERNS_DICT.items():
                     for term in groups:
                         '''
-                        term should be list with 2 argument catched with the regex
+                        term should be list with 2 argument parsed with regex
                         [`pattern`, `indicator`]
                         '''
                         if len(term) == 2 and key in term[0]:
-                            patterns_lists[value].append(term[1])
-                            entries_dict[term[1]] = stix_indicator
+                            new_indicator = term[1]
+                            if value in ("IP", "URL", "Domain"):
+                                new_indicator = ip_parser(new_indicator)
+                            patterns_lists[value].append(new_indicator)
+                            entries_dict[new_indicator] = stix_indicator
+        # Handle CVE
+        elif stix_indicator.get("description") == "cve cvss score":
+            new_indicator = stix_indicator.get("name")
+            if new_indicator:
+                patterns_lists["CVE CVSS Score"].append(new_indicator)
+                entries_dict[new_indicator] = stix_indicator
 
     regex = re.compile("(\\w.*?) = '(.*?)'")
     patterns_lists = {
@@ -209,6 +246,9 @@ def get_indicators(indicators):
         "Domain": list(),
         "Email": list(),
         "URL": list(),
+        "Registry Path Reputation": list(),
+        "CVE CVSS Score": list(),
+        "Username": list()
     }  # type: dict
 
     # Will hold values for package {"KEY": <STIX OBJECT>}

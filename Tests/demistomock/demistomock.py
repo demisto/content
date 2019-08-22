@@ -523,3 +523,28 @@ def appendContext(key, data, dedup=False):
 
 def dt(obj=None, trnsfrm=None):
     return ""
+
+
+def addEntry(id, entry, username=None, email=None, footer=None):
+    return ""
+
+
+def mirrorInvestigation(id, mirrorType, autoClose=False):
+    return ""
+
+
+def updateModuleHealth(error):
+    return ""
+
+def directMessage(message, username = None, email = None, anyoneCanOpenIncidents = None):
+    return ""
+
+def createIncidents(incidents, lastRun = None, userID = None):
+    return []
+
+def findUser(username = None, email = None):
+    return {}
+
+def handleEntitlementForUser(incidentID, guid, email, content, taskID=""):
+    return {}
+
