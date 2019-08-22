@@ -41,7 +41,7 @@ def get_fetch_times(last_fetch):
     Returns:
         List[str]: list of str represents every hour since last_fetch
     """
-    now = get_now()
+    now = get_now() - timedelta(seconds=30)
     times = list()
     time_format = "%Y-%m-%dT%H:%M:%SZ"
     if isinstance(last_fetch, str):
@@ -171,11 +171,13 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
     for index, fetch_time in enumerate(fetch_times):
 
         if index < fetch_time_count - 1:
-            raw_events = client.get_events(interval=fetch_time+"/"+fetch_times[index+1], event_type_filter=event_type_filter,
-                                        threat_status=threat_status, threat_type=threat_type)
+            raw_events = client.get_events(interval=fetch_time + "/" + fetch_times[index + 1],
+                                           event_type_filter=event_type_filter,
+                                           threat_status=threat_status, threat_type=threat_type)
         else:
-            raw_events = client.get_events(interval=fetch_time+"/"+datetime.now().strftime(DATE_FORMAT), event_type_filter=event_type_filter,
-                                        threat_status=threat_status, threat_type=threat_type)
+            raw_events = client.get_events(interval=fetch_time + "/" + datetime.now().strftime(DATE_FORMAT),
+                                           event_type_filter=event_type_filter,
+                                           threat_status=threat_status, threat_type=threat_type)
 
         for raw_event in raw_events.get("messagesDelivered", []):
             raw_event["type"] = "messages delivered"
