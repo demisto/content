@@ -54,6 +54,8 @@ script:
                 {to: 'ThreatCrowd-Emails', from: 'emails'},
                 {to: 'ThreatCrowd-SubDomains', from: 'subdomains'},
                 {to: 'ThreatCrowd-References', from: 'references'},
+                {to: 'ThreatCrowd-Votes', from: 'votes'},
+
             ],
             contextKey: 'Domain(val.Name==obj.Name)',
         },
@@ -85,7 +87,7 @@ script:
             translator: [
                 {to: 'MD5', from: 'md5'},
                 {to: 'ThreatCrowd-IPs', from: 'ips'},
-                {to: 'ThreatCrowd-Domains', from: 'ips'},
+                {to: 'ThreatCrowd-Domains', from: 'domains'},
                 {to: 'ThreatCrowd-Resource', from: 'resource'},
                 {to: 'ThreatCrowd-SHA1', from: 'sha1'},
                 {to: 'ThreatCrowd-References', from: 'references'},
@@ -101,7 +103,7 @@ script:
         },
     };
 
-    function createContext(data) {
+    function createContext(data, dbotScore) {
         var createContextSingle = function(obj) {
             var res = {};
             var keys = Object.keys(obj);
@@ -116,12 +118,26 @@ script:
                 }
                 current[values[j]] = obj[k];
             });
+
+            if (dbotScore == 3) {
+                res.Malicious = {
+                   "Vendor": 'Threat Crowd',
+                   "Description": 'Votes field is -1'
+                };
+            }
             return res;
         };
         if (data instanceof Array) {
             var res = [];
             for (var j=0; j < data.length; j++) {
                 res.push(createContextSingle(data[j]));
+            }
+
+            if (dbotScore == 3) {
+                res.Malicious = {
+                   "Vendor": 'Threat Crowd',
+                   "Description": 'Votes field is -1'
+                };
             }
             return res;
         }
@@ -166,6 +182,48 @@ script:
         delete(args.file);
     }
 
+    function calculateDBotScore(res, args, commandData) {
+        var dbotScore = 0;
+        if (res.response_code == 1){
+             if ('votes' in res){
+                switch (res.votes) {
+                    case -1: //malicious
+                        dbotScore = 3
+                        break;
+                    case 0: //suspicious
+                        dbotScore = 2;
+                        break;
+                    case 1: //clean
+                        dbotScore = 1;
+                        break;
+                }
+            }
+        }
+        return dbotScore;
+    }
+
+    function createDbotEntry(commandData, dbotScore){
+        var DbotEntry = {};
+            if (commandData.url == 'ip'){
+                DbotEntry = {
+                    "Indicator": args.ip,
+                     "Type": "IP",
+                     "Vendor": "Threat Crowd",
+                     "Score": dbotScore
+                };
+            }
+
+            else {
+                DbotEntry = {
+                    "Indicator": args.domain,
+                     "Type": "Domain",
+                     "Vendor": "Threat Crowd",
+                     "Score": dbotScore
+                };
+            }
+            return DbotEntry;
+    }
+
     function sendRequestAndParse(commandData) {
         res = http(
             server + commandData.url + '/report/' + encodeToURLQuery(args && Object.keys(args).length ? args : commandData.defaultArgs),
@@ -186,7 +244,13 @@ script:
             entry.ReadableContentsFormat = formats.markdown;
             entry.HumanReadable = tableToMarkdown(replaceInTemplates(commandData.title, args), data);
             entry.EntryContext = {};
-            entry.EntryContext[commandData.contextKey] = createContext(data);
+            var dbotScore = -1;
+            if (commandData.url == 'domain' || commandData.url== 'ip') { // the only commands with dbotScore
+                dbotScore = calculateDBotScore(JSON.parse(res.Body), args, commandData);
+                entry.EntryContext = {};
+                entry.EntryContext['DBotScore'] = createDbotEntry(commandData, dbotScore);
+            }
+            entry.EntryContext[commandData.contextKey] = createContext(data, dbotScore);
         }
         return entry;
     }
@@ -226,6 +290,16 @@ script:
       description: Threat crowd subdomains
     - contextPath: Domain.ThreatCrowd.References
       description: Threat crowd references
+    - contextPath: Domain.ThreatCrowd.Votes
+      description: Votes from threat crowd
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+    - contextPath: DBotScore.Type
+      description: Indicator type
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
     description: Get domain report
   - name: threat-crowd-ip
     arguments:
@@ -243,6 +317,14 @@ script:
       description: Resolutions from threat crowd
     - contextPath: IP.ThreatCrowd.Votes
       description: Votes from threat crowd
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+    - contextPath: DBotScore.Type
+      description: Indicator type
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
     description: Get ip report
   - name: threat-crowd-antivirus
     arguments:
@@ -280,4 +362,4 @@ script:
     description: Get file report
 hidden: false
 tests:
-  - No test
+  - ThreatCrowd - Test
