@@ -114,6 +114,27 @@ def get_user_by_name(user_to_search: str, integration_context: dict) -> dict:
     return user
 
 
+def search_slack_users(integration_context, users):
+    """
+    Search given users in Slack
+    :param integration_context: The current integration context
+    :param users: The users to find
+    :return: The slack users
+    """
+    slack_users = []
+    for user in users:
+        slack_user = get_user_by_name(user, integration_context)
+        if not slack_user:
+            demisto.results({
+                'Type': 11,  # Warning
+                'Contents': 'User {} not found in Slack'.format(user),
+                'ContentsFormat': formats['text']
+            })
+        else:
+            slack_users.append(slack_user)
+    return slack_users
+
+
 def find_mirror_by_investigation() -> dict:
     mirror: dict = {}
     investigation = demisto.investigation()
@@ -245,17 +266,8 @@ def mirror_investigation():
         conversations = json.loads(integration_context['conversations'])
 
     investigation_id = investigation.get('id')
-    slack_users = []
-    for user in investigation.get('users'):
-        slack_user = get_user_by_name(user, integration_context)
-        if not slack_user:
-            demisto.results({
-                'Type': 11,  # Warning
-                'Contents': 'User {} not found in Slack'.format(user),
-                'ContentsFormat': formats['text']
-            })
-        else:
-            slack_users.append(slack_user)
+    users = investigation.get('users')
+    slack_users = search_slack_users(integration_context, users)
 
     users_to_invite = list(map(lambda u: u.get('id'), slack_users))
     current_mirror = list(filter(lambda m: m['investigation_id'] == investigation_id, mirrors))
@@ -1041,6 +1053,49 @@ def close_channel():
     demisto.results('Channel successfully archived.')
 
 
+def create_channel():
+    """
+    Creates a channel in Slack using the provided arguments.
+    """
+    channel_type = demisto.args().get('type', 'private')
+    channel_name = demisto.args()['name']
+    users = argToList(demisto.args().get('users', []))
+
+    if channel_type != 'private':
+        conversation = CHANNEL_CLIENT.channels_create(name=channel_name).get('channel', {})
+    else:
+        conversation = CHANNEL_CLIENT.groups_create(name=channel_name).get('group', {})
+
+    if users:
+        slack_users = search_slack_users(demisto.getIntegrationContext(), users)
+        invite_users_to_conversation(conversation.get('id'), slack_users)
+
+    demisto.results('Successfully created the channel {}.'.format(conversation.get('name')))
+
+
+def invite_to_channel():
+    channel = demisto.args().get('channel')
+    users = argToList(demisto.args().get('user', []))
+
+    channel_id = ''
+
+    if not channel:
+        mirror = find_mirror_by_investigation()
+        if mirror:
+            channel_id = mirror['channel_id']
+    else:
+        channel = get_conversation_by_name(channel)
+        channel_id = channel.get('id')
+
+    if not channel_id:
+        return_error('No channel was provided.')
+
+    slack_users = search_slack_users(demisto.getIntegrationContext(), users)
+    invite_users_to_conversation(channel_id, slack_users)
+
+    demisto.results('Successfully invited users to the channel.')
+
+
 def long_running_main():
     """
     Starts the long running thread.
@@ -1084,7 +1139,9 @@ def main():
         'slack-send-file': slack_send_file,
         'slack-set-channel-topic': slack_set_channel_topic,
         'close-channel': close_channel,
-        'slack-close-channel': close_channel
+        'slack-close-channel': close_channel,
+        'slack-create-channel': create_channel,
+        'slack-invite-to-channel': invite_to_channel
     }
 
     try:

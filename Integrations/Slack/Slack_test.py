@@ -1612,6 +1612,50 @@ def test_send_request_with_notification_channel(mocker):
     assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
 
 
+def test_send_to_user_lowercase(mocker):
+    import Slack
+
+    # Set
+
+    def users_list(**kwargs):
+        return {'members': json.loads(USERS)}
+
+    def conversations_list(**kwargs):
+        return {'channels': json.loads(CONVERSATIONS)}
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(demisto, 'args', return_value={'to': 'glenda@south.oz.coven', 'message': 'hi'})
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
+    mocker.patch.object(slack.WebClient, 'conversations_list', side_effect=conversations_list)
+    mocker.patch.object(slack.WebClient, 'im_open', return_value={'channel': {'id': 'im_channel'}})
+    mocker.patch.object(Slack, 'send_file', return_value='neat')
+    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+
+    # Arrange
+
+    Slack.slack_send()
+
+    send_args = Slack.send_message.call_args[0]
+
+    results = demisto.results.call_args_list[0][0]
+
+    # Assert
+
+    assert slack.WebClient.users_list.call_count == 0
+    assert slack.WebClient.conversations_list.call_count == 0
+    assert Slack.send_message.call_count == 1
+
+    assert send_args[0] == ['im_channel']
+    assert send_args[1] is None
+    assert send_args[2] is False
+    assert send_args[4] == 'hi'
+    assert send_args[5] == ''
+
+    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+
+
 def test_send_request_with_severity_user_doesnt_exist(mocker, capfd):
     import Slack
 
@@ -2088,45 +2132,28 @@ def test_send_topic_no_args_no_investigation(mocker):
     assert err_msg == 'No channel was provided.'
 
 
-def test_send_to_user_lowercase(mocker):
+def test_invite_users(mocker):
     import Slack
 
     # Set
 
-    def users_list(**kwargs):
-        return {'members': json.loads(USERS)}
-
-    def conversations_list(**kwargs):
-        return {'channels': json.loads(CONVERSATIONS)}
-
+    mocker.patch.object(demisto, 'args', return_value={'channel': 'general', 'users': 'spengler, glinda'})
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '681'})
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-    mocker.patch.object(demisto, 'args', return_value={'to': 'glenda@south.oz.coven', 'message': 'hi'})
+    mocker.patch.object(Slack, 'get_conversation_by_name', return_value={'id': 'C012AB3CD'})
+    mocker.patch.object(slack.WebClient, 'conversations_setTopic')
     mocker.patch.object(demisto, 'results')
-    mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
-    mocker.patch.object(slack.WebClient, 'conversations_list', side_effect=conversations_list)
-    mocker.patch.object(slack.WebClient, 'im_open', return_value={'channel': {'id': 'im_channel'}})
-    mocker.patch.object(Slack, 'send_file', return_value='neat')
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
 
     # Arrange
+    Slack.slack_set_channel_topic()
 
-    Slack.slack_send()
-
-    send_args = Slack.send_message.call_args[0]
-
-    results = demisto.results.call_args_list[0][0]
+    send_args = slack.WebClient.conversations_setTopic.call_args
+    success_results = demisto.results.call_args[0]
 
     # Assert
-
-    assert slack.WebClient.users_list.call_count == 0
-    assert slack.WebClient.conversations_list.call_count == 0
-    assert Slack.send_message.call_count == 1
-
-    assert send_args[0] == ['im_channel']
-    assert send_args[1] is None
-    assert send_args[2] is False
-    assert send_args[4] == 'hi'
-    assert send_args[5] == ''
-
-    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+    assert Slack.get_conversation_by_name.call_count == 1
+    assert slack.WebClient.conversations_setTopic.call_count == 1
+    assert success_results[0] == 'Topic successfully set.'
+    assert send_args[1]['channel'] == 'C012AB3CD'
+    assert send_args[1]['topic'] == 'ey'
