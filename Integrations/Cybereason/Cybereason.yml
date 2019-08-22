@@ -728,7 +728,6 @@ script:
     - contextPath: Cybereason.User.Organization
       description: User organization
       type: string
-  dockerimage: demisto/python
   isfetch: true
   runonce: false
   script: '-'
