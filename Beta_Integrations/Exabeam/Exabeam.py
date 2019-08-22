@@ -77,7 +77,7 @@ def http_request(method, path, data):
 
 def get_watchlist_id():
     """ Return watchlist id based on given parameters """
-    if not demisto().args['id'] and not demisto.args()['title']:
+    if not demisto.args()['id'] and not demisto.args()['title']:
         logout()
         return_error('Please provide either ID or title')
     wid = demisto.args()['id']
