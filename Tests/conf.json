@@ -1824,7 +1824,6 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
-        "vmray": "VMRay license expired (Issue 18752)",
         "Anomali ThreatStream v2": "Credentials are invalid (issue 18561)",
         "Anomali ThreatStream": "Credentials are invalid (issue 18561)",
         "RSA Archer": "Instance does not seem to be working, Arian is checking",
