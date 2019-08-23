@@ -95,6 +95,9 @@
             "playbookID": "RegPathReputationBasicLists_test"
         },
         {
+            "playbookID": "EmailDomainSquattingReputation-Test"
+        },
+        {
             "playbookID": "RandomStringGenerateTest"
         },
         {
@@ -116,6 +119,10 @@
             "playbookID": "Fidelis-Test"
         },
         {
+            "integrations": "AWS - ACM",
+            "playbookID": "ACM-Test"
+        },
+        {
             "integrations": "Thinkst Canary",
             "playbookID": "CanaryTools Test"
         },
@@ -135,6 +142,10 @@
             "nightly": true
         },
         {
+            "integrations": "Have I Been Pwned? V2",
+            "playbookID": "Pwned v2 test"
+        },
+        {
             "integrations": "Alexa Rank Indicator",
             "playbookID": "Alexa Test Playbook"
         },
@@ -149,9 +160,6 @@
         },
         {
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
-        },
-        {
-            "playbookID": "ParseCSVnullbytesTest"
         },
         {
             "integrations": "CVE Search",
@@ -283,6 +291,13 @@
         },
         {
             "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "playbookID": "Panorama Query Logs - Test",
+            "timeout": 1000,
+            "nightly": true
+        },
+        {
+            "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "palo_alto_firewall_test_pb",
             "timeout": 1000,
@@ -360,8 +375,8 @@
             "playbookID": "minemeld_test"
         },
         {
-            "integrations": "SentinelOne Beta",
-            "playbookID": "SentinelOne Beta Test"
+            "integrations": "SentinelOne V2",
+            "playbookID": "SentinelOne V2 - test"
         },
         {
             "integrations": "InfoArmor VigilanteATI",
@@ -552,10 +567,11 @@
             "integrations": "Gmail"
         },
         {
-            "playbookID": "TestParseCSV"
+            "playbookID": "reputations.json Test"
         },
         {
-            "playbookID": "reputations.json Test"
+            "playbookID": "Test IP Indicator Fields",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Shodan",
@@ -892,6 +908,10 @@
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test"
+        },
+        {
+            "integrations": "remedy_sr_beta",
+            "playbookID": "remedy_sr_test_pb"
         },
         {
 
@@ -1383,7 +1403,8 @@
             "nightly": true
         },
         {
-            "playbookID": "Autoextract - Test"
+            "playbookID": "Autoextract - Test",
+            "fromversion": "4.1.0"
         },
         {
             "playbookID": "FilterByList - Test",
@@ -1446,7 +1467,8 @@
         },
         {
             "playbookID": "Extract Indicators From File - Generic v2 - Test",
-            "integrations": "Image OCR"
+            "integrations": "Image OCR",
+            "timeout": 300
         },
         {
             "playbookID": "Endpoint Enrichment - Generic v2 - Test",
@@ -1716,19 +1738,21 @@
             "playbookID": "MailListener-POP3 - Test"
         },
         {
+            "playbookID": "sumList - Test"
+        },
+        {
             "integrations": "VulnDB",
             "playbookID": "Test-VulnDB"
         }
     ],
     "skipped_tests": {
+        "CheckpointFW-test": "Test is not stable (Issue 18643)",
+        "LogRhythm REST test": "A command's response doesnt match the expected results (issue #18385)",
         "search_endpoints_by_hash_-_tie_-_test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
         "McAfee-TIE Test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
-        "CreatePhishingClassifierMLTest": "Test is unstable and fails with no reason from time to time (issue ##18349)",
         "Autoextract - Test": "See issue #18343 for further information",
         "rsa_packets_and_logs_test": "A command searches for a session ID which doesn't exist on our local server - asked RSA to help (issue #18332)",
         "TestUptycs": "There is not enough data in uptycs instance in order the test to pass. Data need to be generated like open connections",
-        "reputations.json Test": "Reverting the fqdn indicator due to glichtman request, will handled next release(end july 19)",
-        "Cybereason Test": "Integration instance being disabled in the middle of test playbook (issue 17394)",
         "LogRhythmRest": "Unstable environment Adi is checking",
         "InfoArmorVigilanteATITest": "Test fails on verify context (issue 17358)",
         "calculate_severity_-_critical_assets_-_test": "Fails on verify context (issue 17924)",
@@ -1767,7 +1791,10 @@
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "old test, needs to check if relevant",
         "Detonate File - FireEye AX - Test": "No instance",
         "Cofense Triage Test": "Creds only works on demo4",
-        "Intezer Testing": "Old test for old version of inteze"
+        "Intezer Testing": "Old test for old version of inteze",
+        "Test - Windows Defender Advanced Threat Protection": "One of the commands has an internal server error. Check again 20/08/2019. Issue - #18552",
+        "CarbonBlackLiveResponseTest": "Task: cb-session-create-and-wait fails (issue 18691)",
+        "nexpose_test": "Failed to create site (issue 18694)"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1781,9 +1808,15 @@
         "Cymon": "The service was discontinued since April 30th, 2019.",
         "FireEye ETP": "No instance",
         "ProofpointTAP_v2": "No instance",
+        "remedy_sr_beta": "No instance",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "Anomali ThreatStream v2": "Credentials are invalid (issue 18561)",
+        "Anomali ThreatStream": "Credentials are invalid (issue 18561)",
+        "RSA Archer": "Instance does not seem to be working, Arian is checking",
+        "SCADAfence CNM": "Once in a while SCADAfence CNM integration fails to create an instance, throwing a '502 bad gateway' error (issue #18376)",
+        "Cortex XDR - IR": "Instance seems to have problems - returning 500 internal server error (issue #18377)",
         "ArcSight ESM v2": "License expired (issue #18328)",
         "AlienVault USM Anywhere": "License expired (issue #18273)",
         "Tufin": "Calls to instance return 502 error. @itay reached out (issue 16441)",
@@ -1820,12 +1853,13 @@
         "Tenable.io": "Unstable instance (issue 16115)",
 
       "_comment": "~~~ OTHER ~~~",
-        "Pwned": "Changes in API - may require integration rewrite (issue #18102)",
+        "Pwned": "Old API is deprecated",
         "SumoLogic": "Shelly working on fixing it",
         "iDefense": "DevOps investigation",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Changes in service (issue #16247)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
+        "MailListener - POP3": "Failing test module (issue 18580)",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
@@ -1871,7 +1905,6 @@
         "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
         "carbonblackliveresponse": "Pending check: issue 16072",
         "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
-        "Cybereason": "Insecure has a non empty default value, will require fixing and merging",
         "Anomali ThreatStream": "'proxy' parameter not working",
         "Palo Alto Networks Cortex": "SDK",
         "AWS - EC2": "SSL Validation fails for STS",

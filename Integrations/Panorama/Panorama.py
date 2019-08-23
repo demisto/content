@@ -56,7 +56,8 @@ SECURITY_RULE_ARGS = {
     'disable_server_response_inspection': 'DisableServerResponseInspection',
     'description': 'Description',
     'target': 'Target',
-    'log_forwarding': 'LogForwarding'
+    'log_forwarding': 'LogForwarding',
+    'log-setting': 'LogForwarding'
 }
 
 PAN_OS_ERROR_DICT = {
@@ -148,6 +149,11 @@ def http_request(uri: str, method: str, headers: Dict = {},
                     ips = json_result['response']['msg']['line']['uid-response']['payload']['register']['entry']['@ip']
                 demisto.results(
                     'IP ' + str(ips) + ' already exist in the tag. All submitted IPs were not registered to the tag')
+                sys.exit(0)
+
+            # catch timed out log queries and return this as an entry.note
+            elif str(json_result['response']['msg']['line']).find('Query timed out') != -1:
+                demisto.results(str(json_result['response']['msg']['line']) + '. Rerun the query')
                 sys.exit(0)
 
         if '@code' in json_result['response']:
@@ -2274,6 +2280,8 @@ def panorama_edit_rule_command():
     """
     rulename = demisto.args()['rulename']
     element_to_change = demisto.args()['element_to_change']
+    if element_to_change == 'log-forwarding':
+        element_to_change = 'log-setting'
     element_value = demisto.args()['element_value']
     target = demisto.args().get('target')
 
@@ -2286,9 +2294,9 @@ def panorama_edit_rule_command():
         'key': API_KEY
     }
 
-    if element_to_change in ['action', 'description']:
+    if element_to_change in ['action', 'description', 'log-setting']:
         params['element'] = add_argument_open(element_value, element_to_change, False)
-    elif element_to_change in ['source', 'destination', 'application', 'categry', 'source-user', 'service']:
+    elif element_to_change in ['source', 'destination', 'application', 'category', 'source-user', 'service']:
         params['element'] = add_argument_open(element_value, element_to_change, True)
     else:  # element_to_change in ['negate_source', 'negate_destination', 'disable']
         params['element'] = add_argument_yes_no(element_value, element_to_change)
@@ -2298,14 +2306,14 @@ def panorama_edit_rule_command():
 
     if DEVICE_GROUP:
         if 'pre_post' not in demisto.args():
-            return_error('please provide the pre_post argument when moving a rule in Panorama instance.')
+            return_error('please provide the pre_post argument when editing a rule in Panorama instance.')
         else:
             params['xpath'] = XPATH_SECURITY_RULES + demisto.args()[
                 'pre_post'] + '/security/rules/entry' + '[@name=\'' + rulename + '\']'
     else:
         params['xpath'] = XPATH_SECURITY_RULES + '[@name=\'' + rulename + '\']'
 
-    params['xpath'] = params['xpath'] + '/' + element_to_change
+    params['xpath'] += '/' + element_to_change
 
     result = http_request(
         URL,
@@ -2904,6 +2912,9 @@ def panorama_refresh_edl_command():
     """
     Refresh an EDL
     """
+    if DEVICE_GROUP:
+        return_error('EDL refresh is only supported on Firewall (not Panorama).')
+
     edl_name = demisto.args()['name']
 
     result = panorama_refresh_edl(edl_name)
@@ -3024,7 +3035,8 @@ def panorama_unregister_ip_tag_command():
 ''' Traffic Logs '''
 
 
-def build_traffic_logs_query(source=None, destination=None, receive_time=None, application=None, to_port=None, action=None):
+def build_traffic_logs_query(source=None, destination=None, receive_time=None,
+                             application=None, to_port=None, action=None):
     query = ''
     if source and len(source) > 0:
         query += '(addr.src in ' + source + ')'
@@ -3269,6 +3281,331 @@ def panorama_get_traffic_logs_command():
             })
 
 
+''' Logs '''
+
+
+def build_logs_query(address_src=None, address_dst=None,
+                     zone_src=None, zone_dst=None, time_generated=None, action=None,
+                     port_dst=None, rule=None, url=None, filedigest=None):
+    query = ''
+    if address_src and len(address_src) > 0:
+        query += '(addr.src in ' + address_src + ')'
+    if address_dst and len(address_dst) > 0:
+        if len(query) > 0 and query[-1] == ')':
+            query += ' and '
+        query += '(addr.dst in ' + address_dst + ')'
+    if zone_src and len(zone_src) > 0:
+        if len(query) > 0 and query[-1] == ')':
+            query += ' and '
+        query += '(zone.src eq ' + zone_src + ')'
+    if zone_dst and len(zone_dst) > 0:
+        if len(query) > 0 and query[-1] == ')':
+            query += ' and '
+        query += '(zone.dst eq ' + zone_dst + ')'
+    if port_dst and len(port_dst) > 0:
+        if len(query) > 0 and query[-1] == ')':
+            query += ' and '
+        query += '(port.dst eq ' + port_dst + ')'
+    if time_generated and len(time_generated) > 0:
+        if len(query) > 0 and query[-1] == ')':
+            query += ' and '
+        query += '(time_generated leq ' + time_generated + ')'
+    if action and len(action) > 0:
+        if len(query) > 0 and query[-1] == ')':
+            query += ' and '
+        query += '(action eq ' + action + ')'
+    if rule and len(rule) > 0:
+        if len(query) > 0 and query[-1] == ')':
+            query += ' and '
+        query += '(rule eq ' + rule + ')'
+    if url and len(url) > 0:
+        if len(query) > 0 and query[-1] == ')':
+            query += ' and '
+        query += '(url eq ' + url + ')'
+    if filedigest and len(filedigest) > 0:
+        if len(query) > 0 and query[-1] == ')':
+            query += ' and '
+        query += '(filedigest eq ' + filedigest + ')'
+    return query
+
+
+@logger
+def panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst,
+                        zone_src, zone_dst, time_generated, action,
+                        port_dst, rule, url, filedigest):
+    params = {
+        'type': 'log',
+        'log-type': log_type,
+        'key': API_KEY
+    }
+
+    if filedigest and log_type != 'wildfire':
+        return_error('The filedigest argument is only relevant to wildfire log type.')
+    if url and log_type == 'traffic':
+        return_error('The url argument is not relevant to traffic log type.')
+
+    if query and len(query) > 0:
+        params['query'] = query
+    else:
+        params['query'] = build_logs_query(address_src, address_dst,
+                                           zone_src, zone_dst, time_generated, action,
+                                           port_dst, rule, url, filedigest)
+    if number_of_logs:
+        params['nlogs'] = number_of_logs
+
+    result = http_request(
+        URL,
+        'GET',
+        params=params,
+    )
+
+    return result
+
+
+def panorama_query_logs_command():
+    """
+    Query logs
+    """
+    log_type = demisto.args().get('log-type')
+    number_of_logs = demisto.args().get('number_of_logs')
+    query = demisto.args().get('query')
+    address_src = demisto.args().get('addr-src')
+    address_dst = demisto.args().get('addr-dst')
+    zone_src = demisto.args().get('zone-src')
+    zone_dst = demisto.args().get('zone-dst')
+    time_generated = demisto.args().get('time-generated')
+    action = demisto.args().get('action')
+    port_dst = demisto.args().get('port-dst')
+    rule = demisto.args().get('rule')
+    filedigest = demisto.args().get('filedigest')
+    url = demisto.args().get('url')
+    if url and url[-1] != '/':
+        url += '/'
+
+    if query and (address_src or address_dst or zone_src or zone_dst
+                  or time_generated or action or port_dst or rule or url or filedigest):
+        return_error('Use the free query argument or the fixed search parameters arguments to build your query')
+
+    result = panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst,
+                                 zone_src, zone_dst, time_generated, action,
+                                 port_dst, rule, url, filedigest)
+
+    if result['response']['@status'] == 'error':
+        if 'msg' in result['response'] and 'line' in result['response']['msg']:
+            message = '. Reason is: ' + result['response']['msg']['line']
+            return_error('Query traffic logs failed' + message)
+        else:
+            return_error('Query traffic logs failed')
+
+    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
+        return_error('Missing JobID in response')
+
+    query_logs_output = {
+        'JobID': result['response']['result']['job'],
+        'Status': 'Pending',
+        'LogType': log_type,
+        'Message': result['response']['result']['msg']['line']
+    }
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Query Logs:', query_logs_output, ['JobID', 'Status'], removeNull=True),
+        'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
+    })
+
+
+def panorama_check_logs_status_command():
+    """
+    Check query logs status
+    """
+    job_id = demisto.args().get('job_id')
+    result = panorama_get_traffic_logs(job_id)
+
+    if result['response']['@status'] == 'error':
+        if 'msg' in result['response'] and 'line' in result['response']['msg']:
+            message = '. Reason is: ' + result['response']['msg']['line']
+            return_error('Query logs failed' + message)
+        else:
+            return_error('Query logs failed')
+
+    query_logs_status_output = {
+        'JobID': job_id,
+        'Status': 'Pending'
+    }
+
+    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']\
+            or 'status' not in result['response']['result']['job']:
+        return_error('Missing JobID status in response')
+    if result['response']['result']['job']['status'] == 'FIN':
+        query_logs_status_output['Status'] = 'Completed'
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': result,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Query Logs status:', query_logs_status_output, ['JobID', 'Status'],
+                                         removeNull=True),
+        'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_status_output}
+    })
+
+
+def prettify_log(log):
+
+    pretty_log = {}
+
+    if 'action' in log:
+        pretty_log['Action'] = log['action']
+    if 'app' in log:
+        pretty_log['Application'] = log['app']
+    if 'category' in log:
+        pretty_log['CategoryOrVerdict'] = log['category']
+    if 'device_name' in log:
+        pretty_log['DeviceName'] = log['device_name']
+    if 'dst' in log:
+        pretty_log['DestinationAddress'] = log['dst']
+    if 'dstuser' in log:
+        pretty_log['DestinationUser'] = log['dstuser']
+    if 'dstloc' in log:
+        pretty_log['DestinationCountry'] = log['dstloc']
+    if 'dport' in log:
+        pretty_log['DestinationPort'] = log['dport']
+    if 'filedigest' in log:
+        pretty_log['FileDigest'] = log['filedigest']
+    if 'filename' in log:
+        pretty_log['FileName'] = log['filename']
+    if 'filetype' in log:
+        pretty_log['FileType'] = log['filetype']
+    if 'from' in log:
+        pretty_log['FromZone'] = log['from']
+    if 'misc' in log:
+        pretty_log['URLOrFilename'] = log['misc']
+    if 'natdst' in log:
+        pretty_log['NATDestinationIP'] = log['natdst']
+    if 'natdport' in log:
+        pretty_log['NATDestinationPort'] = log['natdport']
+    if 'natsrc' in log:
+        pretty_log['NATSourceIP'] = log['natsrc']
+    if 'natsport' in log:
+        pretty_log['NATSourcePort'] = log['natsport']
+    if 'pcap_id' in log:
+        pretty_log['PCAPid'] = log['pcap_id']
+    if 'proto' in log:
+        pretty_log['IPProtocol'] = log['proto']
+    if 'recipient' in log:
+        pretty_log['Recipient'] = log['recipient']
+    if 'rule' in log:
+        pretty_log['Rule'] = log['rule']
+    if 'rule_uuid' in log:
+        pretty_log['RuleID'] = log['rule_uuid']
+    if 'receive_time' in log:
+        pretty_log['ReceiveTime'] = log['receive_time']
+    if 'sender' in log:
+        pretty_log['Sender'] = log['sender']
+    if 'sessionid' in log:
+        pretty_log['SessionID'] = log['sessionid']
+    if 'serial' in log:
+        pretty_log['DeviceSN'] = log['serial']
+    if 'severity' in log:
+        pretty_log['Severity'] = log['severity']
+    if 'src' in log:
+        pretty_log['SourceAddress'] = log['src']
+    if 'srcloc' in log:
+        pretty_log['SourceCountry'] = log['srcloc']
+    if 'srcuser' in log:
+        pretty_log['SourceUser'] = log['srcuser']
+    if 'sport' in log:
+        pretty_log['SourcePort'] = log['sport']
+    if 'thr_category' in log:
+        pretty_log['ThreatCategory'] = log['thr_category']
+    if 'threatid' in log:
+        pretty_log['Name'] = log['threatid']
+    if 'tid' in log:
+        pretty_log['ID'] = log['tid']
+    if 'to' in log:
+        pretty_log['ToZone'] = log['to']
+    if 'time_generated' in log:
+        pretty_log['TimeGenerated'] = log['time_generated']
+    if 'url_category_list' in log:
+        pretty_log['URLCategoryList'] = log['url_category_list']
+
+    return pretty_log
+
+
+def prettify_logs(logs):
+    if not isinstance(logs, list):  # handle case of only one log that matched the query
+        return prettify_log(logs)
+    pretty_logs_arr = []
+    for log in logs:
+        pretty_log = prettify_log(log)
+        pretty_logs_arr.append(pretty_log)
+    return pretty_logs_arr
+
+
+def panorama_get_logs_command():
+    job_id = demisto.args().get('job_id')
+    result = panorama_get_traffic_logs(job_id)
+    ignore_auto_extract = demisto.args().get('ignore_auto_extract') == 'true'
+    log_type_dt = demisto.dt(demisto.context(), f'Panorama.Monitor(val.JobID === "{job_id}").LogType')
+    if isinstance(log_type_dt, list):
+        log_type = log_type_dt[0]
+    else:
+        log_type = log_type_dt
+
+    if result['response']['@status'] == 'error':
+        if 'msg' in result['response'] and 'line' in result['response']['msg']:
+            message = '. Reason is: ' + result['response']['msg']['line']
+            return_error('Query logs failed' + message)
+        else:
+            return_error('Query logs failed')
+
+    query_logs_output = {
+        'JobID': job_id,
+        'Status': 'Pending'
+    }
+
+    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']\
+            or 'status' not in result['response']['result']['job']:
+        return_error('Missing JobID status in response')
+
+    if result['response']['result']['job']['status'] != 'FIN':
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Query Logs status:', query_logs_output,
+                                             ['JobID', 'Status'], removeNull=True),
+            'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
+        })
+    else:  # FIN
+        query_logs_output['Status'] = 'Completed'
+        if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response']['result']\
+                or 'logs' not in result['response']['result']['log']:
+            return_error('Missing logs in response')
+
+        logs = result['response']['result']['log']['logs']
+        if logs['@count'] == '0':
+            demisto.results('No ' + log_type + ' logs matched the query')
+        else:
+            pretty_logs = prettify_logs(logs['entry'])
+            query_logs_output['Logs'] = pretty_logs
+            demisto.results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': result,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': tableToMarkdown('Query ' + log_type + ' Logs:', query_logs_output['Logs'],
+                                                 ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application',
+                                                  'Action', 'Rule', 'URLOrFilename'], removeNull=True),
+                'IgnoreAutoExtract': ignore_auto_extract,
+                'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
+            })
+
+
 ''' EXECUTION '''
 
 
@@ -3433,7 +3770,7 @@ def main():
         elif demisto.command() == 'panorama-delete-rule':
             panorama_delete_rule_command()
 
-        # Traffic Logs
+        # Traffic Logs - deprecated
         elif demisto.command() == 'panorama-query-traffic-logs':
             panorama_query_traffic_logs_command()
 
@@ -3442,6 +3779,16 @@ def main():
 
         elif demisto.command() == 'panorama-get-traffic-logs':
             panorama_get_traffic_logs_command()
+
+        # Logs
+        elif demisto.command() == 'panorama-query-logs':
+            panorama_query_logs_command()
+
+        elif demisto.command() == 'panorama-check-logs-status':
+            panorama_check_logs_status_command()
+
+        elif demisto.command() == 'panorama-get-logs':
+            panorama_get_logs_command()
 
         # Pcaps
         elif demisto.command() == 'panorama-list-pcaps':

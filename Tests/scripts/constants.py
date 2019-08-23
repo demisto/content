@@ -1,3 +1,5 @@
+import re
+
 # dirs
 INTEGRATIONS_DIR = "Integrations"
 SCRIPTS_DIR = "Scripts"
@@ -58,6 +60,9 @@ CHECKED_TYPES_REGEXES = [PLAYBOOK_REGEX, INTEGRATION_YML_REGEX,
 
 PACKAGE_SUPPORTING_DIRECTORIES = [INTEGRATIONS_DIR, SCRIPTS_DIR]
 
+
+PACKAGE_YML_FILE_REGEX = r'(?:\./)?(?:Integrations|Scripts)/([\w\d_-]+)/\1.yml'
+
 OLD_YML_FORMAT_FILE = [INTEGRATION_REGEX, SCRIPT_REGEX]
 
 DIR_LIST = [
@@ -101,6 +106,10 @@ FILE_TYPES_FOR_TESTING = [
     '.yml'
 ]
 
+# github repository url
+CONTENT_GITHUB_LINK = r'https://raw.githubusercontent.com/demisto/content'
+CONTENT_GITHUB_MASTER_LINK = CONTENT_GITHUB_LINK + '/master'
+
 # Run all test signal
 RUN_ALL_TESTS_FORMAT = "Run all tests"
 FILTER_CONF = "./Tests/filter_file.txt"
@@ -111,3 +120,9 @@ class PB_Status:
     COMPLETED = 'completed'
     FAILED = 'failed'
     IN_PROGRESS = 'inprogress'
+
+
+# change log regexes
+UNRELEASE_HEADER = '## [Unreleased]\n'
+CONTENT_RELEASE_TAG_REGEX = r'^\d{2}\.\d{1,2}\.\d'
+RELEASE_NOTES_REGEX = re.escape(UNRELEASE_HEADER) + r'([\s\S]+?)## \[\d{2}\.\d{1,2}\.\d\] - \d{4}-\d{2}-\d{2}'

@@ -47,7 +47,7 @@ args:
   - 'false'
   required: false
   secret: false
-comment: This script is deprecated. Please use SlackAsk instead.
+comment: This script is deprecated. Use SlackAsk instead.
 commonfields:
   id: SlackAskUser
   version: -1
@@ -59,6 +59,7 @@ tags:
 - slack
 timeout: 0s
 type: python
+subtype: python2
 tests:
 - no test - untestable
 dependson:
