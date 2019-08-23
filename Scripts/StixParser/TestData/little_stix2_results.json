@@ -1,24 +1,28 @@
 [
   {
+    "CVE CVSS Score": [],
     "File": [],
     "IP": [],
     "Domain": [],
     "Email": [
       "user@example.com"
     ],
+    "Registry Path Reputation": ["HKEY_LOCAL_MACHINE\\\\SOFTWARE\\\\RKey"],
     "URL": [
-      "http://johnson.com"
+      "http://demisto.com"
     ]
   },
   {
-    "http://johnson.com": {
+    "CVE CVSS Score": [],
+    "Registry Path Reputation": [],
+    "http://demisto.com": {
       "created": "2019-05-26T16:18:32.000Z",
       "id": "indicator--893eac0c-3232-4219-91bb-97f9a6b0de6c",
       "labels": [
         "url"
       ],
       "modified": "2019-05-26T16:18:32.000Z",
-      "pattern": "[url:value = 'http://johnson.com']",
+      "pattern": "[url:value = 'http://demisto.com']",
       "score": "None",
       "source": "",
       "type": "indicator",

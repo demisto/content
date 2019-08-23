@@ -1189,6 +1189,40 @@ async def test_handle_dm_non_create_nonexisting_user(mocker):
 
 
 @pytest.mark.asyncio
+async def test_handle_dm_empty_message(mocker):
+    from Slack import handle_dm
+
+    # Set
+    @asyncio.coroutine
+    def fake_message(channel, text):
+        if not text:
+            raise InterruptedError()
+
+    @asyncio.coroutine
+    def fake_im(user):
+        return {
+            'channel': {
+                'id': 'ey'
+            }
+        }
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'findUser', return_value=None)
+    mocker.patch.object(demisto, 'directMessage', return_value=None)
+    mocker.patch.object(slack.WebClient, 'im_open', side_effect=fake_im)
+    mocker.patch.object(slack.WebClient, 'chat_postMessage', side_effect=fake_message)
+    user = json.loads(USERS)[0]
+
+    # Arrange
+    await handle_dm(user, 'wazup', slack.WebClient)
+
+    message_args = slack.WebClient.chat_postMessage.call_args[1]
+
+    # Assert
+    assert message_args['text'] == 'Sorry, I could not perform the selected operation.'
+
+
+@pytest.mark.asyncio
 async def test_translate_create(mocker):
     # Set
     import Slack

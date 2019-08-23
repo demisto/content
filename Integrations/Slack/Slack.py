@@ -473,6 +473,8 @@ async def handle_dm(user: dict, text: str, client: slack.WebClient):
         except Exception as e:
             data = str(e)
 
+    if not data:
+        data = 'Sorry, I could not perform the selected operation.'
     im = await client.im_open(user=user.get('id'))
     channel = im.get('channel', {}).get('id')
     await client.chat_postMessage(channel=channel, text=data)
@@ -1053,7 +1055,7 @@ def init_globals():
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE
 
     TOKEN = demisto.params().get('bot_token')
-    CHANNEL_TOKEN = demisto.params().get('channel_token')
+    CHANNEL_TOKEN = demisto.params().get('access_token')
     PROXY = handle_proxy().get('https')
     DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel')
     CLIENT = slack.WebClient(token=TOKEN, proxy=PROXY)

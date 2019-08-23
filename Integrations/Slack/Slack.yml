@@ -4,14 +4,14 @@ commonfields:
   version: -1
 configuration:
 - display: Slack API access token
+  name: access_token
+  required: true
+  type: 4
+- display: Slack Bot API token
   name: bot_token
   required: true
   type: 4
-- display: Slack API bot token
-  name: channel_token
-  required: true
-  type: 4
-- display: Dedicated slack channel for notifications
+- display: Dedicated Slack channel to receive notifications
   name: incidentNotificationChannel
   required: true
   type: 0
@@ -48,7 +48,7 @@ configuration:
   name: longRunning
   required: false
   type: 8
-description: Send messages and notifications to your Slack Team.
+description: Sends messages and notifications to your Slack Team.
 display: Slack V2
 name: SlackV2
 script:
@@ -57,8 +57,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: all
-      description: The type of mirroring can be "all" to mirror everything, "chat"
-        to mirror only chatting but not commands, or "none" to stop mirroring.
+      description: Sets the mirroring type. Can be "all" to mirror all relevant communications, "chat" to mirror chatting, or "none" to stop mirroring.
       isArray: false
       name: type
       predefined:
@@ -70,7 +69,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: 'Should we auto-close the channel when the incident is closed. '
+      description: 'Whether to auto-close the channel when the incident is closed.'
       isArray: false
       name: autoclose
       predefined:
@@ -81,8 +80,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: both
-      description: The mirroring direction - Slack to Demisto, Demisto to Slack or
-        both
+      description: Determines the mirroring direction. Can be "FromDemisto", "ToDemisto", or "Both". Default is "Both".
       isArray: false
       name: direction
       predefined:
@@ -94,7 +92,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: group
-      description: Mirror the incident to a group (private) or a channel (public).
+      description: Mirrors an incident to a channel (public) or a group (private).
       isArray: false
       name: mirrorTo
       predefined:
@@ -103,15 +101,14 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: This command is deprecated. Use mirror-investigation instead.
+    description: Deprecated. Use the "mirror-investigation" command instead.
     execution: false
     name: slack-mirror-investigation
   - arguments:
     - auto: PREDEFINED
       default: true
       defaultValue: all
-      description: The type of mirroring can be "all" to mirror everything, "chat"
-        to mirror only chatting but not commands, or "none" to stop mirroring.
+      description: Sets the mirroring type. Can be "all" to mirror all relevant communications, "chat" to mirror all chatting, or "none" to stop mirroring. Default is "all".
       isArray: false
       name: type
       predefined:
@@ -123,7 +120,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: 'Should we auto-close the channel when the incident is closed. '
+      description: Whether the channel is auto-closed when an incident is closed. Can be "true" or "false". Default is "true".
       isArray: false
       name: autoclose
       predefined:
@@ -134,8 +131,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: both
-      description: The mirroring direction - Slack to Demisto, Demisto to Slack or
-        both
+      description: Determines the mirroring direction. Can be "FromDemisto", "ToDemisto", or "Both". Default value is "Both".
       isArray: false
       name: direction
       predefined:
@@ -147,7 +143,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: group
-      description: Mirror the incident to a group or a channel.
+      description: Mirrors an incident. Can be "channel" or "group". Default value is "group".
       isArray: false
       name: mirrorTo
       predefined:
@@ -156,30 +152,30 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the channel in Slack - the default is "incident-<incidentID>"
+      description: The name of the channel. The default is "incident-<incidentID>".
       isArray: false
       name: channelName
       required: false
       secret: false
     - default: false
-      description: The slack channel topic
+      description: The topic of the channel.
       isArray: false
       name: channelTopic
       required: false
       secret: false
     deprecated: false
-    description: Mirror the investigation in slack
+    description: Mirrors the investigation between Slack and the Demisto War Room.
     execution: false
     name: mirror-investigation
   - arguments:
     - default: true
-      description: The text content of the message
+      description: Displays the message content.
       isArray: false
       name: message
       required: false
       secret: false
     - default: false
-      description: Send a direct message by specifying a Slack user name
+      description: Send a direct message to a Slack user by specifying a Slack user name.
       isArray: false
       name: to
       predefined:
@@ -187,13 +183,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Send a message to a specified channel.
+      description: Sends a message to a Slack channel by specifying a Slack channel name.
       isArray: false
       name: channel
       required: false
       secret: false
     - default: false
-      description: Send a link to an entry to Slack.
+      description: Sends a link of a War Room entry to Slack by specifying an entry ID.
       isArray: false
       name: entry
       required: false
@@ -201,7 +197,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Do not add a URL to the Demisto management console.
+      description: Whether to include a URL to the relevant component in Demisto. Can be "true" or "false". Default value is "false".
       isArray: false
       name: ignoreAddURL
       predefined:
@@ -210,28 +206,28 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specify a thread id, to send a reply to another message.
+      description: Specifies the ID of the thread to reply to.
       isArray: false
       name: threadID
       required: false
       secret: false
     deprecated: false
-    description: Send a message to a slack user, group or channel.
+    description: Sends a message to a user, group, or channel.
     execution: false
     name: send-notification
     outputs:
     - contextPath: Slack.Thread.ID
-      description: The conversation thread ID
+      description: Displays the thread ID.
       type: String
   - arguments:
     - default: true
-      description: The text content of the message
+      description: Displays the text content of the message.
       isArray: false
       name: message
       required: false
       secret: false
     - default: false
-      description: Send a direct message by specifying a Slack user name
+      description: Send a direct message to a Slack user by specifying a Slack user name.
       isArray: false
       name: to
       predefined:
@@ -239,19 +235,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: Send a message to a specified channel.
+      description: Sends a message to a channel by specifying a channel name.
       isArray: false
       name: channel
       required: false
       secret: false
     - default: false
-      description: Send a message to a specified group.
+      description: Sends a message to a Slack channel by specifying a Slack channel name.
       isArray: false
       name: group
       required: false
       secret: false
     - default: false
-      description: Send a link to an entry to Slack.
+      description: Sends a link of a War Room entry to Slack by specifying an entry ID.
       isArray: false
       name: entry
       required: false
@@ -259,7 +255,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Do not add a URL to the Demisto management console.
+      description: Whether to add a URL in Slack to the Demisto management console. Default is "false".
       isArray: false
       name: IgnoreAddURL
       predefined:
@@ -268,81 +264,79 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specify a thread id, to send a reply to another message.
+      description: Specifies the ID of the thread to reply to.
       isArray: false
       name: threadID
       required: false
       secret: false
     deprecated: true
-    description: This command is deprecated. Use send-notification instead.
+    description: Deprecated. Use the "send-notification" command instead.
     execution: false
     name: slack-send
   - deprecated: true
-    description: This command is deprecated. Use close-channel instead.
+    description: Deprecated. Use the "close-channel" command instead.
     execution: false
     name: slack-close-channel
   - deprecated: false
-    description: Close the mirrored Slack channel for this incident.
+    description: Archives the mirrored channel for this incident.
     execution: false
     name: close-channel
   - arguments:
     - default: true
-      description: The file entry ID
+      description: The ID of the file entry.
       isArray: false
       name: file
       required: true
       secret: false
     - default: false
-      description: A user to send the file to.
+      description: The user name of the file recipient.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: A private group to send the file to.
+      description: The group name of the file recipient.
       isArray: false
       name: group
       required: false
       secret: false
     - default: false
-      description: A channel to send the file to.
+      description: The channel name of the file recipient.
       isArray: false
       name: channel
       required: false
       secret: false
     - default: false
-      description: Specify a thread id, to send a reply to another message.
+      description: The ID of the thread to which a reply is sent.
       isArray: false
       name: threadID
       required: false
       secret: false
     - default: false
-      description: A comment to add to the file.
+      description: A comment to add to a file.
       isArray: false
       name: comment
       required: false
       secret: false
     deprecated: false
-    description: Send a file to a slack user or channel. If none are specified, the
-      file is sent to the mirrored investigation channel (if it exists).
+    description: Sends a file in Slack to a user, channel, or group. If a user, channel, or group is not specified, the file is sent to the mirrored investigation channel (if it exists).
     execution: false
     name: slack-send-file
   - arguments:
     - default: false
-      description: The channel name. If none is specified, the topic of the mirrored
-        investigation channel is set (if it exists).
+      description: The channel name. If not specified, the topic of the mirrored investigation channel is set (if the channel exists).
       isArray: false
       name: channel
       required: false
       secret: false
     - default: true
-      description: The channel topic
+      description: The topic for  the channel.
       isArray: false
       name: topic
       required: true
       secret: false
     deprecated: false
-    description: Set a topic for a slack channel
+    description: Sets the topic for a channel.
     execution: false
     name: slack-set-channel-topic
   dockerimage: demisto/slack:1.0.0.814

@@ -130,7 +130,7 @@ if __name__ == "__main__":
             instance_ips = [line.strip('\n').split(":") for line in instance_ips]
 
         for ami_instance_name, ami_instance_ip in instance_ips:
-            if ami_instance_name == "Demisto GA":
+            if ami_instance_name == "Demisto Master":
                 server = SERVER_URL.format(ami_instance_ip)
 
         slack_notifier(options.slack, options.secret, server, options.user, options.password, options.buildUrl)

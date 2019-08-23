@@ -1,2 +1,0 @@
-- fixed bug when unknown stix pattern presents the script crushed
-- fixed a bug that causes duplicate indicators

@@ -20,6 +20,7 @@ The following is the format for a file.
         "MD5": "STRING, MD5 Hash of the file",
         "SHA1": "STRING, SHA1 Hash of the file",
         "SHA256": "STRING, SHA256 hash of the file",
+        "SHA512": "STRING SHA512 hash of the file",
         "SSDeep": "STRING, The ssdeep value for the file (same as we display in file entries)",
         "Extension": "STRING, the file extension e.g. xls",
         "Type": "STRING, File type as determined by libmagic (same as we display in file entries)",
@@ -29,6 +30,20 @@ The following is the format for a file.
         "ProductName": "STRING, name of the product to which this file belongs",
         "DigitalSignature": {
             "Publisher": "STRING, Publisher of the digital signature for the file."
+        },
+        "Actor": "STRING, Actor reference",
+        "Tags": "STRING, Tags of the file",
+        "Signature": {
+            "Authentihash": "STRING, Authentication hash",
+            "Copyright": "STRING, Copyright information",
+            "Description": "STRING, Description of the signature",
+            "FileVersion": "STRING, File version",
+            "InternalName": "STRING, File's internal name",
+            "OriginalName": "STRING, File's original name"            
+        },
+        "Malicious": {
+             "Vendor": "STRING, Vendor reporting malicious",
+             "Description": "STRING, Description about why File was determined malicious"
         }
 }
 ```
@@ -61,7 +76,9 @@ The following is the format for an IP entity
         "Location": "STRING, in format latitude, longitude",
         "Country": "STRING, Country IP is found",
         "Description": "STRING, If more information is known about the location, put it here"
-    }
+    },
+    "DetectionEngines": "NUMBER, Total number of engines that checked the indicator",
+    "PositiveDetections": "Number of engines that positively detected the indicator as malicious"
 }
 ```
 
@@ -122,6 +139,28 @@ The following is the format for a Domain. Please note that for WHOIS, the entity
 "Domain": {
     "Name": "STRING, the domain name e.g. google.com",
     "DNS": "STRING, IPs resolved by DNS. List of IP objects",
+    "DetectionEngines": "NUMBER, Total number of engines that checked the indicator",
+    "PositiveDetections": "NUMBER of engines that positively detected the indicator as malicious",
+    "CreationDate": "DATE, Creation date of the domain",
+    "DomainStatus": "STRING, Status of the domain",
+    "ExpirationDate": "DATE, Expiration date of the domain",
+    "NameServers": "STRING, Nameservers of the domain",
+    "Organization": "STRING, Organization of the domain",
+    "Subdomains": "STRING, subdomains of the domain",
+    "UpdatedDate": "DATE, Last update date of the domain",
+    "Admin": {
+        "Country": "STRING, admin's country",
+        "Email": "STRING, admin's email address",
+        "Name": "STRING, admin's name",
+        "Phone": "STRING, admin's phone number"
+    },
+    "Registrant": {
+        "Country": "STRING, Registrants country",
+        "Email": "STRING, Registrants Email address",
+        "Name": "STRING, Registrants name",
+        "Phone": "STRING, Phone number to receive abuse reports",
+        "Email": "STRING, Email address contact to receive abuse reports"
+    },
     "WHOIS": {
         "DomainStatus": "STRING, Status of the domain",
         "NameServers": "STRING, List of nameservers e.g. 'ns1.bla.com, ns2.bla.com'",
@@ -159,7 +198,9 @@ The following is the format for a URL entity.
     "Malicious": {
         "Vendor": "STRING, Vendor reporting the malicious status",
         "Description": "STRING, Description of the malicious url"
-    }
+    },
+    "DetectionEngines": "NUMBER, Total number of engines that checked the indicator",
+    "PositiveDetections": "Number of engines that positively detected the indicator as malicious"
 }
 ```
 
@@ -184,7 +225,13 @@ The following is the format for an Account entity.
     "Email": "STRING, email for the account e.g. johnd@acme.com",
     "Username": "STRING, username in the relevant system, e.g. johnd",
     "DisplayName": "STRING, e.g. 'John Doe'",
-    "Groups": "STRING, integration-specific groups to which the account belongs e.g. for AD these are groups that the account is memberOf"
+    "Groups": "STRING, integration-specific groups to which the account belongs e.g. for AD these are groups that the account is memberOf",
+    "Domain": "STRING, Domain of the account",
+    "Username": "STRING, Username of the account",
+    "OrganizationUnit": "STRING, OrganizationUnit of the account",
+    "Email": {
+        "Address": "STRING, Email address of the account"
+    }
 }
 ```
 
@@ -258,7 +305,6 @@ The following is the format for a process.
     "Child": "LIST, of Child process objects"
 }
 ```
-
 ## InfoFile
 The following is the expected format for an InfoFile
 ```python
