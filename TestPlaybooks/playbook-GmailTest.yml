@@ -1,14 +1,14 @@
 id: GmailTest
-version: -1
+version: 4
 name: GmailTest
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: eb150131-cd31-47f7-8a64-ce5d7ef3494f
+    taskid: 07b052c6-fcf2-4ce7-8a1b-3063d5cd4881
     type: start
     task:
-      id: eb150131-cd31-47f7-8a64-ce5d7ef3494f
+      id: 07b052c6-fcf2-4ce7-8a1b-3063d5cd4881
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: f49d0f56-30a0-41d8-8ab5-3aa4657d3b00
+    taskid: 781264e3-9da4-4ccd-8dc6-e38cd73d4ffb
     type: regular
     task:
-      id: f49d0f56-30a0-41d8-8ab5-3aa4657d3b00
+      id: 781264e3-9da4-4ccd-8dc6-e38cd73d4ffb
       version: -1
       name: Start clean
       scriptName: DeleteContext
@@ -60,10 +60,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 4210b914-41bc-4a65-8aa1-d3e70a011daf
+    taskid: 5435aa68-260b-4ba4-82c1-60fe31a537a6
     type: regular
     task:
-      id: 4210b914-41bc-4a65-8aa1-d3e70a011daf
+      id: 5435aa68-260b-4ba4-82c1-60fe31a537a6
       version: -1
       name: List all users
       script: '|||gmail-list-users'
@@ -98,10 +98,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 96333255-7749-416e-80e0-4b2375f7633b
+    taskid: a252567c-a4bf-4184-8b1a-fd748ded7a15
     type: regular
     task:
-      id: 96333255-7749-416e-80e0-4b2375f7633b
+      id: a252567c-a4bf-4184-8b1a-fd748ded7a15
       version: -1
       name: Get specific user
       script: '|||gmail-get-user'
@@ -151,10 +151,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 83194f90-6e2e-4b12-8375-adddfdfeaa20
+    taskid: 9ccf7cc7-ebca-4f35-881e-7064de7fb275
     type: regular
     task:
-      id: 83194f90-6e2e-4b12-8375-adddfdfeaa20
+      id: 9ccf7cc7-ebca-4f35-881e-7064de7fb275
       version: -1
       name: Create new user
       script: '|||gmail-create-user'
@@ -186,10 +186,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: fd09baa6-4c41-49c3-864e-4eba4a7e80a8
+    taskid: 2bc738c4-cf45-402b-8292-8095fe1eef35
     type: regular
     task:
-      id: fd09baa6-4c41-49c3-864e-4eba4a7e80a8
+      id: 2bc738c4-cf45-402b-8292-8095fe1eef35
       version: -1
       name: Delete User
       script: '|||gmail-delete-user'
@@ -237,10 +237,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 8dd448e8-058c-49ab-83ee-237d71528866
+    taskid: cf560fb3-60ac-4d65-81d6-90416525d6c8
     type: title
     task:
-      id: 8dd448e8-058c-49ab-83ee-237d71528866
+      id: cf560fb3-60ac-4d65-81d6-90416525d6c8
       version: -1
       name: Gmail Commands
       type: title
@@ -264,10 +264,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 31ccff7a-787c-4023-8d3f-0692b9bc480f
+    taskid: a007403f-12de-45e2-8a53-d5d1459aa490
     type: title
     task:
-      id: 31ccff7a-787c-4023-8d3f-0692b9bc480f
+      id: a007403f-12de-45e2-8a53-d5d1459aa490
       version: -1
       name: User Commands
       type: title
@@ -289,10 +289,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 3416075e-2ba0-446a-84c1-1995fcf8637e
+    taskid: 9fe9ab4e-0dbe-4f02-8fb5-474f27fb89fe
     type: regular
     task:
-      id: 3416075e-2ba0-446a-84c1-1995fcf8637e
+      id: 9fe9ab4e-0dbe-4f02-8fb5-474f27fb89fe
       version: -1
       name: Search emails with attachments
       script: '|||gmail-search'
@@ -336,10 +336,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 2a8705e7-4cb0-4bd9-8aca-db63df86fe32
+    taskid: 9b932409-0876-4ba2-89b8-80962c591630
     type: regular
     task:
-      id: 2a8705e7-4cb0-4bd9-8aca-db63df86fe32
+      id: 9b932409-0876-4ba2-89b8-80962c591630
       version: -1
       name: Get mail with attachment
       script: '|||gmail-get-attachments'
@@ -381,10 +381,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 2e1f9ac8-69c4-43d8-86e4-5e311daf6b4f
+    taskid: 0aefee15-76ff-45f5-8737-12ae906e9c52
     type: regular
     task:
-      id: 2e1f9ac8-69c4-43d8-86e4-5e311daf6b4f
+      id: 0aefee15-76ff-45f5-8737-12ae906e9c52
       version: -1
       name: Get Tokens
       script: '|||gmail-get-tokens-for-user'
@@ -410,10 +410,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: a5559277-339d-4769-8ce4-1b2e8e366289
+    taskid: 8eee57ce-157c-421e-882f-9ff168ba9a5a
     type: regular
     task:
-      id: a5559277-339d-4769-8ce4-1b2e8e366289
+      id: 8eee57ce-157c-421e-882f-9ff168ba9a5a
       version: -1
       name: Get Email data
       script: '|||gmail-get-mail'
@@ -459,10 +459,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 6618d082-9c1f-4f86-817a-ae3a969ad0cf
+    taskid: d89756d3-8737-43c7-84db-95e656dcd294
     type: regular
     task:
-      id: 6618d082-9c1f-4f86-817a-ae3a969ad0cf
+      id: d89756d3-8737-43c7-84db-95e656dcd294
       version: -1
       name: Search all mailboxes
       script: '|||gmail-search-all-mailboxes'
@@ -504,10 +504,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: a1e919f4-2c4a-4e45-8958-a93d0e0e2385
+    taskid: 05499427-9dea-4513-8c1b-8037da2f1bd1
     type: regular
     task:
-      id: a1e919f4-2c4a-4e45-8958-a93d0e0e2385
+      id: 05499427-9dea-4513-8c1b-8037da2f1bd1
       version: -1
       name: Get Thread
       script: '|||gmail-get-thread'
@@ -553,10 +553,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 843d13ac-d972-4f3d-8e1a-f97a40b0d69a
+    taskid: 622e0d48-4aec-4eae-8b3c-1319950d4cef
     type: regular
     task:
-      id: 843d13ac-d972-4f3d-8e1a-f97a40b0d69a
+      id: 622e0d48-4aec-4eae-8b3c-1319950d4cef
       version: -1
       name: Search in mailbox
       script: '|||gmail-search'
@@ -598,10 +598,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 19f2242f-95c8-4641-83aa-66be0df22fa8
+    taskid: b2477d31-a969-4a3c-8283-20881503a72b
     type: regular
     task:
-      id: 19f2242f-95c8-4641-83aa-66be0df22fa8
+      id: b2477d31-a969-4a3c-8283-20881503a72b
       version: -1
       name: Move mail to other folder
       script: '|||gmail-move-mail'
@@ -649,10 +649,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: d8741f21-e4d6-491e-8c22-f47723c7b4ce
+    taskid: 790984ce-13c7-4026-85fe-8f5abeefe2aa
     type: regular
     task:
-      id: d8741f21-e4d6-491e-8c22-f47723c7b4ce
+      id: 790984ce-13c7-4026-85fe-8f5abeefe2aa
       version: -1
       name: Move back to inbox
       script: '|||gmail-move-mail'
@@ -700,10 +700,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: a28462e9-7302-4ae6-84ae-617f78026743
+    taskid: 32a080d5-f5d1-458f-813b-b5515211fecf
     type: regular
     task:
-      id: a28462e9-7302-4ae6-84ae-617f78026743
+      id: 32a080d5-f5d1-458f-813b-b5515211fecf
       version: -1
       name: block the admin
       script: '|||gmail-add-delete-filter'
@@ -752,10 +752,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: 22d2579e-3aca-40be-8915-a650cb336568
+    taskid: 54205f4e-fb61-413f-851a-77b17cbe0f4d
     type: title
     task:
-      id: 22d2579e-3aca-40be-8915-a650cb336568
+      id: 54205f4e-fb61-413f-851a-77b17cbe0f4d
       version: -1
       name: Check all mailboxes
       type: title
@@ -777,10 +777,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: 99cd51ac-ea64-47b5-81cf-864fcd48e111
+    taskid: f7c001d1-03af-47b0-8e22-a4731d42b16d
     type: regular
     task:
-      id: 99cd51ac-ea64-47b5-81cf-864fcd48e111
+      id: f7c001d1-03af-47b0-8e22-a4731d42b16d
       version: -1
       name: Remove the block
       script: '|||gmail-remove-filter'
@@ -828,10 +828,10 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: 4e544806-9378-40c8-8bdf-52f8995383cf
+    taskid: 0f23e869-47b8-40d4-808e-2ee55f52555a
     type: regular
     task:
-      id: 4e544806-9378-40c8-8bdf-52f8995383cf
+      id: 0f23e869-47b8-40d4-808e-2ee55f52555a
       version: -1
       name: List mailbox filters
       script: '|||gmail-list-filters'
@@ -860,10 +860,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: 6cfce99d-4574-4cdc-8ff8-b6923edbe948
+    taskid: b2ee7195-a8c8-4fee-8f25-d6e023ebb515
     type: regular
     task:
-      id: 6cfce99d-4574-4cdc-8ff8-b6923edbe948
+      id: b2ee7195-a8c8-4fee-8f25-d6e023ebb515
       version: -1
       name: Delete filters from context
       description: Delete field from context
@@ -894,10 +894,10 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: c916ac39-ef7c-4d0f-897f-8bef1f2fcb25
+    taskid: 247bd9f1-33e3-4303-801d-373d7fc709e8
     type: condition
     task:
-      id: c916ac39-ef7c-4d0f-897f-8bef1f2fcb25
+      id: 247bd9f1-33e3-4303-801d-373d7fc709e8
       version: -1
       name: Verify Filters
       type: condition
@@ -929,10 +929,10 @@ tasks:
     ignoreworker: false
   "28":
     id: "28"
-    taskid: 9903fb59-f78a-4492-8256-230de4c4aabe
+    taskid: ffc3e010-f61a-4f99-8ebb-9a1627869f4b
     type: regular
     task:
-      id: 9903fb59-f78a-4492-8256-230de4c4aabe
+      id: ffc3e010-f61a-4f99-8ebb-9a1627869f4b
       version: -1
       name: Print Error
       description: Prints an error entry with a given message
@@ -956,10 +956,10 @@ tasks:
     ignoreworker: false
   "29":
     id: "29"
-    taskid: 2b2138fb-509e-4920-8c99-e6527a1bd5be
+    taskid: e280fa29-be4c-4230-89d1-70d6d5a032d1
     type: title
     task:
-      id: 2b2138fb-509e-4920-8c99-e6527a1bd5be
+      id: e280fa29-be4c-4230-89d1-70d6d5a032d1
       version: -1
       name: Done
       type: title
@@ -978,10 +978,10 @@ tasks:
     ignoreworker: false
   "30":
     id: "30"
-    taskid: 02d902d4-01f4-4b23-8227-8d47248a2a90
+    taskid: 13cb9a11-07ef-4d87-8665-2268c4a6f4d5
     type: regular
     task:
-      id: 02d902d4-01f4-4b23-8227-8d47248a2a90
+      id: 13cb9a11-07ef-4d87-8665-2268c4a6f4d5
       version: -1
       name: gmail-create-user
       description: Creates a user.
@@ -1014,10 +1014,10 @@ tasks:
     ignoreworker: false
   "31":
     id: "31"
-    taskid: 23efb33c-74bf-4485-8f60-6657d6e1d2b5
+    taskid: a396f48a-0460-4438-8f91-d7f99a718f40
     type: regular
     task:
-      id: 23efb33c-74bf-4485-8f60-6657d6e1d2b5
+      id: a396f48a-0460-4438-8f91-d7f99a718f40
       version: -1
       name: gmail-hide-user-in-directory
       description: Hide a user in the Global Directory
@@ -1046,10 +1046,10 @@ tasks:
     ignoreworker: false
   "32":
     id: "32"
-    taskid: 911d7b75-5e56-4f5b-8a73-226a55b1aa61
+    taskid: 4e7942e8-2aba-4eff-8cb3-95fc71879ad1
     type: condition
     task:
-      id: 911d7b75-5e56-4f5b-8a73-226a55b1aa61
+      id: 4e7942e8-2aba-4eff-8cb3-95fc71879ad1
       version: -1
       name: Verify User creation and visbility
       type: condition
@@ -1090,10 +1090,10 @@ tasks:
     ignoreworker: false
   "33":
     id: "33"
-    taskid: 0ef28f74-a23f-404d-8899-6a9fc3fda301
+    taskid: 47c611c0-339f-4ce6-82bd-a88faf8313ed
     type: regular
     task:
-      id: 0ef28f74-a23f-404d-8899-6a9fc3fda301
+      id: 47c611c0-339f-4ce6-82bd-a88faf8313ed
       version: -1
       name: gmail-delete-user
       description: Delete a User
@@ -1120,10 +1120,10 @@ tasks:
     ignoreworker: false
   "34":
     id: "34"
-    taskid: c4615131-4616-4841-8a1f-a18246424252
+    taskid: 923e120a-93e7-48c6-85d4-7acb56263af9
     type: regular
     task:
-      id: c4615131-4616-4841-8a1f-a18246424252
+      id: 923e120a-93e7-48c6-85d4-7acb56263af9
       version: -1
       name: gmail-get-autoreply
       description: Get the auto-reply message set for the user-account
@@ -1150,10 +1150,10 @@ tasks:
     ignoreworker: false
   "35":
     id: "35"
-    taskid: 08ff44c3-3b2d-49d7-8863-bee4aa21be5f
+    taskid: aac39550-c2ee-481a-8e40-6fd6503604c3
     type: regular
     task:
-      id: 08ff44c3-3b2d-49d7-8863-bee4aa21be5f
+      id: aac39550-c2ee-481a-8e40-6fd6503604c3
       version: -1
       name: gmail-set-autoreply
       description: Set auto-reply for the user
@@ -1186,10 +1186,10 @@ tasks:
     ignoreworker: false
   "36":
     id: "36"
-    taskid: bd82967c-8193-49d5-8e70-650cc45ebdd2
+    taskid: d5b10c4c-50bf-43a4-8f98-2f67d0448240
     type: regular
     task:
-      id: bd82967c-8193-49d5-8e70-650cc45ebdd2
+      id: d5b10c4c-50bf-43a4-8f98-2f67d0448240
       version: -1
       name: gmail-get-autoreply
       description: Get the auto-reply message set for the user-account
@@ -1216,10 +1216,10 @@ tasks:
     ignoreworker: false
   "37":
     id: "37"
-    taskid: 198cff74-e71b-4be8-82a5-126efc1b85f6
+    taskid: c85f43d7-d607-40ec-8cd2-ecafb3df9402
     type: condition
     task:
-      id: 198cff74-e71b-4be8-82a5-126efc1b85f6
+      id: c85f43d7-d607-40ec-8cd2-ecafb3df9402
       version: -1
       name: Verify Autoreply
       type: condition
@@ -1268,10 +1268,10 @@ tasks:
     ignoreworker: false
   "38":
     id: "38"
-    taskid: 03529408-7827-4c69-8392-ac198ab28526
+    taskid: 491c9b66-a153-43ad-8552-ae47350a9e2e
     type: regular
     task:
-      id: 03529408-7827-4c69-8392-ac198ab28526
+      id: 491c9b66-a153-43ad-8552-ae47350a9e2e
       version: -1
       name: gmail-set-autoreply - reset to original autoreply
       description: Set auto-reply for the user
@@ -1304,10 +1304,10 @@ tasks:
     ignoreworker: false
   "39":
     id: "39"
-    taskid: 7951ec08-3325-4720-8d5e-117f43238aa4
+    taskid: aa76db49-7c6d-4ecc-8880-d63cb1b18d9b
     type: regular
     task:
-      id: 7951ec08-3325-4720-8d5e-117f43238aa4
+      id: aa76db49-7c6d-4ecc-8880-d63cb1b18d9b
       version: -1
       name: gmail-send-mail
       description: Send mail using gmail
@@ -1343,10 +1343,10 @@ tasks:
     ignoreworker: false
   "40":
     id: "40"
-    taskid: 344bb46c-a4b1-42f5-8642-d9b9efcb1cb5
+    taskid: 164738dd-6545-44b1-875d-ad99931dbee3
     type: regular
     task:
-      id: 344bb46c-a4b1-42f5-8642-d9b9efcb1cb5
+      id: 164738dd-6545-44b1-875d-ad99931dbee3
       version: -1
       name: gmail-get-mail
       description: Gets the specified message.
@@ -1376,10 +1376,10 @@ tasks:
     ignoreworker: false
   "41":
     id: "41"
-    taskid: dbdaa444-8964-487a-84c4-9db654de14f8
+    taskid: bb397159-5b04-4cb4-8177-8415184a1f72
     type: condition
     task:
-      id: dbdaa444-8964-487a-84c4-9db654de14f8
+      id: bb397159-5b04-4cb4-8177-8415184a1f72
       version: -1
       name: Verify sent mail
       type: condition
@@ -1429,10 +1429,10 @@ tasks:
     ignoreworker: false
   "42":
     id: "42"
-    taskid: c1727839-b5ff-41fb-8a7e-2899657bed4d
+    taskid: 03b0c573-872a-4e15-8b23-efcce4e37e55
     type: regular
     task:
-      id: c1727839-b5ff-41fb-8a7e-2899657bed4d
+      id: 03b0c573-872a-4e15-8b23-efcce4e37e55
       version: -1
       name: gmail-delegate-user-mailbox
       script: Gmail|||gmail-delegate-user-mailbox
@@ -1462,10 +1462,10 @@ tasks:
     ignoreworker: false
   "43":
     id: "43"
-    taskid: 681e3f4d-7b6b-447a-8f04-456bf47cbf74
+    taskid: cd284af4-01fc-4923-8b17-dfb6b8af59af
     type: regular
     task:
-      id: 681e3f4d-7b6b-447a-8f04-456bf47cbf74
+      id: cd284af4-01fc-4923-8b17-dfb6b8af59af
       version: -1
       name: gmail-delegate-user-mailbox
       script: Gmail|||gmail-delegate-user-mailbox
@@ -1474,7 +1474,7 @@ tasks:
       brand: Gmail
     nexttasks:
       '#none#':
-      - "44"
+      - "29"
     scriptarguments:
       delegateEmail:
         simple: test@demistodev.com
@@ -1493,44 +1493,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "44":
-    id: "44"
-    taskid: f3b00c25-6fa6-4f74-8b1f-7b85b5368988
-    type: regular
-    task:
-      id: f3b00c25-6fa6-4f74-8b1f-7b85b5368988
-      version: -1
-      name: gmail-set-password
-      description: Set password for the user
-      script: Gmail|||gmail-set-password
-      type: regular
-      iscommand: true
-      brand: Gmail
-    nexttasks:
-      '#none#':
-      - "29"
-    scriptarguments:
-      password:
-        simple: narcos02s
-      user-id:
-        simple: admin@demistodev.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 840,
-          "y": 5150
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "45":
     id: "45"
-    taskid: 0251d7cb-938a-4fd0-8ef9-5dcf8b8fae2f
+    taskid: 065cc6bd-689a-4f2d-8aea-a1c6bd506a7b
     type: regular
     task:
-      id: 0251d7cb-938a-4fd0-8ef9-5dcf8b8fae2f
+      id: 065cc6bd-689a-4f2d-8aea-a1c6bd506a7b
       version: -1
       name: gmail-delete-mail
       description: Delete a mail in the user's mailbox.
@@ -1579,7 +1547,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2485,
+        "height": 5345,
         "width": 2110,
         "x": 50,
         "y": 50
