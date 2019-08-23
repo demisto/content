@@ -29,7 +29,7 @@ HEADERS = {
 }
 
 # Self signed certificate so no need to verify by default
-USE_SSL = not demisto.params().get('insecure', False)
+USE_SSL = not PARAMS.get('insecure', False)
 
 ''' HELPER FUNCTIONS '''
 @logger
@@ -40,7 +40,6 @@ def http_request(method, url_suffix, params=None, max_retry=3):
         BASE_URL + url_suffix,
         verify=USE_SSL,
         params=params,
-        data=None,
         headers=HEADERS
     )
     # Handle error responses gracefully
@@ -51,6 +50,7 @@ def http_request(method, url_suffix, params=None, max_retry=3):
                                 url_suffix=url_suffix,
                                 params=params,
                                 max_retry=max_retry)
+
         raise Exception(f'Error enrich url with JsonWhoIS API, status code {res.status_code}')
     return res.json()
 
@@ -63,14 +63,14 @@ def dict_by_ec(cur_dict: dict):
     """
     if not cur_dict:
         return None
-    return {key.capitalize(): cur_dict[key] for key in cur_dict if cur_dict[key]}
+    return {key.capitalize(): value for key, value in cur_dict.items() if cur_dict[key]}
 
 
-def list_by_ec(cur_list: list, key_needed):
+def list_by_ec(cur_list: list, needed_keys: list):
     """ Create list of dict (Json) by entry contexts convention
     Capitalize first char in dict, remove nulls, remove not needed parameters
     :param cur_list: list of dict
-    :param key_needed: key to save
+    :param needed_keys: key to save
     :return: modified list by description above
     """
     if not cur_list:
@@ -78,9 +78,24 @@ def list_by_ec(cur_list: list, key_needed):
     cur_list = [createContext(index, removeNull=True) for index in cur_list]
 
     def cur_ec(index):
-        return {key.capitalize(): index[key] for key in index if key in key_needed}
+        return {key.capitalize(): index[key] for key in index if key in needed_keys}
     cur_list = [cur_ec(contact) for contact in cur_list]
     return cur_list
+
+
+def remove_none(obj):
+    """
+    Get objects and remove None or empty strings.
+    :param obj: iterable object
+    :return: Obj with None value removed
+    """
+    if isinstance(obj, (list, tuple, set)):
+        return type(obj)(remove_none(x) for x in obj if x is not (None or ''))
+    elif isinstance(obj, dict):
+        return type(obj)((remove_none(k), remove_none(v))
+                         for k, v in obj.items() if k is not None and v is not (None or ''))
+    else:
+        return obj
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -88,9 +103,9 @@ def list_by_ec(cur_list: list, key_needed):
 
 @logger
 def whois(url: str) -> tuple:
-    """Get Rest API raw from JsonWhoIs service
-    :param url: url to search on
-    :return: dict object of JsonWhoIs service
+    """Get Rest API raw from JsonWhoIs API
+    :param url: url to query
+    :return: raw response and entry context
     """
     # Perform request
     params = {
@@ -100,27 +115,23 @@ def whois(url: str) -> tuple:
                        url_suffix='/api/v1/whois',
                        params=params)
 
-    # entry context by code convention
-    ec_temp = {
-        'DomainStatus': raw.get('status'),
-        'NameServers': list_by_ec(raw.get('nameservers'), key_needed=['name']),
-        'CreationDate': raw.get('created_on'),
-        'UpdatedDate': raw.get('updated_on'),
-        'ExpirationDate': raw.get('expires_on'),
-        'Registrar': dict_by_ec(raw.get('registrar')),
-        'Registrant': list_by_ec(raw.get('registrant_contacts'), key_needed=['name', 'phone', 'email']),
-        'Admin': list_by_ec(raw.get('admin_contacts'), key_needed=['name', 'phone', 'email'])
-    }
-
-    # Clear unused fields
-    ec_temp = createContext(ec_temp, removeNull=True)
-
     # Build all ec
     ec = {
         'Domain': {
-            'WHOIS': ec_temp
+            'WHOIS': {
+                'DomainStatus': raw.get('status'),
+                'NameServers': list_by_ec(raw.get('nameservers'), needed_keys=['name']),
+                'CreationDate': raw.get('created_on'),
+                'UpdatedDate': raw.get('updated_on'),
+                'ExpirationDate': raw.get('expires_on'),
+                'Registrar': dict_by_ec(raw.get('registrar')),
+                'Registrant': list_by_ec(raw.get('registrant_contacts'), needed_keys=['name', 'phone', 'email']),
+                'Admin': list_by_ec(raw.get('admin_contacts'), needed_keys=['name', 'phone', 'email'])
+            }
         }
     }
+
+    remove_none(ec)
 
     return ec, raw
 
@@ -129,9 +140,9 @@ def whois(url: str) -> tuple:
 def whois_command():
     """Whois command"""
     # Get url arg
-    url = demisto.args().get('query')
+    domain = demisto.args().get('query')
     # Get parsed entry context and raw data
-    ec, raw = whois(url)
+    ec, raw = whois(domain)
 
     # Create human-readable format
     ec_shortcut = ec['Domain']['WHOIS']
@@ -158,9 +169,6 @@ def whois_command():
 @logger
 def test_module():
     ec, raw = whois('demisto.com')
-    status = ec.get('Domain').get('WHOIS').get('DomainStatus')
-    if not status:
-        demisto.results('Testing demisto.com url failed')
     demisto.results('ok')
 
 
@@ -168,7 +176,7 @@ def test_module():
 
 
 def main():
-    LOG('Command being called is %s' % (demisto.command()))
+    LOG(f'Command being called is {demisto.command()}')
     handle_proxy()
     try:
         if demisto.command() == 'whois':
@@ -184,3 +192,5 @@ def main():
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == "__builtin__" or __name__ == "builtins":
     main()
+
+main()
