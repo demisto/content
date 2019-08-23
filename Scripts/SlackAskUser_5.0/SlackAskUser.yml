@@ -1,15 +1,9 @@
 args:
-- default: false
-  description: A slack user to ask - can be either email or slack username
+- default: true
+  description: The slack user to ask - can be either email or slack username
   isArray: false
   name: user
-  required: false
-  secret: false
-- default: false
-  description: A slack channel to ask
-  isArray: false
-  name: channel
-  required: false
+  required: true
   secret: false
 - default: false
   description: The message ask the user
@@ -53,24 +47,23 @@ args:
   - 'false'
   required: false
   secret: false
-comment: Ask either a user or a channel a question on Slack and expect a response. The response can also
-  close a task (might be conditional) in a playbook.
+comment: This script is deprecated. Use SlackAsk instead.
 commonfields:
-  id: 923bf124-907d-4cb8-8bea-01c90a3caea7
+  id: SlackAskUser
   version: -1
-enabled: true
-name: SlackAsk
+enabled: false
+name: SlackAskUser
 script: '-'
-system: false
+system: true
 tags:
 - slack
-timeout: '0'
+timeout: 0s
 type: python
-runonce: false
+subtype: python2
+tests:
+- no test - untestable
 dependson:
   must:
-  - send-notification
-subtype: python3
-tests:
-  - no test - Untestable
+  - slack-send
+deprecated: true
 fromversion: 5.0.0
