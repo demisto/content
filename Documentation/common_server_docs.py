@@ -7,7 +7,7 @@ from parinx import parser
 from package_creator import clean_python_code
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
+CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/..')
 sys.path.append(CONTENT_DIR + '/Tests/demistomock')
 
 import demistomock  # noqa: E402
