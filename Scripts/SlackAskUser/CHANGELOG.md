@@ -1,1 +1,0 @@
-Deprecated - use SlackAsk instead.
