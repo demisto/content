@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import re
 import sys
@@ -63,9 +64,9 @@ def add_dot(text):
             else:
                 line = line.strip(' -.')
                 if line.startswith('***') and line.endswith('***'):
-                    formatted_text.append(f'    - {line}')
+                    formatted_text.append('    - {}'.format(line))
                 else:
-                    formatted_text.append(f'  - {line}.')
+                    formatted_text.append('  - {}.'.format(line))
 
         return '\n'.join(formatted_text)
 
