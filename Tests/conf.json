@@ -1353,7 +1353,8 @@
             "playbookID": "DUO Test Playbook"
         },
         {
-            "playbookID": "SLA Scripts - Test"
+            "playbookID": "SLA Scripts - Test",
+            "fromversion": "4.1.0"
         },
         {
             "playbookID": "PcapHTTPExtractor-Test"
