@@ -1,9 +1,7 @@
+import yaml
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import os
-import json
-import yaml
 
 CMD_ARGS_REGEX = re.compile(r'([\w_-]+)=((?:\"[^"]+\")|(?:`.+`)|(?:\"\"\".+\"\"\")|(?:[^ ]+)) ?', re.S)
 
@@ -162,8 +160,8 @@ def get_yaml_obj(entry_id):
         if not isinstance(data, dict):
             raise ValueError()
 
-    except (ValueError, yaml.YAMLError) as e:
-        return_error('Failed to open integration file: {}'.format(e))
+    except (ValueError, yaml.YAMLError) as exception:
+        return_error('Failed to open integration file: {}'.format(exception))
 
     return data
 
@@ -217,46 +215,44 @@ def extract_command(cmd_example):
     args = dict()  # type: dict
     if ' ' in cmd_example:
         cmd, args_str = cmd_example.split(' ', 1)
-        args = dict([(k, v.strip('"`')) for k, v in CMD_ARGS_REGEX.findall(args_str)])
+        args = {k: v.strip('"`') for k, v in CMD_ARGS_REGEX.findall(args_str)}
 
     return cmd, args
 
 
 def run_command(command_example):
-    errors = []
-    context_example = ''
-    md_example = ''
-    cmd = command_example
+    errors: list = []
+    context_example: str = ''
+    md_example: str = ''
+    cmd, kwargs = extract_command(command_example)
     try:
-        cmd, kwargs = extract_command(command_example)
         res = demisto.executeCommand(cmd, kwargs)
+        if is_error(res):
+            demisto.results(res)
+            raise RuntimeError()
 
+    except (ValueError, RuntimeError) as exception:
+        errors.append(
+            'Error encountered in the processing of command `{}`, error was: {}. '.format(command_example,
+                                                                                          str(exception))
+            + 'Please check your command inputs and outputs.')
+        # errors.append('The provided example for cmd {} has failed: {}'.format(cmd, str(exception)))
+
+    else:
         for entry in res:
-            if is_error(entry):
-                demisto.results(res)
-                raise RuntimeError('something went wrong with your command: {}'.format(command_example))
-
             raw_context = entry.get('EntryContext', {})
             if raw_context is not None:
                 context = {k.split('(')[0]: v for k, v in raw_context.items()}
                 context_example += json.dumps(context, indent=4)
             if entry.get('HumanReadable') is None:
-                if entry.get('Contents') is not None:
-                    content = entry.get('Contents')
+                content = entry.get('Contents')
+                if content:
                     if isinstance(content, STRING_TYPES):
                         md_example += content
                     else:
                         md_example += json.dumps(content)
             else:
                 md_example += entry.get('HumanReadable')
-
-    except RuntimeError:
-        errors.append('The provided example for cmd {} has failed...'.format(cmd))
-
-    except Exception as e:
-        errors.append(
-            'Error encountered in the processing of command {}, error was: {}. '.format(cmd, str(e))
-            + '. Please check your command inputs and outputs')
 
     return cmd, md_example, context_example, errors
 
@@ -268,9 +264,9 @@ def add_lines(line):
 
 def to_html_table(headers: list, data: iter):
     records: list = []
-    for d in data:
-        records.append(GENERIC_RECORD.format(data_fields='\n'.join(map(lambda field: '      <td>{}</td>'.format(field),
-                                                                       d))))
+    for data_record in data:
+        records.append(GENERIC_RECORD.format(data_fields='\n'.join('      <td>{}</td>'.format(field)
+                                                                   for field in data_record)))
 
     return HTML_GENERIC_TABLE.format(headers='\n'.join(GENERIC_HEADER.format(h) for h in headers),
                                      records='\n'.join(records))
@@ -306,48 +302,6 @@ def human_readable_example_to_html(hr_sample):
             hr_html.append('<p>\n{}\n</p>'.format('\n'.join(paragraph)))
 
     return '\n'.join(hr_html)
-
-
-def addErrorLines(scriptToScan, scriptType):
-    res = ''
-    if 'python' in scriptType:
-        errorKeys = ['return_error', 'raise ']
-    elif 'javascript' in scriptType:
-        errorKeys = ['throw ']
-    # Unsupported script type
-    else:
-        return res
-    linesToSkip = 0
-    scriptLines = scriptToScan.splitlines()
-    for idx in range(len(scriptLines)):
-        # Skip lines that were already scanned
-        if linesToSkip > 0:
-            linesToSkip -= 1
-            continue
-        line = scriptLines[idx]
-        if any(key in line for key in errorKeys):
-            if '(' in line:
-                bracketOpenIdx = line.index('(') + 1
-                if ')' in line:
-                    bracketCloseIdx = line.index(')')
-                    res += '* ' + line[bracketOpenIdx:bracketCloseIdx] + '\n'
-                # Handle multi line error
-                else:
-                    res += '*' + ('' if len(line[bracketOpenIdx:].lstrip()) < 1 else ' ' + line[bracketOpenIdx:] + '\n')
-                    while ')' not in scriptLines[idx + linesToSkip + 1]:
-                        linesToSkip += 1
-                        line = scriptLines[idx + linesToSkip]
-                        res += ' ' + line.lstrip() + '\n'
-                    # Adding last line of error
-                    linesToSkip += 1
-                    line = scriptLines[idx + linesToSkip]
-                    bracketCloseIdx = line.index(')')
-                    res += line[:bracketCloseIdx].lstrip() + '\n'
-            else:
-                firstMatchingErrorKey = next((key for key in errorKeys if key in line), False)
-                afterErrorKeyIdx = line.index(firstMatchingErrorKey) + len(firstMatchingErrorKey)  # type: ignore
-                res += '* ' + line[afterErrorKeyIdx:] + '\n'
-    return res
 
 
 def generate_use_case_section(title, data):
@@ -533,11 +487,6 @@ def generate_html_docs(args, yml_data, example_dict, errors):
     # Troubleshooting
     docs += generate_section('Troubleshooting', args.get('troubleshooting'))
 
-    # Possible Errors
-    if args.get('withErrors') == 'True':
-        docs += generate_section('Possible Errors (DO NOT PUBLISH ON ZENDESK):',
-                                 addErrorLines(yml_data['script']['script'], yml_data['script']['type']))
-
     return docs
 
 
@@ -559,7 +508,7 @@ def main():
         # 'HumanReadable': docs,
     })
     demisto.results(fileResult(filename, docs, file_type=entryTypes['entryInfoFile']))
-    if len(errors) != 0:
+    if errors:
         errors.append('Visit the documentation page for more details: '
                       'https://github.com/demisto/content/tree/master/docs/integration_documentation')
         return_error('\n'.join('* {}'.format(e) for e in errors))
