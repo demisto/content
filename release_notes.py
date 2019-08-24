@@ -49,10 +49,28 @@ RELEASE_NOTES_ORDER = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR
 
 
 def add_dot(text):
-    text = text.rstrip()
-    if text.endswith('.'):
-        return text
-    return text + '.'
+    text = text.rstrip().replace('```', '***')
+
+    if '\n' in text:
+        # multi-record release notes
+        record_regex = re.compile(r'^((?: {2})- .*\.)|( {4}- \*{3}[\w-]*\*{3})$')
+        formatted_text: list = []
+        for line in text.split('\n'):
+            if not line.strip():
+                continue
+            if record_regex.match(line):
+                formatted_text.append(line)
+            else:
+                line = line.strip(' -.')
+                if line.startswith('***') and line.endswith('***'):
+                    formatted_text.append(f'    - {line}')
+                else:
+                    formatted_text.append(f'  - {line}.')
+
+        return '\n'.join(formatted_text)
+
+    # single record release notes
+    return text[0].upper() + text[1:].rstrip('.') + '.'
 
 
 def release_notes_item(header, body):
