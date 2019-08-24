@@ -163,34 +163,51 @@ def test_human_readable_example_to_html():
         {
             'header1': 'hello',
             'header2': 'hello',
-            'header3': 'hello',
         },
         {
             'header1': 'world',
             'header2': 'world',
-            'header3': 'world',
         },
-        {
-            'header1': '!',
-            'header2': '!',
-            'header3': '!',
-        }
     ]
 
-    md = tableToMarkdown('Title', data, headers=['header1', 'header2', 'header3'])
-    print(human_readable_example_to_html(md))
+    md = tableToMarkdown('Title', data, headers=['header1', 'header2'])
+    expected = '''<h3>Title</h3>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>header1</strong></th>
+      <th><strong>header2</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>hello</td>
+      <td>hello</td>
+    </tr>
+    <tr>
+      <td>world</td>
+      <td>world</td>
+    </tr>
+  </tbody>
+</table>
+'''
+    assert human_readable_example_to_html(md) == expected
 
-    md = '''Key | Value
-- | -
-city | Mountain View
-country | US
-hostname | dns.google
-ip | 8.8.8.8
-loc | 37.3860,-122.0838
-org | AS15169 Google LLC
-postal | 94035
-readme | https://ipinfo.io/missingauth
-region | California
-{"lat": 37.386, "lng": -122.0838}'''
+    md = md + '\n# Headline\nsome text\nanother line of text\n' + md
+    expected = expected + '\n<h1>Headline</h1>\n<p>\nsome text\nanother line of text\n</p>\n' + expected
+    assert human_readable_example_to_html(md) == expected
 
-    print(human_readable_example_to_html(md))
+#     md = '''Key | Value
+# - | -
+# city | Mountain View
+# country | US
+# hostname | dns.google
+# ip | 8.8.8.8
+# loc | 37.3860,-122.0838
+# org | AS15169 Google LLC
+# postal | 94035
+# readme | https://ipinfo.io/missingauth
+# region | California
+# {"lat": 37.386, "lng": -122.0838}'''
+#
+#     print(human_readable_example_to_html(md))

@@ -78,8 +78,7 @@ CONTEXT_EXAMPLE: str = '''<h5>Context Example</h5>
 {context}
 </pre>'''
 
-ARG_TABLE: str = '''
-<table style="width:750px" border="2" cellpadding="6">
+ARG_TABLE: str = '''<table style="width:750px" border="2" cellpadding="6">
   <thead>
     <tr>
       <th>
@@ -105,8 +104,7 @@ ARG_RECORD: str = '''    <tr>
       <td>{required}</td>
     </tr>'''
 
-CONTEXT_TABLE: str = '''
-<table style="width:750px" border="2" cellpadding="6">
+CONTEXT_TABLE: str = '''<table style="width:750px" border="2" cellpadding="6">
   <thead>
     <tr>
       <th>
@@ -132,8 +130,7 @@ CONTEXT_RECORD: str = '''    <tr>
       <td>{description}</td>
     </tr>'''
 
-HTML_GENERIC_TABLE: str = '''
-<table style="width:750px" border="2" cellpadding="6">
+HTML_GENERIC_TABLE: str = '''<table style="width:750px" border="2" cellpadding="6">
   <thead>
     <tr>
 {headers}
@@ -298,10 +295,12 @@ def human_readable_example_to_html(hr_sample):
         paragraph: list = []
         while hr_sample and not hr_sample.startswith('#') and not hr_sample.startswith('|'):
             if '\n' in hr_sample:
-                p, hr_sample = hr_sample.split('\n', 1)
+                paragraph_line, hr_sample = hr_sample.split('\n', 1)
             else:
-                p, hr_sample = hr_sample, ''
-            paragraph.append(p)
+                paragraph_line, hr_sample = hr_sample, ''
+
+            if paragraph_line:
+                paragraph.append(paragraph_line)
         if paragraph:
             hr_html.append('<p>\n{}\n</p>'.format('\n'.join(paragraph)))
 
