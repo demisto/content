@@ -54,7 +54,7 @@ def add_dot(text):
     if '\n' in text:
         # multi-record release notes
         record_regex = re.compile(r'^((?: {2})- .*\.)|( {4}- \*{3}[\w-]*\*{3})$')
-        formatted_text: list = []
+        formatted_text = []
         for line in text.split('\n'):
             if not line.strip():
                 continue
