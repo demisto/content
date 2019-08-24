@@ -134,6 +134,7 @@ def test_add_lines():
     for expected, out in zip(expected_values, outputs):
         assert out == expected
 
+
 def test_to_html_table():
     from HTMLDocsAutomation import to_html_table
     data = [

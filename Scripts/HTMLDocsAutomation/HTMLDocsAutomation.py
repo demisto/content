@@ -14,7 +14,8 @@ OVERVIEW: str = '''<p>
 
 SETUP_CONFIGURATION: str = '''<h2>Configure {integration_name} on Demisto</h2>
 <ol>
-  <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>&nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
+  <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
+  &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
   <li>Search for {integration_name}.</li>
   <li>
     Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
@@ -32,7 +33,7 @@ SETUP_CONFIGURATION: str = '''<h2>Configure {integration_name} on Demisto</h2>
 
 COMMANDS_HEADER: str = '''<h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. 
+  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
