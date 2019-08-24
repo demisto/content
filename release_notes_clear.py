@@ -1,8 +1,8 @@
 import os
-import yaml
 import json
 import argparse
 from datetime import datetime
+import yaml
 
 from Tests.scripts.validate_files import FilesValidator
 from Tests.test_utils import server_version_compare, run_command, get_release_notes_file_path, print_warning
@@ -34,12 +34,13 @@ def should_clear(file_path, current_server_version="0.0.0"):
         return False
 
     load_function = FILE_TYPE_DICT[extension]
-    with open(file_path, 'r') as f:
-        data = load_function(f)
+    with open(file_path, 'r') as file_obj:
+        data = load_function(file_obj)
 
-    v = data.get('fromversion') or data.get('fromVersion')
-    if v and server_version_compare(current_server_version, str(v)) < 0:
-        print_warning('keeping release notes for ({})\nto be published on {} version release'.format(file_path, str(v)))
+    version = data.get('fromversion') or data.get('fromVersion')
+    if version and server_version_compare(current_server_version, str(version)) < 0:
+        print_warning('keeping release notes for ({})\nto be published on {} version release'.format(file_path,
+                                                                                                     version))
         return False
 
     return True
@@ -56,9 +57,9 @@ def main():
     date = args.date if args.date else datetime.now().strftime('%Y-%m-%d')
 
     # get changed yaml/json files (filter only relevant changed files)
-    fv = FilesValidator()
+    files_validator = FilesValidator()
     change_log = run_command('git diff --name-status {}'.format(args.git_sha1))
-    modified_files, added_files, _, _ = fv.get_modified_files(change_log)
+    modified_files, added_files, _, _ = files_validator.get_modified_files(change_log)
 
     for file_path in get_changed_content_entities(modified_files, added_files):
         if not should_clear(file_path, args.server_version):
