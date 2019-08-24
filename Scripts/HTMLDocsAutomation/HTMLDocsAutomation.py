@@ -248,8 +248,10 @@ def run_command(command_example):
             if entry.get('HumanReadable') is None:
                 content = entry.get('Contents')
                 if content:
-                    if isinstance(content, STRING_TYPES):
+                    if isinstance(content, str):
                         md_example += content
+                    elif isinstance(content, bytes):
+                        md_example += content.decode('utf-8')
                     else:
                         md_example += json.dumps(content)
             else:
@@ -263,7 +265,7 @@ def add_lines(line):
     return output if output else [line]
 
 
-def to_html_table(headers: list, data: iter):
+def to_html_table(headers: list, data: list):
     records: list = []
     for data_record in data:
         records.append(GENERIC_RECORD.format(data_fields='\n'.join('      <td>{}</td>'.format(field)
