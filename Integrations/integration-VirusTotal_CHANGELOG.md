@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.8.2] - 2019-08-22
   - Added the Virus Total permanent link to the context of the following commands: 
     - url
     - file

@@ -1,5 +1,6 @@
 from __future__ import print_function
 import os
+import re
 import sys
 import abc
 import json
@@ -549,7 +550,7 @@ def get_release_notes_draft(github_token, asset_id):
     drafts = [release for release in res.json() if release.get('draft', False)]
     if drafts:
         if len(drafts) == 1:
-            return drafts[0]['body'].replace("xxxxx", asset_id)
+            return re.sub(r'Release Notes for version .* \((\d{5,})\)', asset_id, drafts[0]['body'])
 
         print_warning('Too many drafts to choose from ({}), skipping update.'.format(len(drafts)))
 

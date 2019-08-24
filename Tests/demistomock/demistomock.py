@@ -548,3 +548,6 @@ def findUser(username = None, email = None):
 def handleEntitlementForUser(incidentID, guid, email, content, taskID=""):
     return {}
 
+def demistoVersion():
+    return {}
+
