@@ -288,7 +288,8 @@ def human_readable_example_to_html(hr_sample):
         table = table_regex.match(hr_sample)
         if table:
             headers = table.group(2).split('|')[:-1]
-            data = map(lambda fields: fields.split('|')[1:-1], table.group(3).strip().split('\n'))
+            data = [fields.split('|')[1:-1]
+                    for fields in table.group(3).strip().split('\n')]
             hr_html.append(to_html_table(headers, data))
             truncate = len(table.group(0))
             hr_sample = hr_sample[truncate:]
