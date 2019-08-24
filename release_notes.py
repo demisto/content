@@ -1,4 +1,3 @@
-from __future__ import print_function
 import os
 import re
 import sys
@@ -10,7 +9,7 @@ import requests
 import yaml
 
 from Tests.test_utils import print_error, print_warning, get_last_release_version, filter_packagify_changes, \
-    run_command, server_version_compare, get_release_notes_file_path, get_latest_release_notes_text
+    run_command, server_version_compare, get_release_notes_file_path, get_latest_release_notes_text, get_remote_file
 from Tests.scripts.validate_files import FilesValidator
 
 CONTENT_LIB_PATH = "./"
@@ -470,37 +469,28 @@ RELEASE_NOTE_GENERATOR = {
 }
 
 
-def parse_change_list(file_path):
-    with open(file_path, 'r') as file_obj:
-        data = file_obj.read()
-        return data.split("\n")
+def handle_deleted_file(full_file_name, git_sha1):
+    """
+    Create release note for deleted file.
+
+    :param full_file_name: path to file in repository
+    :param git_sha1: git_sha1 to compare to
+    :return: None
+    """
+    data = get_remote_file(full_file_name, git_sha1)
+    name = data.get('name') or data.get('name') or full_file_name
+    file_type = full_file_name.split("/")[0]
+    file_type_mapping = RELEASE_NOTE_GENERATOR.get(file_type)
+    if file_type_mapping is not None:
+        file_type_mapping.add('D', name)
 
 
-def get_deleted_content(full_file_name, data):
-    start_index = data.find(full_file_name)
-    if start_index > 0:
-        name_index = data.find("-name:", start_index)
-        if name_index > 0:
-            return data[name_index:].split("\n")[0][len("-name:"):].strip()
-    return full_file_name
-
-
-def handle_deleted_file(deleted_data, full_file_name):
-    if "/" in full_file_name:
-        file_type = full_file_name.split("/")[0]
-        file_type_mapping = RELEASE_NOTE_GENERATOR.get(file_type)
-        deleted_content = get_deleted_content(full_file_name, deleted_data)
-        if file_type_mapping is not None:
-            file_type_mapping.add("D", deleted_content)
-
-
-def create_file_release_notes(change_type, full_file_name, deleted_data):
+def create_file_release_notes(change_type, full_file_name):
     """
     Create release note for changed file.
 
-    :param change_type: git change status (A, M, D, R*)
+    :param change_type: git change status (A, M, R*)
     :param full_file_name: path to file in repository
-    :param deleted_data: all removed files content
     :return: None
     """
     if isinstance(full_file_name, tuple):
@@ -515,9 +505,7 @@ def create_file_release_notes(change_type, full_file_name, deleted_data):
         print_warning("Unsupported file type: {}".format(full_file_name))
         return
 
-    if change_type == "D":
-        handle_deleted_file(deleted_data, full_file_name)
-    elif change_type != "R100":  # only file name has changed (no actual data was modified
+    if change_type != "R100":  # only file name has changed (no actual data was modified
         if 'R' in change_type:
             # handle the same as modified
             change_type = 'M'
@@ -603,16 +591,15 @@ def main():
     modified_files, added_files, removed_files, _ = file_validator.get_modified_files(change_log)
     modified_files, added_files, removed_files = filter_packagify_changes(modified_files, added_files,
                                                                           removed_files, tag=tag)
-    deleted_data = run_command('git diff --diff-filter=D {}'.format(args.git_sha1))
 
     for file_path in added_files:
-        create_file_release_notes('A', file_path, deleted_data)
+        create_file_release_notes('A', file_path)
 
     for file_path in modified_files:
-        create_file_release_notes('M', file_path, deleted_data)
+        create_file_release_notes('M', file_path)
 
     for file_path in removed_files:
-        create_file_release_notes('D', file_path, deleted_data)
+        handle_deleted_file(file_path, tag)
 
     # join all release notes
     res = []
