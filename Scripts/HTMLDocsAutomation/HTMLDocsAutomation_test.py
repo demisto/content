@@ -92,69 +92,121 @@ def test_generate_commands_section():
                 {'deprecated': True,
                  'name': 'deprecated-cmd'},
                 {'deprecated': False,
-                 'name': 'non-deprecated-cmd'}
+                 'name': 'non-deprecated-cmd'},
+                {'name': 'non-deprecated-cmd2'}
             ]
         }
     }
 
     section, errors = generate_commands_section(yml_data, {})
 
-    expected_section = [
-        '## Commands', '---',
-        'You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.',
-        'After you successfully execute a command, a DBot message appears in the War Room with the command details.',
-        '1. non-deprecated-cmd', '### 1. non-deprecated-cmd', '---', ' ', '##### Required Permissions',
-        '**FILL IN REQUIRED PERMISSIONS HERE**', '##### Base Command', '', '`non-deprecated-cmd`', '##### Input', '',
-        'There are no input arguments for this command.', '', '##### Context Output', '',
-        'There is no context output for this command.', '', '##### Command Example', '``` ```', '',
-        '##### Human Readable Output', '', '']
+    expected_section = '''<h2>Commands</h2>
+<p>
+  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  After you successfully execute a command, a DBot message appears in the War Room with the command details.
+</p>
+<ol>
+  <li>non-deprecated-cmd: non-deprecated-cmd</li>
+  <li>non-deprecated-cmd2: non-deprecated-cmd2</li>
+</ol>
+<h3>1. non-deprecated-cmd</h3>
+<!-- <hr> -->
+<p> </p>
+<h5>Base Command</h5>
+<p>
+  <code>non-deprecated-cmd</code>
+</p>
+<h5>Required Permissions</h5>
+<p>The following permissions are required for all commands.</p>
+<ul>
+    <li>permission 1</li>
+    <li>permission 2</li>
+</ul>
+<h5>Input</h5>
+There are no input arguments for this command.
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+There are no context output for this command.
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code> </code>
+</p>
+
+<h5>Human Readable Output</h5>
+<p>
+
+</p>
+
+<h3>2. non-deprecated-cmd2</h3>
+<!-- <hr> -->
+<p> </p>
+<h5>Base Command</h5>
+<p>
+  <code>non-deprecated-cmd2</code>
+</p>
+<h5>Required Permissions</h5>
+<p>The following permissions are required for all commands.</p>
+<ul>
+    <li>permission 1</li>
+    <li>permission 2</li>
+</ul>
+<h5>Input</h5>
+There are no input arguments for this command.
+<p>&nbsp;</p>
+<h5>Context Output</h5>
+There are no context output for this command.
+<p>&nbsp;</p>
+<h5>Command Example</h5>
+<p>
+  <code> </code>
+</p>
+
+<h5>Human Readable Output</h5>
+<p>
+
+</p>
+'''
 
     assert section == expected_section
-
-
-def test_add_lines():
-    from HTMLDocsAutomation import add_lines
-
-    outputs = [
-        add_lines('this is some free text.'),
-        add_lines('1.this is numbered text.'),
-        add_lines('this is multi line\nwithout numbers'),
-        add_lines('1.this is multi line\n2.with numbers'),
-        add_lines('12.this is multi line\n1234.with large numbers'),
-    ]
-
-    expected_values = [
-        ['this is some free text.'],
-        ['1.this is numbered text.'],
-        ['this is multi line\nwithout numbers'],
-        ['1.this is multi line', '2.with numbers'],
-        ['12.this is multi line', '1234.with large numbers']
-    ]
-
-    for expected, out in zip(expected_values, outputs):
-        assert out == expected
+    assert len(errors) == 2  # no example for both commands
 
 
 def test_to_html_table():
     from HTMLDocsAutomation import to_html_table
     data = [
-        {
-            'header1': 'hello',
-            'header2': 'hello',
-            'header3': 'hello',
-        },
-        {
-            'header1': 'world',
-            'header2': 'world',
-            'header3': 'world',
-        },
-        {
-            'header1': '!',
-            'header2': '!',
-            'header3': '!',
-        }
+        ['hello', 'hello', 'hello'],
+        ['world', 'world', 'world'],
+        ['!', '!', '!'],
     ]
-    print(to_html_table(['header1', 'header2', 'header3'], data))
+    expected = '''<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>header1</strong></th>
+      <th><strong>header2</strong></th>
+      <th><strong>header3</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>hello</td>
+      <td>hello</td>
+      <td>hello</td>
+    </tr>
+    <tr>
+      <td>world</td>
+      <td>world</td>
+      <td>world</td>
+    </tr>
+    <tr>
+      <td>!</td>
+      <td>!</td>
+      <td>!</td>
+    </tr>
+  </tbody>
+</table>
+'''
+    assert to_html_table(['header1', 'header2', 'header3'], data) == expected
 
 
 def test_human_readable_example_to_html():

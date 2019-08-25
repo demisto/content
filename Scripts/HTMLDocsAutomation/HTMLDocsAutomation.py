@@ -69,7 +69,7 @@ SINGLE_COMMAND: str = '''<h3>{index}. {command_hr}</h3>
 {context_example}
 <h5>Human Readable Output</h5>
 <p>
-  {hr_example}
+{hr_example}
 </p>
 '''
 
@@ -257,11 +257,6 @@ def run_command(command_example):
     return cmd, md_example, context_example, errors
 
 
-def add_lines(line):
-    output = re.findall(r'^\d+\..+', line, re.MULTILINE)
-    return output if output else [line]
-
-
 def to_html_table(headers: list, data: list):
     records: list = []
     for data_record in data:
@@ -364,11 +359,11 @@ def generate_commands_section(yaml_data, example_dict):
     errors: list = []
     command_sections: list = []
 
-    commands = yaml_data['script']['commands']
+    commands = [cmd for cmd in yaml_data['script']['commands'] if not cmd.get('deprecated')]
     command_list = [COMMAND_LIST.format(command_hr=cmd['name'], command=cmd['name']) for cmd in commands]
 
     for i, cmd in enumerate(commands):
-        cmd_section, cmd_errors = generate_single_command_section(i, cmd, example_dict)
+        cmd_section, cmd_errors = generate_single_command_section(i + 1, cmd, example_dict)
         command_sections.append(cmd_section)
         errors.extend(cmd_errors)
 
@@ -404,7 +399,7 @@ def generate_single_command_section(index, cmd, example_dict):
     # Context output
     outputs: list = cmd.get('outputs')
     if outputs is None:
-        template['context_table'] = 'There is no context output for this command.'
+        template['context_table'] = 'There are no context output for this command.'
     else:
         context_table: list = []
         for output in outputs:
