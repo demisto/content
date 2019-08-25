@@ -333,7 +333,7 @@ def close_alert_command():
     contents: Dict = alert_contents_request(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Closed'}}
     return_outputs(
-        f'Alert {alert_id} was closed successfully.',
+        f'Successfully closed Alert {alert_id}.',
         context,
         raw_response=contents
     )
@@ -355,7 +355,7 @@ def open_alert_command():
     contents: Dict = alert_contents_request(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Open'}}
     return_outputs(
-        f'Alert {alert_id} was opened successfully.',
+        f'Successfully opened Alert {alert_id}.',
         context,
         raw_response=contents
     )
@@ -424,7 +424,7 @@ def alert_user_assignment_command():
     contents: Dict = alert_contents_request(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Assignee': username}}
     return_outputs(
-        f'{username} was assigned to alert {alert_id} successfully.',
+        f'Successful assignment of {username} to alert {alert_id}.',
         context,
         raw_response=contents
     )
@@ -462,7 +462,7 @@ def modify_alert_tags_command():
     contents: Dict = alert_contents_request(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': contents}
     return_outputs(
-        'Tags were modified successfully.',
+        'Successful modification of tags.',
         context
     )
 
@@ -615,7 +615,7 @@ def list_alerts_command():
     if limit_str:
         limit: int = dict_value_to_integer(params, 'limit')
         if limit < 0 or limit > 100:
-            raise Exception('Limit should be 0 <= x <= 100')
+            raise Exception('Incorrect limit. Limit should be 0 <= x <= 100.')
     response_content: Dict = list_alerts(params)
     if not response_content:
         return_outputs('No alerts found.', outputs={})
