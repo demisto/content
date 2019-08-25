@@ -1,0 +1,2 @@
+- added misp-add-events-from-feed
+- added misp-add-object commands (ip, domain, email and generic)

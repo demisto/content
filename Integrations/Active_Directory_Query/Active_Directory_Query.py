@@ -6,6 +6,7 @@ from ldap3.extend import microsoft
 import ssl
 from datetime import datetime
 import traceback
+import os
 
 
 # global connection
@@ -70,7 +71,7 @@ def initialize_server(host, port, secure_connection, unsecure):
         demisto.debug("initializing sever with ssl (unsecure: {}). port: {}". format(unsecure, port or 'default(636)'))
         if not unsecure:
             demisto.debug("will require server certificate.")
-            tls = Tls(validate=ssl.CERT_REQUIRED)
+            tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'))
             if port:
                 return Server(host, port=port, use_ssl=True, tls=tls)
             return Server(host, use_ssl=True, tls=tls)
@@ -310,11 +311,11 @@ def search_users(default_base_dn, page_size):
     limit = int(args.get('limit', '0'))
 
     # default query - list all users
-    query = "(objectClass=User)(objectCategory=person)"
+    query = "(&(objectClass=User)(objectCategory=person))"
 
     # query by user DN
     if args.get('dn'):
-        query = "(&(objectClass=User)(objectCategory=person)(dn={}))".format(args['dn'])
+        query = "(&(objectClass=User)(objectCategory=person)(distinguishedName={}))".format(args['dn'])
 
     # query by name
     if args.get('name'):
@@ -333,7 +334,7 @@ def search_users(default_base_dn, page_size):
         if not args.get('custom-field-data'):
             raise Exception('Please specify "custom-field-data" as well when quering by "custom-field-type"')
         query = "(&(objectClass=User)(objectCategory=person)({}={}))".format(
-            args['custom-field-type'], args['ustom-field-data'])
+            args['custom-field-type'], args['custom-field-data'])
 
     if args.get('attributes'):
         custom_attributes = args['attributes'].split(",")

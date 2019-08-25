@@ -5,13 +5,12 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cc87995f-62b2-4033-8ac7-9c5fa25f81bc
+    taskid: cff174e4-3b2d-429b-885c-bacf2eeb2cfe
     type: start
     task:
-      id: cc87995f-62b2-4033-8ac7-9c5fa25f81bc
+      id: cff174e4-3b2d-429b-885c-bacf2eeb2cfe
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -30,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: f5a18bac-07bf-497f-8712-ab165ae8fcce
+    taskid: 67f94232-6476-4248-8bfa-62d642c72d55
     type: regular
     task:
-      id: f5a18bac-07bf-497f-8712-ab165ae8fcce
+      id: 67f94232-6476-4248-8bfa-62d642c72d55
       version: -1
       name: Download EML file
       description: Sends http request. Returns the response as json.
@@ -74,10 +73,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 1e112793-3e1f-402a-85eb-8021d202b3b7
+    taskid: 7f00be96-d45f-49cd-85be-b0b930eb8fc7
     type: regular
     task:
-      id: 1e112793-3e1f-402a-85eb-8021d202b3b7
+      id: 7f00be96-d45f-49cd-85be-b0b930eb8fc7
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -109,13 +108,12 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: cfdcb838-e4a5-4f89-8439-9c1c1d318f55
+    taskid: 6df5f8ab-2100-4538-8d34-4bc1f5dfa3b3
     type: title
     task:
-      id: cfdcb838-e4a5-4f89-8439-9c1c1d318f55
+      id: 6df5f8ab-2100-4538-8d34-4bc1f5dfa3b3
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -124,7 +122,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2440
+          "y": 3255
         }
       }
     note: false
@@ -132,10 +130,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: c87b330c-fe70-4420-8bfc-015db4e27390
+    taskid: 46a27e04-c09a-4080-89f8-80e0a295e410
     type: regular
     task:
-      id: c87b330c-fe70-4420-8bfc-015db4e27390
+      id: 46a27e04-c09a-4080-89f8-80e0a295e410
       version: -1
       name: Error Verifying Context Output
       description: Prints an error entry with a given message
@@ -151,7 +149,7 @@ tasks:
       {
         "position": {
           "x": 670,
-          "y": 2320
+          "y": 3225
         }
       }
     note: false
@@ -159,10 +157,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 9263bd85-160b-401c-8518-1f5c154e6163
+    taskid: 3ff5237d-b6ea-45c5-878b-1ab72477a039
     type: regular
     task:
-      id: 9263bd85-160b-401c-8518-1f5c154e6163
+      id: 3ff5237d-b6ea-45c5-878b-1ab72477a039
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -194,10 +192,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: f87d7b81-0b57-4321-8f00-90a071c449a3
+    taskid: 3e347029-e8a0-4cc1-8c6a-bab37c38946a
     type: regular
     task:
-      id: f87d7b81-0b57-4321-8f00-90a071c449a3
+      id: 3e347029-e8a0-4cc1-8c6a-bab37c38946a
       version: -1
       name: Download SMTP Email
       description: Sends http request. Returns the response as json.
@@ -238,10 +236,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 4280d26b-1b8d-4b45-8835-6b8e4dc24a46
+    taskid: 0be499c3-0d6d-4d5a-85ec-3cb9644c12a4
     type: regular
     task:
-      id: 4280d26b-1b8d-4b45-8835-6b8e4dc24a46
+      id: 0be499c3-0d6d-4d5a-85ec-3cb9644c12a4
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -273,10 +271,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 50630427-aacb-49b4-8856-91e98ce44158
+    taskid: bd1f3b53-35f6-4894-8ff9-49e76dbb17b4
     type: regular
     task:
-      id: 50630427-aacb-49b4-8856-91e98ce44158
+      id: bd1f3b53-35f6-4894-8ff9-49e76dbb17b4
       version: -1
       name: Download DOC file
       description: |-
@@ -320,10 +318,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 3cb572bf-9fd7-4aee-8ba2-ff3ba1287b86
+    taskid: e2c81e71-31c7-4c6b-8eb6-16d3db64e070
     type: condition
     task:
-      id: 3cb572bf-9fd7-4aee-8ba2-ff3ba1287b86
+      id: e2c81e71-31c7-4c6b-8eb6-16d3db64e070
       version: -1
       name: Verify email is null
       description: Verifies the email is "null" when we are downloading a DOC file
@@ -335,7 +333,7 @@ tasks:
       '#default#':
       - "7"
       "yes":
-      - "4"
+      - "21"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -360,10 +358,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 230e7c2b-b588-422c-8cbf-ccc8a51d62b7
+    taskid: c5650b6d-1e87-4e6c-8781-c02415106b8e
     type: playbook
     task:
-      id: 230e7c2b-b588-422c-8cbf-ccc8a51d62b7
+      id: c5650b6d-1e87-4e6c-8781-c02415106b8e
       version: -1
       name: Process Email - Generic
       playbookName: Process Email - Generic
@@ -386,10 +384,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 5522f70a-4812-4712-8d58-38f870a5a927
+    taskid: b4ac936e-623a-408b-82a1-b4149a90892b
     type: playbook
     task:
-      id: 5522f70a-4812-4712-8d58-38f870a5a927
+      id: b4ac936e-623a-408b-82a1-b4149a90892b
       version: -1
       name: Process Email - Generic
       playbookName: Process Email - Generic
@@ -454,10 +452,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 1af72dae-82c6-442d-8015-1e463a1ba289
+    taskid: 38339b16-b7ea-4e80-8584-d4df2c813865
     type: playbook
     task:
-      id: 1af72dae-82c6-442d-8015-1e463a1ba289
+      id: 38339b16-b7ea-4e80-8584-d4df2c813865
       version: -1
       name: Process Email - Generic
       playbookName: Process Email - Generic
@@ -480,10 +478,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 3aea8f14-e16e-405d-81f0-6bb9c8f31992
+    taskid: 91e7f7e2-ed31-4377-84c4-07a8730e1091
     type: condition
     task:
-      id: 3aea8f14-e16e-405d-81f0-6bb9c8f31992
+      id: 91e7f7e2-ed31-4377-84c4-07a8730e1091
       version: -1
       name: Verify context
       description: Verifies that the right values in context exist under Email.HeadersMap.
@@ -551,10 +549,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: b43d7841-a3a0-4a1a-85a7-b27e46ef3235
+    taskid: 5083a86b-609e-4858-81c3-55d82943ce59
     type: condition
     task:
-      id: b43d7841-a3a0-4a1a-85a7-b27e46ef3235
+      id: 5083a86b-609e-4858-81c3-55d82943ce59
       version: -1
       name: Verify context
       description: Verifies that the values we expect ParseEmailFiles to put in context
@@ -623,14 +621,208 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "21":
+    id: "21"
+    taskid: d9f1098a-fe30-4a88-8215-f236c8a09fdd
+    type: regular
+    task:
+      id: d9f1098a-fe30-4a88-8215-f236c8a09fdd
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 70389ee5-26ff-43f4-88e1-2b97aceb497c
+    type: regular
+    task:
+      id: 70389ee5-26ff-43f4-88e1-2b97aceb497c
+      version: -1
+      name: Download SMIME Wrapped Email
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: test-smtp-email.test
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/e5541580421db52f78e3ff6071594a2deea50b8e/Scripts/ParseEmailFiles/test_data/smime.p7m
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 5718058e-1e06-438e-8ebf-5c277cffcbd5
+    type: playbook
+    task:
+      id: 5718058e-1e06-438e-8ebf-5c277cffcbd5
+      version: -1
+      name: Process Email - Generic
+      description: Add email details to the relevant context entities and handle the
+        case where original emails are attached.
+      playbookName: Process Email - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 01e2ee53-3e77-4a95-8838-8fcc261c130b
+    type: condition
+    task:
+      id: 01e2ee53-3e77-4a95-8838-8fcc261c130b
+      version: -1
+      name: Verify context
+      description: Verifies that the values we expect ParseEmailFiles to put in context
+        are there.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: HeadersMap.Message-ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: HeadersMap.Return-Path
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: From
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: HeadersMap.Subject
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: HeadersMap.Date
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: To
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: To
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
-      "19_8_yes": 0.64
+      "19_8_yes": 0.64,
+      "20_7_#default#": 0.28
     },
     "paper": {
       "dimensions": {
-        "height": 2455,
+        "height": 3270,
         "width": 1000,
         "x": 50,
         "y": 50
