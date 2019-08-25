@@ -2173,6 +2173,8 @@ def prettify_rule(rule):
         'Name': rule['@name'],
         'Action': rule['action']
     }
+    if DEVICE_GROUP:
+        pretty_rule['DeviceGroup'] = DEVICE_GROUP
     if '@loc' in rule:
         pretty_rule['Location'] = rule['@loc']
     if 'category' in rule and 'member' in rule['category']:
@@ -2265,6 +2267,8 @@ def panorama_move_rule_command():
 
     result = http_request(URL, 'POST', params=params)
     rule_output = {'Name': rulename}
+    if DEVICE_GROUP:
+        rule_output['DeviceGroup'] = DEVICE_GROUP
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -2322,6 +2326,8 @@ def panorama_create_rule_command():
 
     rule_output = {SECURITY_RULE_ARGS[key]: value for key, value in demisto.args().items() if key in SECURITY_RULE_ARGS}
     rule_output['Name'] = rulename
+    if DEVICE_GROUP:
+        rule_output['DeviceGroup'] = DEVICE_GROUP
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -2383,6 +2389,8 @@ def panorama_edit_rule_command():
         params=params
     )
     rule_output = {'Name': rulename}
+    if DEVICE_GROUP:
+        rule_output['DeviceGroup'] = DEVICE_GROUP
     rule_output[SECURITY_RULE_ARGS[element_to_change]] = element_value
 
     demisto.results({
@@ -2458,6 +2466,8 @@ def panorama_custom_block_rule_command():
         'Direction': direction,
         'Disabled': False
     }
+    if DEVICE_GROUP:
+        custom_block_output['DeviceGroup'] = DEVICE_GROUP
     if log_forwarding:
         custom_block_output['LogForwarding'] = log_forwarding
     if target:
@@ -2689,6 +2699,9 @@ def prettify_edls_arr(edls_arr):
             if 'description' in edl['type'][edl_type]:
                 pretty_edl['Description'] = edl['type'][edl_type]['description']
 
+        if DEVICE_GROUP:
+            pretty_edl['DeviceGroup'] = DEVICE_GROUP
+
         pretty_edls_arr.append(pretty_edl)
 
     return pretty_edls_arr
@@ -2747,6 +2760,9 @@ def prettify_edl(edl):
             pretty_edl['Recurring'] = ''.join(edl['type'][edl_type]['recurring'].keys())
         if 'description' in edl['type'][edl_type]:
             pretty_edl['Description'] = edl['type'][edl_type]['description']
+
+    if DEVICE_GROUP:
+        pretty_edl['DeviceGroup'] = DEVICE_GROUP
 
     return pretty_edl
 
@@ -2831,6 +2847,8 @@ def panorama_create_edl_command():
         'Recurring': recurring
     }
 
+    if DEVICE_GROUP:
+        edl_output['DeviceGroup'] = DEVICE_GROUP
     if description:
         edl_output['Description'] = description
     if certificate_profile:
@@ -2855,6 +2873,8 @@ def panorama_edit_edl(edl_name, element_to_change, element_value):
         return_error('Please commit the instance prior to editing the External Dynamic List')
     edl_type = ''.join(edl_prev['type'].keys())
     edl_output = {'Name': edl_name}
+    if DEVICE_GROUP:
+        edl_output['DeviceGroup'] = DEVICE_GROUP
     params = {
         'action': 'edit',
         'type': 'config',
@@ -2938,6 +2958,8 @@ def panorama_delete_edl_command():
 
     edl = panorama_delete_edl(edl_name)
     edl_output = {'Name': edl_name}
+    if DEVICE_GROUP:
+        edl_output['DeviceGroup'] = DEVICE_GROUP
 
     demisto.results({
         'Type': entryTypes['note'],

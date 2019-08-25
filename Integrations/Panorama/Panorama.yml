@@ -1282,6 +1282,9 @@ script:
     - contextPath: Panorama.EDL.Recurring
       description: Time interval that the EDL was pulled and updated
       type: string
+    - contextPath: Panorama.EDL.DeviceGroup
+      description: Device group that the EDL was configured in (Panorama instances).
+      type: string
   - arguments:
     - default: false
       description: Name of the EDL
@@ -1317,6 +1320,9 @@ script:
       type: string
     - contextPath: Panorama.EDL.Recurring
       description: Time interval that the EDL was pulled and updated
+      type: string
+    - contextPath: Panorama.EDL.DeviceGroup
+      description: Device group that the EDL was configured in (Panorama instances).
       type: string
   - arguments:
     - default: false
@@ -1394,6 +1400,9 @@ script:
     - contextPath: Panorama.EDL.Recurring
       description: Time interval that the EDL was pulled and updated
       type: string
+    - contextPath: Panorama.EDL.DeviceGroup
+      description: Device group that the EDL was configured in (Panorama instances).
+      type: string
   - arguments:
     - default: false
       description: Name of the external dynamic list to edit
@@ -1440,6 +1449,9 @@ script:
     - contextPath: Panorama.EDL.Recurring
       description: Time interval that the EDL was pulled and updated
       type: string
+    - contextPath: Panorama.EDL.DeviceGroup
+      description: Device group that the EDL was configured in (Panorama instances).
+      type: string
   - arguments:
     - default: false
       description: Name of the EDL to delete
@@ -1460,6 +1472,9 @@ script:
     outputs:
     - contextPath: Panorama.EDL.Name
       description: Name of the EDL that was deleted
+      type: string
+    - contextPath: Panorama.EDL.DeviceGroup
+      description: Device group that the EDL was configured in (Panorama instances).
       type: string
   - arguments:
     - default: false
@@ -1568,7 +1583,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Pre rule or Post rule (Panorama instances)
+      description: Pre rule or Post rule (Panorama instances).
       isArray: false
       name: pre_post
       predefined:
@@ -1577,7 +1592,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specify a target firewall for the rule (Panorama instances)
+      description: Specify a target firewall for the rule (Panorama instances).
       isArray: false
       name: target
       required: false
@@ -1589,7 +1604,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specify a device group for the rule (Panorama instances)
+      description: Specify a device group for the rule (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -1634,6 +1649,9 @@ script:
       type: string
     - contextPath: Panorama.SecurityRule.LogForwarding
       description: Log forwarding profile (Panorama instances)
+      type: string
+    - contextPath: Panorama.SecurityRule.DeviceGroup
+      description: Device group for the rule (Panorama instances).
       type: string
   - arguments:
     - default: false
@@ -1723,6 +1741,9 @@ script:
     - contextPath: Panorama.SecurityRule.LogForwarding
       description: Log forwarding profile (Panorama instances)
       type: string
+    - contextPath: Panorama.SecurityRule.DeviceGroup
+      description: Device group for the rule (Panorama instances).
+      type: string
   - arguments:
     - default: false
       description: Name of the rule to move
@@ -1773,6 +1794,9 @@ script:
     outputs:
     - contextPath: Panorama.SecurityRule.Name
       description: Rule name
+      type: string
+    - contextPath: Panorama.SecurityRule.DeviceGroup
+      description: Device group for the rule (Panorama instances).
       type: string
   - arguments:
     - default: false
@@ -1854,6 +1878,9 @@ script:
     - contextPath: Panorama.SecurityRule.Target
       description: Target firewall (Panorama instances)
       type: string
+    - contextPath: Panorama.SecurityRule.DeviceGroup
+      description: Device group for the rule (Panorama instances).
+      type: string
   - arguments:
     - default: false
       description: Name of the rule to delete
@@ -1884,6 +1911,9 @@ script:
     outputs:
     - contextPath: Panorama.SecurityRule.Name
       description: Rule name
+      type: string
+    - contextPath: Panorama.SecurityRule.DeviceGroup
+      description: Device group for the rule (Panorama instances).
       type: string
   - deprecated: false
     description: Returns a list of predefined applications
