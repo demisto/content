@@ -22,6 +22,7 @@ DOCS_REGEX = r".*docs.*"
 IMAGE_REGEX = r".*\.png"
 DESCRIPTION_REGEX = r".*\.md"
 CONF_REGEX = "Tests/conf.json"
+SCHEMA_REGEX = "Tests/schemas/.*.yml"
 SCRIPT_TYPE_REGEX = ".*script-.*.yml"
 SCRIPT_PY_REGEX = r"{}.*\.py$".format(SCRIPTS_DIR)
 SCRIPT_JS_REGEX = r"{}.*\.js$".format(SCRIPTS_DIR)
