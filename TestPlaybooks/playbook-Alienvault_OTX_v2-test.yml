@@ -63,17 +63,17 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: b109063f-83fb-48d8-886c-5401da5714c5
+    taskid: 66d09dda-e7fd-4a09-88a4-26b5751d39d2
     type: regular
     task:
-      id: b109063f-83fb-48d8-886c-5401da5714c5
+      id: 66d09dda-e7fd-4a09-88a4-26b5751d39d2
       version: -1
       name: ip command
-      description: Checks the reputation of an IP address.
-      script: '|||ip'
+      description: Query IP in AlienVault OTX
+      script: AlienVault_OTX_v2|||ip
       type: regular
       iscommand: true
-      brand: ""
+      brand: AlienVault_OTX_v2
     nexttasks:
       '#none#':
       - "3"
@@ -205,17 +205,17 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 3624a38c-204f-4597-83b2-18bd83c1acae
+    taskid: a98071e9-ecbd-4190-8f1c-fc626260df9a
     type: regular
     task:
-      id: 3624a38c-204f-4597-83b2-18bd83c1acae
+      id: a98071e9-ecbd-4190-8f1c-fc626260df9a
       version: -1
       name: domain command
-      description: Checks the reputation of a domain.
-      script: '|||domain'
+      description: Query domain in AlienVault OTX
+      script: AlienVault_OTX_v2|||domain
       type: regular
       iscommand: true
-      brand: ""
+      brand: AlienVault_OTX_v2
     nexttasks:
       '#none#':
       - "7"
@@ -617,17 +617,17 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 8606a894-e79b-4d09-897b-d07bc9d27a82
+    taskid: fccb2338-33a1-4442-8ba7-80c0d96bb3a8
     type: regular
     task:
-      id: 8606a894-e79b-4d09-897b-d07bc9d27a82
+      id: fccb2338-33a1-4442-8ba7-80c0d96bb3a8
       version: -1
       name: file command
-      description: Checks the file reputation of the specified hash.
-      script: '|||file'
+      description: Query file in AlienVault OTX
+      script: AlienVault_OTX_v2|||file
       type: regular
       iscommand: true
-      brand: ""
+      brand: AlienVault_OTX_v2
     nexttasks:
       '#none#':
       - "19"
@@ -1392,17 +1392,17 @@ tasks:
     ignoreworker: false
   "42":
     id: "42"
-    taskid: 1923e0f4-afc8-47f2-8303-fe066477b2b3
+    taskid: de4c6454-8900-49cf-8aaa-52277c9a0fe0
     type: regular
     task:
-      id: 1923e0f4-afc8-47f2-8303-fe066477b2b3
+      id: de4c6454-8900-49cf-8aaa-52277c9a0fe0
       version: -1
       name: url command
-      description: Checks the reputation of a URL.
-      script: '|||url'
+      description: Query url in AlienVault OTX
+      script: AlienVault_OTX_v2|||url
       type: regular
       iscommand: true
-      brand: ""
+      brand: AlienVault_OTX_v2
     nexttasks:
       '#none#':
       - "43"
