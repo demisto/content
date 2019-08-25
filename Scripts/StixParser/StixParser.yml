@@ -1,0 +1,25 @@
+args:
+- default: true
+  description: ioc xml in stix format
+  isArray: false
+  name: iocXml
+  required: true
+  secret: false
+comment: Parse Stix files to Demisto indicators
+commonfields:
+  id: StixParser
+  version: -1
+enabled: true
+name: StixParser
+script: '-'
+system: true
+tags:
+- stix
+- ioc
+timeout: 0s
+type: python
+dockerimage: demisto/stix
+tests:
+- STIXParserTest
+dependson: {
+  }

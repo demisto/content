@@ -5,9 +5,9 @@ jobs:
       - image: devdemisto/content-build-2and3:2.0.0.877  # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.7.2"
-      SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "b127a27e348b2f5cc53129da93ca153ce51572c4" # guardrails-disable-line disable-secrets-detection
+      CONTENT_VERSION: "19.8.2"
+      SERVER_VERSION: "4.5.0"
+      GIT_SHA1: "177b7e574fc936df19170c13650ea2581e4920f6" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
@@ -115,7 +115,7 @@ jobs:
               then
                 if [ -n "${NIGHTLY}" ] ;
                   then
-                    export IFRA_ENV_TYPE=Content-GA
+                    export IFRA_ENV_TYPE=Content-Master
 
                   else
                     export IFRA_ENV_TYPE=Content-Env
@@ -132,11 +132,11 @@ jobs:
             if ./Tests/scripts/is_ami.sh ;
               then
                 python ./Tests/scripts/run_content_installation.py
-                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path)
+                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION
 
               else
                 ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
-                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) --non-ami
+                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION --non-ami
             fi
       - run:
           name: Run Tests - Latest GA
