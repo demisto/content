@@ -412,10 +412,9 @@ script:
       default: false
       description: The access permission for the entity
       isArray: false
-      name: Role
+      name: role
       predefined:
       - READER
-      - WRITER
       - OWNER
       required: true
       secret: false
@@ -458,7 +457,6 @@ script:
       name: role
       predefined:
       - READER
-      - WRITER
       - OWNER
       required: true
       secret: false
