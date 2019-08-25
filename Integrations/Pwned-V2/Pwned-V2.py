@@ -48,7 +48,13 @@ def http_request(method, url_suffix, params=None, data=None):
 
     if res.status_code == 404:
         return None
-    elif not res.status_code == 200:
+    elif res.status_code == 429:
+        # Rate limit response code
+        wait_regex = re.search(r'\d+', res.json()['message'])
+        if wait_regex:
+            wait_amount = wait_regex.group()
+            return {'request_retry': int(wait_amount)}
+    if not res.status_code == 200:
         return_error('Error in API call to Pwned Integration [%d] - %s' % (res.status_code, res.reason))
         return None
 
@@ -59,7 +65,7 @@ def html_description_to_human_readable(breach_description):
     """
 
     Args:
-        breach_description: Description of breach from hibp response
+        breach_description: Description of breach from API response
 
     Returns: Description string that altered HTML urls to clickable urls
     for better readability in war-room
@@ -75,14 +81,14 @@ def html_description_to_human_readable(breach_description):
     return breach_description
 
 
-def data_to_markdown(query_type, query_arg, hibp_res, hibp_paste_res=None):
+def data_to_markdown(query_type, query_arg, api_res, api_paste_res=None):
     records_found = False
 
     md = '### Have I Been Pwned query for ' + query_type.lower() + ': *' + query_arg + '*\n'
 
-    if hibp_res and len(hibp_res) > 0:
+    if api_res and len(api_res) > 0:
         records_found = True
-        for breach in hibp_res:
+        for breach in api_res:
             verified_breach = 'Verified' if breach['IsVerified'] else 'Unverified'
             md += '#### ' + breach['Title'] + ' (' + breach['Domain'] + '): ' + str(breach['PwnCount']) + \
                   ' records breached [' + verified_breach + ' breach]\n'
@@ -90,10 +96,10 @@ def data_to_markdown(query_type, query_arg, hibp_res, hibp_paste_res=None):
             md += html_description_to_human_readable(breach['Description']) + '\n'
             md += 'Data breached: **' + ','.join(breach['DataClasses']) + '**\n'
 
-    if hibp_paste_res and len(hibp_paste_res) > 0:
+    if api_paste_res and len(api_paste_res) > 0:
         records_found = True
         pastes_list = []
-        for paste_breach in hibp_paste_res:
+        for paste_breach in api_paste_res:
             paste_entry = \
                 {
                     'Source': paste_breach['Source'],
@@ -155,11 +161,13 @@ def add_malicious_to_context(malicious_type):
     }
 
 
-def email_to_entry_context(email, hibp_email_res, hibp_paste_res):
+def email_to_entry_context(email, api_email_res, api_paste_res):
     dbot_score = 0
     comp_email = dict()  # type: dict
-    comp_sites = sorted([item['Title'] for item in hibp_email_res])
-    comp_pastes = sorted(set(item['Source'] for item in hibp_paste_res))
+    comp_sites = [item['Title'] for item in api_email_res]
+    comp_sites = sorted(comp_sites)
+    comp_pastes = set(item['Source'] for item in api_paste_res)
+    comp_pastes = sorted(comp_pastes)
 
     if len(comp_sites) > 0:
         dbot_score = DEFAULT_DBOT_SCORE_EMAIL
@@ -171,8 +179,8 @@ def email_to_entry_context(email, hibp_email_res, hibp_paste_res):
     return comp_email
 
 
-def domain_to_entry_context(domain, hibp_res):
-    comp_sites = [item['Title'] for item in hibp_res]
+def domain_to_entry_context(domain, api_res):
+    comp_sites = [item['Title'] for item in api_res]
     comp_sites = sorted(comp_sites)
     comp_domain = dict()  # type: dict
     dbot_score = 0
@@ -185,6 +193,18 @@ def domain_to_entry_context(domain, hibp_res):
     comp_domain['DBotScore'] = create_dbot_score_dictionary(domain, 'domain', dbot_score)
 
     return comp_domain
+
+
+def rate_limit_retry(amount_of_seconds, request_type):
+    time.sleep(amount_of_seconds)
+    if request_type == 'email':
+        pwned_email_command()
+    else:
+        pwned_domain_command()
+
+
+def retry_needed(api_res, api_paste_res):
+    return api_res and api_paste_res and 'request_retry' in api_res or 'request_retry' in api_paste_res
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -203,11 +223,19 @@ def pwned_email_command():
 
 
 def pwned_email(email, email_suffix, paste_suffix):
-    hibp_email_res = http_request('GET', email_suffix)
-    hibp_paste_res = http_request('GET', paste_suffix)
-    md = data_to_markdown('Email', email, hibp_email_res, hibp_paste_res)
-    ec = email_to_entry_context(email, hibp_email_res or [], hibp_paste_res or [])
-    return_outputs(md, ec, hibp_email_res)
+    api_email_res = http_request('GET', url_suffix=email_suffix)
+    api_paste_res = http_request('GET', url_suffix=paste_suffix)
+
+    if retry_needed(api_email_res, api_paste_res):
+        wait_amount = max(
+            api_email_res['request_retry'] if 'request_retry' in api_email_res else 0,
+            api_paste_res['request_retry'] if 'request_retry' in api_paste_res else 0
+        )
+        rate_limit_retry(wait_amount, 'email')
+    else:
+        md = data_to_markdown('Email', email, api_email_res, api_paste_res)
+        ec = email_to_entry_context(email, api_email_res or [], api_paste_res or [])
+        return_outputs(md, ec, api_email_res)
 
 
 def pwned_domain_command():
@@ -217,10 +245,14 @@ def pwned_domain_command():
 
 
 def pwned_domain(domain, suffix):
-    hibp_res = http_request('GET', suffix)
-    md = data_to_markdown('Domain', domain, hibp_res)
-    ec = domain_to_entry_context(domain, hibp_res or [])
-    return_outputs(md, ec, hibp_res)
+    api_res = http_request('GET', url_suffix=suffix)
+
+    if retry_needed(api_res, api_res):
+        rate_limit_retry(api_res['request_retry'], 'domain')
+    else:
+        md = data_to_markdown('Domain', domain, api_res)
+        ec = domain_to_entry_context(domain, api_res or [])
+        return_outputs(md, ec, api_res)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
