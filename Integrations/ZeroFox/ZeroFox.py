@@ -276,7 +276,7 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Union[
         )
         # Handle error responses gracefully
         if res.status_code not in {200, 201} and not continue_err:
-            err_msg = f'Error in ZeroFox Integration API call [{res.status_code}] - {res.reason}\n'
+            err_msg = f'Error calling ZeroFox integration API [{res.status_code}] - {res.reason}\n'
             try:
                 res_json = res.json()
                 if 'error' in res_json:
@@ -288,21 +288,21 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Union[
         else:
             try:
                 if res.status_code not in {200, 201}:
-                    raise Exception('URL does not resolve')
+                    raise Exception('Failure resolving URL.')
                 return res.json()
             except ValueError:
                 return {'res_content': res.content}
     except requests.exceptions.ConnectTimeout:
-        err_msg = 'Connection Timeout Error - potential reasons may be that the Server URL parameter' \
-                  ' is incorrect or that the Server is not accessible from your host.'
+        err_msg = 'Connection Timeout Error - incorrect server URL parameter' \
+                  ' or the Server cannot be accessed from your host.'
         raise Exception(err_msg)
     except requests.exceptions.SSLError:
-        err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' in' \
+        err_msg = 'Failure verying SSL certificate. Try selecting \'Trust any certificate\' in' \
                   ' the integration configuration.'
         raise Exception(err_msg)
     except requests.exceptions.ProxyError:
-        err_msg = 'Proxy Error - if \'Use system proxy\' in the integration configuration has been' \
-                  ' selected, try deselecting it.'
+        err_msg = 'Proxy Error - try clearing \'Use system proxy\' in the integration configuration if it has been' \
+                  ' selected.'
         raise Exception(err_msg)
     except requests.exceptions.ConnectionError as e:
         # Get originating Exception in Exception chain
@@ -377,7 +377,7 @@ def alert_request_takedown_command():
     contents: Dict = alert_contents_request(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Takedown:Requested'}}
     return_outputs(
-        f'Alert {alert_id} has been requested to be taken down successfully.',
+        f'Request to successfully take down Alert {alert_id}.',
         context,
         raw_response=contents
     )
@@ -399,7 +399,7 @@ def alert_cancel_takedown_command():
     contents: Dict = alert_contents_request(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Status': 'Open'}}
     return_outputs(
-        f'Alert {alert_id} was cancelled takedown successfully.',
+        f'Successful cancelled takedown of Alert {alert_id}.',
         context,
         raw_response=contents
     )
@@ -424,7 +424,7 @@ def alert_user_assignment_command():
     contents: Dict = alert_contents_request(alert_id)
     context: Dict = {'ZeroFox.Alert(val.ID && val.ID === obj.ID)': {'ID': alert_id, 'Assignee': username}}
     return_outputs(
-        f'{username} has been assigned to alert {alert_id} successfully.',
+        f'{username} was assigned to alert {alert_id} successfully.',
         context,
         raw_response=contents
     )
@@ -527,7 +527,7 @@ def create_entity_command():
     response_content: Dict = create_entity(name, strict_name_matching, tags, policy_id, organization)
     entity_id: int = response_content.get('id', '')
     return_outputs(
-        f'Entity has been created successfully. ID: {entity_id}',
+        f'Successful creation of entity. ID: {entity_id}.',
         {'ZeroFox.Entity(val.ID && val.ID === obj.ID)': {
             'ID': entity_id,
             'StrictNameMatching': strict_name_matching,
