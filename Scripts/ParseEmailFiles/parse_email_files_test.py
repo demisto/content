@@ -4,12 +4,12 @@ import demistomock as demisto
 import pytest
 
 
-def exec_command_for_file(path):
+def exec_command_for_file(file_path, info="RFC 822 mail text, with CRLF line terminators", file_name=None):
     """
     Return a executeCommand function which will return the passed path as an entry to the call 'getFilePath'
 
     Arguments:
-        path {string} -- path
+        file_paht {string} -- file name of file residing in test_data dir
 
     Raises:
         ValueError: if call with differed name from getFilePath or getEntry
@@ -17,6 +17,10 @@ def exec_command_for_file(path):
     Returns:
         [function] -- function to be used for mocking
     """
+    if not file_name:
+        file_name = file_path
+    path = 'test_data/' + file_path
+
     def executeCommand(name, args=None):
         if name == 'getFilePath':
             return [
@@ -24,7 +28,7 @@ def exec_command_for_file(path):
                     'Type': entryTypes['note'],
                     'Contents': {
                         'path': path,
-                        'name': 'test_email.eml'
+                        'name': file_name
                     }
                 }
             ]
@@ -33,7 +37,7 @@ def exec_command_for_file(path):
                 {
                     'Type': entryTypes['file'],
                     'FileMetadata': {
-                        'info': 'RFC 822 mail text, ISO-8859 text, with very long lines, with CRLF line terminators'
+                        'info': info
                     }
                 }
             ]
@@ -334,7 +338,7 @@ def test_unfold():
 
 def test_email_raw_headers(mocker):
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test', 'max_depth': '1'})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('test_data/multiple_to_cc.eml'))
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('multiple_to_cc.eml'))
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
@@ -358,7 +362,7 @@ def test_eml_contains_eml_with_status(mocker):
     decoded = convert_to_unicode(subject)
     subject_attach = decoded.decode('utf-8')
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('test_data/ParseEmailFiles-test-emls.eml'))
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('ParseEmailFiles-test-emls.eml'))
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
@@ -374,7 +378,7 @@ def test_eml_contains_eml_with_status(mocker):
 @pytest.mark.parametrize('email_file', ['eml_contains_base64_eml.eml', 'eml_contains_base64_eml2.eml'])
 def test_eml_contains_base64_encoded_eml(mocker, email_file):
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('test_data/' + email_file))
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file(email_file))
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
@@ -391,3 +395,36 @@ def test_eml_contains_base64_encoded_eml(mocker, email_file):
 
     assert results[0]['EntryContext']['Email'][1]["Subject"] == 'test - inner attachment eml'
     assert results[0]['EntryContext']['Email'][1]['Depth'] == 1
+
+
+# check that we parse an email with "data" type and eml extension
+def test_eml_data_type(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('smtp_email_type.eml', info='data'))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+    assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['Subject'] == 'Test Smtp Email'
+
+
+# check that we parse an email with "data" type and eml extension
+def test_smime(mocker):
+    multipart_sigened = 'multipart/signed; protocol="application/pkcs7-signature";, ASCII text, with CRLF line terminators'
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('smime.p7m', info=multipart_sigened))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+    # assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['Subject'] == 'Testing Email Attachment'
