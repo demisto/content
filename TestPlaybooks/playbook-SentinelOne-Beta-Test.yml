@@ -1,6 +1,6 @@
-id: SentinelOne Beta Test
+id: SentinelOne V2 - test
 version: -1
-name: SentinelOne Beta Test
+name: SentinelOne V2 - test
 starttaskid: "0"
 tasks:
   "0":
@@ -46,6 +46,8 @@ tasks:
       - "3"
       - "4"
       - "7"
+      - "12"
+      - "13"
     scriptarguments:
       all:
         simple: "yes"
@@ -118,6 +120,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
     scriptarguments:
       activities_ids: {}
       activity_types: {}
@@ -220,6 +225,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
     scriptarguments:
       agents_ids:
         simple: "657613730168123595"
@@ -326,14 +334,416 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 89b1439b-2013-48b9-8b26-a5a26083cef2
+    type: regular
+    task:
+      id: 89b1439b-2013-48b9-8b26-a5a26083cef2
+      version: -1
+      name: Disconnect agent to network
+      description: Disconnect agents from network
+      script: '|||sentinelone-disconnect-agent'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      agent_id:
+        simple: ${SentinelOne.Agent.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 9e0b73ea-5a24-4376-85d6-bdd22257eb55
+    type: regular
+    task:
+      id: 9e0b73ea-5a24-4376-85d6-bdd22257eb55
+      version: -1
+      name: Connect agent to network
+      description: Connect agents to network
+      script: '|||sentinelone-connect-agent'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      agent_id:
+        simple: ${SentinelOne.Agent.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: fab84b80-797e-4ab6-86ab-e067aff8da24
+    type: regular
+    task:
+      id: fab84b80-797e-4ab6-86ab-e067aff8da24
+      version: -1
+      name: Broadcast Message
+      description: Broadcasts a message to all agents matching the input filter.
+      script: '|||sentinelone-broadcast-message'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      active_agent: {}
+      agent_id:
+        simple: "657613730168123595"
+      domain: {}
+      group_id: {}
+      message:
+        simple: Hey There, just checking
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 0df4a8ff-955e-4078-8f6b-1fc72b0b1103
+    type: regular
+    task:
+      id: 0df4a8ff-955e-4078-8f6b-1fc72b0b1103
+      version: -1
+      name: Create Query ID
+      description: Start a Deep Visibility Query and get the queryId, use queryId
+        for all other APIs such as Get All Events
+      script: '|||sentinelone-create-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      from_date:
+        simple: 2019-08-02T04:49:26.257525Z
+      query:
+        simple: AgentName Is Not Empty
+      to_date:
+        simple: 2019-08-04T04:49:26.257525Z
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 35378106-47fd-4273-8fae-a05e56acbd8d
+    type: regular
+    task:
+      id: 35378106-47fd-4273-8fae-a05e56acbd8d
+      version: -1
+      name: Get events
+      description: Get all Deep Visibility events from query
+      script: '|||sentinelone-get-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      limit:
+        simple: "10"
+      query_id:
+        simple: ${SentinelOne.Query.QueryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 7bb1e635-2061-4f95-81b4-470e08d5eea6
+    type: regular
+    task:
+      id: 7bb1e635-2061-4f95-81b4-470e08d5eea6
+      version: -1
+      name: Get processes
+      description: Get Deep Visibility events from query by event type - process
+      script: '|||sentinelone-get-processes'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      limit: {}
+      query_id:
+        simple: ${SentinelOne.Query.QueryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2060,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: fb1d65bb-a0fc-4643-883f-cd5f639622b9
+    type: regular
+    task:
+      id: fb1d65bb-a0fc-4643-883f-cd5f639622b9
+      version: -1
+      name: Wait
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+      - "15"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 04604a2f-bd27-425e-87e2-40fca8fff6b8
+    type: regular
+    task:
+      id: 04604a2f-bd27-425e-87e2-40fca8fff6b8
+      version: -1
+      name: Get agent activities
+      description: Returns a list of activities.
+      script: "|||sentinelone-get-activities"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      activities_ids: {}
+      activity_types: {}
+      agent_ids:
+        complex:
+          root: SentinelOne
+          accessor: Activity.AgentID
+          transformers:
+          - operator: GetFirstObject
+      created_after: {}
+      created_before: {}
+      created_between: {}
+      created_from: {}
+      created_until: {}
+      group_ids: {}
+      include_hidden: {}
+      limit:
+        simple: "10"
+      threats_ids: {}
+      user_emails: {}
+      user_ids: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: b05e81f0-881f-463d-886a-f44ddc02ddea
+    type: condition
+    task:
+      id: b05e81f0-881f-463d-886a-f44ddc02ddea
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: SentinelOne.Event.ProcessID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SentinelOne.Event.ProcessName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 7659b866-89b0-471f-87fa-fcbd38279535
+    type: title
+    task:
+      id: 7659b866-89b0-471f-87fa-fcbd38279535
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 1f101b28-6fff-4952-8655-4a81bc2784a0
+    type: condition
+    task:
+      id: 1f101b28-6fff-4952-8655-4a81bc2784a0
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: SentinelOne.Event.ProcessID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SentinelOne.Event.ProcessName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2060,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 9b3bfbb8-ef3a-436d-8fe6-d440703a9437
+    type: condition
+    task:
+      id: 9b3bfbb8-ef3a-436d-8fe6-d440703a9437
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: SentinelOne.Activity.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: SentinelOne.Activity.ActivityType
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 785,
-        "width": 1740,
-        "x": -10,
+        "height": 1305,
+        "width": 2910,
+        "x": -470,
         "y": 50
       }
     }
