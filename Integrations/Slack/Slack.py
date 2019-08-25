@@ -83,10 +83,11 @@ def get_user_by_name(user_to_search: str, integration_context: dict) -> dict:
 
     user: dict = {}
     users: list = []
+    user_to_search = user_to_search.lower()
     if integration_context.get('users'):
         users = json.loads(integration_context['users'])
-        users_filter = list(filter(lambda u: u.get('name') == user_to_search
-                                             or u.get('profile', {}).get('email') == user_to_search, users))
+        users_filter = list(filter(lambda u: u.get('name', '').lower() == user_to_search
+                                             or u.get('profile', {}).get('email', '').lower() == user_to_search, users))
         if users_filter:
             user = users_filter[0]
     if not user:
@@ -94,8 +95,8 @@ def get_user_by_name(user_to_search: str, integration_context: dict) -> dict:
         while True:
             workspace_users = response['members'] if response and response.get('members', []) else []
             cursor = response.get('response_metadata', {}).get('next_cursor')
-            users_filter = list(filter(lambda u: u.get('name') == user_to_search
-                                                 or u.get('profile', {}).get('email') == user_to_search,
+            users_filter = list(filter(lambda u: u.get('name', '').lower() == user_to_search
+                                                 or u.get('profile', {}).get('email', '').lower() == user_to_search,
                                        workspace_users))
             if users_filter:
                 break
