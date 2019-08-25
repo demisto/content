@@ -60,6 +60,66 @@ script:
       type: String
   - arguments:
     - default: true
+      description: Name of the bucket to create
+      isArray: false
+      name: bucket_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Access controls for the bucket
+      isArray: false
+      name: bucket_acl
+      predefined:
+      - authenticatedRead
+      - private
+      - projectPrivate
+      - publicRead
+      - publicReadWrite
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Default access controls for objects in the bucket
+      isArray: false
+      name: default_object_acl
+      predefined:
+      - authenticatedRead
+      - bucketOwnerFullControl
+      - bucketOwnerRead
+      - private
+      - projectPrivate
+      - publicRead
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new bucket
+    execution: false
+    name: gcs-create-bucket
+  - arguments:
+    - default: true
+      description: Name of the bucket to delete
+      isArray: false
+      name: bucket_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: Force-delete the bucket if not empty
+      isArray: false
+      name: force
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+      secret: false
+    deprecated: false
+    description: Permanently deletes a bucket
+    execution: false
+    name: gcs-delete-bucket
+  - arguments:
+    - default: true
       description: Name of the bucket to list objects from
       isArray: false
       name: bucket_name
@@ -124,66 +184,6 @@ script:
     description: Retrieves object data into a file
     execution: false
     name: gcs-download-file
-  - arguments:
-    - default: true
-      description: Name of the bucket to create
-      isArray: false
-      name: bucket_name
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Access controls for the bucket
-      isArray: false
-      name: bucket_acl
-      predefined:
-      - authenticatedRead
-      - private
-      - projectPrivate
-      - publicRead
-      - publicReadWrite
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Default access controls for objects in the bucket
-      isArray: false
-      name: default_object_acl
-      predefined:
-      - authenticatedRead
-      - bucketOwnerFullControl
-      - bucketOwnerRead
-      - private
-      - projectPrivate
-      - publicRead
-      required: false
-      secret: false
-    deprecated: false
-    description: Creates a new bucket
-    execution: false
-    name: gcs-create-bucket
-  - arguments:
-    - default: true
-      description: Name of the bucket to delete
-      isArray: false
-      name: bucket_name
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'False'
-      description: Force-delete the bucket if not empty
-      isArray: false
-      name: force
-      predefined:
-      - 'True'
-      - 'False'
-      required: true
-      secret: false
-    deprecated: false
-    description: Permanently deletes a bucket
-    execution: false
-    name: gcs-delete-bucket
   - arguments:
     - default: true
       description: ID of a context entry containing the file to upload
