@@ -128,6 +128,13 @@ script:
       name: scan_results_id
       required: true
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum results count
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Get details about a given vulnerability from a given Tenable.sc scan
     execution: false
