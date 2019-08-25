@@ -1,5 +1,7 @@
 ## [Unreleased]
     - Removed 'Mandatory' tag from commands' arguments
+    - Added support to rate-limit issue
+    - Added Account.Domain context path
 
 
 ## [19.8.2] - 2019-08-22
