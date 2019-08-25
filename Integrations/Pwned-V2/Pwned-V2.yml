@@ -93,6 +93,9 @@ script:
       description: For compromised domains, the reporters for the vendor to make the
         compromised decision.
       type: String
+    - contextPath: Account.Domain
+      description: Domain of the account.
+      type: String
     - contextPath: Domain.Name
       description: Domain name.
       type: String
@@ -173,6 +176,9 @@ script:
     - contextPath: Domain.Pwned-V2.Compromised.Reporters
       description: For compromised domains, the reporters for the vendor to make the
         compromised decision.
+      type: String
+    - contextPath: Account.Domain
+      description: Domain of the account.
       type: String
     - contextPath: Domain.Name
       description: The domain name.
