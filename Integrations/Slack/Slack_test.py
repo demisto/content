@@ -57,7 +57,7 @@ USERS = '''[{
         "real_name_normalized": "Glinda Southgood",
         "display_name": "Glinda the Fairly Good",
         "display_name_normalized": "Glinda the Fairly Good",
-        "email": "glenda@south.oz.coven"
+        "email": "Glenda@south.oz.coven"
     },
     "is_admin": true,
     "is_owner": false,
@@ -1780,7 +1780,6 @@ def test_send_request_zero_severity(mocker):
 
 
 def test_send_message(mocker):
-    mocker.patch.object(demisto, 'params', return_value={'footer': 'View it on:'})
     import Slack
     # Set
 
@@ -2087,3 +2086,47 @@ def test_send_topic_no_args_no_investigation(mocker):
     # Assert
     assert Slack.get_conversation_by_name.call_count == 0
     assert err_msg == 'No channel was provided.'
+
+
+def test_send_to_user_lowercase(mocker):
+    import Slack
+
+    # Set
+
+    def users_list(**kwargs):
+        return {'members': json.loads(USERS)}
+
+    def conversations_list(**kwargs):
+        return {'channels': json.loads(CONVERSATIONS)}
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(demisto, 'args', return_value={'to': 'glenda@south.oz.coven', 'message': 'hi'})
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
+    mocker.patch.object(slack.WebClient, 'conversations_list', side_effect=conversations_list)
+    mocker.patch.object(slack.WebClient, 'im_open', return_value={'channel': {'id': 'im_channel'}})
+    mocker.patch.object(Slack, 'send_file', return_value='neat')
+    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+
+    # Arrange
+
+    Slack.slack_send()
+
+    send_args = Slack.send_message.call_args[0]
+
+    results = demisto.results.call_args_list[0][0]
+
+    # Assert
+
+    assert slack.WebClient.users_list.call_count == 0
+    assert slack.WebClient.conversations_list.call_count == 0
+    assert Slack.send_message.call_count == 1
+
+    assert send_args[0] == ['im_channel']
+    assert send_args[1] is None
+    assert send_args[2] is False
+    assert send_args[4] == 'hi'
+    assert send_args[5] == ''
+
+    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
