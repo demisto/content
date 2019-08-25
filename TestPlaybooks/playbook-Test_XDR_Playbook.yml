@@ -2,7 +2,6 @@ id: Test XDR Playbook
 version: -1
 name: Test XDR Playbook
 starttaskid: "0"
-fromversion: 4.1.0
 tasks:
   "0":
     id: "0"
@@ -66,7 +65,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 370
         }
       }
     note: false
@@ -99,7 +98,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 545
         }
       }
     note: false
@@ -120,7 +119,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "1"
     scriptarguments:
       all:
         simple: "yes"
@@ -186,7 +185,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 720
         }
       }
     note: false
@@ -235,7 +234,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 895
         }
       }
     note: false
@@ -275,7 +274,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1070
         }
       }
     note: false
@@ -313,7 +312,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1245
         }
       }
     note: false
@@ -335,82 +334,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: 7ba2d5e3-9f66-4c6a-8221-7a3c55323543
-    type: regular
-    task:
-      id: 7ba2d5e3-9f66-4c6a-8221-7a3c55323543
-      version: -1
-      name: xdr-get-incidents
-      description: |-
-        Returns a list of incidents, which you can filter by a list of incident IDs (max 100), the time the incident was last modified, and the time the incident was created.
-        If you pass multiple filtering argument, they will be concatenated using the AND condition. The OR condition is not supported.
-      script: '|||xdr-get-incidents'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      gte_creation_time: {}
-      gte_modification_time: {}
-      incident_id_list: {}
-      limit: {}
-      lte_creation_time: {}
-      lte_modification_time: {}
-      page: {}
-      since_creation_time: {}
-      since_modification_time: {}
-      sort_by_creation_time: {}
-      sort_by_modification_time: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "10":
-    id: "10"
-    taskid: 148dce9a-fe5c-4c17-8403-29ebf8f4a914
-    type: regular
-    task:
-      id: 148dce9a-fe5c-4c17-8403-29ebf8f4a914
-      version: -1
-      name: DeleteContext2
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
+          "y": 1420
         }
       }
     note: false
@@ -421,7 +345,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1785,
+        "height": 1435,
         "width": 380,
         "x": 50,
         "y": 50

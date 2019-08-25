@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added a default query for the xdr-get-incident. 
+Return a meaningful error when no query args are given for the !xdr-get-incidents command 
 
 
 ## [19.8.0] - 2019-08-06

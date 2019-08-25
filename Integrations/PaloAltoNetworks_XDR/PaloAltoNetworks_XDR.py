@@ -165,13 +165,11 @@ def get_incidents_command():
     page = int(demisto.args().get('page', 0))
     limit = int(demisto.args().get('limit', 100))
 
-    # If no filters were given, a default query will be generated
+    # If no filters were given, return a meaningful error message
     if (not lte_modification_time and not gte_modification_time and not since_modification_time
             and not lte_creation_time and not gte_creation_time and not since_creation_time):
-        since_creation_time = "1 year"
-        gte_creation_time, _ = parse_date_range(since_creation_time, TIME_FORMAT)
-        if not sort_by_creation_time:
-            sort_by_creation_time = "desc"
+        return_error("Please provide a query for the incidents.\n For example:"
+                     " !xdr-get-incidents since_creation_time=\"1 year\" sort_by_creation_time=\"desc\" limit=10")
 
     raw_incidents = get_incidents(
         incident_id_list=incident_id_list,
