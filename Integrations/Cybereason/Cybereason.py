@@ -870,7 +870,8 @@ def kill_process_command():
         status_log = response['statusLog'][0]
         status_log['status']
         # response
-        # demisto.results('Request to kill process {0} was sent successfully and now in status {1}')
+        demisto.results('Request to kill process {0} was sent successfully and now in status {1}'.format(process_guid,
+                                                                                                         status_log))
 
 
 def kill_process(malop_guid, machine_guid, process_guid):
@@ -1039,8 +1040,7 @@ def query_file_command():
                 'Path': path,
                 'Machine': machine,
                 'SuspicionsCount': machine_details['suspicionCount'],
-                'IsConnected': True if
-                machine_simple_values['ownerMachine.isActiveProbeConnected']['values'][0] == 'true' else False,
+                'IsConnected': (machine_simple_values['ownerMachine.isActiveProbeConnected']['values'][0] == 'true'),
                 'OSVersion': os_version,
                 'Suspicion': suspicions,
                 'Evidence': evidences,
@@ -1147,10 +1147,9 @@ def query_domain_command():
             simple_values = domains[domain]['simpleValues']
 
             reputation = simple_values['maliciousClassificationType']['values'][0]
-            is_internal_domain = True if simple_values['isInternalDomain']['values'][0] == 'true' else False
-            was_ever_resolved = True if simple_values['everResolvedDomain']['values'][0] == 'true' else False
-            was_ever_resolved_as = True if simple_values['everResolvedSecondLevelDomain']['values'][0] == 'true' \
-                else False
+            is_internal_domain = simple_values['isInternalDomain']['values'][0] == 'true'
+            was_ever_resolved = simple_values['everResolvedDomain']['values'][0] == 'true'
+            was_ever_resolved_as = simple_values['everResolvedSecondLevelDomain']['values'][0] == 'true'
             malicious = domains[domain].get('isMalicious')
             suspicions_count = domains[domain].get('suspicionCount')
 
@@ -1467,7 +1466,7 @@ try:
     elif demisto.command() == 'cybereason-query-user':
         query_user_command()
 
-except Exception, e:
+except Exception as e:
     LOG(e.message)
     LOG.print_log()
     raise
