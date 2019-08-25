@@ -1,6 +1,6 @@
 category: Messaging
 commonfields:
-  id: SlackV2_copy
+  id: SlackV2
   version: -1
 configuration:
 - display: Slack API access token
@@ -50,7 +50,7 @@ configuration:
   type: 8
 description: Sends messages and notifications to your Slack Team.
 display: Slack V2
-name: SlackV2_copy
+name: SlackV2
 script:
   commands:
   - arguments:
@@ -167,6 +167,17 @@ script:
       description: The topic of the channel.
       isArray: false
       name: channelTopic
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Kick the Slack admin(the channel creator).
+      isArray: false
+      name: kickAdmin
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -291,8 +302,16 @@ script:
     description: Deprecated. Use the "close-channel" command instead.
     execution: false
     name: slack-close-channel
-  - deprecated: false
-    description: Archives the mirrored channel for this incident.
+  - arguments:
+    - default: false
+      description: The channel to archive.
+      isArray: false
+      name: channel
+      required: false
+      secret: false
+    deprecated: false
+    description: Archives a slack channel. If no channel is provided, the mirrored
+      channel for the incident is archived (if it exists).
     execution: false
     name: close-channel
   - arguments:
@@ -386,7 +405,7 @@ script:
     name: slack-create-channel
   - arguments:
     - default: true
-      description: CSV list of the user names.
+      description: CSV list of the users to invite.
       isArray: false
       name: users
       required: true
@@ -402,6 +421,69 @@ script:
     description: Invite a user to a channel in Slack.
     execution: false
     name: slack-invite-to-channel
+  - arguments:
+    - default: true
+      description: CSV list of users to kick.
+      isArray: false
+      name: users
+      required: true
+      secret: false
+    - default: false
+      description: The channel name. If not specified, the mirrored investigation
+        channel is used (if the channel exists).
+      isArray: false
+      name: channel
+      required: false
+      secret: false
+    deprecated: false
+    description: KIck a user from a channel in Slack.
+    execution: false
+    name: slack-kick-from-channel
+  - arguments:
+    - default: true
+      description: The new name to use.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The channel name. If not specified, the name of the mirrored investigation
+        channel is set (if the channel exists).
+      isArray: false
+      name: channel
+      required: false
+      secret: false
+    deprecated: false
+    description: Rename a channel in Slack.
+    execution: false
+    name: slack-rename-channel
+  - arguments:
+    - default: true
+      description: The Slack user.
+      isArray: false
+      name: user
+      required: true
+      secret: false
+    deprecated: false
+    description: Get details for a given Slack user.
+    execution: false
+    name: slack-get-user-details
+    outputs:
+    - contextPath: Slack.User.ID
+      description: The user's Slack ID.
+      type: String
+    - contextPath: Slack.User.Username
+      description: The user's username.
+      type: String
+    - contextPath: Slack.User.Name
+      description: The user's name.
+      type: String
+    - contextPath: Slack.User.DisplayName
+      description: The user's display name.
+      type: String
+    - contextPath: Slack.User.Email
+      description: The user's email.
+      type: String
   dockerimage: demisto/slack:1.0.0.814
   isfetch: false
   longRunning: true
