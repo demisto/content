@@ -67,18 +67,18 @@ def geo_by_ec(lat: str, long: str):
 
 def dbot_score(pulse_info: dict):
     """
-    calculate score for query
+    calculate dBot score for query
     :param pulse_info: returned from general section as dictionary
     :return: score - good (if 0), bad (if grater than default), suspicious if between
     """
-    bad_score = 1
+    bad_score = 2
     count = pulse_info.get('count')
-    if isinstance(count, int):
+    if isinstance(count, int) and count >= 0:
         if count == 0:
             return 'good'
         if 0 < count < bad_score:
             return 'suspicious'
-        if count > bad_score:
+        if count >= bad_score:
             return 'bad'
     return 'unknown'
 
@@ -109,53 +109,25 @@ def create_page_pulse(page_entry: list) -> list:
     return [create_pulse_by_ec(entry) for entry in page_entry]
 
 
-def create_passive_dns(passive_dns: list) -> list:
-    """
-    Rearrange all key in the pulses by entry context definition
-    :param page_entry: list of pulses in a page
-    :return: page entry by entry context definition
-    """
-    def create_passive_dns_by_ec(entry: dict) -> dict:
-        by_ec = {
-            'Hostname': entry.get('hostname'),
-            'Ip': entry.get('address'),
-            'Type:': entry.get('asset_type'),
-            'FirstSeen': entry.get('first'),
-            'LastSeen': entry.get('last')
-        }
-        return remove_none(by_ec)
-
-    return [create_passive_dns_by_ec(entry) for entry in passive_dns]
-
-
-def create_url_list(passive_dns: list) -> list:
-    """
-    Rearrange all key in the pulses by entry context definition
-    :param page_entry: list of pulses in a page
-    :return: list of page entry by entry context definition
-    """
-    def create_url_list_by_ec(entry: dict) -> dict:
-        by_ec = {
-            'Data': entry.get('url'),
-        }
-        return remove_none(by_ec)
-
-    return [create_url_list_by_ec(entry) for entry in passive_dns]
-
-
-def create_hash_list(hashes_list: list) -> list:
-    """
-    Rearrange all key in the pulses by entry context definition
-    :param hashes_list: list of hash entries in a page
-    :return: list of hashes list by entry context definition
-    """
-    def create_hashes_list_by_ec(entry: dict) -> dict:
-        by_ec = {
-            'Hash': entry.get('hash'),
-        }
-        return remove_none(by_ec)
-
-    return [create_hashes_list_by_ec(entry) for entry in hashes_list]
+def create_list_by_ec(list_entries: list, list_type: str):
+    def create_entry_by_ec(entry: dict):
+        if list_type == 'passive_dns':
+            return ({
+                'Hostname': entry.get('hostname'),
+                'Ip': entry.get('address'),
+                'Type:': entry.get('asset_type'),
+                'FirstSeen': entry.get('first'),
+                'LastSeen': entry.get('last')
+            })
+        elif list_type == 'url_list':
+            return remove_none({
+                'Data': entry.get('url')
+            })
+        elif list_type == 'hash_list':
+            return remove_none({
+                'Hash': entry.get('hash')
+            })
+    return [create_entry_by_ec(entry) for entry in list_entries]
 
 
 def remove_none(obj):
@@ -184,7 +156,7 @@ def test_module():
     demisto.results('ok')
 
 
-# IP commmand
+# IP command
 def ip(ip_test=None):
     api_path = {
         'source': 'indicators',
@@ -587,7 +559,7 @@ def alienvault_get_related_urls_by_indicator():
     ec = {
         'AlienVaultOTX': {
             'URL': {
-                'Data': create_url_list(raw.get('url_list'))
+                'Data': create_list_by_ec(list_entries=raw.get('url_list'), list_type='url_list')
             }
         }
     }
@@ -634,7 +606,7 @@ def alienvault_get_related_hashes_by_indicator():
     ec = {
         'AlienVaultOTX': {
             'File': {
-                'Hash': create_hash_list(raw.get('data'))
+                'Hash': create_list_by_ec(list_entries=raw.get('data'), list_type='hash_list')
             }
         }
     }
@@ -680,7 +652,7 @@ def alienvault_get_passive_dns_data_by_indicator():
 
     ec = {
         'AlienVaultOTX': {
-            'PassiveDNS': create_passive_dns(raw.get('passive_dns'))
+            'PassiveDNS': create_list_by_ec(list_entries=raw.get('passive_dns'), list_type='passive_dns')
         }
     }
     return raw, ec
