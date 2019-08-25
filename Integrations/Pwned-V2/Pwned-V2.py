@@ -205,7 +205,7 @@ def rate_limit_retry(amount_of_seconds, request_type):
 
 
 def retry_needed(api_res, api_paste_res):
-    return api_res and api_paste_res and 'request_retry' in api_res or 'request_retry' in api_paste_res
+    return api_res and api_paste_res and ('request_retry' in api_res or 'request_retry' in api_paste_res)
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
