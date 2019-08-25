@@ -189,7 +189,6 @@ def domain_to_entry_context(domain, api_res):
         dbot_score = DEFAULT_DBOT_SCORE_DOMAIN
         domain_context = create_context_entry('domain', domain, comp_sites, [], DEFAULT_DBOT_SCORE_DOMAIN)
         comp_domain[outputPaths['domain']] = domain_context
-        comp_domain['Account.Domain'] = domain
 
     comp_domain['DBotScore'] = create_dbot_score_dictionary(domain, 'domain', dbot_score)
 
