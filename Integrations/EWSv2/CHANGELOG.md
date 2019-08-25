@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+- More secure exchange 365 compliance search
 
 ## [19.8.0] - 2019-08-06
   - Improved memory resource usage.
