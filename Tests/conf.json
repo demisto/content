@@ -1353,7 +1353,8 @@
             "playbookID": "DUO Test Playbook"
         },
         {
-            "playbookID": "SLA Scripts - Test"
+            "playbookID": "SLA Scripts - Test",
+            "fromversion": "4.1.0"
         },
         {
             "playbookID": "PcapHTTPExtractor-Test"
@@ -1504,6 +1505,18 @@
         {
             "playbookID": "PAN OS EDL Management - Test",
             "integrations": "palo_alto_networks_pan_os_edl_management"
+        },
+        {
+            "playbookID": "PAN-OS DAG Configuration Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "timeout": 1000
+        },
+        {
+            "playbookID": "PAN-OS EDL Setup Test",
+            "integrations": ["Panorama","palo_alto_networks_pan_os_edl_management"],
+            "instance_names": "palo_alto_panorama",
+            "timeout": 1000
         },
         {
             "integrations": "Snowflake",
@@ -1746,6 +1759,9 @@
         }
     ],
     "skipped_tests": {
+        "VxStream Test": "crowdstrike-detonate-file fails with Bad request code (Issue 18791)",
+        "Extract Indicators From File - Generic v2 - Test": "issue with extract indicators. (probably regex) (Issue 18795)",
+        "Pwned v2 test": "Pwned v2 test fails on conditional task (Issue 18793).",
         "CheckpointFW-test": "Test is not stable (Issue 18643)",
         "LogRhythm REST test": "A command's response doesnt match the expected results (issue #18385)",
         "search_endpoints_by_hash_-_tie_-_test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
@@ -1812,6 +1828,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "vmray": "VMRay license expired (Issue 18752)",
         "Anomali ThreatStream v2": "Credentials are invalid (issue 18561)",
         "Anomali ThreatStream": "Credentials are invalid (issue 18561)",
         "RSA Archer": "Instance does not seem to be working, Arian is checking",
