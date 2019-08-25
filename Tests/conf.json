@@ -1759,6 +1759,9 @@
         }
     ],
     "skipped_tests": {
+        "VxStream Test": "crowdstrike-detonate-file fails with Bad request code (Issue 18791)",
+        "Extract Indicators From File - Generic v2 - Test": "issue with extract indicators. (probably regex) (Issue 18795)",
+        "Pwned v2 test": "Pwned v2 test fails on conditional task (Issue 18793).",
         "CheckpointFW-test": "Test is not stable (Issue 18643)",
         "LogRhythm REST test": "A command's response doesnt match the expected results (issue #18385)",
         "search_endpoints_by_hash_-_tie_-_test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
