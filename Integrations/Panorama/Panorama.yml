@@ -1484,7 +1484,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specify a device group for the EDL (Panorama instances)
+      description: Specify a device group for the EDL (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -2322,7 +2322,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specify a device group for the rule (Panorama instances)
+      description: Specify a device group for the rule (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -2362,6 +2362,9 @@ script:
     - contextPath: Panorama.SecurityRule.Source
       description: Source address.
       type: String
+    - contextPath: Panorama.SecurityRule.DeviceGroup
+      description: Device group for the rule (Panorama instances).
+      type: string
   - arguments:
     - auto: PREDEFINED
       default: false
