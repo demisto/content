@@ -27,6 +27,9 @@ def should_run_pkg(pkg_dir: str) -> bool:
     diff_compare = os.getenv("DIFF_COMPARE")
     if not diff_compare:
         return True
+    if os.getenv('CONTENT_PRECOMMIT_RUN_DEV_TASKS'):
+        # if running in precommit we check against staged
+        diff_compare = '--staged'
     res = subprocess.run(["git", "diff", "--name-only", diff_compare, "--", pkg_dir], text=True, capture_output=True)
     if res.stdout:
         return True

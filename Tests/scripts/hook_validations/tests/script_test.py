@@ -440,3 +440,48 @@ def test_configuration_extraction():
     }
 
     assert validator._get_arg_to_required_dict(script_json) == expected, 'Failed to extract configuration'
+
+
+def test_invalid_subtype():
+    validator = ScriptValidator("temp_file", check_git=False)
+    validator.current_script = {
+        "type": "python",
+        "subtype": "python3"
+    }
+    validator.old_script = {
+        "type": "python",
+        "subtype": "python3"
+    }
+
+    assert validator.is_invalid_subtype() is False, \
+        "found invalid subtype while it is valid - python3"
+
+
+def test_invalid_subtype_python2():
+    validator = ScriptValidator("temp_file", check_git=False)
+    validator.current_script = {
+        "type": "python",
+        "subtype": "python2"
+    }
+    validator.old_script = {
+        "type": "python",
+        "subtype": "python2"
+    }
+
+    assert validator.is_invalid_subtype() is False, \
+        "found invalid subtype while it is valid - python2"
+
+
+def test_invalid_subtype_blabla():
+    validator = ScriptValidator("temp_file", check_git=False)
+    validator.current_script = {
+        "type": "python",
+        "subtype": "blabla"
+    }
+    validator.old_script = {
+        "type": "python",
+        "subtype": "blabla"
+    }
+
+    assert validator.is_invalid_subtype() is True, \
+        "found valid subtype while it is invalid - blabla"

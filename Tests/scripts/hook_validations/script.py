@@ -60,9 +60,10 @@ class ScriptValidator(object):
             self.is_added_required_args(),
             self.is_arg_changed(),
             self.is_there_duplicates_args(),
+            self.is_invalid_subtype()
         ])
 
-        return is_bc_broke
+        return not is_bc_broke
 
     @classmethod
     def _get_arg_to_required_dict(cls, script_json):
@@ -80,6 +81,23 @@ class ScriptValidator(object):
             arg_to_required[arg.get('name')] = arg.get('required', False)
 
         return arg_to_required
+
+    def is_invalid_subtype(self):
+        """Validate that the subtype is python2 or python3."""
+        type_ = self.current_script.get('type')
+        if type_ == 'python':
+            subtype = self.current_script.get('subtype')
+            if not subtype or subtype not in ['python3', 'python2']:
+                print_error("The subtype for our yml files should be either python2 or python3, "
+                            "please update the file {}.".format(self.current_script.get('name')))
+                return True
+            if self.old_script:
+                old_subtype = self.old_script.get('subtype', "")
+                if len(old_subtype) > 0 and old_subtype != subtype:
+                    print_error("Possible backwards compatibility break, You've changed the subtype"
+                                " of the file {}".format(self.file_path))
+                    return True
+        return False
 
     def is_added_required_args(self):
         """Check if required arg were added."""
