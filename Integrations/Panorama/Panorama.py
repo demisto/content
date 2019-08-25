@@ -22,7 +22,10 @@ USE_SSL = not demisto.params().get('insecure')
 
 # determine a vsys or a device-group
 VSYS = demisto.params().get('vsys')
-DEVICE_GROUP = demisto.params().get('device_group')
+if demisto.args() and demisto.args().get('device-group', None):
+    DEVICE_GROUP = demisto.args().get('device-group')
+else:
+    DEVICE_GROUP = demisto.params().get('device_group')
 # configuration check
 if DEVICE_GROUP and VSYS:
     return_error('Cannot configure both vsys and Device group. Set vsys for firewall, set Device group for Panorama')
@@ -31,13 +34,19 @@ if not DEVICE_GROUP and not VSYS:
 
 # setting security xpath relevant to FW or panorama management
 if DEVICE_GROUP:
-    XPATH_SECURITY_RULES = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
+    if DEVICE_GROUP == 'shared':
+        XPATH_SECURITY_RULES = "/config/shared/"
+    else:
+        XPATH_SECURITY_RULES = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
 else:
     XPATH_SECURITY_RULES = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/rulebase/security/rules/entry"
 
 # setting objects xpath relevant to FW or panorama management
 if DEVICE_GROUP:
-    XPATH_OBJECTS = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
+    if DEVICE_GROUP == 'shared':
+        XPATH_OBJECTS = "/config/shared/"
+    else:
+        XPATH_OBJECTS = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
 else:
     XPATH_OBJECTS = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/"
 

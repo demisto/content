@@ -24,7 +24,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Device group - Panorama instances only
+- display: Device group - Panorama instances only (write shared for Shared location)
   name: device_group
   required: false
   type: 0
@@ -209,21 +209,36 @@ script:
     - contextPath: Panorama.Commit.Status
       description: Commit status
       type: string
-  - deprecated: false
-    description: Pushes rules from Palo Alto Panorama to the configured device group
+  - arguments:
+    - default: true
+      description: Specify a device group (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
+      secret: false
+    deprecated: false
+    description: Pushes configuration from Palo Alto Panorama to the configured device
+      group
     execution: false
     name: panorama-push-to-device-group
     outputs:
     - contextPath: Panorama.Push.DeviceGroup
-      description: Device group the policies were pushed into
-      type: string
+      description: Device group the configuration was pushed into
+      type: String
     - contextPath: Panorama.Push.JobID
       description: Job ID of the configuration to be pushed
-      type: number
+      type: Number
     - contextPath: Panorama.Push.Status
       description: Push status
-      type: string
-  - deprecated: false
+      type: String
+  - arguments:
+    - default: false
+      description: Specify a device group for the addresses (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
+      secret: false
+    deprecated: false
     description: Returns a list of addresses
     execution: false
     name: panorama-list-addresses
@@ -249,6 +264,12 @@ script:
       isArray: false
       name: name
       required: true
+      secret: false
+    - default: false
+      description: Specify a device group for the address (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
       secret: false
     deprecated: false
     description: Returns address details for the supplied address name
@@ -301,6 +322,12 @@ script:
       name: ip_range
       required: false
       secret: false
+    - default: false
+      description: Specify a device group for the address (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
+      secret: false
     deprecated: false
     description: Creates an address object
     execution: false
@@ -328,6 +355,12 @@ script:
       name: name
       required: true
       secret: false
+    - default: false
+      description: Specify a device group for the address (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
+      secret: false
     deprecated: false
     description: Delete an address object
     execution: false
@@ -336,7 +369,14 @@ script:
     - contextPath: Panorama.Addresses.Name
       description: Name of the address that was deleted
       type: string
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: Specify a device group for the address groups (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
+      secret: false
+    deprecated: false
     description: Returns a list of address groups
     execution: false
     name: panorama-list-address-groups
@@ -362,6 +402,12 @@ script:
       isArray: false
       name: name
       required: true
+      secret: false
+    - default: false
+      description: Specify a device group for the address group (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
       secret: false
     deprecated: false
     description: Get details for the specified address group
@@ -418,6 +464,12 @@ script:
       name: description
       required: false
       secret: false
+    - default: false
+      description: Specify a device group for the address group (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
+      secret: false
     deprecated: false
     description: Creates an address group; "static" or "dynamic"
     execution: false
@@ -444,6 +496,12 @@ script:
       isArray: false
       name: name
       required: true
+      secret: false
+    - default: false
+      description: Specify a device group for the address group (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
       secret: false
     deprecated: false
     description: Deletes an address group
@@ -516,7 +574,14 @@ script:
     - contextPath: Panorama.AddressGroups.Addresses
       description: Static Address group addresses
       type: string
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: Specify a device group for the services (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
+      secret: false
+    deprecated: false
     description: Returns a list of addresses
     execution: false
     name: panorama-list-services
@@ -541,6 +606,12 @@ script:
       description: Service name
       isArray: false
       name: name
+      required: false
+      secret: false
+    - default: false
+      description: Specify a device group for the service (Panorama instances)
+      isArray: false
+      name: device-group
       required: false
       secret: false
     deprecated: false
@@ -599,6 +670,12 @@ script:
       name: description
       required: false
       secret: false
+    - default: false
+      description: Specify a device group for the service (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
+      secret: false
     deprecated: false
     description: Creates a service object
     execution: false
@@ -626,6 +703,12 @@ script:
       name: name
       required: true
       secret: false
+    - default: false
+      description: Specify a device group for the service (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
+      secret: false
     deprecated: false
     description: Deletes a service object
     execution: false
@@ -634,7 +717,14 @@ script:
     - contextPath: Panorama.Services.Name
       description: Name of the service that was deleted
       type: string
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: Specify a device group for the service groups (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
+      secret: false
+    deprecated: false
     description: Returns a list of service groups
     execution: false
     name: panorama-list-service-groups
@@ -651,6 +741,12 @@ script:
       isArray: false
       name: name
       required: true
+      secret: false
+    - default: false
+      description: Specify a device group for the service group (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
       secret: false
     deprecated: false
     description: Get details for the specified service group
@@ -676,6 +772,12 @@ script:
       name: services
       required: true
       secret: false
+    - default: false
+      description: Specify a device group for the service group (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
+      secret: false
     deprecated: false
     description: Creates a service group
     execution: false
@@ -693,6 +795,12 @@ script:
       isArray: false
       name: name
       required: true
+      secret: false
+    - default: false
+      description: ' Specify a device group for the service group (Panorama instances)'
+      isArray: false
+      name: device-group
+      required: false
       secret: false
     deprecated: false
     description: Deletes a service group
@@ -741,6 +849,12 @@ script:
       name: name
       required: true
       secret: false
+    - default: false
+      description: Specify a device group for the custom url category (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
+      secret: false
     deprecated: false
     description: Returns information for a custom URL category
     execution: false
@@ -774,6 +888,12 @@ script:
       name: sites
       required: false
       secret: false
+    - default: false
+      description: Specify a device group for the custom url category (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
+      secret: false
     deprecated: false
     description: Creates a custom URL category
     execution: false
@@ -793,6 +913,12 @@ script:
       description: Name of the custom URL category to delete
       isArray: false
       name: name
+      required: false
+      secret: false
+    - default: false
+      description: Specify a device group for the custom url category (Panorama instances)
+      isArray: false
+      name: device-group
       required: false
       secret: false
     deprecated: false
@@ -865,6 +991,12 @@ script:
       name: name
       required: true
       secret: false
+    - default: false
+      description: Specify a device group for the URL filter (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
+      secret: false
     deprecated: false
     description: Get information for a URL filtering rule
     execution: false
@@ -931,6 +1063,12 @@ script:
       description: URL Filter description
       isArray: false
       name: description
+      required: false
+      secret: false
+    - default: false
+      description: Specify a device group for the URL filter (Panorama instances)
+      isArray: false
+      name: device-group
       required: false
       secret: false
     deprecated: false
@@ -1022,6 +1160,12 @@ script:
       name: name
       required: true
       secret: false
+    - default: false
+      description: Specify a device group for the URL filter (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
+      secret: false
     deprecated: false
     description: Deletes a URL filtering rule
     execution: false
@@ -1030,7 +1174,14 @@ script:
     - contextPath: Panorama.URLFilter.Name
       description: URL filter rule name
       type: string
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: Specify a device group for the EDL (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
+      secret: false
+    deprecated: false
     description: Returns a list of external dynamic lists
     execution: false
     name: panorama-list-edls
@@ -1059,6 +1210,12 @@ script:
       isArray: false
       name: name
       required: true
+      secret: false
+    - default: false
+      description: Specify a device group for the EDL (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
       secret: false
     deprecated: false
     description: Returns information for an external dynamic list
@@ -1128,6 +1285,12 @@ script:
       description: Description of the EDL
       isArray: false
       name: description
+      required: false
+      secret: false
+    - default: false
+      description: Specify a device group for the EDL (Panorama instances)
+      isArray: false
+      name: device-group
       required: false
       secret: false
     deprecated: false
@@ -1206,6 +1369,12 @@ script:
       name: name
       required: true
       secret: false
+    - default: false
+      description: Specify a device group for the EDL (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
+      secret: false
     deprecated: false
     description: Deletes an external dynamic list
     execution: false
@@ -1220,6 +1389,12 @@ script:
       isArray: false
       name: name
       required: true
+      secret: false
+    - default: false
+      description: Specify a device group for the EDL (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
       secret: false
     deprecated: false
     description: Refreshes the specified external dynamic list
@@ -1335,6 +1510,12 @@ script:
       name: log_forwarding
       required: false
       secret: false
+    - default: false
+      description: Specify a device group for the rule (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
+      secret: false
     deprecated: false
     description: Creates a policy rule
     execution: true
@@ -1438,6 +1619,12 @@ script:
       name: log_forwarding
       required: false
       secret: false
+    - default: false
+      description: Specify a device group for the rule (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
+      secret: false
     deprecated: false
     description: Creates a custom block policy rule
     execution: true
@@ -1493,6 +1680,12 @@ script:
       predefined:
       - pre-rulebase
       - post-rulebase
+      required: false
+      secret: false
+    - default: false
+      description: Specify a device group for the rule (Panorama instances)
+      isArray: false
+      name: device-group
       required: false
       secret: false
     deprecated: false
@@ -1598,6 +1791,12 @@ script:
       predefined:
       - pre-rulebase
       - post-rulebase
+      required: false
+      secret: false
+    - default: false
+      description: Specify a device group for the rule (Panorama instances)
+      isArray: false
+      name: device-group
       required: false
       secret: false
     deprecated: false
@@ -2014,6 +2213,12 @@ script:
       - post-rulebase
       required: false
       secret: false
+    - default: false
+      description: Specify a device group for the rule (Panorama instances)
+      isArray: false
+      name: device-group
+      required: false
+      secret: false
     deprecated: false
     description: Returns a list of predefined Security Rules.
     execution: false
@@ -2336,13 +2541,13 @@ script:
         enforce the policy.
       type: String
   dockerimage: demisto/python3:3.7.3.221
+  subtype: python3
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   type: python
-  subtype: python3
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb
