@@ -190,16 +190,16 @@ script:
     - contextPath: CVE.ID
       description: CVE ID
       type: Unknown
-    - contextPath: TenableSC.ScanResults.Vulnerability.Hosts.IP
+    - contextPath: TenableSC.ScanResults.Vulnerability.Host.IP
       description: Vulnerability Host IP
       type: string
-    - contextPath: TenableSC.ScanResults.Vulnerability.Hosts.MAC
+    - contextPath: TenableSC.ScanResults.Vulnerability.Host.MAC
       description: Vulnerability Host MAC
       type: string
-    - contextPath: TenableSC.ScanResults.Vulnerability.Hosts.Port
+    - contextPath: TenableSC.ScanResults.Vulnerability.Host.Port
       description: Vulnerability Host Port
       type: number
-    - contextPath: TenableSC.ScanResults.Vulnerability.Hosts.Protocol
+    - contextPath: TenableSC.ScanResults.Vulnerability.Host.Protocol
       description: Vulnerability Host Protocol
       type: string
   - arguments:
