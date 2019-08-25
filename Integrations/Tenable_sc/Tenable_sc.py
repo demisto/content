@@ -1159,7 +1159,7 @@ def get_vulnerability_command():
     mapped_vuln.update(exploit_info)
     mapped_vuln.update(risk_info)
     mapped_vuln['PluginDetails'] = plugin_details
-    mapped_vuln['Hosts'] = hosts
+    mapped_vuln['Host'] = hosts
 
     scan_result = {
         'ID': scan_results_id,
