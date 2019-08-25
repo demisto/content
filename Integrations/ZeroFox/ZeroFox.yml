@@ -53,15 +53,6 @@ script:
     - contextPath: ZeroFox.Alert.OffendingContentURL
       description: URL to content that alert was created on.
       type: String
-    - contextPath: ZeroFox.Alert.AssetTerm.ID
-      description: The ID of the Asset Term.
-      type: Number
-    - contextPath: ZeroFox.Alert.AssetTerm.Name
-      description: The Name of the Asset Term.
-      type: String
-    - contextPath: ZeroFox.Alert.AssetTerm.Deleted
-      description: Asset Term deleted or not.
-      type: Boolean
     - contextPath: ZeroFox.Alert.Assignee
       description: Who the alert is assigned to.
       type: String
@@ -118,15 +109,6 @@ script:
     - contextPath: ZeroFox.Alert.RuleGroupID
       description: ID of the rule group.
       type: Number
-    - contextPath: ZeroFox.Alert.Asset.ID
-      description: The Asset ID.
-      type: Number
-    - contextPath: ZeroFox.Alert.Asset.Name
-      description: The Asset Name.
-      type: String
-    - contextPath: ZeroFox.Alert.Asset.Image
-      description: The Asset Image.
-      type: String
     - contextPath: ZeroFox.Alert.Status
       description: Status of alert. Possible values are Open, Closed, Takedown:Accepted,
         Takedown:Denied, Takedown:Requested and Whitelisted.
@@ -276,15 +258,6 @@ script:
     - contextPath: ZeroFox.Alert.OffendingContentURL
       description: URL to content that alert was created on.
       type: String
-    - contextPath: ZeroFox.Alert.AssetTerm.ID
-      description: The ID of the Asset Term.
-      type: Number
-    - contextPath: ZeroFox.Alert.AssetTerm.Name
-      description: The Name of the Asset Term.
-      type: String
-    - contextPath: ZeroFox.Alert.AssetTerm.Deleted
-      description: Asset Term deleted or not.
-      type: Boolean
     - contextPath: ZeroFox.Alert.Assignee
       description: Who the alert is assigned to.
       type: String
@@ -341,15 +314,6 @@ script:
     - contextPath: ZeroFox.Alert.RuleGroupID
       description: ID of the rule group.
       type: Number
-    - contextPath: ZeroFox.Alert.Asset.ID
-      description: The Asset ID.
-      type: Number
-    - contextPath: ZeroFox.Alert.Asset.Name
-      description: The Asset Name.
-      type: String
-    - contextPath: ZeroFox.Alert.Asset.Image
-      description: The Asset Image.
-      type: String
     - contextPath: ZeroFox.Alert.Status
       description: Status of alert. Possible values are Open, Closed, Takedown:Accepted,
         Takedown:Denied, Takedown:Requested and Whitelisted.
@@ -634,15 +598,6 @@ script:
     - contextPath: ZeroFox.Alert.OffendingContentURL
       description: URL to content that alert was created on.
       type: String
-    - contextPath: ZeroFox.Alert.AssetTerm.ID
-      description: The ID of the Asset Term.
-      type: Number
-    - contextPath: ZeroFox.Alert.AssetTerm.Name
-      description: The Name of the Asset Term.
-      type: String
-    - contextPath: ZeroFox.Alert.AssetTerm.Deleted
-      description: Asset Term deleted or not.
-      type: Boolean
     - contextPath: ZeroFox.Alert.Assignee
       description: Who the alert is assigned to.
       type: String
@@ -699,15 +654,6 @@ script:
     - contextPath: ZeroFox.Alert.RuleGroupID
       description: ID of the rule group.
       type: Number
-    - contextPath: ZeroFox.Alert.Asset.ID
-      description: The Asset ID.
-      type: Number
-    - contextPath: ZeroFox.Alert.Asset.Name
-      description: The Asset Name.
-      type: String
-    - contextPath: ZeroFox.Alert.Asset.Image
-      description: The Asset Image.
-      type: String
     - contextPath: ZeroFox.Alert.Status
       description: Status of alert. Possible values are Open, Closed, Takedown:Accepted,
         Takedown:Denied, Takedown:Requested and Whitelisted.
