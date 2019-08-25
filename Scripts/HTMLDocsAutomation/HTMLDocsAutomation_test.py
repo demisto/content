@@ -28,7 +28,7 @@ def test_get_yaml_obj(mocker):
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
-    assert err_msg == 'Failed to open integration file'
+    assert err_msg == 'Failed to open integration file: not a yml file'
 
     # no such file
     mocker.patch.object(demisto, 'getFilePath', side_effect=ValueError('no such file'))
@@ -36,7 +36,7 @@ def test_get_yaml_obj(mocker):
     assert return_error_mock.call_count == 2
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
-    assert err_msg == 'Failed to open integration file'
+    assert err_msg == 'Failed to open integration file: no such file'
 
 
 def test_extract_command():

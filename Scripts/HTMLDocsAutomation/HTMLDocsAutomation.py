@@ -156,7 +156,7 @@ def get_yaml_obj(entry_id):
         with open(yml_file_path, 'r') as yml_file:
             data = yaml.safe_load(yml_file)
         if not isinstance(data, dict):
-            raise ValueError()
+            raise ValueError('not a yml file')
 
     except (ValueError, yaml.YAMLError) as exception:
         return_error('Failed to open integration file: {}'.format(exception))
