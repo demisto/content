@@ -1,1 +1,2 @@
-set default encoding to utf-8
+- set default encoding to utf-8
+- added a command to get alert's CSV file 
