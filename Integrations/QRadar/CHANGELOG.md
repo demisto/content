@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.8.2] - 2019-08-22
   - Fixed an issue in which users would receive an error message for missing SEC headers.
 
 ## [19.8.0] - 2019-08-06
