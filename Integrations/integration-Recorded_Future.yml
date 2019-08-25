@@ -18,7 +18,14 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: File Threshold. Minimum risk score from Recorded Future to consider the file malicious.
+- display: Suspicious threshold. Minimum risk score from Recorded Future to consider
+    the indicator Suspicious.
+  name: suspicious_threshold
+  defaultvalue: "5"
+  type: 0
+  required: false
+- display: File Threshold. Minimum risk score from Recorded Future to consider the
+    file malicious.
   name: file_threshold
   defaultvalue: "65"
   type: 0
@@ -28,18 +35,20 @@ configuration:
   defaultvalue: "65"
   type: 0
   required: false
-- display: Domain Threshold. Minimum risk score from Recorded Future to consider the domain malicious.
+- display: Domain Threshold. Minimum risk score from Recorded Future to consider the
+    domain malicious.
   name: domain_threshold
   defaultvalue: "65"
   type: 0
   required: false
-- display: URL Threshold. Minimum risk score from Recorded Future to consider the URL malicious.
+- display: URL Threshold. Minimum risk score from Recorded Future to consider the
+    URL malicious.
   name: url_threshold
   defaultvalue: "65"
   type: 0
   required: false
-- display: Vulnerability Threshold. Minimum risk score from Recorded Future to consider the vulnerability
-    critical.
+- display: Vulnerability Threshold. Minimum risk score from Recorded Future to consider
+    the vulnerability critical.
   name: cve_threshold
   defaultvalue: "65"
   type: 0
@@ -109,6 +118,7 @@ script:
     DOMAIN_THRESHOLD = int(demisto.params()['domain_threshold'])
     URL_THRESHOLD = int(demisto.params()['url_threshold'])
     CVE_THRESHOLD = int(demisto.params()['cve_threshold'])
+    SUSPICIOUS_THRESHOLD = int(demisto.params()['suspicious_threshold'])
 
     FETCH_TIME = demisto.params().get('triggered').strip()
     RULE_NAMES = demisto.params().get('rule_names').strip()
@@ -146,7 +156,7 @@ script:
         '''
         if score >= threshold: # Bad
             return 3
-        elif score >= 5: # Suspicious
+        elif score >= SUSPICIOUS_THRESHOLD: # Suspicious
             return 2
         else: return 0 # Unknown
 
@@ -1864,13 +1874,15 @@ script:
     - contextPath: IP.RecordedFuture.LastSeen
       description: Risk last seen timestamp
       type: date
-    description: Returns threat intelligence information for an IP address in Recorded Future.
+    description: Returns threat intelligence information for an IP address in Recorded
+      Future.
   - name: file
     arguments:
     - name: file
       required: true
       default: true
-      description: 'File hash to check the reputation of (MD5, SHA-1, SHA-256, SHA-512, CRC-32, CTPH)'
+      description: File hash to check the reputation of (MD5, SHA-1, SHA-256, SHA-512,
+        CRC-32, CTPH)
     - name: detailed
       auto: PREDEFINED
       predefined:
@@ -1953,7 +1965,8 @@ script:
       - Attacker
       - Malware
       - URL
-      description: CSV list of related entity types to return in the result (e.g., Hash,IP,Domain)
+      description: CSV list of related entity types to return in the result (e.g.,
+        Hash,IP,Domain)
       defaultValue: All
     outputs:
     - contextPath: File.SHA256
@@ -2199,7 +2212,8 @@ script:
     - contextPath: URL.RecordedFuture.RelatedEntities.URL.Data
       description: URL related entity name (URL)
       type: string
-    description: Returns threat intelligence context for an indicator in Recorded Future.
+    description: Returns threat intelligence context for an indicator in Recorded
+      Future.
   - name: url
     arguments:
     - name: url
@@ -2330,7 +2344,8 @@ script:
       predefined:
       - "true"
       - "false"
-      description: If true, fetches evidence details. Evidence is a record that is generated if any of the risk rules in Recorded Future is triggered.
+      description: If true, fetches evidence details. Evidence is a record that is
+        generated if any of the risk rules in Recorded Future is triggered.
       defaultValue: "false"
     - name: limit
       description: Number of results to return
@@ -2861,5 +2876,4 @@ script:
     description: Gets alerts from Recorded Future.
   isfetch: true
   runonce: false
-tests:
-  - Recorded Future Test
+releaseNotes: "Added suspicious threshold for all indicator types"
