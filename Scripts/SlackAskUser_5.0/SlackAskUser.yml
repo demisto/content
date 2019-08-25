@@ -47,7 +47,7 @@ args:
   - 'false'
   required: false
   secret: false
-comment: This script is deprecated. Use SlackAsk instead.
+comment: Deprecated. Use the SlackAsk script instead.
 commonfields:
   id: SlackAskUser
   version: -1
