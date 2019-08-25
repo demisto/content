@@ -34,14 +34,14 @@ script:
   commands:
   - arguments:
     - default: false
-      description: IP Address to search for
+      description: IP address for which to perform a query.
       isArray: false
       name: query
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Which index to retrieve data from
+      description: The index from which to retrieve data. Can be "ipv4", "websites", or "certificates".
       isArray: false
       name: index
       predefined:
@@ -51,19 +51,19 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Detailed view
+    description: Returns detailed information for an IP address within the specified index.
     execution: false
     name: cen-view
   - arguments:
     - default: false
-      description: The attribute you're searching for, JSON format
+      description: The attribute for which you are searching (JSON format).
       isArray: false
       name: query
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The index to search on
+      description: The index on which to perform a query.
       isArray: false
       name: index
       predefined:
@@ -73,7 +73,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Attribute search
+    description: Searches for an attribute within the specified index.
     execution: false
     name: cen-search
   isfetch: false
