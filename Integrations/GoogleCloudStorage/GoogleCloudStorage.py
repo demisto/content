@@ -44,7 +44,6 @@ if not USE_PROXY:
 
 
 def init_storage_client():
-
     cur_directory_path = os.getcwd()
     credentials_file_name = "{}.json".format(demisto.uniqueFile())
     credentials_file_path = os.path.join(cur_directory_path, credentials_file_name)
@@ -68,54 +67,6 @@ def ec_key(path, *merge_by):
         js_condition += "val.{0} && val.{0} === obj.{0}".format(key)
 
     return "{}({})".format(path, js_condition)
-
-
-def bucket2dict(bucket):
-    """
-    Converts a google.cloud.storage.Bucket object to context format (GCP.Bucket).
-    """
-    return {
-        "Name": bucket.name,
-        "TimeCreated": reformat_datetime_str(bucket._properties.get("timeCreated", "")),
-        "TimeUpdated": reformat_datetime_str(bucket._properties.get("updated", "")),
-        "OwnerID": "" if not bucket.owner else bucket.owner.get("entityId", "")
-    }
-
-
-def blob2dict(blob):
-    """
-    Converts a google.cloud.storage.Blob to context format (GCP.BucketObject).
-    Note: "blob" is the client API name for what is normally called an "object" in Google Cloud Storage.
-    """
-    return {
-        "Name": blob.name,
-        "Bucket": blob.bucket.name,
-        "ContentType": blob.content_type,
-        "TimeCreated": datetime2str(blob.time_created),
-        "TimeUpdated": datetime2str(blob.updated),
-        "TimeDeleted": datetime2str(blob.time_deleted),
-        "Size": blob.size,
-        "MD5": blob.md5_hash,
-        "OwnerID": "" if not blob.owner else blob.owner.get("entityId", ""),
-        "CRC32c": blob.crc32c,
-        "EncryptionAlgorithm": blob._properties.get("customerEncryption", {}).get("encryptionAlgorithm", ""),
-        "EncryptionKeySHA256": blob._properties.get("customerEncryption", {}).get("keySha256", ""),
-    }
-
-
-def acl2dict(acl_entry, for_blob=False):
-    """
-    Converts an ACL entry from its raw JSON form to context format (either GCP.BucketPolicy or GCP.BucketObjectPolicy).
-    """
-    dict_for_blob = {"object": acl_entry.get("object", "")} if for_blob else {}
-    return {
-        "Bucket": acl_entry.get("bucket", ""),
-        **dict_for_blob,
-        "Entity": acl_entry.get("entity", ""),
-        "Email": acl_entry.get("email", ""),
-        "Role": acl_entry.get("role", ""),
-        "Team": acl_entry.get("projectTeam", {}).get("team", "")
-    }
 
 
 def reformat_datetime_str(dt_str):
@@ -144,7 +95,6 @@ def human_readable_table(title, contents):
 
 
 def format_error(ex):
-
     msg = "Error occurred in the Google Cloud Storage Integration"
 
     if hasattr(ex, "__class__"):
@@ -165,8 +115,22 @@ def test_module():
     list(client.list_buckets())
 
 
-def gcs_list_buckets():
+''' Bucket management '''
 
+
+def bucket2dict(bucket):
+    """
+    Converts a google.cloud.storage.Bucket object to context format (GCP.Bucket).
+    """
+    return {
+        "Name": bucket.name,
+        "TimeCreated": reformat_datetime_str(bucket._properties.get("timeCreated", "")),
+        "TimeUpdated": reformat_datetime_str(bucket._properties.get("updated", "")),
+        "OwnerID": "" if not bucket.owner else bucket.owner.get("entityId", "")
+    }
+
+
+def gcs_list_buckets():
     client = init_storage_client()
     buckets = client.list_buckets()
     result = [bucket2dict(bucket) for bucket in buckets]
@@ -194,39 +158,6 @@ def gcs_get_bucket():
         "HumanReadable": human_readable_table("Bucket " + bucket_name, result),
         "EntryContext": {ec_key("GCP.Bucket", "Name"): result}
     })
-
-
-def gcs_list_bucket_objects():
-    bucket_name = demisto.args()["bucket_name"]
-
-    client = init_storage_client()
-    blobs = client.list_blobs(bucket_name)
-    result = [blob2dict(blob) for blob in blobs]
-
-    demisto.results({
-        "Type": entryTypes["note"],
-        "ContentsFormat": formats["json"],
-        "Contents": result,
-        "HumanReadable": human_readable_table("Objects in bucket " + bucket_name, result),
-        "EntryContext": {ec_key("GCP.BucketObject", "Name", "Bucket"): result}
-    })
-
-
-def gcs_download_file():
-    bucket_name = demisto.args()["bucket_name"]
-    blob_name = demisto.args()["object_name"]
-
-    client = init_storage_client()
-    bucket = client.get_bucket(bucket_name)
-    blob = storage.Blob(blob_name, bucket)
-
-    cur_directory_path = os.getcwd()
-    file_name = blob_name.split("/")[-1] or demisto.uniqueFile()
-    file_path = os.path.join(cur_directory_path, file_name)
-    with open(file_path, "w") as file:
-        client.download_blob_to_file(blob, file)
-
-    demisto.results(file_result_existing_file(file_name))
 
 
 def gcs_create_bucket():
@@ -263,6 +194,79 @@ def gcs_delete_bucket():
     })
 
 
+''' Object operations '''
+
+
+def blob2dict(blob):
+    """
+    Converts a google.cloud.storage.Blob to context format (GCP.BucketObject).
+    Note: "blob" is the client API name for what is normally called an "object" in Google Cloud Storage.
+    """
+    return {
+        "Name": blob.name,
+        "Bucket": blob.bucket.name,
+        "ContentType": blob.content_type,
+        "TimeCreated": datetime2str(blob.time_created),
+        "TimeUpdated": datetime2str(blob.updated),
+        "TimeDeleted": datetime2str(blob.time_deleted),
+        "Size": blob.size,
+        "MD5": blob.md5_hash,
+        "OwnerID": "" if not blob.owner else blob.owner.get("entityId", ""),
+        "CRC32c": blob.crc32c,
+        "EncryptionAlgorithm": blob._properties.get("customerEncryption", {}).get("encryptionAlgorithm", ""),
+        "EncryptionKeySHA256": blob._properties.get("customerEncryption", {}).get("keySha256", ""),
+    }
+
+
+def download_blob(blob):
+    cur_directory_path = os.getcwd()
+    file_name = blob.name.split("/")[-1] or demisto.uniqueFile()
+    file_path = os.path.join(cur_directory_path, file_name)
+
+    with open(file_path, "w") as file:
+        blob.client.download_blob_to_file(blob, file)
+
+    return file_name
+
+
+def upload_blob(file_path, bucket_name, object_name):
+    client = init_storage_client()
+    bucket = client.get_bucket(bucket_name)
+    blob = bucket.blob(object_name)
+
+    blob.upload_from_filename(file_path)
+
+    return blob
+
+
+def gcs_list_bucket_objects():
+    bucket_name = demisto.args()["bucket_name"]
+
+    client = init_storage_client()
+    blobs = client.list_blobs(bucket_name)
+    result = [blob2dict(blob) for blob in blobs]
+
+    demisto.results({
+        "Type": entryTypes["note"],
+        "ContentsFormat": formats["json"],
+        "Contents": result,
+        "HumanReadable": human_readable_table("Objects in bucket " + bucket_name, result),
+        "EntryContext": {ec_key("GCP.BucketObject", "Name", "Bucket"): result}
+    })
+
+
+def gcs_download_file():
+    bucket_name = demisto.args()["bucket_name"]
+    blob_name = demisto.args()["object_name"]
+
+    client = init_storage_client()
+    bucket = client.get_bucket(bucket_name)
+    blob = storage.Blob(blob_name, bucket)
+    file_name = download_blob(blob)
+
+    demisto.results(file_result_existing_file(file_name))
+
+
 def gcs_upload_file():
     entry_id = demisto.args()["entry_id"]
     bucket_name = demisto.args()["bucket_name"]
@@ -272,7 +276,7 @@ def gcs_upload_file():
     context_file = demisto.getFilePath(entry_id)
     file_path = context_file["path"]
     file_name = context_file["name"]
-    blob = upload_file(file_path, bucket_name, object_name)
+    blob = upload_blob(file_path, bucket_name, object_name)
     if object_acl:
         blob.acl.save_predefined(object_acl)
 
@@ -283,12 +287,44 @@ def gcs_upload_file():
     })
 
 
-def upload_file(file_path, bucket_name, object_name):
-    client = init_storage_client()
-    bucket = client.get_bucket(bucket_name)
-    blob = bucket.blob(object_name)
-    blob.upload_from_filename(file_path)
-    return blob
+''' Bucket policy (ACL) '''
+
+
+def acl2dict(acl_entry, include_object_name=False):
+    """
+    Converts an ACL entry from its raw JSON form to context format (either GCP.BucketPolicy or GCP.BucketObjectPolicy).
+    """
+    key_dict = {
+        "Bucket": acl_entry.get("bucket", "")
+    }
+
+    if include_object_name:
+        key_dict["Object"] = acl_entry.get("object", "")
+
+    return key_dict.update({
+        "Entity": acl_entry.get("entity", ""),
+        "Email": acl_entry.get("email", ""),
+        "Role": acl_entry.get("role", ""),
+        "Team": acl_entry.get("projectTeam", {}).get("team", "")
+    })
+
+
+def get_acl_entries(acl):
+    path = acl.reload_path
+    query_params = {}
+    parsed_json = acl.client._connection.api_request(method="GET", path=path, query_params=query_params)
+    return parsed_json.get("items", ())
+
+
+def set_acl_entry(acl, entity, role):
+    acl_entry = acl.entity_from_dict({"entity": entity, "role": role})
+    acl.add_entity(acl_entry)
+    acl.save()
+
+
+def delete_acl_entry(acl, entity):
+    del acl.entities[str(entity)]
+    acl.save()
 
 
 def gcs_list_bucket_policy():
@@ -307,14 +343,6 @@ def gcs_list_bucket_policy():
         "HumanReadable": human_readable_table("ACL policy for bucket " + bucket_name, result),
         "EntryContext": {ec_key("GCP.BucketPolicy", "Bucket", "Entity"): result}
     })
-
-
-def get_acl_entries(acl):
-    client = acl.client
-    path = acl.reload_path
-    query_params = {}
-    parsed_json = client._connection.api_request(method="GET", path=path, query_params=query_params)
-    return parsed_json.get("items", ())
 
 
 def gcs_create_bucket_policy():
@@ -359,12 +387,6 @@ def gcs_put_bucket_policy():
     })
 
 
-def set_acl_entry(acl, entity, role):
-    acl_entry = acl.entity_from_dict({"entity": entity, "role": role})
-    acl.add_entity(acl_entry)
-    acl.save()
-
-
 def gcs_delete_bucket_policy():
     bucket_name = demisto.args()["bucket_name"]
     entity = demisto.args()["entity"]
@@ -383,9 +405,14 @@ def gcs_delete_bucket_policy():
     })
 
 
-def delete_acl_entry(acl, entity):
-    del acl.entities[str(entity)]
-    acl.save()
+''' Object policy (ACL) '''
+
+
+def get_blob_acl(bucket_name, blob_name):
+    client = init_storage_client()
+    bucket = client.get_bucket(bucket_name)
+    blob = storage.Blob(blob_name, bucket)
+    return blob.acl
 
 
 def gcs_list_bucket_object_policy():
@@ -394,7 +421,7 @@ def gcs_list_bucket_object_policy():
 
     acl = get_blob_acl(bucket_name, blob_name)
     acl_entries = get_acl_entries(acl)
-    result = [acl2dict(entry, for_blob=True) for entry in acl_entries]
+    result = [acl2dict(entry, include_object_name=True) for entry in acl_entries]
 
     demisto.results({
         "Type": entryTypes["note"],
@@ -403,13 +430,6 @@ def gcs_list_bucket_object_policy():
         "HumanReadable": human_readable_table("ACL policy for object " + blob_name, result),
         "EntryContext": {ec_key("GCP.BucketObjectPolicy", "Bucket", "Object", "Entity"): result}
     })
-
-
-def get_blob_acl(bucket_name, blob_name):
-    client = init_storage_client()
-    bucket = client.get_bucket(bucket_name)
-    blob = storage.Blob(blob_name, bucket)
-    return blob.acl
 
 
 def gcs_create_bucket_object_policy():
@@ -482,17 +502,14 @@ try:
         test_module()
         demisto.results("ok")
 
+    #
+    # Bucket management
+    #
     elif demisto.command() == "gcs-list-buckets":
         gcs_list_buckets()
 
     elif demisto.command() == "gcs-get-bucket":
         gcs_get_bucket()
-
-    elif demisto.command() == "gcs-list-bucket-objects":
-        gcs_list_bucket_objects()
-
-    elif demisto.command() == "gcs-download-file":
-        gcs_download_file()
 
     elif demisto.command() == "gcs-create-bucket":
         gcs_create_bucket()
@@ -500,9 +517,21 @@ try:
     elif demisto.command() == "gcs-delete-bucket":
         gcs_delete_bucket()
 
+    #
+    # Object operations
+    #
+    elif demisto.command() == "gcs-list-bucket-objects":
+        gcs_list_bucket_objects()
+
+    elif demisto.command() == "gcs-download-file":
+        gcs_download_file()
+
     elif demisto.command() == "gcs-upload-file":
         gcs_upload_file()
 
+    #
+    # Bucket policy (ACL)
+    #
     elif demisto.command() == "gcs-list-bucket-policy":
         gcs_list_bucket_policy()
 
@@ -515,6 +544,9 @@ try:
     elif demisto.command() == "gcs-delete-bucket-policy":
         gcs_delete_bucket_policy()
 
+    #
+    # Object policy (ACL)
+    #
     elif demisto.command() == "gcs-list-bucket-object-policy":
         gcs_list_bucket_object_policy()
 
