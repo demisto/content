@@ -476,7 +476,7 @@ def update_test_set(tests_set, tests):
 def get_test_from_conf(branch_name):
     tests = set([])
     changed = set([])
-    change_string = run_command("git diff origin/master...{} Tests/conf.json".format(branch_name))
+    change_string = run_command("git diff origin/master...refs/heads/{} Tests/conf.json".format(branch_name))
     added_groups = re.findall(r'(\+[ ]+")(.*)(":)', change_string)
     if added_groups:
         for group in added_groups:
@@ -569,12 +569,12 @@ def create_test_file(is_nightly, skip_save=False):
 
         print("Getting changed files from the branch: {0}".format(branch_name))
         if branch_name != 'master':
-            files_string = run_command("git diff --name-status origin/master...{0}".format(branch_name))
+            files_string = run_command("git diff --name-status origin/master...refs/heads/{0}".format(branch_name))
         else:
             commit_string = run_command("git log -n 2 --pretty='%H'")
             commit_string = commit_string.replace("'", "")
             last_commit, second_last_commit = commit_string.split()
-            files_string = run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
+            files_string = run_command("git diff --name-status {}...refs/heads/{}".format(second_last_commit, last_commit))
 
         tests = get_test_list(files_string, branch_name)
 
