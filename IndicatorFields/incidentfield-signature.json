@@ -5,7 +5,7 @@
   "neverSetAsRequired": false,
   "threshold": 0,
   "defaultRows": null,
-  "id": "incident_signature",
+  "id": "indicator_signature",
   "validatedError": "",
   "group": 2,
   "script": "",
