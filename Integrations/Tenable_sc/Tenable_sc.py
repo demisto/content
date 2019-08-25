@@ -1072,8 +1072,8 @@ def get_vulnerability_command():
         'filters': vuln_filter,
         'tool': 'vulndetails',
         'type': 'vuln',
-        'startOffset': 0,
-        'endOffset': 50
+        'startOffset': 0,  # Lower bound for the results list (must be specified)
+        'endOffset': 999999  # Upper bound for the results list (must be specified)
     }
 
     analysis = get_analysis(query, scan_results_id)
@@ -1092,7 +1092,7 @@ def get_vulnerability_command():
         return_message('Vulnerability not found')
 
     vuln = vuln_response['response']
-    vuln['severity'] = results[0]['severity']  # todo: are all the analysis results differ only by the hosts?
+    vuln['severity'] = results[0]['severity']  # The vulnerability severity is the same in all the results
 
     hosts = get_vulnerability_hosts_from_analysis(results)
 
