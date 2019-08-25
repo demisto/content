@@ -1221,6 +1221,7 @@
         },
         {
             "integrations": [
+                "Lastline",
                 "WildFire-v2",
                 "SNDBOX",
                 "VxStream",
@@ -1243,7 +1244,8 @@
            "nightly": true,
            "integrations": [
              "McAfee Advanced Threat Defense",
-             "VxStream"
+             "VxStream",
+             "Lastline"
            ]
         },
         {
@@ -1773,6 +1775,7 @@
         "Forescout-Test": "Should be skipped (issue 17016)",
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
         "EWS test": "Old test",
+        "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "entity_enrichment_generic_test": "Flaky test - fails for changing reasons, requires more investigation (issue 16490)",
         "ArcSight Logger test": "Possibly outdated API calls",
         "Qualys-Test": "Test is failing on qualys-report-list not returning results, and also seems there's a proxy issue (issue 16486)",
@@ -1825,6 +1828,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "Lastline": "Temporally moved to skipped inorder to not fail nightly",
         "vmray": "VMRay license expired (Issue 18752)",
         "Anomali ThreatStream v2": "Credentials are invalid (issue 18561)",
         "Anomali ThreatStream": "Credentials are invalid (issue 18561)",
