@@ -1,6 +1,6 @@
 category: Messaging
 commonfields:
-  id: MailListener - POP3
+  id: MailListener - POP3 Beta
   version: -1
 configuration:
 - display: Server URL (e.g. example.com)
@@ -43,12 +43,13 @@ configuration:
   required: false
   type: 13
 description: Listen to a mailbox, enable incident triggering via e-mail
-display: MailListener - POP3
-name: MailListener - POP3
+display: MailListener - POP3 (Beta)
+name: MailListener - POP3 Beta
 script:
   isfetch: true
   runonce: false
   script: '-'
   type: python
+beta: true
 tests:
 - MailListener-POP3 - Test

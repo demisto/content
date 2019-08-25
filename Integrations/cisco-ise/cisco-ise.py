@@ -26,19 +26,6 @@ DEFAULT_HEADERS = {
 ''' HELPER FUNCTIONS '''
 
 
-def is_mac_address(mac):
-    """
-    Test for valid mac address
-    :param mac: MAC address in the form of AA:BB:CC:00:11:22
-    :return: True/False
-    """
-
-    if re.search(r'([0-9A-F]{2}[:]){5}([0-9A-F]){2}', mac.upper()) is not None:
-        return True
-    else:
-        return False
-
-
 def http_request(method, url_suffix, params={}, data=None, headers=DEFAULT_HEADERS):
     try:
         url = SERVER_URL + url_suffix

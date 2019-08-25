@@ -568,3 +568,36 @@ def test_duplicated_argss():
 
     assert validator.is_there_duplicate_args(), \
         "The integration validator did not find duplicated args although there are duplicates"
+
+
+def test_valid_subtype_python3():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "script": {
+            "type": "python",
+            "subtype": "python3"
+        }
+    }
+    validator.old_integration = {
+        "script": {
+            "type": "python",
+            "subtype": "python3"
+        }
+    }
+
+    assert validator.is_valid_subtype(), \
+        "The integration validator found invalid subtype while it is valid"
+
+
+def test_valid_subtype_lies():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "script": {
+            "type": "python",
+            "subtype": "lies"
+        }
+    }
+    validator.old_integration = None
+
+    assert validator.is_valid_subtype() is False, \
+        "The integration validator found valid subtype while it is invalid"
