@@ -770,7 +770,8 @@ def update_status_command(ioc_id, status):
 
 
 def get_ip_reputation(ip):
-    validate_ioc(ip, 'ipv4')  # todo: add ipv6 when there is a validation
+    if not is_ip_valid(ip, accept_v6_ips=True):
+        return_error("Argument {0} is not a valid IP address.".format(ip))
 
     generic_context = {"Address": ip}
     raw_context = get_ioc_reputation(ip)
