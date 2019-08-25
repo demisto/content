@@ -2,6 +2,7 @@ from MicrosoftTeamsAsk import main
 from CommonServerPython import entryTypes
 import demistomock as demisto
 import json
+import pytest
 
 
 def execute_command(name, args=None):
@@ -20,11 +21,15 @@ def execute_command(name, args=None):
             'investigation_id': '32',
             'task_id': '44'
         })
-        assert args == {
-            'team_member': 'Shaq',
+        expected_script_arguments: dict = {
             'message': expected_message,
             'using-brand': 'Microsoft Teams'
         }
+        if 'team_member' in args:
+            expected_script_arguments['team_member'] = 'Shaq'
+        elif 'channel' in args:
+            expected_script_arguments['channel'] = 'WhatAchannel'
+        assert args == expected_script_arguments
     else:
         raise ValueError('Unimplemented command called: {}'.format(name))
 
@@ -38,17 +43,37 @@ def test_microsoft_teams_ask(mocker):
             'id': '32'
         }
     )
+    script_arguments: dict = {
+        'message': 'How are you today?',
+        'option1': 'Great',
+        'option2': 'Wonderful',
+        'additional_options': 'SSDD,Wooah',
+        'task_id': '44'
+    }
     mocker.patch.object(
         demisto,
         'args',
-        return_value={
-            'message': 'How are you today?',
-            'option1': 'Great',
-            'option2': 'Wonderful',
-            'additional_options': 'SSDD,Wooah',
-            'team_member': 'Shaq',
-            'task_id': '44'
-        }
+        return_value=script_arguments
+    )
+    with pytest.raises(ValueError) as e:
+        main()
+    assert str(e.value) == 'Either team member or channel must be provided.'
+
+    script_arguments['team_member'] = 'Shaq'
+    script_arguments['channel'] = 'WhatAchannel'
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value=script_arguments
+    )
+    with pytest.raises(ValueError) as e:
+        main()
+    assert str(e.value) == 'Either team member or channel should be provided, not both.'
+    script_arguments.pop('team_member')
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value=script_arguments
     )
     main()
     assert demisto.executeCommand.call_count == 2
