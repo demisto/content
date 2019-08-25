@@ -284,12 +284,14 @@ def delete_ps_file(ps_path):
 
 
 def start_compliance_search(query):
-    ps_path = create_ps_file('startcs_' + str(uuid.uuid4()).replace('-', '') + '.ps1', STARTCS)
-    output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'",
-                               "'" + str(query).replace("'", "''") + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)],
-                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = output.communicate(input=PASSWORD.encode())
-    delete_ps_file(ps_path)
+    try:
+        ps_path = create_ps_file('startcs_' + str(uuid.uuid4()).replace('-', '') + '.ps1', STARTCS)
+        output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'",
+                                   "'" + str(query).replace("'", "''") + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)],
+                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = output.communicate(input=PASSWORD.encode())
+    finally:
+        delete_ps_file(ps_path)
 
     if stderr:
         return_error(stderr)
@@ -309,12 +311,15 @@ def start_compliance_search(query):
 
 
 def get_compliance_search(search_name):
-    ps_path = create_ps_file('getcs_' + search_name + '.ps1', GETCS)
-    output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'",
-                               "'" + search_name + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)],
-                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = output.communicate(input=PASSWORD.encode())
-    delete_ps_file(ps_path)
+    try:
+        ps_path = create_ps_file('getcs_' + search_name + '.ps1', GETCS)
+        output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'",
+                                   "'" + search_name + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)],
+                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = output.communicate(input=PASSWORD.encode())
+    finally:
+        delete_ps_file(ps_path)
+
     stdout = stdout[len(PASSWORD):]
 
     if stderr:
@@ -340,45 +345,54 @@ def get_compliance_search(search_name):
 
 
 def remove_compliance_search(search_name):
-    ps_path = create_ps_file('removecs_' + search_name + '.ps1', REMOVECS)
-    output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'",
-                               "'" + search_name + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)],
-                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = output.communicate(input=PASSWORD.encode())
-    delete_ps_file(ps_path)
+    try:
+        ps_path = create_ps_file('removecs_' + search_name + '.ps1', REMOVECS)
+        output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'",
+                                   "'" + search_name + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)],
+                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = output.communicate(input=PASSWORD.encode())
+    finally:
+        delete_ps_file(ps_path)
 
     return return_error(stderr) if stderr else get_cs_status(search_name, 'Removed')
 
 
 def purge_compliance_search(search_name):
-    ps_path = create_ps_file('startpurge_' + search_name + '.ps1', STARTPURGE)
-    output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'",
-                               "'" + search_name + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)],
-                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = output.communicate(input=PASSWORD.encode())
-    delete_ps_file(ps_path)
+    try:
+        ps_path = create_ps_file('startpurge_' + search_name + '.ps1', STARTPURGE)
+        output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'",
+                                   "'" + search_name + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)],
+                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = output.communicate(input=PASSWORD.encode())
+    finally:
+        delete_ps_file(ps_path)
     return return_error(stderr) if stderr else get_cs_status(search_name, 'Purging')
 
 
 def check_purge_compliance_search(search_name):
-    ps_path = create_ps_file('checkpurge_' + search_name + '.ps1', CHECKPURGE)
-    output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'",
-                               "'" + search_name + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)],
-                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = output.communicate(input=PASSWORD.encode())
-    delete_ps_file(ps_path)
+    try:
+        ps_path = create_ps_file('checkpurge_' + search_name + '.ps1', CHECKPURGE)
+        output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'",
+                                   "'" + search_name + "'", "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)],
+                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = output.communicate(input=PASSWORD.encode())
+    finally:
+        delete_ps_file(ps_path)
 
     return return_error(stderr) if stderr else get_cs_status(search_name,
                                                              'Purged' if stdout.strip() == 'Completed' else 'Purging')
 
 
 def test_module():
-    ps_path = create_ps_file('testcon_' + str(uuid.uuid4()).replace('-', '') + '.ps1', TESTCON)
-    output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'",
-                               "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)],
-                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout = output.communicate(input=PASSWORD.encode())[0].strip()
-    delete_ps_file(ps_path)
+    try:
+        ps_path = create_ps_file('testcon_' + str(uuid.uuid4()).replace('-', '') + '.ps1', TESTCON)
+        output = subprocess.Popen(["powershell.exe", ps_path, "'" + USERNAME + "'",
+                                   "'" + EXCHANGE_FQDN + "'", "$" + str(UNSECURE)],
+                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout = output.communicate(input=PASSWORD.encode())[0].strip()
+    finally:
+        delete_ps_file(ps_path)
+
     stdout = stdout[len(PASSWORD):]
 
     if stdout == "successful connection":
