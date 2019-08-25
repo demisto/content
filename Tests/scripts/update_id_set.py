@@ -363,7 +363,7 @@ def re_create_id_set():
     for arr in pool.map(process_integration, integration_files):
         integration_list.extend(arr)
     print_color("Starting iterating over Playbooks", LOG_COLORS.GREEN)
-    for arr in pool.map(process_playbook, glob.glob(os.path.join('Playbooks', '*'))):
+    for arr in pool.map(process_playbook, glob.glob(os.path.join('Playbooks', '*.yml'))):
         playbooks_list.extend(arr)
     print_color("Starting iterating over Scripts", LOG_COLORS.GREEN)
     for arr in pool.map(process_script, glob.glob(os.path.join('Scripts', '*'))):

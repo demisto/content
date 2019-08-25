@@ -41,7 +41,7 @@ class Client:
         )
 
         if res.status_code not in [200, 204]:
-            raise ValueError('Error in API call to Example Integration [%d] - %s' % (res.status_code, res.reason))
+            raise ValueError('Error in API call to Proofpoint TAP [%d]. Reason: %s' % (res.status_code, res.text))
 
         try:
             return res.json()
