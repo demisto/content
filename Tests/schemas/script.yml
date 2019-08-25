@@ -44,7 +44,7 @@ mapping:
     type: text
   dependson:
     type: map
-    allowempty: yes
+    allowempty: True
   outputs:
     type: seq
     sequence:
