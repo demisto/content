@@ -17,22 +17,23 @@ def test_module():
     if res is not None:
         demisto.results('ok')
     else:
-        return_error('Error 404: Test failed.')
+        return_error("Received an error, data retrieved: {1}".format(res))
 
 
 def send_request(method, url_suffix, data=None):
     res = requests.request(method, API_URL + url_suffix,
                            auth=(API_ID, API_SECRET),
                            data=data, verify=USE_SSL)
-    data = json.loads(res.text)
-
-    if res.status_code == 404:
+    if res is not None:
+        data = json.loads(res.text)
+        if res.status_code == 404:
+            return None
+        elif res.status_code >= 400:
+            return_error("Received an error - status code [{0}], "
+                         "error message: {1}".format(res.status_code, data["error"].title()))
+        return data
+    else:
         return None
-    elif res.status_code >= 400:
-        return_error("Received an error - status code [{0}], "
-                     "error message: {1}".format(res.status_code, data["error"].title()))
-
-    return data
 
 
 def censys_view_command():
