@@ -13,6 +13,11 @@ urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 # Setting global params, initiation in main() function
+INTEGRATION_NAME: str = 'Data Enrichment Threat Intelligence'
+# lowercase with `-` dividers
+INTEGRATION_NAME_COMMAND: str = 'data-enrichment-threat-intelligence'
+# No dividers
+INTEGRATION_NAME_CONTEXT: str = 'DataEnrichmentThreatIntelligence'
 FILE_HASHES: Tuple = ('md5', 'ssdeep', 'sha1', 'sha256')  # hashes as described in API
 ''' HELPER FUNCTIONS '''
 
@@ -23,9 +28,9 @@ class Client:
         self.use_ssl: bool = use_ssl
         self.base_url: str = self.server + '/api/v2.0/'
 
-    def http_request(self, method: str, url_suffix: str, full_url: str = None, headers: Dict = None,
-                     auth: Tuple = None, params: Dict = None, data: Dict = None, files: Dict = None,
-                     timeout: float = 10, resp_type: str = 'json') -> Any:
+    def _http_request(self, method: str, url_suffix: str, full_url: str = None, headers: Dict = None,
+                      auth: Tuple = None, params: Dict = None, data: Dict = None, files: Dict = None,
+                      timeout: float = 10, resp_type: str = 'json') -> Any:
         """A wrapper for requests lib to send our requests and handle requests
         and responses better
 
@@ -75,8 +80,7 @@ class Client:
 
             # Handle error responses gracefully
             if res.status_code not in (200, 201):
-                err_msg = 'Error in DataEnrichmentThreatIntell' \
-                          'igence Integration API call [{}] - {}'.format(res.status_code, res.reason)
+                err_msg = f'Error in {INTEGRATION_NAME} API call [{res.status_code}] - {res.reason}'
                 try:
                     # Try to parse json error response
                     res_json = res.json()
@@ -134,13 +138,13 @@ class Client:
         Returns:
             True if request succeeded
         """
-        self.http_request('GET', 'version')
+        self._http_request('GET', 'version')
         return True
 
     def get_ip_request(self, ip: str) -> Dict:
         suffix: str = 'ip'
         params = {'ip': ip}
-        return self.http_request('GET', suffix, params=params).get('results')
+        return self._http_request('GET', suffix, params=params).get('results')
 
     def get_url_request(self, url: str) -> Dict:
         """Gets an analysis from the API for given url.
@@ -153,7 +157,7 @@ class Client:
         """
         suffix: str = 'analysis'
         params = {'url': url}
-        return self.http_request('GET', suffix, params=params).get('results')
+        return self._http_request('GET', suffix, params=params).get('results')
 
     def search_file_request(self, file_hash: str) -> Dict:
         """Building request for file command
@@ -166,7 +170,7 @@ class Client:
         """
         suffix = 'analysis'
         params = {'hash': file_hash}
-        return self.http_request('GET', suffix, params=params).get('results')
+        return self._http_request('GET', suffix, params=params).get('results')
 
 
 def calculate_dbot_score(score: AnyStr) -> int:
@@ -196,7 +200,7 @@ def search_ip(client: Client):
     ip: str = demisto.args().get('ip', '')
     raw_response: Dict = client.get_ip_request(ip)
     if raw_response:
-        title: str = f'DataEnrichmentThreatIntelligence - Analysis results for IP: {ip}'
+        title: str = f'{INTEGRATION_NAME} - Analysis results for IP: {ip}'
         context_entry: Dict = {
             'ID': raw_response.get('id'),
             'Severity': raw_response.get('severity'),
@@ -209,27 +213,27 @@ def search_ip(client: Client):
         dbot_score: Dict = {
             'Indicator': ip,
             'Type': 'ip',
-            'Vendor': 'DataEnrichmentThreatIntelligence',
+            'Vendor': f'{INTEGRATION_NAME}',
             'Score': score
         }
 
         context: Dict = {
             outputPaths['dbotscore']: dbot_score,
-            'DataEnrichmentThreatIntelligence.Analysis(val.ID && val.ID === obj.ID)': context_entry
+            f'{INTEGRATION_NAME_CONTEXT}.Analysis(val.ID && val.ID === obj.ID)': context_entry
         }
 
         if score == 3:  # If file is malicious, adds a malicious entry
             context[outputPaths['ip']] = {
                 'Address': ip,
                 'Malicious': {
-                    'Vendor': 'DataEnrichmentThreatIntelligence',
+                    'Vendor': f'{INTEGRATION_NAME}',
                     'Description': raw_response.get('description')
                 }
             }
         human_readable: str = tableToMarkdown(title, context_entry, removeNull=True)
         return_outputs(human_readable, context, raw_response)
     else:
-        return_warning(f'DataEnrichmentThreatIntelligence - Found no results for IP: {ip}')
+        return_warning(f'{INTEGRATION_NAME} - Found no results for IP: {ip}')
 
 
 def search_url(client: Client):
@@ -238,7 +242,7 @@ def search_url(client: Client):
     url: str = demisto.args().get('url', '')
     raw_response: Dict = client.get_url_request(url)
     if raw_response:
-        title: str = f'DataEnrichmentThreatIntelligence - Analysis results for URL: {url}'
+        title: str = f'{INTEGRATION_NAME} - Analysis results for URL: {url}'
         context_entry: Dict = {
             'ID': raw_response.get('id'),
             'Severity': raw_response.get('severity'),
@@ -251,27 +255,27 @@ def search_url(client: Client):
         dbot_score: Dict = {
             'Indicator': url,
             'Type': 'url',
-            'Vendor': 'DataEnrichmentThreatIntelligence',
+            'Vendor': f'{INTEGRATION_NAME}',
             'Score': score
         }
 
         context: Dict = {
             outputPaths['dbotscore']: dbot_score,
-            'DataEnrichmentThreatIntelligence.Analysis(val.ID && val.ID === obj.ID)': context_entry
+            f'{INTEGRATION_NAME_CONTEXT}.Analysis(val.ID && val.ID === obj.ID)': context_entry
         }
 
         if score == 3:  # If file is malicious, adds a malicious entry
             context[outputPaths['url']] = {
                 'Data': url,
                 'Malicious': {
-                    'Vendor': 'DataEnrichmentThreatIntelligence',
+                    'Vendor': f'{INTEGRATION_NAME}',
                     'Description': raw_response.get('description')
                 }
             }
         human_readable: str = tableToMarkdown(title, context_entry, removeNull=True)
         return_outputs(human_readable, context, raw_response)
     else:
-        return_warning(f'DataEnrichmentThreatIntelligence - Found no results for URL: {url}')
+        return_warning(f'{INTEGRATION_NAME} - Found no results for URL: {url}')
 
 
 def search_file(client: Client):
@@ -280,7 +284,7 @@ def search_file(client: Client):
     file_hash: str = demisto.args().get('file')
     raw_response: Dict = client.search_file_request(file_hash)
     if raw_response:
-        title: str = f'DataEnrichmentThreatIntelligence - Analysis results for file hash: {file_hash}'
+        title: str = f'{INTEGRATION_NAME} - Analysis results for file hash: {file_hash}'
         context_entry: Dict = {
             'ID': raw_response.get('id'),
             'Severity': raw_response.get('severity'),
@@ -297,27 +301,27 @@ def search_file(client: Client):
             {
                 'Indicator': raw_response.get(hash_name),
                 'Type': 'hash',
-                'Vendor': 'DataEnrichmentThreatIntelligence',
+                'Vendor': f'{INTEGRATION_NAME}',
                 'Score': score
             } for hash_name in FILE_HASHES if raw_response.get(hash_name)
         ]
         context: Dict = {
             outputPaths['dbotscore']: dbot_score,
-            'DataEnrichmentThreatIntelligence.Analysis(val.ID && val.ID === obj.ID)': context_entry
+            f'{INTEGRATION_NAME_CONTEXT}.Analysis(val.ID && val.ID === obj.ID)': context_entry
         }
 
         if score == 3:  # If file is malicious, adds a malicious entry
             context[outputPaths['file']] = [{
                 hash_name.upper(): raw_response.get(hash_name),
                 'Malicious': {
-                    'Vendor': 'DataEnrichmentThreatIntelligence',
+                    'Vendor': f'{INTEGRATION_NAME}',
                     'Description': raw_response.get('description')
                 }
             } for hash_name in FILE_HASHES if raw_response.get(hash_name)]
         human_readable: str = tableToMarkdown(title, context_entry, removeNull=True)
         return_outputs(human_readable, context, raw_response)
     else:
-        return_warning(f'DataEnrichmentThreatIntelligence - Could not find results for file hash: {file_hash}')
+        return_warning(f'{INTEGRATION_NAME} - Could not find results for file hash: [{file_hash}')
 
 
 def test_module(client: Client):
@@ -329,18 +333,18 @@ def test_module(client: Client):
 
 
 def main():
-    server = demisto.getArg('url')
-    use_ssl = not demisto.params().get('insecure', False)
-    client = Client(server, use_ssl)
+    server: str = demisto.getParam('url')
+    use_ssl: bool = not demisto.params().get('insecure', False)
+    client: Client = Client(server, use_ssl)
     command: str = demisto.command()
     demisto.info(f'Command being called is {command}')
-    commands = {
+    commands: Dict = {
         'test-module': test_module,
-        'data-enrichment-threat-intelligence-search-ip': search_ip,
+        f'{INTEGRATION_NAME_COMMAND}-search-ip': search_ip,
         'ip': search_ip,
-        'data-enrichment-threat-intelligence-search-url': search_url,
+        f'{INTEGRATION_NAME_COMMAND}-search-url': search_url,
         'url': search_url,
-        'data-enrichment-threat-intelligence-search-file': search_file,
+        f'{INTEGRATION_NAME_COMMAND}-search-file': search_file,
         'file': search_file
     }
     try:
@@ -349,7 +353,7 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        err_msg = f'Error in DataEnrichmentThreatIntelligence Integration [{e}]'
+        err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg, error=e)
 
 
