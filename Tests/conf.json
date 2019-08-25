@@ -1758,7 +1758,7 @@
             "playbookID": "Test-VulnDB"
         },
         {
-            "integrations": "ThreatCrowd",
+            "integrations": "Threat Crowd",
             "playbookID": "ThreatCrowd - Test"
         }
     ],
