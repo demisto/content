@@ -446,7 +446,7 @@ script:
       isArray: true
     - name: expiry
       description: Time until expiry in seconds. 0 for indefinite ban.
-    description: Immediately add one or more users to the banned list.
+    description: Immediately add one or more IPs to the banned list.
   - name: fortigate-unban-ip
     arguments:
     - name: ip_address
