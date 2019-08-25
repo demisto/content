@@ -223,7 +223,7 @@ script:
     name: panorama-push-to-device-group
     outputs:
     - contextPath: Panorama.Push.DeviceGroup
-      description: Device group the configuration was pushed into
+      description: Device group the configuration was pushed into (Panorama instances).
       type: String
     - contextPath: Panorama.Push.JobID
       description: Job ID of the configuration to be pushed
@@ -233,7 +233,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Specify a device group for the addresses (Panorama instances)
+      description: Specify a device group for the addresses (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -258,6 +258,9 @@ script:
     - contextPath: Panorama.Addresses.IP_Range
       description: Address IP range
       type: string
+    - contextPath: Panorama.Addresses.DeviceGroup
+      description: Device group that the address was configured in (Panorama Instances).
+      type: String
   - arguments:
     - default: false
       description: Address name
@@ -291,6 +294,9 @@ script:
     - contextPath: Panorama.Addresses.IP_Range
       description: Address IP range
       type: string
+    - contextPath: Panorama.Addresses.DeviceGroup
+      description: Device group that the address was configured in (Panorama Instances).
+      type: String
   - arguments:
     - default: false
       description: Name for the new address
@@ -348,6 +354,9 @@ script:
     - contextPath: Panorama.Addresses.IP_Range
       description: Address IP range
       type: string
+    - contextPath: Panorama.Addresses.DeviceGroup
+      description: Device group that the address was configured in (Panorama Instances).
+      type: String
   - arguments:
     - default: false
       description: Name of the address to delete
@@ -369,6 +378,9 @@ script:
     - contextPath: Panorama.Addresses.Name
       description: Name of the address that was deleted
       type: string
+    - contextPath: Panorama.Addresses.DeviceGroup
+      description: Device group that the address was configured in (Panorama Instances).
+      type: String
   - arguments:
     - default: false
       description: Specify a device group for the address groups (Panorama instances)
@@ -395,7 +407,10 @@ script:
       type: string
     - contextPath: Panorama.AddressGroups.Addresses
       description: Static Address group addresses
-      type: string
+      type: String
+    - contextPath: Panorama.AddressGroups.DeviceGroup
+      description: Device group that the address group was configured in (Panorama Instances).
+      type: String
   - arguments:
     - default: false
       description: Address group name
@@ -429,6 +444,9 @@ script:
     - contextPath: Panorama.AddressGroups.Addresses
       description: Static Address group addresses
       type: string
+    - contextPath: Panorama.AddressGroups.DeviceGroup
+      description: Device group that the address group was configured in (Panorama instances).
+      type: String
   - arguments:
     - default: false
       description: Address group name
@@ -490,6 +508,9 @@ script:
     - contextPath: Panorama.AddressGroups.Description
       description: Address group description
       type: string
+    - contextPath: Panorama.AddressGroups.DeviceGroup
+      description: Device group that the address group was configured in (Panorama instances).
+      type: String
   - arguments:
     - default: false
       description: Name of address group to delete
@@ -511,6 +532,9 @@ script:
     - contextPath: Panorama.AddressGroups.Name
       description: Name of address group that was deleted
       type: string
+    - contextPath: Panorama.AddressGroups.DeviceGroup
+      description: Device group that the address group was configured in (Panorama instances).
+      type: String
   - arguments:
     - default: false
       description: Name of the address group to edit
@@ -574,6 +598,9 @@ script:
     - contextPath: Panorama.AddressGroups.Addresses
       description: Static Address group addresses
       type: string
+    - contextPath: Panorama.AddressGroups.DeviceGroup
+      description: Device group that the address group was configured in (Panorama instances).
+      type: String
   - arguments:
     - default: false
       description: Specify a device group for the services (Panorama instances)
@@ -601,6 +628,9 @@ script:
     - contextPath: Panorama.Services.SourcePort
       description: Service source port
       type: string
+    - contextPath: Panorama.Services.DeviceGroup
+      description: Device group that the service was configured in (Panorama instances).
+      type: String
   - arguments:
     - default: false
       description: Service name
@@ -634,6 +664,9 @@ script:
     - contextPath: Panorama.Services.SourcePort
       description: Service source port
       type: string
+    - contextPath: Panorama.Services.DeviceGroup
+      description: Device group that the service was configured in (Panorama instances).
+      type: String
   - arguments:
     - default: false
       description: Name for the new service
@@ -1867,7 +1900,7 @@ script:
     name: panorama-push-status
     outputs:
     - contextPath: Panorama.Push.DeviceGroup
-      description: Device group the policies were pushed into
+      description: Device group the configuration was pushed into
       type: string
     - contextPath: Panorama.Push.JobID
       description: Job ID of the configuration to be pushed
@@ -2541,13 +2574,13 @@ script:
         enforce the policy.
       type: String
   dockerimage: demisto/python3:3.7.3.221
-  subtype: python3
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb

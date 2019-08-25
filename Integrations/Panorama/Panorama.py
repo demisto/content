@@ -528,9 +528,9 @@ def prettify_addresses_arr(addresses_arr: list) -> List:
         return prettify_address(addresses_arr)
     pretty_addresses_arr = []
     for address in addresses_arr:
-        pretty_address = {
-            'Name': address['@name'],
-        }
+        pretty_address = {'Name': address['@name']}
+        if DEVICE_GROUP:
+            pretty_address['DeviceGroup'] = DEVICE_GROUP
         if 'description' in address:
             pretty_address['Description'] = address['description']
 
@@ -586,9 +586,9 @@ def panorama_list_addresses_command():
 
 
 def prettify_address(address: Dict) -> Dict:
-    pretty_address = {
-        'Name': address['@name'],
-    }
+    pretty_address = {'Name': address['@name']}
+    if DEVICE_GROUP:
+        pretty_address['DeviceGroup'] = DEVICE_GROUP
     if 'description' in address:
         pretty_address['Description'] = address['description']
 
@@ -685,6 +685,8 @@ def panorama_create_address_command():
     address = panorama_create_address(address_name, fqdn, ip_netmask, ip_range, description)
 
     address_output = {'Name': address_name}
+    if DEVICE_GROUP:
+        address_output['DeviceGroup'] = DEVICE_GROUP
     if fqdn:
         address_output['FQDN'] = fqdn
     if ip_netmask:
@@ -732,6 +734,8 @@ def panorama_delete_address_command():
 
     address = panorama_delete_address(address_name)
     address_output = {'Name': address_name}
+    if DEVICE_GROUP:
+        address_output['DeviceGroup'] = DEVICE_GROUP
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -755,8 +759,10 @@ def prettify_address_groups_arr(address_groups_arr: list) -> List:
     for address_group in address_groups_arr:
         pretty_address_group = {
             'Name': address_group['@name'],
-            'Type': 'static' if 'static' in address_group else 'dynamic',
+            'Type': 'static' if 'static' in address_group else 'dynamic'
         }
+        if DEVICE_GROUP:
+            pretty_address_group['DeviceGroup'] = DEVICE_GROUP
         if 'description' in address_group:
             pretty_address_group['Description'] = address_group['description']
 
@@ -812,8 +818,10 @@ def panorama_list_address_groups_command():
 def prettify_address_group(address_group: Dict) -> Dict:
     pretty_address_group = {
         'Name': address_group['@name'],
-        'Type': 'static' if 'static' in address_group else 'dynamic',
+        'Type': 'static' if 'static' in address_group else 'dynamic'
     }
+    if DEVICE_GROUP:
+        pretty_address_group['DeviceGroup'] = DEVICE_GROUP
 
     if 'description' in address_group:
         pretty_address_group['Description'] = address_group['description']
@@ -927,6 +935,8 @@ def panorama_create_address_group_command():
         'Name': address_group_name,
         'Type': type_
     }
+    if DEVICE_GROUP:
+        address_group_output['DeviceGroup'] = DEVICE_GROUP
     if match:
         address_group_output['Match'] = match
     if addresses:
@@ -972,6 +982,8 @@ def panorama_delete_address_group_command():
 
     address_group = panorama_delete_address_group(address_group_name)
     address_group_output = {'Name': address_group_name}
+    if DEVICE_GROUP:
+        address_group_output['DeviceGroup'] = DEVICE_GROUP
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1031,6 +1043,8 @@ def panorama_edit_address_group_command():
     }
 
     address_group_output = {'Name': address_group_name}
+    if DEVICE_GROUP:
+        address_group_output['DeviceGroup'] = DEVICE_GROUP
 
     if match:
         params['xpath'] = match_path
@@ -1078,9 +1092,9 @@ def panorama_edit_address_group_command():
 def prettify_services_arr(services_arr: Dict):
     pretty_services_arr = []
     for service in services_arr:
-        pretty_service = {
-            'Name': service['@name'],
-        }
+        pretty_service = {'Name': service['@name']}
+        if DEVICE_GROUP:
+            pretty_service['DeviceGroup'] = DEVICE_GROUP
         if 'description' in service:
             pretty_service['Description'] = service['description']
 
@@ -1146,6 +1160,8 @@ def prettify_service(service: Dict):
     pretty_service = {
         'Name': service['@name'],
     }
+    if DEVICE_GROUP:
+        pretty_service['DeviceGroup'] = DEVICE_GROUP
     if 'description' in service:
         pretty_service['Description'] = service['description']
 
@@ -1249,6 +1265,8 @@ def panorama_create_service_command():
         'Protocol': protocol,
         'DestinationPort': destination_port
     }
+    if DEVICE_GROUP:
+        service_output['DeviceGroup'] = DEVICE_GROUP
     if source_port:
         service_output['SourcePort'] = source_port
     if description:
@@ -1292,6 +1310,8 @@ def panorama_delete_service_command():
 
     service = panorama_delete_service(service_name)
     service_output = {'Name': service_name}
+    if DEVICE_GROUP:
+        service_output['DeviceGroup'] = DEVICE_GROUP
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1315,6 +1335,9 @@ def prettify_service_groups_arr(service_groups_arr: Dict):
             'Name': service_group['@name'],
             'Services': service_group['members']['member']
         }
+        if DEVICE_GROUP:
+            pretty_service_group['DeviceGroup'] = DEVICE_GROUP
+
         pretty_service_groups_arr.append(pretty_service_group)
 
     return pretty_service_groups_arr
@@ -1362,6 +1385,9 @@ def prettify_service_group(service_group):
         'Name': service_group['@name'],
         'Services': service_group['members']['member']
     }
+    if DEVICE_GROUP:
+        pretty_service_group['DeviceGroup'] = DEVICE_GROUP
+
     return pretty_service_group
 
 
@@ -1433,6 +1459,8 @@ def panorama_create_service_group_command():
         'Name': service_group_name,
         'Services': services
     }
+    if DEVICE_GROUP:
+        service_group_output['DeviceGroup'] = DEVICE_GROUP
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1472,6 +1500,8 @@ def panorama_delete_service_group_command():
 
     service_group = panorama_delete_service_group(service_group_name)
     service_group_output = {'Name': service_group_name}
+    if DEVICE_GROUP:
+        service_group_output['DeviceGroup'] = DEVICE_GROUP
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1531,6 +1561,8 @@ def panorama_edit_service_group_command():
         'Name': service_group_name,
         'Services': services
     }
+    if DEVICE_GROUP:
+        service_group_output['DeviceGroup'] = DEVICE_GROUP
 
     demisto.results({
         'Type': entryTypes['note'],
