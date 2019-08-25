@@ -2,9 +2,8 @@ id: Failed Login Playbook - Slack V2
 version: -1
 name: Failed Login Playbook - Slack V2
 fromversion: 5.0.0
-description: Following a failed login event happening more than 3 times, ask user
-  on Slack if she attempted a login. If no, raise the incident level to high. If yes,
-  ask user if she needs a password reset and reset the password in AD.
+description: When there are three failed login attempts to Demisto that originate from the same user ID, a direct message is sent to the user on Slack requesting that they confirm the activity.
+  If the reply is "no", then the incident severity is set to "high". If the reply is "yes", then another direct message is sent to the user asking if they require a password reset in AD.
 starttaskid: "0"
 tasks:
   "0":
@@ -40,8 +39,8 @@ tasks:
     task:
       id: 34e65914-c4a4-436d-8774-60ef198b8f4d
       version: -1
-      name: Confirm failed login with user
-      description: Ask a user a question on Slack and expect a response. The response
+      name: Ask user to confirm failed login attempts
+      description: Sends the user a direct message in Slack requesting that they confirm the account activity. The message includes predefined reply options. The response
         can also close a task (might be conditional) in a playbook.
       scriptName: SlackAsk
       clonedfrom: 7a39f05d-23c9-412d-8e36-3dd1ba0dd2f2
@@ -54,8 +53,8 @@ tasks:
     scriptarguments:
       channel: {}
       message:
-        simple: We noticed failed-login attempts with your user ID, please confirm
-          it was your attempts
+        simple: There were several failed login attempts with your user ID. Please confirm
+          that you attempted these logins.
       option1: {}
       option2: {}
       persistent: {}
@@ -82,8 +81,8 @@ tasks:
     task:
       id: 58679e35-4e24-4d2a-89ba-22fbd161f308
       version: -1
-      name: Was the failed login attempt by the user?
-      description: Answer `yes` if failed login attempt made by the user
+      name: Did the user attempt the failed login attempts?
+      description: Answer `yes` if the user initiated the failed login attempts.
       iscommand: false
       brand: ""
     nexttasks:
@@ -234,7 +233,7 @@ tasks:
       id: fbf62a23-acd3-4546-8b0b-83e210261251
       version: -1
       name: Ask the user if we should reset their password
-      description: Ask a user a question on Slack and expect a response. The response
+      description: Sends the user a direct message in Slack asking if their AD password should be reset. The message includes predefined reply options. The response
         can also close a task (might be conditional) in a playbook.
       scriptName: SlackAsk
       type: regular
@@ -274,7 +273,7 @@ tasks:
       id: 5de09b8c-1b2e-4ca7-8f16-afdcb5c5df16
       version: -1
       name: Should we reset the password?
-      description: Answer `yes` if password should be reset
+      description: Answer `yes` if password should be reset.
       type: condition
       iscommand: false
       brand: ""
@@ -285,7 +284,7 @@ tasks:
       - "7"
     scriptarguments:
       message:
-        simple: Would you like us to reset your password?
+        simple: Do you want us to reset your password?
       option1: {}
       option2: {}
       task:
@@ -343,7 +342,7 @@ tasks:
       id: 761d55ff-dd09-42e4-880a-0c53659486c9
       version: -1
       name: Notify User on Slack
-      description: Send a message to a slack user, group or channel.
+      description: Sends a direct message to a Slack user, group, or channel.
       script: '|||send-notification'
       clonedfrom: 5e3d77e5-2172-4f74-87b6-c54e0f70fa62
       type: regular
