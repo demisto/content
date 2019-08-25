@@ -2,6 +2,7 @@ id: Test XDR Playbook
 version: -1
 name: Test XDR Playbook
 starttaskid: "0"
+fromversion: 4.1.0
 tasks:
   "0":
     id: "0"
