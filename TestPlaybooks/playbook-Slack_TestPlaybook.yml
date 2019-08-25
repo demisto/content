@@ -29,13 +29,13 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 21872fd2-9c5c-4ac4-8055-fb0dd31d0ad3
+    taskid: 83d770a5-084f-431d-8dc4-09ec73d297ac
     type: regular
     task:
-      id: 21872fd2-9c5c-4ac4-8055-fb0dd31d0ad3
+      id: 83d770a5-084f-431d-8dc4-09ec73d297ac
       version: -1
       name: Mirror investigation
-      description: Mirror the investigation in slack
+      description: Mirrors the investigation between Slack and the Demisto War Room.
       script: SlackV2|||mirror-investigation
       type: regular
       iscommand: true
@@ -47,6 +47,7 @@ tasks:
       autoclose: {}
       channelName:
         simple: ${TimeNow}
+      channelTopic: {}
       direction:
         simple: FromDemisto
       mirrorTo: {}
@@ -64,13 +65,13 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 59ae8cfd-0d20-48e9-865a-1f5f4db93085
+    taskid: c297407e-05ce-4146-88fd-18b925807602
     type: regular
     task:
-      id: 59ae8cfd-0d20-48e9-865a-1f5f4db93085
+      id: c297407e-05ce-4146-88fd-18b925807602
       version: -1
       name: Send a message
-      description: Send a message to a slack user, group or channel.
+      description: Sends a message to a user, group, or channel.
       script: SlackV2|||send-notification
       type: regular
       iscommand: true
@@ -133,13 +134,15 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 3aae9361-2eb3-42a6-86bb-d686ffe7bf66
+    taskid: db60916b-89a2-4d8f-8fdd-22147295db5e
     type: regular
     task:
-      id: 3aae9361-2eb3-42a6-86bb-d686ffe7bf66
+      id: db60916b-89a2-4d8f-8fdd-22147295db5e
       version: -1
       name: Send a file
-      description: Send a file to a slack user, channel or group.
+      description: Sends a file in Slack to a user, channel, or group. If a user,
+        channel, or group is not specified, the file is sent to the mirrored investigation
+        channel (if it exists).
       script: SlackV2|||slack-send-file
       type: regular
       iscommand: true
@@ -168,17 +171,20 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 9d3be335-45fe-4f02-816f-29434e408b2c
+    taskid: 804e23f9-d616-405f-8516-7a0696a26b93
     type: regular
     task:
-      id: 9d3be335-45fe-4f02-816f-29434e408b2c
+      id: 804e23f9-d616-405f-8516-7a0696a26b93
       version: -1
       name: Close the channel
-      description: Close the mirrored Slack channel for this incident.
+      description: Archives the mirrored channel for this incident.
       script: SlackV2|||close-channel
       type: regular
       iscommand: true
       brand: SlackV2
+    nexttasks:
+      '#none#':
+      - "13"
     separatecontext: false
     view: |-
       {
@@ -323,12 +329,180 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "10":
+    id: "10"
+    taskid: bfe98ff6-b147-4002-85ec-3388e7b39e1c
+    type: regular
+    task:
+      id: bfe98ff6-b147-4002-85ec-3388e7b39e1c
+      version: -1
+      name: GetTime
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      contextKey: {}
+      date: {}
+      dateFormat: {}
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: a800430c-c96b-4254-8b48-2e01ecf326b6
+    type: regular
+    task:
+      id: a800430c-c96b-4254-8b48-2e01ecf326b6
+      version: -1
+      name: Create a channel
+      description: Create a channel in Slack.
+      script: SlackV2|||slack-create-channel
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      name:
+        complex:
+          root: TimeNow
+          transformers:
+          - operator: substring
+            args:
+              from:
+                value:
+                  simple: "8"
+              to:
+                value:
+                  simple: "24"
+      type: {}
+      users:
+        simple: demisto_integration
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: aa6e96b2-9bc3-4f1b-8903-af29b6031df9
+    type: regular
+    task:
+      id: aa6e96b2-9bc3-4f1b-8903-af29b6031df9
+      version: -1
+      name: Close the channel
+      description: Archives the mirrored channel for this incident.
+      script: SlackV2|||close-channel
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    scriptarguments:
+      channel:
+        complex:
+          root: TimeNow
+          transformers:
+          - operator: substring
+            args:
+              from:
+                value:
+                  simple: "8"
+              to:
+                value:
+                  simple: "24"
+          - operator: toLowerCase
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '-'
+              toReplace:
+                value:
+                  simple: ' '
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: _
+              toReplace:
+                value:
+                  simple: ':'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: c0db924e-26a2-43d5-8c05-d978b77cb82c
+    type: regular
+    task:
+      id: c0db924e-26a2-43d5-8c05-d978b77cb82c
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1640,
+        "height": 2340,
         "width": 380,
         "x": 50,
         "y": 50
