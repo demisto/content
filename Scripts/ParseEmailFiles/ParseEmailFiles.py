@@ -37,6 +37,7 @@ from olefile import OleFileIO, isOleFile
 # coding=utf-8
 from datetime import datetime, timedelta
 from struct import unpack
+import chardet
 
 reload(sys)
 sys.setdefaultencoding('utf8')  # pylint: disable=no-member
@@ -190,7 +191,8 @@ class DataModel(object):
     def PtypString(data_value):
         if data_value:
             try:
-                data_value = data_value.decode('ascii', errors='ignore').replace('\x00', '')
+                encoding = chardet.detect(data_value)
+                data_value = data_value.decode(encoding['encoding'], errors='ignore').replace('\x00', '')
             except UnicodeDecodeError:
                 data_value = data_value.decode("utf-16-le", errors="ignore").replace('\x00', '')
 
