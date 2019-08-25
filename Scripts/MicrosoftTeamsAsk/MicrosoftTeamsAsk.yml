@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: Question (message) to send to the specified team member.
+  description: Question (message) to send to the specified team member or channel.
   isArray: false
   name: message
   required: true
@@ -55,7 +55,7 @@ args:
   name: channel
   required: false
   secret: false
-comment: Send a user a question with predefined response options on Microsoft Teams. The response
+comment: Send a team member or channel a question with predefined response options on Microsoft Teams. The response
   can be used to close a task (might be conditional) in a playbook.
 commonfields:
   id: MicrosoftTeamsAsk
