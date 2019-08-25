@@ -2,6 +2,7 @@ import os
 import yaml
 import requests
 
+from Tests.scripts.constants import CONTENT_GITHUB_MASTER_LINK
 from Tests.test_utils import print_error, get_yaml
 
 # disable insecure warnings
@@ -18,7 +19,6 @@ class IntegrationValidator(object):
        current_integration (dict): Json representation of the current integration from the branch.
        old_integration (dict): Json representation of the current integration from master.
     """
-    CONTENT_GIT_HUB_LINK = "https://raw.githubusercontent.com/demisto/content/master/"
 
     def __init__(self, file_path, check_git=True, old_file_path=None):
         self._is_valid = True
@@ -28,12 +28,12 @@ class IntegrationValidator(object):
             self.current_integration = get_yaml(file_path)
             # The replace in the end is for Windows support
             if old_file_path:
-                git_hub_path = os.path.join(self.CONTENT_GIT_HUB_LINK, old_file_path).replace("\\", "/")
+                git_hub_path = os.path.join(CONTENT_GITHUB_MASTER_LINK, old_file_path).replace("\\", "/")
                 file_content = requests.get(git_hub_path, verify=False).content
                 self.old_integration = yaml.safe_load(file_content)
             else:
                 try:
-                    file_path_from_master = os.path.join(self.CONTENT_GIT_HUB_LINK, file_path).replace("\\", "/")
+                    file_path_from_master = os.path.join(CONTENT_GITHUB_MASTER_LINK, file_path).replace("\\", "/")
                     self.old_integration = yaml.safe_load(requests.get(file_path_from_master, verify=False).content)
                 except Exception as e:
                     print(str(e))
@@ -52,7 +52,25 @@ class IntegrationValidator(object):
         self.is_changed_command_name_or_arg()
         self.is_there_duplicate_args()
         self.is_there_duplicate_params()
+        self.is_valid_subtype()
 
+        return self._is_valid
+
+    def is_valid_subtype(self):
+        """Validate that the subtype is python2 or python3."""
+        type_ = self.current_integration.get('script', {}).get('type')
+        if type_ == 'python':
+            subtype = self.current_integration.get('script', {}).get('subtype')
+            if not subtype or subtype not in ['python3', 'python2']:
+                print_error("The subtype for our yml files should be either python2 or python3, "
+                            "please update the file {}.".format(self.current_integration.get('name')))
+                self._is_valid = False
+            if self.old_integration:
+                old_subtype = self.old_integration.get('script', {}).get('subtype', "")
+                if len(old_subtype) > 0 and old_subtype != subtype:
+                    print_error("Possible backwards compatibility break, You've changed the subtype"
+                                " of the file {}".format(self.file_path))
+                    self._is_valid = False
         return self._is_valid
 
     def is_there_duplicate_args(self):

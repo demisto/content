@@ -223,6 +223,7 @@ def create_msg():
     to = argToList(demisto.getArg('to'))
     cc = argToList(demisto.getArg('cc'))
     bcc = argToList(demisto.getArg('bcc'))
+    additional_header = argToList(demisto.getArg('additionalHeader'))
     subject = demisto.getArg('subject') or ''
     body = demisto.getArg('body') or ''
     htmlBody = demisto.getArg('htmlBody') or ''
@@ -286,6 +287,10 @@ def create_msg():
         msg['To'] = header(','.join(to))
     if cc:
         msg['CC'] = header(','.join(cc))
+    if additional_header:
+        for h in additional_header:
+            header_name_and_value = h.split('=')
+            msg[header_name_and_value[0]] = header(header_name_and_value[1])
     # Notice we should not add BCC header since Python2 does not filter it
     return msg.as_string(), to, cc, bcc
 
