@@ -17,7 +17,7 @@ def test_module():
     if res is not None:
         demisto.results('ok')
     else:
-        return_error("Received an error, data retrieved: {1}".format(res))
+        return_error("Received an error, data retrieved: {1}".format(res.text))
 
 
 def send_request(method, url_suffix, data=None):
