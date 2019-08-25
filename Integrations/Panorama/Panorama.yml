@@ -630,7 +630,7 @@ script:
       type: string
     - contextPath: Panorama.Services.DeviceGroup
       description: Device group that the service was configured in (Panorama instances).
-      type: String
+      type: string
   - arguments:
     - default: false
       description: Service name
@@ -666,7 +666,7 @@ script:
       type: string
     - contextPath: Panorama.Services.DeviceGroup
       description: Device group that the service was configured in (Panorama instances).
-      type: String
+      type: string
   - arguments:
     - default: false
       description: Name for the new service
@@ -729,6 +729,9 @@ script:
     - contextPath: Panorama.Services.SourcePort
       description: Service source port
       type: string
+    - contextPath: Panorama.Services.DeviceGroup
+      description: Device group that the service was configured in (Panorama instances).
+      type: string
   - arguments:
     - default: false
       description: Name of the service to delete
@@ -750,6 +753,9 @@ script:
     - contextPath: Panorama.Services.Name
       description: Name of the service that was deleted
       type: string
+    - contextPath: Panorama.Services.DeviceGroup
+      description: Device group that the service was configured in (Panorama instances).
+      type: string
   - arguments:
     - default: false
       description: Specify a device group for the service groups (Panorama instances)
@@ -767,6 +773,9 @@ script:
       type: string
     - contextPath: Panorama.ServiceGroups.Services
       description: Service group related services
+      type: string
+    - contextPath: Panorama.ServiceGroups.DeviceGroup
+      description: Device group that the service group was configured in (Panorama instances).
       type: string
   - arguments:
     - default: false
@@ -791,6 +800,9 @@ script:
       type: string
     - contextPath: Panorama.ServiceGroups.Services
       description: Service group related services
+      type: string
+    - contextPath: Panorama.ServiceGroups.DeviceGroup
+      description: Device group that the service group was configured in (Panorama instances).
       type: string
   - arguments:
     - default: false
@@ -822,6 +834,9 @@ script:
     - contextPath: Panorama.ServiceGroups.Services
       description: Service group related services
       type: string
+    - contextPath: Panorama.ServiceGroups.DeviceGroup
+      description: Device group that the service group was configured in (Panorama instances).
+      type: string
   - arguments:
     - default: false
       description: Name of service group to delete
@@ -843,6 +858,9 @@ script:
     - contextPath: Panorama.ServiceGroups.Name
       description: Name of service group that was deleted
       type: string
+    - contextPath: Panorama.ServiceGroups.DeviceGroup
+      description: Device group that the service group was configured in (Panorama instances).
+      type: string
   - arguments:
     - default: false
       description: Name of the service group to edit
@@ -852,14 +870,14 @@ script:
       secret: false
     - default: false
       description: Services to add to the service group. only existing Services objects
-        can be added
+        can be added.
       isArray: true
       name: services_to_add
       required: false
       secret: false
     - default: false
       description: Services to remove from the service group. only existing Services
-        objects can be removed
+        objects can be removed.
       isArray: false
       name: services_to_remove
       required: false
@@ -875,6 +893,9 @@ script:
     - contextPath: Panorama.ServiceGroups.Services
       description: Service group related services
       type: string
+    - contextPath: Panorama.ServiceGroups.DeviceGroup
+      description: Device group that the service group was configured in (Panorama instances).
+      type: string
   - arguments:
     - default: false
       description: Custom URL category name
@@ -883,7 +904,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specify a device group for the custom url category (Panorama instances)
+      description: Specify a device group for the custom URL category (Panorama instances)
       isArray: false
       name: device-group
       required: false
@@ -901,6 +922,9 @@ script:
       type: string
     - contextPath: Panorama.CustomURLCategory.Sites
       description: Custom URL category list of sites
+      type: string
+    - contextPath: Panorama.CustomURLCategory.DeviceGroup
+      description: Device group that the Custom URL Category was configured in (Panorama instances).
       type: string
   - arguments:
     - default: false
@@ -922,7 +946,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specify a device group for the custom url category (Panorama instances)
+      description: Specify a device group for the custom URL category (Panorama instances)
       isArray: false
       name: device-group
       required: false
@@ -940,6 +964,9 @@ script:
       type: string
     - contextPath: Panorama.CustomURLCategory.Sites
       description: Custom URL category list of sites
+      type: string
+    - contextPath: Panorama.CustomURLCategory.DeviceGroup
+      description: Device group that the Custom URL Category was configured in (Panorama instances).
       type: string
   - arguments:
     - default: false
@@ -961,6 +988,9 @@ script:
     outputs:
     - contextPath: Panorama.CustomURLCategory.Name
       description: Name of the custom URL category to delete
+      type: string
+    - contextPath: Panorama.CustomURLCategory.DeviceGroup
+      description: Device group that the Custom URL Category was configured in (Panorama instances).
       type: string
   - arguments:
     - default: false
@@ -999,6 +1029,9 @@ script:
     - contextPath: Panorama.CustomURLCategory.Sites
       description: Custom URL category list of sites
       type: string
+    - contextPath: Panorama.CustomURLCategory.DeviceGroup
+      description: Device group that the Custom URL Category was configured in (Panorama instances).
+      type: string
   - arguments:
     - default: false
       description: URL to check
@@ -1025,7 +1058,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specify a device group for the URL filter (Panorama instances)
+      description: Specify a device group for the URL Filter (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -1052,6 +1085,9 @@ script:
       type: string
     - contextPath: Panorama.URLFilter.Description
       description: URL Filter description
+      type: string
+    - contextPath: Panorama.URLFilter.DeviceGroup
+      description: Device group that the URL Filter was configured in (Panorama instances).
       type: string
   - arguments:
     - default: false
@@ -1099,7 +1135,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specify a device group for the URL filter (Panorama instances)
+      description: Specify a device group for the URL Filter (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -1126,6 +1162,9 @@ script:
       type: string
     - contextPath: Panorama.URLFilter.Description
       description: URL Filter description
+      type: string
+    - contextPath: Panorama.URLFilter.DeviceGroup
+      description: Device group that the URL Filter was configured in (Panorama instances).
       type: string
   - arguments:
     - default: false
@@ -1186,6 +1225,9 @@ script:
     - contextPath: Panorama.URLFilter.OverrideBlockList
       description: Block Overrides for the url category
       type: string
+    - contextPath: Panorama.URLFilter.DeviceGroup
+      description: Device group that the URL Filter was configured in (Panorama instances).
+      type: string
   - arguments:
     - default: false
       description: Name of the URL filter rule to delete
@@ -1206,6 +1248,9 @@ script:
     outputs:
     - contextPath: Panorama.URLFilter.Name
       description: URL filter rule name
+      type: string
+    - contextPath: Panorama.URLFilter.DeviceGroup
+      description: Device group that the URL Filter was configured in (Panorama instances).
       type: string
   - arguments:
     - default: false

@@ -1583,6 +1583,8 @@ def prettify_custom_url_category(custom_url_category):
     pretty_custom_url_category = {
         'Name': custom_url_category['@name'],
     }
+    if DEVICE_GROUP:
+        pretty_custom_url_category['DeviceGroup'] = DEVICE_GROUP
 
     if 'description' in custom_url_category:
         pretty_custom_url_category['Description'] = custom_url_category['description']
@@ -1648,6 +1650,8 @@ def panorama_create_custom_url_category(custom_url_category_name, sites=None, de
     )
 
     custom_url_category_output = {'Name': custom_url_category_name}
+    if DEVICE_GROUP:
+        custom_url_category_output['DeviceGroup'] = DEVICE_GROUP
     if sites:
         custom_url_category_output['Sites'] = sites
     if description:
@@ -1706,6 +1710,8 @@ def panorama_delete_custom_url_category_command():
 
     result = panorama_delete_custom_url_category(custom_url_category_name)
     custom_url_category_output = {'Name': custom_url_category_name}
+    if DEVICE_GROUP:
+        custom_url_category_output['DeviceGroup'] = DEVICE_GROUP
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1737,6 +1743,8 @@ def panorama_edit_custom_url_category(custom_url_category_name, sites, descripti
     )
 
     custom_url_category_output = {'Name': custom_url_category_name}
+    if DEVICE_GROUP:
+        custom_url_category_output['DeviceGroup'] = DEVICE_GROUP
     if sites:
         custom_url_category_output['Sites'] = sites
     if description:
@@ -1801,8 +1809,8 @@ def panorama_custom_url_category_remove_sites_command():
 
     sites = argToList(demisto.args()['sites'])
 
-    substructed_sites = [item for item in custom_url_category_sites if item not in sites]
-    result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, substructed_sites,
+    subtracted_sites = [item for item in custom_url_category_sites if item not in sites]
+    result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, subtracted_sites,
                                                                            description)
 
     demisto.results({
@@ -1891,6 +1899,8 @@ def panorama_get_url_category_command():
 
 def prettify_get_url_filter(url_filter):
     pretty_url_filter = {'Name': url_filter['@name']}
+    if DEVICE_GROUP:
+        pretty_url_filter['DeviceGroup'] = DEVICE_GROUP
     if 'description' in url_filter:
         pretty_url_filter['Description'] = url_filter['description']
 
@@ -2012,6 +2022,8 @@ def panorama_create_url_filter_command():
                                         override_block_list, description)
 
     url_filter_output = {'Name': url_filter_name}
+    if DEVICE_GROUP:
+        url_filter_output['DeviceGroup'] = DEVICE_GROUP
     url_filter_output['Category'] = []
     for category in url_category_list:
         url_filter_output['Category'].append({
@@ -2044,6 +2056,8 @@ def panorama_edit_url_filter(url_filter_name, element_to_change, element_value, 
         return_error('Please commit the instance prior to editing the URL Filter')
 
     url_filter_output = {'Name': url_filter_name}
+    if DEVICE_GROUP:
+        url_filter_output['DeviceGroup'] = DEVICE_GROUP
     params = {
         'action': 'edit',
         'type': 'config',
@@ -2135,12 +2149,19 @@ def panorama_delete_url_filter_command():
     url_filter_name = demisto.args()['name']
     result = panorama_delete_url_filter(url_filter_name)
 
+    url_filter_output = {'Name': url_filter_name}
+    if DEVICE_GROUP:
+        url_filter_output['DeviceGroup'] = DEVICE_GROUP
+
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['text'],
         'HumanReadable': 'URL Filter was deleted successfully',
+        'EntryContext': {
+            "Panorama.URLFilter(val.Name == obj.Name)": url_filter_output
+        }
     })
 
 
