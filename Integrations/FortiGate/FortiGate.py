@@ -486,14 +486,16 @@ def ban_ip_command():
     ip_addresses_string = demisto.args()['ip_address']
     ip_addresses_array = argToList(ip_addresses_string)
     for ip_address in ip_addresses_array:
-        if not is_ip_valid(ip_address, True):
+        if not is_ip_valid(ip_address, accept_v6_ips=True):
             return_error('Error: invalid IP address sent as argument.')
+
     time_to_expire = demisto.args().get('expiry')
     if time_to_expire:
         time_to_expire = convert_arg_to_int(time_to_expire, 'expiry')
     else:
         # The default time to expiration is 0, which means infinite time (It will remain banned).
         time_to_expire = 0
+
     response = ban_ip(ip_addresses_array, time_to_expire)
     demisto.results({
         'Type': entryTypes['note'],
@@ -518,8 +520,9 @@ def unban_ip_command():
     ip_addresses_string = demisto.args()['ip_address']
     ip_addresses_array = argToList(ip_addresses_string)
     for ip_address in ip_addresses_array:
-        if not is_ip_valid(ip_address, True):
+        if not is_ip_valid(ip_address, accept_v6_ips=True):
             return_error('Error: invalid IP address sent as argument.')
+
     response = unban_ip(ip_addresses_array)
     demisto.results({
         'Type': entryTypes['note'],
