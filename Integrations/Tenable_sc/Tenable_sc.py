@@ -1040,6 +1040,9 @@ def create_query(scan_id, tool, query_filters=None):
 def get_analysis(query, scan_results_id):
     path = 'analysis'
 
+    # This function can receive 'query' argument either as a dict (as in get_vulnerability_command),
+    # or as an ID of an existing query (as in get_vulnearbilites).
+    # Here we form the query field in the request body as a dict, as required.
     if not isinstance(query, dict):
         query = {'id': query}
 
@@ -1089,8 +1092,9 @@ def get_vulnerability_command():
         return_message('Vulnerability not found')
 
     vuln = vuln_response['response']
+    vuln['severity'] = results[0]['severity']  # todo: are all the analysis results differ only by the hosts?
 
-    hosts = [{'IP': h['ip'], 'MAC': h['macAddress'], 'Port': h['port'], 'Protocol': h['protocol']} for h in results]
+    hosts = get_vulnerability_hosts_from_analysis(results)
 
     cves = None
     cves_output = []  # type: List[dict]
@@ -1108,7 +1112,7 @@ def get_vulnerability_command():
         'Name': vuln['name'],
         'Description': vuln['description'],
         'Type': vuln['type'],
-        'Severity': results[0]['severity'].get('name'),
+        'Severity': vuln['severity'].get('name'),
         'Synopsis': vuln['synopsis'],
         'Solution': vuln['solution']
     }
@@ -1183,6 +1187,15 @@ def get_vulnerability(vuln_id):
     }
 
     return send_request(path, params=params)
+
+
+def get_vulnerability_hosts_from_analysis(results):
+    return [{
+        'IP': host['ip'],
+        'MAC': host['macAddress'],
+        'Port': host['port'],
+        'Protocol': host['protocol']
+    } for host in results]
 
 
 def stop_scan_command():
@@ -1306,7 +1319,7 @@ def get_device_command():
         'DNSName': device.get('dnsName'),
         'OS': re.sub('<[^<]+?>', ' ', device['os']).lstrip() if device.get('os') else '',
         'OsCPE': device.get('osCPE'),
-        'LastScan': timestamp_to_utc(device['lastScan'], additional_cond=(int(device['lastScan']) > 0)),
+        'LastScan': timestamp_to_utc(device['lastScan']),
         'TotalScore': device.get('total'),
         'LowSeverity': device.get('severityLow'),
         'MediumSeverity': device.get('severityMedium'),
@@ -1551,9 +1564,7 @@ def list_alerts_command():
         'Name': a['name'],
         'State': 'Triggered' if a['didTriggerLastEvaluation'] == 'true' else 'Not Triggered',
         'Actions': demisto.dt(a['action'], 'type'),
-        'LastTriggered': timestamp_to_utc(a['lastTriggered'],
-                                          additional_cond=(int(a['lastTriggered']) > 0),
-                                          default_returned_value='Never'),
+        'LastTriggered': timestamp_to_utc(a['lastTriggered'], default_returned_value='Never'),
         'LastEvaluated': timestamp_to_utc(a['lastEvaluated']),
         'Group': a['ownerGroup'].get('name'),
         'Owner': a['owner'].get('username')
@@ -1591,9 +1602,7 @@ def get_alert_command():
         'ID': alert['id'],
         'Name': alert['name'],
         'Description': alert['description'],
-        'LastTriggered': timestamp_to_utc(alert['lastTriggered'],
-                                          additional_cond=(int(alert['lastTriggered']) > 0),
-                                          default_returned_value='Never'),
+        'LastTriggered': timestamp_to_utc(alert['lastTriggered'], default_returned_value='Never'),
         'State': 'Triggered' if alert['didTriggerLastEvaluation'] == 'true' else 'Not Triggered',
         'Behavior': 'Execute on every trigger ' if alert['executeOnEveryTrigger'] == 'true' else 'Execute only on'
                                                                                                  ' first trigger'
@@ -1694,7 +1703,7 @@ def fetch_incidents():
     demisto.setLastRun({'time': max_timestamp})
 
 
-def request_scan_results():
+def get_all_scan_results():
     path = 'scanResult'
     params = {
         'fields': 'name,description,details,status,scannedIPs,startTime,scanDuration,importStart,'
@@ -1704,13 +1713,13 @@ def request_scan_results():
 
 
 def get_all_scan_results_command():
-    res = request_scan_results()
-    manageable = demisto.args().get('manageable', 'false').lower()
+    res = get_all_scan_results()
+    get_manageable_results = demisto.args().get('manageable', 'false').lower()  # 'true' or 'false'
 
     if not res or 'response' not in res or not res['response']:
         return_message('Scan results not found')
 
-    elements = get_elements(res['response'], manageable)
+    elements = get_elements(res['response'], get_manageable_results)
 
     headers = ['ID', 'Name', 'Status', 'Description', 'Policy', 'Group', 'Owner', 'ScannedIPs',
                'StartTime', 'EndTime', 'Duration', 'Checks', 'ImportTime', 'RepositoryName']
@@ -1747,8 +1756,8 @@ def get_all_scan_results_command():
     })
 
 
-def timestamp_to_utc(timestamp_str, additional_cond=True, default_returned_value=''):
-    if timestamp_str and additional_cond:
+def timestamp_to_utc(timestamp_str, default_returned_value=''):
+    if timestamp_str and (int(timestamp_str) > 0):  # no value is when timestamp_str == '-1'
         return datetime.utcfromtimestamp(int(timestamp_str)).strftime(
             '%Y-%m-%dT%H:%M:%SZ')
     return default_returned_value
