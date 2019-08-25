@@ -56,7 +56,7 @@ args:
 comment: Ask either a user or a channel a question on Slack and expect a response. The response can also
   close a task (might be conditional) in a playbook.
 commonfields:
-  id: 923bf124-907d-4cb8-8bea-01c90a3caea7
+  id: SlackAsk
   version: -1
 enabled: true
 name: SlackAsk

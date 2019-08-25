@@ -64,6 +64,6 @@ dependson:
   must:
   - slack-send
 fromversion: 3.5.0
-toversion: 5.0.0
+toversion: 4.5.0
 tests:
   - No test - entitlement
