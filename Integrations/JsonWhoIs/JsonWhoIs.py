@@ -83,21 +83,6 @@ def list_by_ec(cur_list: list, needed_keys: list):
     return cur_list
 
 
-def remove_none(obj):
-    """
-    Get objects and remove None or empty strings.
-    :param obj: iterable object
-    :return: Obj with None value removed
-    """
-    if isinstance(obj, (list, tuple, set)):
-        return type(obj)(remove_none(x) for x in obj if x is not (None or ''))
-    elif isinstance(obj, dict):
-        return type(obj)((remove_none(k), remove_none(v))
-                         for k, v in obj.items() if k is not None and v is not (None or ''))
-    else:
-        return obj
-
-
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -117,21 +102,16 @@ def whois(url: str) -> tuple:
 
     # Build all ec
     ec = {
-        'Domain': {
-            'WHOIS': {
-                'DomainStatus': raw.get('status'),
-                'NameServers': list_by_ec(raw.get('nameservers'), needed_keys=['name']),
-                'CreationDate': raw.get('created_on'),
-                'UpdatedDate': raw.get('updated_on'),
-                'ExpirationDate': raw.get('expires_on'),
-                'Registrar': dict_by_ec(raw.get('registrar')),
-                'Registrant': list_by_ec(raw.get('registrant_contacts'), needed_keys=['name', 'phone', 'email']),
-                'Admin': list_by_ec(raw.get('admin_contacts'), needed_keys=['name', 'phone', 'email'])
-            }
-        }
+        'DomainStatus': raw.get('status'),
+        'NameServers': list_by_ec(raw.get('nameservers'), needed_keys=['name']),
+        'CreationDate': raw.get('created_on'),
+        'UpdatedDate': raw.get('updated_on'),
+        'ExpirationDate': raw.get('expires_on'),
+        'Registrar': dict_by_ec(raw.get('registrar')),
+        'Registrant': list_by_ec(raw.get('registrant_contacts'), needed_keys=['name', 'phone', 'email']),
+        'Admin': list_by_ec(raw.get('admin_contacts'), needed_keys=['name', 'phone', 'email'])
     }
-
-    remove_none(ec)
+    createContext(ec, removeNull=True)
 
     return ec, raw
 
@@ -145,21 +125,27 @@ def whois_command():
     ec, raw = whois(domain)
 
     # Create human-readable format
-    ec_shortcut = ec['Domain']['WHOIS']
     human_readable = ''
-    if 'Admin' in ec_shortcut:
-        human_readable += tableToMarkdown(name='Admin account', t=ec_shortcut['Admin'])
-    if 'NameServers' in ec_shortcut:
-        human_readable += tableToMarkdown(name='Name servers', t=ec_shortcut['NameServers'])
-    if 'Registrant' in ec_shortcut:
-        human_readable += tableToMarkdown(name='Registrant', t=ec_shortcut['Registrant'])
-    if 'Registrar' in ec_shortcut:
-        human_readable += tableToMarkdown(name='Registrar', t=ec_shortcut['Registrar'])
+    if ec.get('Admin'):
+        human_readable += tableToMarkdown(name='Admin account', t=ec['Admin'])
+    if ec.get('NameServers'):
+        human_readable += tableToMarkdown(name='Name servers', t=ec['NameServers'])
+    if ec.get('Registrant'):
+        human_readable += tableToMarkdown(name='Registrant', t=ec['Registrant'])
+    if ec.get('Registrar'):
+        human_readable += tableToMarkdown(name='Registrar', t=ec['Registrar'])
 
     # Others table
     others_keys = ['DomainStatus', 'CreationDate', 'UpdatedDate', 'ExpirationDate']
-    ec_others = {key: ec_shortcut[key] for key in ec_shortcut if key in others_keys}
+    ec_others = {key: ec[key] for key in ec if key in others_keys}
     human_readable += tableToMarkdown(name='Others', t=ec_others)
+
+    # Create full ec
+    ec = {
+        'Domain': {
+            'WHOIS': ec
+        }
+    }
 
     return_outputs(readable_output=human_readable,
                    outputs=ec,
@@ -168,7 +154,7 @@ def whois_command():
 
 @logger
 def test_module():
-    ec, raw = whois('demisto.com')
+    whois('demisto.com')
     demisto.results('ok')
 
 
@@ -192,5 +178,3 @@ def main():
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == "__builtin__" or __name__ == "builtins":
     main()
-
-main()
