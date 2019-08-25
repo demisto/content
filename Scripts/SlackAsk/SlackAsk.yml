@@ -1,43 +1,43 @@
 args:
 - default: false
-  description: A slack user to ask - can be either email or slack username
+  description: The Slack user to which to send the message. Cab be either an email address or a Slack user name.
   isArray: false
   name: user
   required: false
   secret: false
 - default: false
-  description: A slack channel to ask
+  description: The Slack channel to which to send the message.
   isArray: false
   name: channel
   required: false
   secret: false
 - default: false
-  description: The message ask the user
+  description: The message to send to the user or channel.
   isArray: false
   name: message
   required: true
   secret: false
 - default: false
-  description: First option for a user reply. "yes" is the default.
+  description: First teply option. Default is "yes".
   isArray: false
   name: option1
   required: false
   secret: false
 - default: false
-  description: Second option for the user reply. "no" is the default.
+  description: Second reply option. Default is "no".
   isArray: false
   name: option2
   required: false
   secret: false
 - default: false
-  description: Which task should we close with the reply. If none then no playbook
+  description: The task to close with the reply. If empty, then no playbook
     tasks will be closed.
   isArray: false
   name: task
   required: false
   secret: false
 - default: false
-  description: Tag to add on email reply entries
+  description: Tag to add to email reply entries.
   isArray: false
   name: replyEntriesTag
   required: false
@@ -45,7 +45,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Indicates whether to use one-time entitlement or a persistent one
+  description: Indicates whether to use one-time entitlement or persistent entitlement.
   isArray: false
   name: persistent
   predefined:
@@ -53,7 +53,7 @@ args:
   - 'false'
   required: false
   secret: false
-comment: Ask either a user or a channel a question on Slack and expect a response. The response can also
+comment: Sends a message (question) to either user (in a direct message) or to a channel. The message includes predefined reply options. The response can also
   close a task (might be conditional) in a playbook.
 commonfields:
   id: SlackAsk
