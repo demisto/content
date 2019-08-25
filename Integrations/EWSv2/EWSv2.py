@@ -1673,13 +1673,17 @@ def get_cs_status(search_name, status):
 
 def start_compliance_search(query):
     check_cs_prereqs()
-    with open("startcompliancesearch2.ps1", "w+") as f:
-        f.write(START_COMPLIANCE)
+    try:
+        with open("startcompliancesearch2.ps1", "w+") as f:
+            f.write(START_COMPLIANCE)
 
-    output = subprocess.Popen(["pwsh", "startcompliancesearch2.ps1", USERNAME, query],
-                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output = subprocess.Popen(["pwsh", "startcompliancesearch2.ps1", USERNAME, query],
+                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    stdout, stderr = output.communicate(input=PASSWORD.encode())
+        stdout, stderr = output.communicate(input=PASSWORD.encode())
+
+    finally:
+        os.remove("startcompliancesearch2.ps1")
 
     if stderr:
         return get_cs_error(stderr)
@@ -1690,7 +1694,6 @@ def start_compliance_search(query):
     sub_end = sub_start + 45
     search_name = stdout[sub_start:sub_end]
 
-    os.remove("startcompliancesearch2.ps1")
     return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
@@ -1703,14 +1706,16 @@ def start_compliance_search(query):
 
 def get_compliance_search(search_name):
     check_cs_prereqs()
-    with open("getcompliancesearch2.ps1", "w+") as f:
-        f.write(GET_COMPLIANCE)
+    try:
+        with open("getcompliancesearch2.ps1", "w+") as f:
+            f.write(GET_COMPLIANCE)
 
-    output = subprocess.Popen(["pwsh", "getcompliancesearch2.ps1", USERNAME, search_name],
-                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = output.communicate(input=PASSWORD.encode())
+        output = subprocess.Popen(["pwsh", "getcompliancesearch2.ps1", USERNAME, search_name],
+                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = output.communicate(input=PASSWORD.encode())
 
-    os.remove("getcompliancesearch2.ps1")
+    finally:
+        os.remove("getcompliancesearch2.ps1")
 
     if stderr:
         return get_cs_error(stderr)
@@ -1740,14 +1745,16 @@ def get_compliance_search(search_name):
 
 def purge_compliance_search(search_name):
     check_cs_prereqs()
-    with open("purgecompliancesearch2.ps1", "w+") as f:
-        f.write(PURGE_COMPLIANCE)
+    try:
+        with open("purgecompliancesearch2.ps1", "w+") as f:
+            f.write(PURGE_COMPLIANCE)
 
-    output = subprocess.Popen(["pwsh", "purgecompliancesearch2.ps1", USERNAME, search_name],
-                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = output.communicate(input=PASSWORD.encode())
+        output = subprocess.Popen(["pwsh", "purgecompliancesearch2.ps1", USERNAME, search_name],
+                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        _, stderr = output.communicate(input=PASSWORD.encode())
 
-    os.remove("purgecompliancesearch2.ps1")
+    finally:
+        os.remove("purgecompliancesearch2.ps1")
 
     if stderr:
         return get_cs_error(stderr)
@@ -1757,16 +1764,18 @@ def purge_compliance_search(search_name):
 
 def check_purge_compliance_search(search_name):
     check_cs_prereqs()
-    with open("purgestatuscompliancesearch2.ps1", "w+") as f:
-        f.write(PURGE_STATUS_COMPLIANCE)
+    try:
+        with open("purgestatuscompliancesearch2.ps1", "w+") as f:
+            f.write(PURGE_STATUS_COMPLIANCE)
 
-    output = subprocess.Popen(["pwsh", "purgestatuscompliancesearch2.ps1", USERNAME, search_name],
-                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = output.communicate(input=PASSWORD.encode())
+        output = subprocess.Popen(["pwsh", "purgestatuscompliancesearch2.ps1", USERNAME, search_name],
+                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = output.communicate(input=PASSWORD.encode())
 
-    stdout = stdout[len(PASSWORD):]
+        stdout = stdout[len(PASSWORD):]
 
-    os.remove("purgestatuscompliancesearch2.ps1")
+    finally:
+        os.remove("purgestatuscompliancesearch2.ps1")
 
     if stderr:
         return get_cs_error(stderr)
@@ -1776,15 +1785,17 @@ def check_purge_compliance_search(search_name):
 
 def remove_compliance_search(search_name):
     check_cs_prereqs()
-    with open("removecompliance2.ps1", "w+") as f:
-        f.write(REMOVE_COMPLIANCE)
+    try:
+        with open("removecompliance2.ps1", "w+") as f:
+            f.write(REMOVE_COMPLIANCE)
 
-    output = subprocess.Popen(
-        ["pwsh", "removecompliance2.ps1", USERNAME, search_name],
-        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = output.communicate(input=PASSWORD.encode())
+        output = subprocess.Popen(
+            ["pwsh", "removecompliance2.ps1", USERNAME, search_name],
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = output.communicate(input=PASSWORD.encode())
 
-    os.remove("removecompliance2.ps1")
+    finally:
+        os.remove("removecompliance2.ps1")
 
     if stderr:
         return get_cs_error(stderr)
