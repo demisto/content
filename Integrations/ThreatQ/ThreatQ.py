@@ -22,14 +22,17 @@ THRESHOLD = demisto.params().get('threshold')
 if THRESHOLD:
     THRESHOLD = int(THRESHOLD)
 
+domainRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-A-Z0-9]+\[?\.\]?)' \
+               r'+[-A-Z0-9]+(?::[0-9]+)?(?:(?:\/|\?)[-A-Z0-9+&@#\/%=~_$?!\-:,.\(\);]*[A-Z0-9+&@#\/%=~_$\(\);])?' \
+               r'|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'
+
 REGEX_MAP = {
-    'ipv4': re.compile(ipv4Regex, regexFlags),
-    'ipv6': re.compile(r"", regexFlags),
     'email': re.compile(emailRegex, regexFlags),
     'url': re.compile(urlRegex, regexFlags),
     'md5': re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags),
     'sha1': re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags),
-    'sha256': re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
+    'sha256': re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags),
+    'domain': re.compile(domainRegex, regexFlags)
 }
 
 TQ_TO_DEMISTO_IOC_TYPES = {
@@ -786,7 +789,8 @@ def get_ip_reputation(ip):
 
 
 def get_url_reputation(url):
-    validate_ioc(url, 'url')
+    if not REGEX_MAP['url'].match(url):
+        return_error("Argument {0} is not a valid URL.".format(url))
 
     generic_context = {"Data": url}
     raw_context = get_ioc_reputation(url)
@@ -801,7 +805,8 @@ def get_url_reputation(url):
 
 
 def get_email_reputation(email):
-    validate_ioc(email, 'email')
+    if not REGEX_MAP['email'].match(email):
+        return_error("Argument {0} is not a valid email address.".format(email))
 
     generic_context = {"Address": email}
     raw_context = get_ioc_reputation(email)
@@ -816,7 +821,8 @@ def get_email_reputation(email):
 
 
 def get_domain_reputation(domain):
-    # fmt = validate_ioc(domain, 'domain')  # todo: add validation
+    if not REGEX_MAP['domain'].match(domain):
+        return_error("Argument {0} is not a valid domain.".format(domain))
 
     generic_context = {"Name": domain}
     raw_context = get_ioc_reputation(domain)
@@ -831,7 +837,11 @@ def get_domain_reputation(domain):
 
 
 def get_file_reputation(file):
-    fmt = validate_ioc(file, 'md5', 'sha1', 'sha256')
+    for fmt in ['md5', 'sha1', 'sha256']:
+        if REGEX_MAP[fmt].match(file):
+            break
+        elif fmt == 'sha256':
+            return_error("Argument {0} is not a valid file format.".format(file))
 
     generic_context = createContext({
         "MD5": file if fmt == 'md5' else None,
