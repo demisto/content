@@ -13,11 +13,11 @@ USE_SSL = not demisto.params().get('insecure', False)
 
 def test_module():
     url_suffix = "view/ipv4/8.8.8.8"
-    res = requests.get(API_URL + url_suffix, auth=(API_ID, API_SECRET), verify=USE_SSL)
-    if res.status_code == 200:
+    res = send_request('GET', url_suffix)
+    if res is not None:
         demisto.results('ok')
     else:
-        demisto.results('test failed')
+        return_error('Error 404: test failed.')
 
 
 def send_request(method, url_suffix, data=None):
