@@ -1,5 +1,4 @@
 ## [Unreleased]
-    - Removed 'Mandatory' tag from commands' arguments
     - Added support to rate-limit issue
 
 
