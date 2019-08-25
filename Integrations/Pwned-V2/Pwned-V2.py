@@ -53,7 +53,7 @@ def http_request(method, url_suffix, params=None, data=None):
         wait_regex = re.search(r'\d+', res.json()['message'])
         if wait_regex:
             wait_amount = wait_regex.group()
-            return {'request_retry': int(wait_amount)}
+            return {'time_to_wait': int(wait_amount)}
     if not res.status_code == 200:
         return_error('Error in API call to Pwned Integration [%d] - %s' % (res.status_code, res.reason))
         return None
@@ -164,10 +164,8 @@ def add_malicious_to_context(malicious_type):
 def email_to_entry_context(email, api_email_res, api_paste_res):
     dbot_score = 0
     comp_email = dict()  # type: dict
-    comp_sites = [item['Title'] for item in api_email_res]
-    comp_sites = sorted(comp_sites)
-    comp_pastes = set(item['Source'] for item in api_paste_res)
-    comp_pastes = sorted(comp_pastes)
+    comp_sites = sorted([item['Title'] for item in api_email_res])
+    comp_pastes = sorted(set(item['Source'] for item in api_paste_res))
 
     if len(comp_sites) > 0:
         dbot_score = DEFAULT_DBOT_SCORE_EMAIL
@@ -203,8 +201,12 @@ def rate_limit_retry(amount_of_seconds, request_type):
         pwned_domain_command()
 
 
-def retry_needed(api_res, api_paste_res):
-    return api_res and api_paste_res and ('request_retry' in api_res or 'request_retry' in api_paste_res)
+def retry_needed(api_res, api_paste_res=None):
+    if api_res and 'time_to_wait' in api_res:
+        return True
+    elif api_paste_res and 'time_to_wait' in api_paste_res:
+        return True
+    return False
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -228,8 +230,8 @@ def pwned_email(email, email_suffix, paste_suffix):
 
     if retry_needed(api_email_res, api_paste_res):
         wait_amount = max(
-            api_email_res['request_retry'] if 'request_retry' in api_email_res else 0,
-            api_paste_res['request_retry'] if 'request_retry' in api_paste_res else 0
+            api_email_res['time_to_wait'] if 'time_to_wait' in api_email_res else 0,
+            api_paste_res['time_to_wait'] if 'time_to_wait' in api_paste_res else 0
         )
         rate_limit_retry(wait_amount, 'email')
     else:
@@ -247,8 +249,8 @@ def pwned_domain_command():
 def pwned_domain(domain, suffix):
     api_res = http_request('GET', url_suffix=suffix)
 
-    if retry_needed(api_res, api_res):
-        rate_limit_retry(api_res['request_retry'], 'domain')
+    if retry_needed(api_res):
+        rate_limit_retry(api_res['time_to_wait'], 'domain')
     else:
         md = data_to_markdown('Domain', domain, api_res)
         ec = domain_to_entry_context(domain, api_res or [])
