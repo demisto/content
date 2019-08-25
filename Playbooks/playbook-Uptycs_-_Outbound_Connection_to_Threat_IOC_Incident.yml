@@ -1,7 +1,7 @@
 id: Uptycs - Outbound Connection to Threat IOC Incident
 version: -1
 name: Uptycs - Outbound Connection to Threat IOC Incident
-description: Get information about processes which open connections to known Bad IP's
+description: Get information about connections from IOC incidents.
 starttaskid: "0"
 fromversion: 4.0.0
 tasks:

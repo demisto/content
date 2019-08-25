@@ -90,7 +90,9 @@ def copy_dir_json(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
     scan_files = glob.glob(os.path.join(dir_name, '*.json'))
     for path in scan_files:
         dpath = os.path.basename(path)
+        shutil.copyfile(path, os.path.join(bundle_pre, os.path.basename(path)))
         # this part is a workaround because server doesn't support indicatorfield-*.json naming
+        shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
         if dir_name == 'IndicatorFields':
             new_path = dpath.replace('incidentfield-', 'incidentfield-indicatorfield-')
             if os.path.isfile(new_path):
