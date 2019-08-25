@@ -1,7 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-res = demisto.executeCommand('addEntitlement', {'persistent': demisto.get(demisto.args(), 'persistent'), 'replyEntriesTag': demisto.get(demisto.args(), 'replyEntriesTag')})
+res = demisto.executeCommand('addEntitlement', {'persistent': demisto.get(demisto.args(), 'persistent'),
+                                                'replyEntriesTag': demisto.get(demisto.args(), 'replyEntriesTag')})
 if isError(res[0]):
     demisto.results(res)
     sys.exit(0)
@@ -15,5 +16,7 @@ if not option2:
 entitlementString = entitlement + '@' + demisto.investigation()['id']
 if demisto.get(demisto.args(), 'task'):
     entitlementString += '|' + demisto.get(demisto.args(), 'task')
-message = '%s - Please reply `%s %s` or `%s %s`' % (demisto.args()['message'], option1, entitlementString, option2, entitlementString)
-demisto.results(demisto.executeCommand('slack-send', {'to': demisto.get(demisto.args(), 'user'), 'message': message, 'IgnoreAddURL': 'true'}))
+message = '%s - Please reply `%s %s` or `%s %s`' % (demisto.args()['message'],
+                                                    option1, entitlementString, option2, entitlementString)
+demisto.results(demisto.executeCommand('slack-send', {'to': demisto.get(demisto.args(), 'user'),
+                                                      'message': message, 'IgnoreAddURL': 'true'}))
