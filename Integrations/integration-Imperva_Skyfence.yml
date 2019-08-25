@@ -10,13 +10,19 @@ description: The Imperva Skyfence Cloud Gateway is a Cloud Access Security Broke
   (CASB) that provides visibility and control over sanctioned and unsanctioned cloud
   apps to enable their safe and productive use.
 detaileddescription: |-
-  All API requests must be authenticated. The authentication model is OAuth 2.0.
-  Client applications must initially perform a token request to receive an authentication token,
-  and subsequently use the obtained token in all following requests.
-  The token request must itself be authenticated by a customer ID and password, here called Client ID and Client Secret. You need to manually obtain these credentials in the Skyfence web interface, at Settings > API.
-  Note: After the Client Secret has been displayed once, it no longer appears in the Skyfence web interface.
+ To use the Imperva Skyfence integration, you need to retrieve your credentials, and generate an authentication to use for all requests.
+
+ ## Get your credentials
+ In the Skyfence platform, the customer ID is the "Client ID", and the password is the "Client Secret".
+ - To obtain these credentials, go to the Skyfence platform and navigate to **Settings > API**.
+  
+ ## Generate an authentication token
+ All API requests require authentication. The authentication model is OAuth 2.0, which requires an authentication token. To receive an authentication token, the client performs
+ a token request by providing a customer ID and password. The received token is used in all requests.  
+  
+ Important/:/ The Client Secret is displayed only during the initial use. Make sure you copy the Client Secret for further reference.
 configuration:
-- display: Server URL (192.168.56.101)
+- display: Server URL (e.g., 123.168.01.222)  # disable-secrets-detection
   name: url
   defaultvalue: ""
   type: 0
@@ -41,7 +47,6 @@ script:
     if (typeof params.insecure === 'string' || !params.insecure) {
         params.insecure = params.insecure === 'true' ? true : false;
     }
-
     var fixUrl = function(url) {
         fixedUrl = '';
         if (url.indexOf("http") !== 0) {
@@ -51,10 +56,8 @@ script:
                 fixedUrl = 'https://' + url;
             }
         }
-
         return fixedUrl;
     };
-
     var parseResponse = function(resp) {
         var res = null;
         if (resp.StatusCode >= 200 && resp.StatusCode < 300) {
@@ -70,8 +73,6 @@ script:
           }
           throw err;
         }
-
-
         if (res && res.length && res.length > 1 ) {
             // response body is array, then put it into object
             // we don't want to return array
@@ -82,9 +83,7 @@ script:
             return res;
         }
     };
-
     var url = fixUrl(params.url);
-
     var login = function(params) {
         var fullUrl = fixUrl(params.url) + '/cm/api/v1.0/oauth2/token';
         var body = {
@@ -92,7 +91,6 @@ script:
             client_id: params.clientId,
             client_secret: params.clientSecret
         };
-
         var res = httpMultipart(
             fullUrl,
             '',
@@ -102,10 +100,8 @@ script:
             body,
             params.insecure
         );
-
         return parseResponse(res);
     };
-
     var listEndpoints = function(url, token) {
         var fullUrl = fixUrl(url) + '/cm/api/v1.0/endpoint';
         var res = http(
@@ -116,17 +112,14 @@ script:
             },
             params.insecure
         );
-
         return parseResponse(res);
     };
-
     var setEndpointStatus = function(url, token, endpointId, action) {
         // validate action
         // action can be "enroll" or "revoke"
         if (action !== 'enroll' && action !== 'revoke') {
             throw 'action must be "enroll" or "revoke"!';
         }
-
         var fullUrl = fixUrl(url) + '/cm/api/v1.0/endpoint/' + endpointId;
         var res = http(
             fullUrl,
@@ -142,11 +135,9 @@ script:
             },
             params.insecure
         );
-
         parseResponse(res);
         return 'Success';
     };
-
     switch(command) {
         case 'test-module':
             login(params);
@@ -164,26 +155,18 @@ script:
   commands:
   - name: imp-sf-list-endpoints
     arguments: []
-    description: The endpoints list request enables a client application to receive
-      a list of all managed and unmanaged endpoints, with their basic details. This
-      list can then be externally filtered or searched by the application to identify
-      individual endpoints that might require action. For any such endpoint, the application
-      can obtain fuller details (see Endpoint Details Request below) and if relevant
-      change its enrollment status (see Set Endpoint Status Request on page 11).
+    description: Returns a list of, and basic details for, all managed and un-managed endpoints.    
   - name: imp-sf-set-endpoint-status
     arguments:
     - name: endpointId
       required: true
       default: true
-      description: 'The id of the endpoint. '
+      description: The ID of the endpoint. Run the "imp-sf-list-endpoints" command to return a list.
     - name: action
       required: true
-      description: '"enroll" / "revoke"'
-    description: ' The endpoint status request enables a client application to enroll
-      an endpoint or revoke its enrollment. This is usually relevant for endpoints
-      with pending status but can be done for endpoints with any current status. The
-      endpoint needs to be specified by its ID, which can have been received from
-      an endpoints list request (see Endpoints List Request on page 10), from a new
-      endpoint notification (see New Endpoint Notifications on page 6), or from any
-      other implemented manual or automated input.'
+      description: Enroll/Revoke endpoint status. Can be "enroll" or "revoke".
+    description: 'Updates the status (enroll or revoke) of an endpoint. You can run this command on an endpoint with any status, but the most common use
+    case is endpoints with a status of pending.'
     execution: true
+tests:
+  - No tests

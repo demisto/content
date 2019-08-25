@@ -93,7 +93,7 @@ def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
 
 
 def insert_description_to_yml(dir_name, package_path, yml_data, yml_text):
-    desc_data, found_desc_path = get_data(dir_name, package_path, '*md')
+    desc_data, found_desc_path = get_data(dir_name, package_path, '*_description.md')
 
     if yml_data.get('detaileddescription'):
         raise ValueError('Please move the detailed description from the yml to a description file (.md)'
@@ -103,7 +103,12 @@ def insert_description_to_yml(dir_name, package_path, yml_data, yml_text):
             # for multiline detailed-description, if it's not wrapped in quotation marks
             # add | to the beginning of the description, and shift everything to the right
             desc_data = '|\n  ' + desc_data.replace('\n', '\n  ')
-        yml_text = "detaileddescription: " + desc_data + '\n' + yml_text
+        temp_yml_text = u"detaileddescription: "
+        temp_yml_text += desc_data.encode("utf-8")
+        temp_yml_text += u"\n"
+        temp_yml_text += yml_text
+
+        yml_text = temp_yml_text
 
     return yml_text, found_desc_path
 

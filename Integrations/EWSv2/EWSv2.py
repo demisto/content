@@ -11,6 +11,7 @@ from cStringIO import StringIO
 import logging
 import warnings
 import subprocess
+import email
 from requests.exceptions import ConnectionError
 
 import exchangelib
@@ -101,6 +102,7 @@ IS_TEST_MODULE = False
 BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
 AUTO_DISCOVERY = False
 SERVER_BUILD = ""
+MARK_AS_READ = demisto.params().get('markAsRead', False)
 
 # initialized in main()
 EWS_SERVER = ''
@@ -290,13 +292,19 @@ def get_account(account_email, access_type=ACCESS_TYPE):
 
 # LOGGING
 log_stream = None
+log_handler = None
 
 
 def start_logging():
     global log_stream
+    global log_handler
     if log_stream is None:
         log_stream = StringIO()
-        logging.basicConfig(stream=log_stream, level=logging.DEBUG)
+        log_handler = logging.StreamHandler(stream=log_stream)
+        log_handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
+        logger = logging.getLogger()
+        logger.addHandler(log_handler)
+        logger.setLevel(logging.DEBUG)
 
 
 # Exchange 2010 Fixes
@@ -763,7 +771,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
         new_dict = {}
         fields_list = ['datetime_created', 'datetime_received', 'datetime_sent', 'sender',
                        'has_attachments', 'importance', 'message_id', 'last_modified_time',
-                       'size', 'subject', 'text_body', 'headers', 'body', 'folder_path']
+                       'size', 'subject', 'text_body', 'headers', 'body', 'folder_path', 'is_read']
 
         # Docker BC
         if exchangelib.__version__ == "1.12.0":
@@ -800,7 +808,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
     return raw_dict
 
 
-def parse_incident_from_item(item):
+def parse_incident_from_item(item, is_fetch):
     incident = {}
     labels = []
 
@@ -877,8 +885,10 @@ def parse_incident_from_item(item):
 
                 # save the attachment
                 if attachment.item.mime_content:
-                    file_result = fileResult(get_attachment_name(attachment.name) + ".eml",
-                                             attachment.item.mime_content)
+                    attached_email = email.message_from_string(attachment.item.mime_content)
+                    if attachment.item.headers:
+                        map(lambda h: attached_email.add_header(h.name, h.value), attachment.item.headers)
+                    file_result = fileResult(get_attachment_name(attachment.name) + ".eml", attached_email.as_string())
 
                 if file_result:
                     # check for error
@@ -915,6 +925,10 @@ def parse_incident_from_item(item):
     if item.conversation_id:
         labels.append({'type': 'Email/ConversionID', 'value': item.conversation_id.id})
 
+    if MARK_AS_READ and is_fetch:
+        item.is_read = True
+        item.save()
+
     incident['labels'] = labels
     incident['rawJSON'] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
 
@@ -934,7 +948,7 @@ def fetch_emails_as_incidents(account_email, folder_name):
         for item in last_emails:
             if item.message_id:
                 ids.append(item.message_id)
-                incident = parse_incident_from_item(item)
+                incident = parse_incident_from_item(item, True)
                 incidents.append(incident)
 
         new_last_run = {
@@ -1388,7 +1402,7 @@ def get_items(item_ids, target_mailbox=None):
 
     items = get_items_from_mailbox(account, item_ids)
     items = [x for x in items if isinstance(x, Message)]
-    items_as_incidents = map(lambda x: parse_incident_from_item(x), items)
+    items_as_incidents = map(lambda x: parse_incident_from_item(x, False), items)
     items_to_context = map(lambda x: parse_item_as_dict(x, account.primary_smtp_address, True, True), items)
 
     return {
@@ -1555,6 +1569,28 @@ def get_autodiscovery_config():
     }
 
 
+def mark_item_as_read(item_ids, operation='read', target_mailbox=None):
+    marked_items = []
+    account = get_account(target_mailbox or ACCOUNT_EMAIL)
+    item_ids = argToList(item_ids)
+    items = get_items_from_mailbox(account, item_ids)
+    items = [x for x in items if isinstance(x, Message)]
+
+    for item in items:
+        item.is_read = (operation == 'read')
+        item.save()
+
+        marked_items.append({
+            ITEM_ID: item.item_id,
+            MESSAGE_ID: item.message_id,
+            ACTION: 'marked-as-{}'.format(operation)
+        })
+
+    return get_entry_for_object('Marked items ({} marked operation)'.format(operation),
+                                CONTEXT_UPDATE_EWS_ITEM,
+                                marked_items)
+
+
 def test_module():
     try:
         global IS_TEST_MODULE
@@ -1652,6 +1688,8 @@ def main():
             encode_and_submit_results(get_autodiscovery_config())
         elif demisto.command() == 'ews-expand-group':
             encode_and_submit_results(get_expanded_group(protocol, **args))
+        elif demisto.command() == 'ews-mark-items-as-read':
+            encode_and_submit_results(mark_item_as_read(**args))
 
     except Exception, e:
         import time
@@ -1682,26 +1720,26 @@ def main():
 
         if isinstance(e, ConnectionError):
             error_message_simple = "Could not connect to the server.\n" \
-                "Verify that the Hostname or IP address is correct.\n\n" \
-                "Additional information: {}".format(e.message)
+                                   "Verify that the Hostname or IP address is correct.\n\n" \
+                                   "Additional information: {}".format(e.message)
         elif exchangelib.__version__ == "1.12.0":
             from exchangelib.errors import MalformedResponseError
 
             if IS_TEST_MODULE and isinstance(e, MalformedResponseError):
                 error_message_simple = "Got invalid response from the server.\n" \
-                    "Verify that the Hostname or IP address is is correct."
+                                       "Verify that the Hostname or IP address is is correct."
 
         # Legacy error handling
         if "Status code: 401" in debug_log:
             error_message_simple = "Got unauthorized from the server. " \
-                "Check credentials are correct and authentication method are supported. "
+                                   "Check credentials are correct and authentication method are supported. "
 
             error_message_simple += "You can try using 'domain\\username' as username for authentication. " \
                 if AUTH_METHOD_STR.lower() == 'ntlm' else ''
         if "Status code: 503" in debug_log:
             error_message_simple = "Got timeout from the server. " \
-                "Probably the server is not reachable with the current settings. " \
-                "Check proxy parameter. If you are using server URL - change to server IP address. "
+                                   "Probably the server is not reachable with the current settings. " \
+                                   "Check proxy parameter. If you are using server URL - change to server IP address. "
 
         if not error_message_simple:
             error_message = error_message_simple = str(e.message)
@@ -1723,6 +1761,13 @@ def main():
             demisto.results(
                 {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple})
         demisto.error("%s: %s" % (e.__class__.__name__, error_message))
+    finally:
+        if log_stream:
+            try:
+                logging.getLogger().removeHandler(log_handler)  # type: ignore
+                log_stream.close()
+            except Exception as ex:
+                demisto.error("EWS: unexpected exception when trying to remove log handler: {}".format(ex))
 
 
 # python2 uses __builtin__ python3 uses builtins

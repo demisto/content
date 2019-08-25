@@ -821,7 +821,7 @@ tasks:
         simple: "10"
       hash:
         complex:
-          root: File
+          root: HashesTest
           accessor: SHA256
     separatecontext: true
     loop:
@@ -860,7 +860,7 @@ tasks:
         simple: "10"
       hash:
         complex:
-          root: File
+          root: HashesTest
           accessor: MD5
     separatecontext: true
     loop:
