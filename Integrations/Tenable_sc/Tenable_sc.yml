@@ -1043,8 +1043,8 @@ script:
       default: false
       defaultValue: 'false'
       description: |-
-        Whether to return only manageable alerts. Returns both usable and
-                manageable by default.
+        Filter only manageable alerts. By default, returns both usable and
+                manageable alerts.
       isArray: false
       name: manageable
       predefined:
@@ -1053,7 +1053,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get all scan results in Tenable.sc
+    description: Returns all scan results in Tenable.sc
     execution: false
     name: tenable-sc-get-all-scan-results
     outputs:
