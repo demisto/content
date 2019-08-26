@@ -1826,6 +1826,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "SumoLogic": "No credentials (Issue 18441)",
         "Lastline": "Temporally moved to skipped inorder to not fail nightly",
         "vmray": "VMRay license expired (Issue 18752)",
         "Anomali ThreatStream v2": "Credentials are invalid (issue 18561)",
@@ -1871,10 +1872,9 @@
       "_comment": "~~~ OTHER ~~~",
         "EclecticIQ Platform": "Old API is deprecated (Issue 8821)",
         "Pwned": "Old API is deprecated",
-        "SumoLogic": "Shelly working on fixing it",
         "iDefense": "DevOps investigation",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
-        "BitDam": "Changes in service (issue #16247)",
+        "BitDam": "Changes in service (issue #17247)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
         "MailListener - POP3": "Failing test module (issue 18580)",
 
