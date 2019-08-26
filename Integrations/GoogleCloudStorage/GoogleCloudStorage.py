@@ -112,7 +112,7 @@ def format_error(ex):
 
 def test_module():
     client = init_storage_client()
-    list(client.list_buckets())
+    next(client.list_buckets())
 
 
 ''' Bucket management '''
@@ -175,7 +175,7 @@ def gcs_create_bucket():
     demisto.results({
         "Type": entryTypes["note"],
         "ContentsFormat": formats["text"],
-        "Contents": "Bucket {} was successfully created.".format(bucket_name)
+        "Contents": "Bucket {} was created successfully.".format(bucket_name)
     })
 
 
@@ -190,7 +190,7 @@ def gcs_delete_bucket():
     demisto.results({
         "Type": entryTypes["note"],
         "ContentsFormat": formats["text"],
-        "Contents": "Bucket {} was successfully deleted.".format(bucket_name)
+        "Contents": "Bucket {} was deleted successfully.".format(bucket_name)
     })
 
 
@@ -283,7 +283,7 @@ def gcs_upload_file():
     demisto.results({
         "Type": entryTypes["note"],
         "ContentsFormat": formats["text"],
-        "Contents": "File {} was successfully uploaded to {}.".format(file_name, object_name)
+        "Contents": "File {} was successfully uploaded to bucket {} as {}".format(file_name, bucket_name, object_name)
     })
 
 
