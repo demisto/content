@@ -223,7 +223,7 @@ def download_blob(blob):
     file_name = blob.name.split("/")[-1] or demisto.uniqueFile()
     file_path = os.path.join(cur_directory_path, file_name)
 
-    with open(file_path, "w") as file:
+    with open(file_path, "wb") as file:
         blob.client.download_blob_to_file(blob, file)
 
     return file_name
@@ -294,19 +294,21 @@ def acl2dict(acl_entry, include_object_name=False):
     """
     Converts an ACL entry from its raw JSON form to context format (either GCP.BucketPolicy or GCP.BucketObjectPolicy).
     """
-    key_dict = {
+    result = {
         "Bucket": acl_entry.get("bucket", "")
     }
 
     if include_object_name:
-        key_dict["Object"] = acl_entry.get("object", "")
+        result["Object"] = acl_entry.get("object", "")
 
-    return key_dict.update({
+    result.update({
         "Entity": acl_entry.get("entity", ""),
         "Email": acl_entry.get("email", ""),
         "Role": acl_entry.get("role", ""),
         "Team": acl_entry.get("projectTeam", {}).get("team", "")
     })
+
+    return result
 
 
 def get_acl_entries(acl):
