@@ -672,7 +672,6 @@ class TestManager(object):
     def classify_tests(test_list):
         tests_mapping = {}
         parallel_tests = []
-        non_parallel_tests = []
 
         for test in test_list:
             test_integrations = test.get('integrations', [])
@@ -701,8 +700,8 @@ class TestManager(object):
                     for k, v in test_mapping_copy.items():
                         if len(v) == 1 and integration_test in v:
                             parallel_tests.append(integration_test)
-            else:
-                non_parallel_tests.extend(integration_tests_list)
+
+        non_parallel_tests = [t for t in test_list if t not in parallel_tests]
 
         if len(parallel_tests) == 1:
             # If parallel_tests list contains only one test, run on parallel step will be skipped
