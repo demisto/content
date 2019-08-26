@@ -126,8 +126,8 @@ class Client:
             error_class = str(e.__class__)
             err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
             err_msg = f'\nError Type: {err_type}\nError Number: [{e.errno}]\nMessage: {e.strerror}\n' \
-                f'ADVICE: Check that the Server URL parameter is correct and that you' \
-                f' have access to the Server from your host.'  # TODO send alex
+                f'Verify that the server URL parameter' \
+                f' is correct and that you have access to the server from your host.'
             return_error(err_msg)
 
     def test_module(self) -> bool:

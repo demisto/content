@@ -13,11 +13,11 @@ import urllib3
 urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-INTEGRATION_NAME: str = 'Authentication Integration'
+INTEGRATION_NAME: str = 'Analytics & SIEM Integration'
 # lowercase with `-` dividers
-INTEGRATION_NAME_COMMAND: str = 'authentication'
+INTEGRATION_NAME_COMMAND: str = 'analytics-and-siem'
 # No dividers
-INTEGRATION_NAME_CONTEXT: str = 'AuthenticationIntegration'
+INTEGRATION_NAME_CONTEXT: str = 'AnalyticsAndSIEM'
 
 
 class Client:
@@ -139,7 +139,7 @@ class Client:
         self._http_request('GET', 'version')
         return True
 
-    def fetch_credentials(self) -> Dict:
+    def fetch_incidents(self, timestamp: datetime) -> Dict:
         """Gets all credentials from API.
 
         Returns:
@@ -241,12 +241,12 @@ def test_module(client: Client):
         demisto.results('ok')
 
 
-def fetch_credentials(client: Client):
+def fetch_incidents(client: Client):
     """Uses to fetch credentials into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_credentials
     """
     # Get credentials from api
-    raw_response: Dict = client.fetch_credentials()
+    raw_response: Dict = client.fetch_incidents()
     raw_credentials: List[Dict] = raw_response.get('credentials', [])
     # Creates credentials entry
     credentials = [{
@@ -374,7 +374,7 @@ def reset_account_command(client: Client):
 
 
 def list_credentials(client: Client):
-    raw_response: Dict = client.fetch_credentials()
+    raw_response: Dict = client.fetch_incidents()
     credentials: List[Dict] = raw_response.get('credentials', [])
     if raw_response.get('credentials'):
         title: str = f'{INTEGRATION_NAME} - Credentials list.'
@@ -401,7 +401,7 @@ def main():
     demisto.info(f'Command being called is {command}')
     commands: Dict = {
         'test-module': test_module,
-        'fetch-credentials': fetch_credentials,
+        'fetch-incidents': fetch_incidents,
         f'{INTEGRATION_NAME_COMMAND}-list-credentials': list_credentials,
         f'{INTEGRATION_NAME_COMMAND}-lock-account': lock_account,
         f'{INTEGRATION_NAME_COMMAND}-unlock-account': unlock_account,
