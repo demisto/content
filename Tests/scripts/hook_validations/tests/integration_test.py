@@ -613,8 +613,8 @@ def test_is_default_arguments_non_default():
                     "arguments": [
                         {
                             "name": "file",
-                            "required": "true",
-                            "default": "false"
+                            "required": True,
+                            "default": False
                         },
                         {
                             "name": "verbose"
@@ -640,8 +640,8 @@ def test_is_default_arguments_is_required():
                     "arguments": [
                         {
                             "name": "domain",
-                            "required": "true",
-                            "default": "true"
+                            "required": True,
+                            "default": True
                         },
                         {
                             "name": "verbose"
@@ -667,8 +667,8 @@ def test_is_default_arguments_ok():
                     "arguments": [
                         {
                             "name": "email",
-                            "required": "false",
-                            "default": "true"
+                            "required": False,
+                            "default": True
                         },
                         {
                             "name": "verbose"

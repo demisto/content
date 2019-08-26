@@ -53,6 +53,11 @@ class IntegrationValidator(object):
         self.is_changed_command_name_or_arg()
         self.is_there_duplicate_args()
         self.is_there_duplicate_params()
+
+        return self._is_valid
+
+    def is_valid_integration(self):
+        """Check whether the Integration is valid or not, update the _is_valid field to determine that"""
         self.is_valid_subtype()
         self.is_default_arguments()
 
@@ -70,12 +75,12 @@ class IntegrationValidator(object):
             command_name = command.get('name')
             for arg in command.get('arguments', []):
                 arg_name = arg.get('name')
-                if ((command_name == 'file' and arg_name == 'file') or
-                        (command_name == 'email' and arg_name == 'email') or
-                        (command_name == 'domain' and arg_name == 'domain') or
-                        (command_name == 'url' and arg_name == 'url') or
-                        (command_name == 'ip' and arg_name == 'ip')):
-                    if arg.get('default') == 'false' or arg.get('required') == 'true':
+                if ((command_name == 'file' and arg_name == 'file')
+                        or (command_name == 'email' and arg_name == 'email')
+                        or (command_name == 'domain' and arg_name == 'domain')
+                        or (command_name == 'url' and arg_name == 'url')
+                        or (command_name == 'ip' and arg_name == 'ip')):
+                    if arg.get('default') is False or arg.get('required') is True:
                         self._is_valid = False
                         print_error("The argument '{}' of the command '{}' is either non default or required"
                                     .format(arg_name, command_name))
