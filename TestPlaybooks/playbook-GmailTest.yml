@@ -251,6 +251,7 @@ tasks:
       - "9"
       - "16"
       - "18"
+      - "30"
     separatecontext: false
     view: |-
       {
@@ -969,8 +970,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 5330
+          "x": 850,
+          "y": 5530
         }
       }
     note: false
@@ -994,7 +995,7 @@ tasks:
       - "31"
     scriptarguments:
       email:
-        simple: re_test@demistodev.com
+        simple: user_to_delete@demistodev.com
       family-name:
         simple: Second
       first-name:
@@ -1030,7 +1031,7 @@ tasks:
       - "32"
     scriptarguments:
       user-id:
-        simple: re_test@demistodev.com
+        simple: user_to_delete@demistodev.com
       visible-globally:
         simple: "False"
     separatecontext: false
@@ -1057,7 +1058,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "33"
+      - "46"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1069,7 +1070,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: re_test@demistodev.com
+              simple: user_to_delete@demistodev.com
       - - operator: isEqualString
           left:
             value:
@@ -1082,7 +1083,7 @@ tasks:
       {
         "position": {
           "x": 840,
-          "y": 2760
+          "y": 2730
         }
       }
     note: false
@@ -1106,13 +1107,13 @@ tasks:
       - "34"
     scriptarguments:
       user-id:
-        simple: re_test@demistodev.com
+        simple: user_to_delete@demistodev.com
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 840,
-          "y": 2940
+          "y": 3280
         }
       }
     note: false
@@ -1141,8 +1142,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 3120
+          "x": 850,
+          "y": 3450
         }
       }
     note: false
@@ -1177,8 +1178,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 3300
+          "x": 850,
+          "y": 3630
         }
       }
     note: false
@@ -1207,8 +1208,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 3480
+          "x": 850,
+          "y": 3780
         }
       }
     note: false
@@ -1259,8 +1260,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 3660
+          "x": 850,
+          "y": 3930
         }
       }
     note: false
@@ -1295,8 +1296,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 3840
+          "x": 850,
+          "y": 4120
         }
       }
     note: false
@@ -1334,8 +1335,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 4020
+          "x": 850,
+          "y": 4340
         }
       }
     note: false
@@ -1367,8 +1368,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 4200
+          "x": 850,
+          "y": 4530
         }
       }
     note: false
@@ -1420,8 +1421,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 4380
+          "x": 850,
+          "y": 4730
         }
       }
     note: false
@@ -1453,8 +1454,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 4730
+          "x": 850,
+          "y": 5130
         }
       }
     note: false
@@ -1474,7 +1475,7 @@ tasks:
       brand: Gmail
     nexttasks:
       '#none#':
-      - "44"
+      - "29"
     scriptarguments:
       delegateEmail:
         simple: test@demistodev.com
@@ -1486,40 +1487,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 4950
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "44":
-    id: "44"
-    taskid: f3b00c25-6fa6-4f74-8b1f-7b85b5368988
-    type: regular
-    task:
-      id: f3b00c25-6fa6-4f74-8b1f-7b85b5368988
-      version: -1
-      name: gmail-set-password
-      description: Set password for the user
-      script: Gmail|||gmail-set-password
-      type: regular
-      iscommand: true
-      brand: Gmail
-    nexttasks:
-      '#none#':
-      - "29"
-    scriptarguments:
-      password:
-        simple: narcos02s
-      user-id:
-        simple: admin@demistodev.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 840,
-          "y": 5150
+          "x": 850,
+          "y": 5340
         }
       }
     note: false
@@ -1567,8 +1536,86 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 850,
+          "y": 4940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "46":
+    id: "46"
+    taskid: baff0507-89c9-4204-8f55-9362ca111d2e
+    type: regular
+    task:
+      id: baff0507-89c9-4204-8f55-9362ca111d2e
+      version: -1
+      name: GeneratePassword
+      description: "This function generates a password and allows various parameters
+        to customize the properties of the password depending on the use case (e.g.
+        password complexity requirements).  The default behavior is to generate a
+        password of  *random length* including all four character classes (upper,
+        lower, digits, symbols) with at least five and at most ten characters per
+        class. \n\nThe min_* values all default to 0. This means that if the command
+        is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible that
+        a password of length zero could be generated. It is therefore recommended
+        to always include a min_* parameter that matches. \n\nThe debug parameter
+        will print certain properties of the command into the WarRoom for easy diagnostics."
+      scriptName: GeneratePassword
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      debug: {}
+      max_digits: {}
+      max_lcase: {}
+      max_symbols: {}
+      max_ucase: {}
+      min_digits: {}
+      min_lcase: {}
+      min_symbols: {}
+      min_ucase: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
           "x": 840,
-          "y": 4550
+          "y": 2920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "47":
+    id: "47"
+    taskid: 32dc1a42-318b-4599-82cc-edc953c682e4
+    type: regular
+    task:
+      id: 32dc1a42-318b-4599-82cc-edc953c682e4
+      version: -1
+      name: gmail-set-password
+      description: Set password for the user
+      script: Gmail|||gmail-set-password
+      type: regular
+      iscommand: true
+      brand: Gmail
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      password:
+        simple: ${NEW_PASSWORD}
+      user-id:
+        simple: user_to_delete@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 3110
         }
       }
     note: false
@@ -1579,7 +1626,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2485,
+        "height": 5545,
         "width": 2110,
         "x": 50,
         "y": 50
