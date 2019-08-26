@@ -601,3 +601,84 @@ def test_valid_subtype_lies():
 
     assert validator.is_valid_subtype() is False, \
         "The integration validator found valid subtype while it is invalid"
+
+
+def test_is_default_arguments_non_default():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "file",
+                    "arguments": [
+                        {
+                            "name": "file",
+                            "required": "true",
+                            "default": "false"
+                        },
+                        {
+                            "name": "verbose"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    validator.old_integration = None
+
+    assert validator.is_default_arguments() is False, \
+        "The integration validator did not find invalid arg (needed to be default)"
+
+
+def test_is_default_arguments_is_required():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "domain",
+                    "arguments": [
+                        {
+                            "name": "domain",
+                            "required": "true",
+                            "default": "true"
+                        },
+                        {
+                            "name": "verbose"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    validator.old_integration = None
+
+    assert validator.is_default_arguments() is False, \
+        "The integration validator did not find invalid arg (need not to be required)"
+
+
+def test_is_default_arguments_ok():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "email",
+                    "arguments": [
+                        {
+                            "name": "email",
+                            "required": "false",
+                            "default": "true"
+                        },
+                        {
+                            "name": "verbose"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    validator.old_integration = None
+
+    assert validator.is_default_arguments() is True, \
+        "The integration validator found an invalid command arg while it is valid"
