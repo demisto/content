@@ -168,7 +168,7 @@ def get_incidents_command():
     # If no filters were given, return a meaningful error message
     if (not lte_modification_time and not gte_modification_time and not since_modification_time
             and not lte_creation_time and not gte_creation_time and not since_creation_time):
-        return_error("Please provide a query for the incidents.\n For example:"
+        return_error("Specify a query for the incidents.\n For example:"
                      " !xdr-get-incidents since_creation_time=\"1 year\" sort_by_creation_time=\"desc\" limit=10")
 
     raw_incidents = get_incidents(
