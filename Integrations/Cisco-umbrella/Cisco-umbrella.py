@@ -758,11 +758,12 @@ def get_domain_command():
     emails = whois.get('emails')  # type: ignore
     registrar = {'Name': whois.get('registrarName', '')}  # type: ignore
     creation_date = first_queried
+    # @TODO: check if 0 or -1 or whole list
     domain_status = whois.get('status', [])[0] if whois.get('status') else None  # type: ignore
     updated_date = whois.get('updated', '')  # type: ignore
     expiration_date = whois.get('expires', '')  # type: ignore
 
-    # wrong resigtrar field - should be registrarName
+    # @TODO: wrong resigtrar field - should be registrarName
     whois = {
         'Name': whois['domainName'],  # type: ignore
         'Registrar Name': whois['registrantName'],  # type: ignore
