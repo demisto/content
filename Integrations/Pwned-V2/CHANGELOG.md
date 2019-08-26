@@ -1,5 +1,5 @@
 ## [Unreleased]
-    - Added support to rate-limit issue
+Added handling for cases where the rate limit is exceeded.
 
 
 ## [19.8.2] - 2019-08-22
