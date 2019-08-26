@@ -202,7 +202,7 @@ def tq_request(method, url_suffix, params=None, files=None):
 
 def get_raw_data_by_id(obj_type, obj_id):
     url_suffix = "/{0}/{1}?with=attributes,sources".format(OBJ_DIRECTORY[obj_type], obj_id)
-    demisto.results(url_suffix)
+
     if obj_type == "indicator":
         url_suffix += ",score,type"
 
@@ -804,23 +804,19 @@ def add_source_command():
 
 def delete_source_command():
     args = demisto.args()
-    source = args.get('source')
+    source_id = args.get('source_id')
     obj_id = args.get('obj_id')
     obj_type = args.get('obj_type')
 
     if isinstance(obj_id, str) and not obj_id.isdigit():
         return_error("Invalid argument for object ID.")
+    if isinstance(source_id, str) and not source_id.isdigit():
+        return_error("Invalid argument for source ID.")
 
-    res = get_raw_data_by_id(obj_type, obj_id)  # returns error if object was not found
+    url_suffix = "/{0}/{1}/sources/{2}".format(OBJ_DIRECTORY[obj_type], obj_id, source_id)
 
-    sources = [s for s in res["Sources"] if s["Name"] == source]
-    if not sources:
-        return_error("Source {0} does not exist in {1} with id {2}.".format(source, obj_type, obj_id))
-
-    url_suffix = "/{0}/{1}/sources/{2}".format(OBJ_DIRECTORY[obj_type], obj_id, sources[0]['ID'])
-    demisto.results(url_suffix)
     tq_request("DELETE", url_suffix)
-    demisto.results("Successfully deleted source {0} from {1} with id {2}.".format(source, obj_type, obj_id))
+    demisto.results("Successfully deleted source #{0} from {1} with id {2}.".format(source_id, obj_type, obj_id))
 
 
 def add_attr_command():
