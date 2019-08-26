@@ -673,7 +673,7 @@ def search_by_name_command():
     keyword = args.get('keyword')
     limit = args.get('limit')
 
-    if limit and isinstance(limit, str) and not obj_id.isdigit():
+    if limit and isinstance(limit, str) and not limit.isdigit():
         return_error("Invalid value for limit argument.")
 
     url_suffix = "/search?query={0}&limit={1}".format(keyword, limit)
