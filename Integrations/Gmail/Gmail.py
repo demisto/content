@@ -6,7 +6,6 @@ import re
 import json
 import base64
 from datetime import datetime, timedelta
-from time import time
 import httplib2
 import urlparse
 from distutils.util import strtobool
@@ -1370,7 +1369,7 @@ def fetch_incidents():
     last_fetch = last_run.get('gmt_time')
     # handle first time fetch - gets current GMT time -1 day
     if last_fetch is None:
-        last_fetch = (datetime.utcfromtimestamp(int(time())) - timedelta(days=1)).isoformat() + 'Z'
+        last_fetch = (datetime.utcfromtimestamp(int(time.time())) - timedelta(days=1)).isoformat() + 'Z'
     last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
     current_fetch = last_fetch
     service = get_service(
