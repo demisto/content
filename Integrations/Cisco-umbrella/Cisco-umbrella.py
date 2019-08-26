@@ -739,9 +739,30 @@ def get_domain_command():
     # whois data
     whois = []  # type: ignore
     whois = get_whois_for_domain(domain)
+
+    # 5.0 update - context indicators
+    admin = {
+        'Country': whois.get('administrativeContactCountry', ''),
+        'Email': whois.get('administrativeContactEmail', ''),
+        'Name': whois.get('administrativeContactName', ''),
+        'Phone': whois.get('administrativeContactTelephone', '')
+    }
+    registrant = {
+        'Country': whois.get('registrantCountry', ''),
+        'Email': whois.get('registrantEmail', ''),
+        'Name': whois.get('registrantName', ''),
+        'Phone': whois.get('registrantTelephone', ''),
+    }
     first_queried = whois.get('created')  # type: ignore
     name_servers = whois.get('nameServers')  # type: ignore
     emails = whois.get('emails')  # type: ignore
+    registrar = {'Name': whois.get('registrarName', '')}
+    creation_date = first_queried
+    domain_status = whois.get('status', [])[0] if whois.get('status') else None  # or [-1] ?
+    updated_date = whois.get('updated', '')
+    expiration_date = whois.get('expires', '')
+
+    # wrong resigtrar field - should be registrarName
     whois = {
         'Name': whois['domainName'],  # type: ignore
         'Registrar Name': whois['registrantName'],  # type: ignore
@@ -752,6 +773,7 @@ def get_domain_command():
         'IANAID': whois['registrarIANAID'],  # type: ignore
         'Last Observed': whois['auditUpdatedDate']  # type: ignore
     }
+
     # domain categorization data
     domain_categorization = []  # type: ignore
     domain_categorization = get_domain_categorization(domain)
@@ -773,6 +795,13 @@ def get_domain_command():
     # Domain
     context[outputPaths['domain']] = {
         'Name': domain,
+        'Admin': admin,
+        'Registrant': registrant,
+        'Registrar': registrar,
+        'CreationDate': creation_date,
+        'DomainStatus': domain_status,
+        'UpdatedDate': updated_date,
+        'ExpirationDate': expiration_date,
         'Umbrella': {
             'RiskScore': risk_score,
             'SecureRank': secure_rank,
@@ -806,6 +835,8 @@ def get_domain_command():
         'Demisto Reputation': scoreToReputation(dbotscore),
         'First Queried time': first_queried,
     })
+
+    # @TODO: Do we need to print to war room the indicators?
 
     # Domain reputation + [whois -> whois nameservers -> whois emails] + domain categorization
     results.append({
