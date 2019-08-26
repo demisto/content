@@ -859,6 +859,7 @@ def modify_attr_command():
     params = {"value": attr_value}
 
     tq_request("PUT", url_suffix, params)
+
     demisto.results("Successfully modified attribute #{0} of {1} with id {2}.".format(attr_id, obj_type, obj_id))
 
 
