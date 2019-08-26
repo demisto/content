@@ -154,7 +154,7 @@ script:
       description: Policy description
       type: string
     - contextPath: Fortigate.Policy.Status
-      description: The status of the poilcy (Enabled or Disabled)
+      description: The status of the policy (Enabled or Disabled)
       type: string
     - contextPath: Fortigate.Policy.Source
       description: Source address
@@ -224,7 +224,7 @@ script:
       description: Policy description
       type: string
     - contextPath: Fortigate.Policy.Status
-      description: The status of the poilcy (Enabled or Disabled)
+      description: The status of the policy (Enabled or Disabled)
       type: string
     - contextPath: Fortigate.Policy.Source
       description: Source address
@@ -302,7 +302,7 @@ script:
       description: Policy description
       type: string
     - contextPath: Fortigate.Policy.Status
-      description: The status of the poilcy (Enabled or Disabled)
+      description: The status of the policy (Enabled or Disabled)
       type: string
     - contextPath: Fortigate.Policy.Source.Address
       description: Source address
