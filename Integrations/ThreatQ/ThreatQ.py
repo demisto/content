@@ -508,7 +508,7 @@ def create_ioc_command():
     # For some reason, only while creating an indicator, the response data is a list of dicts with size 1.
     # Creating other objects simply returns one dict, as expected.
     raw = data_to_demisto_format(res["data"][0], "indicator")
-    demisto.results(raw)
+
     entry_context = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': createContext(raw, removeNull=True)}
 
     readable_title = "Successfully created {0} '{1}'".format(ioc_type, value)
