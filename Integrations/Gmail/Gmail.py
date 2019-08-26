@@ -194,7 +194,7 @@ def get_email_context(email_data, mailbox):
     body = body.encode('ascii') if body is not None else ''
     parsed_body = base64.urlsafe_b64decode(body)
     context_email = {}  # type: Dict
-    context_gmail = {} # type: Dict
+    context_gmail = {}  # type: Dict
     if email_data.get('internalDate') is not None:
         base_time = create_base_time(email_data.get('internalDate'), str(headers.get('date', '')))
 
@@ -376,7 +376,7 @@ def mail_to_incident(msg, service, user_key):
 
 
 def organization_format(org_list):
-    if org_list is None or len(org_list) ==0:
+    if org_list is None or len(org_list) == 0:
         return None
     org_str = ''
     for org in org_list:
@@ -1371,8 +1371,7 @@ def fetch_incidents():
     # handle first time fetch - gets current GMT time -1 day
     if last_fetch is None:
         last_fetch = (datetime.utcfromtimestamp(int(time())) - timedelta(days=1)).isoformat() + 'Z'
-    last_fetch = datetime.strptime(
-            last_fetch, '%Y-%m-%dT%H:%M:%SZ')
+    last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
     current_fetch = last_fetch
     service = get_service(
         'gmail',
