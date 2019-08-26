@@ -11,6 +11,7 @@ HOST = demisto.getParam('hostname')
 INTEGRATION_KEY = demisto.getParam('integration_key')
 SECRET_KEY = demisto.getParam('secret_key')
 USE_SSL = not demisto.params().get('insecure', False)
+USE_PROXY = demisto.params().get('proxy', False)
 
 # The duo client returns a signature error upon bad secret
 # Convert it to a more informative message using this
@@ -37,14 +38,13 @@ OPTIONS_TO_TIME = {
 
 # Utility Methods
 
-
 def create_api_call():
     if USE_SSL:
         return duo_client.Admin(
             ikey=INTEGRATION_KEY,
             skey=SECRET_KEY,
             host=HOST,
-            ca_certs='DISABLE'
+            ca_certs='HTTP'
         )
 
     return duo_client.Admin(
@@ -52,6 +52,29 @@ def create_api_call():
         skey=SECRET_KEY,
         host=HOST
     )
+
+
+def set_proxy():
+    try:
+        proxy_settings = os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy', '')
+        if proxy_settings:
+            proxy_settings_str = str(proxy_settings)
+            proxy_settings_str_args = proxy_settings_str.split(':')
+
+            if 'http' in proxy_settings_str:
+                host = ':'.join(proxy_settings_str_args[1:2])[2:]
+                port = proxy_settings_str_args[2]
+            else:
+                host = proxy_settings_str_args[0]
+                port = proxy_settings_str_args[1]
+
+            if USE_PROXY:
+                admin_api.set_proxy(host=host, port=port, proxy_type='CONNECT')
+                return
+
+    # if no proxy settings have been set
+    except ValueError:
+        admin_api.set_proxy(proxy_type=None)
 
 
 def time_to_timestamp_milliseconds(time):
@@ -253,8 +276,8 @@ def delete_u2f_token(token_id):
 
 # Execution
 try:
-    handle_proxy()
     admin_api = create_api_call()
+    set_proxy()
 
     if demisto.command() == 'test-module':
         test_instance()
