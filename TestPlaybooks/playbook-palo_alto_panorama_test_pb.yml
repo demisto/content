@@ -43,7 +43,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "85"
     scriptarguments:
       all:
         simple: "yes"
@@ -81,7 +81,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 1565
         }
       }
     note: false
@@ -106,7 +106,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1565
+          "y": 2760
         }
       }
     note: false
@@ -131,7 +131,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5265
+          "y": 6460
         }
       }
     note: false
@@ -166,7 +166,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 690
+          "y": 1885
         }
       }
     note: false
@@ -204,7 +204,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 865
+          "y": 2060
         }
       }
     note: false
@@ -230,7 +230,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 515
+          "y": 1710
         }
       }
     note: false
@@ -259,7 +259,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1390
+          "y": 2585
         }
       }
     note: false
@@ -285,7 +285,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1710
+          "y": 2905
         }
       }
     note: false
@@ -321,7 +321,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2030
+          "y": 3225
         }
       }
     note: false
@@ -359,7 +359,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2205
+          "y": 3400
         }
       }
     note: false
@@ -395,7 +395,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3225
+          "y": 4420
         }
       }
     note: false
@@ -424,7 +424,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2730
+          "y": 3925
         }
       }
     note: false
@@ -453,7 +453,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2905
+          "y": 4100
         }
       }
     note: false
@@ -491,7 +491,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3750
+          "y": 4945
         }
       }
     note: false
@@ -520,7 +520,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3925
+          "y": 5120
         }
       }
     note: false
@@ -549,7 +549,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5410
+          "y": 6605
         }
       }
     note: false
@@ -582,7 +582,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5585
+          "y": 6780
         }
       }
     note: false
@@ -612,7 +612,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2555
+          "y": 3750
         }
       }
     note: false
@@ -642,7 +642,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1215
+          "y": 2410
         }
       }
     note: false
@@ -672,7 +672,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3400
+          "y": 4595
         }
       }
     note: false
@@ -694,7 +694,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8295
+          "y": 9490
         }
       }
     note: false
@@ -719,7 +719,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6080
+          "y": 7275
         }
       }
     note: false
@@ -744,7 +744,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5760
+          "y": 6955
         }
       }
     note: false
@@ -778,7 +778,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6225
+          "y": 7420
         }
       }
     note: false
@@ -807,7 +807,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6400
+          "y": 7595
         }
       }
     note: false
@@ -841,7 +841,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6575
+          "y": 7770
         }
       }
     note: false
@@ -870,7 +870,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6750
+          "y": 7945
         }
       }
     note: false
@@ -895,7 +895,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6925
+          "y": 8120
         }
       }
     note: false
@@ -920,7 +920,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1885
+          "y": 3080
         }
       }
     note: false
@@ -945,7 +945,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3080
+          "y": 4275
         }
       }
     note: false
@@ -972,7 +972,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1040
+          "y": 2235
         }
       }
     note: false
@@ -999,7 +999,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2380
+          "y": 3575
         }
       }
     note: false
@@ -1026,7 +1026,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3575
+          "y": 4770
         }
       }
     note: false
@@ -1072,7 +1072,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7070
+          "y": 8265
         }
       }
     note: false
@@ -1108,7 +1108,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7420
+          "y": 8615
         }
       }
     note: false
@@ -1137,7 +1137,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7245
+          "y": 8440
         }
       }
     note: false
@@ -1169,7 +1169,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8120
+          "y": 9315
         }
       }
     note: false
@@ -1199,7 +1199,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5905
+          "y": 7100
         }
       }
     note: false
@@ -1237,7 +1237,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4245
+          "y": 5440
         }
       }
     note: false
@@ -1262,7 +1262,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4100
+          "y": 5295
         }
       }
     note: false
@@ -1295,7 +1295,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4420
+          "y": 5615
         }
       }
     note: false
@@ -1324,7 +1324,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4595
+          "y": 5790
         }
       }
     note: false
@@ -1353,7 +1353,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4770
+          "y": 5965
         }
       }
     note: false
@@ -1378,7 +1378,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4945
+          "y": 6140
         }
       }
     note: false
@@ -1407,7 +1407,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5090
+          "y": 6285
         }
       }
     note: false
@@ -1433,7 +1433,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7595
+          "y": 8790
         }
       }
     note: false
@@ -1459,7 +1459,7 @@ tasks:
       element_to_change:
         simple: log-forwarding
       element_value:
-        simple: log_forwading_101
+        simple: log_forwarding_101
       pre_post:
         simple: post-rulebase
       rulename:
@@ -1469,7 +1469,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7770
+          "y": 8965
         }
       }
     note: false
@@ -1495,7 +1495,233 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7945
+          "y": 9140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "85":
+    id: "85"
+    taskid: 9d0a1eb6-65b9-47e4-8221-cb35ec9c6d6c
+    type: title
+    task:
+      id: 9d0a1eb6-65b9-47e4-8221-cb35ec9c6d6c
+      version: -1
+      name: Shared
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "86":
+    id: "86"
+    taskid: 908aeab2-de52-4029-810b-c8e4794ca7f3
+    type: regular
+    task:
+      id: 908aeab2-de52-4029-810b-c8e4794ca7f3
+      version: -1
+      name: panorama-list-addresses - shared
+      description: Returns a list of addresses
+      script: '|||panorama-list-addresses'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "87"
+    scriptarguments:
+      device-group:
+        simple: shared
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "87":
+    id: "87"
+    taskid: f05a4c86-2724-4dfb-823c-5c11e39ea67d
+    type: regular
+    task:
+      id: f05a4c86-2724-4dfb-823c-5c11e39ea67d
+      version: -1
+      name: panorama-get-address - shared
+      description: Returns address details for the supplied address name
+      script: '|||panorama-get-address'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      device-group:
+        simple: shared
+      name:
+        simple: my_shared_address_object_test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "88":
+    id: "88"
+    taskid: 3a704a8d-99b3-40e4-8e3a-3201dc046f88
+    type: condition
+    task:
+      id: 3a704a8d-99b3-40e4-8e3a-3201dc046f88
+      version: -1
+      name: test panorama-get-address shared
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "89"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Panorama
+                accessor: Addresses.DeviceGroup
+            iscontext: true
+          right:
+            value:
+              simple: shared
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "89":
+    id: "89"
+    taskid: 5a87f5b1-0c92-4130-87da-7a1cccc01090
+    type: regular
+    task:
+      id: 5a87f5b1-0c92-4130-87da-7a1cccc01090
+      version: -1
+      name: panorama-list-rules - shared
+      description: Returns a list of predefined Security Rules.
+      script: '|||panorama-list-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      device-group:
+        simple: shared
+      pre_post:
+        simple: pre-rulebase
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "90":
+    id: "90"
+    taskid: 2b7f68b5-882b-4f39-8949-4453a03898ff
+    type: condition
+    task:
+      id: 2b7f68b5-882b-4f39-8949-4453a03898ff
+      version: -1
+      name: Test panorama-list-rules - shared
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "91"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Panorama
+                accessor: SecurityRule
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "91":
+    id: "91"
+    taskid: 74dcb0b3-223c-48a5-8977-58f4dbc21185
+    type: regular
+    task:
+      id: 74dcb0b3-223c-48a5-8977-58f4dbc21185
+      version: -1
+      name: DeleteContext - shared commands
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
         }
       }
     note: false
@@ -1509,7 +1735,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 8310,
+        "height": 9505,
         "width": 380,
         "x": 50,
         "y": 50
