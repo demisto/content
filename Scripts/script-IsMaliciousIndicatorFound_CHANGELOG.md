@@ -1,1 +1,2 @@
-Added the includeManual argument, which is default to true, and consider manually set to Good indicators as non malicious.
+## [Unreleased]
+Added the *includeManual* argument, which applies the manually assigned indicator severity to the indicator. This overrides the DBot score. Default is "true".
