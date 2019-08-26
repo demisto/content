@@ -778,7 +778,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Date of Occurrence. Valid formats: YYYY/dd/mm HH:MM:SS, YY/dd/mm'
+      description: 'Date of Occurrence. Valid formats: YYYY-mm-dd HH:MM:SS, YYYY-mm-dd'
       isArray: false
       name: date
       required: true
@@ -1443,7 +1443,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Date of Occurrence. Valid formats: YYYY/dd/mm HH:MM:SS, YY/dd/mm'
+      description: 'Date of Occurrence. Valid formats: YYYY-mm-dd HH:MM:SS, YYYY-mm-dd'
       isArray: false
       name: date
       required: false
