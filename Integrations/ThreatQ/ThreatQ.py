@@ -341,7 +341,6 @@ def data_to_demisto_format(data, obj_type):
 
 
 def indicator_data_to_demisto_format(data):
-    demisto.results(data)
     ret = {
         "Type": "indicator",
         "ID": data["id"],
@@ -430,7 +429,7 @@ def get_ioc_reputation(keyword):
     url_suffix = "/indicators/{0}?with=attributes,sources,score,type".format(res['data'][0]['id'])
     res = tq_request("GET", url_suffix)
 
-    return data_to_demisto_format(res["data"], "indicator")
+    return indicator_data_to_demisto_format(res["data"])
 
 
 def set_ioc_entry_context(ioc_type, raw, dbot, generic):
@@ -507,7 +506,7 @@ def create_ioc_command():
 
     # For some reason, only while creating an indicator, the response data is a list of dicts with size 1.
     # Creating other objects simply returns one dict, as expected.
-    raw = data_to_demisto_format(res["data"][0], "indicator")
+    raw = indicator_data_to_demisto_format(res["data"][0])
 
     entry_context = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': createContext(raw, removeNull=True)}
 
@@ -531,7 +530,7 @@ def create_adversary_command():
     }
     res = tq_request("POST", "/adversaries", params)
 
-    raw = data_to_demisto_format(res["data"], "adversary")
+    raw = adversary_data_to_demisto_format(res["data"])
     entry_context = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': createContext(raw, removeNull=True)}
 
     readable_title = "Successfully created adversary '{0}'".format(name)
@@ -558,7 +557,7 @@ def create_event_command():
     }
     res = tq_request("POST", "/events", params)
 
-    raw = data_to_demisto_format(res["data"], "event")
+    raw = event_data_to_demisto_format(res["data"])
     entry_context = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': createContext(raw, removeNull=True)}
 
     readable_title = "Successfully created event '{0}'".format(title)
@@ -588,7 +587,7 @@ def edit_ioc_command():
     url_suffix = "/indicators/{0}".format(ioc_id)
     res = tq_request("PUT", url_suffix, params)
 
-    raw = data_to_demisto_format(res["data"], "indicator")
+    raw = indicator_data_to_demisto_format(res["data"])
     entry_context = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': createContext(raw, removeNull=True)}
 
     readable_title = "Successfully edited indicator with id {0}".format(ioc_id)
@@ -614,7 +613,7 @@ def edit_adversary_command():
     url_suffix = "/adversaries/{0}".format(adversary_id)
     res = tq_request("PUT", url_suffix, params)
 
-    raw = data_to_demisto_format(res["data"], "adversary")
+    raw = adversary_data_to_demisto_format(res["data"])
     entry_context = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': createContext(raw, removeNull=True)}
 
     readable_title = "Successfully edited adversary with id {0}".format(adversary_id)
@@ -646,7 +645,7 @@ def edit_event_command():
     url_suffix = "/events/{0}".format(event_id)
     res = tq_request("PUT", url_suffix, params)
 
-    raw = data_to_demisto_format(res["data"], "event")
+    raw = event_data_to_demisto_format(res["data"])
     entry_context = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': createContext(raw, removeNull=True)}
 
     readable_title = "Successfully edited event with id {0}".format(event_id)
