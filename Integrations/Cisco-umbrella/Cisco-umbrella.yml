@@ -1309,6 +1309,48 @@ script:
     - contextPath: Domain.Umbrella.Whois.Emails.Name
       description: Domain's email
       type: string
+    - contextPath: Domain.Name
+      description: The domain name e.g. google.com
+      type: Unknown
+    - contextPath: Domain.Admin.Country
+      description: Admin's country
+      type: String
+    - contextPath: Domain.Admin.Email
+      description: Admin's email address
+      type: String
+    - contextPath: Domain.Admin.Name
+      description: Admin's Name
+      type: String
+    - contextPath: Domain.Admin.Phone
+      description: Admin's phone number
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: Registrant's country
+      type: String
+    - contextPath: Domain.Registrant.Email
+      description: Registrant's email address
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: Registrant's name
+      type: String
+    - contextPath: Domain.Registrant.Phone
+      description: Registrant's phone number
+      type: String
+    - contextPath: Domain.CreationDate
+      description: Creation date of the domain
+      type: Date
+    - contextPath: Domain.Registrar.Name
+      description: Registrar's name
+      type: String
+    - contextPath: Domain.DomainStatus
+      description: Status of the domain
+      type: String
+    - contextPath: Domain.UpdatedDate
+      description: Last update date of the domain
+      type: Date
+    - contextPath: Domain.ExpirationDate
+      description: Expiration date of the domain
+      type: Date
   - arguments:
     - default: false
       description: IP Address to check for malicious domains.

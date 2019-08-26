@@ -1402,6 +1402,38 @@ def get_whois_for_domain_command():
             'LastObserved': res['auditUpdatedDate'],
         }
 
+        # 5.0 update - context indicators
+        admin = {
+            'Country': res.get('administrativeContactCountry', ''),
+            'Email': res.get('administrativeContactEmail', ''),
+            'Name': res.get('administrativeContactName', ''),
+            'Phone': res.get('administrativeContactTelephone', '')
+        }
+        registrant = {
+            'Country': res.get('registrantCountry', ''),
+            'Email': res.get('registrantEmail', ''),
+            'Name': res.get('registrantName', ''),
+            'Phone': res.get('registrantTelephone', ''),
+        }
+        creation_date = res.get('created')  # type: ignore
+        registrar = {'Name': res.get('registrarName', '')}
+        domain_status = res.get('status', [])[0] if res.get('status') else None  # or [-1] ?
+        updated_date = res.get('updated', '')
+        expiration_date = res.get('expires', '')
+
+        # context entry
+        # Domain
+        context[outputPaths['domain']] = {
+            'Name': domain,
+            'Admin': admin,
+            'Registrant': registrant,
+            'Registrar': registrar,
+            'CreationDate': creation_date,
+            'DomainStatus': domain_status,
+            'UpdatedDate': updated_date,
+            'ExpirationDate': expiration_date,
+        }
+
         table_whois = {
             'Name': whois['Name'],
             'Registrar Name': whois['RegistrarName'],
