@@ -646,7 +646,7 @@ def test_is_default_arguments_non_default():
     validator.old_integration = None
 
     assert validator.is_default_arguments() is False, \
-        "The integration validator did not find invalid arg (needed to be default)"
+        "The integration validator did not find invalid arg (needed to be default and not required)"
 
 
 def test_is_default_arguments_is_required():
