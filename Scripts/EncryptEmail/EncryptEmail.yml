@@ -29,3 +29,5 @@ timeout: '0'
 type: python
 dockerimage: devdemisto/smime-encrypt:1.0.0.1721
 subtype: python3
+tests:
+  - No tests - UNIT TESTS
