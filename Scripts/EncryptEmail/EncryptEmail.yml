@@ -1,17 +1,17 @@
 args:
 - default: false
-  description: public RSA key
+  description: The public RSA key.
   isArray: false
   name: key
   required: true
   secret: false
 - default: false
-  description: The message body to encrypt
+  description: The message body to encrypt.
   isArray: false
   name: message
   required: true
   secret: false
-comment: S/MIME messages encryption using a public RSA key
+comment: Encrypts an email message with S/MIME protocol by using a public RSA key.
 commonfields:
   id: 46b038af-c80a-4c93-bc85-465622252553
   version: -1
@@ -19,7 +19,7 @@ enabled: false
 name: EncryptEmail
 outputs:
 - contextPath: Email.Message
-  description: The encrypted message
+  description: The encrypted message.
   type: String
 script: '-'
 system: false
