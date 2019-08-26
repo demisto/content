@@ -18,6 +18,7 @@ configuration:
 description: Palo Alto Traps ESM beta integration.
 display: Palo Alto Traps ESM (Beta)
 name: Palo Alto Traps ESM (Beta)
+beta: true
 script:
   commands:
   - arguments:
@@ -55,5 +56,4 @@ script:
   runonce: false
   script: ''
   type: python
-  beta: true
   dockerimage: demisto/btfl-soup:1.0.0.925
