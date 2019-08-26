@@ -1,2 +1,2 @@
 ## [Unreleased]
-Bug fix - exclude "-1" TaskIds from all Playbook tasks
+Improved playbook implementation by excluding "-1" TaskIds from all playbook tasks.
