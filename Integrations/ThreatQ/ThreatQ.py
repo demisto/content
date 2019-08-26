@@ -124,27 +124,24 @@ OBJ_DIRECTORY = {
 ''' HELPER FUNCTIONS '''
 
 
-def get_errors_string_from_response(res):  # todo: finish replacing this function
-    errors_str = "Error 400 - Could not complete the request."  # default error
-    errors = None
-    if "data" in res:
-        errors = res["data"]["errors"]
-    if "errors" in res:
-        errors = res["errors"]
-    if isinstance(errors, list):
-        errorslst = ["\n".join(lst) for lst in errors]
-        errors_str = "\n".join(errorslst)
-    elif isinstance(errors, dict):
-        errorslst = ["\n".join(lst) for lst in errors.values()]
-        errors_str = "\n".join(errorslst)
-    return errors_str
-
-
 def get_errors_string_from_bad_request(bad_request_results):
+    # Errors could be retrieved in two forms:
+    # 1. A dictionary of fields and errors list related to the fields, all under "data" key in the response json object
+    # 2. A list, directly within the response object
+
+    errors_string = "Errors from server:\n\n"
+
+    # First form
+    errors_dict = bad_request_results.json().get("data", {}).get("errors", {})
+    if errors_dict:
+        for error_num, (key, lst) in enumerate(errors_dict.items(), 1):
+            curr_error_string = "\n".join(lst) + "\n\n"
+            errors_string += "{0}. In '{1}':\n{2}".format(error_num, key, curr_error_string)
+        return errors_string
+
+    # Second form
     errors_list = bad_request_results.json().get("errors", [])
-    errors_string = ""
     if errors_list:
-        errors_string = "Errors from server: \n"
         for error_num, error in enumerate(errors_list, 1):
             errors_string += "Error #{0}: {1}\n".format(error_num, error)
     return errors_string
@@ -158,7 +155,7 @@ def request_new_access_token():
     res = json.loads(access_token_response.text)
     if int(access_token_response.status_code) >= 400:
         errors_string = get_errors_string_from_bad_request(access_token_response)
-        error_message = "Authentication failed, unable to retrieve an access token.\n {}".format(errors_string)
+        error_message = "Authentication failed, unable to retrieve an access token.\n{}".format(errors_string)
         return_error(error_message)
 
     updated_integration_context = {
@@ -196,7 +193,7 @@ def tq_request(method, url_suffix, params=None, files=None):
 
     if response.status_code >= 400:
         errors_string = get_errors_string_from_bad_request(response)
-        error_message = "Received and error - status code [{0}].\n {1}".format(response.status_code, errors_string)
+        error_message = "Received and error - status code [{0}].\n{1}".format(response.status_code, errors_string)
         return_error(error_message)
 
     if method != "DELETE":  # the DELETE request returns nothing in response
@@ -353,11 +350,7 @@ def indicator_data_to_demisto_format(data):
         "Value": data["value"],
         "Status": STATUS_ID_TO_STATUS[data["status_id"]],
         "IndicatorType": TYPE_ID_TO_IOC_TYPE[data["type_id"]],
-        "URL": "{0}/indicators/{1}/details".format(SERVER_URL, data['id']),
-        "TQScore": None,
-        "Description": None,
-        "Sources": None,
-        "Attributes": None
+        "URL": "{0}/indicators/{1}/details".format(SERVER_URL, data['id'])
     }
 
     if "score" in data:
@@ -378,9 +371,7 @@ def adversary_data_to_demisto_format(data):
         "UpdatedAt": data["updated_at"],
         "CreatedAt": data["created_at"],
         "Name": data["name"],
-        "URL": "{0}/indicators/{1}/details".format(SERVER_URL, data['id']),
-        "Sources": None,
-        "Attributes": None
+        "URL": "{0}/indicators/{1}/details".format(SERVER_URL, data['id'])
     }
     if "sources" in data:
         ret["Sources"] = sources_to_demisto_format(data["sources"])
@@ -398,10 +389,7 @@ def event_data_to_demisto_format(data):
         "Title": data["title"],
         "Occurred": data["happened_at"],
         "EventType": TYPE_ID_TO_EVENT_TYPE[data["type_id"]],
-        "URL": "{0}/indicators/{1}/details".format(SERVER_URL, data['id']),
-        "Description": None,
-        "Sources": None,
-        "Attributes": None
+        "URL": "{0}/indicators/{1}/details".format(SERVER_URL, data['id'])
     }
     if "description" in data:
         ret["Description"] = clean_html_from_string(data["description"])
@@ -523,7 +511,7 @@ def create_ioc_command():
     demisto.results(raw)
     entry_context = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': createContext(raw, removeNull=True)}
 
-    readable_title = "Successfully created {0} {1}".format(ioc_type, value)
+    readable_title = "Successfully created {0} '{1}'".format(ioc_type, value)
     readable = build_readable(readable_title, "indicator", raw)
 
     return_outputs(readable, entry_context, raw)
@@ -546,7 +534,7 @@ def create_adversary_command():
     raw = data_to_demisto_format(res["data"], "adversary")
     entry_context = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': createContext(raw, removeNull=True)}
 
-    readable_title = "Successfully created adversary {0}".format(name)
+    readable_title = "Successfully created adversary '{0}'".format(name)
     readable = build_readable(readable_title, "adversary", raw)
 
     return_outputs(readable, entry_context, raw)
@@ -573,7 +561,95 @@ def create_event_command():
     raw = data_to_demisto_format(res["data"], "event")
     entry_context = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': createContext(raw, removeNull=True)}
 
-    readable_title = "Successfully created event {0}".format(title)
+    readable_title = "Successfully created event '{0}'".format(title)
+    readable = build_readable(readable_title, "event", raw)
+
+    return_outputs(readable, entry_context, raw)
+
+
+def edit_ioc_command():
+    args = demisto.args()
+    ioc_id = args.get('ioc_id')
+    value = args.get('value')
+    ioc_type = args.get('ioc_type')
+    description = args.get('description')
+
+    if isinstance(ioc_id, str) and not ioc_id.isdigit():
+        return_error("Invalid argument for indicator ID.")
+
+    params = {
+        "value": value,
+        "type": ioc_type,
+        "description": description
+    }
+    # Remove items with empty values:
+    params = {k: v for k, v in params.items() if v is not None}
+
+    url_suffix = "/indicators/{0}".format(ioc_id)
+    res = tq_request("PUT", url_suffix, params)
+
+    raw = data_to_demisto_format(res["data"], "indicator")
+    entry_context = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': createContext(raw, removeNull=True)}
+
+    readable_title = "Successfully edited indicator with id {0}".format(ioc_id)
+    readable = build_readable(readable_title, "indicator", raw)
+
+    return_outputs(readable, entry_context, raw)
+
+
+def edit_adversary_command():
+    args = demisto.args()
+    adversary_id = args.get('adversary_id')
+    name = args.get('name')
+
+    if isinstance(adversary_id, str) and not adversary_id.isdigit():
+        return_error("Invalid argument for adversary ID.")
+
+    params = {
+        "name": name
+    }
+    # Remove items with empty values:
+    params = {k: v for k, v in params.items() if v is not None}
+
+    url_suffix = "/adversaries/{0}".format(adversary_id)
+    res = tq_request("PUT", url_suffix, params)
+
+    raw = data_to_demisto_format(res["data"], "adversary")
+    entry_context = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': createContext(raw, removeNull=True)}
+
+    readable_title = "Successfully edited adversary with id {0}".format(adversary_id)
+    readable = build_readable(readable_title, "adversary", raw)
+
+    return_outputs(readable, entry_context, raw)
+
+
+def edit_event_command():
+    args = demisto.args()
+    event_id = args.get('event_id')
+    event_type = args.get('event_type')
+    title = args.get('title')
+    date = args.get('date')
+    description = args.get('description')
+
+    if isinstance(event_id, str) and not event_id.isdigit():
+        return_error("Invalid argument for event ID.")
+
+    params = {
+        "title": title,
+        "happened_at": parse_date(date) if date else None,
+        "type": event_type,
+        "description": description
+    }
+    # Remove items with empty values:
+    params = {k: v for k, v in params.items() if v is not None}
+
+    url_suffix = "/events/{0}".format(event_id)
+    res = tq_request("PUT", url_suffix, params)
+
+    raw = data_to_demisto_format(res["data"], "event")
+    entry_context = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': createContext(raw, removeNull=True)}
+
+    readable_title = "Successfully edited event with id {0}".format(event_id)
     readable = build_readable(readable_title, "event", raw)
 
     return_outputs(readable, entry_context, raw)
@@ -632,9 +708,8 @@ def search_by_id_command():
     return_outputs(readable, ec, raw)
 
 
-def get_related_objs_command():
+def get_related_objs_command(related_type):
     args = demisto.args()
-    related_type = args.get('related_type')
     obj_type = args.get('obj_type')
     obj_id = args.get('obj_id')
 
@@ -821,8 +896,53 @@ def update_status_command():
     url_suffix = "/indicators/{0}".format(ioc_id)
     params = {"status": status}
 
-    tq_request("PUT", url_suffix, params)
-    demisto.results("Successfully updated status of indicator with id {0} {1}.".format(ioc_id, status))
+    res = tq_request("PUT", url_suffix, params)
+
+    raw = {
+        "Type": "indicator",
+        "ID": int(ioc_id),
+        "Status": STATUS_ID_TO_STATUS[res["data"]["status_id"]],
+    }
+
+    ec = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': raw}
+
+    readable = "Successfully updated status of indicator with id {0} to {1}.".format(ioc_id, status)
+
+    return_outputs(readable, ec, raw)
+
+
+def update_score_command():
+    # Note: We can't update DBot Score because API doesn't retrieve the indicator value.
+    args = demisto.args()
+    ioc_id = args.get('ioc_id')
+    score = args.get('score')
+
+    if isinstance(ioc_id, str) and not ioc_id.isdigit():
+        return_error("Invalid argument for indicator ID.")
+
+    if isinstance(score, str) and not score.isdigit():  # User chose 'Generated Score' option
+        manual_score = None
+    else:
+        manual_score = int(score)
+
+    url_suffix = "/indicator/{0}/scores".format(ioc_id)
+    params = {"manual_score": manual_score}
+
+    res = tq_request("PUT", url_suffix, params)
+
+    raw = {
+        "Type": "indicator",
+        "ID": int(ioc_id),
+        "TQScore": get_tq_score_from_response(res["data"])
+    }
+
+    ec = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': raw}
+
+    readable = "Successfully updated score of indicator with id {0} to {1}. "\
+               "Notice that final score is the maximum between " \
+               "manual and generated scores.".format(ioc_id, int(raw["TQScore"]))
+
+    return_outputs(readable, ec, raw)
 
 
 def get_ip_reputation():
@@ -944,6 +1064,12 @@ try:
         create_event_command()
     elif command == 'threatq-create-adversary':
         create_adversary_command()
+    elif command == 'threatq-edit-ioc':
+        edit_ioc_command()
+    elif command == 'threatq-edit-event':
+        edit_event_command()
+    elif command == 'threatq-edit-adversary':
+        edit_adversary_command()
     elif command == 'threatq-delete-object':
         delete_object_command()
     elif command == 'threatq-get-related-ioc':
@@ -970,6 +1096,8 @@ try:
         upload_file_command()
     elif command == 'threatq-update-status':
         update_status_command()
+    elif command == 'threatq-update-score':
+        update_score_command()
     elif command == "ip":
         get_ip_reputation()
     elif command == "domain":
