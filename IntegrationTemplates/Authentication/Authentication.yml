@@ -8,17 +8,9 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Authorization
-  name: authorization
-  required: true
-  type: 9
 - defaultvalue: 'true'
   display: Trust any certificate (insecure)
   name: insecure
-  required: false
-  type: 8
-- display: Use system proxy
-  name: proxy
   required: false
   type: 8
 - display: Fetches credentials
@@ -30,25 +22,101 @@ display: Authentication
 name: Authentication
 script:
   commands:
+  - deprecated: false
+    description: lists all credentials
+    execution: false
+    name: authentication-list-credentials
+    outputs:
+    - contextPath: AuthenticationIntegration.Account.Name
+      description: Account Name
+      type: String
   - arguments:
     - default: false
-      description: 'This is a list argument, please provide comma separated list (example:
-        "1,2,3"). This item is mandatory so it must be provided in order to use the
-        command.'
-      isArray: true
-      name: item_ids
+      description: account ID to lock
+      isArray: false
+      name: account_id
       required: true
       secret: false
     deprecated: false
-    description: Get items from service.
+    description: Locks account
     execution: false
-    name: example-get-items
+    name: authentication-lock-account
     outputs:
-    - contextPath: AuthenticationExample.Account.ID
+    - contextPath: AuthenticationIntegration.Account.ID
       description: Account ID
       type: String
-    - contextPath: AuthenticationExample.Account.IsLocked
-      description: Locked status of account
+    - contextPath: AuthenticationIntegration.Account.IsLocked
+      description: Accound state
+      type: Boolean
+  - arguments:
+    - default: false
+      description: account ID to lock
+      isArray: false
+      name: account_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Locks account
+    execution: false
+    name: authentication-unlock-account
+    outputs:
+    - contextPath: AuthenticationIntegration.Account.ID
+      description: Account ID
+      type: String
+    - contextPath: AuthenticationIntegration.Account.IsLocked
+      description: Accound state
+      type: Boolean
+  - arguments:
+    - default: false
+      description: account ID to lock
+      isArray: false
+      name: account_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Resets account
+    execution: false
+    name: authentication-reset-account
+    outputs:
+    - contextPath: AuthenticationIntegration.Account.ID
+      description: Account ID
+      type: String
+    - contextPath: AuthenticationIntegration.Account.IsLocked
+      description: Accound state
+      type: Boolean
+  - arguments:
+    - default: false
+      isArray: false
+      name: vault_id
+      required: true
+      secret: false
+    deprecated: false
+    description: locks given vault
+    execution: false
+    name: authentication-lock-vault
+    outputs:
+    - contextPath: AuthenticationIntegration.Vault.ID
+      description: ID of vault
+      type: String
+    - contextPath: AuthenticationIntegration.Vault.IsLocked
+      description: Vault state
+      type: Boolean
+  - arguments:
+    - default: false
+      isArray: false
+      name: vault_id
+      required: true
+      secret: false
+    deprecated: false
+    description: locks given vault
+    execution: false
+    name: authentication-unlock-vault
+    outputs:
+    - contextPath: AuthenticationIntegration.Vault.ID
+      description: ID of vault
+      type: String
+    - contextPath: AuthenticationIntegration.Vault.IsLocked
+      description: Vault state
       type: Boolean
   isfetch: false
   longRunning: false

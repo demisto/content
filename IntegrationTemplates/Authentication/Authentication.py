@@ -85,7 +85,7 @@ class Client:
                     message = res_json.get('message')
                     return_error(message)
                 except json.decoder.JSONDecodeError:
-                    if res.status_code in {400, 401, 501}:
+                    if res.status_code in (400, 401, 501):
                         # Try to parse xml error response
                         resp_xml = ElementTree.fromstring(res.content)
                         codes = [child.text for child in resp_xml.iter() if child.tag == 'CODE']
@@ -370,7 +370,7 @@ def reset_account_command(client: Client):
         # Return data to Demisto
         return_outputs(human_readable, context)
     else:
-        return_error(f'{INTEGRATION_NAME} - Could not unlock account `{account_to_reset}`')
+        return_error(f'{INTEGRATION_NAME} - Could not reset account `{account_to_reset}`')
 
 
 def list_credentials(client: Client):

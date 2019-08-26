@@ -22,16 +22,7 @@ display: AnalyticsAndSIEM
 name: AnalyticsAndSIEM
 script:
   commands:
-  - arguments:
-    - default: false
-      description: 'This is a list argument, please provide comma separated list (example:
-        "1,2,3"). This item is mandatory so it must be provided in order to use the
-        command.'
-      isArray: true
-      name: item_ids
-      required: true
-      secret: false
-    deprecated: false
+  - deprecated: false
     description: Get items from service.
     execution: false
     name: example-get-items
