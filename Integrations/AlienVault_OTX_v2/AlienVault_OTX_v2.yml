@@ -3,6 +3,15 @@ commonfields:
   id: AlienVault_OTX_v2
   version: -1
 configuration:
+- defaultvalue: https://otx.alienvault.com
+  display: Server address
+  name: Server
+  required: false
+  type: 0
+- display: Token
+  name: api_token
+  required: false
+  type: 4
 - display: Trust any certificate
   name: insecure
   required: false
@@ -11,22 +20,13 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Token
-  name: api_token
-  required: false
-  type: 4
-- defaultvalue: https://otx.alienvault.com
-  display: Server address
-  name: Server
-  required: false
-  type: 0
 description: Query IOCs in AlienVault
-display: AlienVault_OTX_v2
+display: AlienVault OTX v2
 name: AlienVault_OTX_v2
 script:
   commands:
   - arguments:
-    - default: false
+    - default: true
       description: ip to query
       isArray: false
       name: ip
@@ -65,7 +65,7 @@ script:
       description: The indicator we tested
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: domain to query
       isArray: false
       name: domain
@@ -98,14 +98,14 @@ script:
       description: AlienVault vendor
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: ip to query
       isArray: false
       name: ip
       required: true
       secret: false
     deprecated: false
-    description: Query IP in AlienVault OTX
+    description: Query IPv6 in AlienVault OTX
     execution: false
     name: alienvault-search-ipv6
     outputs:
@@ -131,7 +131,7 @@ script:
       description: AlienVault vendor
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: hostname to query
       isArray: false
       name: hostname
@@ -164,7 +164,7 @@ script:
       description: The indicator we tested
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: File hash to query
       isArray: false
       name: file
@@ -209,10 +209,10 @@ script:
       description: The ssdeep value for the file
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: The cve to query
       isArray: false
-      name: cve-id
+      name: cve_id
       required: true
       secret: false
     deprecated: false
@@ -252,7 +252,7 @@ script:
       default: false
       description: the type of the indicator
       isArray: false
-      name: indicator-type
+      name: indicator_type
       predefined:
       - IPv4
       - IPv6
@@ -266,6 +266,20 @@ script:
       isArray: false
       name: indicator
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: '3'
+      description: Max number of printing in war room
+      isArray: false
+      name: threshold_results
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      required: false
       secret: false
     deprecated: false
     description: URLs analyzed by AlienVault Labs on this indicator
@@ -286,12 +300,26 @@ script:
       default: false
       description: the type of the indicator
       isArray: false
-      name: indicator-type
+      name: indicator_type
       predefined:
       - IPv4
       - IPv6
       - domain
       - hostname
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: '3'
+      description: Max number of printing in war room
+      isArray: false
+      name: threshold_results
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
       required: false
       secret: false
     deprecated: false
@@ -307,7 +335,7 @@ script:
       default: false
       description: the type of the indicator
       isArray: false
-      name: indicator-type
+      name: indicator_type
       predefined:
       - IPv4
       - IPv6
@@ -320,6 +348,20 @@ script:
       isArray: false
       name: indicator
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: '3'
+      description: Max number of printing in war room
+      isArray: false
+      name: threshold_results
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      required: false
       secret: false
     deprecated: false
     description: Passive dns records observed by AlienVault Labs pointing to this
@@ -346,11 +388,25 @@ script:
       description: the last seen date
       type: Date
   - arguments:
-    - default: false
+    - default: true
       description: The page of pulses to get
       isArray: false
       name: page
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: '3'
+      description: Amount of results to print
+      isArray: false
+      name: threshold_results
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      required: false
       secret: false
     deprecated: false
     description: Search for pulses in AlienVault OTX
@@ -388,10 +444,10 @@ script:
       description: Pulse description
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: ID of desired pules
       isArray: false
-      name: pulse-id
+      name: pulse_id
       required: true
       secret: false
     deprecated: false
@@ -421,7 +477,7 @@ script:
       description: Pulse description
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: url to query
       isArray: false
       name: url
@@ -461,6 +517,8 @@ script:
       type: String
   dockerimage: demisto/python3:3.7.4.1150
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   type: python

@@ -752,10 +752,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: 0167a964-a1fd-4d9a-843e-f8ba2d1087f5
+    taskid: ff3353ef-52df-4e3e-839e-9da19ab1677e
     type: regular
     task:
-      id: 0167a964-a1fd-4d9a-843e-f8ba2d1087f5
+      id: ff3353ef-52df-4e3e-839e-9da19ab1677e
       version: -1
       name: alienvault-search-cve command
       description: Query CVE in AlienVault OTX
@@ -768,6 +768,8 @@ tasks:
       - "23"
     scriptarguments:
       cve-id:
+        simple: CVE-2014-0160
+      cve_id:
         simple: CVE-2014-0160
     continueonerror: true
     separatecontext: false
@@ -883,10 +885,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: 45af5865-b562-4b0a-8730-695267d16a39
+    taskid: 75fdd28a-6db8-48a6-803c-76460491d139
     type: regular
     task:
-      id: 45af5865-b562-4b0a-8730-695267d16a39
+      id: 75fdd28a-6db8-48a6-803c-76460491d139
       version: -1
       name: alienvault-get-related-urls-by-indicator command
       description: URLs analyzed by AlienVault Labs on this indicator
@@ -902,6 +904,9 @@ tasks:
         simple: 8.8.8.8
       indicator-type:
         simple: IPv4
+      indicator_type:
+        simple: IPv4
+      threshold_results: {}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -1011,10 +1016,10 @@ tasks:
     ignoreworker: false
   "30":
     id: "30"
-    taskid: fc88df87-44bf-40a6-85dd-87ef107b5054
+    taskid: f845653b-6ec8-477c-8e14-51add185c199
     type: regular
     task:
-      id: fc88df87-44bf-40a6-85dd-87ef107b5054
+      id: f845653b-6ec8-477c-8e14-51add185c199
       version: -1
       name: alienvault-get-passive-dns-data-by-indicator command
       description: Passive dns records observed by AlienVault Labs pointing to this
@@ -1031,6 +1036,9 @@ tasks:
         simple: 8.8.8.8
       indicator-type:
         simple: IPv4
+      indicator_type:
+        simple: IPv4
+      threshold_results: {}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -1140,10 +1148,10 @@ tasks:
     ignoreworker: false
   "34":
     id: "34"
-    taskid: b6fb478f-8e30-465c-8ba7-82b9853b27a2
+    taskid: c6508de1-68ca-4b97-89ca-673436f31aa6
     type: regular
     task:
-      id: b6fb478f-8e30-465c-8ba7-82b9853b27a2
+      id: c6508de1-68ca-4b97-89ca-673436f31aa6
       version: -1
       name: alienvault-search-pulses command
       description: Search for pulses in AlienVault OTX
@@ -1157,6 +1165,8 @@ tasks:
     scriptarguments:
       page:
         simple: "1"
+      threshold_results:
+        simple: "3"
     continueonerror: true
     separatecontext: false
     view: |-
@@ -1266,10 +1276,10 @@ tasks:
     ignoreworker: false
   "38":
     id: "38"
-    taskid: 2bc4d99d-8476-4397-886f-9b84a714ab3b
+    taskid: 3235451a-6064-47a1-85cd-dbdf2725c10e
     type: regular
     task:
-      id: 2bc4d99d-8476-4397-886f-9b84a714ab3b
+      id: 3235451a-6064-47a1-85cd-dbdf2725c10e
       version: -1
       name: alienvault-get-pulse-details command
       description: Get pulse details (pulse are alian vault's entities)
@@ -1282,6 +1292,8 @@ tasks:
       - "39"
     scriptarguments:
       pulse-id:
+        simple: 57204e9b3c4c3e015d93cb12
+      pulse_id:
         simple: 57204e9b3c4c3e015d93cb12
     continueonerror: true
     separatecontext: false
@@ -1490,7 +1502,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 5970
         }
       }
@@ -1520,7 +1532,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 5970
         }
       }
@@ -1529,10 +1541,10 @@ tasks:
     ignoreworker: false
   "46":
     id: "46"
-    taskid: 51912dee-1f8f-45f0-8b6e-76d3b557dedc
+    taskid: e2ee18a5-12d6-4346-8b78-9f3e4122af1b
     type: regular
     task:
-      id: 51912dee-1f8f-45f0-8b6e-76d3b557dedc
+      id: e2ee18a5-12d6-4346-8b78-9f3e4122af1b
       version: -1
       name: alienvault-get-related-hashes-by-indicator command
       description: Malwares analyzed by AlienVault Labs on this indicator
@@ -1548,6 +1560,10 @@ tasks:
         simple: 8.8.8.8
       indicator-type:
         simple: IPv4
+      indicator_type:
+        simple: IPv4
+      threshold_results:
+        simple: "3"
     continueonerror: true
     separatecontext: false
     view: |-
@@ -1615,7 +1631,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 6495
         }
       }
@@ -1642,7 +1658,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 6495
         }
       }
