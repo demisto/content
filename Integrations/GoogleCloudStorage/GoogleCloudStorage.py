@@ -120,7 +120,7 @@ def test_module():
 
 def bucket2dict(bucket):
     """
-    Converts a google.cloud.storage.Bucket object to context format (GCP.Bucket).
+    Converts a google.cloud.storage.Bucket object to context format (GCS.Bucket).
     """
     return {
         "Name": bucket.name,
@@ -140,7 +140,7 @@ def gcs_list_buckets():
         "ContentsFormat": formats["json"],
         "Contents": result,
         "HumanReadable": human_readable_table("Buckets in project " + client.project, result),
-        "EntryContext": {ec_key("GCP.Bucket", "Name"): result}
+        "EntryContext": {ec_key("GCS.Bucket", "Name"): result}
     })
 
 
@@ -156,7 +156,7 @@ def gcs_get_bucket():
         "ContentsFormat": formats["json"],
         "Contents": result,
         "HumanReadable": human_readable_table("Bucket " + bucket_name, result),
-        "EntryContext": {ec_key("GCP.Bucket", "Name"): result}
+        "EntryContext": {ec_key("GCS.Bucket", "Name"): result}
     })
 
 
@@ -199,7 +199,7 @@ def gcs_delete_bucket():
 
 def blob2dict(blob):
     """
-    Converts a google.cloud.storage.Blob to context format (GCP.BucketObject).
+    Converts a google.cloud.storage.Blob to context format (GCS.BucketObject).
     Note: "blob" is the client API name for what is normally called an "object" in Google Cloud Storage.
     """
     return {
@@ -251,7 +251,7 @@ def gcs_list_bucket_objects():
         "ContentsFormat": formats["json"],
         "Contents": result,
         "HumanReadable": human_readable_table("Objects in bucket " + bucket_name, result),
-        "EntryContext": {ec_key("GCP.BucketObject", "Name", "Bucket"): result}
+        "EntryContext": {ec_key("GCS.BucketObject", "Name", "Bucket"): result}
     })
 
 
@@ -292,7 +292,7 @@ def gcs_upload_file():
 
 def acl2dict(acl_entry, include_object_name=False):
     """
-    Converts an ACL entry from its raw JSON form to context format (either GCP.BucketPolicy or GCP.BucketObjectPolicy).
+    Converts an ACL entry from its raw JSON form to context format (either GCS.BucketPolicy or GCS.BucketObjectPolicy).
     """
     result = {
         "Bucket": acl_entry.get("bucket", "")
@@ -343,7 +343,7 @@ def gcs_list_bucket_policy():
         "ContentsFormat": formats["json"],
         "Contents": result,
         "HumanReadable": human_readable_table("ACL policy for bucket " + bucket_name, result),
-        "EntryContext": {ec_key("GCP.BucketPolicy", "Bucket", "Entity"): result}
+        "EntryContext": {ec_key("GCS.BucketPolicy", "Bucket", "Entity"): result}
     })
 
 
@@ -430,7 +430,7 @@ def gcs_list_bucket_object_policy():
         "ContentsFormat": formats["json"],
         "Contents": result,
         "HumanReadable": human_readable_table("ACL policy for object " + blob_name, result),
-        "EntryContext": {ec_key("GCP.BucketObjectPolicy", "Bucket", "Object", "Entity"): result}
+        "EntryContext": {ec_key("GCS.BucketObjectPolicy", "Bucket", "Object", "Entity"): result}
     })
 
 
