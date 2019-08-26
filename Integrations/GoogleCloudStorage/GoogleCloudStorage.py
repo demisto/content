@@ -112,7 +112,7 @@ def format_error(ex):
 
 def test_module():
     client = init_storage_client()
-    next(client.list_buckets())
+    next(client.list_buckets().pages)
 
 
 ''' Bucket management '''
