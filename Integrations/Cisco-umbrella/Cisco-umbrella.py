@@ -758,15 +758,13 @@ def get_domain_command():
     emails = whois.get('emails')  # type: ignore
     registrar = {'Name': whois.get('registrarName', '')}  # type: ignore
     creation_date = first_queried
-    # @TODO: check if 0 or -1 or whole list
-    domain_status = whois.get('status', [])[0] if whois.get('status') else None  # type: ignore
+    domain_status = whois.get('status', [])  # type: ignore
     updated_date = whois.get('updated', '')  # type: ignore
     expiration_date = whois.get('expires', '')  # type: ignore
 
-    # @TODO: wrong resigtrar field - should be registrarName
     whois = {
         'Name': whois['domainName'],  # type: ignore
-        'Registrar Name': whois['registrantName'],  # type: ignore
+        'Registrar Name': whois['registrarName'],  # type: ignore
         'Last Retrieved': timestamp_to_date(whois['timeOfLatestRealtimeCheck']),  # type: ignore
         'Created': whois['created'],  # type: ignore
         'Updated': whois['updated'],  # type: ignore
@@ -836,8 +834,6 @@ def get_domain_command():
         'Demisto Reputation': scoreToReputation(dbotscore),
         'First Queried time': first_queried,
     })
-
-    # @TODO: Do we need to print to war room the indicators?
 
     # Domain reputation + [whois -> whois nameservers -> whois emails] + domain categorization
     results.append({
