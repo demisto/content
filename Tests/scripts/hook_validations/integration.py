@@ -1,6 +1,7 @@
 import os
-import yaml
+
 import requests
+import yaml
 
 from Tests.scripts.constants import CONTENT_GITHUB_MASTER_LINK
 from Tests.test_utils import print_error, get_yaml
@@ -52,8 +53,38 @@ class IntegrationValidator(object):
         self.is_changed_command_name_or_arg()
         self.is_there_duplicate_args()
         self.is_there_duplicate_params()
-        self.is_valid_subtype()
+        self.is_changed_subtype()
 
+        return self._is_valid
+
+    def is_valid_integration(self):
+        """Check whether the Integration is valid or not, update the _is_valid field to determine that"""
+        self.is_valid_subtype()
+        self.is_default_arguments()
+
+        return self._is_valid
+
+    def is_default_arguments(self):
+        """Check if a reputation command (domain/email/file/ip/url)
+            has a default non required argument with the same name
+
+        Returns:
+            bool. Whether a reputation command hold a valid argument
+        """
+        commands = self.current_integration.get('script', {}).get('commands', [])
+        for command in commands:
+            command_name = command.get('name')
+            for arg in command.get('arguments', []):
+                arg_name = arg.get('name')
+                if ((command_name == 'file' and arg_name == 'file')
+                        or (command_name == 'email' and arg_name == 'email')
+                        or (command_name == 'domain' and arg_name == 'domain')
+                        or (command_name == 'url' and arg_name == 'url')
+                        or (command_name == 'ip' and arg_name == 'ip')):
+                    if arg.get('default') is False or arg.get('required') is True:
+                        self._is_valid = False
+                        print_error("The argument '{}' of the command '{}' is either non default or required"
+                                    .format(arg_name, command_name))
         return self._is_valid
 
     def is_valid_subtype(self):
@@ -65,12 +96,21 @@ class IntegrationValidator(object):
                 print_error("The subtype for our yml files should be either python2 or python3, "
                             "please update the file {}.".format(self.current_integration.get('name')))
                 self._is_valid = False
+
+        return self._is_valid
+
+    def is_changed_subtype(self):
+        """Validate that the subtype was not changed."""
+        type_ = self.current_integration.get('script', {}).get('type')
+        if type_ == 'python':
+            subtype = self.current_integration.get('script', {}).get('subtype')
             if self.old_integration:
                 old_subtype = self.old_integration.get('script', {}).get('subtype', "")
                 if len(old_subtype) > 0 and old_subtype != subtype:
                     print_error("Possible backwards compatibility break, You've changed the subtype"
                                 " of the file {}".format(self.file_path))
                     self._is_valid = False
+
         return self._is_valid
 
     def is_there_duplicate_args(self):

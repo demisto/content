@@ -205,10 +205,14 @@ class FilesValidator(object):
                 integration_validator = IntegrationValidator(file_path, old_file_path=old_file_path)
                 if is_backward_check and not integration_validator.is_backward_compatible():
                     self._is_valid = False
+                if not integration_validator.is_valid_integration():
+                    self._is_valid = False
 
             elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
                 script_validator = ScriptValidator(file_path, old_file_path=old_file_path)
                 if is_backward_check and not script_validator.is_backward_compatible():
+                    self._is_valid = False
+                if not script_validator.is_valid_script():
                     self._is_valid = False
 
             elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
