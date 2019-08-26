@@ -742,25 +742,25 @@ def get_domain_command():
 
     # 5.0 update - context indicators
     admin = {
-        'Country': whois.get('administrativeContactCountry', ''),
-        'Email': whois.get('administrativeContactEmail', ''),
-        'Name': whois.get('administrativeContactName', ''),
-        'Phone': whois.get('administrativeContactTelephone', '')
+        'Country': whois.get('administrativeContactCountry', ''),  # type: ignore
+        'Email': whois.get('administrativeContactEmail', ''),  # type: ignore
+        'Name': whois.get('administrativeContactName', ''),  # type: ignore
+        'Phone': whois.get('administrativeContactTelephone', '')  # type: ignore
     }
     registrant = {
-        'Country': whois.get('registrantCountry', ''),
-        'Email': whois.get('registrantEmail', ''),
-        'Name': whois.get('registrantName', ''),
-        'Phone': whois.get('registrantTelephone', ''),
+        'Country': whois.get('registrantCountry', ''),  # type: ignore
+        'Email': whois.get('registrantEmail', ''),  # type: ignore
+        'Name': whois.get('registrantName', ''),  # type: ignore
+        'Phone': whois.get('registrantTelephone', ''),  # type: ignore
     }
     first_queried = whois.get('created')  # type: ignore
     name_servers = whois.get('nameServers')  # type: ignore
     emails = whois.get('emails')  # type: ignore
-    registrar = {'Name': whois.get('registrarName', '')}
+    registrar = {'Name': whois.get('registrarName', '')}  # type: ignore
     creation_date = first_queried
-    domain_status = whois.get('status', [])[0] if whois.get('status') else None  # or [-1] ?
-    updated_date = whois.get('updated', '')
-    expiration_date = whois.get('expires', '')
+    domain_status = whois.get('status', [])[0] if whois.get('status') else None  # type: ignore
+    updated_date = whois.get('updated', '')  # type: ignore
+    expiration_date = whois.get('expires', '')  # type: ignore
 
     # wrong resigtrar field - should be registrarName
     whois = {
