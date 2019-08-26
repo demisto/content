@@ -68,11 +68,12 @@ class FilesValidator(object):
         return False
 
     @staticmethod
-    def get_modified_files(files_string):
+    def get_modified_files(files_string, tag='master'):
         """Get lists of the modified files in your branch according to the files string.
 
         Args:
             files_string (string): String that was calculated by git using `git diff` command.
+            tag (string): String of git tag used to update modified files
 
         Returns:
             (modified_files_list, added_files_list, deleted_files). Tuple of sets.
@@ -122,38 +123,40 @@ class FilesValidator(object):
             modified_files_list,
             added_files_list,
             deleted_files,
-            'master')
+            tag)
 
         return modified_files_list, added_files_list, deleted_files, old_format_files
 
-    def get_modified_and_added_files(self, branch_name, is_circle):
+    def get_modified_and_added_files(self, branch_name, is_circle, tag='master'):
         """Get lists of the modified and added files in your branch according to the git diff output.
 
         Args:
             branch_name (string): The name of the branch we are working on.
             is_circle (bool): Whether we are running on circle or local env.
+            tag (string): String of git tag used to update modified files
 
         Returns:
             (modified_files, added_files). Tuple of sets.
         """
-        all_changed_files_string = run_command("git diff --name-status origin/master...{}".format(branch_name))
+        all_changed_files_string = run_command(
+            "git diff --name-status origin/{tag}...{branch}".format(tag=tag, branch=branch_name))
         modified_files, added_files, _, old_format_files = self.get_modified_files(all_changed_files_string)
 
         if not is_circle:
             files_string = run_command("git diff --name-status --no-merges HEAD")
 
             non_committed_modified_files, non_committed_added_files, non_committed_deleted_files, \
-                non_committed_old_format_files = self.get_modified_files(files_string)
-            all_changed_files_string = run_command("git diff --name-status origin/master")
-            modified_files_from_master, added_files_from_master, _, _ = \
+            non_committed_old_format_files = self.get_modified_files(files_string)
+            all_changed_files_string = run_command("git diff --name-status origin/{}".format(tag))
+            modified_files_from_tag, added_files_from_tag, _, _ = \
                 self.get_modified_files(all_changed_files_string)
 
             old_format_files = old_format_files.union(non_committed_old_format_files)
-            for mod_file in modified_files_from_master:
+            for mod_file in modified_files_from_tag:
                 if mod_file in non_committed_modified_files:
                     modified_files.add(mod_file)
 
-            for add_file in added_files_from_master:
+            for add_file in added_files_from_tag:
                 if add_file in non_committed_added_files:
                     added_files.add(add_file)
 
@@ -169,6 +172,43 @@ class FilesValidator(object):
 
         return modified_files, added_files, old_format_files
 
+    @staticmethod
+    def get_previous_release_branch(release_branch_name):
+        """Get previous release branch
+
+        Args:
+            release_branch_name (string): Release branch to compare to
+
+        Returns:
+            (string). Release version prior to release_branch_name
+        """
+        try:
+            year, month, ver = release_branch_name.split('.')
+            if ver == '0':
+                month = int(month) - 1
+                if month < 1:
+                    month = 12
+                    year = int(year) - 1
+                prev_ver_prefix = 'origin/{year}.{month}.*'.format(year=year, month=month)
+                git_prev_versions = run_command("git branch -a --list {}".format(prev_ver_prefix)).decode('utf8').strip().split('\n')
+                git_prev_versions.sort()
+                # No branches were found
+                if not git_prev_versions:
+                    return ''
+                # Deal with branches of type 'year.month.ver*' whereas * is not empty
+                i = -1
+                prev_ver = git_prev_versions[i]
+                # TODO: Discuss this solution, and try to think of a better one
+                while len(git_prev_versions[i]) != len(git_prev_versions[0]):
+                    prev_ver = git_prev_versions[i]
+                    i -= 1
+                return prev_ver
+            ver = int(ver) - 1
+            return '{year}.{month}.{ver}'.format(year=year, month=month, ver=ver)
+        except ValueError:
+            # Wrong input
+            return ''
+
     def validate_modified_files(self, modified_files, is_backward_check=True):
         """Validate the modified files from your branch.
 
@@ -176,6 +216,7 @@ class FilesValidator(object):
 
         Args:
             modified_files (set): A set of the modified files in the current branch.
+            is_backward_check (bool): When set to True will run backward compatibility checks
         """
         for file_path in modified_files:
             old_file_path = None
@@ -361,10 +402,28 @@ class FilesValidator(object):
             # validates only committed files
             self.validate_committed_files(branch_name, is_backward_check=is_backward_check)
         else:
+            if branch_name != 'master':
+                self.validate_with_previous_version(branch_name)
             # validates all of Content repo directories according to their schemas
             self.validate_all_files()
 
         return self._is_valid
+
+    def validate_with_previous_version(self, release_branch_name):
+        """Validate all files from previous version
+
+        Args:
+            release_branch_name: current release branch name to validate with
+        """
+        prev_version_name = self.get_previous_release_branch(release_branch_name)
+        # Validate previous version only if found it
+        if prev_version_name:
+            modified_files, added_files, old_format_files = \
+                self.get_modified_and_added_files(release_branch_name, self.is_circle, prev_version_name)
+            # TODO: Ask whether I should limit the tests
+            self.validate_modified_files(modified_files, is_backward_check=True)
+        else:
+            pass #TODO: Add warning if couldn't find previous version?
 
 
 def main():
