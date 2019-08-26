@@ -218,9 +218,9 @@ def blob2dict(blob):
     }
 
 
-def download_blob(blob):
+def download_blob(blob, file_name=""):
     cur_directory_path = os.getcwd()
-    file_name = blob.name.split("/")[-1] or demisto.uniqueFile()
+    file_name = file_name or blob.name.replace("\\", "/").split("/")[-1] or demisto.uniqueFile()
     file_path = os.path.join(cur_directory_path, file_name)
 
     with open(file_path, "wb") as file:
@@ -258,13 +258,14 @@ def gcs_list_bucket_objects():
 def gcs_download_file():
     bucket_name = demisto.args()["bucket_name"]
     blob_name = demisto.args()["object_name"]
+    saved_file_name = demisto.args().get("saved_file_name", "")
 
     client = init_storage_client()
     bucket = client.get_bucket(bucket_name)
     blob = storage.Blob(blob_name, bucket)
-    file_name = download_blob(blob)
+    saved_file_name = download_blob(blob, saved_file_name)
 
-    demisto.results(file_result_existing_file(file_name))
+    demisto.results(file_result_existing_file(saved_file_name))
 
 
 def gcs_upload_file():

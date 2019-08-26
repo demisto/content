@@ -180,6 +180,14 @@ script:
       name: object_name
       required: true
       secret: false
+    - default: false
+      description: Name of the file to download the object into (if not specified,
+        the name will be derived from the object name, but note that this may fail
+        if the object contains invalid filename characters)
+      isArray: false
+      name: saved_file_name
+      required: false
+      secret: false
     deprecated: false
     description: Retrieves object data into a file
     execution: false
