@@ -322,7 +322,7 @@ def attributes_to_demisto_format(lst):
 
 
 def parse_date(text):
-    valid_formats = ['%Y/%d/%m %H:%M:%S', '%Y/%d/%m']
+    valid_formats = ['%Y-%m-%d %H:%M:%S', '%Y-%m-%d']
     for fmt in valid_formats:
         try:
             return str(datetime.datetime.strptime(text, fmt))
@@ -954,14 +954,15 @@ def get_ip_reputation():
 
     generic_context = {"Address": ip}
     raw_context = get_ioc_reputation(ip)
-    dbot_context = create_dbot_context(ip, 'ip', raw_context.get('TQScore'))
+    if not raw_context:
+        demisto.results("No results.")
+    else:
+        dbot_context = create_dbot_context(ip, 'ip', raw_context.get('TQScore'))
+        entry_context = set_ioc_entry_context('ip', raw_context, dbot_context, generic_context)
+        readable_title = "Search results for IP {0}".format(ip)
+        readable = build_readable(readable_title, "indicator", raw_context)
 
-    entry_context = set_ioc_entry_context('ip', raw_context, dbot_context, generic_context)
-
-    readable_title = "Search results for IP {0}".format(ip)
-    readable = build_readable(readable_title, "indicator", raw_context)
-
-    return_outputs(readable, entry_context, raw_context)
+        return_outputs(readable, entry_context, raw_context)
 
 
 def get_url_reputation():
@@ -973,14 +974,15 @@ def get_url_reputation():
 
     generic_context = {"Data": url}
     raw_context = get_ioc_reputation(url)
-    dbot_context = create_dbot_context(url, 'url', raw_context.get('TQScore'))
+    if not raw_context:
+        demisto.results("No results.")
+    else:
+        dbot_context = create_dbot_context(url, 'url', raw_context.get('TQScore'))
+        entry_context = set_ioc_entry_context('url', raw_context, dbot_context, generic_context)
+        readable_title = "Search results for URL {0}".format(url)
+        readable = build_readable(readable_title, "indicator", raw_context)
 
-    entry_context = set_ioc_entry_context('url', raw_context, dbot_context, generic_context)
-
-    readable_title = "Search results for URL {0}".format(url)
-    readable = build_readable(readable_title, "indicator", raw_context)
-
-    return_outputs(readable, entry_context, raw_context)
+        return_outputs(readable, entry_context, raw_context)
 
 
 def get_email_reputation():
@@ -992,14 +994,15 @@ def get_email_reputation():
 
     generic_context = {"Address": email}
     raw_context = get_ioc_reputation(email)
-    dbot_context = create_dbot_context(email, 'email', raw_context.get('TQScore'))
+    if not raw_context:
+        demisto.results("No results.")
+    else:
+        dbot_context = create_dbot_context(email, 'email', raw_context.get('TQScore'))
+        entry_context = set_ioc_entry_context('email', raw_context, dbot_context, generic_context)
+        readable_title = "Search results for email {0}".format(email)
+        readable = build_readable(readable_title, "indicator", raw_context)
 
-    entry_context = set_ioc_entry_context('email', raw_context, dbot_context, generic_context)
-
-    readable_title = "Search results for email {0}".format(email)
-    readable = build_readable(readable_title, "indicator", raw_context)
-
-    return_outputs(readable, entry_context, raw_context)
+        return_outputs(readable, entry_context, raw_context)
 
 
 def get_domain_reputation():
@@ -1011,14 +1014,15 @@ def get_domain_reputation():
 
     generic_context = {"Name": domain}
     raw_context = get_ioc_reputation(domain)
-    dbot_context = create_dbot_context(domain, 'domain', raw_context.get('TQScore'))
+    if not raw_context:
+        demisto.results("No results.")
+    else:
+        dbot_context = create_dbot_context(domain, 'domain', raw_context.get('TQScore'))
+        entry_context = set_ioc_entry_context('domain', raw_context, dbot_context, generic_context)
+        readable_title = "Search results for domain {0}".format(domain)
+        readable = build_readable(readable_title, "indicator", raw_context)
 
-    entry_context = set_ioc_entry_context('domain', raw_context, dbot_context, generic_context)
-
-    readable_title = "Search results for domain {0}".format(domain)
-    readable = build_readable(readable_title, "indicator", raw_context)
-
-    return_outputs(readable, entry_context, raw_context)
+        return_outputs(readable, entry_context, raw_context)
 
 
 def get_file_reputation():
@@ -1037,14 +1041,15 @@ def get_file_reputation():
         "SHA256": file if fmt == 'sha256' else None
     }, removeNull=True)
     raw_context = get_ioc_reputation(file)
-    dbot_context = create_dbot_context(file, 'file', raw_context.get('TQScore'))
+    if not raw_context:
+        demisto.results("No results.")
+    else:
+        dbot_context = create_dbot_context(file, 'file', raw_context.get('TQScore'))
+        entry_context = set_ioc_entry_context('file', raw_context, dbot_context, generic_context)
+        readable_title = "Search results for file {0}".format(file)
+        readable = build_readable(readable_title, "indicator", raw_context)
 
-    entry_context = set_ioc_entry_context('file', raw_context, dbot_context, generic_context)
-
-    readable_title = "Search results for file {0}".format(file)
-    readable = build_readable(readable_title, "indicator", raw_context)
-
-    return_outputs(readable, entry_context, raw_context)
+        return_outputs(readable, entry_context, raw_context)
 
 
 ''' EXECUTION CODE '''
