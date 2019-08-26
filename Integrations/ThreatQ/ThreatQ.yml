@@ -1263,9 +1263,9 @@ script:
     name: threatq-add-source
   - arguments:
     - default: false
-      description: Source name
+      description: Source ID
       isArray: false
-      name: source
+      name: source_id
       required: true
       secret: false
     - default: false
