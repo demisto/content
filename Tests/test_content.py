@@ -412,85 +412,6 @@ def organize_tests(tests, unmockable_integrations, skipped_integrations_conf, ni
     return mock_tests, mockless_tests
 
 
-def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
-                      skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests, is_filter_configured,
-                      filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
-                      unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server, build_name,
-                      server_numeric_version, is_ami=True):
-    playbook_id = t['playbookID']
-    nightly_test = t.get('nightly', False)
-    integrations_conf = t.get('integrations', [])
-    instance_names_conf = t.get('instance_names', [])
-
-    test_message = 'playbook: ' + playbook_id
-
-    test_options = {
-        'timeout': t.get('timeout', default_test_timeout)
-    }
-
-    if not isinstance(integrations_conf, list):
-        integrations_conf = [integrations_conf, ]
-
-    if not isinstance(instance_names_conf, list):
-        instance_names_conf = [instance_names_conf, ]
-
-    has_skipped_integration, integrations, is_nightly_integration = collect_integrations(
-        integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations)
-
-    skip_nightly_test = True if (nightly_test or is_nightly_integration) and not is_nightly else False
-
-    # Skip nightly test
-    if skip_nightly_test:
-        print('\n------ Test {} start ------'.format(test_message))
-        print('Skip test')
-        print('------ Test {} end ------\n'.format(test_message))
-
-        return
-
-    if not run_all_tests:
-        # Skip filtered test
-        if is_filter_configured and playbook_id not in filtered_tests:
-            return
-
-    # Skip bad test
-    if playbook_id in skipped_tests_conf:
-        skipped_tests.add("{0} - reason: {1}".format(playbook_id, skipped_tests_conf[playbook_id]))
-        return
-
-    # Skip integration
-    if has_skipped_integration:
-        return
-
-    # Skip version mismatch test
-    test_from_version = t.get('fromversion', '0.0.0')
-    test_to_version = t.get('toversion', '99.99.99')
-    if (server_version_compare(test_from_version, server_numeric_version) > 0
-            or server_version_compare(test_to_version, server_numeric_version) < 0):
-        print('\n------ Test {} start ------'.format(test_message))
-        print_warning('Test {} ignored due to version mismatch (test versions: {}-{})'.format(test_message,
-                                                                                              test_from_version,
-                                                                                              test_to_version))
-        print('------ Test {} end ------\n'.format(test_message))
-        return
-
-    are_params_set = set_integration_params(demisto_api_key, integrations,
-                                            secret_params, instance_names_conf, playbook_id)
-    if not are_params_set:
-        failed_playbooks.append(playbook_id)
-        return
-
-    test_message = update_test_msg(integrations, test_message)
-    options = options_handler()
-    stdout, stderr = get_docker_memory_data()
-    text = 'Memory Usage: {}'.format(stdout) if not stderr else stderr
-    if options.nightly:
-        send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
-
-    run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id,
-             succeed_playbooks, test_message, test_options, slack, circle_ci,
-             build_number, server, build_name, is_ami)
-
-
 def restart_demisto_service(ami, c):
     ami.check_call(['sudo', 'service', 'demisto', 'restart'])
     exit_code = 1
@@ -605,13 +526,6 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
 
     if is_ami and mock_tests:
         proxy.configure_proxy_in_demisto(proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
-        # for t in mock_tests:
-        #     run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
-        #                       skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
-        #                       is_filter_configured,
-        #                       filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
-        #                       unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
-        #                       build_name, server_numeric_version)
         # if test_index % 10 == 0:
         # stdout, stderr = get_docker_processes_data()
         # text = stdout if not stderr else stderr
@@ -626,13 +540,6 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
         restart_demisto_service(ami, c)
         print("Demisto service restarted\n")
 
-    # for t in mockless_tests:
-    # run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
-    #                   skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
-    #                   is_filter_configured,
-    #                   filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
-    #                   unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
-    #                   build_name, server_numeric_version, is_ami)
     # if test_index % 10 == 0:
     # stdout, stderr = get_docker_processes_data()
     # text = stdout if not stderr else stderr
