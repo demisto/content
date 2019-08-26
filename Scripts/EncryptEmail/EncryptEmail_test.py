@@ -11,9 +11,3 @@ def test_encrypt_body(mocker):
     main()
 
     demisto.results.call_args[0][0]
-
-
-
-
-
-
