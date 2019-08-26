@@ -487,9 +487,6 @@ def test_module():
 
 
 def create_ioc_command(ioc_type, status, value, source_lst=None, attr_names_lst=None, attr_values_lst=None):
-    if ioc_type not in STATUS_ID_TO_STATUS.values():
-        return_error("Invalid indicator type.")
-
     params = {
         "type": ioc_type,
         "status": status,
