@@ -1683,6 +1683,60 @@ script:
     - contextPath: SentMail.threadId
       description: The ID of the thread the message belongs to
       type: String
+  - arguments:
+    - default: false
+      description: The user's email address. The special value me can be used to indicate
+        the authenticated user.
+      isArray: false
+      name: user-id
+      required: true
+      secret: false
+    - default: false
+      description: Recipient email address
+      isArray: false
+      name: emailto
+      required: true
+      secret: false
+    - default: false
+      defaultValue: me
+      description: Email address of the sender. Generally the account setup in the
+        integration. (Default value is me)
+      isArray: false
+      name: emailfrom
+      required: false
+      secret: false
+    - default: false
+      description: Body of the email
+      isArray: false
+      name: body
+      required: false
+      secret: false
+    - default: false
+      description: Subject of the email
+      isArray: false
+      name: subject
+      required: true
+      secret: false
+    - default: false
+      description: Entry ID of the Attachment to be sent in the mail
+      isArray: false
+      name: entryid
+      required: false
+      secret: false
+    deprecated: false
+    description: Send mail using Gmail
+    execution: false
+    name: send-mail
+    outputs:
+    - contextPath: SentMail.MessageId
+      description: The immutable ID of the message.
+      type: String
+    - contextPath: SentMail.labelIds
+      description: List of IDs of labels applied to this message.
+      type: String
+    - contextPath: SentMail.threadId
+      description: The ID of the thread the message belongs to
+      type: String
   dockerimage: demisto/google-api:1.0
   isfetch: true
   runonce: false

@@ -163,62 +163,7 @@ def parse_mail_parts(parts):
     return body, html, attachments
 
 
-def days_of_the_week(day):
-    if day == 1:
-        return 'Mon'
-    elif day == 2:
-        return 'Tue'
-    elif day == 3:
-        return 'Wed'
-    elif day == 4:
-        return 'Thu'
-    elif day == 5:
-        return 'Fri'
-    elif day == 6:
-        return 'Sat'
-    elif day == 7:
-        return 'Sun'
-
-
-def month_abbr(mon_num):
-    if mon_num == 1:
-        return 'Jan'
-    elif mon_num == 2:
-        return 'Feb'
-    elif mon_num == 3:
-        return 'Mar'
-    elif mon_num == 4:
-        return 'Apr'
-    elif mon_num == 5:
-        return 'May'
-    elif mon_num == 6:
-        return 'Jun'
-    elif mon_num == 7:
-        return 'Jul'
-    elif mon_num == 8:
-        return 'Aug'
-    elif mon_num == 9:
-        return 'Sep'
-    elif mon_num == 10:
-        return 'Oct'
-    elif mon_num == 11:
-        return 'Nov'
-    elif mon_num == 12:
-        return 'Dec'
-
-
-def time_reformat(timestamp_date):
-    timestamp_date = timestamp_date.split(' ')
-    exact_time = timestamp_date[1]
-    date = timestamp_date[0]
-    date = date.split('-')
-    year = date[0]
-    mon = month_abbr(int(date[1]))
-    day = date[2]
-    return day + " " + mon + " " + year + " " + exact_time
-
-
-def utc_extract(time_from_mail):
+def utc_extract(time_from_mail, time_from_stamp):
     utc = time_from_mail[-5:]
     if utc[0] != '-' and utc[0] != '+':
         return '-0000', 0
@@ -227,6 +172,16 @@ def utc_extract(time_from_mail):
             return '-0000', 0
     delta_in_seconds = int(utc[0] + utc[1:3]) * 3600 + int(utc[0] + utc[3:]) * 60
     return utc, delta_in_seconds
+
+
+def create_base_time(internal_date_timestamp, header_date):
+    if len(str(internal_date_timestamp)) > 10:
+        internal_date_timestamp = int(str(internal_date_timestamp)[:10])
+    utc, delta_in_seconds = utc_extract(header_date, datetime.fromtimestamp(internal_date_timestamp))
+    base_time = datetime.fromtimestamp(internal_date_timestamp) + timedelta(
+        seconds=delta_in_seconds)
+    base_time = str(base_time.strftime('%a, %d %b %Y %H:%M:%S')) + " " + utc
+    return base_time
 
 
 def get_email_context(email_data, mailbox):
@@ -239,13 +194,13 @@ def get_email_context(email_data, mailbox):
     parsed_body = base64.urlsafe_b64decode(body)
     context_email = {}  # type: Dict
     if email_data.get('internalDate') is not None:
-        utc, delta_in_seconds = utc_extract(str(headers.get('date', '')))
-        base_time = datetime.fromtimestamp((int(str(email_data.get('internalDate'))[:10]))) + timedelta(seconds=delta_in_seconds)
-        day = days_of_the_week(int(base_time.isoweekday()))  # gets day of week from date
-        base_time = day + ", " + time_reformat(str(base_time)) + " " + utc
-    # return_error(str(headers.get('date', ''))+" ### "+base_time)
+        base_time = create_base_time(email_data.get('internalDate'), str(headers.get('date', '')))
+
     else:
-        base_time = None
+        # in case no internalDate field exists will revert to extracting the date from the email payload itself
+        # Note: this should not happen in any command other than other than gmail-move-mail which doesn't return the
+        # email payload nor internalDate
+        base_time = headers.get('date', '')
 
     context_gmail = {
         'Type': 'Gmail',
@@ -268,12 +223,13 @@ def get_email_context(email_data, mailbox):
         # only for incident
         'Cc': headers.get('cc', []),
         'Bcc': headers.get('bcc', []),
-        'Date': unicode(base_time),
+        'Date': base_time,
         # 'Date': headers.get('date', ''),
         'Html': None,
     }
 
     context_email = {
+        'ID': email_data['id'],
         'Headers': context_headers,
         'Attachments': {'entryID': email_data.get('payload', {}).get('filename', '')},
         # only for format 'raw'
@@ -288,7 +244,7 @@ def get_email_context(email_data, mailbox):
 
         'CC': headers.get('cc', []),
         'BCC': headers.get('bcc', []),
-        'Date': unicode(base_time),
+        'Date': base_time,
         # 'Date': headers.get('date', ''),
         'Body/HTML': None,
     }
@@ -296,12 +252,18 @@ def get_email_context(email_data, mailbox):
     if 'text/html' in context_gmail['Format']:  # type: ignore
         context_gmail['Html'] = context_gmail['Body']
         context_gmail['Body'] = html_to_text(context_gmail['Body'])
+        context_email['Body/HTML'] = context_gmail['Html']
+        context_email['Body/Text'] = context_gmail['Body']
 
     if 'multipart' in context_gmail['Format']:  # type: ignore
         context_gmail['Body'], context_gmail['Html'], context_gmail['Attachments'] = parse_mail_parts(
             email_data.get('payload', {}).get('parts', []))
         context_gmail['Attachment Names'] = ', '.join(
             [attachment['Name'] for attachment in context_gmail['Attachments']])  # type: ignore
+        context_email['Body/Text'], context_email['Body/HTML'], context_email['Attachments'] = parse_mail_parts(
+            email_data.get('payload', {}).get('parts', []))
+        context_email['Attachment Names'] = ', '.join(
+            [attachment['Name'] for attachment in context_email['Attachments']])  # type: ignore
 
     return context_gmail, headers, context_email
 
@@ -342,11 +304,13 @@ def create_incident_labels(parsed_msg, headers):
 
 
 def emails_to_entry(title, raw_emails, format_data, mailbox):
+    gmail_emails = []
     emails = []
     context_email = {}  # type: Dict
     for email_data in raw_emails:
         context_gmail, _, context_email = get_email_context(email_data, mailbox)
-        emails.append(context_gmail)
+        gmail_emails.append(context_gmail)
+        emails.append(context_email)
 
     headers = {
         'minimal': ['Mailbox', 'ID', 'Labels', 'Attachment Names', ],
@@ -358,11 +322,11 @@ def emails_to_entry(title, raw_emails, format_data, mailbox):
     return {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
-        'Contents': emails,
+        'Contents': gmail_emails,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, emails, headers[format_data]),
-        'EntryContext': {'Gmail(val.ID && val.ID == obj.ID)': emails,
-                         'Email(val.Date == obj.Date && val.Subject == obj.Subject)': context_email}
+        'HumanReadable': tableToMarkdown(title, gmail_emails, headers[format_data]),
+        'EntryContext': {'Gmail(val.ID && val.ID == obj.ID)': gmail_emails,
+                         'Email(val.ID && val.ID == obj.ID)': emails}
     }
 
 
@@ -407,6 +371,20 @@ def mail_to_incident(msg, service, user_key):
     return second_delta, incident
 
 
+def organization_format(org_list):
+    if org_list is None or len(org_list) ==0:
+        return None
+    org_str = ''
+    for org in org_list:
+        if org.get('name') is None:
+            continue
+
+        else:
+            org_str = org_list + str(org.get('name')) + ','
+
+    return org_str[:-1]
+
+
 def users_to_entry(title, response):
     context = []
     for user_data in response:
@@ -425,61 +403,17 @@ def users_to_entry(title, response):
             'Domain': user_data.get('primaryEmail').split('@')[1],
             'Username': (user_data.get('name').get('givenName')
                          if user_data.get('name') and 'givenName' in user_data.get('name') else None),
-            'OrganizationUnit': (user_data.get('organizations')[0].get('name')
-                                 if (user_data.get('organizations') and len(user_data.get('organizations')) > 0
-                                     and 'name' in user_data.get('organizations')[0]) else None)
+            'OrganizationUnit': organization_format(user_data.get('organizations')),
+            'VisibleInDirectory': user_data.get('includeInGlobalAddressList'),
 
         })
     headers = ['Type', 'ID', 'UserName',
                'DisplayName', 'Email', 'Group', 'CustomerId', 'Email',
-               'Groups', 'Domain', 'Username', 'OrganizationUnit']
+               'Groups', 'Domain', 'Username', 'OrganizationUnit', 'VisibleInDirectory']
 
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': context,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, context, headers),
-        'EntryContext': {'Account(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': context}
-    }
-
-
-def hide_users_to_entry(title, response):
-    context = []
-    for user_data in response:
-        context.append({
-            'Type': 'Google',
-            'ID': user_data.get('id'),
-            'UserName': (user_data.get('name').get('givenName')
-                         if user_data.get('name') and 'givenName' in user_data.get('name') else None),
-            'DisplayName': (user_data.get('name').get('fullName')
-                            if user_data.get('name') and 'fullName' in user_data.get('name') else None),
-            'Email': {'Address': user_data.get('primaryEmail')},
-            'Gmail': {'Address': user_data.get('primaryEmail')},
-            'Group': user_data.get('kind'),
-            'CustomerId': user_data.get('customerId'),
-            'VisibleInDirectory': user_data.get('includeInGlobalAddressList'),
-            'Groups': user_data.get('kind'),
-            'Domain': user_data.get('primaryEmail').split('@')[1],
-            'Username': (user_data.get('name').get('givenName')
-                         if user_data.get('name') and 'givenName' in user_data.get('name') else None),
-            'OrganizationUnit': (user_data.get('organizations')[0].get('name')
-                                 if (user_data.get('organizations') and len(user_data.get('organizations')) > 0
-                                     and 'name' in user_data.get('organizations')[0]) else None)
-
-        })
-    headers = ['Type', 'ID', 'UserName',
-               'DisplayName', 'Email', 'Group', 'CustomerId', 'Visible In Directory', 'CustomerId',
-               'Groups', 'Domain', 'Username', 'OrganizationUnit']
-
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': context,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, context, headers),
-        'EntryContext': {'Account(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': context}
-    }
+    return_outputs(tableToMarkdown(title, context, headers),
+                   {'Account(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': context},
+                   response)
 
 
 def autoreply_to_entry(title, response):
@@ -708,7 +642,7 @@ def set_user_password(user_key, password):
     service = discovery.build('admin', 'directory_v1', credentials=credentials)
     service.users().update(**command_args).execute()
 
-    return 'User %s password has been set.' % (command_args['userKey'],)
+    return 'User {} password has been set.'.format(command_args['userKey'])
 
 
 def get_autoreply_command():
@@ -717,7 +651,7 @@ def get_autoreply_command():
 
     autoreply_message = get_autoreply(user_id)
 
-    return autoreply_to_entry('User %s:' % user_id, [autoreply_message])
+    return autoreply_to_entry('User {}:'.format(user_id), [autoreply_message])
 
 
 def get_autoreply(user_id):
@@ -745,7 +679,7 @@ def set_autoreply_command():
 
     autoreply_message = set_autoreply(user_id, enable_autoreply, response_subject, response_body_plain_text)
 
-    return autoreply_to_entry('User %s:' % user_id, [autoreply_message])
+    return autoreply_to_entry('User {}:'.format(user_id), [autoreply_message])
 
 
 def set_autoreply(user_id, enable_autoreply, response_subject, response_body_plain_text):
@@ -1461,8 +1395,9 @@ def fetch_incidents():
         # in order to prevent missing incidents we implement the same correction in the internal date
         internal_date = datetime.strptime(
             incident['occurred'], '%Y-%m-%dT%H:%M:%SZ') + timedelta(seconds=2 * delta_seconds)
-
         # update last run
+        LOG("look here!!!§§§§§§ internal date: "+str(internal_date)+" ### last fetch: "+str(last_fetch))
+        LOG.print_log()
         if internal_date > last_fetch:
             last_fetch = internal_date + timedelta(seconds=1)
 
@@ -1506,6 +1441,7 @@ def main():
         'gmail-set-autoreply': set_autoreply_command,
         'gmail-delegate-user-mailbox': delegate_user_mailbox_command,
         'gmail-send-mail': send_mail_command,
+        'send-mail': send_mail_command
     }
     command = demisto.command()
     LOG('GMAIL: command is %s' % (command, ))
