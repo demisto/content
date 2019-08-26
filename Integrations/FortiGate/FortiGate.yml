@@ -441,8 +441,8 @@ script:
     arguments:
     - name: ip_address
       required: true
-      description: CSV list of IP addresses to ban, comma separated. IPv4 and IPv6 addresses
-        are allowed. For example, "1.1.1.1,6.7.8.9".
+      description: CSV list of IP addresses to ban. IPv4 and IPv6 addresses
+        are supported. For example, "1.1.1.1,6.7.8.9".
       isArray: true
     - name: expiry
       description: Time until ban expires in seconds. 0 for indefinite ban.
@@ -451,8 +451,8 @@ script:
     arguments:
     - name: ip_address
       required: true
-      description: CSV list of banned user IP addresses to clear, comma separated. IPv4 and IPv6
-        addresses are allowed. For example, "1.1.1.1,6.7.8.9".
+      description: CSV list of banned user IP addresses to clear. IPv4 and IPv6
+        addresses are supported. For example, "1.1.1.1,6.7.8.9".
       isArray: true
     description: Clears a list of specific banned IP addresses.
   - name: fortigate-get-banned-ips
@@ -462,10 +462,10 @@ script:
       description: The IP address.
       type: string
     - contextPath: Fortigate.BannedIP.Created
-      description: Date/time the IP was added to the banned list.
+      description: Date/time the IP address was added to the banned list.
       type: string
     - contextPath: Fortigate.BannedIP.Expires
-      description: Date/time the IP expires from the banned list.
+      description: Date/time the IP address expires from the banned list.
       type: string
     - contextPath: Fortigate.BannedIP.Source
       description: Source of the ban.
