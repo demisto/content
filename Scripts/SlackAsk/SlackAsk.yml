@@ -1,6 +1,7 @@
 args:
 - default: false
-  description: The Slack user to which to send the message. Cab be either an email address or a Slack user name.
+  description: The Slack user to which to send the message. Can be either an email
+    address or a Slack user name.
   isArray: false
   name: user
   required: false
@@ -18,7 +19,7 @@ args:
   required: true
   secret: false
 - default: false
-  description: First teply option. Default is "yes".
+  description: First reply option. Default is "yes".
   isArray: false
   name: option1
   required: false
@@ -30,8 +31,8 @@ args:
   required: false
   secret: false
 - default: false
-  description: The task to close with the reply. If empty, then no playbook
-    tasks will be closed.
+  description: The task to close with the reply. If empty, then no playbook tasks
+    will be closed.
   isArray: false
   name: task
   required: false
@@ -53,8 +54,9 @@ args:
   - 'false'
   required: false
   secret: false
-comment: Sends a message (question) to either user (in a direct message) or to a channel. The message includes predefined reply options. The response can also
-  close a task (might be conditional) in a playbook.
+comment: Sends a message (question) to either user (in a direct message) or to a channel.
+  The message includes predefined reply options. The response can also close a task
+  (might be conditional) in a playbook.
 commonfields:
   id: SlackAsk
   version: -1
@@ -67,10 +69,10 @@ tags:
 timeout: '0'
 type: python
 runonce: false
+tests:
+- no test - Untestable
 dependson:
   must:
   - send-notification
 subtype: python3
-tests:
-  - no test - Untestable
 fromversion: 5.0.0
