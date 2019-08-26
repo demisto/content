@@ -1058,7 +1058,7 @@ script:
     name: tenable-sc-get-all-scan-results
     outputs:
     - contextPath: TenableSC.ScanResults.ID
-      description: Scan result ID
+      description: Scan ID
       type: Number
     - contextPath: TenableSC.ScanResults.Name
       description: Scan name
@@ -1073,16 +1073,16 @@ script:
       description: Scan policy
       type: string
     - contextPath: TenableSC.ScanResults.Group
-      description: Scan owner group name
+      description: Scan group name
       type: string
     - contextPath: TenableSC.ScanResults.Checks
-      description: Scan completed checks
+      description: Scan completed number of checks
       type: number
     - contextPath: TenableSC.ScanResults.StartTime
-      description: Scan start time
+      description: Scan results start time
       type: date
     - contextPath: TenableSC.ScanResults.EndTime
-      description: Scan end time
+      description: Scan results end time
       type: date
     - contextPath: TenableSC.ScanResults.Duration
       description: Scan duration in minutes
@@ -1091,10 +1091,10 @@ script:
       description: Scan import time
       type: date
     - contextPath: TenableSC.ScanResults.ScannedIPs
-      description: Scan number of scanned IPs
+      description: Number of scanned IPs
       type: number
     - contextPath: TenableSC.ScanResults.Owner
-      description: Scan owner user name
+      description: Scan owner name
       type: string
     - contextPath: TenableSC.ScanResults.RepositoryName
       description: Scan repository name
