@@ -941,6 +941,16 @@ script:
     description: Update an Indicator status in ThreatQ
     execution: false
     name: threatq-update-status
+    outputs:
+    - contextPath: ThreatQ.ID
+      description: Indicator ID
+      type: Number
+    - contextPath: ThreatQ.Type
+      description: Object type - indicator
+      type: String
+    - contextPath: ThreatQ.Status
+      description: Indicator status
+      type: String
   - arguments:
     - default: false
       description: Object's ID
@@ -1162,117 +1172,6 @@ script:
     - contextPath: ThreatQ.EventType
       description: Event's type
       type: string
-    - contextPath: IP.Address
-      description: An IP address
-      type: string
-    - contextPath: URL.Data
-      description: A URL data
-      type: string
-    - contextPath: File.Name
-      description: A file name
-      type: string
-    - contextPath: File.MD5
-      description: A file MD5
-      type: string
-    - contextPath: File.Path
-      description: A file path
-      type: string
-    - contextPath: File.SHA1
-      description: A file SHA1
-      type: string
-    - contextPath: File.SHA256
-      description: A file SHA256
-      type: string
-    - contextPath: File.SHA512
-      description: A file SHA512
-      type: string
-    - contextPath: Email.From
-      description: An email address
-      type: string
-    - contextPath: Email.Subject
-      description: An email subject
-      type: string
-    - contextPath: Email.Attachments
-      description: An email attachment
-      type: string
-    - contextPath: Domain.Name
-      description: A domain name
-      type: string
-    - contextPath: Account.Username
-      description: An account username
-      type: string
-    - contextPath: CVE.ID
-      description: A CVE ID
-      type: string
-    - contextPath: Service.Name
-      description: A service name
-      type: string
-    - contextPath: RegistryKey.Path
-      description: A registry key path
-      type: string
-    - contextPath: Event.Type
-      description: An event type, e.g Spearphish
-      type: string
-    - contextPath: Event.ID
-      description: An event ID
-      type: number
-    - contextPath: Event.Name
-      description: An event title
-      type: string
-    - contextPath: IP.Malicious.Vendor
-      description: IP vendor
-      type: string
-    - contextPath: IP.Malicious.Description
-      description: IP Malicious description
-      type: string
-    - contextPath: URL.Malicious.Vendor
-      description: URL vendor
-      type: string
-    - contextPath: URL.Malicious.Description
-      description: URL Malicious description
-      type: string
-    - contextPath: File.Malicious.Vendor
-      description: File vendor
-      type: string
-    - contextPath: File.Malicious.Description
-      description: File Malicious description
-      type: string
-    - contextPath: Email.Malicious.Vendor
-      description: Email vendor
-      type: string
-    - contextPath: Email.Malicious.Description
-      description: Email Malicious description
-      type: string
-    - contextPath: Domain.Malicious.Vendor
-      description: Domain vendor
-      type: string
-    - contextPath: Domain.Malicious.Description
-      description: Domain Malicious description
-      type: string
-    - contextPath: Account.Malicious.Vendor
-      description: Account vendor
-      type: string
-    - contextPath: Account.Malicious.Description
-      description: Account Malicious description
-      type: string
-    - contextPath: RegistryKey.Malicious.Vendor
-      description: Registry key vendor
-      type: string
-    - contextPath: RegistryKey.Malicious.Description
-      description: Registry key Malicious description
-      type: string
-    - contextPath: CVE.Malicious.Vendor
-      description: CVE vendor
-      type: string
-    - contextPath: CVE.Malicious.Description
-      description: CVE Malicious description
-      type: string
-    - contextPath: Service.Malicious.Vendor
-      description: Service vendor
-      type: string
-    - contextPath: Service.Malicious.Description
-      description: Service Malicious description
-      type: string
   - arguments:
     - default: false
       description: First object's ID
@@ -1418,6 +1317,247 @@ script:
     description: Delete an attribute from an object in ThreatQ
     execution: false
     name: threatq-delete-attr
+  - arguments:
+    - default: false
+      description: Adversary ID
+      isArray: false
+      name: adversary_id
+      required: true
+      secret: false
+    - default: false
+      description: New adversary name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Update an adversary name in ThreatQ
+    execution: false
+    name: threatq-edit-adversary
+    outputs:
+    - contextPath: ThreatQ.ID
+      description: Adversary ID
+      type: Number
+    - contextPath: ThreatQ.Type
+      description: Object type (adversary)
+      type: String
+    - contextPath: ThreatQ.Name
+      description: Adversary name
+      type: String
+    - contextPath: ThreatQ.UpdatedAt
+      description: Adversary's last update date
+      type: Date
+  - arguments:
+    - default: false
+      description: Indicator ID
+      isArray: false
+      name: ioc_id
+      required: true
+      secret: false
+    - default: false
+      description: New indicator value
+      isArray: false
+      name: value
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: New indicator type
+      isArray: false
+      name: ioc_type
+      predefined:
+      - Binary String
+      - CIDR Block
+      - CVE
+      - Email Address
+      - Email Attachment
+      - Email Subject
+      - File Mapping
+      - File Path
+      - Filename
+      - FQDN
+      - Fuzzy Hash
+      - GOST Hash
+      - Hash ION
+      - IP Address
+      - IPv6 Address
+      - MD5
+      - Mutex
+      - Password
+      - Registry Key
+      - Service Name
+      - SHA-1
+      - SHA-256
+      - SHA-384
+      - SHA-512
+      - String
+      - x509 Serial
+      - x509 Subject
+      - URL
+      - URL Path
+      - User-agent
+      - Username
+      - X-Mailer
+      required: false
+      secret: false
+    - default: false
+      description: Indicator description
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Update an indicator in ThreatQ.
+    execution: false
+    name: threatq-edit-ioc
+    outputs:
+    - contextPath: ThreatQ.ID
+      description: Indicator ID
+      type: Number
+    - contextPath: ThreatQ.Type
+      description: Object type - indicator
+      type: String
+    - contextPath: ThreatQ.IndicatorType
+      description: Indicator type
+      type: String
+    - contextPath: ThreatQ.Value
+      description: Indicator value
+      type: String
+    - contextPath: ThreatQ.UpdatedAt
+      description: Indicator's last update date
+      type: Date
+    - contextPath: ThreatQ.Description
+      description: Indicator description
+      type: String
+  - arguments:
+    - default: false
+      description: Event ID
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    - default: false
+      description: New event title
+      isArray: false
+      name: title
+      required: false
+      secret: false
+    - default: false
+      description: 'Date of Occurrence. Valid formats: YYYY/dd/mm HH:MM:SS, YY/dd/mm'
+      isArray: false
+      name: date
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Event type
+      isArray: false
+      name: event_type
+      predefined:
+      - Spearphish
+      - Watering Hole
+      - SQL Injection Attack
+      - DoS Attack
+      - Malware
+      - Watchlist
+      - Command and Control
+      - Anonymization
+      - Exfiltration
+      - Host Characteristics
+      - Compromised PKI Certificate
+      - Login Compromise
+      - Incident
+      required: false
+      secret: false
+    - default: false
+      description: Event description
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Update an event in ThreatQ
+    execution: false
+    name: threatq-edit-event
+    outputs:
+    - contextPath: ThreatQ.ID
+      description: Event ID
+      type: Number
+    - contextPath: ThreatQ.Type
+      description: Object type - event
+      type: String
+    - contextPath: ThreatQ.Title
+      description: Event title
+      type: String
+    - contextPath: ThreatQ.Occurred
+      description: Event occurrence date
+      type: Date
+    - contextPath: ThreatQ.UpdatedAt
+      description: Event last update date
+      type: Date
+    - contextPath: ThreatQ.EventType
+      description: Event type
+      type: String
+    - contextPath: ThreatQ.Description
+      description: Event description
+      type: String
+  - arguments:
+    - default: false
+      description: Indicator's ID
+      isArray: false
+      name: ioc_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Manual score
+      isArray: false
+      name: score
+      predefined:
+      - Generated Score
+      - '0'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+      - '8'
+      - '9'
+      - '10'
+      required: true
+      secret: false
+    deprecated: false
+    description: Modify an indicator's score in ThreatQ. Notice that final TQ Score
+      would be the maximum between manual and generated scores.
+    execution: false
+    name: threatq-update-score
+    outputs:
+    - contextPath: ThreatQ.ID
+      description: Indicator's ID
+      type: Number
+    - contextPath: ThreatQ.Type
+      description: Object type - indicator
+      type: String
+    - contextPath: ThreatQ.TQScore
+      description: Indicator TQ Score
+      type: Number
+    - contextPath: ThreatQ.UpdatedAt
+      description: Indicator's last update date
+      type: Date
+    - contextPath: DBotScore.Indicator
+      description: Indicator value
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Indicator vendor
+      type: String
+    - contextPath: DBotScore.Score
+      description: Indicator DBot score
+      type: Number
+    - contextPath: DBotScore.Type
+      description: Indicator type
+      type: String
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false
   runonce: false
