@@ -605,7 +605,7 @@ def prettify_address(address: Dict) -> Dict:
 
 
 @logger
-def panorama_get_address(address_name: Dict) -> Dict:
+def panorama_get_address(address_name: str) -> Dict:
     params = {
         'action': 'show',
         'type': 'config',
