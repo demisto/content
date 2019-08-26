@@ -1,5 +1,3 @@
-''' IMPORTS '''
-
 
 def test_timestamp_to_date():
     from Gmail import create_base_time
