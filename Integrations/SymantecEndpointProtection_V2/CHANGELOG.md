@@ -1,4 +1,4 @@
-## [19.8.1] - 2019-08-20
+## [Unreleased]
  - New command `!sep-identify-old-clients` which identifies endpoints with a running
   version that is inconsistant with the target version or the desired version (as optional argument).
  - New argument added to `!sep-endpoints-info`. Now it's possible to specify a group to search.
