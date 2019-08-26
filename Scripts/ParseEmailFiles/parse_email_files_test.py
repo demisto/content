@@ -398,9 +398,10 @@ def test_eml_contains_base64_encoded_eml(mocker, email_file):
 
 
 # check that we parse an email with "data" type and eml extension
-def test_eml_data_type(mocker):
+@pytest.mark.parametrize('file_info', ['data', 'data\n'])
+def test_eml_data_type(mocker, file_info):
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('smtp_email_type.eml', info='data'))
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('smtp_email_type.eml', info=file_info))
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
@@ -413,7 +414,6 @@ def test_eml_data_type(mocker):
     assert results[0]['EntryContext']['Email']['Subject'] == 'Test Smtp Email'
 
 
-# check that we parse an email with "data" type and eml extension
 def test_smime(mocker):
     multipart_sigened = 'multipart/signed; protocol="application/pkcs7-signature";, ASCII text, with CRLF line terminators'
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
