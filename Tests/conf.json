@@ -1823,11 +1823,12 @@
         "FireEye ETP": "No instance",
         "ProofpointTAP_v2": "No instance",
         "remedy_sr_beta": "No instance",
+        "Minerva Labs Anti-Evasion Platform": "No instance (Issue 18835)",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
         "SumoLogic": "No credentials (Issue 18441)",
-        "Lastline": "Temporally moved to skipped inorder to not fail nightly",
+        "Lastline": "Temporally moved to skipped in order to not fail nightly",
         "vmray": "VMRay license expired (Issue 18752)",
         "Anomali ThreatStream v2": "Credentials are invalid (issue 18561)",
         "Anomali ThreatStream": "Credentials are invalid (issue 18561)",
@@ -1859,8 +1860,7 @@
         "ANYRUN": "No instance",
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "No instance",
-        "Minerva Labs Anti-Evasion Platform": "No instance",
-        "Phish.AI": "Unauthorized. will be re-branded soon as Cofense",
+        "Phish.AI": "Unauthorized. will be re-branded soon as Cofense (Issue 17291)",
         "QRadar": "No license (issue 17794)",
 
       "_comment": "~~~ UNSTABLE ~~~",
