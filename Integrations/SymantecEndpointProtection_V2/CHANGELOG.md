@@ -1,8 +1,8 @@
 ## [Unreleased]
- - New command `!sep-identify-old-clients` which identifies endpoints with a running
-  version that is inconsistant with the target version or the desired version (as optional argument).
- - New argument added to `!sep-endpoints-info`. Now it's possible to specify a group to search.
- - New context outputs for `!sep-endpoints-info`:
+ - Added the ***sep-identify-old-clients***, which identifies endpoints with a running
+  version that is not consistent with the target version or the desired version.
+ - Added the *grouName* argument to the **sep-endpoints-info***, which enables you to specify a group for the search.
+ - Added the following outputs to the ***sep-endpoints-info*** command:
     * Group
     * RunningVersion
     * TargetVersion
