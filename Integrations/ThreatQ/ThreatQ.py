@@ -718,11 +718,9 @@ def get_related_objs_command(related_type):
     if isinstance(obj_id, str) and not obj_id.isdigit():
         return_error("Invalid argument for object ID.")
 
-    url_suffix = "/{0}/{1}/{2}?with=attributes".format(OBJ_DIRECTORY[obj_type], obj_id, OBJ_DIRECTORY[related_type])
+    url_suffix = "/{0}/{1}/{2}?with=sources".format(OBJ_DIRECTORY[obj_type], obj_id, OBJ_DIRECTORY[related_type])
     if related_type == "indicator":
-        url_suffix += "score"  # only indicators have tq score
-    else:
-        url_suffix += ",sources"  # TODO: verify that indicators don't have an option to see sources in the api
+        url_suffix += ",score"  # only indicators have tq score
     res = tq_request("GET", url_suffix)
 
     info = [data_to_demisto_format(obj, related_type) for obj in res["data"]]
