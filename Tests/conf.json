@@ -1759,6 +1759,7 @@
         }
     ],
     "skipped_tests": {
+        "EclecticIQ Test": "fails on eclecticiq-get-observable-related-entity command (Issue 18819)",
         "TestParseEmailHeaders": "Fails on conditional task (Issue 18815)",
         "VxStream Test": "crowdstrike-detonate-file fails with Bad request code (Issue 18791)",
         "Extract Indicators From File - Generic v2 - Test": "issue with extract indicators. (probably regex) (Issue 18795)",
@@ -1818,7 +1819,6 @@
         "VMware": "no License, and probably not going to get it",
         "AWS Sagemaker": "License expired, and probably not going to get it",
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
-        "EclecticIQ Platform": "Instance Issues",
         "Google Cloud Compute": "Can't test yet",
         "Cymon": "The service was discontinued since April 30th, 2019.",
         "FireEye ETP": "No instance",
