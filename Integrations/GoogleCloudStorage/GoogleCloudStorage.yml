@@ -22,16 +22,16 @@ script:
     execution: false
     name: gcs-list-buckets
     outputs:
-    - contextPath: GCP.Bucket.Name
+    - contextPath: GCS.Bucket.Name
       description: Bucket name (which is also its ID)
       type: String
-    - contextPath: GCP.Bucket.TimeCreated
+    - contextPath: GCS.Bucket.TimeCreated
       description: Bucket creation time
       type: Date
-    - contextPath: GCP.Bucket.TimeUpdated
+    - contextPath: GCS.Bucket.TimeUpdated
       description: Last bucket modification time
       type: Date
-    - contextPath: GCP.Bucket.OwnerID
+    - contextPath: GCS.Bucket.OwnerID
       description: Bucket owner ID
       type: String
   - arguments:
@@ -46,16 +46,16 @@ script:
     execution: false
     name: gcs-get-bucket
     outputs:
-    - contextPath: GCP.Bucket.Name
+    - contextPath: GCS.Bucket.Name
       description: Bucket name (which is also its ID)
       type: String
-    - contextPath: GCP.Bucket.TimeCreated
+    - contextPath: GCS.Bucket.TimeCreated
       description: Bucket creation time
       type: Date
-    - contextPath: GCP.Bucket.TimeUpdated
+    - contextPath: GCS.Bucket.TimeUpdated
       description: Last bucket modification time
       type: Date
-    - contextPath: GCP.Bucket.OwnerID
+    - contextPath: GCS.Bucket.OwnerID
       description: Bucket owner ID
       type: String
   - arguments:
@@ -130,41 +130,41 @@ script:
     execution: false
     name: gcs-list-bucket-objects
     outputs:
-    - contextPath: GCP.BucketObject.Name
+    - contextPath: GCS.BucketObject.Name
       description: Object name
       type: String
-    - contextPath: GCP.BucketObject.Bucket
+    - contextPath: GCS.BucketObject.Bucket
       description: Name of the bucket containing this object
       type: String
-    - contextPath: GCP.BucketObject.ContentType
+    - contextPath: GCS.BucketObject.ContentType
       description: Content-Type of the object data
       type: String
-    - contextPath: GCP.BucketObject.TimeCreated
+    - contextPath: GCS.BucketObject.TimeCreated
       description: Object creation time
       type: Date
-    - contextPath: GCP.BucketObject.TimeUpdated
+    - contextPath: GCS.BucketObject.TimeUpdated
       description: Last object modification time
       type: Date
-    - contextPath: GCP.BucketObject.TimeDeleted
+    - contextPath: GCS.BucketObject.TimeDeleted
       description: Object deletion time (available if the object is archived)
       type: Date
-    - contextPath: GCP.BucketObject.Size
+    - contextPath: GCS.BucketObject.Size
       description: Object size in bytes
       type: Number
-    - contextPath: GCP.BucketObject.MD5
+    - contextPath: GCS.BucketObject.MD5
       description: MD5 hash of the data, in Base64
       type: String
-    - contextPath: GCP.BucketObject.OwnerID
+    - contextPath: GCS.BucketObject.OwnerID
       description: Object owner ID
       type: String
-    - contextPath: GCP.BucketObject.CRC32c
+    - contextPath: GCS.BucketObject.CRC32c
       description: CRC32c checksum (as described in RFC 4960, Appendix B), encoded
         using Base64 in big-endian byte order
       type: String
-    - contextPath: GCP.BucketObject.EncryptionAlgorithm
+    - contextPath: GCS.BucketObject.EncryptionAlgorithm
       description: Encryption algorithm
       type: String
-    - contextPath: GCP.BucketObject.EncryptionKeySHA256
+    - contextPath: GCS.BucketObject.EncryptionKeySHA256
       description: SHA256 hash value of the encryption key
       type: String
   - arguments:
@@ -233,19 +233,19 @@ script:
     execution: false
     name: gcs-list-bucket-policy
     outputs:
-    - contextPath: GCP.BucketPolicy.Bucket
+    - contextPath: GCS.BucketPolicy.Bucket
       description: Name of the bucket holding this ACL policy
       type: String
-    - contextPath: GCP.BucketPolicy.Entity
+    - contextPath: GCS.BucketPolicy.Entity
       description: The entity holding the permission
       type: String
-    - contextPath: GCP.BucketPolicy.Email
+    - contextPath: GCS.BucketPolicy.Email
       description: Email address associated with the entity (if any)
       type: String
-    - contextPath: GCP.BucketPolicy.Role
+    - contextPath: GCS.BucketPolicy.Role
       description: The access permission for the entity
       type: String
-    - contextPath: GCP.BucketPolicy.Team
+    - contextPath: GCS.BucketPolicy.Team
       description: Project team associated with the entity (if any)
       type: String
   - arguments:
@@ -364,22 +364,22 @@ script:
     execution: false
     name: gcs-list-bucket-object-policy
     outputs:
-    - contextPath: GCP.BucketObjectPolicy.Bucket
+    - contextPath: GCS.BucketObjectPolicy.Bucket
       description: Name of the bucket in which the object resides
       type: String
-    - contextPath: GCP.BucketObjectPolicy.Object
+    - contextPath: GCS.BucketObjectPolicy.Object
       description: Name of the object holding this ACL policy
       type: String
-    - contextPath: GCP.BucketObjectPolicy.Entity
+    - contextPath: GCS.BucketObjectPolicy.Entity
       description: The entity holding the permission
       type: String
-    - contextPath: GCP.BucketObjectPolicy.Email
+    - contextPath: GCS.BucketObjectPolicy.Email
       description: Email address associated with the entity (if any)
       type: String
-    - contextPath: GCP.BucketObjectPolicy.Role
+    - contextPath: GCS.BucketObjectPolicy.Role
       description: The access permission for the entity
       type: String
-    - contextPath: GCP.BucketObjectPolicy.Team
+    - contextPath: GCS.BucketObjectPolicy.Team
       description: Project team associated with the entity (if any)
       type: String
   - arguments:
