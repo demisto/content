@@ -1759,7 +1759,6 @@
         }
     ],
     "skipped_tests": {
-        "EclecticIQ Test": "fails on eclecticiq-get-observable-related-entity command (Issue 18819)",
         "TestParseEmailHeaders": "Fails on conditional task (Issue 18815)",
         "VxStream Test": "crowdstrike-detonate-file fails with Bad request code (Issue 18791)",
         "Extract Indicators From File - Generic v2 - Test": "issue with extract indicators. (probably regex) (Issue 18795)",
@@ -1870,6 +1869,7 @@
         "Tenable.io": "Unstable instance (issue 16115)",
 
       "_comment": "~~~ OTHER ~~~",
+        "EclecticIQ Platform": "Old API is deprecated (Issue 8821)",
         "Pwned": "Old API is deprecated",
         "SumoLogic": "Shelly working on fixing it",
         "iDefense": "DevOps investigation",
