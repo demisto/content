@@ -526,13 +526,13 @@ script:
     - default: false
       description: Add attributes
       isArray: true
-      name: attr_lst
+      name: attr_names_lst
       required: false
       secret: false
     - default: false
       description: Attributes values
       isArray: true
-      name: attr_vals
+      name: attr_values_lst
       required: false
       secret: false
     deprecated: false
@@ -705,13 +705,13 @@ script:
     - default: false
       description: Add attributes
       isArray: true
-      name: attr_lst
+      name: attr_names_lst
       required: false
       secret: false
     - default: false
       description: Attributes values
       isArray: true
-      name: attr_vals
+      name: attr_values_lst
       required: false
       secret: false
     deprecated: false
