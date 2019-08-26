@@ -6,8 +6,10 @@ import random
 import argparse
 import requests
 import subprocess
+from itertools import chain
 from time import sleep
 from datetime import datetime
+from multiprocessing.pool import ThreadPool
 
 import demisto
 from slackclient import SlackClient
@@ -583,35 +585,33 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                            'Content CircleCI', 'False')
     # first run the mock tests to avoid mockless side effects in container
     # test_index = 0
+
+    test_manager = TestManager(c=c, proxy=proxy, default_test_timeout=default_test_timeout,
+                               skipped_tests_conf=skipped_tests_conf,
+                               nightly_integrations=nightly_integrations,
+                               skipped_integrations_conf=skipped_integrations_conf,
+                               skipped_integration=skipped_integration, is_nightly=is_nightly,
+                               run_all_tests=run_all_tests,
+                               is_filter_configured=is_filter_configured,
+                               filtered_tests=filtered_tests, skipped_tests=skipped_tests,
+                               demisto_api_key=demisto_api_key, secret_params=secret_params,
+                               failed_playbooks=failed_playbooks,
+                               unmockable_integrations=unmockable_integrations,
+                               succeed_playbooks=succeed_playbooks, slack=slack, circle_ci=circle_ci,
+                               build_number=build_number,
+                               server=server,
+                               build_name=build_name, server_numeric_version=server_numeric_version,
+                               is_ami=is_ami)
+
     if is_ami and mock_tests:
         proxy.configure_proxy_in_demisto(proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
-        for t in mock_tests:
-            run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
-                              skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
-                              is_filter_configured,
-                              filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
-                              unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
-                              build_name, server_numeric_version)
-            # if test_index % 10 == 0:
-            # stdout, stderr = get_docker_processes_data()
-            # text = stdout if not stderr else stderr
-            # send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
-            # print(test_index)
-            # test_index += 1
-
-        print("\nRunning mock-disabled tests")
-        proxy.configure_proxy_in_demisto('')
-        print("Restarting demisto service")
-        restart_demisto_service(ami, c)
-        print("Demisto service restarted\n")
-
-    for t in mockless_tests:
-        run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
-                          skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
-                          is_filter_configured,
-                          filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
-                          unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
-                          build_name, server_numeric_version, is_ami)
+        # for t in mock_tests:
+        #     run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
+        #                       skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
+        #                       is_filter_configured,
+        #                       filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
+        #                       unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
+        #                       build_name, server_numeric_version)
         # if test_index % 10 == 0:
         # stdout, stderr = get_docker_processes_data()
         # text = stdout if not stderr else stderr
@@ -619,6 +619,28 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
         # print(test_index)
         # test_index += 1
 
+        test_manager.run_mock_tests(mock_tests)
+        print("\nRunning mock-disabled tests")
+        proxy.configure_proxy_in_demisto('')
+        print("Restarting demisto service")
+        restart_demisto_service(ami, c)
+        print("Demisto service restarted\n")
+
+    # for t in mockless_tests:
+    # run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
+    #                   skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
+    #                   is_filter_configured,
+    #                   filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
+    #                   unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
+    #                   build_name, server_numeric_version, is_ami)
+    # if test_index % 10 == 0:
+    # stdout, stderr = get_docker_processes_data()
+    # text = stdout if not stderr else stderr
+    # send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
+    # print(test_index)
+    # test_index += 1
+
+    test_manager.run_mockless_tests(mockless_tests)
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, unmockable_integrations,
                        proxy, is_ami)
 
@@ -634,6 +656,161 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
             is_build_failed_file.write('Build failed')
 
         sys.exit(1)
+
+
+class TestManager(object):
+    POOL_SIZE = 8
+
+    def __init__(self, **kwargs):
+        valid_attributes = ('c', 'proxy', 'default_test_timeout', 'skipped_tests_conf', 'nightly_integrations',
+                            'skipped_integrations_conf', 'skipped_integration', 'is_nightly', 'run_all_tests',
+                            'is_filter_configured',
+                            'filtered_tests', 'skipped_tests', 'demisto_api_key', 'secret_params', 'failed_playbooks',
+                            'unmockable_integrations', 'succeed_playbooks', 'slack', 'circle_ci', 'build_number',
+                            'server',
+                            'build_name',
+                            'server_numeric_version', 'is_ami')
+        for attr in valid_attributes:
+            if attr == 'is_ami':
+                setattr(self, attr, kwargs.get(attr, True))
+            else:
+                setattr(self, attr, kwargs.get(attr))
+
+        self._pool_size = self.POOL_SIZE
+
+    def run_test_scenario(self, test):
+        playbook_id = test['playbookID']
+        nightly_test = test.get('nightly', False)
+        integrations_conf = test.get('integrations', [])
+        instance_names_conf = test.get('instance_names', [])
+
+        test_message = 'playbook: ' + playbook_id
+
+        test_options = {
+            'timeout': test.get('timeout', self.default_test_timeout)
+        }
+
+        if not isinstance(integrations_conf, list):
+            integrations_conf = [integrations_conf, ]
+
+        if not isinstance(instance_names_conf, list):
+            instance_names_conf = [instance_names_conf, ]
+
+        has_skipped_integration, integrations, is_nightly_integration = collect_integrations(
+            integrations_conf, self.skipped_integration, self.skipped_integrations_conf, self.nightly_integrations)
+
+        skip_nightly_test = True if (nightly_test or is_nightly_integration) and not self.is_nightly else False
+
+        # Skip nightly test
+        if skip_nightly_test:
+            print('\n------ Test {} start ------'.format(test_message))
+            print('Skip test')
+            print('------ Test {} end ------\n'.format(test_message))
+
+            return
+
+        if not self.run_all_tests:
+            # Skip filtered test
+            if self.is_filter_configured and playbook_id not in self.filtered_tests:
+                return
+
+        # Skip bad test
+        if playbook_id in self.skipped_tests_conf:
+            self.skipped_tests.add("{0} - reason: {1}".format(playbook_id, self.skipped_tests_conf[playbook_id]))
+            return
+
+        # Skip integration
+        if has_skipped_integration:
+            return
+
+        # Skip version mismatch test
+        test_from_version = test.get('fromversion', '0.0.0')
+        test_to_version = test.get('toversion', '99.99.99')
+        if (server_version_compare(test_from_version, self.server_numeric_version) > 0
+                or server_version_compare(test_to_version, self.server_numeric_version) < 0):
+            print('\n------ Test {} start ------'.format(test_message))
+            print_warning('Test {} ignored due to version mismatch (test versions: {}-{})'.format(test_message,
+                                                                                                  test_from_version,
+                                                                                                  test_to_version))
+            print('------ Test {} end ------\n'.format(test_message))
+            return
+
+        are_params_set = set_integration_params(self.demisto_api_key, integrations,
+                                                self.secret_params, instance_names_conf, playbook_id)
+        if not are_params_set:
+            self.failed_playbooks.append(playbook_id)
+            return
+
+        test_message = update_test_msg(integrations, test_message)
+
+        run_test(self.c, self.proxy, self.failed_playbooks, integrations, self.unmockable_integrations,
+                 playbook_id,
+                 self.succeed_playbooks, test_message, test_options, self.slack, self.circle_ci,
+                 self.build_number, self.server, self.build_name, self.is_ami)
+
+    def run_serial_tests(self, test_list):
+        for test in test_list:
+            self.run_test_scenario(test)
+
+    def run_parallel_test(self, test_list):
+        if not test_list:
+            return
+        print('------ Starting running concurrent tests ------\n')
+        pool = ThreadPool(self._pool_size)
+        pool.map(self.run_test_scenario, test_list)
+        pool.close()
+        pool.join()
+
+    @staticmethod
+    def classify_tests(test_list):
+        tests_mapping = {}
+        parallel_tests = []
+        non_parallel_tests = []
+
+        for test in test_list:
+            test_integrations = test.get('integrations', [])
+
+            if not test_integrations:  # Test has no integration and can be added to parallel list of tests
+                parallel_tests.append(test)
+                continue
+
+            if isinstance(test_integrations, basestring):
+                test_integrations = [test_integrations]
+
+            for integration in test_integrations:
+                tests_mapping.setdefault(integration, []).append(test)
+
+        for integration, integration_tests_list in tests_mapping.items():
+            if len(integration_tests_list) == 1:
+                integration_test = integration_tests_list[0]
+                test_mapping_copy = tests_mapping.copy()
+                test_mapping_copy.pop(integration, '')
+                remaining_tests_list = list(chain.from_iterable(test_mapping_copy.values()))
+                number_of_occurrences = remaining_tests_list.count(integration_test)
+
+                if number_of_occurrences == 0:
+                    parallel_tests.append(integration_test)
+                elif number_of_occurrences == 1 and integration_test not in parallel_tests:
+                    for k, v in test_mapping_copy.items():
+                        if len(v) == 1 and integration_test in v:
+                            parallel_tests.append(integration_test)
+            else:
+                non_parallel_tests.extend(integration_tests_list)
+
+        if len(parallel_tests) == 1:
+            # If parallel_tests list contains only one test, run on parallel step will be skipped
+            non_parallel_tests.append(parallel_tests)
+            parallel_tests = []
+
+        return non_parallel_tests, parallel_tests
+
+    def run_mock_tests(self, test_list):
+        self.run_serial_tests(test_list)
+
+    def run_mockless_tests(self, test_list):
+        non_parallel_tests, parallel_tests = TestManager.classify_tests(test_list)
+        self.run_serial_tests(non_parallel_tests)
+        self.run_parallel_test(parallel_tests)
 
 
 def main():
