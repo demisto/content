@@ -27,7 +27,7 @@ tags:
 - email
 timeout: '0'
 type: python
-dockerimage: devdemisto/smime-encrypt:1.0.0.1721
+dockerimage: demisto/smime-encrypt:1.0.0.1722
 subtype: python3
 tests:
   - No tests - UNIT TESTS
