@@ -737,40 +737,38 @@ def get_domain_command():
 
     # Fetch data
     # whois data
-    whois = []  # type: ignore
     whois = get_whois_for_domain(domain)
 
-    # 5.0 update - context indicators
     admin = {
-        'Country': whois.get('administrativeContactCountry', ''),  # type: ignore
-        'Email': whois.get('administrativeContactEmail', ''),  # type: ignore
-        'Name': whois.get('administrativeContactName', ''),  # type: ignore
-        'Phone': whois.get('administrativeContactTelephone', '')  # type: ignore
+        'Country': whois.get('administrativeContactCountry'),
+        'Email': whois.get('administrativeContactEmail'),
+        'Name': whois.get('administrativeContactName'),
+        'Phone': whois.get('administrativeContactTelephone')
     }
     registrant = {
-        'Country': whois.get('registrantCountry', ''),  # type: ignore
-        'Email': whois.get('registrantEmail', ''),  # type: ignore
-        'Name': whois.get('registrantName', ''),  # type: ignore
-        'Phone': whois.get('registrantTelephone', ''),  # type: ignore
+        'Country': whois.get('registrantCountry'),
+        'Email': whois.get('registrantEmail'),
+        'Name': whois.get('registrantName'),
+        'Phone': whois.get('registrantTelephone'),
     }
-    first_queried = whois.get('created')  # type: ignore
-    name_servers = whois.get('nameServers')  # type: ignore
-    emails = whois.get('emails')  # type: ignore
-    registrar = {'Name': whois.get('registrarName', '')}  # type: ignore
+    first_queried = whois.get('created')
+    name_servers = whois.get('nameServers')
+    emails = whois.get('emails')
+    registrar = {'Name': whois.get('registrarName')}
     creation_date = first_queried
-    domain_status = whois.get('status', [])  # type: ignore
-    updated_date = whois.get('updated', '')  # type: ignore
-    expiration_date = whois.get('expires', '')  # type: ignore
+    domain_status = whois.get('status')
+    updated_date = whois.get('updated')
+    expiration_date = whois.get('expires')
 
     whois = {
-        'Name': whois['domainName'],  # type: ignore
-        'Registrar Name': whois['registrarName'],  # type: ignore
-        'Last Retrieved': timestamp_to_date(whois['timeOfLatestRealtimeCheck']),  # type: ignore
-        'Created': whois['created'],  # type: ignore
-        'Updated': whois['updated'],  # type: ignore
-        'Expires': whois['expires'],  # type: ignore
-        'IANAID': whois['registrarIANAID'],  # type: ignore
-        'Last Observed': whois['auditUpdatedDate']  # type: ignore
+        'Name': whois.get('domainName'),
+        'Registrar Name': whois.get('registrarName'),
+        'Last Retrieved': timestamp_to_date(whois.get('timeOfLatestRealtimeCheck')),
+        'Created': whois.get('created'),
+        'Updated': whois.get('updated'),
+        'Expires': whois.get('expires'),
+        'IANAID': whois.get('registrarIANAID'),
+        'Last Observed': whois.get('auditUpdatedDate')
     }
 
     # domain categorization data
@@ -1389,34 +1387,34 @@ def get_whois_for_domain_command():
         nameservers = res.get('nameServers')
         emails = res.get('emails')
         whois = {
-            'Name': res['domainName'],
-            'RegistrarName': res['registrarName'],
+            'Name': res.get('domainName'),
+            'RegistrarName': res.get('registrarName'),
             'LastRetrieved': res.get('timeOfLatestRealtimeCheck'),
-            'Created': res['created'],
-            'Updated': res['updated'],
-            'Expires': res['expires'],
-            'IANAID': res['registrarIANAID'],
-            'LastObserved': res['auditUpdatedDate'],
+            'Created': res.get('created'),
+            'Updated': res.get('updated'),
+            'Expires': res.get('expires'),
+            'IANAID': res.get('registrarIANAID'),
+            'LastObserved': res.get('auditUpdatedDate',)
         }
 
         # 5.0 update - context indicators
         admin = {
-            'Country': res.get('administrativeContactCountry', ''),
-            'Email': res.get('administrativeContactEmail', ''),
-            'Name': res.get('administrativeContactName', ''),
-            'Phone': res.get('administrativeContactTelephone', '')
+            'Country': res.get('administrativeContactCountry',),
+            'Email': res.get('administrativeContactEmail',),
+            'Name': res.get('administrativeContactName'),
+            'Phone': res.get('administrativeContactTelephone')
         }
         registrant = {
-            'Country': res.get('registrantCountry', ''),
-            'Email': res.get('registrantEmail', ''),
-            'Name': res.get('registrantName', ''),
-            'Phone': res.get('registrantTelephone', ''),
+            'Country': res.get('registrantCountry'),
+            'Email': res.get('registrantEmail'),
+            'Name': res.get('registrantName'),
+            'Phone': res.get('registrantTelephone'),
         }
-        creation_date = res.get('created')  # type: ignore
-        registrar = {'Name': res.get('registrarName', '')}
-        domain_status = res.get('status', [])[0] if res.get('status') else None  # or [-1] ?
-        updated_date = res.get('updated', '')
-        expiration_date = res.get('expires', '')
+        creation_date = res.get('created')
+        registrar = {'Name': res.get('registrarName')}
+        domain_status = res.get('status')
+        updated_date = res.get('updated')
+        expiration_date = res.get('expires')
 
         # context entry
         # Domain
