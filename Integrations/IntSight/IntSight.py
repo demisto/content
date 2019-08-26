@@ -760,8 +760,8 @@ def get_iocs():
                 'DBotScore': dbot_scores,
                 'Domain': domains,
                 'IP': ip_infos,
-                'URL': url_info,
-                'File': hash_info
+                'URL': url_infos,
+                'File': hash_infos
             },
             'Contents': r,
             'HumanReadable': tableToMarkdown('IOC Information', iocs_readable,
