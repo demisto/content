@@ -280,6 +280,31 @@ def test_mirror_investigation(mocker, requests_mock):
     assert len(results) == 1
     assert results[0] == 'Investigation mirror was updated successfully.'
 
+    # verify channel with custom channel name is mirrored successfully
+    mocker.patch.object(
+        demisto,
+        'investigation',
+        return_value={
+            'id': '14'
+        }
+    )
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'channel_name': 'booya'
+        }
+    )
+
+    mirror_investigation()
+    assert requests_mock.request_history[3].json() == {
+        'displayName': 'booya',
+        'description': 'Channel to mirror incident 14'
+    }
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0] == 'Investigation mirrored successfully in channel booya.'
+
 
 def test_send_message(mocker, requests_mock):
     from MicrosoftTeams import send_message
