@@ -114,20 +114,6 @@ HEADERS = {
     "sources": ["ID", "Name"]
 }
 
-SEARCH_OBJECT = 0
-SEARCH_TWO_OBJS = 1
-SEARCH_PIVOT = 2
-SEARCH_ATTRIBUTE = 3
-UNLINK_OBJS = 4
-
-ERRORS_MAP = {
-    SEARCH_OBJECT: "Object was not found.",
-    SEARCH_TWO_OBJS: "One of the objects was not found.",
-    SEARCH_PIVOT: "Objects are not linked.",
-    SEARCH_ATTRIBUTE: "Attribute was not found.",
-    UNLINK_OBJS: "Could not unlink the objects."
-}
-
 OBJ_DIRECTORY = {
     "indicator": "indicators",
     "adversary": "adversaries",
@@ -136,6 +122,22 @@ OBJ_DIRECTORY = {
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def get_errors_string_from_response(res):  # todo: finish replacing this function
+    errors_str = "Error 400 - Could not complete the request."  # default error
+    errors = None
+    if "data" in res:
+        errors = res["data"]["errors"]
+    if "errors" in res:
+        errors = res["errors"]
+    if isinstance(errors, list):
+        errorslst = ["\n".join(lst) for lst in errors]
+        errors_str = "\n".join(errorslst)
+    elif isinstance(errors, dict):
+        errorslst = ["\n".join(lst) for lst in errors.values()]
+        errors_str = "\n".join(errorslst)
+    return errors_str
 
 
 def get_errors_string_from_bad_request(bad_request_results):
@@ -185,47 +187,20 @@ def get_access_token():
         return new_access_token
 
 
-def tq_request(method, url_suffix, params=None, func=None, files=None):
+def tq_request(method, url_suffix, params=None, files=None):
     access_token = get_access_token()
     api_call_headers = {'Authorization': 'Bearer ' + access_token}
 
-    res = requests.request(method, API_URL + url_suffix, data=json.dumps(params),
-                           headers=api_call_headers, verify=USE_SSL, files=files)
+    response = requests.request(method, API_URL + url_suffix, data=json.dumps(params),
+                                headers=api_call_headers, verify=USE_SSL, files=files)
 
-    check_errors_in_response(res, func)
+    if response.status_code >= 400:
+        errors_string = get_errors_string_from_bad_request(response)
+        error_message = "Received and error - status code [{0}].\n {1}".format(response.status_code, errors_string)
+        return_error(error_message)
 
-    if method != "DELETE":  # the DELETE request returns nothing
-        return json.loads(res.text)
-
-
-def check_errors_in_response(res, func=None):
-    if res.status_code == 400:
-        if func is not None:
-            return_error(ERRORS_MAP[func])
-        else:
-            return_error(get_errors_string_from_response(json.loads(res.text)))
-    elif res.status_code == 404:
-        if func is not None:
-            return_error(ERRORS_MAP[func])
-        return_error("Error 404 - Object not found.")
-    elif res.status_code == 500:
-        return_error("Error 500 - Could not complete the request.")
-
-
-def get_errors_string_from_response(res):
-    errors_str = "Error 400 - Could not complete the request."  # default error
-    errors = None
-    if "data" in res:
-        errors = res["data"]["errors"]
-    if "errors" in res:
-        errors = res["errors"]
-    if isinstance(errors, list):
-        errorslst = ["\n".join(lst) for lst in errors]
-        errors_str = "\n".join(errorslst)
-    elif isinstance(errors, dict):
-        errorslst = ["\n".join(lst) for lst in errors.values()]
-        errors_str = "\n".join(errorslst)
-    return errors_str
+    if method != "DELETE":  # the DELETE request returns nothing in response
+        return json.loads(response.text)
 
 
 def create_dbot_context(indicator, ind_type, ind_score):
@@ -428,7 +403,7 @@ def get_pivot_id(obj1_type, obj1_id, obj2_type, obj2_id):
     # A pivot id represents a connection between two objects.
 
     url_suffix = "/{0}/{1}/{2}".format(OBJ_DIRECTORY[obj1_type], obj1_id, OBJ_DIRECTORY[obj2_type])
-    res = tq_request("GET", url_suffix, func=SEARCH_PIVOT)
+    res = tq_request("GET", url_suffix)
 
     for related_object in res["data"]:  # res["data"] contains all the related objects of obj_id1
         if int(related_object["id"]) == int(obj2_id):
@@ -442,18 +417,10 @@ def add_malicious_data(generic_context):
     }
 
 
-def validate_ioc(value, *valid_format_types):
-    # If the value is valid, its format type is returned
-    for fmt in valid_format_types:
-        if REGEX_MAP[fmt].match(value):
-            return fmt
-    return_error("Argument {0} is not valid.".format(value))
-
-
 def get_ioc_reputation(keyword):
     # First, search for the IOC ID by keyword:
     url_suffix = "/search?query={0}&limit=1".format(keyword)
-    res = tq_request("GET", url_suffix, SEARCH_OBJECT)
+    res = tq_request("GET", url_suffix)
 
     if not res["data"]:
         return {}
@@ -582,13 +549,13 @@ def delete_object_command(obj_type, obj_id):
         return_error("Invalid argument for object ID.")
 
     url_suffix = "/{0}/{1}".format(OBJ_DIRECTORY[obj_type], obj_id)
-    tq_request("DELETE", url_suffix, SEARCH_OBJECT)
+    tq_request("DELETE", url_suffix)
     demisto.results("Successfully deleted {0} with id {1}.".format(obj_type, obj_id))
 
 
 def search_by_name_command(keyword, limit):
     url_suffix = "/search?query={0}&limit={1}".format(keyword, limit)
-    res = tq_request("GET", url_suffix, SEARCH_OBJECT)
+    res = tq_request("GET", url_suffix)
 
     raw = [{"ID": e["id"], "Type": e["object"], "Value": e["value"]} for e in res["data"]]
     entry_context = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': raw} if raw else None
@@ -597,20 +564,20 @@ def search_by_name_command(keyword, limit):
     return_outputs(human_readable, entry_context, raw)
 
 
-def get_raw_data_by_id(obj_type, obj_id, func=None):
+def get_raw_data_by_id(obj_type, obj_id):
     url_suffix = "/{0}/{1}?with=attributes,sources".format(OBJ_DIRECTORY[obj_type], obj_id)
     if obj_type == "indicator":
         url_suffix += ",score,type"
 
-    res = tq_request("GET", url_suffix, func=func)
+    res = tq_request("GET", url_suffix)
     return data_to_demisto_format(res["data"], obj_type)
 
 
-def search_by_id_command(obj_type, obj_id, func=None):
+def search_by_id_command(obj_type, obj_id):
     if isinstance(obj_id, str) and not obj_id.isdigit():
         return_error("Invalid argument for object ID.")
 
-    raw = get_raw_data_by_id(obj_type, obj_id, func)
+    raw = get_raw_data_by_id(obj_type, obj_id)
 
     ec = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': createContext(raw, removeNull=True)}
 
@@ -680,7 +647,7 @@ def unlink_objects_command(obj1_id, obj1_type, obj2_id, obj2_type):
         demisto.results("Command failed - Objects are not related.")
     else:
         url_suffix = "/{0}/{1}/{2}".format(OBJ_DIRECTORY[obj1_type], obj1_id, OBJ_DIRECTORY[obj2_type])
-        tq_request("DELETE", url_suffix, params=[p_id], func=UNLINK_OBJS)
+        tq_request("DELETE", url_suffix, params=[p_id])
         demisto.results(
             "Successfully unlinked {0} with id {1} and {2} with id {3}.".format(obj1_type, obj1_id, obj2_type, obj2_id))
 
