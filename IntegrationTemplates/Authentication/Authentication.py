@@ -376,7 +376,7 @@ def reset_account_command(client: Client):
 def list_credentials(client: Client):
     raw_response: Dict = client.fetch_credentials()
     credentials: List[Dict] = raw_response.get('credentials', [])
-    if raw_response.get('credentials'):
+    if credentials:
         title: str = f'{INTEGRATION_NAME} - Credentials list.'
         context_entry = [{
             'Name': credential.get('name')
