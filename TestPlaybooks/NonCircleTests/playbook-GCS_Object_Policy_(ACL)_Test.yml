@@ -1,6 +1,6 @@
-id: 4bd1cc3d-aeb2-4d9e-8c8d-3ee5815c7b3d
+id: GCS Object Policy (ACL) - Test
 version: -1
-name: GCS Test - Object Policy (ACL)
+name: GCS Object Policy (ACL) - Test
 starttaskid: "0"
 tasks:
   "0":

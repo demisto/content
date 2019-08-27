@@ -1,21 +1,21 @@
-id: cf69fa8c-4973-44dd-806b-0281dd8c5ca8
+id: GCS Bucket Management - Test
 version: -1
-name: GCS Test - Object Operations
+name: GCS Bucket Management - Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 92ee8687-6e2e-4aa9-8dab-211b26217316
+    taskid: 906961b4-35e5-49aa-8d5c-21b273b4f3c1
     type: start
     task:
-      id: 92ee8687-6e2e-4aa9-8dab-211b26217316
+      id: 906961b4-35e5-49aa-8d5c-21b273b4f3c1
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "25"
+      - "21"
     separatecontext: false
     view: |-
       {
@@ -27,57 +27,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 28748e80-66b1-40c5-89f4-4e7f35f9fba7
+  "1":
+    id: "1"
+    taskid: b8d7c48f-efd3-466d-8c02-e9880d0b6f09
     type: regular
     task:
-      id: 28748e80-66b1-40c5-89f4-4e7f35f9fba7
+      id: b8d7c48f-efd3-466d-8c02-e9880d0b6f09
       version: -1
-      name: Create bucket demisto-test-2
-      description: Creates a new bucket
-      script: Google Cloud Storage|||gcs-create-bucket
+      name: List buckets
+      description: Retrieves the list of buckets in the project
+      script: Google Cloud Storage|||gcs-list-buckets
       type: regular
       iscommand: true
       brand: Google Cloud Storage
     nexttasks:
       '#none#':
-      - "6"
-    scriptarguments:
-      bucket_acl: {}
-      bucket_name:
-        simple: demisto-test-2
-      default_object_acl: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1215
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 0d57885f-667a-4bed-8463-0a4c4413065c
-    type: regular
-    task:
-      id: 0d57885f-667a-4bed-8463-0a4c4413065c
-      version: -1
-      name: List objects in bucket
-      description: Retrieves the list of objects in a bucket
-      script: Google Cloud Storage|||gcs-list-bucket-objects
-      type: regular
-      iscommand: true
-      brand: Google Cloud Storage
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      bucket_name:
-        simple: demisto-test-2
+      - "9"
     separatecontext: false
     view: |-
       {
@@ -89,126 +54,27 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 4e1e181a-aa8e-4452-844a-31439897720c
+  "2":
+    id: "2"
+    taskid: 21919174-f5e8-413a-8ad5-d1c062db2df0
     type: regular
     task:
-      id: 4e1e181a-aa8e-4452-844a-31439897720c
+      id: 21919174-f5e8-413a-8ad5-d1c062db2df0
       version: -1
-      name: Upload test.txt (create object)
-      description: Uploads a file (object) into a bucket
-      script: Google Cloud Storage|||gcs-upload-file
+      name: Create bucket demisto-test-1
+      description: Creates a new bucket
+      script: Google Cloud Storage|||gcs-create-bucket
       type: regular
       iscommand: true
       brand: Google Cloud Storage
     nexttasks:
       '#none#':
-      - "8"
+      - "3"
     scriptarguments:
+      bucket_acl: {}
       bucket_name:
-        simple: demisto-test-2
-      entry_id:
-        simple: ${File.EntryID}
-      object_acl: {}
-      object_name:
-        simple: foo/bar/baz.txt
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1915
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 391843f1-24de-4e7f-8b09-aca8f2dea98e
-    type: regular
-    task:
-      id: 391843f1-24de-4e7f-8b09-aca8f2dea98e
-      version: -1
-      name: List objects in bucket
-      description: Retrieves the list of objects in a bucket
-      script: Google Cloud Storage|||gcs-list-bucket-objects
-      type: regular
-      iscommand: true
-      brand: Google Cloud Storage
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      bucket_name:
-        simple: demisto-test-2
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 2090
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "10":
-    id: "10"
-    taskid: 8cbb8f3f-0846-4ab0-86fa-e0020afb828e
-    type: regular
-    task:
-      id: 8cbb8f3f-0846-4ab0-86fa-e0020afb828e
-      version: -1
-      name: Delete bucket with force=True
-      description: Permanently deletes a bucket
-      script: Google Cloud Storage|||gcs-delete-bucket
-      type: regular
-      iscommand: true
-      brand: Google Cloud Storage
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      bucket_name:
-        simple: demisto-test-2
-      force:
-        simple: "True"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 3255
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "11":
-    id: "11"
-    taskid: ae6ec309-f90b-47c1-8e21-3d26638ff714
-    type: regular
-    task:
-      id: ae6ec309-f90b-47c1-8e21-3d26638ff714
-      version: -1
-      name: Create test.txt file
-      description: |
-        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
-      scriptName: FileCreateAndUpload
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      data:
-        simple: Think I'll take TWO chickens.
-      entryId: {}
-      filename:
-        simple: test.txt
+        simple: demisto-test-1
+      default_object_acl: {}
     separatecontext: false
     view: |-
       {
@@ -220,12 +86,127 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "12":
-    id: "12"
-    taskid: 6da829fd-4247-4789-809b-4f9ebf87cf8e
+  "3":
+    id: "3"
+    taskid: 72d6b062-e26a-41b0-88ae-43589ae633e0
+    type: regular
+    task:
+      id: 72d6b062-e26a-41b0-88ae-43589ae633e0
+      version: -1
+      name: List buckets
+      description: Retrieves the list of buckets in the project
+      script: Google Cloud Storage|||gcs-list-buckets
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 45e6dd94-9954-4fd2-8a3a-421b37548b89
+    type: regular
+    task:
+      id: 45e6dd94-9954-4fd2-8a3a-421b37548b89
+      version: -1
+      name: Get demisto-test-1 info
+      description: Retrieves bucket information
+      script: Google Cloud Storage|||gcs-get-bucket
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      bucket_name:
+        simple: demisto-test-1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 0e90c734-0272-4d12-848d-c7da710c1bb7
+    type: regular
+    task:
+      id: 0e90c734-0272-4d12-848d-c7da710c1bb7
+      version: -1
+      name: Delete bucket demisto-test-1
+      description: Permanently deletes a bucket
+      script: Google Cloud Storage|||gcs-delete-bucket
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      bucket_name:
+        simple: demisto-test-1
+      force: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: af01305b-9350-4055-8a4e-cad9058276d7
+    type: regular
+    task:
+      id: af01305b-9350-4055-8a4e-cad9058276d7
+      version: -1
+      name: List buckets
+      description: Retrieves the list of buckets in the project
+      script: Google Cloud Storage|||gcs-list-buckets
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: bb6eed53-747d-450c-8545-af0e95c0ea59
     type: title
     task:
-      id: 6da829fd-4247-4789-809b-4f9ebf87cf8e
+      id: bb6eed53-747d-450c-8545-af0e95c0ea59
       version: -1
       name: Done
       type: title
@@ -242,195 +223,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "13":
-    id: "13"
-    taskid: bc6c978a-1bc2-4bd8-8ffd-bebc1c7f8e57
-    type: regular
+  "9":
+    id: "9"
+    taskid: 9b37490e-8da5-4fed-8694-ec88683c6f06
+    type: condition
     task:
-      id: bc6c978a-1bc2-4bd8-8ffd-bebc1c7f8e57
+      id: 9b37490e-8da5-4fed-8694-ec88683c6f06
       version: -1
-      name: Clear context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      name: Verify that bucket demisto-test-1 does not exist
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "2"
-    scriptarguments:
-      all: {}
-      index: {}
-      key:
-        simple: GCS
-      keysToKeep: {}
-      subplaybook:
-        simple: "yes"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "14":
-    id: "14"
-    taskid: 2312fa3e-a7d8-4df5-80ba-bf54058be63f
-    type: condition
-    task:
-      id: 2312fa3e-a7d8-4df5-80ba-bf54058be63f
-      version: -1
-      name: Verify no objects in bucket
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "11"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotExists
-          left:
-            value:
-              complex:
-                root: GCS
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: GCS.BucketObject.Bucket
-                      iscontext: true
-                    right:
-                      value:
-                        simple: demisto-test-2
-                accessor: BucketObject.Name
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1565
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "15":
-    id: "15"
-    taskid: 7f6b6a7a-10c5-4b0b-87b5-7b7f063a028f
-    type: condition
-    task:
-      id: 7f6b6a7a-10c5-4b0b-87b5-7b7f063a028f
-      version: -1
-      name: Verify object created
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "27"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: GCS.BucketObject.Name
-            iscontext: true
-          right:
-            value:
-              simple: foo/bar/baz.txt
-      - - operator: isEqualString
-          left:
-            value:
-              simple: GCS.BucketObject.Bucket
-            iscontext: true
-          right:
-            value:
-              simple: demisto-test-2
-      - - operator: isEqualString
-          left:
-            value:
-              simple: GCS.BucketObject.Size
-            iscontext: true
-          right:
-            value:
-              simple: "29"
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 2265
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "16":
-    id: "16"
-    taskid: 78dd590a-b62c-4fd2-819b-ca4a4e3ca3c1
-    type: condition
-    task:
-      id: 78dd590a-b62c-4fd2-819b-ca4a4e3ca3c1
-      version: -1
-      name: Verify downloaded file name and size
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "28"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: File.Name
-            iscontext: true
-          right:
-            value:
-              simple: baz.txt
-      - - operator: isEqualString
-          left:
-            value:
-              simple: File.Size
-            iscontext: true
-          right:
-            value:
-              simple: "29"
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 2935
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "17":
-    id: "17"
-    taskid: 18a8a322-7e34-4b6a-8f6e-3016d0704e72
-    type: condition
-    task:
-      id: 18a8a322-7e34-4b6a-8f6e-3016d0704e72
-      version: -1
-      name: Verify bucket was force-deleted
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "12"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -448,25 +254,69 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: demisto-test-2
+                        simple: demisto-test-1
                 accessor: Bucket.Name
             iscontext: true
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 3780
+          "y": 1565
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "18":
-    id: "18"
-    taskid: 27dc165b-c32d-45d8-8d10-d8cb7043b6b2
+  "10":
+    id: "10"
+    taskid: ab52e6af-5746-4712-839a-48f0f2f2a7e3
+    type: condition
+    task:
+      id: ab52e6af-5746-4712-839a-48f0f2f2a7e3
+      version: -1
+      name: Verify bucket created
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GCS
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GCS.Bucket.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: demisto-test-1
+                accessor: Bucket.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 46a75895-1ffb-4cdc-8aae-6a8c99d0d39d
     type: regular
     task:
-      id: 27dc165b-c32d-45d8-8d10-d8cb7043b6b2
+      id: 46a75895-1ffb-4cdc-8aae-6a8c99d0d39d
       version: -1
       name: Clear context
       description: Delete field from context
@@ -476,7 +326,119 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "12"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: GCS
+      keysToKeep: {}
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: af119b3e-1eb5-4b5b-8f4d-5bc013430741
+    type: condition
+    task:
+      id: af119b3e-1eb5-4b5b-8f4d-5bc013430741
+      version: -1
+      name: Test sanity - verify context cleared
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: GCS.Bucket
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 34df3aff-3cc0-49ad-871b-137a0f0deaf8
+    type: condition
+    task:
+      id: 34df3aff-3cc0-49ad-871b-137a0f0deaf8
+      version: -1
+      name: Verify bucket retrieved
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GCS
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GCS.Bucket.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: demisto-test-1
+                accessor: Bucket.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 05b270f4-17a0-450a-8048-d92af10c235c
+    type: regular
+    task:
+      id: 05b270f4-17a0-450a-8048-d92af10c235c
+      version: -1
+      name: Clear context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
     scriptarguments:
       all: {}
       index: {}
@@ -496,74 +458,56 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "19":
-    id: "19"
-    taskid: 67139e39-83c5-4250-8284-3a99b3cbdbf4
-    type: regular
+  "16":
+    id: "16"
+    taskid: 91dfef47-cc5b-491a-8446-f72b94150972
+    type: condition
     task:
-      id: 67139e39-83c5-4250-8284-3a99b3cbdbf4
+      id: 91dfef47-cc5b-491a-8446-f72b94150972
       version: -1
-      name: gcs-list-buckets
-      description: Retrieves the list of buckets in the project
-      script: Google Cloud Storage|||gcs-list-buckets
-      type: regular
-      iscommand: true
-      brand: Google Cloud Storage
-    nexttasks:
-      '#none#':
-      - "17"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 3605
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "20":
-    id: "20"
-    taskid: 5372ba6d-fb13-44b0-8081-9ebc3d024cd6
-    type: regular
-    task:
-      id: 5372ba6d-fb13-44b0-8081-9ebc3d024cd6
-      version: -1
-      name: Clear context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      name: Verify that bucket demisto-test-1 does not exist
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "26"
-    scriptarguments:
-      all: {}
-      index: {}
-      key:
-        simple: GCS
-      keysToKeep: {}
-      subplaybook:
-        simple: "yes"
+      "yes":
+      - "7"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: GCS
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GCS.Bucket.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: demisto-test-1
+                accessor: Bucket.Name
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 2585
+          "y": 3780
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "21":
-    id: "21"
-    taskid: c26ae322-9c0f-40af-8a1b-f5f59865f5dc
+  "17":
+    id: "17"
+    taskid: 38384e1f-c4a7-4e1f-8a8e-a380a3b778aa
     type: regular
     task:
-      id: c26ae322-9c0f-40af-8a1b-f5f59865f5dc
+      id: 38384e1f-c4a7-4e1f-8a8e-a380a3b778aa
       version: -1
       name: List buckets
       description: Retrieves the list of buckets in the project
@@ -573,34 +517,34 @@ tasks:
       brand: Google Cloud Storage
     nexttasks:
       '#none#':
-      - "22"
+      - "18"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 370
+          "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "22":
-    id: "22"
-    taskid: 13c4349c-0c96-4376-8eba-6d870fe583bf
+  "18":
+    id: "18"
+    taskid: 7ae9ed51-83be-4562-8485-974b33130e91
     type: condition
     task:
-      id: 13c4349c-0c96-4376-8eba-6d870fe583bf
+      id: 7ae9ed51-83be-4562-8485-974b33130e91
       version: -1
-      name: Bucket demisto-test-2 exists?
+      name: Bucket demisto-test-1 exists?
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "24"
+      - "20"
       "yes":
-      - "23"
+      - "19"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -612,23 +556,23 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: demisto-test-2
+              simple: demisto-test-1
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 545
+          "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "23":
-    id: "23"
-    taskid: 11a12c52-1e6f-4dc9-88ac-85175995494a
+  "19":
+    id: "19"
+    taskid: c0be11c2-208f-4cc4-824a-57796018faac
     type: regular
     task:
-      id: 11a12c52-1e6f-4dc9-88ac-85175995494a
+      id: c0be11c2-208f-4cc4-824a-57796018faac
       version: -1
       name: Delete bucket
       description: Permanently deletes a bucket
@@ -638,10 +582,10 @@ tasks:
       brand: Google Cloud Storage
     nexttasks:
       '#none#':
-      - "24"
+      - "20"
     scriptarguments:
       bucket_name:
-        simple: demisto-test-2
+        simple: demisto-test-1
       force:
         simple: "True"
     separatecontext: false
@@ -649,43 +593,43 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "24":
-    id: "24"
-    taskid: 3bf20a6d-dfea-41a9-856e-bd78b17c9abc
-    type: title
-    task:
-      id: 3bf20a6d-dfea-41a9-856e-bd78b17c9abc
-      version: -1
-      name: 'Test: List Objects + Upload File'
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
           "y": 895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "25":
-    id: "25"
-    taskid: a4df8703-1422-4abf-8bb3-cf2e3e9d2cd5
+  "20":
+    id: "20"
+    taskid: 59eb7e31-9722-46fb-8467-84413244a93c
+    type: title
+    task:
+      id: 59eb7e31-9722-46fb-8467-84413244a93c
+      version: -1
+      name: 'Test: List Buckets + Create Bucket'
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: d568fef9-48f9-4077-8237-6b4e1c6bf520
     type: regular
     task:
-      id: a4df8703-1422-4abf-8bb3-cf2e3e9d2cd5
+      id: d568fef9-48f9-4077-8237-6b4e1c6bf520
       version: -1
       name: Clear context
       description: Delete field from context
@@ -695,10 +639,9 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "21"
+      - "22"
     scriptarguments:
-      all:
-        simple: "yes"
+      all: {}
       index: {}
       key:
         simple: GCS
@@ -716,77 +659,113 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "26":
-    id: "26"
-    taskid: d52fb8d1-35e0-460a-8d48-17bfcc20ab9e
+  "22":
+    id: "22"
+    taskid: 801c2cc1-f9f9-4208-8af1-37835157a48a
+    type: condition
+    task:
+      id: 801c2cc1-f9f9-4208-8af1-37835157a48a
+      version: -1
+      name: Test sanity - verify context cleared
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: GCS.Bucket
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 86994847-525f-42a3-80c7-8804ed3734fd
     type: regular
     task:
-      id: d52fb8d1-35e0-460a-8d48-17bfcc20ab9e
+      id: 86994847-525f-42a3-80c7-8804ed3734fd
       version: -1
-      name: Download the object
-      description: Retrieves object data into a file
-      script: Google Cloud Storage|||gcs-download-file
+      name: Clear context
+      description: Delete field from context
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: Google Cloud Storage
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "1"
     scriptarguments:
-      bucket_name:
-        simple: demisto-test-2
-      object_name:
-        simple: foo/bar/baz.txt
+      all: {}
+      index: {}
+      key:
+        simple: GCS
+      keysToKeep: {}
+      subplaybook:
+        simple: "yes"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 2760
+          "y": 1215
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "27":
-    id: "27"
-    taskid: c6cf7d0d-e273-4138-84f9-f4ed0c97674f
+  "24":
+    id: "24"
+    taskid: a2679185-6e04-46ab-8544-8e0e5aef1be5
     type: title
     task:
-      id: c6cf7d0d-e273-4138-84f9-f4ed0c97674f
+      id: a2679185-6e04-46ab-8544-8e0e5aef1be5
       version: -1
-      name: 'Test: Download File'
+      name: 'Test: Get Bucket'
       type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+      - "11"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 2440
+          "y": 2265
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "28":
-    id: "28"
-    taskid: c285141e-45b1-4891-8d24-94494bfcd6f8
+  "25":
+    id: "25"
+    taskid: 5cb188b0-8eb4-4400-8998-0e5c66967114
     type: title
     task:
-      id: c285141e-45b1-4891-8d24-94494bfcd6f8
+      id: 5cb188b0-8eb4-4400-8998-0e5c66967114
       version: -1
-      name: 'Test: Force-delete Bucket'
+      name: 'Test: Delete Bucket'
       type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "5"
     separatecontext: false
     view: |-
       {
