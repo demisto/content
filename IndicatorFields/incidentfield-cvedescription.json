@@ -12,7 +12,7 @@
   "isReadOnly": false,
   "commitMessage": "",
   "system": false,
-  "content": false,
+  "content": true,
   "unsearchable": false,
   "version": -1,
   "unmapped": false,
@@ -37,9 +37,10 @@
   "name": "CVE Description",
   "ownerOnly": false,
   "required": false,
-  "modified": "2019-07-18T07:21:57.16583761Z",
+  "modified": "2019-07-29T10:37:51.837856802Z",
   "fieldCalcScript": "",
   "selectValues": null,
   "validationRegex": "",
-  "sla": 0
+  "sla": 0,
+  "fromVersion": "5.0.0"
 }

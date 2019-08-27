@@ -25,21 +25,23 @@ script: |2-
   };
 
   domains.forEach(function(domain){
-      var resp = executeCommand("GetStringsDistance", {inputString: emailObj.Domain, compareString: domain});
+    if(domain) {
+        var resp = executeCommand("GetStringsDistance", {inputString: emailObj.Domain, compareString: domain});
 
-      if(isError(resp[0])){
-          return resp;
-      }
+        if(isError(resp[0])){
+            return resp;
+        }
 
-      data = [dq(resp[0], "Contents.Distances")];
-      data.forEach(function(entry)
-      {
-          emailObj.Distance.push(
-              {
-                  Domain  : dq(entry,"StringB"),
-                  Value   : dq(entry,"LevenshteinDistance")
-              });
-      });
+        data = [dq(resp[0], "Contents.Distances")];
+        data.forEach(function(entry)
+        {
+            emailObj.Distance.push(
+                {
+                    Domain  : dq(entry,"StringB"),
+                    Value   : dq(entry,"LevenshteinDistance")
+                });
+        });
+    }
   });
   var ec = {};
   var suspicious = dq(emailObj,"Distance(val.Value > 0 && val.Value < {0}).Value".format(threshold));
@@ -91,6 +93,7 @@ args:
 - name: domain
   required: true
   description: The domain list to check against for squatting (comma separated)
+  isArray: true
 - name: threshold
   description: The similarity threshold
   defaultValue: "3"
