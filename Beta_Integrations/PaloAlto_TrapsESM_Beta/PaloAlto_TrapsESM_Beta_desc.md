@@ -1,1 +1,0 @@
-**This is a beta integration and _may_ not work for your implementation**

@@ -718,22 +718,22 @@ def create_channel(team_aad_id: str, channel_name: str, channel_description: str
     return channel_id
 
 
-def get_channel_id(channel_name: str, team_aad_id: str) -> str:
+def get_channel_id(channel_name: str, team_aad_id: str, investigation_id: str = None) -> str:
     """
     Retrieves Microsoft Teams channel ID
     :param channel_name: Name of channel to get ID of
     :param team_aad_id: AAD ID of team to search channel in
+    :param investigation_id: Demisto investigation ID to search mirrored channel of
     :return: Requested channel ID
     """
+    investigation_id = investigation_id or str()
     integration_context: dict = demisto.getIntegrationContext()
-    if integration_context.get('teams'):
-        teams: list = json.loads(integration_context['teams'])
-        for team in teams:
-            mirrored_channels: list = team.get('mirrored_channels', [])
-            for channel in mirrored_channels:
-                investigation_id: str = channel.get('investigation_id', '')
-                if channel_name == f'incident-{investigation_id}':
-                    return channel.get('channel_id')
+    teams: list = json.loads(integration_context.get('teams', '[]'))
+    for team in teams:
+        mirrored_channels: list = team.get('mirrored_channels', [])
+        for channel in mirrored_channels:
+            if channel.get('channel_name') == channel_name or channel.get('investigation_id') == investigation_id:
+                return channel.get('channel_id')
     url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_aad_id}/channels'
     response: dict = cast(Dict[Any, Any], http_request('GET', url))
     channel_id: str = ''
@@ -799,13 +799,13 @@ def close_channel():
     """
     integration_context: dict = demisto.getIntegrationContext()
     channel_name: str = demisto.args().get('channel', '')
+    investigation: dict = demisto.investigation()
+    investigation_id: str = investigation.get('id', '')
     channel_id: str = str()
     team_aad_id: str
     mirrored_channels: list
     if not channel_name:
         # Closing channel as part of autoclose in mirroring process
-        investigation: dict = demisto.investigation()
-        investigation_id: str = investigation.get('id', '')
         teams: list = json.loads(integration_context.get('teams', '[]'))
         for team in teams:
             team_aad_id = team.get('team_aad_id', '')
@@ -824,7 +824,7 @@ def close_channel():
     else:
         team_name: str = demisto.args().get('team') or demisto.params().get('team')
         team_aad_id = get_team_aad_id(team_name)
-        channel_id = get_channel_id(channel_name, team_aad_id)
+        channel_id = get_channel_id(channel_name, team_aad_id, investigation_id)
         close_channel_request(team_aad_id, channel_id)
     demisto.results('Channel was successfully closed.')
 
@@ -915,7 +915,13 @@ def send_message():
     if channel_name:
         team_name: str = demisto.args().get('team', '') or demisto.params().get('team', '')
         team_aad_id: str = get_team_aad_id(team_name)
-        channel_id = get_channel_id(channel_name, team_aad_id)
+        investigation_id: str = str()
+        if message_type == MESSAGE_TYPES['mirror_entry']:
+            # Got an entry from the War Room to mirror to Teams
+            # Getting investigation ID in case channel name is custom and not the default
+            investigation: dict = demisto.investigation()
+            investigation_id = investigation.get('id', '')
+        channel_id = get_channel_id(channel_name, team_aad_id, investigation_id)
     elif team_member:
         team_member_id: str = get_team_member_id(team_member, integration_context)
         personal_conversation_id = create_personal_conversation(integration_context, team_member_id)
@@ -994,7 +1000,7 @@ def mirror_investigation():
         mirrored_channels[investigation_mirrored_index]['mirrored'] = False
         demisto.results('Investigation mirror was updated successfully.')
     else:
-        channel_name: str = f'incident-{investigation_id}'
+        channel_name: str = demisto.args().get('channel_name', '') or f'incident-{investigation_id}'
         channel_description = f'Channel to mirror incident {investigation_id}'
         channel_id = create_channel(team_aad_id, channel_name, channel_description)
         mirrored_channels.append({
@@ -1006,7 +1012,7 @@ def mirror_investigation():
             'mirrored': False,
             'channel_name': channel_name
         })
-        demisto.results(f'Investigation mirrored successfully in channel incident-{investigation_id}.')
+        demisto.results(f'Investigation mirrored successfully in channel {channel_name}.')
     team['mirrored_channels'] = mirrored_channels
     integration_context['teams'] = json.dumps(teams)
     demisto.setIntegrationContext(integration_context)

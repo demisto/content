@@ -1415,7 +1415,7 @@ def return_error(message, error='', outputs=None):
 
 def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_extract=False):
     """
-        Returns an error entry with the specified message, and exits the script.
+        Returns a warning entry with the specified message, and exits the script.
 
         :type message: ``str``
         :param message: The message to return in the entry (required).
@@ -1441,7 +1441,7 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
     LOG.print_log()
 
     demisto.results({
-        'Type': 11,
+        'Type': entryTypes['warning'],
         'ContentsFormat': formats['text'],
         'IgnoreAutoExtract': ignore_auto_extract,
         'Contents': str(message),
