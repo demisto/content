@@ -2365,7 +2365,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The time that the log was generated from the timestamp and prior to it. For example: "2019/08/11 01:10:44".
+      description: |-
+        The time that the log was generated from the timestamp and prior to it.
+        e.g "2019/08/11 01:10:44".
       isArray: false
       name: time-generated
       required: false
