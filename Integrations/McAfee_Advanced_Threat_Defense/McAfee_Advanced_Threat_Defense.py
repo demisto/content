@@ -544,11 +544,12 @@ def build_report_context(report_summary, upload_data, status, threshold, task_id
                     context['DBotScore']['Type'] = 'application/url'
                     context['DBotScore']['Indicator'] = submission.get('url')
                 else:  # if does not exist, submission is a file
-                    context['DBotScore']['Type'] = 'hash'
                     if submission.get('SHA256') and len(str(submission.get('SHA256'))) > 0:
                         context['DBotScore']['Indicator'] = submission.get('SHA256')
+                        context['DBotScore']['Type'] = 'hash'
                     elif submission.get('SHA1') and len(str(submission.get('SHA1'))) > 0:
                         context['DBotScore']['Indicator'] = submission.get('SHA1')
+                        context['DBotScore']['Type'] = 'hash'
 
         context['IP'] = {}
         if 'Ips' in report_summary:
