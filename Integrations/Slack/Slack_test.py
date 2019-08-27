@@ -349,19 +349,19 @@ def test_get_user_by_name(mocker):
 
     # User name exists in integration context
     username = 'spengler'
-    user = get_user_by_name(username, demisto.getIntegrationContext())
+    user = get_user_by_name(username)
     assert user['id'] == 'U012A3CDE'
     assert slack.WebClient.users_list.call_count == 0
 
     # User email exists in integration context
     email = 'spengler@ghostbusters.example.com'
-    user = get_user_by_name(email, demisto.getIntegrationContext())
+    user = get_user_by_name(email)
     assert user['id'] == 'U012A3CDE'
     assert slack.WebClient.users_list.call_count == 0
 
     # User name doesn't exist in integration context
     username = 'perikles'
-    user = get_user_by_name(username, demisto.getIntegrationContext())
+    user = get_user_by_name(username)
     assert user['id'] == 'U012B3CUI'
     assert slack.WebClient.users_list.call_count == 1
 
@@ -374,13 +374,13 @@ def test_get_user_by_name(mocker):
 
     # User email doesn't exist in integration context
     email = 'perikles@acropoli.com'
-    user = get_user_by_name(email, demisto.getIntegrationContext())
+    user = get_user_by_name(email)
     assert user['id'] == 'U012B3CUI'
     assert slack.WebClient.users_list.call_count == 2
 
     # User doesn't exist
     username = 'alexios'
-    user = get_user_by_name(username, demisto.getIntegrationContext())
+    user = get_user_by_name(username)
     assert user == {}
     assert slack.WebClient.users_list.call_count == 3
 
@@ -407,7 +407,7 @@ def test_get_user_by_name_paging(mocker):
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
 
     # Arrange
-    user = get_user_by_name('alexios', demisto.getIntegrationContext())
+    user = get_user_by_name('alexios')
     args = slack.WebClient.users_list.call_args_list
     first_args = args[0][1]
     second_args = args[1][1]
@@ -686,7 +686,7 @@ def test_mirror_investigation_existing_mirror_error_name(mocker):
     assert slack.WebClient.users_list.call_count == 0
 
     assert return_error_mock.call_count == 1
-    assert err_msg == 'Cannot change the Slack channel name from Demisto.'
+    assert err_msg == 'Cannot change the Slack channel name.'
 
 
 def test_mirror_investigation_existing_investigation(mocker):
@@ -2212,6 +2212,33 @@ def test_invite_users_no_channel(mocker):
     assert send_args[1] == ['U012A3CDE', 'U07QCRPA4']
 
 
+def test_invite_users_no_channel_doesnt_exist(mocker):
+    import Slack
+
+    # Set
+
+    mocker.patch.object(demisto, 'args', return_value={'users': 'spengler, glinda'})
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '777'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(Slack, 'get_conversation_by_name', return_value={'id': 'GKQ86DVPH'})
+    mocker.patch.object(Slack, 'invite_users_to_conversation')
+    mocker.patch.object(demisto, 'results')
+
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
+
+    # Arrange
+    with pytest.raises(InterruptedError):
+        Slack.invite_to_channel()
+
+    err_msg = return_error_mock.call_args[0][0]
+
+    # Assert
+    assert Slack.get_conversation_by_name.call_count == 0
+    assert Slack.invite_users_to_conversation.call_count == 0
+    assert err_msg == 'Channel not found - the Demisto app needs to be a member of the channel in order to look it up.'
+
+
 def test_kick_users(mocker):
     import Slack
 
@@ -2264,6 +2291,33 @@ def test_kick_users_no_channel(mocker):
     assert success_results[0] == 'Successfully kicked users from the channel.'
     assert send_args[0] == 'GKQ86DVPH'
     assert send_args[1] == ['U012A3CDE', 'U07QCRPA4']
+
+
+def test_kick_users_no_channel_doesnt_exist(mocker):
+    import Slack
+
+    # Set
+
+    mocker.patch.object(demisto, 'args', return_value={'users': 'spengler, glinda'})
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '777'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(Slack, 'get_conversation_by_name', return_value={'id': 'GKQ86DVPH'})
+    mocker.patch.object(Slack, 'invite_users_to_conversation')
+    mocker.patch.object(demisto, 'results')
+
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
+
+    # Arrange
+    with pytest.raises(InterruptedError):
+        Slack.kick_from_channel()
+
+    err_msg = return_error_mock.call_args[0][0]
+
+    # Assert
+    assert Slack.get_conversation_by_name.call_count == 0
+    assert Slack.invite_users_to_conversation.call_count == 0
+    assert err_msg == 'Channel not found - the Demisto app needs to be a member of the channel in order to look it up.'
 
 
 def test_rename_channel(mocker):

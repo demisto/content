@@ -30,7 +30,7 @@ MIRROR_TYPE = 'mirrorEntry'
 INCIDENT_OPENED = 'incidentOpened'
 INCIDENT_NOTIFICATION_CHANNEL = 'incidentNotificationChannel'
 PLAYGROUND_INVESTIGATION_TYPE = 9
-
+WARNING_ENTRY_TYPE = 11
 
 ''' GLOBALS '''
 
@@ -73,24 +73,23 @@ def test_module():
     demisto.results('ok')
 
 
-def get_user_by_name(user_to_search: str, integration_context: dict) -> dict:
+def get_user_by_name(user_to_search: str) -> dict:
     """
     Gets a slack user by a user name
     :param user_to_search: The user name or email
-    :param integration_context The integration context
     :return: A slack user object
     """
 
     user: dict = {}
     users: list = []
-    if not integration_context:
-        integration_context = demisto.getIntegrationContext()
+    integration_context = demisto.getIntegrationContext()
 
     user_to_search = user_to_search.lower()
     if integration_context.get('users'):
         users = json.loads(integration_context['users'])
         users_filter = list(filter(lambda u: u.get('name', '').lower() == user_to_search
-                                             or u.get('profile', {}).get('email', '').lower() == user_to_search, users))
+                                             or u.get('profile', {}).get('email', '').lower() == user_to_search
+                                             or u.get('real_name', '').lower() == user_to_search, users))
         if users_filter:
             user = users_filter[0]
     if not user:
@@ -99,8 +98,8 @@ def get_user_by_name(user_to_search: str, integration_context: dict) -> dict:
             workspace_users = response['members'] if response and response.get('members', []) else []
             cursor = response.get('response_metadata', {}).get('next_cursor')
             users_filter = list(filter(lambda u: u.get('name', '').lower() == user_to_search
-                                                 or u.get('profile', {}).get('email', '').lower() == user_to_search,
-                                       workspace_users))
+                                                 or u.get('profile', {}).get('email', '').lower() == user_to_search
+                                                 or u.get('real_name', '').lower() == user_to_search, workspace_users))
             if users_filter:
                 break
             if not cursor:
@@ -117,10 +116,9 @@ def get_user_by_name(user_to_search: str, integration_context: dict) -> dict:
     return user
 
 
-def search_slack_users(integration_context, users):
+def search_slack_users(users) -> list:
     """
     Search given users in Slack
-    :param integration_context: The current integration context
     :param users: The users to find
     :return: The slack users
     """
@@ -130,10 +128,10 @@ def search_slack_users(integration_context, users):
         users = [users]
 
     for user in users:
-        slack_user = get_user_by_name(user, integration_context)
+        slack_user = get_user_by_name(user)
         if not slack_user:
             demisto.results({
-                'Type': 11,  # Warning
+                'Type': WARNING_ENTRY_TYPE,
                 'Contents': 'User {} not found in Slack'.format(user),
                 'ContentsFormat': formats['text']
             })
@@ -290,7 +288,7 @@ def mirror_investigation():
 
     investigation_id = investigation.get('id')
     users = investigation.get('users')
-    slack_users = search_slack_users(integration_context, users)
+    slack_users = search_slack_users(users)
 
     users_to_invite = list(map(lambda u: u.get('id'), slack_users))
     current_mirror = list(filter(lambda m: m['investigation_id'] == investigation_id, mirrors))
@@ -337,9 +335,9 @@ def mirror_investigation():
         if mirror_to and mirror['mirror_to'] != mirror_to:
             return_error('Cannot change the Slack channel type from Demisto.')
         if channel_name:
-            return_error('Cannot change the Slack channel name from Demisto.')
+            return_error('Cannot change the Slack channel name.')
         if channel_topic:
-            return_error('Cannot change the Slack channel topic from Demisto.')
+            return_error('Cannot change the Slack channel topic.')
         conversation_name = mirror['channel_name']
         mirror['mirrored'] = False
 
@@ -971,7 +969,7 @@ def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignor
     if to:
         if isinstance(to, list):
             to = to[0]
-        user = get_user_by_name(to, integration_context)
+        user = get_user_by_name(to)
         if not user:
             demisto.error('Could not find the Slack user {}'.format(to))
         else:
@@ -1121,6 +1119,7 @@ def create_channel():
     channel_type = demisto.args().get('type', 'private')
     channel_name = demisto.args()['name']
     users = argToList(demisto.args().get('users', []))
+    topic = demisto.args().get('topic')
 
     if channel_type != 'private':
         conversation = CHANNEL_CLIENT.channels_create(name=channel_name).get('channel', {})
@@ -1128,8 +1127,10 @@ def create_channel():
         conversation = CHANNEL_CLIENT.groups_create(name=channel_name).get('group', {})
 
     if users:
-        slack_users = search_slack_users(demisto.getIntegrationContext(), users)
+        slack_users = search_slack_users(users)
         invite_users_to_conversation(conversation.get('id'), list(map(lambda u: u.get('id'), slack_users)))
+    if topic:
+        CHANNEL_CLIENT.conversations_setTopic(channel=conversation.get('id'), topic=topic)
 
     demisto.results('Successfully created the channel {}.'.format(conversation.get('name')))
 
@@ -1151,8 +1152,11 @@ def invite_to_channel():
     if not channel_id:
         return_error('Channel not found - the Demisto app needs to be a member of the channel in order to look it up.')
 
-    slack_users = search_slack_users(demisto.getIntegrationContext(), users)
-    invite_users_to_conversation(channel_id, list(map(lambda u: u.get('id'), slack_users)))
+    slack_users = search_slack_users(users)
+    if slack_users:
+        invite_users_to_conversation(channel_id, list(map(lambda u: u.get('id'), slack_users)))
+    else:
+        return_error('No users found')
 
     demisto.results('Successfully invited users to the channel.')
 
@@ -1174,8 +1178,11 @@ def kick_from_channel():
     if not channel_id:
         return_error('Channel not found - the Demisto app needs to be a member of the channel in order to look it up.')
 
-    slack_users = search_slack_users(demisto.getIntegrationContext(), users)
-    kick_users_from_conversation(channel_id, list(map(lambda u: u.get('id'), slack_users)))
+    slack_users = search_slack_users(users)
+    if slack_users:
+        kick_users_from_conversation(channel_id, list(map(lambda u: u.get('id'), slack_users)))
+    else:
+        return_error('No users found')
 
     demisto.results('Successfully kicked users from the channel.')
 
@@ -1183,7 +1190,10 @@ def kick_from_channel():
 def get_user():
     user = demisto.args()['user']
 
-    slack_user = get_user_by_name(user, demisto.getIntegrationContext())
+    slack_user = get_user_by_name(user)
+    if not slack_user:
+        return_error('User not found')
+
     profile = slack_user.get('profile', {})
     result_user = {
         'ID': slack_user.get('id'),
@@ -1194,9 +1204,10 @@ def get_user():
     }
 
     hr = tableToMarkdown('Details for Slack user: ' + user, result_user,
-                         headers=['ID', 'Username', 'Name', 'DisplayName', 'Email'], headerTransform=pascalToSpace)
+                         headers=['ID', 'Username', 'Name', 'DisplayName', 'Email'], headerTransform=pascalToSpace,
+                         removeNull=True)
     context = {
-        'Slack.User(val.ID === obj.ID)': createContext(result_user)
+        'Slack.User(val.ID === obj.ID)': createContext(result_user, removeNull=True)
     }
 
     return_outputs(hr, context, slack_user)
@@ -1263,4 +1274,3 @@ def main():
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
-
