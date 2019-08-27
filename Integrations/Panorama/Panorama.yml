@@ -2023,10 +2023,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns information for a Panorama PCAP file. 
-    The recommended maximum file size is 5 MB. 
-    If the limit is exceeded, you might need to SSH the firewall and run the scp export command to export the PCAP file. 
-    For more information, see the Palo Alto Networks documentation.
+    description: Returns information for a Panorama PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you might need to SSH the firewall and run the scp export command to export the PCAP file. For more information, see the Palo Alto Networks documentation.
     execution: false
     name: panorama-get-pcap
     outputs:
@@ -2096,8 +2093,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether the IP addresses remain registered to the tag after the device
-        reboots ('true':persistent, 'false':non-persistent). Default is 'true'.
+      description: Whether the IP addresses remain registered to the tag after the device reboots ('true':persistent, 'false':non-persistent). Default is 'true'.
       isArray: false
       name: persistent
       predefined:
@@ -2135,9 +2131,7 @@ script:
     name: panorama-unregister-ip-tag
   - arguments:
     - default: false
-      description: Specifies the match criteria for the logs. This is similar to the
-        query provided in the web interface under the Monitor tab, when viewing the
-        logs.
+      description: Specifies the match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab, when viewing the logs.
       isArray: false
       name: query
       required: false
@@ -2364,16 +2358,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The query string by which to match criteria for the logs. This
-        is similar to the query provided in the web interface under the Monitor tab
-        when viewing the logs.
+      description: The query string by which to match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs.
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
-      description: 'The time that the log was generated from the timestamp and prior
-        to it. For example: "2019/08/11 01:10:44".'
+      description: The time that the log was generated from the timestamp and prior to it. For example: "2019/08/11 01:10:44".
       isArray: false
       name: time-generated
       required: false
@@ -2415,13 +2406,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Rule name, for example: "Allow all outbound".'
+      description: Rule name, for example: "Allow all outbound".
       isArray: false
       name: rule
       required: false
       secret: false
     - default: false
-      description: 'URL, for example: "safebrowsing.googleapis.com".'
+      description: URL, for example: "safebrowsing.googleapis.com".
       isArray: false
       name: url
       required: false
@@ -2434,8 +2425,7 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: Maximum number of logs to retrieve. If empty, the default is 100.
-        The maximum is 5,000.
+      description: Maximum number of logs to retrieve. If empty, the default is 100. The maximum is 5,000.
       isArray: false
       name: number_of_logs
       required: false
@@ -2481,8 +2471,7 @@ script:
       secret: false
     - default: false
       defaultValue: 'true'
-      description: Whether to auto-enrich the War Room entry. If "true", entry is
-        not auto-enriched. If "false", entry is auto-extracted. Default is "true".
+      description: Whether to auto-enrich the War Room entry. If "true", entry is not auto-enriched. If "false", entry is auto-extracted. Default is "true".
       isArray: false
       name: ignore_auto_extract
       required: false
@@ -2493,17 +2482,13 @@ script:
     name: panorama-get-logs
     outputs:
     - contextPath: Panorama.Monitor.Logs.Action
-      description: Action taken for the session. Can be "alert", "allow", "deny",
-        "drop", "drop-all-packets", "reset-client", "reset-server", "reset-both",
-        or "block-url".
+      description: Action taken for the session. Can be "alert", "allow", "deny", "drop", "drop-all-packets", "reset-client", "reset-server", "reset-both", or "block-url".
       type: String
     - contextPath: Panorama.Monitor.Logs.Application
       description: Application associated with the session.
       type: String
     - contextPath: Panorama.Monitor.Logs.Category
-      description: The URL category of the URL subtype. For WildFire subtype, it is
-        the verdict on the file, and can be either "malicious", "phishing", "grayware"’,
-        or "benign". For other subtypes, the value is "any".
+      description: The URL category of the URL subtype. For WildFire subtype, it is the verdict on the file, and can be either "malicious", "phishing", "grayware"’, or "benign". For other subtypes, the value is "any".
       type: String
     - contextPath: Panorama.Monitor.Logs.DeviceName
       description: The hostname of the firewall on which the session was logged.
@@ -2515,15 +2500,13 @@ script:
       description: Username of the user to which the session was destined.
       type: String
     - contextPath: Panorama.Monitor.Logs.DestinationCountry
-      description: Destination country or internal region for private addresses. Maximum
-        length is 32 bytes.
+      description: Destination country or internal region for private addresses. Maximum length is 32 bytes.
       type: String
     - contextPath: Panorama.Monitor.Logs.DestinationPort
       description: Destination port utilized by the session.
       type: String
     - contextPath: Panorama.Monitor.Logs.FileDigest
-      description: Only for the WildFire subtype, all other types do not use this field.
-      The filedigest string shows the binary hash of the file sent to be analyzed by the WildFire service.
+      description: Only for the WildFire subtype, all other types do not use this field. The filedigest string shows the binary hash of the file sent to be analyzed by the WildFire service.
       type: String
     - contextPath: Panorama.Monitor.Logs.FileName
       description: |-
@@ -2562,7 +2545,8 @@ script:
       description: Post-NAT source port.
       type: String
     - contextPath: Panorama.Monitor.Logs.PCAPid
-      description: The packet capture (pcap) ID is a 64 bit unsigned integral denoting
+      description: |-
+        The packet capture (pcap) ID is a 64 bit unsigned integral denoting
         an ID to correlate threat pcap files with extended pcaps taken as a part of
         that flow. All threat logs will contain either a pcap_id of 0 (no associated
         pcap), or an ID referencing the extended pcap file.
@@ -2571,8 +2555,9 @@ script:
       description: IP protocol associated with the session.
       type: String
     - contextPath: Panorama.Monitor.Logs.Recipient
-      description: Only for the WildFire subtype, all other types do not use this field.
-      Specifies the name of the receiver of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
+      description: |-
+        Only for the WildFire subtype, all other types do not use this field.
+        Specifies the name of the receiver of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
       type: String
     - contextPath: Panorama.Monitor.Logs.Rule
       description: Name of the rule that the session matched.
@@ -2584,7 +2569,8 @@ script:
       description: Time the log was received at the management plane.
       type: String
     - contextPath: Panorama.Monitor.Logs.Sender
-      description: Only for the WildFire subtype; all other types do not use this field.
+      description: |-
+        Only for the WildFire subtype; all other types do not use this field.
         Specifies the name of the sender of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
       type: String
     - contextPath: Panorama.Monitor.Logs.SessionID
@@ -2594,14 +2580,16 @@ script:
       description: The serial number of the firewall on which the session was logged.
       type: String
     - contextPath: Panorama.Monitor.Logs.Severity
-      description: Severity associated with the threat. Can be "informational", "low",
+      description: |-
+        Severity associated with the threat. Can be "informational", "low",
         "medium", "high", or "critical".
       type: String
     - contextPath: Panorama.Monitor.Logs.SourceAddress
       description: Original session source IP address.
       type: String
     - contextPath: Panorama.Monitor.Logs.SourceCountry
-      description: Source country or internal region for private addresses. Maximum
+      description: |-
+        Source country or internal region for private addresses. Maximum
         length is 32 bytes.
       type: String
     - contextPath: Panorama.Monitor.Logs.SourceUser
