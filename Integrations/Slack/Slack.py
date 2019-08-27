@@ -243,13 +243,13 @@ def invite_users_to_conversation(conversation_id: str, users_to_invite: list):
                 raise
 
 
-def kick_users_from_conversation(conversation_id: str, users_to_invite: list):
+def kick_users_from_conversation(conversation_id: str, users_to_kick: list):
     """
     Kicks users from a provided conversation using a provided slack client with a channel token.
     :param conversation_id: The slack conversation ID to kick the users from.
-    :param users_to_invite: The user slack IDs to kick.
+    :param users_to_kick: The user slack IDs to kick.
     """
-    for user in users_to_invite:
+    for user in users_to_kick:
         try:
             CHANNEL_CLIENT.conversations_kick(channel=conversation_id, user=user)
         except SlackApiError as e:
