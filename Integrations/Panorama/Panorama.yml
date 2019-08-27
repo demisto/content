@@ -1744,8 +1744,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Where to move the rule. Can be "before", "after", "top", or "bottom".
-      If you specify "up" or "down", you need to supply the "dst" argument.
+      description: Where to move the rule. Can be 'before', 'after', 'top', or 'bottom'.
+      If you specify 'up' or 'down', you need to supply the 'dst' argument.
       isArray: false
       name: where
       predefined:
@@ -1757,7 +1757,7 @@ script:
       secret: false
     - default: false
       description: Destination rule relative to the rule you are moving. Relevant if
-      you specify "up" or "down" for the "where" argument.
+      you specify 'up' or 'down' for the 'where' argument.
       isArray: false
       name: dst
       required: false
@@ -1798,8 +1798,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Parameter in the security rule to change. Can be "source", "destination",
-        "application", "action", "category", "description", "disabled", "target", or "log-forwarding".
+      description: Parameter in the security rule to change. Can be 'source', 'destination',
+        'application', 'action', 'category', 'description', 'disabled', 'target', or 'log-forwarding'.
       isArray: false
       name: element_to_change
       predefined:
@@ -1990,7 +1990,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The file name for the PCAP type ("dlp-pcap", "filters-pcap", or "application-pcap").
+      description: The file name for the PCAP type ('dlp-pcap', 'filters-pcap', or 'application-pcap').
       isArray: false
       name: from
       required: false
@@ -2024,7 +2024,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Password for Panorama, needed for the "dlp-pcap" PCAP type only.
+      description: Password for Panorama, needed for the 'dlp-pcap' PCAP type only.
       isArray: false
       name: password
       required: false
@@ -2078,7 +2078,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Password for Panorama. Relevant for the "dlp-pcap" PCAP type.
+      description: Password for Panorama. Relevant for the 'dlp-pcap' PCAP type.
       isArray: false
       name: password
       required: false
@@ -2104,7 +2104,7 @@ script:
       default: false
       defaultValue: 'true'
       description: Whether the IP addresses remain registered to the tag after the device
-        reboots ("true":persistent, "false":non-persistent). Default is "true".
+        reboots ('true':persistent, 'false':non-persistent). Default is 'true'.
       isArray: false
       name: persistent
       predefined:
@@ -2302,7 +2302,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Rules location. Can be "pre-rulebase" or "post-rulebase". Mandatory
+      description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory
         for Panorama instances.
       isArray: false
       name: pre_post
