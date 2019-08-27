@@ -1399,6 +1399,12 @@
             "nightly": true
         },
         {
+            "integrations": "Google Cloud Storage",
+            "playbookID": "GCS Test",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
             "integrations": "Freshdesk",
             "playbookID": "Freshdesk-Test",
             "timeout": 500,
