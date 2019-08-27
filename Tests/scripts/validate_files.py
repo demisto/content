@@ -139,7 +139,7 @@ class FilesValidator(object):
             (modified_files, added_files). Tuple of sets.
         """
         all_changed_files_string = run_command(
-            "git diff --name-status origin/{tag}...{branch}".format(tag=tag, branch=branch_name))
+            "git diff --name-status origin/{tag}...refs/heads/{branch}".format(tag=tag, branch=branch_name))
         modified_files, added_files, _, old_format_files = self.get_modified_files(all_changed_files_string)
 
         if not is_circle:
@@ -403,10 +403,10 @@ class FilesValidator(object):
             # validates only committed files
             self.validate_committed_files(branch_name, is_backward_check=is_backward_check)
         else:
-            if branch_name != 'master':
-                self.validate_with_previous_version(branch_name)
             # validates all of Content repo directories according to their schemas
             self.validate_all_files()
+            if branch_name != 'master':
+                self.validate_with_previous_version(branch_name)
 
         return self._is_valid
 
@@ -419,10 +419,8 @@ class FilesValidator(object):
         prev_version_name = self.get_previous_release_branch(release_branch_name)
         # Validate previous version only if found it
         if prev_version_name:
-            # origin is added to bypass possible ambiguous git names
-            origin_branch = 'origin/{}'.format(release_branch_name)
             modified_files, added_files, old_format_files = \
-                self.get_modified_and_added_files(origin_branch, self.is_circle, prev_version_name)
+                self.get_modified_and_added_files(release_branch_name, self.is_circle, prev_version_name)
             # TODO: Ask whether I should limit the tests
             self.validate_modified_files(modified_files, is_backward_check=True)
         else:
