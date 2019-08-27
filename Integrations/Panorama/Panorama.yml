@@ -1744,8 +1744,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Where to move the rule. Can be 'before', 'after', 'top', or 'bottom'.
-      If you specify 'up' or 'down', you need to supply the 'dst' argument.
+      description: Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "up" or "down", you need to supply the "dst" argument.
       isArray: false
       name: where
       predefined:
