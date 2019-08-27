@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 
 import json
 import requests
+import typing
 from datetime import datetime, timedelta
 
 # Disable insecure warnings
@@ -201,10 +202,24 @@ def create_issue_table(issue_list, response, limit):
     context_create_issue(response, issue_table)
 
 
-def get_last_event(commit_timestamp=None, comment_timestamp=None, review_timestamp=None):
+def get_last_event(commit_timestamp: str = '', comment_timestamp: str = '', review_timestamp: str = '') -> str:
+    """ Compare dates to determine the last event.
+
+    :param commit_timestamp: timestamp of last pr commit
+    :param comment_timestamp: timestamp of last pr comment
+    :param review_timestamp:  timestamp of the last pr review
+    :return: The last event to occur
+    """
     commit_date = datetime.strptime(commit_timestamp) if commit_timestamp else datetime.fromordinal(1)
-    commit_date = datetime.strptime(commit_timestamp) if commit_timestamp else datetime.fromordinal(1)
-    commit_date = datetime.strptime(commit_timestamp) if commit_timestamp else datetime.fromordinal(1)
+    comment_date = datetime.strptime(comment_timestamp) if comment_timestamp else datetime.fromordinal(1)
+    review_date = datetime.strptime(review_timestamp) if review_timestamp else datetime.fromordinal(1)
+
+    last_event = 'comment' if comment_date >= commit_date else 'commit'
+    if last_event == 'comment' and review_date > comment_date:
+        last_event = 'review'
+    elif last_event == 'commit' and review_date > commit_date:
+        last_event = 'review'
+    return last_event
 
 
 ''' REQUESTS FUNCTIONS '''
