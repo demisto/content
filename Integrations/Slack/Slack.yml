@@ -442,7 +442,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: KIck a user from a channel in Slack.
+    description: Kick a user from a channel in Slack.
     execution: false
     name: slack-kick-from-channel
   - arguments:
