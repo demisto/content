@@ -1518,7 +1518,7 @@ def authorize_security_group_ingress_command(args):
     if args.get('IpPermissionsfromPort') is not None:
         IpPermissions_dict.update({'FromPort': int(args.get('IpPermissionsfromPort'))})
     if args.get('IpPermissionsIpProtocol') is not None:
-        IpPermissions_dict.update({'IpProtocol': int(args.get('IpPermissionsIpProtocol'))})
+        IpPermissions_dict.update({'IpProtocol': str(args.get('IpPermissionsIpProtocol'))})
     if args.get('IpPermissionsToPort') is not None:
         IpPermissions_dict.update({'ToPort': int(args.get('IpPermissionsToPort'))})
 
