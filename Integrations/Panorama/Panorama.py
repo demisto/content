@@ -26,6 +26,7 @@ if demisto.args() and demisto.args().get('device-group', None):
     DEVICE_GROUP = demisto.args().get('device-group')
 else:
     DEVICE_GROUP = demisto.params().get('device_group')
+
 # configuration check
 if DEVICE_GROUP and VSYS:
     return_error('Cannot configure both vsys and Device group. Set vsys for firewall, set Device group for Panorama')
@@ -305,6 +306,40 @@ def panorama_test():
     )
 
     demisto.results('ok')
+
+
+def test_device_group():
+    """
+    Test module for the Device group specified
+    """
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': "/config/devices/entry/device-group/entry",
+        'key': API_KEY
+    }
+
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+
+    device_groups = result['response']['result']['entry']
+    if isinstance(device_groups, dict):
+        # only one device group in the panorama
+        device_group_name = device_groups.get('@name')
+        if device_group_name != DEVICE_GROUP:
+            return_error(f'Device Group specified: {DEVICE_GROUP} '
+                         f'is not the one existing in Panorama: {device_group_name}')
+    else:
+        # panorama has more than one device group configured
+        device_groups_arr = []
+        for device_group in device_groups:
+            device_groups_arr.append(device_group.get('@name'))
+        if DEVICE_GROUP not in device_groups_arr:
+            return_error(f'Device Group specified: {DEVICE_GROUP} '
+                         f'is not the of the ones existing in Panorama: {str(device_groups_arr)}')
 
 
 @logger
@@ -3699,6 +3734,9 @@ def main():
     try:
         # Remove proxy if not set to true in params
         handle_proxy()
+
+        if DEVICE_GROUP:
+            test_device_group()
 
         if demisto.command() == 'test-module':
             panorama_test()
