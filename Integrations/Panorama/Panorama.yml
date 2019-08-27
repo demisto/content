@@ -2409,13 +2409,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Rule name, for example: "Allow all outbound".
+      description: Rule name, e.g "Allow all outbound".
       isArray: false
       name: rule
       required: false
       secret: false
     - default: false
-      description: URL, for example: "safebrowsing.googleapis.com".
+      description: URL, e.g "safebrowsing.googleapis.com".
       isArray: false
       name: url
       required: false
@@ -2602,11 +2602,13 @@ script:
       description: Source port utilized by the session.
       type: String
     - contextPath: Panorama.Monitor.Logs.ThreatCategory
-      description: Describes threat categories used to classify different types of
+      description: |-
+        Describes threat categories used to classify different types of
         threat signatures.
       type: String
     - contextPath: Panorama.Monitor.Logs.Name
-      description: Palo Alto Networks identifier for the threat. It is a description
+      description: |-
+        Palo Alto Networks identifier for the threat. It is a description
         string followed by a 64-bit numerical identifier
       type: String
     - contextPath: Panorama.Monitor.Logs.ID
@@ -2619,7 +2621,8 @@ script:
       description: Time that the log was generated on the dataplane.
       type: String
     - contextPath: Panorama.Monitor.Logs.URLCategoryList
-      description: A list of the URL filtering categories that the firewall used to
+      description: |-
+        A list of the URL filtering categories that the firewall used to
         enforce the policy.
       type: String
   dockerimage: demisto/python3:3.7.3.221
