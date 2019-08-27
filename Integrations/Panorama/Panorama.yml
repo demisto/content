@@ -1755,8 +1755,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Destination rule relative to the rule you are moving. Relevant if
-      you specify 'up' or 'down' for the 'where' argument.
+      description: Destination rule relative to the rule you are moving. Relevant if you specify "up" or "down" for the "where" argument.
       isArray: false
       name: dst
       required: false
@@ -1797,8 +1796,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Parameter in the security rule to change. Can be 'source', 'destination',
-        'application', 'action', 'category', 'description', 'disabled', 'target', or 'log-forwarding'.
+      description: Parameter in the security rule to change. Can be 'source', 'destination', 'application', 'action', 'category', 'description', 'disabled', 'target', or 'log-forwarding'.
       isArray: false
       name: element_to_change
       predefined:
@@ -1995,29 +1993,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: The new name for the PCAP file after downloading. If this argument
-        is not specified, the file name is the PCAP file name set in the firewall.
+      description: The new name for the PCAP file after downloading. If this argument is not specified, the file name is the PCAP file name set in the firewall.
       isArray: false
       name: localName
       required: false
       secret: false
     - default: false
-      description: Serial number for the request. For further information, see the
-        Panorama XML API Documentation.
+      description: Serial number for the request. For further information, see the Panorama XML API Documentation.
       isArray: false
       name: serialNo
       required: false
       secret: false
     - default: false
-      description: The Search time for the request. For further information, see the Panorama
-        XML API Documentation.
+      description: The Search time for the request. For further information, see the Panorama XML API Documentation.
       isArray: false
       name: searchTime
       required: false
       secret: false
     - default: false
-      description: The ID of the PCAP for the request. For further information, see the
-        Panorama XML API Documentation.
+      description: The ID of the PCAP for the request. For further information, see the Panorama XML API Documentation.
       isArray: false
       name: pcapID
       required: false
