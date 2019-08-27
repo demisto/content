@@ -190,7 +190,8 @@ class FilesValidator(object):
                     month = 12
                     year = int(year) - 1
                 prev_ver_prefix = 'origin/{year}.{month}.*'.format(year=year, month=month)
-                git_prev_versions = run_command("git branch -a --list {}".format(prev_ver_prefix)).decode('utf8').strip().split('\n')
+                git_prev_versions = run_command("git branch -a --list {}".format(prev_ver_prefix)).decode(
+                    'utf8').strip().split('\n')
                 git_prev_versions.sort()
                 # No branches were found
                 if not git_prev_versions:
@@ -224,7 +225,7 @@ class FilesValidator(object):
                 old_file_path, file_path = file_path
 
             print("Validating {}".format(file_path))
-            structure_validator = StructureValidator(file_path, is_added_file=not(False or is_backward_check),
+            structure_validator = StructureValidator(file_path, is_added_file=not (False or is_backward_check),
                                                      is_renamed=True if old_file_path else False)
             if not structure_validator.is_file_valid():
                 self._is_valid = False
@@ -418,12 +419,17 @@ class FilesValidator(object):
         prev_version_name = self.get_previous_release_branch(release_branch_name)
         # Validate previous version only if found it
         if prev_version_name:
+            # origin is added to bypass possible ambiguous git names
+            origin_branch = 'origin/{}'.format(release_branch_name)
             modified_files, added_files, old_format_files = \
-                self.get_modified_and_added_files(release_branch_name, self.is_circle, prev_version_name)
+                self.get_modified_and_added_files(origin_branch, self.is_circle, prev_version_name)
             # TODO: Ask whether I should limit the tests
             self.validate_modified_files(modified_files, is_backward_check=True)
         else:
-            pass #TODO: Add warning if couldn't find previous version?
+            print_color(
+                "Failed BC check. No release version prior to {} found in git.".format(release_branch_name),
+                LOG_COLORS.RED)
+            sys.exit(1)
 
 
 def main():
