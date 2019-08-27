@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
@@ -39,6 +39,9 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
     scriptarguments:
       action: {}
       addr-dst: {}
@@ -62,8 +65,63 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: b7f0068b-88cb-462c-89f0-f17b868126fa
+    type: condition
+    task:
+      id: b7f0068b-88cb-462c-89f0-f17b868126fa
+      version: -1
+      name: Exist context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Panorama.Monitor.Logs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 0f95f6ff-42bd-4e34-82e5-5f0a444b7bf9
+    type: title
+    task:
+      id: 0f95f6ff-42bd-4e34-82e5-5f0a444b7bf9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -74,9 +132,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 275,
+        "height": 560,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }
