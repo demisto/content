@@ -6147,5 +6147,6 @@ script:
   runonce: false
   script: ''
   type: python
+  subtype: python2
 tests:
 - 2142f8de-29d5-4288-8426-0db39abe988b
