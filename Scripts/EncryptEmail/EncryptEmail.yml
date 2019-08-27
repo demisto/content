@@ -11,7 +11,7 @@ args:
   name: message
   required: true
   secret: false
-comment: Encrypts an email message with S/MIME protocol by using a public RSA key.
+comment: Encrypts an email message with S/MIME protocol by using a public RSA certificate.
 commonfields:
   id: 46b038af-c80a-4c93-bc85-465622252553
   version: -1
@@ -21,6 +21,9 @@ outputs:
 - contextPath: Email.Message
   description: The encrypted message.
   type: String
+- contextPath: Email.Headers
+  description: The S/MIME headers.
+  type: String
 script: '-'
 system: false
 tags:
@@ -28,6 +31,6 @@ tags:
 timeout: '0'
 type: python
 dockerimage: demisto/smime-encrypt:1.0.0.1722
-subtype: python3
 tests:
-  - No tests - UNIT TESTS
+- No tests - UNIT TESTS
+subtype: python3
