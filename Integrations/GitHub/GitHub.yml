@@ -19,8 +19,8 @@ configuration:
   name: repository
   required: false
   type: 0
-- defaultvalue: '3'
-  display: First fetch timestamp, in days.
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   required: false
   type: 0
@@ -36,6 +36,12 @@ configuration:
 - defaultvalue: Contribution
   display: The name of the contribution label
   name: contribution_label
+  required: false
+  type: 0
+- defaultvalue: 3 days
+  display: Time of inactivity after which a PR is considered stale and requires our
+    bot's ministrations
+  name: stale_time
   required: false
   type: 0
 description: Integration to GitHub API

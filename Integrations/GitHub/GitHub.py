@@ -18,6 +18,7 @@ TOKEN = demisto.params().get('token')
 BASE_URL = 'https://api.github.com'
 REPOSITORY = demisto.params().get('repository')
 CONTRIBUTION_LABEL = demisto.params().get('contribution_label')
+STALE_TIME = demisto.params().get('stale_time', '3 days')
 USE_SSL = not demisto.params().get('insecure', False)
 FETCH_TIME = demisto.params().get('fetch_time', '30 days')
 
@@ -225,6 +226,30 @@ def get_last_event(commit_timestamp: str = '', comment_timestamp: str = '', revi
 ''' REQUESTS FUNCTIONS '''
 
 
+def create_issue_comment(issue_number: int, msg: str) -> dict:
+    suffix = ISSUE_SUFFIX + f'/{issue_number}/comments'
+    response = http_request('POST', url_suffix=suffix, data={'body': msg})
+    return response
+
+
+def list_issue_comments(issue_number: int) -> list:
+    suffix = ISSUE_SUFFIX + f'/{issue_number}/comments'
+    response = http_request('GET', url_suffix=suffix)
+    return response
+
+
+def get_pr_reviews(pull_number: int) -> list:
+    suffix = PULLS_SUFFIX + f'/{pull_number}/reviews'
+    response = http_request('GET', url_suffix=suffix)
+    return response
+
+
+def get_commit(commit_sha: str) -> dict:
+    suffix = USER_SUFFIX + f'/git/commits/{commit_sha}'
+    response = http_request('GET', url_suffix=suffix)
+    return response
+
+
 def add_label(issue_number, labels):
     suffix = ISSUE_SUFFIX + f'/{issue_number}'
     response = http_request('POST', url_suffix=suffix, data=labels)
@@ -364,20 +389,34 @@ def fetch_incidents_command():
         start_time = datetime.strptime(last_run.get('start_time'), '%Y-%m-%dT%H:%M:%SZ')
 
     else:
-        start_time = datetime.now() - timedelta(days=int(FETCH_TIME))
+        time_range_start, _ = date_to_timestamp(parse_date_range(FETCH_TIME))
+        start_time = datetime.now() - time_range_start
 
     last_time = start_time
     # issue_list = http_request(method='GET',
     #                           url_suffix=ISSUE_SUFFIX,
     #                           params={'state': 'all'})
-    timestamp = timestamp_to_datestring(datetime.now().timestamp())
-    query = f'repo:{USER}/{REPOSITORY} is:open updated:<${timestamp} is:pr'
+    timestamp = timestamp_to_datestring(str(datetime.now().timestamp()))
+    query = f'repo:{USER}/{REPOSITORY} is:open updated:<{timestamp} is:pr'
+    external_pr_count = search_issue(query)
+
+    timestamp = timestamp_to_datestring(str(start_time))
+    query = f'repo:{USER}/{REPOSITORY} is:open updated:>{timestamp} is:pr -label:{CONTRIBUTION_LABEL}'
     newly_opened_prs = search_issue(query)
 
-    timestamp = timestamp_to_datestring(datetime.fromordinal(1).timestamp())
-    query = f'repo:{USER}/{REPOSITORY} is:open updated:<${timestamp} is:pr label:${CONTRIBUTION_LABEL}'
+    time_range_start, _ = parse_date_range(STALE_TIME)
+    timestamp = timestamp_to_datestring(time_range_start)
+    query = f'repo:{USER}/{REPOSITORY} is:open updated:<{timestamp} is:pr label:{CONTRIBUTION_LABEL}'
     ongoing_external_prs = search_issue(query)
+    inactive_prs = [get_pull_request(issue.get('number')) for issue in ongoing_external_prs]
+    for pr in inactive_prs:
+        issue_number = pr.get('number')
+        requested_reviewers = [requested_reviewer.get('login') for requested_reviewer in pr.get('requested_reviewers')]
+        commit_data = get_commit(pr.get('head', {}).get('sha'))
+        reviews_data = get_pr_reviews(issue_number)
+        comments_data = list_issue_comments(issue_number)
 
+    # label and assign reviewer to new external PRs
     incidents = []
     for issue in newly_opened_prs:
         updated_at_str = issue.get('created_at')
