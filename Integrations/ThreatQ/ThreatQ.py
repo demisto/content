@@ -917,22 +917,13 @@ def delete_attr_command():
 
 
 def upload_file_command():
-    file_info = demisto.getFilePath("3749@9da8d636-cf30-42c2-8263-d09f5268be8a")
+    args = demisto.args()
+    file_id = args.get('file_id')
+    file_info = demisto.getFilePath(file_id)
     with open(file_info['path'], 'rb') as f:
-        files = {file_info['name']: f}
-        params = {
-            'resumableChunkNumber': 1,
-            'resumableChunkSize': 1048576,
-            'resumableCurrentChunkSize': 376,
-            'resumableTotalSize': 376,
-            'resumableType': 'text / rtf',
-            'resumableIdentifier': '376 - filetestrtf',
-            'resumableFilename': 'filetest.rtf',
-            'resumableRelativePath': 'filetest.rtf',
-            'resumableTotalChunks': 1
-        }
+        files = {'file': (file_info['name'], f)}
         url_suffix = '/attachments/upload'
-        tq_request("POST", url_suffix, params=params, files=files)
+        tq_request("POST", url_suffix, files=files)
         demisto.results("Successfully uploaded the file.")
 
 

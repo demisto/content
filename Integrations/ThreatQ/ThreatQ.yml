@@ -1078,7 +1078,14 @@ script:
     - contextPath: ThreatQ.Type
       description: Object type
       type: string
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: File ID in Demisto
+      isArray: false
+      name: file_id
+      required: true
+      secret: false
+    deprecated: false
     description: Uplad a file in ThreatQ
     execution: false
     name: threatq-upload-file
