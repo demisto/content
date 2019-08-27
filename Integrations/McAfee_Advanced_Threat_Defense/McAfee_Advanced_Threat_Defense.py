@@ -316,7 +316,7 @@ def check_task_status_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': md,
         'EntryContext': {
-            'ATD.status': result['status'],  # backward compatability
+            'ATD.status': result['status'],  # backward compatibility
             'ATD.Task(val.taskId == obj.taskId)': result['tasks']
         }
     })
@@ -466,7 +466,8 @@ def file_upload_command():
                          skip_task_id, analyze_again, x_mode, message_id, file_priority_q,
                          src_ip, dest_ip, file_name)
     md = tableToMarkdown('ATD sandbox sample submission', prettify_file_upload_res(result['resultObj']),
-                         ['taskId', 'jobId', 'messageId', 'url', 'dest_ip', 'src_ip', 'MD5', 'SHA1', 'SHA256'])
+                         ['taskId', 'jobId', 'messageId', 'url', 'dest_ip', 'src_ip', 'MD5', 'SHA1', 'SHA256'],
+                         removeNull=True)
 
     upload_file_output = {
         'ATD.Task(val.taskId == obj.taskId)': prettify_file_upload_res(result['resultObj']),
@@ -485,7 +486,7 @@ def file_upload_command():
     })
 
 
-def build_report_context(report_summary, upload_data, status, threshold):
+def build_report_context(report_summary, upload_data, status, threshold, task_id):
     context = {}  # type: dict
     if report_summary and report_summary['Subject']:
         subject = report_summary['Subject']
@@ -495,6 +496,7 @@ def build_report_context(report_summary, upload_data, status, threshold):
                 'Score': 0
             }
         }
+
         if 'FileType' in subject:
             context['DBotScore']['Indicator'] = subject['md5']
             context['DBotScore']['Type'] = 'hash'
@@ -530,6 +532,24 @@ def build_report_context(report_summary, upload_data, status, threshold):
             else:
                 context['DBotScore']['Score'] = 1
 
+        else:  # detonation did not return any data
+            # retrieve submission url by the task ID, if exist
+            submission_dt = demisto.dt(demisto.context(), 'ATD.Task(val.taskId === "{}")'.format(task_id))
+            if isinstance(submission_dt, list):
+                submission = submission_dt[0]
+            else:
+                submission = submission_dt
+            if isinstance(submission, dict):
+                if submission.get('url') and len(str(submission.get('url'))) > 0:
+                    context['DBotScore']['Type'] = 'application/url'
+                    context['DBotScore']['Indicator'] = submission.get('url')
+                else:  # if does not exist, submission is a file
+                    context['DBotScore']['Type'] = 'hash'
+                    if submission.get('SHA256') and len(str(submission.get('SHA256'))) > 0:
+                        context['DBotScore']['Indicator'] = submission.get('SHA256')
+                    elif submission.get('SHA1') and len(str(submission.get('SHA1'))) > 0:
+                        context['DBotScore']['Indicator'] = submission.get('SHA1')
+
         context['IP'] = {}
         if 'Ips' in report_summary:
             ip_addresses = []
@@ -563,7 +583,7 @@ def build_report_context(report_summary, upload_data, status, threshold):
 
 
 @logger
-def get_report(uri_suffix, filename, report_type, upload_data, status, threshold):
+def get_report(uri_suffix, task_id, report_type, upload_data, status, threshold):
     json_res = http_request('php/showreport.php?' + uri_suffix + '&iType=json', 'get', API_HEADERS)
     if not json_res:
         return_error(
@@ -575,7 +595,7 @@ def get_report(uri_suffix, filename, report_type, upload_data, status, threshold
     summary = json_res['Summary']
     summary['VerdictDescription'] = summary['Verdict']['Description']
     summary['VerdictSeverity'] = summary['Verdict']['Severity']
-    ec = build_report_context(summary, upload_data, status, threshold)
+    ec = build_report_context(summary, upload_data, status, threshold, task_id)
     json_res_string = json.dumps(json_res)
     if report_type == 'json':
         md = tableToMarkdown('McAfee ATD Sandbox Report', summary, summary.keys(), None, True)
@@ -588,7 +608,7 @@ def get_report(uri_suffix, filename, report_type, upload_data, status, threshold
     res = http_request('php/showreport.php?' + uri_suffix + '&iType=' + report_type, 'get', API_HEADERS)
 
     if report_type == 'pdf' or report_type == 'zip':
-        filename = str(filename) + '.' + report_type
+        filename = str(task_id) + '.' + report_type
         return {
             'content': res,
             'filename': filename,
@@ -598,7 +618,7 @@ def get_report(uri_suffix, filename, report_type, upload_data, status, threshold
     if report_type == 'sample':
         return {
             'content': res,
-            'filename': filename + '.zip',
+            'filename': task_id + '.zip',
             'ec': ec
         }
     return res
