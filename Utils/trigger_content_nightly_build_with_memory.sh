@@ -9,7 +9,7 @@ post_data=$(cat <<EOF
 {
   "build_parameters": {
     "NIGHTLY": "true",
-    "MEM_CHECK"
+    "MEM_CHECK": "true"
   }
 }
 EOF)
