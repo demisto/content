@@ -16,12 +16,14 @@ USER = demisto.params().get('user')
 TOKEN = demisto.params().get('token')
 BASE_URL = 'https://api.github.com'
 REPOSITORY = demisto.params().get('repository')
+CONTRIBUTION_LABEL = demisto.params().get('contribution_label')
 USE_SSL = not demisto.params().get('insecure', False)
 FETCH_TIME = demisto.params().get('fetch_time', '30 days')
 
 USER_SUFFIX = '/repos/{}/{}'.format(USER, REPOSITORY)
 ISSUE_SUFFIX = USER_SUFFIX + '/issues'
 RELEASE_SUFFIX = USER_SUFFIX + '/releases'
+PULLS_SUFFIX = USER_SUFFIX + '/pulls'
 
 RELEASE_HEADERS = ['ID', 'Name', 'Download_count', 'Body', 'Created_at', 'Published_at']
 ISSUE_HEADERS = ['ID', 'Repository', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at', 'Closed_by',
@@ -31,6 +33,18 @@ ISSUE_HEADERS = ['ID', 'Repository', 'Title', 'State', 'Body', 'Created_at', 'Up
 HEADERS = {
     'Authorization': "Bearer " + TOKEN
 }
+
+REVIEWERS = ['Itay4', 'yaakovi', 'yuvalbenshalom', 'ronykoz']
+
+WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
+              'wizard @reviewer will very shortly look over your proposed changes.'
+LOTR_NUDGE_MSG = '"And some things that should not have been forgotten were lost. History became legend. Legend ' \
+                 'became myth. And for two and a half thousand years", @reviewer had not looked at this beautiful PR ' \
+                 '- as they were meant to do.'
+NUDGE_AUTHOR_MSG = 'A lengthy period of time has transpired since the PR was reviewed. @author Please address the ' \
+                   'reviewer\'s comments and push your committed changes. '
+APPROVED_UNMERGED_MSG = 'The PR was approved but doesn\'t seem to have been merged. @author Please verify that there ' \
+                        'aren\'t any outstanding requested changes. '
 
 
 ''' HELPER FUNCTIONS '''
@@ -187,7 +201,25 @@ def create_issue_table(issue_list, response, limit):
     context_create_issue(response, issue_table)
 
 
+def get_last_event(commit_timestamp=None, comment_timestamp=None, review_timestamp=None):
+    commit_date = datetime.strptime(commit_timestamp) if commit_timestamp else datetime.fromordinal(1)
+    commit_date = datetime.strptime(commit_timestamp) if commit_timestamp else datetime.fromordinal(1)
+    commit_date = datetime.strptime(commit_timestamp) if commit_timestamp else datetime.fromordinal(1)
+
+
 ''' REQUESTS FUNCTIONS '''
+
+
+def add_label(issue_number, labels):
+    suffix = ISSUE_SUFFIX + f'/{issue_number}'
+    response = http_request('POST', url_suffix=suffix, data=labels)
+    return response
+
+
+def get_pull_request(pull_number):
+    suffix = PULLS_SUFFIX + f'/{pull_number}'
+    response = http_request('GET', url_suffix=suffix)
+    return response
 
 
 def create_issue(title, body, labels, assignees):
@@ -320,14 +352,24 @@ def fetch_incidents_command():
         start_time = datetime.now() - timedelta(days=int(FETCH_TIME))
 
     last_time = start_time
-    issue_list = http_request(method='GET',
-                              url_suffix=ISSUE_SUFFIX,
-                              params={'state': 'all'})
+    # issue_list = http_request(method='GET',
+    #                           url_suffix=ISSUE_SUFFIX,
+    #                           params={'state': 'all'})
+    timestamp = timestamp_to_datestring(datetime.now().timestamp())
+    query = f'repo:{USER}/{REPOSITORY} is:open updated:<${timestamp} is:pr'
+    newly_opened_prs = search_issue(query)
+
+    timestamp = timestamp_to_datestring(datetime.fromordinal(1).timestamp())
+    query = f'repo:{USER}/{REPOSITORY} is:open updated:<${timestamp} is:pr label:${CONTRIBUTION_LABEL}'
+    ongoing_external_prs = search_issue(query)
 
     incidents = []
-    for issue in issue_list:
+    for issue in newly_opened_prs:
         updated_at_str = issue.get('created_at')
         updated_at = datetime.strptime(updated_at_str, '%Y-%m-%dT%H:%M:%SZ')
+        is_fork = issue.get('head', {}).get('repo', {}).get('fork')
+        if is_fork:
+            add_label(issue.get('number'), CONTRIBUTION_LABEL)
         if updated_at > start_time:
             inc = {
                 'name': issue.get('url'),

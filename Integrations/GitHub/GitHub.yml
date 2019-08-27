@@ -33,6 +33,11 @@ configuration:
   name: insecure
   required: false
   type: 8
+- defaultvalue: Contribution
+  display: The name of the contribution label
+  name: contribution_label
+  required: false
+  type: 0
 description: Integration to GitHub API
 display: GitHub
 name: GitHub
@@ -362,6 +367,7 @@ script:
       description: Date when the release was published.
       type: Date
   dockerimage: demisto/python3:3.7.3.286
+  subtype: python3
   isfetch: true
   runonce: false
   script: '-'
