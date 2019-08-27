@@ -1185,8 +1185,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: add
-      description: Add or remove an element from the Allow List or Block List
-      fields. Default is to "add" the element_value to the list.
+      description: Add or remove an element from the Allow List or Block List fields. Default is to 'add' the element_value to the list.
       isArray: false
       name: add_remove_element
       predefined:
