@@ -1,12 +1,9 @@
 id: Failed Login Playbook With Slack
 version: -1
 name: Failed Login Playbook With Slack
-description: Following a failed login event happening more than 3 times, ask user
-  on Slack if she attempted a login. If no, raise the incident level to high. If yes,
-  ask user if she needs a password reset and reset the password in AD.
+description: Deprecated. Use the Failed Login - Slack V2 playbook instead.
 system: true
-fromversion: 2.5.0
-toversion: 4.5.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
