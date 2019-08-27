@@ -982,6 +982,11 @@ def upload_file_command():
     ticket_id = args['id']
     file_id = args['file_id']
     file_name = args.get('file_name', demisto.dt(demisto.context(), "File(val.EntryID=='" + file_id + "').Name"))
+
+    # in case of info file
+    if file_id and not file_name:
+        file_name = demisto.dt(demisto.context(), "InfoFile(val.EntryID=='" + file_id + "').Name")
+
     file_name = file_name[0] if isinstance(file_name, list) else file_name
 
     res = upload_file(ticket_id, file_id, file_name, ticket_type)

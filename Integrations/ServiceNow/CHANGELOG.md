@@ -1,0 +1,1 @@
+fix servicenow-upload-file command when the file is summary report
