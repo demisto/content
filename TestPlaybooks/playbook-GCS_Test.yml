@@ -1,6 +1,6 @@
-id: GCS Test
+id: GCS - Test
 version: -1
-name: GCS Test
+name: GCS - Test
 starttaskid: "0"
 tasks:
   "0":
@@ -56,8 +56,8 @@ tasks:
     task:
       id: 58b4dfe7-ab23-44b6-8410-c7b37682c8fe
       version: -1
-      name: GCS Test - Bucket Management
-      playbookName: GCS Test - Bucket Management
+      name: GCS Bucket Management - Test
+      playbookName: GCS Bucket Management - Test
       type: playbook
       iscommand: false
       brand: ""
@@ -82,8 +82,8 @@ tasks:
     task:
       id: 2b121bdd-4b5f-4aae-8e28-88e1e1c661c1
       version: -1
-      name: GCS Test - Object Operations
-      playbookName: GCS Test - Object Operations
+      name: GCS Object Operations - Test
+      playbookName: GCS Object Operations - Test
       type: playbook
       iscommand: false
       brand: ""
@@ -108,8 +108,8 @@ tasks:
     task:
       id: 6860d138-ef6a-4e83-8fb7-1c67848f545e
       version: -1
-      name: GCS Test - Bucket Policy (ACL)
-      playbookName: GCS Test - Bucket Policy (ACL)
+      name: GCS Bucket Policy (ACL) - Test
+      playbookName: GCS Bucket Policy (ACL) - Test
       type: playbook
       iscommand: false
       brand: ""
@@ -134,8 +134,8 @@ tasks:
     task:
       id: 37570108-7aa0-4ce2-8a1d-7e0495ce0d45
       version: -1
-      name: GCS Test - Object Policy (ACL)
-      playbookName: GCS Test - Object Policy (ACL)
+      name: GCS Object Policy (ACL) - Test
+      playbookName: GCS Object Policy (ACL) - Test
       type: playbook
       iscommand: false
       brand: ""

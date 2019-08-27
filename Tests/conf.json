@@ -1400,7 +1400,7 @@
         },
         {
             "integrations": "Google Cloud Storage",
-            "playbookID": "GCS Test",
+            "playbookID": "GCS - Test",
             "timeout": 500,
             "nightly": true
         },

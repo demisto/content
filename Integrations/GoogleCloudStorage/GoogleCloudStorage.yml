@@ -8,7 +8,7 @@ configuration:
   required: true
   type: 4
 - display: Use system proxy settings
-  name: use_proxy
+  name: proxy
   required: false
   type: 8
 description: Google Cloud Storage is a RESTful online file storage web service for
@@ -282,9 +282,9 @@ script:
       isArray: false
       name: role
       predefined:
-      - READER
-      - WRITER
-      - OWNER
+      - Reader
+      - Writer
+      - Owner
       required: true
       secret: false
     deprecated: false
@@ -319,9 +319,9 @@ script:
       isArray: false
       name: role
       predefined:
-      - READER
-      - WRITER
-      - OWNER
+      - Reader
+      - Writer
+      - Owner
       required: true
       secret: false
     deprecated: false
@@ -422,8 +422,8 @@ script:
       isArray: false
       name: role
       predefined:
-      - READER
-      - OWNER
+      - Reader
+      - Owner
       required: true
       secret: false
     deprecated: false
@@ -464,8 +464,8 @@ script:
       isArray: false
       name: role
       predefined:
-      - READER
-      - OWNER
+      - Reader
+      - Owner
       required: true
       secret: false
     deprecated: false
@@ -512,4 +512,4 @@ script:
   script: '-'
   type: python
 tests:
-- GCS Test
+- GCS - Test

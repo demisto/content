@@ -1,6 +1,6 @@
-id: 4d497da1-8c61-47df-805f-42259d922b8b
+id: GCS Bucket Policy (ACL) - Test
 version: -1
-name: GCS Test - Bucket Policy (ACL)
+name: GCS Bucket Policy (ACL) - Test
 starttaskid: "0"
 tasks:
   "0":
