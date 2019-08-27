@@ -1,0 +1,187 @@
+commonfields:
+  id: AbuseIPDB
+  version: -1
+name: AbuseIPDB
+display: AbuseIPDB
+category: Data Enrichment & Threat Intelligence
+description: Central repository to report and identify IP addresses that have been
+  associated with malicious activity online. Check the Detailed Information section
+  for more information on how to configure the integration.-
+configuration:
+- display: AbuseIP server URL
+  name: server
+  defaultvalue: https://api.abuseipdb.com/api/v2/
+  type: 0
+  required: true
+- display: API Key (v2)
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Minimum score threshold
+  name: threshold
+  defaultvalue: "80"
+  type: 0
+  required: false
+- display: Maximum reports age (in days)
+  name: days
+  defaultvalue: "30"
+  type: 0
+  required: false
+- display: Disregard quota errors
+  name: disregard_quota
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      description: ' IP address to check'
+    - name: days
+      description: Time range to return reports for (in days), default is 30
+      defaultValue: "30"
+    - name: verbose
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Report length, "true" returns the full report, "false" does not
+        return reported categories, default is "true"
+      defaultValue: "true"
+    - name: threshold
+      description: Minimum score from AbuseIPDB to consider the IP malicious (must
+        be greater than 20), default is 80
+      defaultValue: "80"
+    outputs:
+    - contextPath: IP.Address
+      description: IP address
+    - contextPath: IP.Geo.Country
+      description: Country associated with this IP Address
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor that determined this IP address to be malicious
+    - contextPath: IP.Malicious.Detections
+      description: The Detections that led to the verdict
+    - contextPath: AbuseIPDB.IP.Address
+      description: IP address
+    - contextPath: AbuseIPDB.IP.AbuseConfidenceScore
+      description: Confidence score fetched from AbuseIPDB
+    - contextPath: AbuseIPDB.IP.TotalReports
+      description: The number of times this address has been reported
+    - contextPath: AbuseIPDB.IP.Geo.Country
+      description: Country associated with this IP Address
+    - contextPath: AbuseIPDB.IP.Reports
+      description: Reports summary (for "verbose" reports)
+    - contextPath: DBotScore.Score
+      description: Analysis score
+    - contextPath: DBotScore.Vendor
+      description: Vendor name (AbuseIPDB)
+    - contextPath: DBotScore.Indicator
+      description: The IP address
+    - contextPath: DBotScore.Type
+      description: The type (ip)
+    - contextPath: AbuseIPDB.IP.Malicious.Vendor
+      description: The vendor that determined this IP address to be malicious
+    - contextPath: AbuseIPDB.IP.Malicious.Detections
+      description: The Detections that led to the verdict
+    description: Checks the specified IP address against the AbuseIP database
+  - name: abuseipdb-check-cidr-block
+    arguments:
+    - name: network
+      required: true
+      description: IPv4 Address Block in CIDR notation.
+    - name: days
+      description: Time range to return reports for (in days), default is 30
+      defaultValue: "30"
+    - name: limit
+      description: Maximum number of IPs to check, default is 40
+      defaultValue: "40"
+    - name: threshold
+      description: Minimum score from AbuseIPDB to consider the IP malicious (must
+        be greater than 20), default is 80
+      defaultValue: "80"
+    outputs:
+    - contextPath: IP.Address
+      description: IP address
+    - contextPath: IP.Geo.Country
+      description: Country associated with this IP Address
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor that determined this IP address to be malicious
+    - contextPath: IP.Malicious.Detections
+      description: The Detections that led to the verdict
+    - contextPath: AbuseIPDB.IP.Address
+      description: IP address
+    - contextPath: AbuseIPDB.IP.AbuseConfidenceScore
+      description: Confidence score fetched from AbuseIPDB
+    - contextPath: AbuseIPDB.IP.TotalReports
+      description: The number of times this address has been reported
+    - contextPath: AbuseIPDB.IP.Geo.Country
+      description: Country associated with this IP Address
+    - contextPath: AbuseIPDB.IP.Reports
+      description: Reports summary (for "verbose" reports)
+    - contextPath: DBotScore.Score
+      description: Analysis score
+    - contextPath: DBotScore.Vendor
+      description: Vendor name (AbuseIPDB)
+    - contextPath: DBotScore.Indicator
+      description: The IP address
+    - contextPath: DBotScore.Type
+      description: The type (ip)
+    - contextPath: AbuseIPDB.IP.Malicious.Vendor
+      description: The vendor that determined this IP address to be malicious
+    - contextPath: AbuseIPDB.IP.Malicious.Detections
+      description: The Detections that led to the verdict
+    description: Queries a block of IPs to check against the database
+  - name: abuseipdb-report-ip
+    arguments:
+    - name: ip
+      required: true
+      description: ' The IP address to report'
+    - name: categories
+      required: true
+      description: CSV list of category IDs (numerical representation or in their
+        name)
+    description: Report an IP address to AbuseIPDB
+  - name: abuseipdb-get-blacklist
+    arguments:
+    - name: days
+      description: Time range to return reports for (in days), default is 30
+      defaultValue: "30"
+    - name: limit
+      description: 'Maximum number of IPs to retrieve, default is 50 '
+      defaultValue: "50"
+    - name: saveToContext
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Save a list of blacklisted IPs into the Context
+      defaultValue: "false"
+    outputs:
+    - contextPath: AbuseIPDB.Blacklist
+      description: List of blacklisted IPs
+    description: Returns a list of the most reported IP addresses
+  - name: abuseipdb-get-categories
+    arguments: []
+    outputs:
+    - contextPath: AbuseIPDB.Categories
+      description: List of AbuseIPDB categories
+      type: string
+    description: Returns a list of report categories from AbuseIPDB
+  runonce: false
+tests:
+- AbuseIPDB Test
