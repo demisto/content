@@ -3735,7 +3735,7 @@ def main():
         # Remove proxy if not set to true in params
         handle_proxy()
 
-        if DEVICE_GROUP:
+        if DEVICE_GROUP and DEVICE_GROUP != 'shared':
             test_device_group()
 
         if demisto.command() == 'test-module':
