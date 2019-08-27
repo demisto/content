@@ -22,9 +22,8 @@ requests.packages.urllib3.disable_warnings()
 RFC3339_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEMISTO_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
-PROJECT_ID = demisto.params().get('project_id')
-SERVICE_ACCOUNT_JSON = demisto.params().get('service_account_json')
-USE_PROXY = demisto.params().get('use_proxy')
+SERVICE_ACCOUNT_JSON = demisto.params()["service_account_json"]
+USE_PROXY = demisto.params().get("use_proxy")
 
 
 def safe_del(dictionary, key):
