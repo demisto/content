@@ -110,7 +110,7 @@ HEADERS = {
                   "TQScore", "CreatedAt", "UpdatedAt", "DBotScore", "URL"],
     "adversary": ["ID", "Name", "CreatedAt", "UpdatedAt", "URL"],
     "event": ["ID", "EventType", "Title", "Description", "Occurred", "CreatedAt", "UpdatedAt", "URL"],
-    "attributes": ["ID", "Name", "Value"],
+    "attrs": ["ID", "Name", "Value"],
     "sources": ["ID", "Name"]
 }
 
@@ -132,7 +132,8 @@ def get_errors_string_from_bad_request(bad_request_results):
     errors_string = "Errors from server:\n\n"
 
     # First form
-    errors_dict = bad_request_results.json().get("data", {}).get("errors", {})
+    # errors_dict = bad_request_results.json().get("data", {}).get("errors", {})
+    return bad_request_results  # todo: delete line
     if errors_dict:
         for error_num, (key, lst) in enumerate(errors_dict.items(), 1):
             curr_error_string = "\n".join(lst) + "\n\n"
@@ -187,8 +188,9 @@ def get_access_token():
 def tq_request(method, url_suffix, params=None, files=None):
     access_token = get_access_token()
     api_call_headers = {'Authorization': 'Bearer ' + access_token}
+    # data = json.dumps(params) if params else None  # todo: uncomment if needed
 
-    response = requests.request(method, API_URL + url_suffix, data=json.dumps(params),
+    response = requests.request(method, API_URL + url_suffix, data=params,
                                 headers=api_call_headers, verify=USE_SSL, files=files)
 
     if response.status_code >= 400:
@@ -198,16 +200,6 @@ def tq_request(method, url_suffix, params=None, files=None):
 
     if method != "DELETE":  # the DELETE request returns nothing in response
         return json.loads(response.text)
-
-
-def get_raw_data_by_id(obj_type, obj_id):
-    url_suffix = "/{0}/{1}?with=attributes,sources".format(OBJ_DIRECTORY[obj_type], obj_id)
-
-    if obj_type == "indicator":
-        url_suffix += ",score,type"
-
-    res = tq_request("GET", url_suffix)
-    return data_to_demisto_format(res["data"], obj_type)
 
 
 def create_dbot_context(indicator, ind_type, ind_score):
@@ -445,29 +437,26 @@ def set_ioc_entry_context(ioc_type, raw, dbot, generic):
 
 
 def build_readable(readable_title, obj_type, data, dbot_score=None):
-    if "Related" in data.keys():
-        # handle related objects readable output
-        readable = tableToMarkdown(readable_title, data["Related"], headers=HEADERS[obj_type], removeNull=True)
-
-        for elem in data["Related"]:
-            url_in_markdown_format = "[{0}]({1})".format(elem['URL'], elem['URL'])
-            readable = readable.replace(elem["URL"], url_in_markdown_format)
-
-    else:
+    if isinstance(data, dict):  # One object data
         data["DBotScore"] = dbot_score  # only for readable output - then we pop it back
         readable = tableToMarkdown(readable_title, data, headers=HEADERS[obj_type],
                                    headerTransform=pascalToSpace, removeNull=True)
         data.pop("DBotScore")
 
         if "Attributes" in data:
-            readable += tableToMarkdown("Attributes", data["Attributes"],
-                                        headers=HEADERS["attributes"], removeNull=True)
+            readable += tableToMarkdown("Attributes", data["Attributes"], headers=HEADERS["attrs"], removeNull=True)
         if "Sources" in data:
-            readable += tableToMarkdown("Sources", data["Sources"],
-                                        headers=HEADERS["sources"], removeNull=True)
-        if "URL" in data:
-            url_in_markdown_format = "[{0}]({1})".format(data['URL'], data['URL'])
-            readable = readable.replace(data["URL"], url_in_markdown_format)
+            readable += tableToMarkdown("Sources", data["Sources"], headers=HEADERS["sources"], removeNull=True)
+
+        url_in_markdown_format = "[{0}]({1})".format(data['URL'], data['URL'])
+        readable = readable.replace(data["URL"], url_in_markdown_format)
+
+    else:  # 'data' is a list of related objects
+        readable = tableToMarkdown(readable_title, data, headers=HEADERS[obj_type],
+                                   headerTransform=pascalToSpace, removeNull=True)
+        for elem in data:
+            url_in_markdown_format = "[{0}]({1})".format(elem['URL'], elem['URL'])
+            readable = readable.replace(elem["URL"], url_in_markdown_format)
 
     return readable
 
@@ -693,7 +682,12 @@ def search_by_id_command():
     if isinstance(obj_id, str) and not obj_id.isdigit():
         return_error("Invalid argument for object ID.")
 
-    raw = get_raw_data_by_id(obj_type, obj_id)
+    url_suffix = "/{0}/{1}?with=attributes,sources".format(OBJ_DIRECTORY[obj_type], obj_id)
+    if obj_type == "indicator":
+        url_suffix += ",score,type"
+
+    res = tq_request("GET", url_suffix)
+    raw = data_to_demisto_format(res["data"], obj_type)
 
     ec = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': createContext(raw, removeNull=True)}
 
@@ -710,7 +704,7 @@ def search_by_id_command():
     return_outputs(readable, ec, raw)
 
 
-def get_related_objs_command(related_type):
+def get_related_indicators_command():
     args = demisto.args()
     obj_type = args.get('obj_type')
     obj_id = args.get('obj_id')
@@ -718,21 +712,69 @@ def get_related_objs_command(related_type):
     if isinstance(obj_id, str) and not obj_id.isdigit():
         return_error("Invalid argument for object ID.")
 
-    url_suffix = "/{0}/{1}/{2}?with=sources".format(OBJ_DIRECTORY[obj_type], obj_id, OBJ_DIRECTORY[related_type])
-    if related_type == "indicator":
-        url_suffix += ",score"  # only indicators have tq score
+    url_suffix = "/{0}/{1}/indicators?with=sources,score".format(OBJ_DIRECTORY[obj_type], obj_id)
     res = tq_request("GET", url_suffix)
 
-    info = [data_to_demisto_format(obj, related_type) for obj in res["data"]]
+    info = [indicator_data_to_demisto_format(obj) for obj in res["data"]]
     raw = {
-        "Related": createContext(info, removeNull=True),
+        "RelatedIndicators": createContext(info, removeNull=True),
         "ID": int(obj_id),
         "Type": obj_type
     }
     ec = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': raw} if info else {}
 
-    readable_title = "Search results for {0} with id {1}".format(obj_type, obj_id)
-    readable = build_readable(readable_title, related_type, raw)
+    readable_title = "Related indicators for {0} with id {1}".format(obj_type, obj_id)
+    readable = build_readable(readable_title, "indicator", raw["RelatedIndicators"])
+
+    return_outputs(readable, ec, raw)
+
+
+def get_related_adversaries_command():
+    args = demisto.args()
+    obj_type = args.get('obj_type')
+    obj_id = args.get('obj_id')
+
+    if isinstance(obj_id, str) and not obj_id.isdigit():
+        return_error("Invalid argument for object ID.")
+
+    url_suffix = "/{0}/{1}/adversaries?with=sources".format(OBJ_DIRECTORY[obj_type], obj_id)
+    res = tq_request("GET", url_suffix)
+
+    info = [adversary_data_to_demisto_format(obj) for obj in res["data"]]
+    raw = {
+        "RelatedAdversaries": createContext(info, removeNull=True),
+        "ID": int(obj_id),
+        "Type": obj_type
+    }
+    ec = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': raw} if info else {}
+
+    readable_title = "Related adversaries for {0} with id {1}".format(obj_type, obj_id)
+    readable = build_readable(readable_title, "adversary", raw["RelatedAdversaries"])
+
+    return_outputs(readable, ec, raw)
+
+
+def get_related_events_command():
+    args = demisto.args()
+    obj_type = args.get('obj_type')
+    obj_id = args.get('obj_id')
+
+    if isinstance(obj_id, str) and not obj_id.isdigit():
+        return_error("Invalid argument for object ID.")
+
+    url_suffix = "/{0}/{1}/events?with=sources".format(OBJ_DIRECTORY[obj_type], obj_id)
+    res = tq_request("GET", url_suffix)
+
+    info = [event_data_to_demisto_format(obj) for obj in res["data"]]
+    raw = {
+        "RelatedEvents": createContext(info, removeNull=True),
+        "ID": int(obj_id),
+        "Type": obj_type
+    }
+    ec = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': raw} if info else {}
+
+    readable_title = "Related events for {0} with id {1}".format(obj_type, obj_id)
+    readable = build_readable(readable_title, "event", raw["RelatedEvents"])
 
     return_outputs(readable, ec, raw)
 
@@ -875,11 +917,23 @@ def delete_attr_command():
 
 
 def upload_file_command():
-    file_info = demisto.getFilePath("825@9da8d636-cf30-42c2-8263-d09f5268be8a")
-    files = {'file': (file_info['name'], open(file_info['path'], 'rb'))}
-    url_suffix = '/attachments/upload'
-    tq_request("POST", url_suffix, files=files)
-    demisto.results("Successfully uploaded the file.")
+    file_info = demisto.getFilePath("3749@9da8d636-cf30-42c2-8263-d09f5268be8a")
+    with open(file_info['path'], 'rb') as f:
+        files = {file_info['name']: f}
+        params = {
+            'resumableChunkNumber': 1,
+            'resumableChunkSize': 1048576,
+            'resumableCurrentChunkSize': 376,
+            'resumableTotalSize': 376,
+            'resumableType': 'text / rtf',
+            'resumableIdentifier': '376 - filetestrtf',
+            'resumableFilename': 'filetest.rtf',
+            'resumableRelativePath': 'filetest.rtf',
+            'resumableTotalChunks': 1
+        }
+        url_suffix = '/attachments/upload'
+        tq_request("POST", url_suffix, params=params, files=files)
+        demisto.results("Successfully uploaded the file.")
 
 
 def update_status_command():
@@ -1075,11 +1129,11 @@ try:
     elif command == 'threatq-delete-object':
         delete_object_command()
     elif command == 'threatq-get-related-ioc':
-        get_related_objs_command("indicator")
+        get_related_indicators_command()
     elif command == 'threatq-get-related-events':
-        get_related_objs_command("event")
+        get_related_events_command()
     elif command == 'threatq-get-related-adversaries':
-        get_related_objs_command("adversary")
+        get_related_adversaries_command()
     elif command == 'threatq-link-objects':
         link_objects_command()
     elif command == 'threatq-unlink-objects':
