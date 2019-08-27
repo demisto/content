@@ -1,0 +1,10 @@
+{
+  "id": "IncidentsPerWeek",
+  "name": "Incidents opened per week",
+  "dataType": "scripts",
+  "widgetType": "column",
+  "query": "IncidentsPerWeek",
+  "description": "Widget that shows the amount of incidents opened each week",
+  "isPredefined": true,
+  "version": -1
+}

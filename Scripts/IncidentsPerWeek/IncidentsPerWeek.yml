@@ -1,0 +1,16 @@
+commonfields:
+  id: IncidentsPerWeek
+  version: -1
+name: IncidentsPerWeek
+script: ''
+type: python
+tags:
+- widget
+comment: Data output script for populating dashboard widget with the amount
+  of incidents opened each week
+enabled: true
+scripttarget: 0
+subtype: python2
+runonce: false
+dockerimage: demisto/python:2.7.16.373
+runas: Administrator
