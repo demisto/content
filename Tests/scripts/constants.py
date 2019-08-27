@@ -22,6 +22,7 @@ DOCS_REGEX = r".*docs.*"
 IMAGE_REGEX = r".*\.png"
 DESCRIPTION_REGEX = r".*\.md"
 CONF_REGEX = "Tests/conf.json"
+SCHEMA_REGEX = "Tests/schemas/.*.yml"
 SCRIPT_TYPE_REGEX = ".*script-.*.yml"
 SCRIPT_PY_REGEX = r"{}.*\.py$".format(SCRIPTS_DIR)
 SCRIPT_JS_REGEX = r"{}.*\.js$".format(SCRIPTS_DIR)
@@ -60,7 +61,8 @@ CHECKED_TYPES_REGEXES = [PLAYBOOK_REGEX, INTEGRATION_YML_REGEX,
 
 PACKAGE_SUPPORTING_DIRECTORIES = [INTEGRATIONS_DIR, SCRIPTS_DIR]
 
-PACKAGE_YML_FILE_REGEX = r'(?:\./)?(?:Integrations|Scripts)/([\w\d_]+)/\1.yml'
+
+PACKAGE_YML_FILE_REGEX = r'(?:\./)?(?:Integrations|Scripts)/([\w\d_-]+)/\1.yml'
 
 OLD_YML_FORMAT_FILE = [INTEGRATION_REGEX, SCRIPT_REGEX]
 
@@ -104,6 +106,10 @@ FILE_TYPES_FOR_TESTING = [
     '.js',
     '.yml'
 ]
+
+# github repository url
+CONTENT_GITHUB_LINK = r'https://raw.githubusercontent.com/demisto/content'
+CONTENT_GITHUB_MASTER_LINK = CONTENT_GITHUB_LINK + '/master'
 
 # Run all test signal
 RUN_ALL_TESTS_FORMAT = "Run all tests"
