@@ -1,3 +1,6 @@
 ## [Unreleased]
-* Fixed command mapping issue where some commands were were not called correctly.
-* Deprecated `detonate-file` function because it doesn't exist in code.
+
+
+## [19.8.0] - 2019-08-06
+  - Fixed an issue with command mapping in which some commands were were not called correctly.
+  - Deprecated the ***detonate-file*** function.
