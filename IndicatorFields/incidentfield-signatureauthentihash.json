@@ -12,7 +12,7 @@
   "isReadOnly": false,
   "commitMessage": "",
   "system": false,
-  "content": false,
+  "content": true,
   "unsearchable": false,
   "version": -1,
   "unmapped": false,
@@ -37,9 +37,10 @@
   "name": "Signature Authentihash",
   "ownerOnly": false,
   "required": false,
-  "modified": "2019-07-10T07:54:36.383678151Z",
+  "modified": "2019-07-29T10:37:51.819101201Z",
   "fieldCalcScript": "",
   "selectValues": null,
   "validationRegex": "",
-  "sla": 0
+  "sla": 0,
+  "fromVersion": "5.0.0"
 }
