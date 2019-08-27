@@ -1826,6 +1826,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "google-vault": "Error when creating exports (Issue 18866)",
         "Lastline": "Temporally moved to skipped inorder to not fail nightly",
         "vmray": "VMRay license expired (Issue 18752)",
         "Anomali ThreatStream v2": "Credentials are invalid (issue 18561)",
