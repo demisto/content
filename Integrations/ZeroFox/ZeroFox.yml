@@ -30,8 +30,7 @@ configuration:
   name: fetch_limit
   required: true
   type: 0
-description: Cloud-based SaaS to detect risks found on social
-  media and digital channels.
+description: Cloud-based SaaS to detect risks found on social media and digital channels.
 display: ZeroFox
 name: ZeroFox
 script:
