@@ -121,6 +121,8 @@ jobs:
                     export IFRA_ENV_TYPE=Content-Env
                 fi
                 python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType $IFRA_ENV_TYPE
+                ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -outfile ./mr_results.json
 
               else
                 python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild
