@@ -9,6 +9,8 @@ import argparse
 import requests
 import yaml
 
+from Tests.scripts.constants import INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR, DASHBOARDS_DIR, \
+    WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR
 from Tests.test_utils import print_error, print_warning, get_last_release_version, filter_packagify_changes, \
     run_command, server_version_compare, get_release_notes_file_path, get_latest_release_notes_text, get_remote_file
 from Tests.scripts.validate_files import FilesValidator
@@ -33,20 +35,9 @@ LAYOUT_TYPE_TO_NAME = {
     "indicatorsDetails": "Indicator Details",
 }
 
-INTEGRATIONS_DIR = "Integrations"
-SCRIPTS_DIR = "Scripts"
-PLAYBOOKS_DIR = "Playbooks"
-REPORTS_DIR = "Reports"
-DASHBOARDS_DIR = "Dashboards"
-WIDGETS_DIR = "Widgets"
-INCIDENT_FIELDS_DIR = "IncidentFields"
-LAYOUTS_DIR = "Layouts"
-CLASSIFIERS_DIR = "Classifiers"
-REPUTATIONS_DIR = "Misc"
-
 RELEASE_NOTES_ORDER = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR,
                        DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR,
-                       CLASSIFIERS_DIR, REPUTATIONS_DIR]
+                       CLASSIFIERS_DIR, MISC_DIR]
 
 
 def add_dot(text):
@@ -484,7 +475,7 @@ RELEASE_NOTE_GENERATOR = {
     INCIDENT_FIELDS_DIR: IncidentFieldContent(),
     LAYOUTS_DIR: LayoutContent(),
     CLASSIFIERS_DIR: ClassifierContent(),
-    REPUTATIONS_DIR: ReputationContent()
+    MISC_DIR: ReputationContent()
 }
 
 
