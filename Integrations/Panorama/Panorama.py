@@ -305,6 +305,9 @@ def panorama_test():
         params=params
     )
 
+    if DEVICE_GROUP and DEVICE_GROUP != 'shared':
+        device_group_test()
+
     demisto.results('ok')
 
 
@@ -3734,9 +3737,6 @@ def main():
     try:
         # Remove proxy if not set to true in params
         handle_proxy()
-
-        if DEVICE_GROUP and DEVICE_GROUP != 'shared':
-            device_group_test()
 
         if demisto.command() == 'test-module':
             panorama_test()
