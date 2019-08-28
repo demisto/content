@@ -289,7 +289,7 @@ def mirror_investigation():
     investigation_id = investigation.get('id')
     users = investigation.get('users')
     slack_users = search_slack_users(users)
-
+    send_first_message = False
     users_to_invite = list(map(lambda u: u.get('id'), slack_users))
     current_mirror = list(filter(lambda m: m['investigation_id'] == investigation_id, mirrors))
     channel_filter: list = []
@@ -308,6 +308,8 @@ def mirror_investigation():
             conversation_name = conversation.get('name')
             conversation_id = conversation.get('id')
             conversations.append(conversation)
+
+            send_first_message = True
         else:
             mirrored_channel = channel_filter[0]
             conversation_id = mirrored_channel['channel_id']
@@ -383,6 +385,9 @@ def mirror_investigation():
 
     if kick_admin:
         CHANNEL_CLIENT.conversations_leave(channel=conversation_id)
+    if send_first_message:
+        CLIENT.chat_postMessage(channel=conversation_id, text='This is the mirrored channel for incident {}.'
+                                .format(investigation_id))
 
     demisto.results('Investigation mirrored successfully, channel: {}'.format(conversation_name))
 
@@ -867,7 +872,7 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
     try:
         response = send_message_to_destinations(destinations, message, thread_id)
     except SlackApiError as e:
-        if str(e).find('not_in_channel') == -1:
+        if str(e).find('not_in_channel') == -1 and str(e).find('channel_not_found') == -1:
             raise
         bot_id = integration_context.get('bot_id')
         if not bot_id:
@@ -887,11 +892,11 @@ def send_message_to_destinations(destinations: list, message: str, thread_id: st
     :return: The Slack send response.
     """
     response: dict = {}
+    kwargs: dict = {'text': message}
+    if thread_id:
+        kwargs['thread_ts'] = thread_id
     for destination in destinations:
-        if thread_id:
-            response = CLIENT.chat_postMessage(channel=destination, text=message, thread_ts=thread_id)
-        else:
-            response = CLIENT.chat_postMessage(channel=destination, text=message)
+        response = CLIENT.chat_postMessage(channel=destination, **kwargs)
     return response
 
 
@@ -907,7 +912,7 @@ def send_file(destinations: list, file: dict, integration_context: dict, thread_
     try:
         response = send_file_to_destinations(destinations, file, thread_id)
     except SlackApiError as e:
-        if str(e).find('not_in_channel') == -1:
+        if str(e).find('not_in_channel') == -1 and str(e).find('channel_not_found') == -1:
             raise
         bot_id = integration_context.get('bot_id')
         if not bot_id:
@@ -928,15 +933,16 @@ def send_file_to_destinations(destinations: list, file: dict, thread_id: str) ->
     :return: The Slack send response.
     """
     response: dict = {}
+    kwargs = {
+        'filename': file['name'],
+        'initial_comment': file['comment']
+    }
     for destination in destinations:
+        kwargs['channels'] = destination
         if thread_id:
-            response = CLIENT.files_upload(channels=destination,
-                                           file=file['data'], filename=file['name'],
-                                           initial_comment=file['comment'], thread_ts=thread_id)
-        else:
-            response = CLIENT.files_upload(channels=destination,
-                                           file=file['data'], filename=file['name'],
-                                           initial_comment=file['comment'])
+            kwargs['thread_ts'] = thread_id
+
+        response = CLIENT.files_upload(file=file['data'], **kwargs)
     return response
 
 
