@@ -984,8 +984,11 @@ def upload_file_command():
     file_name = args.get('file_name', demisto.dt(demisto.context(), "File(val.EntryID=='" + file_id + "').Name"))
 
     # in case of info file
-    if file_id and not file_name:
+    if not file_name:
         file_name = demisto.dt(demisto.context(), "InfoFile(val.EntryID=='" + file_id + "').Name")
+
+    if not file_name:
+        return_error('Could not find the file')
 
     file_name = file_name[0] if isinstance(file_name, list) else file_name
 
