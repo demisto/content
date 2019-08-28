@@ -187,7 +187,7 @@ class MITMProxy:
         http_proxy = https_proxy = proxy
         if proxy:
             http_proxy = 'http://' + proxy
-            https_proxy = 'https://' + proxy
+            https_proxy = 'http://' + proxy
         data = {
             'data':
                 {

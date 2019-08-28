@@ -1,3 +1,5 @@
+import re
+
 # dirs
 INTEGRATIONS_DIR = "Integrations"
 SCRIPTS_DIR = "Scripts"
@@ -20,16 +22,15 @@ DOCS_REGEX = r".*docs.*"
 IMAGE_REGEX = r".*\.png"
 DESCRIPTION_REGEX = r".*\.md"
 CONF_REGEX = "Tests/conf.json"
+SCHEMA_REGEX = "Tests/schemas/.*.yml"
 SCRIPT_TYPE_REGEX = ".*script-.*.yml"
 SCRIPT_PY_REGEX = r"{}.*\.py$".format(SCRIPTS_DIR)
 SCRIPT_JS_REGEX = r"{}.*\.js$".format(SCRIPTS_DIR)
-SCRIPT_PS_REGEX = r"{}.*\.ps1$".format(SCRIPTS_DIR)
 SCRIPT_YML_REGEX = r"{}.*\.yml$".format(SCRIPTS_DIR)
 TEST_SCRIPT_REGEX = r"{}.*script-.*\.yml$".format(TEST_PLAYBOOKS_DIR)
 SCRIPT_REGEX = r"{}.*script-.*\.yml$".format(SCRIPTS_DIR)
 INTEGRATION_PY_REGEX = r"{}.*\.py$".format(INTEGRATIONS_DIR)
 INTEGRATION_JS_REGEX = r"{}.*\.js$".format(INTEGRATIONS_DIR)
-INTEGRATION_PS_REGEX = r"{}.*\.ps1$".format(INTEGRATIONS_DIR)
 INTEGRATION_YML_REGEX = r"{}.*\.yml$".format(INTEGRATIONS_DIR)
 INTEGRATION_REGEX = r"{}.*integration-.*\.yml$".format(INTEGRATIONS_DIR)
 PLAYBOOK_REGEX = r"(?!Test){}.*playbook-.*\.yml$".format(PLAYBOOKS_DIR)
@@ -47,6 +48,7 @@ INCIDENT_FIELD_REGEX = r"{}.*incidentfield-.*\.json$".format(INCIDENT_FIELDS_DIR
 MISC_REGEX = r"{}.*reputations.*\.json$".format(MISC_DIR)
 REPUTATION_REGEX = r"{}.*reputation-.*\.json$".format(MISC_DIR)
 REPORT_REGEX = r"{}.*report-.*\.json$".format(REPORTS_DIR)
+MISC_REPUTATIONS_REGEX = r"{}.reputations.json$".format(MISC_DIR)
 
 BETA_SCRIPT_REGEX = r"{}.*script-.*\.yml$".format(BETA_INTEGRATIONS_DIR)
 BETA_PLAYBOOK_REGEX = r"{}.*playbook-.*\.yml$".format(BETA_INTEGRATIONS_DIR)
@@ -58,6 +60,9 @@ CHECKED_TYPES_REGEXES = [PLAYBOOK_REGEX, INTEGRATION_YML_REGEX,
                          REPUTATION_REGEX]
 
 PACKAGE_SUPPORTING_DIRECTORIES = [INTEGRATIONS_DIR, SCRIPTS_DIR]
+
+
+PACKAGE_YML_FILE_REGEX = r'(?:\./)?(?:Integrations|Scripts)/([\w\d_-]+)/\1.yml'
 
 OLD_YML_FORMAT_FILE = [INTEGRATION_REGEX, SCRIPT_REGEX]
 
@@ -77,25 +82,34 @@ DIR_LIST = [
     BETA_INTEGRATIONS_DIR
 ]
 
+SPELLCHECK_FILE_TYPES = [
+    INTEGRATION_REGEX,
+    INTEGRATION_YML_REGEX,
+    PLAYBOOK_REGEX,
+    SCRIPT_REGEX,
+    SCRIPT_YML_REGEX
+]
+
 KNOWN_FILE_STATUSES = ['a', 'm', 'd', 'r'] + ['r{:03}'.format(i) for i in range(101)]
 
-CODE_FILES_REGEX = [INTEGRATION_JS_REGEX, INTEGRATION_PY_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX,
-                    INTEGRATION_PS_REGEX, SCRIPT_PS_REGEX]
+CODE_FILES_REGEX = [INTEGRATION_JS_REGEX, INTEGRATION_PY_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX]
 
-SCRIPTS_REGEX_LIST = [SCRIPT_YML_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX, SCRIPT_PS_REGEX]
+SCRIPTS_REGEX_LIST = [SCRIPT_YML_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX]
 
 TYPE_TO_EXTENSION = {
     'python': '.py',
-    'javascript': '.js',
-    'powershell': '.ps1'
+    'javascript': '.js'
 }
 
 FILE_TYPES_FOR_TESTING = [
     '.py',
     '.js',
-    '.yml',
-    '.ps1'
+    '.yml'
 ]
+
+# github repository url
+CONTENT_GITHUB_LINK = r'https://raw.githubusercontent.com/demisto/content'
+CONTENT_GITHUB_MASTER_LINK = CONTENT_GITHUB_LINK + '/master'
 
 # Run all test signal
 RUN_ALL_TESTS_FORMAT = "Run all tests"
@@ -107,3 +121,9 @@ class PB_Status:
     COMPLETED = 'completed'
     FAILED = 'failed'
     IN_PROGRESS = 'inprogress'
+
+
+# change log regexes
+UNRELEASE_HEADER = '## [Unreleased]\n'
+CONTENT_RELEASE_TAG_REGEX = r'^\d{2}\.\d{1,2}\.\d'
+RELEASE_NOTES_REGEX = re.escape(UNRELEASE_HEADER) + r'([\s\S]+?)## \[\d{2}\.\d{1,2}\.\d\] - \d{4}-\d{2}-\d{2}'

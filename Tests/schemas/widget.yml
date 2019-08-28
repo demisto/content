@@ -27,8 +27,6 @@ mapping:
     type: bool
     required: yes
     enum: [true]
-  releaseNotes:
-    type: str
   dateRange:
     type: map
     allowempty: True

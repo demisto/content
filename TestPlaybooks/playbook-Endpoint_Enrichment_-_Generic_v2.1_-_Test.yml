@@ -131,10 +131,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: c2ec5003-ddfd-4c70-8fea-b6f17e3f078f
+    taskid: d279268a-58f3-4bde-8fb8-4b6712498e29
     type: condition
     task:
-      id: c2ec5003-ddfd-4c70-8fea-b6f17e3f078f
+      id: d279268a-58f3-4bde-8fb8-4b6712498e29
       version: -1
       name: Did enrichment work?
       description: Checks whether the enrichment outputs that we expected are in the
@@ -164,8 +164,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: CN=moshe,OU=Domain Controllers,DC=demisto,DC=int
-                accessor: Hostname
+                        simple: CN=moshe,DC=demisto,DC=ninja
             iscontext: true
       - - operator: containsGeneral
           left:
