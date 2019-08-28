@@ -219,6 +219,8 @@ def parse_query_args(args):
 
 
 def test_module():
+    if not ACCESS_KEY:
+        return_error('Cannot test valid connection without the Access Key parameter.')
     list_managed_url()
 
 
@@ -1482,7 +1484,8 @@ def download_attachment_request(attachment_id):
 LOG('command is %s' % (demisto.command(),))
 
 # Check if token needs to be refresh, if it does and relevant params are set, refresh.
-auto_refresh_token()
+if ACCESS_KEY:
+    auto_refresh_token()
 
 try:
     if demisto.command() == 'test-module':
