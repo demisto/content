@@ -1199,3 +1199,55 @@ def test_direct_message_handler(mocker, requests_mock):
         'type': 'message',
         'text': 'I\'m sorry but I was unable to find you as a Demisto user for email [johnnydepp@gmail.com]'
     }
+
+
+def test_error_parser():
+    from MicrosoftTeams import error_parser
+
+    class MockResponse:
+        def __init__(self, json_data, status_code, text=''):
+            self.json_data = json_data
+            self.status_code = status_code
+            self.text = text
+
+        def json(self):
+            return self.json_data
+
+    # verify bot framework error parsed as expected
+    error_description: str = "AADSTS700016: Application with identifier '2bc5202b-ad6a-4458-8821-e104af433bbb' " \
+                             "was not found in the directory 'botframework.com'. This can happen if the application " \
+                             "has not been installed by the administrator of the tenant or consented to by any user " \
+                             "in the tenant. You may have sent your authentication request to the wrong tenant.\r\n" \
+                             "Trace ID: 9eaeeec8-7f9e-4fb8-b319-5413581f0a00\r\nCorrelation ID: " \
+                             "138cb511-2484-410e-b9c1-14b15accbeba\r\nTimestamp: 2019-08-28 13:18:44Z"
+
+    bot_error_json_response: dict = {
+        'error': 'unauthorized_client',
+        'error_description': error_description,
+        'error_codes': [
+            700016
+        ],
+        'timestamp': '2019-08-28 13:18:44Z',
+        'trace_id': '9eaeeec8-7f9e-4fb8-b319-5413581f0a11',
+        'correlation_id': '138cb111-2484-410e-b9c1-14b15accbeba',
+        'error_uri': 'https://login.microsoftonline.com/error?code=700016'
+    }
+
+    bot_error_json_response = MockResponse(bot_error_json_response, 400)
+    assert error_parser(bot_error_json_response, 'bot') == error_description
+
+    # verify graph error parsed as expected
+    error_code: str = 'InvalidAuthenticationToken'
+    error_message: str = 'Access token validation failure.'
+    graph_error_json_response: dict = {
+        'error': {
+            'code': error_code,
+            'message': error_message,
+            'innerError': {
+                'request-id': 'c240ab22-4463-4a1f-82bc-8509d8190a77',
+                'date': '2019-08-28T13:37:14'
+            }
+        }
+    }
+    graph_error_json_response = MockResponse(graph_error_json_response, 401)
+    assert error_parser(graph_error_json_response) == f'{error_code}: {error_message}'
