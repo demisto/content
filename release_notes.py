@@ -535,8 +535,8 @@ def get_release_notes_draft(github_token, asset_id):
     requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
     try:
-        res = requests.get('https://api.github.com/repos/demisto/content/releases',  # guardrails-disable-line
-                           verify=False,
+        res = requests.get('https://api.github.com/repos/demisto/content/releases',
+                           verify=False,  # guardrails-disable-line
                            headers={'Authorization': 'token {}'.format(github_token)})
     except requests.exceptions.ConnectionError as exc:
         print_warning('unable to get release draft, reason:\n{}'.format(str(exc)))
