@@ -1080,15 +1080,73 @@ script:
       type: string
   - arguments:
     - default: false
-      description: File ID in Demisto
+      description: The file entry ID in Demisto
       isArray: false
-      name: file_id
+      name: entry_id
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: File category
+      isArray: false
+      name: type
+      predefined:
+      - Cuckoo
+      - CrowdStrike Intelligence
+      - Early Warning and Indicator Notice (EWIN)
+      - FireEye Analysis
+      - FBI FLASH
+      - Generic Text
+      - Intelligence Whitepaper
+      - iSight Report
+      - iSight ThreatScape Intelligence Report
+      - JIB
+      - MAEC
+      - Malware Analysis Report
+      - Malware Initial Findings Report (MFIR)
+      - Malware Sample
+      - Packet Capture
+      - Palo Alto Networks WildFire XML
+      - PCAP
+      - PDF
+      - Private Industry Notification (PIN)
+      - Spearphish Attachment
+      - STIX
+      - ThreatAnalyzer Analysis
+      - ThreatQ CSV File
+      - Whitepaper
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'off'
+      description: Enabling this will .zip malware files for safer downloading
+      isArray: false
+      name: malware_safety_lock
+      predefined:
+      - 'on'
+      - 'off'
+      required: false
+      secret: false
+    - default: false
+      description: File source
+      isArray: false
+      name: source
+      required: false
+      secret: false
+    - default: false
+      description: File title - by default, value would be the file name
+      isArray: false
+      name: title
+      required: false
+      secret: false
     deprecated: false
-    description: Uplad a file in ThreatQ
+    description: Upload a file in ThreatQ
     execution: false
     name: threatq-upload-file
+    outputs:
+    - contextPath: ThreatQ.File.
+      type: Unknown
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -1570,4 +1628,3 @@ script:
   runonce: false
   script: '-'
   type: python
-  subtype: python3
