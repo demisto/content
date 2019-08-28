@@ -1,0 +1,143 @@
+id: Panorama Query Logs - Test
+version: -1
+name: Panorama Query Logs - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bb0bbbee-b4d8-439f-8337-13ed98fff035
+    type: start
+    task:
+      id: bb0bbbee-b4d8-439f-8337-13ed98fff035
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 7456e61f-27a3-4ae6-8c03-82c6946bd1e7
+    type: playbook
+    task:
+      id: 7456e61f-27a3-4ae6-8c03-82c6946bd1e7
+      version: -1
+      name: Panorama Query Logs
+      playbookName: Panorama Query Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      action: {}
+      addr-dst: {}
+      addr-src: {}
+      filedigest: {}
+      log_type:
+        simple: url
+      port-dst: {}
+      query: {}
+      rule: {}
+      time-generated: {}
+      url:
+        simple: winatp-gw-weu.microsoft.com
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: b7f0068b-88cb-462c-89f0-f17b868126fa
+    type: condition
+    task:
+      id: b7f0068b-88cb-462c-89f0-f17b868126fa
+      version: -1
+      name: Exist context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Panorama.Monitor.Logs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 0f95f6ff-42bd-4e34-82e5-5f0a444b7bf9
+    type: title
+    task:
+      id: 0f95f6ff-42bd-4e34-82e5-5f0a444b7bf9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

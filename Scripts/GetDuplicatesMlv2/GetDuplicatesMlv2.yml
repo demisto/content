@@ -1,0 +1,101 @@
+commonfields:
+  id: GetDuplicatesMlv2
+  version: -1
+name: GetDuplicatesMlv2
+fromversion: "3.5.0"
+script: ''
+type: python
+tags:
+- dedup
+- incidents
+- ml
+- duplicate
+comment: |-
+  Find duplicate incidents candidates.
+  Using machine learning techniques with pre-defined data (can also use data from the local environment), this script takes into consideration different features such as: labels comparison, email labels (relevant for phishing), incident time difference and shared indicators, which can be customized by the arguments.
+enabled: true
+args:
+- name: maxNumberOfIncidents
+  description: Maximum number of incidents (to fetch from the database) to consider
+    for machine-learning calculation.
+  defaultValue: "1000"
+- name: timeFrameHours
+  description: Check candidates for duplication in this time frame of number of days
+    from\after.
+  defaultValue: "72"
+- name: ignoreClosedIncidents
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Ignore closed incidents as potential candidates.
+  defaultValue: "yes"
+- name: threshold
+  description: Threshold to consider incident as duplication, number between 0-1
+  defaultValue: "0.5"
+- name: compareIndicators
+  description: 'Indicators to consider for duplicate calculation, from the following
+    options: Email, IP, Domain, File SHA256, File MD5, URL. Comma separated values'
+  defaultValue: Email, IP, Domain, File SHA256, File MD5, URL
+- name: compareEmailLabels
+  description: 'Email labels to consider for duplicate calculation, from the following
+    options: Email/headers/From, Email/headers/Subject, Email/text, Email/html, Email/attachments.
+    Comma separated values. If your labels are different from the default, please
+    specify your labels as follows: LABEL_NAME:YOUR_LABEL_NAME. For example, email/from:email_sender.'
+  defaultValue: Email/headers/From, Email/headers/Subject, Email/text, Email/html,
+    Email/attachments
+- name: compareOtherLabels
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: If yes - take into account all labels keys.
+  defaultValue: "yes"
+- name: compareIncidentTimeDiff
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: If yes - take into account incident time differences.
+  defaultValue: "yes"
+- name: UseLocalEnvDuplicatesInLastDays
+  description: Consider duplicate incident examples from the local environment within
+    the last "X" days. Default is 0, which means do not use.
+  defaultValue: "0"
+- name: ipComparisonSubnetMask
+  description: Consider the equity of the IP base on this subnet mask (a valid value
+    is a number between 0 - 32). Default is 32 which means an exact match of the IP
+    addresses.
+  defaultValue: "32"
+- name: maxResults
+  description: Maximum number of candidates in the output (in incidents candidate
+    list).
+  defaultValue: "10"
+- name: timeField
+  auto: PREDEFINED
+  predefined:
+  - occurred
+  - created
+  - modified
+  description: Time field to consider.
+  defaultValue: created
+outputs:
+- contextPath: similarIncident
+  description: Similar incident.
+  type: unknown
+- contextPath: isSimilarIncidentFound
+  description: Found any duplicate?
+  type: boolean
+- contextPath: similarIncidentList
+  description: Similar incident candidates list.
+- contextPath: similarIncident.rawId
+  description: Similar incident ID.
+  type: string
+- contextPath: similarIncident.name
+  description: Similar incident name.
+  type: string
+scripttarget: 0
+runonce: false
+dockerimage: demisto/machine-learning
+tests:
+  - dedup_-_generic_-_test

@@ -319,7 +319,7 @@ inputs:
   value:
     simple: ml
   required: true
-  description: 'Choose one of duplicate method: rule, ml, text'
+  description: 'Choose one of duplicate method: rules, ml, text'
 - key: DuplicateThreshold
   value:
     simple: "0.75"

@@ -23,6 +23,7 @@ PRIVATE_KEY_CONTENT = None
 GAPPS_ID = None
 SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
 PROXY = demisto.params().get('proxy')
+DISABLE_SSL = demisto.params().get('insecure', False)
 
 
 ''' HELPER FUNCTIONS '''
@@ -96,7 +97,7 @@ def get_http_client_with_proxy():
         proxy_port=parsed_proxy.port,
         proxy_user=parsed_proxy.username,
         proxy_pass=parsed_proxy.password)
-    return httplib2.Http(proxy_info=proxy_info)
+    return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=DISABLE_SSL)
 
 
 def get_credentials(additional_scopes=None, delegated_user=None):
@@ -122,7 +123,7 @@ def get_credentials(additional_scopes=None, delegated_user=None):
 
 def get_service(serviceName, version, additional_scopes=None, delegated_user=None):
     credentials = get_credentials(additional_scopes=additional_scopes, delegated_user=delegated_user)
-    if PROXY:
+    if PROXY or DISABLE_SSL:
         http_client = credentials.authorize(get_http_client_with_proxy())
         return discovery.build(serviceName, version, http=http_client)
     return discovery.build(serviceName, version, credentials=credentials)
