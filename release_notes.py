@@ -1,3 +1,4 @@
+import re
 import abc
 import datetime
 import json
@@ -30,6 +31,7 @@ LAYOUT_TYPE_TO_NAME = {
     "edit": "New/Edit",
     "close": "Close",
     "quickView": "Quick View",
+    "indicatorsDetails": "Indicator Details",
 }
 
 INTEGRATIONS_DIR = "Integrations"
@@ -548,7 +550,7 @@ def get_release_notes_draft(github_token, asset_id):
     drafts = [release for release in res.json() if release.get('draft', False)]
     if drafts:
         if len(drafts) == 1:
-            return drafts[0]['body'].replace("xxxxx", asset_id)
+            return re.sub('Release Notes for version .* \((\d{5,})\)', asset_id, drafts[0]['body'])
         else:
             print_warning('Too many drafts to choose from ({}), skipping update.'.format(len(drafts)))
 

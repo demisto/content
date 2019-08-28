@@ -2,7 +2,6 @@
 	"id": "incident_emailhtml",
 	"version": -1,
 	"modified": "2019-07-01T10:34:23.758886583Z",
-	"sortValues": null,
 	"name": "Email HTML",
 	"ownerOnly": false,
 	"placeholder": "",
@@ -36,6 +35,5 @@
 	"defaultRows": null,
 	"sla": 0,
 	"threshold": 72,
-	"breachScript": "",
-	"validatedError": ""
+	"breachScript": ""
 }

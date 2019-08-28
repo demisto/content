@@ -1,1 +1,0 @@
-Added "Email HTML" mapping.
