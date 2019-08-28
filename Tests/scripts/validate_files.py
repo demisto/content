@@ -147,7 +147,7 @@ class FilesValidator(object):
         if not is_circle:
             files_string = run_command("git diff --name-status --no-merges HEAD")
             non_committed_modified_files, non_committed_added_files, non_committed_deleted_files, \
-            non_committed_old_format_files = self.get_modified_files(files_string)
+                non_committed_old_format_files = self.get_modified_files(files_string)
             all_changed_files_string = run_command("git diff --name-status origin/{}".format(tag))
             modified_files_from_tag, added_files_from_tag, _, _ = \
                 self.get_modified_files(all_changed_files_string)

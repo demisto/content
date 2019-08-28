@@ -2,7 +2,7 @@ import os
 import yaml
 import requests
 
-from Tests.scripts.constants import CONTENT_GITHUB_LINK, CONTENT_GITHUB_MASTER_LINK
+from Tests.scripts.constants import CONTENT_GITHUB_LINK
 from Tests.test_utils import print_error, get_yaml
 
 # disable insecure warnings
