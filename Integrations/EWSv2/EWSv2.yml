@@ -1112,7 +1112,7 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python2
+  type: python
 tests:
 - pyEWS_Test
 - EWS search-mailbox test
