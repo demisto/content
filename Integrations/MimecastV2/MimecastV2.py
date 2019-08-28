@@ -1529,7 +1529,7 @@ try:
         demisto.results(download_attachment())
 
 
-except Exception, e:
+except Exception as e:
     LOG(e.message)
     LOG.print_log()
     return_error(e.message)
