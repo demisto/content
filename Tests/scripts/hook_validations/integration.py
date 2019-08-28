@@ -101,21 +101,29 @@ class IntegrationValidator(object):
         for command in commands:
             command_name = command.get('name')
             # look for reputations commands
-            if ((command_name == 'file' and arg_name == 'file')
-                    or (command_name == 'email' and arg_name == 'email')
-                    or (command_name == 'domain' and arg_name == 'domain')
-                    or (command_name == 'url' and arg_name == 'url')
-                    or (command_name == 'ip' and arg_name == 'ip')):
-                context_paths = []
+            if command_name in ['domain', 'email', 'file', 'ip', 'url']:
+                context_outputs_paths = []
                 for output in command.get('outputs', []):
-                    context_paths.append(output.get('contextPath'))
-                if 'DBotScore.Indicator' not in context_paths\
-                        or 'DBotScore.Type' not in context_paths\
-                        or 'DBotScore.Vendor' not in context_paths\
-                        or 'DBotScore.Score' not in context_paths:
+                    context_outputs_paths.append(output.get('contextPath'))
+
+                # validate DBotScore outputs
+                if 'DBotScore.Indicator' not in context_outputs_paths\
+                        or 'DBotScore.Type' not in context_outputs_paths\
+                        or 'DBotScore.Vendor' not in context_outputs_paths\
+                        or 'DBotScore.Score' not in context_outputs_paths:
                     self._is_valid = False
                     print_error("The DBotScore outputs of the reputation command aren't valid. "
                                 "Fix according to context standard {} ".format(context_standard))
+
+                # validate the IOC output
+                if ((command_name == 'domain' and 'Domain.Name' not in context_outputs_paths)
+                        or (command_name == 'file' and 'File.Name' not in context_outputs_paths)
+                        or (command_name == 'ip' and 'IP.Address' not in context_outputs_paths)
+                        or (command_name == 'url' and 'URL.Data' not in context_outputs_paths)):
+                    self._is_valid = False
+                    print_error("The outputs of the {} command aren't valid. "
+                                "Fix according to context standard {} ".format(command_name, context_standard))
+
         return self._is_valid
 
     def is_valid_subtype(self):
