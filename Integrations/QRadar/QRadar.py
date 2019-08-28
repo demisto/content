@@ -1059,7 +1059,7 @@ try:
     elif demisto.command() == 'qradar-get-domain-by-id':
         demisto.results(get_domains_by_id_command())
 except Exception as e:
-    message = e.message if hasattr(e, 'message') else ''
+    message = e.message if hasattr(e, 'message') else convert_to_str(e)
     error = 'Error has occurred in the QRadar Integration: {error}\n {message}'.format(error=type(e), message=message)
     LOG(traceback.format_exc())
     if demisto.command() == 'fetch-incidents':
