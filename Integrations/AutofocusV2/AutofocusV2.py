@@ -73,7 +73,14 @@ API_PARAM_DICT = {
         'Malware Family': 'malware_family'
 
     },
-
+    'file_indicators': {
+        'Size': 'Size',
+        'SHA1': 'SHA1',
+        'SHA256': 'SHA256',
+        'FileType': 'Type',
+        'Tags': 'Tags',
+        'FileName': 'Name'
+    },
     'search_results': {
         'sha1': 'SHA1',
         'sha256': 'SHA256',
@@ -522,6 +529,24 @@ def print_hr_by_category(category_name, category_data):
             })
 
 
+def get_file_context_indicators(results):
+    files = []
+    for result in results:
+        raw_file = get_fields_from_hit_object(result, 'file_indicators')
+        file = get_relevant_fields(raw_file, 'file_indicators')
+        files.append(file)
+    return files
+
+
+def get_relevant_fields(result_object, response_dict_name):
+    af_params_dict = API_PARAM_DICT.get(response_dict_name)
+    new_object = {}
+    for key in result_object.keys():
+        if key in af_params_dict.values():
+            new_object[key] = result_object.get(key)
+    return new_object
+
+
 ''' COMMANDS'''
 
 
@@ -583,6 +608,7 @@ def samples_search_results_command():
     args = demisto.args()
     af_cookie = args.get('af_cookie')
     results, status = get_search_results('samples', af_cookie)
+    files = get_file_context_indicators(results)
     if len(results) < 1:
         md = results = 'No entries found that match the query'
     else:
@@ -593,7 +619,8 @@ def samples_search_results_command():
         'Contents': results,
         'EntryContext': {'AutoFocus.SamplesResults(val.ID == obj.ID)': results,
                          'AutoFocus.SamplesSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
-                                                                                   'AFCookie': af_cookie}},
+                                                                                   'AFCookie': af_cookie},
+                         outputPaths['file']: files},
         'HumanReadable': md
     })
 
@@ -602,6 +629,7 @@ def sessions_search_results_command():
     args = demisto.args()
     af_cookie = args.get('af_cookie')
     results, status = get_search_results('sessions', af_cookie)
+    files = get_file_context_indicators(results)
     if len(results) < 1:
         md = results = 'No entries found that match the query'
     else:
@@ -612,7 +640,8 @@ def sessions_search_results_command():
         'Contents': results,
         'EntryContext': {'AutoFocus.SessionsResults(val.ID == obj.ID)': results,
                          'AutoFocus.SessionsSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
-                                                                                    'AFCookie': af_cookie}},
+                                                                                    'AFCookie': af_cookie},
+                         outputPaths['file']: files},
         'HumanReadable': md
     })
 
