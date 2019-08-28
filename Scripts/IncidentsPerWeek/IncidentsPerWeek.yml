@@ -6,8 +6,8 @@ script: ''
 type: python
 tags:
 - widget
-comment: Data output script for populating dashboard widget with the amount
-  of incidents opened each week
+comment: Data output script for populating and displaying a dashboard widget with the number
+  of incidents opened per week.
 enabled: true
 scripttarget: 0
 subtype: python2
