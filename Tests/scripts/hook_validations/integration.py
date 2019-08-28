@@ -108,10 +108,10 @@ class IntegrationValidator(object):
 
                 # validate DBotScore outputs
                 DBot_Score_outputs = {'DBotScore.Indicator', 'DBotScore.Type', 'DBotScore.Vendor', 'DBotScore.Score'}
-                missing_outputs = {}
+                missing_outputs = []
                 for DBot_Score_output in DBot_Score_outputs:
                     if DBot_Score_output not in context_outputs_paths:
-                        missing_outputs.add(DBot_Score_output)
+                        missing_outputs.append(DBot_Score_output)
                         self._is_valid = False
                 if missing_outputs:
                     print_error("The DBotScore outputs of the reputation command aren't valid. Missing: {}."
