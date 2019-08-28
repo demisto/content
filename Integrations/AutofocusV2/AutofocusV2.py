@@ -650,12 +650,14 @@ def get_session_details_command():
     args = demisto.args()
     session_id = args.get('session_id')
     result = get_session_details(session_id)
+    file = get_file_context_indicators(result)
     md = tableToMarkdown(f'Session {session_id}:', result)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': result,
-        'EntryContext': {'AutoFocus.Sessions(val.ID == obj.ID)': result},
+        'EntryContext': {'AutoFocus.Sessions(val.ID == obj.ID)': result,
+                         outputPaths['file']: file},
         'HumanReadable': md
     })
 
