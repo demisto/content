@@ -5,20 +5,14 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import os
-import re
-import sys
 import hmac
 import uuid
 import json
-import time
-import urllib
 import base64
 import hashlib
 import datetime
 import requests
-from urlparse import urlparse
 from urllib2 import HTTPError
-from distutils.util import strtobool
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -95,7 +89,7 @@ def auto_refresh_token():
         last_update_ts = integration_context.get('token_last_update')
         current_ts = epoch_seconds()
         if (last_update_ts and current_ts - last_update_ts > 60 * 60 * 24 * 3 - 1800) or last_update_ts is None:
-            response = refresh_token_request()
+            refresh_token_request()
             current_ts = epoch_seconds()
             demisto.setIntegrationContext({'token_last_update': current_ts})
 
@@ -124,7 +118,7 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
             'x-mc-req-id': request_id,
             'Content-Type': 'application/json'
         }
-        auth_method = 'user'
+
     else:
         # This type of auth is only supported for basic commands: login/discover/refresh-token
         is_user_auth = False
@@ -138,7 +132,7 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
         }
 
     LOG('running %s request with url=%s\tparams=%s\tdata=%s\tis user auth=%s' % (
-    method, url, json.dumps(params), json.dumps(payload), is_user_auth))
+        method, url, json.dumps(params), json.dumps(payload), is_user_auth))
     try:
         res = requests.request(
             method,
@@ -159,11 +153,12 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
         if e.response.status_code == 418:
             if not APP_ID or not EMAIL_ADDRESS or not PASSWORD:
                 return_error(
-                    'Credentials provided are expired, could not automatically refresh tokens. App ID + Email Address + Password are required.')
+                    'Credentials provided are expired, could not automatically refresh tokens. App ID + Email Address '
+                    '+ Password are required.')
         else:
             raise
 
-    except Exception, e:
+    except Exception as e:
         LOG(e)
         raise
 
@@ -516,12 +511,11 @@ def create_policy_request(policy, option):
 
 
 def delete_policy():
-    headers = []
     contents = []
     context = {}
     policy_id = demisto.args().get('policyID').encode('utf-8')
 
-    deleted_policy = delete_policy_request(policy_id)
+    delete_policy_request(policy_id)
 
     context['Mimecast.Policy(val.ID && val.ID == obj.ID)'] = {
         'ID': policy_id,
@@ -683,10 +677,8 @@ def list_managed_url_request():
 
 
 def create_managed_url():
-    headers = []
     context = {}
     contents = {}
-    url_req_obj = {}
     managed_urls_context = []
     url = demisto.args().get('url').encode('utf-8')
     action = demisto.args().get('action').encode('utf-8')
@@ -1230,11 +1222,6 @@ def discover_request():
 
 
 def refresh_token():
-    headers = []
-    context = {}
-    context_obj = {}
-    contents = []
-
     contents = refresh_token_request()
 
     results = {
@@ -1342,7 +1329,6 @@ def get_message():
 
 def get_message_body_content_request(message_id, message_context, message_type):
     # Setup required variables
-    request_params = {}
     api_endpoint = '/api/archive/get-message-part'
 
     data = [{
@@ -1454,7 +1440,6 @@ def get_message_metadata(message_id):
 
 def get_message_metadata_request(message_id):
     # Setup required variables
-    request_params = {}
     api_endpoint = '/api/archive/get-message-detail'
     data = [{
         'id': message_id
@@ -1477,7 +1462,6 @@ def download_attachment():
 
 def download_attachment_request(attachment_id):
     # Setup required variables
-    request_params = {}
     api_endpoint = '/api/archive/get-file'
 
     data = [{
