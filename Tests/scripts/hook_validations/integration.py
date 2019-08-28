@@ -55,13 +55,16 @@ class IntegrationValidator(object):
         self.is_there_duplicate_params()
         self.is_changed_subtype()
 
+        # will move to is_valid_integration after https://github.com/demisto/etc/issues/17949
+        self.is_outputs_for_reputations_commands_valid()
+
         return self._is_valid
 
     def is_valid_integration(self):
         """Check whether the Integration is valid or not, update the _is_valid field to determine that"""
         self.is_valid_subtype()
         self.is_default_arguments()
-        self.is_outputs_for_reputations_commands_valid()
+
 
         return self._is_valid
 
