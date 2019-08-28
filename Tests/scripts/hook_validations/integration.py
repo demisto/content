@@ -3,7 +3,7 @@ import os
 import requests
 import yaml
 
-from Tests.scripts.constants import CONTENT_GITHUB_MASTER_LINK
+from Tests.scripts.constants import CONTENT_GITHUB_MASTER_LINK, PYTHON_SUBTYPES
 from Tests.test_utils import print_error, get_yaml
 
 # disable insecure warnings
@@ -131,7 +131,7 @@ class IntegrationValidator(object):
         type_ = self.current_integration.get('script', {}).get('type')
         if type_ == 'python':
             subtype = self.current_integration.get('script', {}).get('subtype')
-            if subtype not in ['python3', 'python2']:
+            if subtype not in PYTHON_SUBTYPES:
                 print_error("The subtype for our yml files should be either python2 or python3, "
                             "please update the file {}.".format(self.current_integration.get('name')))
                 self._is_valid = False
