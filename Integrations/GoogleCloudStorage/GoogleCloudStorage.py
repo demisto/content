@@ -93,10 +93,11 @@ def format_error(ex):
 
     if hasattr(ex, '__class__'):
         class_name = ex.__class__.__name__
-        if hasattr(ex, 'message'):
-            msg = '{}: {}'.format(class_name, ex.message)
+        details = str(ex)
+        if isinstance(ex, BaseException) and details:
+            msg = '{}: {}'.format(class_name, details)
         else:
-            msg += ' ({})'.format(class_name)
+            msg += ' ({})'.format(details if details else class_name)
 
     return msg
 
