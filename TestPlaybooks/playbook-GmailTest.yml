@@ -348,7 +348,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "29"
+      - "48"
     scriptarguments:
       message-id:
         complex:
@@ -422,7 +422,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "29"
+      - "48"
     scriptarguments:
       format: {}
       message-id:
@@ -516,7 +516,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "48"
     scriptarguments:
       format: {}
       thread-id:
@@ -661,7 +661,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "29"
+      - "48"
     scriptarguments:
       add-labels:
         simple: INBOX
@@ -907,7 +907,7 @@ tasks:
       '#default#':
       - "28"
       "yes":
-      - "29"
+      - "48"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1005,7 +1005,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
+          "x": 880,
           "y": 2410
         }
       }
@@ -1615,6 +1615,40 @@ tasks:
         "position": {
           "x": 840,
           "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "48":
+    id: "48"
+    taskid: f991bea6-655d-4570-8d24-09e0c21d162e
+    type: regular
+    task:
+      id: f991bea6-655d-4570-8d24-09e0c21d162e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2265
         }
       }
     note: false
