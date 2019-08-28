@@ -443,6 +443,7 @@ def test_mirror_investigation_new_mirror(mocker):
     }})
     mocker.patch.object(slack.WebClient, 'conversations_invite')
     mocker.patch.object(slack.WebClient, 'conversations_setTopic')
+    mocker.patch.object(slack.WebClient, 'chat_postMessage')
 
     new_mirror = {
         'channel_id': 'new_group',
@@ -458,18 +459,9 @@ def test_mirror_investigation_new_mirror(mocker):
     # Arrange
 
     mirror_investigation()
-
-    # Assert
-
-    assert slack.WebClient.groups_create.call_count == 1
-    assert slack.WebClient.users_list.call_count == 1
-    assert slack.WebClient.conversations_invite.call_count == 2
-    assert slack.WebClient.conversations_setTopic.call_count == 1
-
     error_results = demisto.results.call_args_list[0][0]
-    assert error_results[0]['Contents'] == 'User alexios not found in Slack'
     success_results = demisto.results.call_args_list[1][0]
-    assert success_results[0] == 'Investigation mirrored successfully, channel: incident-999'
+    message_args = slack.WebClient.chat_postMessage.call_args[1]
 
     new_context = demisto.setIntegrationContext.call_args[0][0]
     new_mirrors = json.loads(new_context['mirrors'])
@@ -478,6 +470,19 @@ def test_mirror_investigation_new_mirror(mocker):
     our_conversation = our_conversation_filter[0]
     our_mirror_filter = list(filter(lambda m: '999' == m['investigation_id'], new_mirrors))
     our_mirror = our_mirror_filter[0]
+
+    # Assert
+
+    assert slack.WebClient.groups_create.call_count == 1
+    assert slack.WebClient.users_list.call_count == 1
+    assert slack.WebClient.conversations_invite.call_count == 2
+    assert slack.WebClient.conversations_setTopic.call_count == 1
+    assert slack.WebClient.chat_postMessage.call_count == 1
+
+    assert error_results[0]['Contents'] == 'User alexios not found in Slack'
+    assert success_results[0] == 'Investigation mirrored successfully, channel: incident-999'
+    assert message_args['channel'] == 'new_group'
+    assert message_args['text'] == 'This is the mirrored channel for incident 999.'
 
     assert len(our_conversation_filter) == 1
     assert len(our_mirror_filter) == 1
@@ -507,6 +512,7 @@ def test_mirror_investigation_new_mirror_with_name(mocker):
     }})
     mocker.patch.object(slack.WebClient, 'conversations_invite')
     mocker.patch.object(slack.WebClient, 'conversations_setTopic')
+    mocker.patch.object(slack.WebClient, 'chat_postMessage')
 
     new_mirror = {
         'channel_id': 'new_group',
@@ -522,18 +528,9 @@ def test_mirror_investigation_new_mirror_with_name(mocker):
     # Arrange
 
     mirror_investigation()
-
-    # Assert
-
-    assert slack.WebClient.groups_create.call_count == 1
-    assert slack.WebClient.users_list.call_count == 1
-    assert slack.WebClient.conversations_invite.call_count == 2
-    assert slack.WebClient.conversations_setTopic.call_count == 1
-
     error_results = demisto.results.call_args_list[0][0]
-    assert error_results[0]['Contents'] == 'User alexios not found in Slack'
     success_results = demisto.results.call_args_list[1][0]
-    assert success_results[0] == 'Investigation mirrored successfully, channel: coolname'
+    message_args = slack.WebClient.chat_postMessage.call_args[1]
 
     new_context = demisto.setIntegrationContext.call_args[0][0]
     new_mirrors = json.loads(new_context['mirrors'])
@@ -542,6 +539,19 @@ def test_mirror_investigation_new_mirror_with_name(mocker):
     our_conversation = our_conversation_filter[0]
     our_mirror_filter = list(filter(lambda m: '999' == m['investigation_id'], new_mirrors))
     our_mirror = our_mirror_filter[0]
+
+    # Assert
+
+    assert slack.WebClient.groups_create.call_count == 1
+    assert slack.WebClient.users_list.call_count == 1
+    assert slack.WebClient.conversations_invite.call_count == 2
+    assert slack.WebClient.conversations_setTopic.call_count == 1
+    assert slack.WebClient.chat_postMessage.call_count == 1
+
+    assert error_results[0]['Contents'] == 'User alexios not found in Slack'
+    assert success_results[0] == 'Investigation mirrored successfully, channel: coolname'
+    assert message_args['channel'] == 'new_group'
+    assert message_args['text'] == 'This is the mirrored channel for incident 999.'
 
     assert len(our_conversation_filter) == 1
     assert len(our_mirror_filter) == 1
@@ -571,6 +581,7 @@ def test_mirror_investigation_new_mirror_with_topic(mocker):
     }})
     mocker.patch.object(slack.WebClient, 'conversations_invite')
     mocker.patch.object(slack.WebClient, 'conversations_setTopic')
+    mocker.patch.object(slack.WebClient, 'chat_postMessage')
 
     new_mirror = {
         'channel_id': 'new_group',
@@ -587,19 +598,8 @@ def test_mirror_investigation_new_mirror_with_topic(mocker):
 
     mirror_investigation()
     topic_args = slack.WebClient.conversations_setTopic.call_args[1]
-
-    # Assert
-
-    assert slack.WebClient.groups_create.call_count == 1
-    assert slack.WebClient.users_list.call_count == 1
-    assert slack.WebClient.conversations_invite.call_count == 2
-    assert slack.WebClient.conversations_setTopic.call_count == 1
-
-    error_results = demisto.results.call_args_list[0][0]
-    assert error_results[0]['Contents'] == 'User alexios not found in Slack'
     success_results = demisto.results.call_args_list[1][0]
-    assert success_results[0] == 'Investigation mirrored successfully, channel: coolname'
-
+    error_results = demisto.results.call_args_list[0][0]
     new_context = demisto.setIntegrationContext.call_args[0][0]
     new_mirrors = json.loads(new_context['mirrors'])
     new_conversations = json.loads(new_context['conversations'])
@@ -607,6 +607,20 @@ def test_mirror_investigation_new_mirror_with_topic(mocker):
     our_conversation = our_conversation_filter[0]
     our_mirror_filter = list(filter(lambda m: '999' == m['investigation_id'], new_mirrors))
     our_mirror = our_mirror_filter[0]
+    message_args = slack.WebClient.chat_postMessage.call_args[1]
+
+    # Assert
+
+    assert slack.WebClient.groups_create.call_count == 1
+    assert slack.WebClient.users_list.call_count == 1
+    assert slack.WebClient.conversations_invite.call_count == 2
+    assert slack.WebClient.conversations_setTopic.call_count == 1
+    assert slack.WebClient.chat_postMessage.call_count == 1
+
+    assert error_results[0]['Contents'] == 'User alexios not found in Slack'
+    assert success_results[0] == 'Investigation mirrored successfully, channel: coolname'
+    assert message_args['channel'] == 'new_group'
+    assert message_args['text'] == 'This is the mirrored channel for incident 999.'
 
     assert topic_args['channel'] == 'new_group'
     assert topic_args['topic'] == 'cooltopic'
