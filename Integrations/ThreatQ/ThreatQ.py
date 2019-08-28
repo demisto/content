@@ -102,11 +102,40 @@ TYPE_ID_TO_EVENT_TYPE = {
     13: 'Incident'
 }
 
+TYPE_ID_TO_FILE_TYPE = {
+    1: 'Cuckoo',
+    2: 'CrowdStrike Intelligence',
+    3: 'Early Warning and Indicator Notice (EWIN)',
+    4: 'FireEye Analysis',
+    5: 'FBI FLASH',
+    6: 'Generic Text',
+    7: 'Intelligence Whitepaper',
+    8: 'iSight Report',
+    9: 'iSight ThreatScape Intelligence Report',
+    10: 'IB',
+    11: 'AEC',
+    12: 'Malware Analysis Report',
+    13: 'Malware Initial Findings Report (MFIR)',
+    14: 'Malware Sample',
+    15: 'Packet Capture',
+    16: 'Palo Alto Networks WildFire XML',
+    17: 'PCAP',
+    18: 'PDF',
+    19: 'Private Industry Notification (PIN)',
+    20: 'Spearphish Attachment',
+    21: 'STIX',
+    22: 'ThreatAnalyzer Analysis',
+    23: 'ThreatQ CSV File',
+    24: 'Whitepaper'
+}
+
 HEADERS = {
     'indicator': ['ID', 'IndicatorType', 'Value', 'Description', 'Status',
                   'TQScore', 'CreatedAt', 'UpdatedAt', 'DBotScore', 'URL'],
     'adversary': ['ID', 'Name', 'CreatedAt', 'UpdatedAt', 'URL'],
     'event': ['ID', 'EventType', 'Title', 'Description', 'Occurred', 'CreatedAt', 'UpdatedAt', 'URL'],
+    'attachment': ['ID', 'Name', 'Title', 'FileType', 'Size', 'Description', 'MD5', 'CreatedAt', 'UpdatedAt',
+             'MalwareLocked', 'ContentType', 'URL'],
     'attrs': ['ID', 'Name', 'Value'],
     'sources': ['ID', 'Name']
 }
@@ -114,7 +143,8 @@ HEADERS = {
 OBJ_DIRECTORY = {
     'indicator': 'indicators',
     'adversary': 'adversaries',
-    'event': 'events'
+    'event': 'events',
+    'attachment': 'attachments'
 }
 
 
@@ -226,7 +256,6 @@ def create_dbot_context(indicator, ind_type, ind_score):
         (dict). The indicator's DBotScore.
 
     """
-    #
     dbot_score_map = {
         -1: 0,
         0: 1,
@@ -327,6 +356,22 @@ def attributes_to_demisto_format(lst):
     } for elem in lst]
 
 
+def content_type_to_demisto_format(c_type_id):
+    # content_type is a file object property
+    return 'text/plain' if c_type_id == 1 else 'text/rtf'
+
+
+def malware_locked_to_request_format(state):
+    # malware_locked is a file object property
+    if not state:
+        return None
+    return 1 if state == 'on' else 0
+
+
+def malware_locked_to_demisto_format(state):
+    return 'on' if state == 1 else 'off'
+
+
 def parse_date(text):
     valid_formats = ['%Y-%m-%d %H:%M:%S', '%Y-%m-%d']
     for fmt in valid_formats:
@@ -344,6 +389,8 @@ def data_to_demisto_format(data, obj_type):
         return event_data_to_demisto_format(data)
     elif obj_type == 'adversary':
         return adversary_data_to_demisto_format(data)
+    elif obj_type == 'attachment':
+        return file_data_to_demisto_format(data)
 
 
 def indicator_data_to_demisto_format(data):
@@ -393,6 +440,26 @@ def event_data_to_demisto_format(data):
         'Attributes': attributes_to_demisto_format(data.get('attributes'))
     }
     return ret
+
+
+def file_data_to_demisto_format(data):
+    raw = {
+        'ID': data.get('id'),
+        'Type': 'attachment',
+        'CreatedAt': data.get('created_at'),
+        'UpdatedAt': data.get('updated_at'),
+        'Size': data.get('file_size'),
+        'MD5': data.get('hash'),
+        'FileType': TYPE_ID_TO_FILE_TYPE[data.get('type_id')],
+        'Name': data.get('name'),
+        'Title': data.get('title'),
+        'ContentType': content_type_to_demisto_format(data.get('content_type_id')),
+        'MalwareLocked': malware_locked_to_demisto_format(data.get('content_type_id')),
+        'Sources': sources_to_demisto_format(data.get('sources')),
+        'Attributes': attributes_to_demisto_format(data.get('attributes'))
+    }
+
+    return raw
 
 
 def get_pivot_id(obj1_type, obj1_id, obj2_type, obj2_id):
@@ -925,36 +992,91 @@ def upload_file_command():
     args = demisto.args()
     entry_id = args.get('entry_id')
     title = args.get('title')
-    type = args.get('type')
-    source = args.get('source')
     malware_safety_lock = args.get('malware_safety_lock')
+    file_type = args.get('file_type')
+    source_lst = args.get('source_lst')
+    attr_names_lst = args.get('attr_names_lst')
+    attr_values_lst = args.get('attr_values_lst')
 
     file_info = demisto.getFilePath(entry_id)
-    file_path = file_info['path']
-    file_name = file_info['name']
+
+    if not title:
+        title = file_info['name']
 
     params = {
-        'malware_locked': 0,
         'name': file_info['name'],
-        'sources': [] if not sources else ,
-        'title': file_info['name'],
-        'type': type
+        'title': title,
+        'type': file_type,
+        'malware_locked': malware_locked_to_request_format(malware_safety_lock),
+        'sources': sources_to_request_format(source_lst),
+        'attributes': attributes_to_request_format(attr_names_lst, attr_values_lst)
     }
 
     try:
         shutil.copy(file_info['path'], file_info['name'])
-    except Exception:
-        return_error('Failed to prepare file for upload.')
+    except Exception as e:
+        return_error('Failed to prepare file for upload. Error message: {0}'.format(str(e)))
 
     try:
-        demisto.log(str(file_info['name']))
-        with open(file_name, 'rb') as f:
-            files = {'file': file_info['name']}
+        with open(file_info['name'], 'rb') as f:
+            files = {'file': f}
             url_suffix = '/attachments'
-            tq_request('POST', url_suffix, params, files=files)
-            demisto.results('Successfully uploaded the file.')
+            res = tq_request('POST', url_suffix, params, files=files)
     finally:
         shutil.rmtree(file_info['name'], ignore_errors=True)
+
+    raw = file_data_to_demisto_format(res['data'])
+
+    ec = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': raw}
+
+    readable_title = 'Successfully uploaded file {0}.'.format(file_info['name'])
+    readable = build_readable(readable_title, 'file', raw)
+
+    return_outputs(readable, ec, raw)
+
+
+def edit_file_command():
+    args = demisto.args()
+    file_id = args.get('file_id')
+    description = args.get('description')
+    title = args.get('title')
+    name = args.get('name')
+    malware_safety_lock = args.get('malware_safety_lock')
+    file_type = args.get('file_type')
+
+    if isinstance(file_id, str) and not file_id.isdigit():
+        return_error('Argument file_id must be an integer.')
+
+    params = {
+        'malware_locked': malware_locked_to_request_format(malware_safety_lock),
+        'name': name,
+        'title': title,
+        'type': file_type,
+        'description': description
+    }
+
+    # Remove items with empty values:
+    params = {k: v for k, v in params.items() if v is not None}
+
+    url_suffix = '/attachments/{0}'.format(file_id)
+    res = tq_request('PUT', url_suffix, params)
+
+    raw = file_data_to_demisto_format(res['data'])
+    entry_context = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': createContext(raw, removeNull=True)}
+
+    readable_title = 'Successfully edited file with ID {0}'.format(file_id)
+    readable = build_readable(readable_title, 'file', raw)
+
+    return_outputs(readable, entry_context, raw)
+
+
+def download_file_command():
+    args = demisto.args()
+    file_id = args.get('file_id')
+
+    url_suffix = '/attachments/{0}/download'.format(file_id)
+    res = tq_request('GET', url_suffix)  # todo: finish command
+    demisto.results(res)
 
 
 def update_status_command():
@@ -1161,6 +1283,10 @@ try:
         delete_attr_command()
     elif command == 'threatq-upload-file':
         upload_file_command()
+    elif command == 'threatq-edit-file':
+        edit_file_command()
+    elif command == 'threatq-download-file':
+        download_file_command()
     elif command == 'threatq-update-status':
         update_status_command()
     elif command == 'threatq-update-score':
