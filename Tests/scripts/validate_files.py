@@ -112,6 +112,8 @@ class FilesValidator(object):
                 deleted_files.add(file_path)
             elif file_status.lower().startswith('r') and checked_type(file_path):
                 modified_files_list.add((file_data[1], file_data[2]))
+            elif checked_type(file_path, [SCHEMA_REGEX]):
+                modified_files_list.add(file_path)
             elif file_status.lower() not in KNOWN_FILE_STATUSES:
                 print_error(file_path + " file status is an unknown known one, "
                                         "please check. File status was: " + file_status)
@@ -203,10 +205,14 @@ class FilesValidator(object):
                 integration_validator = IntegrationValidator(file_path, old_file_path=old_file_path)
                 if is_backward_check and not integration_validator.is_backward_compatible():
                     self._is_valid = False
+                if not integration_validator.is_valid_integration():
+                    self._is_valid = False
 
             elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
                 script_validator = ScriptValidator(file_path, old_file_path=old_file_path)
                 if is_backward_check and not script_validator.is_backward_compatible():
+                    self._is_valid = False
+                if not script_validator.is_valid_script():
                     self._is_valid = False
 
             elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
@@ -298,11 +304,20 @@ class FilesValidator(object):
             branch_name (string): The name of the branch you are working on.
         """
         modified_files, added_files, old_format_files = self.get_modified_and_added_files(branch_name, self.is_circle)
-
-        self.validate_no_secrets_found(branch_name)
-        self.validate_modified_files(modified_files, is_backward_check)
-        self.validate_added_files(added_files)
-        self.validate_no_old_format(old_format_files)
+        schema_changed = False
+        for f in modified_files:
+            if isinstance(f, tuple):
+                _, f = f
+            if checked_type(f, [SCHEMA_REGEX]):
+                schema_changed = True
+        # Ensure schema change did not break BC
+        if schema_changed:
+            self.validate_all_files()
+        else:
+            self.validate_no_secrets_found(branch_name)
+            self.validate_modified_files(modified_files, is_backward_check)
+            self.validate_added_files(added_files)
+            self.validate_no_old_format(old_format_files)
 
     def validate_all_files(self):
         """Validate all files in the repo are in the right format."""

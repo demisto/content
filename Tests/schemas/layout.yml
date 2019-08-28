@@ -30,10 +30,8 @@ mapping:
         type: number
       kind:
         type: str
-        required: True
       typeId:
         type: str
-        required: True
       modified:
         type: str
       name:
