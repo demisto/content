@@ -1,3 +1,3 @@
 ## [Unreleased]
-  - Added new widget with the ability to see how many incidents were opened each week
+Added a widget that displays the number of incidents that were opened per week.
 
