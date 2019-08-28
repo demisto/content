@@ -13,13 +13,12 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8413e04e-c9ff-4942-85cf-50fe1f408808
+    taskid: acf29053-815f-4e96-8122-4781e4f967d7
     type: start
     task:
-      id: 8413e04e-c9ff-4942-85cf-50fe1f408808
+      id: acf29053-815f-4e96-8122-4781e4f967d7
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -38,10 +37,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 437573fd-802e-4c52-81a1-95a9d3a9b45e
+    taskid: 8d01fbd2-8fe8-49f3-89ea-1c412a1c53a1
     type: regular
     task:
-      id: 437573fd-802e-4c52-81a1-95a9d3a9b45e
+      id: 8d01fbd2-8fe8-49f3-89ea-1c412a1c53a1
       version: -1
       name: Download TXT file
       description: Downloads a TXT file using HTTP GET.
@@ -81,10 +80,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: e824e975-52d6-40fc-850c-b28b17bf9f57
+    taskid: 36c14cb2-423d-4d53-8423-2f1a44f4875f
     type: condition
     task:
-      id: e824e975-52d6-40fc-850c-b28b17bf9f57
+      id: 36c14cb2-423d-4d53-8423-2f1a44f4875f
       version: -1
       name: Were the correct indicators extracted?
       description: Checks whether specific indicators were extracted from each one
@@ -169,6 +168,16 @@ tasks:
                 transformers:
                 - operator: toUpperCase
             iscontext: true
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: URL
+                accessor: Data
+            iscontext: true
+          right:
+            value:
+              simple: https://mock.com?e=P6wGLG
     view: |-
       {
         "position": {
@@ -181,13 +190,12 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 021f84a0-ec5e-499f-8d2e-e41e49a97827
+    taskid: 88666eac-de82-43cd-80e7-b7bcbd707c8b
     type: title
     task:
-      id: 021f84a0-ec5e-499f-8d2e-e41e49a97827
+      id: 88666eac-de82-43cd-80e7-b7bcbd707c8b
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -204,10 +212,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: eafc1ba0-7f53-448f-8775-8250d601451d
+    taskid: a7537367-cc86-4d5c-8179-eb9e3edbf463
     type: regular
     task:
-      id: eafc1ba0-7f53-448f-8775-8250d601451d
+      id: a7537367-cc86-4d5c-8179-eb9e3edbf463
       version: -1
       name: Make test fail
       description: Causes the test playbook to fail if the correct email addresses
@@ -236,13 +244,12 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 83802eda-2b9a-4008-8b80-82f764254dc9
+    taskid: 69f8a4ec-a422-4067-84d8-c09cf54de4a9
     type: title
     task:
-      id: 83802eda-2b9a-4008-8b80-82f764254dc9
+      id: 69f8a4ec-a422-4067-84d8-c09cf54de4a9
       version: -1
       name: Download Files
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -254,6 +261,7 @@ tasks:
       - "11"
       - "15"
       - "18"
+      - "20"
     separatecontext: false
     view: |-
       {
@@ -267,10 +275,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: b1e0c536-eca1-48fa-8809-912c83c6ee5a
+    taskid: d021722f-2461-4b45-863a-d17979a1988e
     type: regular
     task:
-      id: b1e0c536-eca1-48fa-8809-912c83c6ee5a
+      id: d021722f-2461-4b45-863a-d17979a1988e
       version: -1
       name: Download DOC file
       description: Downloads a DOC file using HTTP GET.
@@ -310,10 +318,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: f99b7564-3dfe-4f2a-8dff-9b11ca930d41
+    taskid: d79d8f9b-0d3d-479f-8fe1-1cf0902d8bf2
     type: regular
     task:
-      id: f99b7564-3dfe-4f2a-8dff-9b11ca930d41
+      id: d79d8f9b-0d3d-479f-8fe1-1cf0902d8bf2
       version: -1
       name: Download DOCX file
       description: Downloads a DOCX file using HTTP GET.
@@ -353,10 +361,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 75a86fbe-f1b2-4fc9-81a7-ce987066bd83
+    taskid: 2c831b40-0b51-4868-8d07-3452279b8f0b
     type: regular
     task:
-      id: 75a86fbe-f1b2-4fc9-81a7-ce987066bd83
+      id: 2c831b40-0b51-4868-8d07-3452279b8f0b
       version: -1
       name: Download PDF file
       description: Downloads a PDF file using HTTP GET.
@@ -396,10 +404,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 7bc46c8b-8690-4f90-8361-7e5c27a6ba2f
+    taskid: 77764bdf-2752-45c1-845b-9912d826761d
     type: regular
     task:
-      id: 7bc46c8b-8690-4f90-8361-7e5c27a6ba2f
+      id: 77764bdf-2752-45c1-845b-9912d826761d
       version: -1
       name: Delete Context
       description: Delete the context of the incident to start with clear context.
@@ -431,10 +439,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 4186830f-cf3e-49ed-8720-39125eb9de6e
+    taskid: 6d32259d-a837-4547-82d0-cf883f087d8b
     type: condition
     task:
-      id: 4186830f-cf3e-49ed-8720-39125eb9de6e
+      id: 6d32259d-a837-4547-82d0-cf883f087d8b
       version: -1
       name: Did the PDF file return outputs?
       description: |-
@@ -517,10 +525,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: a7f5c5b4-97e4-42d5-8a0b-a2434d3bd24c
+    taskid: 9ac7080d-c4dd-4b94-8fe0-4b182283c074
     type: regular
     task:
-      id: a7f5c5b4-97e4-42d5-8a0b-a2434d3bd24c
+      id: 9ac7080d-c4dd-4b94-8fe0-4b182283c074
       version: -1
       name: Download EML file
       description: Downloads an EML file using HTTP GET.
@@ -560,10 +568,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: bde0ac3e-6b86-4892-8903-b5eac5002a1e
+    taskid: b24d3e5f-c9a5-4d2a-851a-2e7d7aea1877
     type: regular
     task:
-      id: bde0ac3e-6b86-4892-8903-b5eac5002a1e
+      id: b24d3e5f-c9a5-4d2a-851a-2e7d7aea1877
       version: -1
       name: Download XLSX file
       description: Downloads an XLSX file using HTTP GET.
@@ -603,10 +611,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: a09c8414-f315-4943-86c7-6f02638de504
+    taskid: aaea1865-4ee1-4738-8d3a-794c62b22d03
     type: playbook
     task:
-      id: a09c8414-f315-4943-86c7-6f02638de504
+      id: aaea1865-4ee1-4738-8d3a-794c62b22d03
       version: -1
       name: Extract Indicators From File - Generic v2
       playbookName: Extract Indicators From File - Generic v2
@@ -615,14 +623,56 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
       - "14"
+      - "3"
     separatecontext: true
     view: |-
       {
         "position": {
           "x": 50,
           "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 3f9b5e0d-cf2f-4305-8983-856df49f1b50
+    type: regular
+    task:
+      id: 3f9b5e0d-cf2f-4305-8983-856df49f1b50
+      version: -1
+      name: Download RTF file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/ACH.Payment.Advice.rtf
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1380,
+          "y": 570
         }
       }
     note: false
@@ -637,8 +687,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1415,
-        "width": 2770,
-        "x": -910,
+        "width": 3240,
+        "x": -1380,
         "y": 50
       }
     }

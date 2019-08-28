@@ -182,7 +182,17 @@ def parse_response(resp, err_operation):
     # Errors returned from AutoFocus
     except requests.exceptions.HTTPError:
         err_msg = f'{err_operation}: {res_json.get("message")}'
-        return return_error(err_msg)
+        if res_json.get("message").find('Requested sample not found') != -1:
+            demisto.results(err_msg)
+            sys.exit(0)
+        elif res_json.get("message").find("AF Cookie Not Found") != -1:
+            demisto.results(err_msg)
+        elif err_operation == 'Tag details operation failed' and\
+                res_json.get("message").find("Tag") != -1 and res_json.get("message").find("not found") != -1:
+            demisto.results(err_msg)
+            sys.exit(0)
+        else:
+            return return_error(err_msg)
     # Unexpected errors (where no json object was received)
     except Exception as err:
         err_msg = f'{err_operation}: {err}'
@@ -402,6 +412,11 @@ def parse_tag_details_response(resp):
     new_tag_info = {}
     for field in fields_to_extract_from_tag_details:
         new_tag_info[field] = tag_details.get(field)
+
+    tag_group_details = resp.get('tag_groups')
+    if tag_group_details:
+        new_tag_info['tag_group'] = tag_group_details
+
     return new_tag_info
 
 
@@ -568,12 +583,17 @@ def samples_search_results_command():
     args = demisto.args()
     af_cookie = args.get('af_cookie')
     results, status = get_search_results('samples', af_cookie)
-    md = tableToMarkdown(f'Search Samples Results is {status}', results)
+    if len(results) < 1:
+        md = results = 'No entries found that match the query'
+    else:
+        md = tableToMarkdown(f'Search Samples Results is {status}', results)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': results,
-        'EntryContext': {'AutoFocus.SamplesResults(val.ID == obj.ID)': results},
+        'EntryContext': {'AutoFocus.SamplesResults(val.ID == obj.ID)': results,
+                         'AutoFocus.SamplesSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
+                                                                                   'AFCookie': af_cookie}},
         'HumanReadable': md
     })
 
@@ -582,12 +602,17 @@ def sessions_search_results_command():
     args = demisto.args()
     af_cookie = args.get('af_cookie')
     results, status = get_search_results('sessions', af_cookie)
-    md = tableToMarkdown(f'Search Sessions Results is {status}:', results)
+    if len(results) < 1:
+        md = results = 'No entries found that match the query'
+    else:
+        md = tableToMarkdown(f'Search Samples Results is {status}', results)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': results,
-        'EntryContext': {'AutoFocus.SessionsResults(val.ID == obj.ID)': results},
+        'EntryContext': {'AutoFocus.SessionsResults(val.ID == obj.ID)': results,
+                         'AutoFocus.SessionsSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
+                                                                                    'AFCookie': af_cookie}},
         'HumanReadable': md
     })
 
@@ -668,7 +693,9 @@ def top_tags_results_command():
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': results,
-        'EntryContext': {'AutoFocus.TopTagsResults(val.PublicTagName == obj.PublicTagName)': context},
+        'EntryContext': {'AutoFocus.TopTagsResults(val.PublicTagName == obj.PublicTagName)': context,
+                         'AutoFocus.TopTagsSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
+                                                                                   'AFCookie': af_cookie}},
         'HumanReadable': md
     })
 

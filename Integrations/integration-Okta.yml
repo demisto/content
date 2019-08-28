@@ -964,7 +964,7 @@ script:
         var queryParams = {};
 
         if(filter){
-            queryParams.filter =  encodeURIComponent(filter);
+            queryParams.filter =  filter;
         }
 
         if(query){

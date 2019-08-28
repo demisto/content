@@ -1,0 +1,479 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Palo Alto Minemeld
+  version: -1
+configuration:
+- display: MineMeld url e.g.(https://192.0.0.1/)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Blacklist names e.g.(BlackListIPv4, BlackListURL,Malicious)
+  name: blacklist
+  required: false
+  type: 0
+- display: Whitelist names e.g.(wlWhiteListIPv4,wlWhiteListDomain,Unmalicious)
+  name: whitelist
+  required: false
+  type: 0
+- defaultvalue: 'false'
+  display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+description: MineMeld streamlines the aggregation, enforcement and sharing of threat
+  intelligence.
+display: Palo Alto Networks Minemeld
+name: Palo Alto Minemeld
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Miner name - you can get it under Nodes page on Minemeld UI (nodes
+        of type "miner").
+      isArray: false
+      name: miner
+      required: true
+      secret: false
+    - default: false
+      description: The indicator's value to add. Support list \ comma-separated values.
+      isArray: true
+      name: indicator
+      required: true
+      secret: false
+    - default: false
+      description: Comment for the indicator.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Add indicator to a miner.
+    execution: false
+    name: minemeld-add-to-miner
+  - arguments:
+    - default: false
+      description: Miner name - you can get it under Nodes page on Minemeld UI (nodes
+        of type "miner").
+      isArray: false
+      name: miner
+      required: true
+      secret: false
+    - default: false
+      description: The value of the indicator  to remove.
+      isArray: false
+      name: indicator
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove an indicator from a miner.
+    execution: false
+    name: minemeld-remove-from-miner
+  - arguments:
+    - default: false
+      description: Miner name, value 'all' for all miners indicators
+      isArray: false
+      name: miner
+      required: true
+      secret: false
+    deprecated: false
+    description: Get miner's indicators list.
+    execution: false
+    name: minemeld-retrieve-miner
+    outputs:
+    - contextPath: MineMeld.Miner
+      description: Entire miner object
+      type: unknown
+    - contextPath: MineMeld.Miner.name
+      description: Miner name
+      type: string
+    - contextPath: MineMeld.Miner.class
+      description: Miner class
+      type: string
+    - contextPath: MineMeld.Indicators
+      description: Entire indicator object
+      type: Unknown
+    - contextPath: MineMeld.Indicators.miner
+      description: Indicator's miner
+      type: string
+    - contextPath: MineMeld.Indicators.type
+      description: Indicator type
+      type: string
+    - contextPath: MineMeld.Indicators.indicator
+      description: Indicator's value
+      type: string
+    - contextPath: MineMeld.Indicators.comment
+      description: Indicator's comment
+      type: string
+  - arguments:
+    - default: false
+      description: Miner name
+      isArray: false
+      name: miner
+      required: true
+      secret: false
+    - default: false
+      description: Indicator details
+      isArray: false
+      name: indicator
+      required: true
+      secret: false
+    deprecated: false
+    description: Get indicator from a miner's list
+    execution: false
+    name: minemeld-get-indicator-from-miner
+    outputs:
+    - contextPath: MineMeld.Miner
+      description: Entire miner object
+      type: Unknown
+    - contextPath: MineMeld.Miner.name
+      description: Miner name
+      type: string
+    - contextPath: MineMeld.Indicators
+      description: Entire indicator object
+      type: unknown
+    - contextPath: MineMeld.Indicators.miner
+      description: Indicator's miner
+      type: string
+    - contextPath: MineMeld.Indicators.type
+      description: Indicator type
+      type: string
+    - contextPath: MineMeld.Indicators.indicator
+      description: Indicator's value
+      type: string
+    - contextPath: MineMeld.Indicators.comment
+      description: Indicator's comment
+      type: string
+  - arguments:
+    - default: true
+      description: ip
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Search for ip on miners
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The Indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The DBot score vendor
+      type: string
+    - contextPath: DBotScore.Score
+      description: The DBot score
+      type: number
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+      type: string
+    - contextPath: IP.Address
+      description: IP address
+      type: string
+    - contextPath: IP.MineMeld.Indicators
+      description: Entire indicator object
+      type: Unknown
+    - contextPath: IP.MineMeld.Indicators.indicator
+      description: Indicator's value
+      type: string
+    - contextPath: IP.MineMeld.Indicators.miner
+      description: Indicator's miner
+      type: string
+    - contextPath: IP.MineMeld.Indicators.type
+      description: Indicator type
+      type: string
+    - contextPath: IP.MineMeld.Indicators.comment
+      description: Indicator's comment
+      type: string
+    - contextPath: IP.MineMeld.Miner
+      description: Entire miner object
+      type: unknown
+    - contextPath: IP.MineMeld.Miner.name
+      description: Miner name
+      type: string
+    - contextPath: MineMeld.Indicators
+      description: Entire indicator object
+      type: Unknown
+    - contextPath: MineMeld.Indicators.indicator
+      description: Indicator's value
+      type: string
+    - contextPath: MineMeld.Indicators.miner
+      description: Indicator's miner
+      type: string
+    - contextPath: MineMeld.Indicators.type
+      description: Indicator type
+      type: string
+    - contextPath: MineMeld.Indicators.comment
+      description: Indicator's comment
+      type: string
+    - contextPath: MineMeld.Miner
+      description: Entire miner object
+      type: Unknown
+    - contextPath: MineMeld.Miner.name
+      description: Miner name
+      type: string
+  - arguments:
+    - default: true
+      description: file
+      isArray: false
+      name: file
+      required: true
+      secret: false
+    deprecated: false
+    description: Search for file on lists
+    execution: false
+    name: file
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The Indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The DBot score vendor
+      type: string
+    - contextPath: DBotScore.Score
+      description: The DBot score
+      type: number
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+      type: string
+    - contextPath: File.MineMeld.Indicators
+      description: Entire indicator object
+      type: Unknown
+    - contextPath: File.MineMeld.Indicators.indicator
+      description: Indicator's value
+      type: string
+    - contextPath: File.MineMeld.Indicators.miner
+      description: Indicator's miner
+      type: string
+    - contextPath: File.MineMeld.Indicators.type
+      description: Indicator type
+      type: string
+    - contextPath: File.MineMeld.Indicators.comment
+      description: Indicator's comment
+      type: string
+    - contextPath: File.MineMeld.Miner
+      description: Entire miner object
+      type: unknown
+    - contextPath: File.MineMeld.Miner.name
+      description: Miner name
+      type: string
+    - contextPath: MineMeld.Indicators
+      description: Entire indicator object
+      type: Unknown
+    - contextPath: MineMeld.Indicators.indicator
+      description: Indicator's value
+      type: string
+    - contextPath: MineMeld.Indicators.miner
+      description: Indicator's miner
+      type: string
+    - contextPath: MineMeld.Indicators.type
+      description: Indicator type
+      type: string
+    - contextPath: MineMeld.Indicators.comment
+      description: Indicator's comment
+      type: string
+    - contextPath: MineMeld.Miner
+      description: Entire miner object
+      type: Unknown
+    - contextPath: MineMeld.Miner.name
+      description: Miner name
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: string
+  - arguments:
+    - default: true
+      description: domain
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Search for domain on lists
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The Indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The DBot score vendor
+      type: string
+    - contextPath: DBotScore.Score
+      description: The DBot score
+      type: number
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious Domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious Domains, the reason for the vendor to make the decision
+      type: string
+    - contextPath: Domain.Name
+      description: Domain's name (value)
+      type: string
+    - contextPath: Domain.MineMeld.Indicators
+      description: Entire indicator object
+      type: Unknown
+    - contextPath: Domain.MineMeld.Indicators.indicator
+      description: Indicator's value
+      type: string
+    - contextPath: Domain.MineMeld.Indicators.miner
+      description: Indicator's miner
+      type: string
+    - contextPath: Domain.MineMeld.Indicators.type
+      description: Indicator type
+      type: string
+    - contextPath: Domain.MineMeld.Indicators.comment
+      description: Indicator's comment
+      type: string
+    - contextPath: Domain.MineMeld.Miner
+      description: Entire miner object
+      type: unknown
+    - contextPath: Domain.MineMeld.Miner.name
+      description: Miner name
+      type: string
+    - contextPath: MineMeld.Indicators
+      description: Entire indicator object
+      type: Unknown
+    - contextPath: MineMeld.Indicators.indicator
+      description: Indicator's value
+      type: string
+    - contextPath: MineMeld.Indicators.miner
+      description: Indicator's miner
+      type: string
+    - contextPath: MineMeld.Indicators.type
+      description: Indicator type
+      type: string
+    - contextPath: MineMeld.Indicators.comment
+      description: Indicator's comment
+      type: string
+    - contextPath: MineMeld.Miner
+      description: Entire miner object
+      type: Unknown
+    - contextPath: MineMeld.Miner.name
+      description: Miner name
+      type: string
+  - arguments:
+    - default: true
+      description: url
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: Search for url on lists
+    execution: false
+    name: url
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The Indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The Indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The DBot score vendor
+      type: string
+    - contextPath: DBotScore.Score
+      description: The DBot score
+      type: number
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+      type: string
+    - contextPath: URL.Data
+      description: URL's data (value)
+      type: string
+    - contextPath: URL.MineMeld.Indicators
+      description: Entire indicator object
+      type: Unknown
+    - contextPath: URL.MineMeld.Indicators.indicator
+      description: Indicator's value
+      type: string
+    - contextPath: URL.MineMeld.Indicators.miner
+      description: Indicator's miner
+      type: string
+    - contextPath: URL.MineMeld.Indicators.type
+      description: Indicator type
+      type: string
+    - contextPath: URL.MineMeld.Indicators.comment
+      description: Indicator's comment
+      type: string
+    - contextPath: URL.MineMeld.Miner
+      description: Entire miner object
+      type: unknown
+    - contextPath: URL.MineMeld.Miner.name
+      description: Miner name
+      type: string
+    - contextPath: MineMeld.Indicators
+      description: Entire indicator object
+      type: Unknown
+    - contextPath: MineMeld.Indicators.indicator
+      description: Indicator's value
+      type: string
+    - contextPath: MineMeld.Indicators.miner
+      description: Indicator's miner
+      type: string
+    - contextPath: MineMeld.Indicators.type
+      description: Indicator type
+      type: string
+    - contextPath: MineMeld.Indicators.comment
+      description: Indicator's comment
+      type: string
+    - contextPath: MineMeld.Miner
+      description: Entire miner object
+      type: Unknown
+    - contextPath: MineMeld.Miner.name
+      description: Miner name
+      type: string
+  - deprecated: false
+    description: Returns all miners names (with supported classes of custom indicators
+      lists)
+    execution: false
+    name: minemeld-get-all-miners-names
+    outputs:
+    - contextPath: MineMeld.Miner
+      description: Entire miner object
+      type: unknown
+    - contextPath: MineMeld.Miner.name
+      description: Miner's name
+      type: string
+    - contextPath: MineMeld.Miner.class
+      description: Miner's class
+      type: string
+    - contextPath: MineMeld.Miner.indicators
+      description: Amount of miner's indicators
+      type: string
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+tests:
+- minemeld_test
