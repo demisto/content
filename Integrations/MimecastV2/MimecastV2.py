@@ -418,9 +418,9 @@ def get_policy_request(policy_id=None):
 
 def create_policy():
     headers = ['Policy ID', 'Sender', 'Reciever', 'Bidirectional', 'Start', 'End']
-    contents = {}
+    contents = {}  # type: Dict[Any]
     context = {}
-    policies_context = {}
+    policies_context = {}  # type: Dict[Any]
     description = demisto.args().get('description').encode('utf-8')
     from_part = demisto.args().get('fromPart').encode('utf-8')
     from_type = demisto.args().get('fromType').encode('utf-8')
@@ -512,7 +512,7 @@ def create_policy_request(policy, option):
 
 
 def delete_policy():
-    contents = []
+    contents = []  # type: List[Any]
     context = {}
     policy_id = demisto.args().get('policyID').encode('utf-8')
 
@@ -554,7 +554,7 @@ def delete_policy_request(policy_id=None):
 
 
 def manage_sender():
-    headers = []
+    headers = []  # type: List[str]
     context = {}
     sender = demisto.args().get('sender').encode('utf-8')
     recipient = demisto.args().get('recipient').encode('utf-8')
@@ -665,7 +665,7 @@ def list_managed_url():
 def list_managed_url_request():
     # Setup required variables
     api_endpoint = '/api/ttp/url/get-all-managed-urls'
-    data = []
+    data = []  # type: List[Any]
     payload = {
         'data': data
     }
@@ -678,7 +678,7 @@ def list_managed_url_request():
 
 def create_managed_url():
     context = {}
-    contents = {}
+    contents = {}  # type: Dict[Any]
     managed_urls_context = []
     url = demisto.args().get('url').encode('utf-8')
     action = demisto.args().get('action').encode('utf-8')
@@ -817,7 +817,7 @@ def list_messages_request(search_params):
 
 
 def get_url_logs():
-    headers = []
+    headers = []  # type: List[Any]
     contents = []
     context = {}
     url_logs_context = []
@@ -881,7 +881,7 @@ def get_url_logs():
 def get_url_logs_request(search_params, result_number=None):
     # Setup required variables
     api_endpoint = '/api/ttp/url/get-logs'
-    pagination = {}
+    pagination = {}  # type: Dict[Any]
     if result_number:
         pagination = {'page_size': result_number}
     payload = {
@@ -898,7 +898,7 @@ def get_url_logs_request(search_params, result_number=None):
 
 
 def get_attachment_logs():
-    headers = []
+    headers = []  # type: List[Any]
     contents = []
     context = {}
     attachment_logs_context = []
@@ -960,7 +960,7 @@ def get_attachment_logs():
 def get_attachment_logs_request(search_params, result_number=None):
     # Setup required variables
     api_endpoint = '/api/ttp/attachment/get-logs'
-    pagination = {}
+    pagination = {}  # type: Dict[Any]
     if result_number:
         pagination = {'page_size': result_number}
     payload = {
@@ -977,7 +977,7 @@ def get_attachment_logs_request(search_params, result_number=None):
 
 
 def get_impersonation_logs():
-    headers = []
+    headers = []  # type: List[Any]
     contents = []
     context = {}
     impersonation_logs_context = []
@@ -1059,7 +1059,7 @@ def get_impersonation_logs():
 def get_impersonation_logs_request(search_params, result_number=None):
     # Setup required variables
     api_endpoint = '/api/ttp/impersonation/get-logs'
-    pagination = {}
+    pagination = {}  # type: Dict[Any]
     if result_number:
         pagination = {'page_size': result_number}
     payload = {
@@ -1171,9 +1171,9 @@ def impersonation_to_incident(impersonation_log):
 
 
 def discover():
-    headers = []
+    headers = []  # type: List[Any]
     context = {}
-    context_obj = {}
+    context_obj = {}  # type: Dict[Any]
     contents = []
 
     response = discover_request()
@@ -1298,8 +1298,8 @@ def login_request():
 
 def get_message():
     context = {}
-    contents = {}
-    metadata_context = {}
+    contents = {}  # type: Dict[Any]
+    metadata_context = {}  # type: Dict[Any]
     results = []
     message_id = demisto.args().get('messageID').encode('utf-8')
     message_context = demisto.args().get('context').encode('utf-8')
@@ -1347,8 +1347,8 @@ def get_message_body_content_request(message_id, message_context, message_type):
 
 
 def get_message_metadata(message_id):
-    contents = {}
-    context = {}
+    contents = {}  # type: Dict[Any]
+    context = {}  # type: Dict[Any]
     message = get_message_metadata_request(message_id)
 
     receivers = message.get('to', [])
