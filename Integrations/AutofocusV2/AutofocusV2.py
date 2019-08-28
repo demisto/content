@@ -541,9 +541,10 @@ def get_file_context_indicators(results):
 def get_relevant_fields(result_object, response_dict_name):
     af_params_dict = API_PARAM_DICT.get(response_dict_name)
     new_object = {}
-    for key in result_object.keys():
-        if key in af_params_dict.values():
-            new_object[key] = result_object.get(key)
+    if af_params_dict:
+        for key in result_object.keys():
+            if key in af_params_dict.values():
+                new_object[key] = result_object.get(key)
     return new_object
 
 
