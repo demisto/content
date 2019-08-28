@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 
 import os
@@ -40,14 +41,12 @@ EMAIL_ADDRESS = demisto.params().get('email')
 PASSWORD = demisto.params().get('password')
 FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
 
-
 # remove proxy if not set to true in params
 if not demisto.params().get('proxy'):
     del os.environ['HTTP_PROXY']
     del os.environ['HTTPS_PROXY']
     del os.environ['http_proxy']
     del os.environ['https_proxy']
-
 
 # default query xml template for test module
 default_query_xml = "<?xml version=\"1.0\"?> \n\
@@ -101,7 +100,7 @@ def auto_refresh_token():
             demisto.setIntegrationContext({'token_last_update': current_ts})
 
 
-def http_request(method, api_endpoint, payload=None, params= {}, user_auth=True, is_file=False):
+def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False):
     is_user_auth = True
     url = BASE_URL + api_endpoint
     # 2 types of auth, user and non user, mostly user is needed
@@ -112,7 +111,7 @@ def http_request(method, api_endpoint, payload=None, params= {}, user_auth=True,
 
         # Create the HMAC SHA1 of the Base64 decoded secret key for the Authorization header
         hmac_sha1 = hmac.new(SECRET_KEY.decode("base64"), ':'.join([hdr_date, request_id, api_endpoint, APP_KEY]),
-                      digestmod=hashlib.sha1).digest()
+                             digestmod=hashlib.sha1).digest()
 
         # Use the HMAC SHA1 value to sign the hdrDate + ":" requestId + ":" + URI + ":" + appkey
         signature = base64.encodestring(hmac_sha1).rstrip()
@@ -138,7 +137,8 @@ def http_request(method, api_endpoint, payload=None, params= {}, user_auth=True,
             'Authorization': auth_header
         }
 
-    LOG('running %s request with url=%s\tparams=%s\tdata=%s\tis user auth=%s' % (method, url, json.dumps(params), json.dumps(payload), is_user_auth))
+    LOG('running %s request with url=%s\tparams=%s\tdata=%s\tis user auth=%s' % (
+    method, url, json.dumps(params), json.dumps(payload), is_user_auth))
     try:
         res = requests.request(
             method,
@@ -158,7 +158,8 @@ def http_request(method, api_endpoint, payload=None, params= {}, user_auth=True,
         LOG(e)
         if e.response.status_code == 418:
             if not APP_ID or not EMAIL_ADDRESS or not PASSWORD:
-                return_error('Credentials provided are expired, could not automatically refresh tokens. App ID + Email Address + Password are required.')
+                return_error(
+                    'Credentials provided are expired, could not automatically refresh tokens. App ID + Email Address + Password are required.')
         else:
             raise
 
@@ -170,22 +171,22 @@ def http_request(method, api_endpoint, payload=None, params= {}, user_auth=True,
 def parse_query_args(args):
     query_xml = default_query_xml
     if args.get('pageSize'):
-        query_xml = query_xml.replace('page-size=\"25\"','page-size=\"'+args.get('pageSize')+'\"')
+        query_xml = query_xml.replace('page-size=\"25\"', 'page-size=\"' + args.get('pageSize') + '\"')
     if args.get('startRow'):
-        query_xml = query_xml.replace('startrow=\"0\"','startrow=\"'+args.get('startRow')+'\"')
+        query_xml = query_xml.replace('startrow=\"0\"', 'startrow=\"' + args.get('startRow') + '\"')
     if args.get('active') == 'true':
-        query_xml = query_xml.replace('active=\"false\"','active=\"true\"')
+        query_xml = query_xml.replace('active=\"false\"', 'active=\"true\"')
     if args.get('body'):
-        query_xml = query_xml.replace('<text></text>','<text>(body: '+args.get('body')+')</text>')
+        query_xml = query_xml.replace('<text></text>', '<text>(body: ' + args.get('body') + ')</text>')
     if args.get('subject'):
-        query_xml = query_xml.replace('<text></text>','<text>(subject: '+args.get('subject')+')</text>')
+        query_xml = query_xml.replace('<text></text>', '<text>(subject: ' + args.get('subject') + ')</text>')
     if args.get('text'):
-        query_xml = query_xml.replace('<text></text>','<text>'+args.get('text')+'</text>')
+        query_xml = query_xml.replace('<text></text>', '<text>' + args.get('text') + '</text>')
     if args.get('date'):
-        query_xml = query_xml.replace('<date select=\"last_year\"/>','<date select=\"'+args.get('date')+'\"/>')
+        query_xml = query_xml.replace('<date select=\"last_year\"/>', '<date select=\"' + args.get('date') + '\"/>')
 
         if args.get('dateTo') or args.get('dateFrom'):
-             return_error('Cannot use both date and dateFrom/dateTo arguments')
+            return_error('Cannot use both date and dateFrom/dateTo arguments')
 
     date_to = ""
     date_from = ""
@@ -195,21 +196,25 @@ def parse_query_args(args):
     if args.get('dateFrom'):
         date_from = args.get('dateFrom')
     if date_to and date_from:
-        query_xml = query_xml.replace('<date select=\"last_year\"/>','<date select=\"between\" from=\"'+date_from+'\" to=\"'+date_to+'\" />')
+        query_xml = query_xml.replace('<date select=\"last_year\"/>',
+                                      '<date select=\"between\" from=\"' + date_from + '\" to=\"' + date_to + '\" />')
     elif date_from:
-        query_xml = query_xml.replace('<date select=\"last_year\"/>','<date select=\"between\" from=\"'+date_from+'\" />')
+        query_xml = query_xml.replace('<date select=\"last_year\"/>',
+                                      '<date select=\"between\" from=\"' + date_from + '\" />')
     elif date_to:
-        query_xml = query_xml.replace('<date select=\"last_year\"/>','<date select=\"between\" to=\"'+date_to+'\" />')
+        query_xml = query_xml.replace('<date select=\"last_year\"/>',
+                                      '<date select=\"between\" to=\"' + date_to + '\" />')
 
     if args.get('sentFrom'):
-        query_xml = query_xml.replace('<sent></sent>','<sent select=\"from\" >'+args.get('sentFrom')+'</sent>')
+        query_xml = query_xml.replace('<sent></sent>', '<sent select=\"from\" >' + args.get('sentFrom') + '</sent>')
     if args.get('sentTo'):
-        query_xml = query_xml.replace('<sent></sent>','<sent select=\"to\" >'+args.get('sentTo')+'</sent>')
-    query_xml = query_xml.replace('<sent></sent>','') #no empty tag
+        query_xml = query_xml.replace('<sent></sent>', '<sent select=\"to\" >' + args.get('sentTo') + '</sent>')
+    query_xml = query_xml.replace('<sent></sent>', '')  # no empty tag
     if args.get('attachmentText'):
-        query_xml = query_xml.replace('</docs>',args.get('attachmentText')+'</docs>')
+        query_xml = query_xml.replace('</docs>', args.get('attachmentText') + '</docs>')
     if args.get('attachmentType'):
-        query_xml = query_xml.replace('<docs select=\"optional\">','<docs select=\"'+args.get('attachmentType')+'\">')
+        query_xml = query_xml.replace('<docs select=\"optional\">',
+                                      '<docs select=\"' + args.get('attachmentType') + '\">')
 
     return query_xml
 
@@ -226,7 +231,7 @@ def query():
     contents = []
     context = {}
     messages_context = []
-    query_xml  = ''
+    query_xml = ''
 
     if demisto.args().get('queryXml'):
         query_xml = demisto.args().get('queryXml')
@@ -292,7 +297,7 @@ def url_decode():
     headers = []
     contents = {}
     context = {}
-    protected_url =  demisto.args().get('url').encode('utf-8')
+    protected_url = demisto.args().get('url').encode('utf-8')
     decoded_url = url_decode_request(protected_url)
     contents['Decoded URL'] = decoded_url
     context[outputPaths['url']] = {
@@ -335,7 +340,7 @@ def get_policy():
     contents = []
     context = {}
     title = 'Mimecast list blocked sender policies: \n These are the existing Blocked Sender Policies:'
-    policy_id =  demisto.args().get('policyID')
+    policy_id = demisto.args().get('policyID')
     if policy_id:
         policy_id = policy_id.encode('utf-8')
         title = 'Mimecast Get Policy'
@@ -437,7 +442,7 @@ def create_policy():
         'toValue': to_value
     }
 
-    policy_list = create_policy_request(policy_obj,option)
+    policy_list = create_policy_request(policy_obj, option)
     policy = policy_list.get('policy')
     policy_id = policy_list.get('id')
     title = 'Mimecast Create Policy: \n Policy {} Was Created Successfully!'.format(policy_id)
@@ -514,7 +519,7 @@ def delete_policy():
     headers = []
     contents = []
     context = {}
-    policy_id =  demisto.args().get('policyID').encode('utf-8')
+    policy_id = demisto.args().get('policyID').encode('utf-8')
 
     deleted_policy = delete_policy_request(policy_id)
 
@@ -557,11 +562,11 @@ def manage_sender():
     headers = []
     contents = []
     context = {}
-    sender =  demisto.args().get('sender').encode('utf-8')
-    recipient =  demisto.args().get('recipient').encode('utf-8')
-    action =  demisto.args().get('action').encode('utf-8')
+    sender = demisto.args().get('sender').encode('utf-8')
+    recipient = demisto.args().get('recipient').encode('utf-8')
+    action = demisto.args().get('action').encode('utf-8')
     title_action = 'permitted' if action == 'permit' else 'blocked'
-    title = 'Mimecast messages from {} to {} will now be {}!'.format(sender,recipient,title_action)
+    title = 'Mimecast messages from {} to {} will now be {}!'.format(sender, recipient, title_action)
 
     req_obj = {
         'sender': sender,
@@ -606,19 +611,19 @@ def manage_sender_request(req_obj):
         'data': data
     }
 
-    response = http_request('POST', api_endpoint , str(payload))
+    response = http_request('POST', api_endpoint, str(payload))
     if response.get('fail'):
         return_error(json.dumps(response.get('fail')[0].get('errors')))
     return response.get('data')[0]
 
 
 def list_managed_url():
-    headers = ['URL','Action','Match Type','User Awareness','URL Rewriting','Comment']
+    headers = ['URL', 'Action', 'Match Type', 'User Awareness', 'URL Rewriting', 'Comment']
     contents = []
     context = {}
     managed_urls_context = []
     full_url_response = ''
-    url =  demisto.args().get('url')
+    url = demisto.args().get('url')
     if url:
         url = url.encode('utf-8')
 
@@ -683,7 +688,7 @@ def create_managed_url():
     contents = {}
     url_req_obj = {}
     managed_urls_context = []
-    url =  demisto.args().get('url').encode('utf-8')
+    url = demisto.args().get('url').encode('utf-8')
     action = demisto.args().get('action').encode('utf-8')
     match_type = demisto.args().get('matchType').encode('utf-8')
     disable_rewrite = demisto.args().get('disableRewrite').encode('utf-8')
@@ -694,13 +699,13 @@ def create_managed_url():
         comment = comment.encode('utf-8')
 
     url_req_obj = {
-       'comment': comment,
-       'disableRewrite': disable_rewrite,
-       'url': url,
-       'disableUserAwareness': disable_user_awareness,
-       'disableLogClick': disable_log_click,
-       'action': action,
-       'matchType': match_type
+        'comment': comment,
+        'disableRewrite': disable_rewrite,
+        'url': url,
+        'disableUserAwareness': disable_user_awareness,
+        'disableLogClick': disable_log_click,
+        'action': action,
+        'matchType': match_type
     }
 
     managed_url = create_managed_url_request(url_req_obj)
@@ -751,19 +756,19 @@ def list_messages():
     search_params = {}
 
     # can't send null values for keys, so if optional value not sent by user, do not add to request.
-    mailbox =  demisto.args().get('mailbox','').encode('utf-8')
+    mailbox = demisto.args().get('mailbox', '').encode('utf-8')
     if mailbox:
-       search_params['mailbox'] = mailbox
-    view =  demisto.args().get('view','').encode('utf-8')
+        search_params['mailbox'] = mailbox
+    view = demisto.args().get('view', '').encode('utf-8')
     if view:
         search_params['view'] = view
-    end_time =  demisto.args().get('endTime','').encode('utf-8')
+    end_time = demisto.args().get('endTime', '').encode('utf-8')
     if end_time:
         search_params['end'] = end_time
-    start_time =  demisto.args().get('startTime','').encode('utf-8')
+    start_time = demisto.args().get('startTime', '').encode('utf-8')
     if start_time:
         search_params['start'] = start_time
-    subject =  demisto.args().get('subject')
+    subject = demisto.args().get('subject')
 
     messages_list = list_messages_request(search_params)
 
@@ -807,8 +812,8 @@ def list_messages_request(search_params):
     data.append(search_params)
     payload = {
         'meta': {
-          'pagination': {
-          }
+            'pagination': {
+            }
         },
         'data': data
     }
@@ -825,10 +830,10 @@ def get_url_logs():
     context = {}
     url_logs_context = []
     search_params = {}
-    result_number =  demisto.args().get('resultsNumber', '').encode('utf-8')
-    from_date =  demisto.args().get('fromDate', '').encode('utf-8')
-    to_date =  demisto.args().get('toDate', '').encode('utf-8')
-    scan_result =  demisto.args().get('resultType', '').encode('utf-8')
+    result_number = demisto.args().get('resultsNumber', '').encode('utf-8')
+    from_date = demisto.args().get('fromDate', '').encode('utf-8')
+    to_date = demisto.args().get('toDate', '').encode('utf-8')
+    scan_result = demisto.args().get('resultType', '').encode('utf-8')
     limit = int(demisto.args().get('limit', 100))
 
     if from_date:
@@ -840,9 +845,8 @@ def get_url_logs():
 
     url_logs = get_url_logs_request(search_params, result_number)
     if limit:
-       url_logs = url_logs[:limit]
+        url_logs = url_logs[:limit]
     for url_log in url_logs:
-
         contents.append({
             'Action': url_log.get('action'),
             'Admin Override': url_log.get('adminOverride'),
@@ -856,7 +860,7 @@ def get_url_logs():
             'User Override': url_log.get('userOverride')
         })
         url_logs_context.append({
-            'Action' : url_log.get('action'),
+            'Action': url_log.get('action'),
             'AdminOverride': url_log.get('adminOverride'),
             'Category': url_log.get('category'),
             'Date': url_log.get('date'),
@@ -867,7 +871,6 @@ def get_url_logs():
             'Address': url_log.get('userEmailAddress'),
             'UserOverride': url_log.get('userOverride')
         })
-
 
     context['Mimecast.UrlLog'] = url_logs_context
 
@@ -882,15 +885,16 @@ def get_url_logs():
 
     return results
 
-def get_url_logs_request(search_params,result_number=None):
-     # Setup required variables
+
+def get_url_logs_request(search_params, result_number=None):
+    # Setup required variables
     api_endpoint = '/api/ttp/url/get-logs'
     pagination = {}
     if result_number:
-        pagination = { 'page_size': result_number }
+        pagination = {'page_size': result_number}
     payload = {
         'meta': {
-          'pagination': pagination
+            'pagination': pagination
         },
         'data': [search_params]
     }
@@ -907,10 +911,10 @@ def get_attachment_logs():
     context = {}
     attachment_logs_context = []
     search_params = {}
-    result_number =  demisto.args().get('resultsNumber', '').encode('utf-8')
-    from_date =  demisto.args().get('fromDate', '').encode('utf-8')
-    to_date =  demisto.args().get('toDate', '').encode('utf-8')
-    result =  demisto.args().get('resultType', '').encode('utf-8')
+    result_number = demisto.args().get('resultsNumber', '').encode('utf-8')
+    from_date = demisto.args().get('fromDate', '').encode('utf-8')
+    to_date = demisto.args().get('toDate', '').encode('utf-8')
+    result = demisto.args().get('resultType', '').encode('utf-8')
     limit = int(demisto.args().get('limit', 100))
 
     if from_date:
@@ -960,15 +964,16 @@ def get_attachment_logs():
 
     return results
 
-def get_attachment_logs_request(search_params,result_number=None):
-     # Setup required variables
+
+def get_attachment_logs_request(search_params, result_number=None):
+    # Setup required variables
     api_endpoint = '/api/ttp/attachment/get-logs'
     pagination = {}
     if result_number:
-        pagination = { 'page_size': result_number }
+        pagination = {'page_size': result_number}
     payload = {
         'meta': {
-          'pagination': pagination
+            'pagination': pagination
         },
         'data': [search_params]
     }
@@ -985,14 +990,14 @@ def get_impersonation_logs():
     context = {}
     impersonation_logs_context = []
     search_params = {}
-    result_number =  demisto.args().get('resultsNumber', '').encode('utf-8')
-    from_date =  demisto.args().get('fromDate', '').encode('utf-8')
-    to_date =  demisto.args().get('toDate', '').encode('utf-8')
-    tagged_malicious =  demisto.args().get('taggedMalicious', '').encode('utf-8')
-    search_field =  demisto.args().get('searchField', '').encode('utf-8')
-    query =  demisto.args().get('query', '').encode('utf-8')
-    identifiers =  argToList(demisto.args().get('identifiers', '').encode('utf-8'))
-    actions =  argToList(demisto.args().get('actions', '').encode('utf-8'))
+    result_number = demisto.args().get('resultsNumber', '').encode('utf-8')
+    from_date = demisto.args().get('fromDate', '').encode('utf-8')
+    to_date = demisto.args().get('toDate', '').encode('utf-8')
+    tagged_malicious = demisto.args().get('taggedMalicious', '').encode('utf-8')
+    search_field = demisto.args().get('searchField', '').encode('utf-8')
+    query = demisto.args().get('query', '').encode('utf-8')
+    identifiers = argToList(demisto.args().get('identifiers', '').encode('utf-8'))
+    actions = argToList(demisto.args().get('actions', '').encode('utf-8'))
     limit = int(demisto.args().get('limit', 100))
 
     if from_date:
@@ -1059,15 +1064,15 @@ def get_impersonation_logs():
     return results
 
 
-def get_impersonation_logs_request(search_params,result_number=None):
-     # Setup required variables
+def get_impersonation_logs_request(search_params, result_number=None):
+    # Setup required variables
     api_endpoint = '/api/ttp/impersonation/get-logs'
     pagination = {}
     if result_number:
-        pagination = { 'page_size': result_number }
+        pagination = {'page_size': result_number}
     payload = {
         'meta': {
-          'pagination': pagination
+            'pagination': pagination
         },
         'data': [search_params]
     }
@@ -1076,7 +1081,6 @@ def get_impersonation_logs_request(search_params,result_number=None):
     if response.get('fail'):
         return_error(json.dumps(response.get('fail')[0].get('errors')))
     return response.get('data')[0].get('impersonationLogs'), response.get('data')[0].get('resultCount')
-
 
 
 def fetch_incidents():
@@ -1146,21 +1150,22 @@ def fetch_incidents():
             if temp_date > current_fetch:
                 incidents.append(incident)
 
-    demisto.setLastRun({'time' : last_fetch.isoformat().split('.')[0] + 'Z'})
+    demisto.setLastRun({'time': last_fetch.isoformat().split('.')[0] + 'Z'})
     demisto.incidents(incidents)
 
 
 def url_to_incident(url_log):
     incident = {}
     incident['name'] = 'Mimecast malicious URL: ' + url_log.get('url')
-    incident['occurred'] = url_log.get('date').replace('+0000','Z')
+    incident['occurred'] = url_log.get('date').replace('+0000', 'Z')
     incident['rawJSON'] = json.dumps(url_log)
     return incident
+
 
 def attachment_to_incident(attachment_log):
     incident = {}
     incident['name'] = 'Mimecast malicious attachment: ' + attachment_log.get('fileName')
-    incident['occurred'] = attachment_log.get('date').replace('+0000','Z')
+    incident['occurred'] = attachment_log.get('date').replace('+0000', 'Z')
     incident['rawJSON'] = json.dumps(attachment_log)
     return incident
 
@@ -1168,7 +1173,7 @@ def attachment_to_incident(attachment_log):
 def impersonation_to_incident(impersonation_log):
     incident = {}
     incident['name'] = 'Mimecast malicious impersonation: ' + impersonation_log.get('subject')
-    incident['occurred'] = impersonation_log.get('eventTime').replace('+0000','Z')
+    incident['occurred'] = impersonation_log.get('eventTime').replace('+0000', 'Z')
     incident['rawJSON'] = json.dumps(impersonation_log)
     return incident
 
@@ -1211,7 +1216,7 @@ def discover_request():
     if not EMAIL_ADDRESS:
         return_error('In order to discover account\'s auth types, account\'s email is required.')
     email = EMAIL_ADDRESS.encode('utf-8')
-     # Setup required variables
+    # Setup required variables
     api_endpoint = '/api/login/discover-authentication'
     payload = {
         'data': [{
@@ -1265,7 +1270,7 @@ def refresh_token_request():
 
 
 def login():
-    headers = ['Access Key','Secret Key']
+    headers = ['Access Key', 'Secret Key']
     contents = []
 
     response = login_request()
@@ -1280,7 +1285,8 @@ def login():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Mimecast authentication details \n Tokens are valid for 3 days', contents, headers)
+        'HumanReadable': tableToMarkdown('Mimecast authentication details \n Tokens are valid for 3 days', contents,
+                                         headers)
     }
 
     return results
@@ -1290,7 +1296,7 @@ def login_request():
     if not EMAIL_ADDRESS:
         return_error('In order to refresh a token validty duration, account\'s email is required.')
     email = EMAIL_ADDRESS.encode('utf-8')
-     # Setup required variables
+    # Setup required variables
     api_endpoint = '/api/login/login'
     payload = {
         'data': [{
@@ -1406,7 +1412,9 @@ def get_message_metadata(message_id):
             'Size': attachment.get('size')
         })
         attachments_contents.append(
-            'FileName: {}, SHA256: {}, ID: {}, Size: {}'.format(str(attachment.get('filename')),str(attachment.get('sha256')),str(attachment.get('id')),str(attachment.get('size')))
+            'FileName: {}, SHA256: {}, ID: {}, Size: {}'.format(str(attachment.get('filename')),
+                                                                str(attachment.get('sha256')),
+                                                                str(attachment.get('id')), str(attachment.get('size')))
         )
 
     contents = {
@@ -1487,7 +1495,7 @@ def download_attachment_request(attachment_id):
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-LOG('command is %s' % (demisto.command(), ))
+LOG('command is %s' % (demisto.command(),))
 
 # Check if token needs to be refresh, if it does and relevant params are set, refresh.
 auto_refresh_token()
