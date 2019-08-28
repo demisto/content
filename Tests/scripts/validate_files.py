@@ -366,22 +366,27 @@ class FilesValidator(object):
         if not self.conf_json_validator.is_valid_conf_json():
             self._is_valid = False
 
-        self.validate_against_previous_version(branch_name, prev_ver)
         if branch_name != 'master' and not branch_name.startswith('19.') and not branch_name.startswith('20.'):
             # validates only committed files
             self.validate_committed_files(branch_name, is_backward_check=is_backward_check)
+            if not prev_ver:
+                # validate against master if no version was provided
+                prev_ver = 'master'
+            self.validate_against_previous_version(branch_name, prev_ver)
         else:
+            self.validate_against_previous_version(branch_name, prev_ver, no_error=(branch_name == 'master'))
             # validates all of Content repo directories according to their schemas
             self.validate_all_files()
 
         return self._is_valid
 
-    def validate_against_previous_version(self, branch_sha, prev_branch_sha=None):
+    def validate_against_previous_version(self, branch_sha, prev_branch_sha=None, no_error=False):
         """Validate all files that were changed between previous version and branch_sha
 
         Args:
             branch_sha (str): Current branch SHA1 to validate
             prev_branch_sha (str): Previous branch SHA1 to validate against
+            no_error (bool): If set to true will restore self._is_valid after run (will not return new errors)
         """
         if not prev_branch_sha:
             with open('./.circleci/config.yml') as f:
@@ -390,7 +395,10 @@ class FilesValidator(object):
 
         print_color("Starting validation against {}".format(prev_branch_sha), LOG_COLORS.GREEN)
         modified_files, _, _ = self.get_modified_and_added_files(branch_sha, self.is_circle, prev_branch_sha)
+        prev_self_valid = self._is_valid
         self.validate_modified_files(modified_files, is_backward_check=True, old_branch=prev_branch_sha)
+        if no_error:
+            self._is_valid = prev_self_valid
 
 
 def main():
