@@ -5,22 +5,22 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: dc7a1e42-0965-4468-860a-9fedd396bfd9
+    taskid: 88374354-befd-4bb8-80b6-248c13f556bd
     type: start
     task:
-      id: dc7a1e42-0965-4468-860a-9fedd396bfd9
+      id: 88374354-befd-4bb8-80b6-248c13f556bd
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "39"
+      - "38"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 50
         }
       }
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 9d6182c1-3a8f-4df1-8976-4b06ba8ebe6e
+    taskid: 8b84bdd2-ccac-45bb-8cba-2e261f467b76
     type: regular
     task:
-      id: 9d6182c1-3a8f-4df1-8976-4b06ba8ebe6e
+      id: 8b84bdd2-ccac-45bb-8cba-2e261f467b76
       version: -1
       name: Create bucket demisto-test-4 with default object ACL = publicRead
       description: Creates a new bucket
@@ -53,7 +53,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 1215
         }
       }
@@ -62,10 +62,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: dbd1ef58-4af8-4d8c-8ba5-900e0ad3e0f3
+    taskid: 60cddf9e-e0a4-4f93-8526-1b6a8d8fbd78
     type: regular
     task:
-      id: dbd1ef58-4af8-4d8c-8ba5-900e0ad3e0f3
+      id: 60cddf9e-e0a4-4f93-8526-1b6a8d8fbd78
       version: -1
       name: Upload file (create object) foo.txt without explicit permission
       description: Uploads a file (object) into a bucket
@@ -88,7 +88,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 1565
         }
       }
@@ -97,10 +97,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: d16586ab-f528-42b1-8f70-ea283819f1e7
+    taskid: e350c1a0-3df9-4e14-841e-ed349c6758bb
     type: regular
     task:
-      id: d16586ab-f528-42b1-8f70-ea283819f1e7
+      id: e350c1a0-3df9-4e14-841e-ed349c6758bb
       version: -1
       name: Upload file (create object) bar.txt with explicit permission = authenticatedRead
       description: Uploads a file (object) into a bucket
@@ -124,7 +124,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 1740
         }
       }
@@ -133,10 +133,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 33e3c755-9a5d-43e3-8156-0d6a798c1355
+    taskid: 6e56688f-0853-4bb4-8573-0f3ae027ef91
     type: regular
     task:
-      id: 33e3c755-9a5d-43e3-8156-0d6a798c1355
+      id: 6e56688f-0853-4bb4-8573-0f3ae027ef91
       version: -1
       name: Create test file
       description: |
@@ -158,7 +158,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 1390
         }
       }
@@ -167,10 +167,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 6fc49647-e0c0-4f1a-86b7-33fe1612d75a
+    taskid: 415ad176-3477-4a34-8260-560f9758907c
     type: regular
     task:
-      id: 6fc49647-e0c0-4f1a-86b7-33fe1612d75a
+      id: 415ad176-3477-4a34-8260-560f9758907c
       version: -1
       name: Get object ACL for foo.txt
       description: Retrieves the access control list of an object
@@ -190,7 +190,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 1915
         }
       }
@@ -199,10 +199,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 081e58a8-415b-48bb-8ba4-e3c6ceef5166
+    taskid: c7c43d91-c2ae-4633-8012-4b64698a0d15
     type: regular
     task:
-      id: 081e58a8-415b-48bb-8ba4-e3c6ceef5166
+      id: c7c43d91-c2ae-4633-8012-4b64698a0d15
       version: -1
       name: Get object ACL for bar.txt
       description: Retrieves the access control list of an object
@@ -222,7 +222,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 2440
         }
       }
@@ -231,10 +231,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 447a1909-a52c-4f3e-820c-4aa59cbcc055
+    taskid: 6c9fbf4b-09ee-481b-82a0-82c96a79cd99
     type: regular
     task:
-      id: 447a1909-a52c-4f3e-820c-4aa59cbcc055
+      id: 6c9fbf4b-09ee-481b-82a0-82c96a79cd99
       version: -1
       name: Get object ACL for foo.txt
       description: Retrieves the access control list of an object
@@ -254,7 +254,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 3285
         }
       }
@@ -263,10 +263,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: c2cb6fcd-a2fe-43b2-87bb-ae1f7cf52ade
+    taskid: 5f07336e-eb16-4f33-80d9-3804e706749c
     type: regular
     task:
-      id: c2cb6fcd-a2fe-43b2-87bb-ae1f7cf52ade
+      id: 5f07336e-eb16-4f33-80d9-3804e706749c
       version: -1
       name: Update allAuthenticatedUsers to OWNER
       description: |-
@@ -292,7 +292,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 3780
         }
       }
@@ -301,10 +301,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 8ac07ffd-a12a-4a16-8bb4-6d9b86a39cb4
+    taskid: 52ddf0a6-9dcf-4ea6-89f7-9df3a8532f57
     type: regular
     task:
-      id: 8ac07ffd-a12a-4a16-8bb4-6d9b86a39cb4
+      id: 52ddf0a6-9dcf-4ea6-89f7-9df3a8532f57
       version: -1
       name: Get object ACL for foo.txt
       description: Retrieves the access control list of an object
@@ -324,7 +324,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 4130
         }
       }
@@ -333,10 +333,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 87625ef5-cf7c-491e-842a-f28cca677488
+    taskid: 38d5d867-5b63-462a-8e9a-49a37a2db661
     type: regular
     task:
-      id: 87625ef5-cf7c-491e-842a-f28cca677488
+      id: 38d5d867-5b63-462a-8e9a-49a37a2db661
       version: -1
       name: Remove allAuthenticatedUsers from ACL of foo.txt
       description: Removes an entity from an object's access control list
@@ -358,7 +358,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 4625
         }
       }
@@ -367,10 +367,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: e4259933-d2fa-455e-8086-19d61a88d5b4
+    taskid: 2799915c-9816-49e2-893c-ad592baad56c
     type: regular
     task:
-      id: e4259933-d2fa-455e-8086-19d61a88d5b4
+      id: 2799915c-9816-49e2-893c-ad592baad56c
       version: -1
       name: Get object ACL for foo.txt
       description: Retrieves the access control list of an object
@@ -390,7 +390,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 4975
         }
       }
@@ -399,10 +399,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: 56332753-4aa0-4332-80c8-7ef74e23126b
+    taskid: 82bd1cdd-75d9-4fd1-89c7-5a1232a6d3b1
     type: regular
     task:
-      id: 56332753-4aa0-4332-80c8-7ef74e23126b
+      id: 82bd1cdd-75d9-4fd1-89c7-5a1232a6d3b1
       version: -1
       name: Delete bucket with force=True
       description: Permanently deletes a bucket
@@ -422,7 +422,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 5470
         }
       }
@@ -431,10 +431,10 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: 451c49ce-0cd9-4470-8267-ba267610bc5b
+    taskid: 3bd85011-bfe8-4654-8f62-b7c7b079a8f2
     type: regular
     task:
-      id: 451c49ce-0cd9-4470-8267-ba267610bc5b
+      id: 3bd85011-bfe8-4654-8f62-b7c7b079a8f2
       version: -1
       name: Clear context
       description: Delete field from context
@@ -444,7 +444,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "47"
     scriptarguments:
       all: {}
       index: {}
@@ -458,7 +458,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1040
+          "y": 720
         }
       }
     note: false
@@ -466,10 +466,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: 72d3959d-73b3-44c0-821d-2fab53c51138
+    taskid: 766f3d9b-584f-4314-80b6-748dac72badd
     type: condition
     task:
-      id: 72d3959d-73b3-44c0-821d-2fab53c51138
+      id: 766f3d9b-584f-4314-80b6-748dac72badd
       version: -1
       name: Verify default ACL (entity allUsers should have role READER)
       type: condition
@@ -558,7 +558,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 2090
         }
       }
@@ -567,10 +567,10 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: bf15c6e2-71cc-4f62-838c-d6c87c226b6c
+    taskid: 75586614-83f7-4a37-883c-5d75a730f97b
     type: regular
     task:
-      id: bf15c6e2-71cc-4f62-838c-d6c87c226b6c
+      id: 75586614-83f7-4a37-883c-5d75a730f97b
       version: -1
       name: Clear context
       description: Delete field from context
@@ -593,7 +593,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 2265
         }
       }
@@ -602,10 +602,10 @@ tasks:
     ignoreworker: false
   "29":
     id: "29"
-    taskid: 2333801d-b1e8-4feb-8cb4-e9cf4cd3a761
+    taskid: 52fa74e0-acab-4506-8966-ec3a5bc7b7ee
     type: condition
     task:
-      id: 2333801d-b1e8-4feb-8cb4-e9cf4cd3a761
+      id: 52fa74e0-acab-4506-8966-ec3a5bc7b7ee
       version: -1
       name: Verify explicit ACL (entity allAuthenticatedUsers should have role READER)
       type: condition
@@ -694,7 +694,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 2615
         }
       }
@@ -703,10 +703,10 @@ tasks:
     ignoreworker: false
   "30":
     id: "30"
-    taskid: 81ff9716-f719-46d4-8438-63fe787b5539
+    taskid: 723e0e9d-7c6b-4414-8a20-c50b855269aa
     type: regular
     task:
-      id: 81ff9716-f719-46d4-8438-63fe787b5539
+      id: 723e0e9d-7c6b-4414-8a20-c50b855269aa
       version: -1
       name: Add allAuthenticatedUsers to ACL of foo.txt as READER
       description: |-
@@ -734,7 +734,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 2935
         }
       }
@@ -743,10 +743,10 @@ tasks:
     ignoreworker: false
   "31":
     id: "31"
-    taskid: ae281e8e-12ea-4df5-88b6-d205df046d7c
+    taskid: 45f372a1-5456-4cfa-85f9-d2aaf84b6593
     type: regular
     task:
-      id: ae281e8e-12ea-4df5-88b6-d205df046d7c
+      id: 45f372a1-5456-4cfa-85f9-d2aaf84b6593
       version: -1
       name: Clear context
       description: Delete field from context
@@ -769,7 +769,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 3110
         }
       }
@@ -778,10 +778,10 @@ tasks:
     ignoreworker: false
   "32":
     id: "32"
-    taskid: 282f2b20-e915-44ee-863b-2e31d2ed2801
+    taskid: 4f4adb4c-5b39-4e19-86ed-1363753e89f7
     type: condition
     task:
-      id: 282f2b20-e915-44ee-863b-2e31d2ed2801
+      id: 4f4adb4c-5b39-4e19-86ed-1363753e89f7
       version: -1
       name: Verify permission was added
       type: condition
@@ -870,7 +870,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 3460
         }
       }
@@ -879,10 +879,10 @@ tasks:
     ignoreworker: false
   "33":
     id: "33"
-    taskid: 701f6e68-b877-4271-85b4-2bf5523a0aaf
+    taskid: 2c3eca36-0bc9-488f-8105-93fa4d41f997
     type: regular
     task:
-      id: 701f6e68-b877-4271-85b4-2bf5523a0aaf
+      id: 2c3eca36-0bc9-488f-8105-93fa4d41f997
       version: -1
       name: Clear context
       description: Delete field from context
@@ -905,7 +905,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 3955
         }
       }
@@ -914,10 +914,10 @@ tasks:
     ignoreworker: false
   "34":
     id: "34"
-    taskid: 99dcbc5e-8006-4509-88a6-6eac2a354eb4
+    taskid: 586bfe11-5b28-43c7-8873-6a5d40d00263
     type: condition
     task:
-      id: 99dcbc5e-8006-4509-88a6-6eac2a354eb4
+      id: 586bfe11-5b28-43c7-8873-6a5d40d00263
       version: -1
       name: Verify permission was updated
       type: condition
@@ -1006,7 +1006,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 4305
         }
       }
@@ -1015,10 +1015,10 @@ tasks:
     ignoreworker: false
   "35":
     id: "35"
-    taskid: 7aa14c3d-042d-4562-8e18-ba343fecfbf6
+    taskid: 18bfdc32-85d9-4036-83db-44884feccdff
     type: title
     task:
-      id: 7aa14c3d-042d-4562-8e18-ba343fecfbf6
+      id: 18bfdc32-85d9-4036-83db-44884feccdff
       version: -1
       name: Done
       type: title
@@ -1028,7 +1028,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 5645
         }
       }
@@ -1037,10 +1037,10 @@ tasks:
     ignoreworker: false
   "36":
     id: "36"
-    taskid: 09bb3345-13e5-4130-8289-0bc796a7e913
+    taskid: 90dbfa40-be8a-4121-89e0-89e560f34f41
     type: regular
     task:
-      id: 09bb3345-13e5-4130-8289-0bc796a7e913
+      id: 90dbfa40-be8a-4121-89e0-89e560f34f41
       version: -1
       name: Clear context
       description: Delete field from context
@@ -1063,7 +1063,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 4800
         }
       }
@@ -1072,10 +1072,10 @@ tasks:
     ignoreworker: false
   "37":
     id: "37"
-    taskid: e0347904-0ac9-4236-8e0f-a34d45403b55
+    taskid: 479a5e94-7f87-4148-8236-cfba5b420a45
     type: condition
     task:
-      id: e0347904-0ac9-4236-8e0f-a34d45403b55
+      id: 479a5e94-7f87-4148-8236-cfba5b420a45
       version: -1
       name: Verify permission was deleted
       type: condition
@@ -1107,7 +1107,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 5150
         }
       }
@@ -1116,10 +1116,10 @@ tasks:
     ignoreworker: false
   "38":
     id: "38"
-    taskid: d3cedadc-5b7a-4030-812b-b21702243ed1
+    taskid: 83deae96-e845-4a5b-8520-8623c5721fc5
     type: regular
     task:
-      id: d3cedadc-5b7a-4030-812b-b21702243ed1
+      id: 83deae96-e845-4a5b-8520-8623c5721fc5
       version: -1
       name: List buckets
       description: Retrieves the list of buckets in the project
@@ -1134,42 +1134,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "39":
-    id: "39"
-    taskid: 6dcbf0b7-fd52-4c48-8cd3-5599b727ca2c
-    type: regular
-    task:
-      id: 6dcbf0b7-fd52-4c48-8cd3-5599b727ca2c
-      version: -1
-      name: Clear context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "38"
-    scriptarguments:
-      all: {}
-      index: {}
-      key:
-        simple: GCS
-      keysToKeep: {}
-      subplaybook:
-        simple: "yes"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 195
         }
       }
@@ -1178,10 +1143,10 @@ tasks:
     ignoreworker: false
   "40":
     id: "40"
-    taskid: 099c8350-8cab-4df4-8c29-b0f640a5daba
+    taskid: 8787c0ca-8559-49ea-86ef-1b1e8c358093
     type: condition
     task:
-      id: 099c8350-8cab-4df4-8c29-b0f640a5daba
+      id: 8787c0ca-8559-49ea-86ef-1b1e8c358093
       version: -1
       name: Bucket demisto-test-4 exists?
       type: condition
@@ -1207,8 +1172,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 545
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -1216,10 +1181,10 @@ tasks:
     ignoreworker: false
   "41":
     id: "41"
-    taskid: e4ce5fff-b2e4-4b37-89d1-9f3e262d717e
+    taskid: fbe534fc-8fbf-4345-84a4-957e6fd9154c
     type: regular
     task:
-      id: e4ce5fff-b2e4-4b37-89d1-9f3e262d717e
+      id: fbe534fc-8fbf-4345-84a4-957e6fd9154c
       version: -1
       name: Delete bucket
       description: Permanently deletes a bucket
@@ -1229,7 +1194,7 @@ tasks:
       brand: Google Cloud Storage
     nexttasks:
       '#none#':
-      - "42"
+      - "25"
     scriptarguments:
       bucket_name:
         simple: demisto-test-4
@@ -1239,8 +1204,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 162.5,
+          "y": 545
         }
       }
     note: false
@@ -1248,10 +1213,10 @@ tasks:
     ignoreworker: false
   "42":
     id: "42"
-    taskid: 0d6173dd-cda4-4bec-8c6f-9d181ba1b796
+    taskid: cecd738e-68be-401c-8b75-e686eb202358
     type: title
     task:
-      id: 0d6173dd-cda4-4bec-8c6f-9d181ba1b796
+      id: cecd738e-68be-401c-8b75-e686eb202358
       version: -1
       name: 'Test: Create Objects with Predefined ACLs + Get Object ACL'
       type: title
@@ -1259,13 +1224,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "25"
+      - "2"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 895
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -1273,10 +1238,10 @@ tasks:
     ignoreworker: false
   "43":
     id: "43"
-    taskid: d0244dc8-1a90-45a6-866c-5d65df9ef4cf
+    taskid: 87b090a4-62e0-431d-80ad-74db26055a7b
     type: title
     task:
-      id: d0244dc8-1a90-45a6-866c-5d65df9ef4cf
+      id: 87b090a4-62e0-431d-80ad-74db26055a7b
       version: -1
       name: 'Test: Add Entry to Object ACL'
       type: title
@@ -1289,7 +1254,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 2790
         }
       }
@@ -1298,10 +1263,10 @@ tasks:
     ignoreworker: false
   "44":
     id: "44"
-    taskid: 9adfba0e-09e7-4d75-85c8-bcdf37a9b6b5
+    taskid: 6c875baf-c0ae-4ea0-8e58-77516943eb41
     type: title
     task:
-      id: 9adfba0e-09e7-4d75-85c8-bcdf37a9b6b5
+      id: 6c875baf-c0ae-4ea0-8e58-77516943eb41
       version: -1
       name: 'Test: Update Entry in Object ACL'
       type: title
@@ -1314,7 +1279,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 3635
         }
       }
@@ -1323,10 +1288,10 @@ tasks:
     ignoreworker: false
   "45":
     id: "45"
-    taskid: b05e8121-7ec1-425e-8501-e7ef630418f9
+    taskid: c4f18e02-14b6-420b-8d81-46ff7223099c
     type: title
     task:
-      id: b05e8121-7ec1-425e-8501-e7ef630418f9
+      id: c4f18e02-14b6-420b-8d81-46ff7223099c
       version: -1
       name: 'Test: Remove Entry from Object ACL'
       type: title
@@ -1339,7 +1304,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 4480
         }
       }
@@ -1348,10 +1313,10 @@ tasks:
     ignoreworker: false
   "46":
     id: "46"
-    taskid: db45d921-1eb8-41b8-879b-87de3885ca82
+    taskid: 45e27cd7-cdd7-4d40-8218-5bddc965e120
     type: title
     task:
-      id: db45d921-1eb8-41b8-879b-87de3885ca82
+      id: 45e27cd7-cdd7-4d40-8218-5bddc965e120
       version: -1
       name: Cleanup
       type: title
@@ -1364,8 +1329,41 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 5325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "47":
+    id: "47"
+    taskid: 5e0b07cc-9efd-4c5d-83fd-a31235d6f508
+    type: condition
+    task:
+      id: 5e0b07cc-9efd-4c5d-83fd-a31235d6f508
+      version: -1
+      name: Test sanity - verify context cleared
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: GCS
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
         }
       }
     note: false

@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d8dd377b-24d1-4f7c-80c1-669d005faa45
+    taskid: 741f27e5-8f8e-4f03-86f3-de7e4df7b672
     type: start
     task:
-      id: d8dd377b-24d1-4f7c-80c1-669d005faa45
+      id: 741f27e5-8f8e-4f03-86f3-de7e4df7b672
       version: -1
       name: ""
       iscommand: false
@@ -16,11 +16,14 @@ tasks:
     nexttasks:
       '#none#':
       - "6"
+      - "7"
+      - "8"
+      - "9"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 695,
           "y": 50
         }
       }
@@ -29,10 +32,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: bd841a8a-d3db-47de-848a-3929f22e45f7
+    taskid: 943cfb3b-d2d2-4029-83fa-a3889050d8ec
     type: title
     task:
-      id: bd841a8a-d3db-47de-848a-3929f22e45f7
+      id: 943cfb3b-d2d2-4029-83fa-a3889050d8ec
       version: -1
       name: Done
       type: title
@@ -42,8 +45,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 695,
+          "y": 370
         }
       }
     note: false
@@ -51,10 +54,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 58b4dfe7-ab23-44b6-8410-c7b37682c8fe
+    taskid: 3bf9bf44-3fa9-45a4-8b1f-4737726d4b5a
     type: playbook
     task:
-      id: 58b4dfe7-ab23-44b6-8410-c7b37682c8fe
+      id: 3bf9bf44-3fa9-45a4-8b1f-4737726d4b5a
       version: -1
       name: GCS Bucket Management - Test
       playbookName: GCS Bucket Management - Test
@@ -63,7 +66,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "5"
     separatecontext: true
     view: |-
       {
@@ -77,10 +80,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 2b121bdd-4b5f-4aae-8e28-88e1e1c661c1
+    taskid: 0cf3321c-10cf-4193-8c6e-756b90c9acd2
     type: playbook
     task:
-      id: 2b121bdd-4b5f-4aae-8e28-88e1e1c661c1
+      id: 0cf3321c-10cf-4193-8c6e-756b90c9acd2
       version: -1
       name: GCS Object Operations - Test
       playbookName: GCS Object Operations - Test
@@ -89,13 +92,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "5"
     separatecontext: true
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 480,
+          "y": 195
         }
       }
     note: false
@@ -103,10 +106,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 6860d138-ef6a-4e83-8fb7-1c67848f545e
+    taskid: a709939b-5ed3-4287-80b9-7015772660d5
     type: playbook
     task:
-      id: 6860d138-ef6a-4e83-8fb7-1c67848f545e
+      id: a709939b-5ed3-4287-80b9-7015772660d5
       version: -1
       name: GCS Bucket Policy (ACL) - Test
       playbookName: GCS Bucket Policy (ACL) - Test
@@ -115,13 +118,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "5"
     separatecontext: true
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 910,
+          "y": 195
         }
       }
     note: false
@@ -129,10 +132,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 37570108-7aa0-4ce2-8a1d-7e0495ce0d45
+    taskid: 235c5701-31e4-4693-84b2-38633611f8f2
     type: playbook
     task:
-      id: 37570108-7aa0-4ce2-8a1d-7e0495ce0d45
+      id: 235c5701-31e4-4693-84b2-38633611f8f2
       version: -1
       name: GCS Object Policy (ACL) - Test
       playbookName: GCS Object Policy (ACL) - Test
@@ -146,8 +149,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 1340,
+          "y": 195
         }
       }
     note: false
@@ -158,8 +161,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
-        "width": 380,
+        "height": 385,
+        "width": 1670,
         "x": 50,
         "y": 50
       }
