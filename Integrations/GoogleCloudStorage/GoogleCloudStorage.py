@@ -22,7 +22,7 @@ def init_storage_client():
     """Creates the Python API client for Google Cloud Storage."""
     service_account_json = demisto.params()['service_account_json']
     cur_directory_path = os.getcwd()
-    credentials_file_name = f'{demisto.uniqueFile()}.json'
+    credentials_file_name = demisto.uniqueFile() + '.json'
     credentials_file_path = os.path.join(cur_directory_path, credentials_file_name)
 
     with open(credentials_file_path, 'w') as creds_file:
@@ -160,7 +160,7 @@ def gcs_create_bucket():
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
-        'Contents': 'Bucket {} was created successfully.'.format(bucket_name)
+        'Contents': f'Bucket {bucket_name} was created successfully.'
     })
 
 
@@ -174,7 +174,7 @@ def gcs_delete_bucket():
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
-        'Contents': 'Bucket {} was deleted successfully.'.format(bucket_name)
+        'Contents': f'Bucket {bucket_name} was deleted successfully.'
     })
 
 
@@ -260,7 +260,7 @@ def gcs_upload_file():
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
-        'Contents': 'File {} was successfully uploaded to bucket {} as {}'.format(file_name, bucket_name, object_name)
+        'Contents': f'File {file_name} was successfully uploaded to bucket {bucket_name} as {object_name}'
     })
 
 
@@ -326,15 +326,15 @@ def gcs_create_bucket_policy():
 
     acl = CLIENT.get_bucket(bucket_name).acl
     if acl.has_entity(entity):
-        raise ValueError('Entity {} already exists in the ACL of bucket {} (use gcs-put-bucket-policy to update it)'
-                         .format(entity, bucket_name))
+        raise ValueError(f'Entity {entity} already exists in the ACL of bucket {bucket_name}'
+                         ' (use gcs-put-bucket-policy to update it)')
 
     set_acl_entry(acl, entity, role)
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
-        'Contents': 'Added entity {} to ACL of bucket {} with role {}'.format(entity, bucket_name, role)
+        'Contents': f'Added entity {entity} to ACL of bucket {bucket_name} with role {role}'
     })
 
 
@@ -345,16 +345,15 @@ def gcs_put_bucket_policy():
 
     acl = CLIENT.get_bucket(bucket_name).acl
     if not acl.has_entity(entity):
-        raise ValueError(
-            'Entity {} does not exist in the ACL of bucket {} (use gcs-create-bucket-policy to create it)'
-            .format(entity, bucket_name))
+        raise ValueError(f'Entity {entity} does not exist in the ACL of bucket {bucket_name}'
+                         ' (use gcs-create-bucket-policy to create it)')
 
     set_acl_entry(acl, entity, role)
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
-        'Contents': 'Updated ACL entity {} in bucket {} to role {}'.format(entity, bucket_name, role)
+        'Contents': f'Updated ACL entity {entity} in bucket {bucket_name} to role {role}'
     })
 
 
@@ -364,14 +363,14 @@ def gcs_delete_bucket_policy():
 
     acl = CLIENT.get_bucket(bucket_name).acl
     if not acl.has_entity(entity):
-        raise ValueError('Entity {} does not exist in the ACL of bucket {}'.format(entity, bucket_name))
+        raise ValueError(f'Entity {entity} does not exist in the ACL of bucket {bucket_name}')
 
     delete_acl_entry(acl, entity)
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
-        'Contents': 'Removed entity {} from ACL of bucket {}'.format(entity, bucket_name)
+        'Contents': f'Removed entity {entity} from ACL of bucket {bucket_name}'
     })
 
 
@@ -407,16 +406,15 @@ def gcs_create_bucket_object_policy():
 
     acl = get_blob_acl(bucket_name, blob_name)
     if acl.has_entity(entity):
-        raise ValueError(
-            'Entity {} already exists in the ACL of object {} (use gcs-put-bucket-object-policy to update it)'
-            .format(entity, blob_name))
+        raise ValueError(f'Entity {entity} already exists in the ACL of object {blob_name}'
+                         ' (use gcs-put-bucket-object-policy to update it)')
 
     set_acl_entry(acl, entity, role)
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
-        'Contents': 'Added entity {} to ACL of object {} with role {}'.format(entity, blob_name, role)
+        'Contents': f'Added entity {entity} to ACL of object {blob_name} with role {role}'
     })
 
 
@@ -428,16 +426,15 @@ def gcs_put_bucket_object_policy():
 
     acl = get_blob_acl(bucket_name, blob_name)
     if not acl.has_entity(entity):
-        raise ValueError(
-            'Entity {} does not exist in the ACL of object {} (use gcs-create-bucket-object-policy to create it)'
-            .format(entity, blob_name))
+        raise ValueError(f'Entity {entity} does not exist in the ACL of object {blob_name}'
+                         ' (use gcs-create-bucket-object-policy to create it)')
 
     set_acl_entry(acl, entity, role)
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
-        'Contents': 'Updated ACL entity {} in object {} to role {}'.format(entity, blob_name, role)
+        'Contents': f'Updated ACL entity {entity} in object {blob_name} to role {role}'
     })
 
 
@@ -448,14 +445,14 @@ def gcs_delete_bucket_object_policy():
 
     acl = get_blob_acl(bucket_name, blob_name)
     if not acl.has_entity(entity):
-        raise ValueError('Entity {} does not exist in the ACL of object {}'.format(entity, blob_name))
+        raise ValueError(f'Entity {entity} does not exist in the ACL of object {blob_name}')
 
     delete_acl_entry(acl, entity)
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
-        'Contents': 'Removed entity {} from ACL of object {}'.format(entity, blob_name)
+        'Contents': f'Removed entity {entity} from ACL of object {blob_name}'
     })
 
 
