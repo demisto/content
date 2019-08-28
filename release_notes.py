@@ -41,7 +41,7 @@ RELEASE_NOTES_ORDER = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR
 
 
 def add_dot(text):
-    text = text.rstrip().replace('```', '***')
+    text = text.rstrip().replace('```', '***').replace('`', '*')
 
     if '\n' in text:
         # multi-record release notes
@@ -535,7 +535,7 @@ def get_release_notes_draft(github_token, asset_id):
     requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
     try:
-        res = requests.get('https://api.github.com/repos/demisto/content/releases',
+        res = requests.get('https://api.github.com/repos/demisto/content/releases',  # guardrails-disable-line
                            verify=False,
                            headers={'Authorization': 'token {}'.format(github_token)})
     except requests.exceptions.ConnectionError as exc:
