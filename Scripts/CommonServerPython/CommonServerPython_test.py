@@ -2,7 +2,7 @@
 import demistomock as demisto
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
-    remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid
+    remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version
 
 import copy
 import os
@@ -583,3 +583,20 @@ def test_exception_in_return_error(mocker):
     assert expected == results
     # IntegrationLogger = LOG (2 times if exception supplied)
     assert IntegrationLogger.__call__.call_count == 2
+
+
+def test_get_demisto_version(mocker):
+
+    # verify expected server version and build returned in case Demisto class has attribute demistoVersion
+    mocker.patch.object(
+        demisto,
+        'demistoVersion',
+        return_value={
+            'version': '5.0.0',
+            'buildNumber': '50000'
+        }
+    )
+    assert get_demisto_version() == {
+        'version': '5.0.0',
+        'buildNumber': '50000'
+    }
