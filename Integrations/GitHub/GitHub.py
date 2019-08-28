@@ -1,12 +1,12 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 
 import json
 import requests
-import typing
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -14,7 +14,7 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 
 USER = demisto.params().get('user')
-TOKEN = demisto.params().get('token')
+TOKEN = demisto.params().get('token', '')
 BASE_URL = 'https://api.github.com'
 REPOSITORY = demisto.params().get('repository')
 CONTRIBUTION_LABEL = demisto.params().get('contribution_label')
@@ -54,7 +54,6 @@ SUGGEST_CLOSE_MSG = 'These reminders don\'t seem to be working and the issue is 
                     'consider whether this PR is still relevant or should be closed.'
 STALE_MSG = 'This PR is starting to get a little stale and possibly even a little moldy and smelly.'
 
-
 ''' HELPER FUNCTIONS '''
 
 
@@ -77,7 +76,8 @@ def http_request(method, url_suffix, params=None, data=None):
             else:
                 error_code = json_res.get('errors')[0].get('code')
                 if error_code == 'missing_field':
-                    return_error('Error: the field: "{}" requires a value'.format(json_res.get('errors')[0].get('field')))
+                    return_error(
+                        'Error: the field: "{}" requires a value'.format(json_res.get('errors')[0].get('field')))
 
                 elif error_code == 'invalid':
                     field = json_res.get('errors')[0].get('field')
@@ -94,7 +94,8 @@ def http_request(method, url_suffix, params=None, data=None):
                     return_error('Error: the field {} must be unique'.format(json_res.get('errors')[0].get('field')))
 
                 else:
-                    return_error('Error in API call to the GitHub Integration [%d] - %s' % (res.status_code, res.reason))
+                    return_error(
+                        'Error in API call to the GitHub Integration [%d] - %s' % (res.status_code, res.reason))
 
         except ValueError:
             return_error('Error in API call to GitHub Integration [%d] - %s' % (res.status_code, res.reason))
@@ -217,9 +218,10 @@ def get_last_event(commit_timestamp: str = '', comment_timestamp: str = '', revi
     :param review_timestamp:  timestamp of the last pr review
     :return: The last event to occur
     """
-    commit_date = datetime.strptime(commit_timestamp) if commit_timestamp else datetime.fromordinal(1)
-    comment_date = datetime.strptime(comment_timestamp) if comment_timestamp else datetime.fromordinal(1)
-    review_date = datetime.strptime(review_timestamp) if review_timestamp else datetime.fromordinal(1)
+    time_fmt = '%Y-%m-%dT%H:%M:%SZ'
+    commit_date = datetime.strptime(commit_timestamp, time_fmt) if commit_timestamp else datetime.fromordinal(1)
+    comment_date = datetime.strptime(comment_timestamp, time_fmt) if comment_timestamp else datetime.fromordinal(1)
+    review_date = datetime.strptime(review_timestamp, time_fmt) if review_timestamp else datetime.fromordinal(1)
 
     last_event = 'comment' if comment_date >= commit_date else 'commit'
     if last_event == 'comment' and review_date > comment_date:
@@ -230,7 +232,7 @@ def get_last_event(commit_timestamp: str = '', comment_timestamp: str = '', revi
 
 
 def alert_appropriate_party(pr: dict, commit_data: dict, reviews_data: list, comments_data: list):
-    requested_reviewers = [requested_reviewer.get('login') for requested_reviewer in pr.get('requested_reviewers')]
+    requested_reviewers = [requested_reviewer.get('login') for requested_reviewer in pr.get('requested_reviewers', [])]
     reviewers_with_prefix = ' '.join(['@' + reviewer for reviewer in requested_reviewers])
 
     commit_author = commit_data.get('author', {}).get('login')
@@ -240,8 +242,12 @@ def alert_appropriate_party(pr: dict, commit_data: dict, reviews_data: list, com
     review_time = last_review.get('submitted_at', '')
     review_status = last_review.get('state')
 
-    comments = list(filter(lambda comment: not (comment.get('body', '').startswith('Thank', 'Hey') and
-                                           comment.get('user', {}).get('login', '').endswith('[bot]')), comments_data))
+    comments = list(filter(
+        lambda comment:
+            not (comment.get('body', '').startswith('Thank', 'Hey')
+                 and comment.get('user', {}).get('login', '').endswith('[bot]')),
+        comments_data
+    ))
     last_comment = comments[-1] if len(comments) >= 1 else {}
     comment_time = last_comment.get('updated_at', '')
     comment_body = last_comment.get('body', '')
@@ -253,7 +259,7 @@ def alert_appropriate_party(pr: dict, commit_data: dict, reviews_data: list, com
     if last_event == 'commit':
         msg = NEEDS_REVIEW_MSG.replace('@reviewer', reviewers_with_prefix)
     elif last_event == 'review':
-        if review_status !=  'APPROVED':
+        if review_status != 'APPROVED':
             msg = NUDGE_AUTHOR_MSG.replace('author', commit_author)
         else:
             msg = APPROVED_UNMERGED_MSG.replace('author', commit_author)
@@ -283,11 +289,16 @@ def alert_appropriate_party(pr: dict, commit_data: dict, reviews_data: list, com
     create_issue_comment(issue_number, msg)
 
 
-
 ''' REQUESTS FUNCTIONS '''
 
 
-def create_issue_comment(issue_number: int, msg: str) -> dict:
+def assign_reviewer(pull_number: int, reviewers: list) -> dict:
+    suffix = PULLS_SUFFIX + f'/{pull_number}/requested_reviewers'
+    response = http_request('POST', url_suffix=suffix, data={'reviewers': reviewers})
+    return response
+
+
+def create_issue_comment(issue_number, msg: str) -> dict:
     suffix = ISSUE_SUFFIX + f'/{issue_number}/comments'
     response = http_request('POST', url_suffix=suffix, data={'body': msg})
     return response
@@ -450,16 +461,16 @@ def fetch_incidents_command():
         start_time = datetime.strptime(last_run.get('start_time'), '%Y-%m-%dT%H:%M:%SZ')
 
     else:
-        time_range_start, _ = date_to_timestamp(parse_date_range(FETCH_TIME))
+        time_range_start, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
         start_time = datetime.now() - time_range_start
 
     last_time = start_time
     # issue_list = http_request(method='GET',
     #                           url_suffix=ISSUE_SUFFIX,
     #                           params={'state': 'all'})
-    timestamp = timestamp_to_datestring(str(datetime.now().timestamp()))
-    query = f'repo:{USER}/{REPOSITORY} is:open updated:<{timestamp} is:pr'
-    external_pr_count = search_issue(query)
+    # timestamp = timestamp_to_datestring(str(datetime.now().timestamp()))
+    # query = f'repo:{USER}/{REPOSITORY} is:open updated:<{timestamp} is:pr'
+    # external_pr_count = search_issue(query)
 
     timestamp = timestamp_to_datestring(str(start_time))
     query = f'repo:{USER}/{REPOSITORY} is:open updated:>{timestamp} is:pr -label:{CONTRIBUTION_LABEL}'
@@ -484,7 +495,11 @@ def fetch_incidents_command():
         updated_at = datetime.strptime(updated_at_str, '%Y-%m-%dT%H:%M:%SZ')
         is_fork = issue.get('head', {}).get('repo', {}).get('fork')
         if is_fork:
-            add_label(issue.get('number'), CONTRIBUTION_LABEL)
+            issue_number = issue.get('number')
+            add_label(issue_number, CONTRIBUTION_LABEL)
+            selected_reviewer = REVIEWERS[issue_number % len(REVIEWERS)]
+            create_issue_comment(issue_number, WELCOME_MSG.replace('reviewer', selected_reviewer))
+            assign_reviewer(issue_number, [selected_reviewer])
         if updated_at > start_time:
             inc = {
                 'name': issue.get('url'),
@@ -500,30 +515,36 @@ def fetch_incidents_command():
 
 
 '''EXECUTION'''
-handle_proxy()
-LOG('command is %s' % (demisto.command(),))
-try:
-    if demisto.command() == 'test-module':
-        issue_list = http_request(method='GET',
-                                  url_suffix=ISSUE_SUFFIX,
-                                  params={'state': 'all'})
-        demisto.results("ok")
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents_command()
-    elif demisto.command() == 'GitHub-create-issue':
-        create_command()
-    elif demisto.command() == 'GitHub-close-issue':
-        close_command()
-    elif demisto.command() == 'GitHub-update-issue':
-        update_command()
-    elif demisto.command() == 'GitHub-list-all-issues':
-        list_all_command()
-    elif demisto.command() == 'GitHub-search-issues':
-        search_command()
-    elif demisto.command() == 'GitHub-get-download-count':
-        get_download_count()
 
-except Exception as e:
-    LOG(str(e))
-    LOG.print_log()
-    raise
+
+def main():
+    handle_proxy()
+    LOG('command is %s' % (demisto.command(),))
+    try:
+        if demisto.command() == 'test-module':
+            http_request(method='GET', url_suffix=ISSUE_SUFFIX, params={'state': 'all'})
+            demisto.results("ok")
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents_command()
+        elif demisto.command() == 'GitHub-create-issue':
+            create_command()
+        elif demisto.command() == 'GitHub-close-issue':
+            close_command()
+        elif demisto.command() == 'GitHub-update-issue':
+            update_command()
+        elif demisto.command() == 'GitHub-list-all-issues':
+            list_all_command()
+        elif demisto.command() == 'GitHub-search-issues':
+            search_command()
+        elif demisto.command() == 'GitHub-get-download-count':
+            get_download_count()
+
+    except Exception as e:
+        LOG(str(e))
+        LOG.print_log()
+        raise
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == '__builtin__' or __name__ == 'builtins':
+    main()
