@@ -308,7 +308,7 @@ def panorama_test():
     demisto.results('ok')
 
 
-def test_device_group():
+def device_group_test():
     """
     Test module for the Device group specified
     """
@@ -330,16 +330,16 @@ def test_device_group():
         # only one device group in the panorama
         device_group_name = device_groups.get('@name')
         if device_group_name != DEVICE_GROUP:
-            return_error(f'Device Group specified: {DEVICE_GROUP} '
-                         f'is not the one existing in Panorama: {device_group_name}')
+            return_error(f'Device Group: {DEVICE_GROUP} does not exist.'
+                         f'These is the available Device Group for this instance: {device_group_name}')
     else:
         # panorama has more than one device group configured
         device_groups_arr = []
         for device_group in device_groups:
             device_groups_arr.append(device_group.get('@name'))
         if DEVICE_GROUP not in device_groups_arr:
-            return_error(f'Device Group specified: {DEVICE_GROUP} '
-                         f'is not the of the ones existing in Panorama: {str(device_groups_arr)}')
+            return_error(f'Device Group: {DEVICE_GROUP} does not exist.'
+                         f'These are the available Device Groups for this instance: {str(device_groups_arr)}')
 
 
 @logger
@@ -3736,7 +3736,7 @@ def main():
         handle_proxy()
 
         if DEVICE_GROUP and DEVICE_GROUP != 'shared':
-            test_device_group()
+            device_group_test()
 
         if demisto.command() == 'test-module':
             panorama_test()
