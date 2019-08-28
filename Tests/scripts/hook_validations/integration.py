@@ -65,7 +65,6 @@ class IntegrationValidator(object):
         self.is_valid_subtype()
         self.is_default_arguments()
 
-
         return self._is_valid
 
     def is_default_arguments(self):
