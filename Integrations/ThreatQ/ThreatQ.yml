@@ -1089,7 +1089,7 @@ script:
       default: false
       description: File category
       isArray: false
-      name: type
+      name: file_type
       predefined:
       - Cuckoo
       - CrowdStrike Intelligence
@@ -1129,9 +1129,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: File source
-      isArray: false
-      name: source
+      description: Source(s) name(s)
+      isArray: true
+      name: source_lst
       required: false
       secret: false
     - default: false
@@ -1140,13 +1140,71 @@ script:
       name: title
       required: false
       secret: false
+    - default: false
+      description: Add attributes
+      isArray: true
+      name: attr_names_lst
+      required: false
+      secret: false
+    - default: false
+      description: Attributes values
+      isArray: true
+      name: attr_values_lst
+      required: false
+      secret: false
     deprecated: false
     description: Upload a file in ThreatQ
     execution: false
     name: threatq-upload-file
     outputs:
-    - contextPath: ThreatQ.File.
-      type: Unknown
+    - contextPath: ThreatQ.CreatedAt
+      description: File upload date
+      type: Date
+    - contextPath: ThreatQ.Size
+      description: File size (in bytes)
+      type: Number
+    - contextPath: ThreatQ.MD5
+      description: File MD5
+      type: String
+    - contextPath: ThreatQ.Type
+      description: Object type - File
+      type: String
+    - contextPath: ThreatQ.ID
+      description: File ID in ThreatQ
+      type: Number
+    - contextPath: ThreatQ.Name
+      description: File name
+      type: String
+    - contextPath: ThreatQ.Title
+      description: File title
+      type: String
+    - contextPath: ThreatQ.UpdatedAt
+      description: File last update
+      type: Date
+    - contextPath: ThreatQ.MalwareLocked
+      description: If enabled, malware files will be zipped for safer downloading
+      type: Number
+    - contextPath: ThreatQ.ContentType
+      description: File content type
+      type: String
+    - contextPath: ThreatQ.FileType
+      description: File type
+      type: String
+    - contextPath: ThreatQ.Sources.ID
+      description: Source ID
+      type: Number
+    - contextPath: ThreatQ.Sources.Name
+      description: Source name
+      type: String
+    - contextPath: ThreatQ.Attributes.ID
+      description: Attribute ID
+      type: Number
+    - contextPath: ThreatQ.Attributes.Name
+      description: Attribute name
+      type: String
+    - contextPath: ThreatQ.Attributes.Value
+      description: Attribute value
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -1157,6 +1215,7 @@ script:
       - indicator
       - adversary
       - event
+      - attachment
       required: true
       secret: false
     - default: false
@@ -1237,6 +1296,21 @@ script:
     - contextPath: ThreatQ.EventType
       description: Event's type
       type: string
+    - contextPath: ThreatQ.Size
+      description: File size (in bytes)
+      type: Number
+    - contextPath: ThreatQ.MalwareLocked
+      description: If enabled, malware files will be zipped for safer downloading
+      type: String
+    - contextPath: ThreatQ.ContentType
+      description: File content type
+      type: String
+    - contextPath: ThreatQ.FileType
+      description: File type
+      type: String
+    - contextPath: ThreatQ.MD5
+      description: File MD5 value
+      type: String
   - arguments:
     - default: false
       description: First object's ID
@@ -1292,6 +1366,7 @@ script:
       - indicator
       - event
       - adversary
+      - attachment
       required: true
       secret: false
     deprecated: false
@@ -1623,6 +1698,122 @@ script:
     - contextPath: DBotScore.Type
       description: Indicator type
       type: String
+  - arguments:
+    - default: false
+      description: File ID
+      isArray: false
+      name: file_id
+      required: true
+      secret: false
+    - default: false
+      description: File description
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: File title
+      isArray: false
+      name: title
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Enabling this will .zip malware files for safer downloading
+      isArray: false
+      name: malware_safety_lock
+      predefined:
+      - 'on'
+      - 'off'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: File category
+      isArray: false
+      name: file_type
+      predefined:
+      - Cuckoo
+      - CrowdStrike Intelligence
+      - Early Warning and Indicator Notice (EWIN)
+      - FireEye Analysis
+      - FBI FLASH
+      - Generic Text
+      - Intelligence Whitepaper
+      - iSight Report
+      - iSight ThreatScape Intelligence Report
+      - JIB
+      - MAEC
+      - Malware Analysis Report
+      - Malware Initial Findings Report (MFIR)
+      - Malware Sample
+      - Packet Capture
+      - Palo Alto Networks WildFire XML
+      - PCAP
+      - PDF
+      - Private Industry Notification (PIN)
+      - Spearphish Attachment
+      - STIX
+      - ThreatAnalyzer Analysis
+      - ThreatQ CSV File
+      - Whitepaper
+      required: false
+      secret: false
+    - default: false
+      description: File name
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: Update a file properties in ThreatQ (not the file itself).
+    execution: false
+    name: threatq-edit-file
+    outputs:
+    - contextPath: ThreatQ.CreatedAt
+      description: File upload date
+      type: Date
+    - contextPath: ThreatQ.Size
+      description: File size (in bytes)
+      type: Number
+    - contextPath: ThreatQ.MD5
+      description: File MD5
+      type: String
+    - contextPath: ThreatQ.Type
+      description: Object type - File
+      type: String
+    - contextPath: ThreatQ.ID
+      description: File ID in ThreatQ
+      type: Number
+    - contextPath: ThreatQ.Name
+      description: File name
+      type: String
+    - contextPath: ThreatQ.Title
+      description: File title
+      type: String
+    - contextPath: ThreatQ.UpdatedAt
+      description: File last update
+      type: Date
+    - contextPath: ThreatQ.MalwareLocked
+      description: If enabled, malware files will be zipped for safer downloading
+      type: String
+    - contextPath: ThreatQ.ContentType
+      description: File content type
+      type: String
+    - contextPath: ThreatQ.FileType
+      description: File type
+      type: String
+  - arguments:
+    - default: false
+      description: File ID
+      isArray: false
+      name: file_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Download a file from ThreatQ to Demisto
+    execution: false
+    name: threatq-download-file
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false
   runonce: false
