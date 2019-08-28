@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+  - Updated Cisco-umbrella Indicators context outputs to support version 5.0.
 
 ## [19.8.2] - 2019-08-22
   - Added *tagGroups* output to ***autofocus-samples-search-results*** command.
