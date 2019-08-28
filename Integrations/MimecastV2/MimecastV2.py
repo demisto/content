@@ -151,7 +151,7 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
 
     except HTTPError as e:
         LOG(e)
-        if e.response.status_code == 418:  # type: ignore
+        if e.response.status_code == 418:  # type: ignore  # pylint: disable=no-member
             if not APP_ID or not EMAIL_ADDRESS or not PASSWORD:
                 return_error(
                     'Credentials provided are expired, could not automatically refresh tokens. App ID + Email Address '
