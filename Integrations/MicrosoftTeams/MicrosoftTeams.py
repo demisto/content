@@ -1001,8 +1001,19 @@ def mirror_investigation():
         demisto.results('Investigation mirror was updated successfully.')
     else:
         channel_name: str = demisto.args().get('channel_name', '') or f'incident-{investigation_id}'
-        channel_description = f'Channel to mirror incident {investigation_id}'
-        channel_id = create_channel(team_aad_id, channel_name, channel_description)
+        channel_description: str = f'Channel to mirror incident {investigation_id}'
+        channel_id: str = create_channel(team_aad_id, channel_name, channel_description)
+        service_url: str = integration_context.get('service_url', '')
+        server_links: dict = demisto.demistoUrls()
+        server_link: str = server_links.get('server', '')
+        warroom_link: str = f'{server_link}#/WarRoom/{investigation_id}'
+        conversation: dict = {
+            'type': 'message',
+            'text': f'This channel was created to mirror [incident {investigation_id}]({warroom_link}) '
+                    f'between Teams and Demisto. In order for your Teams messages to be mirrored in Demisto, '
+                    f'you need to mention the Demisto Bot in the message.'
+        }
+        send_message_request(service_url, channel_id, conversation)
         mirrored_channels.append({
             'channel_id': channel_id,
             'investigation_id': investigation_id,
@@ -1159,8 +1170,8 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
             formatted_message = urlify_hyperlinks(data)
     else:
         try:
-            return_card = True
             data = demisto.directMessage(message, username, user_email, allow_external_incidents_creation)
+            return_card = True
             if data.startswith('`'):  # We got a list of incidents/tasks:
                 data_by_line: list = data.replace('```', '').strip().split('\n')
                 return_card = True
