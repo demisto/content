@@ -622,7 +622,7 @@ def hide_user(user_key, hide_value):
         }}
 
     service = get_service('admin', 'directory_v1',
-                           additional_scopes=['https://www.googleapis.com/auth/admin.directory.user'])
+                          additional_scopes=['https://www.googleapis.com/auth/admin.directory.user'])
     result = service.users().update(**command_args).execute()
 
     return result
