@@ -1046,10 +1046,10 @@ tasks:
     ignoreworker: false
   "32":
     id: "32"
-    taskid: a12bca86-7924-4d6c-877a-155c61dd4233
+    taskid: c48e8771-ab49-457c-88bb-d649731e7eaf
     type: condition
     task:
-      id: a12bca86-7924-4d6c-877a-155c61dd4233
+      id: c48e8771-ab49-457c-88bb-d649731e7eaf
       version: -1
       name: Verify User creation and visbility
       type: condition
@@ -1070,14 +1070,11 @@ tasks:
           right:
             value:
               simple: user_to_delete@demistodev.com
-      - - operator: isEqualString
+      - - operator: isFalse
           left:
             value:
               simple: Account.VisibleInDirectory
             iscontext: true
-          right:
-            value:
-              simple: "false"
     view: |-
       {
         "position": {
