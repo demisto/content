@@ -92,6 +92,7 @@ jobs:
 
               else
                 ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+                cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
             fi
       - run:
           name: Download Configuration
@@ -121,9 +122,10 @@ jobs:
                     export IFRA_ENV_TYPE=Content-Env
                 fi
                 python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType $IFRA_ENV_TYPE -outfile ./env_results.json
-                ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-                cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
-                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType MultiRepos -outfile ./mr_results.json
+#                 Create MultiRepos ENV (Will be located in ./mr_results.json)
+#                ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+#                cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
+#                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType MultiRepos -outfile ./mr_results.json
 
               else
                 python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -outfile ./env_results.json
@@ -207,13 +209,13 @@ jobs:
           name: Destroy Instances
           command: |
             python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json
-            python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./mr_results.json
+#            Destroy MultiRepos ENV
+#            python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./mr_results.json
           when: always
       - store_artifacts:
           path: artifacts
           destination: artifacts
           when: always
-
 
 workflows:
   version: 2
