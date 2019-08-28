@@ -4,7 +4,7 @@
   "dataType": "scripts",
   "widgetType": "column",
   "query": "IncidentsPerWeek",
-  "description": "Widget that shows the amount of incidents opened each week",
+  "description": "Widget that displays the number of incidents opened per week.",
   "isPredefined": true,
   "version": -1
 }
