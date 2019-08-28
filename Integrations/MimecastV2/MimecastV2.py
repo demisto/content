@@ -10,8 +10,9 @@ import uuid
 import json
 import base64
 import hashlib
-import datetime
 import requests
+
+from datetime import timedelta
 from urllib2 import HTTPError
 
 # Disable insecure warnings
@@ -76,8 +77,8 @@ def epoch_seconds(d=None):
     Return the number of seconds for given date. If no date, return current.
     """
     if not d:
-        d = datetime.datetime.utcnow()
-    return int((d - datetime.datetime.utcfromtimestamp(0)).total_seconds())
+        d = datetime.utcnow()
+    return int((d - datetime.utcfromtimestamp(0)).total_seconds())
 
 
 def auto_refresh_token():
@@ -101,7 +102,7 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
     if user_auth:
         # Generate request header values
         request_id = str(uuid.uuid4())
-        hdr_date = datetime.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S") + " UTC"
+        hdr_date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S") + " UTC"
 
         # Create the HMAC SHA1 of the Base64 decoded secret key for the Authorization header
         hmac_sha1 = hmac.new(SECRET_KEY.decode("base64"), ':'.join([hdr_date, request_id, api_endpoint, APP_KEY]),
@@ -150,7 +151,7 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
 
     except HTTPError as e:
         LOG(e)
-        if e.response.status_code == 418:
+        if e.response.status_code == 418:  # type: ignore
             if not APP_ID or not EMAIL_ADDRESS or not PASSWORD:
                 return_error(
                     'Credentials provided are expired, could not automatically refresh tokens. App ID + Email Address '
@@ -1081,10 +1082,10 @@ def fetch_incidents():
 
     # handle first time fetch
     if last_fetch is None:
-        last_fetch = datetime.datetime.now() - datetime.timedelta(hours=FETCH_DELTA)
+        last_fetch = datetime.now() - timedelta(hours=FETCH_DELTA)
         last_fetch_date_time = last_fetch.strftime("%Y-%m-%dT%H:%M:%S") + '+0000'
     else:
-        last_fetch = datetime.datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
+        last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
         last_fetch_date_time = last_fetch.strftime("%Y-%m-%dT%H:%M:%S") + '+0000'
     current_fetch = last_fetch
 
@@ -1097,10 +1098,10 @@ def fetch_incidents():
         url_logs = get_url_logs_request(search_params)
         for url_log in url_logs:
             incident = url_to_incident(url_log)
-            temp_date = datetime.datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
+            temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
             # update last run
             if temp_date > last_fetch:
-                last_fetch = temp_date + datetime.timedelta(seconds=1)
+                last_fetch = temp_date + timedelta(seconds=1)
 
             # avoid duplication due to weak time query
             if temp_date > current_fetch:
@@ -1114,11 +1115,11 @@ def fetch_incidents():
         attachment_logs = get_attachment_logs_request(search_params)
         for attachment_log in attachment_logs:
             incident = attachment_to_incident(attachment_log)
-            temp_date = datetime.datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
+            temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
 
             # update last run
             if temp_date > last_fetch:
-                last_fetch = temp_date + datetime.timedelta(seconds=1)
+                last_fetch = temp_date + timedelta(seconds=1)
 
             # avoid duplication due to weak time query
             if temp_date > current_fetch:
@@ -1132,11 +1133,11 @@ def fetch_incidents():
         impersonation_logs, _ = get_impersonation_logs_request(search_params)
         for impersonation_log in impersonation_logs:
             incident = impersonation_to_incident(impersonation_log)
-            temp_date = datetime.datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
+            temp_date = datetime.strptime(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
 
             # update last run
             if temp_date > last_fetch:
-                last_fetch = temp_date + datetime.timedelta(seconds=1)
+                last_fetch = temp_date + timedelta(seconds=1)
 
             # avoid duplication due to weak time query
             if temp_date > current_fetch:
@@ -1342,7 +1343,7 @@ def get_message_body_content_request(message_id, message_context, message_type):
 
     response = http_request('POST', api_endpoint, str(payload), is_file=True)
     if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
     return response.content
 
 
@@ -1473,7 +1474,7 @@ def download_attachment_request(attachment_id):
 
     response = http_request('POST', api_endpoint, str(payload), is_file=True)
     if isinstance(response, dict) and response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
     return response.content
 
 
