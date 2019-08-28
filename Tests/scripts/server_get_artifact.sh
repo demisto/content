@@ -32,7 +32,7 @@ TEMP_LINK=${SERVER_DOWNLOAD_LINK}?${TOKEN_ATTR}
 SERVER_DOWNLOAD_LINK=${TEMP_LINK%$'\r'}
 
 echo "Getting server artifact for build: ${ARTIFACT_BUILD_NUM}"
-echo "curl to ${SERVER_DOWNLOAD_LINK}"
+echo "curl to server installer"
 
 curl ${SERVER_DOWNLOAD_LINK} --output demistoserver.sh
 
