@@ -2193,7 +2193,7 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Queries traffic logs.
+    description: Deprecated. Use the panorama-query-logs command instead.
     execution: false
     name: panorama-query-traffic-logs
     outputs:
@@ -2211,7 +2211,7 @@ script:
       required: true
       secret: false
     deprecated: true
-    description: Checks the query status of traffic logs.
+    description: Deprecated. Use the panorama-check-logs-status command instead.
     execution: false
     name: panorama-check-traffic-logs-status
     outputs:
@@ -2229,7 +2229,7 @@ script:
       required: true
       secret: false
     deprecated: true
-    description: Retrieve traffic log query data by Job ID.
+    description: Deprecated. Use the panorama-get-logs command instead.
     execution: false
     name: panorama-get-traffic-logs
     outputs:
