@@ -1,1 +1,1 @@
-Fix `servicenow-upload-file` command when the file is summary info file.
+Fix `servicenow-upload-file` command when the file is info file.
