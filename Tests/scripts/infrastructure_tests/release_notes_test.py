@@ -39,12 +39,12 @@ multi_rn_input2_2 = '''  - RN 1.
     - ***world***
     - ***hello-world***
   - RN 2.'''
-multi_rn_input2_3 = '''  - RN 1.
-  - Added 4 new commands.
+multi_rn_input2_3 = '''- RN 1.
+- Added 4 new commands.
     - ***hello***
-    - ***world***.
+    - ***world***
     - ***hello-world***
-    - RN 2.'''
+- RN 2.'''
 multi_rn_input2_4 = '''  - RN 1.
   - Added 4 new commands.
     - ***hello***
@@ -63,13 +63,8 @@ Added 4 new commands.
     - ***world***
     - ***hello-world***
   - RN 2.'''
-multi_rn_input2_7 = '''- RN 1.
-- Added 4 new commands.
-    - ***hello***
-    - ***world***
-    - ***hello-world***
-- RN 2.'''
-multi_rn_input2_8 = '''  - RN 1.
+
+multi_rn_input2_7 = '''  - RN 1.
   - Added 4 new commands.
     - ***hello***
     - ***world***
@@ -102,8 +97,7 @@ def test_add_dot():
 
     assert add_dot(multi_rn_input2_1) == multi_rn_output2
     assert add_dot(multi_rn_input2_2) == multi_rn_output2
-    assert add_dot(multi_rn_input2_3) == multi_rn_output2  # check with alex if second indent is always commands
+    assert add_dot(multi_rn_input2_3) == multi_rn_output2
     assert add_dot(multi_rn_input2_4) == multi_rn_output2
     assert add_dot(multi_rn_input2_5) == multi_rn_output2
     assert add_dot(multi_rn_input2_6) == multi_rn_output2
-    assert add_dot(multi_rn_input2_7) == multi_rn_output2
