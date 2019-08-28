@@ -116,6 +116,7 @@ def main():
             with open(rn_path, 'w') as rn_file:
                 text = CHANGE_LOG_FORMAT.format(version=args.version, date=date) + get_new_header(file_path)
                 rn_file.write(text)
+            run_command('git add {}'.format(rn_path))
 
 
 if __name__ == '__main__':
