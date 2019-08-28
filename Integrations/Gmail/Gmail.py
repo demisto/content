@@ -620,8 +620,9 @@ def hide_user(user_key, hide_value):
         'body': {
             'includeInGlobalAddressList': hide_value,
         }}
-    credentials = get_credentials(additional_scopes=['https://www.googleapis.com/auth/admin.directory.user'])
-    service = discovery.build('admin', 'directory_v1', credentials=credentials)
+
+    service = get_service('admin', 'directory_v1',
+                           additional_scopes=['https://www.googleapis.com/auth/admin.directory.user'])
     result = service.users().update(**command_args).execute()
 
     return result
@@ -641,8 +642,9 @@ def set_user_password(user_key, password):
         'body': {
             'password': password,
         }}
-    credentials = get_credentials(additional_scopes=['https://www.googleapis.com/auth/admin.directory.user'])
-    service = discovery.build('admin', 'directory_v1', credentials=credentials)
+
+    service = get_service('admin', 'directory_v1',
+                          additional_scopes=['https://www.googleapis.com/auth/admin.directory.user'])
     service.users().update(**command_args).execute()
 
     return 'User {} password has been set.'.format(command_args['userKey'])
@@ -662,11 +664,11 @@ def get_autoreply(user_id):
         'userId': user_id
     }
 
-    credentials = get_credentials(
-        ['https://mail.google.com', 'https://www.googleapis.com/auth/gmail.modify',
-         'https://www.googleapis.com/auth/gmail.readonly', 'https://www.googleapis.com/auth/gmail.settings.basic'],
-        delegated_user=user_id)
-    service = discovery.build('gmail', 'v1', credentials=credentials)
+    service = get_service('gmail', 'v1',
+                          additional_scopes=['https://mail.google.com', 'https://www.googleapis.com/auth/gmail.modify',
+                                             'https://www.googleapis.com/auth/gmail.readonly',
+                                             'https://www.googleapis.com/auth/gmail.settings.basic'],
+                          delegated_user=user_id)
     result = service.users().settings().getVacation(**command_args).execute()
 
     return result
@@ -694,8 +696,7 @@ def set_autoreply(user_id, enable_autoreply, response_subject, response_body_pla
             'responseBodyPlainText': response_body_plain_text,
         }}
 
-    credentials = get_credentials(additional_scopes=['https://www.googleapis.com/auth/gmail.settings.basic'])
-    service = discovery.build('gmail', 'v1', credentials=credentials)
+    service = get_service('gmail', 'v1', additional_scopes=['https://www.googleapis.com/auth/gmail.settings.basic'])
     result = service.users().settings().updateVacation(**command_args).execute()
     return result
 
@@ -709,8 +710,7 @@ def delegate_user_mailbox_command():
 
 
 def delegate_user_mailbox(user_id, delegate_email, delegate_token):
-    credentials = get_credentials(additional_scopes=['https://www.googleapis.com/auth/gmail.settings.sharing'])
-    service = discovery.build('gmail', 'v1', credentials=credentials)
+    service = get_service('gmail', 'v1', additional_scopes=['https://www.googleapis.com/auth/gmail.settings.sharing'])
     if delegate_token == 'True':  # guardrails-disable-line
         command_args = {
             'userId': user_id if user_id != 'me' else ADMIN_EMAIL,
@@ -793,9 +793,8 @@ def send_mail(emailto, emailfrom, subject, body, entry_id):
             'raw': encoded_message,
         }}
 
-    credentials = get_credentials(additional_scopes=['https://www.googleapis.com/auth/gmail.compose',
-                                                     'https://www.googleapis.com/auth/gmail.send'])
-    service = discovery.build('gmail', 'v1', credentials=credentials)
+    service = get_service('gmail', 'v1', additional_scopes=['https://www.googleapis.com/auth/gmail.compose',
+                                                            'https://www.googleapis.com/auth/gmail.send'])
     result = service.users().messages().send(**command_args).execute()
     return result
 
