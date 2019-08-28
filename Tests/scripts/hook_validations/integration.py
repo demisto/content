@@ -107,22 +107,29 @@ class IntegrationValidator(object):
                     context_outputs_paths.append(output.get('contextPath'))
 
                 # validate DBotScore outputs
-                if 'DBotScore.Indicator' not in context_outputs_paths\
-                        or 'DBotScore.Type' not in context_outputs_paths\
-                        or 'DBotScore.Vendor' not in context_outputs_paths\
-                        or 'DBotScore.Score' not in context_outputs_paths:
-                    self._is_valid = False
-                    print_error("The DBotScore outputs of the reputation command aren't valid. "
-                                "Fix according to context standard {} ".format(context_standard))
+                DBot_Score_outputs = {'DBotScore.Indicator', 'DBotScore.Type', 'DBotScore.Vendor', 'DBotScore.Score'}
+                missing_outputs = {}
+                for DBot_Score_output in DBot_Score_outputs:
+                    if DBot_Score_output not in context_outputs_paths:
+                        missing_outputs.add(DBot_Score_output)
+                        self._is_valid = False
+                if missing_outputs:
+                    print_error("The DBotScore outputs of the reputation command aren't valid. Missing: {}."
+                                " Fix according to context standard {} ".format(missing_outputs, context_standard))
 
                 # validate the IOC output
-                if ((command_name == 'domain' and 'Domain.Name' not in context_outputs_paths)
-                        or (command_name == 'file' and 'File.Name' not in context_outputs_paths)
-                        or (command_name == 'ip' and 'IP.Address' not in context_outputs_paths)
-                        or (command_name == 'url' and 'URL.Data' not in context_outputs_paths)):
+                command_to_output = {
+                    'domain': 'Domain.Name',
+                    'file': 'File.Name',
+                    'ip': 'IP.Address',
+                    'url': 'URL.Data'
+                }
+                reputation_output = command_to_output.get(command)
+                if reputation_output and reputation_output not in context_outputs_paths:
                     self._is_valid = False
-                    print_error("The outputs of the {} command aren't valid. "
-                                "Fix according to context standard {} ".format(command_name, context_standard))
+                    print_error("The outputs of the {} command aren't valid. The {} outputs is missing"
+                                "Fix according to context standard {} "
+                                .format(command_name, reputation_output, context_standard))
 
         return self._is_valid
 
