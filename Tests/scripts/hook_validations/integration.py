@@ -124,7 +124,7 @@ class IntegrationValidator(object):
                     'ip': 'IP.Address',
                     'url': 'URL.Data'
                 }
-                reputation_output = command_to_output.get(command)
+                reputation_output = command_to_output.get(command_name)
                 if reputation_output and reputation_output not in context_outputs_paths:
                     self._is_valid = False
                     print_error("The outputs of the {} command aren't valid. The {} outputs is missing"
