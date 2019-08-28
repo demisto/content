@@ -61,6 +61,7 @@ class IntegrationValidator(object):
         """Check whether the Integration is valid or not, update the _is_valid field to determine that"""
         self.is_valid_subtype()
         self.is_default_arguments()
+        self.is_outputs_for_reputations_commands_valid()
 
         return self._is_valid
 
@@ -85,6 +86,36 @@ class IntegrationValidator(object):
                         self._is_valid = False
                         print_error("The argument '{}' of the command '{}' is either non default or required"
                                     .format(arg_name, command_name))
+        return self._is_valid
+
+    def is_outputs_for_reputations_commands_valid(self):
+        """Check if a reputation command (domain/email/file/ip/url)
+            has the correct DBotScore outputs according to the context standard
+            https://github.com/demisto/content/blob/master/docs/context_standards/README.MD
+
+        Returns:
+            bool. Whether a reputation command holds valid outputs
+        """
+        context_standard = "https://github.com/demisto/content/blob/master/docs/context_standards/README.MD"
+        commands = self.current_integration.get('script', {}).get('commands', [])
+        for command in commands:
+            command_name = command.get('name')
+            # look for reputations commands
+            if ((command_name == 'file' and arg_name == 'file')
+                    or (command_name == 'email' and arg_name == 'email')
+                    or (command_name == 'domain' and arg_name == 'domain')
+                    or (command_name == 'url' and arg_name == 'url')
+                    or (command_name == 'ip' and arg_name == 'ip')):
+                context_paths = []
+                for output in command.get('outputs', []):
+                    context_paths.append(output.get('contextPath'))
+                if 'DBotScore.Indicator' not in context_paths\
+                        or 'DBotScore.Type' not in context_paths\
+                        or 'DBotScore.Vendor' not in context_paths\
+                        or 'DBotScore.Score' not in context_paths:
+                    self._is_valid = False
+                    print_error("The DBotScore outputs of the reputation command aren't valid. "
+                                "Fix according to context standard {} ".format(context_standard))
         return self._is_valid
 
     def is_valid_subtype(self):
