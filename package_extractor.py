@@ -124,15 +124,22 @@ def migrate(yml_path, output_path, demisto_mock, commonserver=None, yml_type=Non
         fp.close()
         subprocess.check_call(["pipenv", "install", "-r", fp.name], cwd=output_path)
         os.unlink(fp.name)
+        print("Installing flake8 for linting")
+        subprocess.call(["pipenv", "install", "--dev", "flake8"], cwd=output_path)        
     except FileNotFoundError:
         print_color("pipenv install skipped! It doesn't seem you have pipenv installed.\n"
                     "Make sure to install it with: pip3 install pipenv.\n"
                     "Then run in the package dir: pipenv install --dev", LOG_COLORS.YELLOW)
     print_color("\nCompleted: setting up package: {}\n".format(arg_path), LOG_COLORS.GREEN)
-    print("Next steps: \n"
-          "* Install additional py packages for unit testsing (if needed): pipenv install <package>\n"
-          "* Create unit tests\n"
-          "* Check linting and unit tests by running: ./Tests/scripts/pkg_dev_test_tasks.py -d {}\n".format(arg_path))
+    print("Next steps: \n",
+          "* Install additional py packages for unit testsing (if needed): cd {}; pipenv install <package>\n".format(arg_path),
+          "* Create unit tests\n",
+          "* Check linting and unit tests by running: ./Tests/scripts/pkg_dev_test_tasks.py -d {}\n".format(arg_path),
+          "* When ready rm from git the source yml and add the new package:\n",
+          "    git rm {}\n".format(yml_path),
+          "    git add {}\n".format(arg_path),
+          sep=''
+          )
     return 0
 
 
