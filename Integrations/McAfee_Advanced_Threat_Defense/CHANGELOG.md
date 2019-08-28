@@ -1,5 +1,5 @@
 ## [Unreleased]
-Bug Fix - Handle DBotScore outputs for an unsuccessful detonation of submission.
+Bug Fix - Improved handling of DBotScore outputs, when unsuccessfully detonating a file using the ***detonate-file*** command.
 
 ## [19.8.2] - 2019-08-22
 -
