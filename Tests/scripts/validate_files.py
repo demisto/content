@@ -138,7 +138,7 @@ class FilesValidator(object):
         Returns:
             (modified_files, added_files). Tuple of sets.
         """
-        compare_type = '.' if tag == "master" else ''
+        compare_type = '.' if 'master' in tag else ''
         all_changed_files_string = run_command(
             "git diff --name-status {tag}..{compare_type}refs/heads/{branch}".format(tag=tag,
                                                                                      branch=branch_name,
