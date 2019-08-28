@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 import datetime
 import requests
 import json
+import shutil
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -21,10 +22,6 @@ USE_SSL = not demisto.params().get('insecure', False)
 THRESHOLD = demisto.params().get('threshold')
 if THRESHOLD:
     THRESHOLD = int(THRESHOLD)
-
-domainRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-A-Z0-9]+\[?\.\]?)' \
-               r'+[-A-Z0-9]+(?::[0-9]+)?(?:(?:\/|\?)[-A-Z0-9+&@#\/%=~_$?!\-:,.\(\);]*[A-Z0-9+&@#\/%=~_$\(\);])?' \
-               r'|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'
 
 REGEX_MAP = {
     'email': re.compile(emailRegex, regexFlags),
@@ -144,7 +141,9 @@ def get_errors_string_from_bad_request(bad_request_results):
     if errors_list:
         for error_num, error in enumerate(errors_list, 1):
             errors_string += 'Error #{0}: {1}\n'.format(error_num, error)
-    return errors_string
+        return errors_string
+
+    return str()  # Server did not provide any errors.
 
 
 # ThreatQ auth based on OAuth 2.0 credential grand method
@@ -187,12 +186,22 @@ def get_access_token():
 def tq_request(method, url_suffix, params=None, files=None):
     access_token = get_access_token()
     api_call_headers = {'Authorization': 'Bearer ' + access_token}
-    # data = json.dumps(params) if params else None  # todo: uncomment if needed
+
+    '''if params:
+        data = json.dumps(params)
+    else:
+        data = None'''
 
     response = requests.request(method, API_URL + url_suffix, data=params,
                                 headers=api_call_headers, verify=USE_SSL, files=files)
 
-    if response.status_code >= 400:
+    if response.status_code not in [200, 201, 204]:
+        demisto.log(str(dir(response)))
+        demisto.log(str(response.reason))
+        demisto.log(str(response.raw))
+        demisto.log(str(response.content))
+        demisto.log(str(response.text))
+        demisto.log(str(response.headers))
         errors_string = get_errors_string_from_bad_request(response)
         error_message = 'Received and error - status code [{0}].\n{1}'.format(response.status_code, errors_string)
         return_error(error_message)
@@ -248,6 +257,8 @@ def create_dbot_context(indicator, ind_type, ind_score):
 
 
 def get_tq_score_from_response(score_data):
+    if score_data is None:
+        return None
     if isinstance(score_data, dict):
         # score will be max(gen_score, manual_score)
         gen_score = score_data.get('generated_score')
@@ -285,9 +296,11 @@ def sources_to_request_format(sources):
 
 
 def sources_to_demisto_format(lst):
+    if lst is None:
+        return None
     return [{
-        'name': elem.get('name'),
-        'ID': elem.get('pivot', {}).get('ID')
+        'Name': elem.get('name'),
+        'ID': elem.get('pivot', {}).get('id')
     } for elem in lst]
 
 
@@ -299,16 +312,18 @@ def attributes_to_request_format(attr_names_lst, attr_values_lst):
     if isinstance(attr_values_lst, str):
         attr_values_lst = attr_values_lst.split(',')
     if not attr_names_lst or not attr_values_lst or len(attr_names_lst) != len(attr_values_lst):
-        return_error('Invalid input: attr_names_lst and attr_values_lst should have the same length')
+        return_error('Arguments attr_names_lst and attr_values_lst should have the same length.')
 
     return [{'name': name, 'value': val} for name, val in zip(attr_names_lst, attr_values_lst)]
 
 
 def attributes_to_demisto_format(lst):
+    if lst is None:
+        return None
     return [{
-        'name': elem['name'],
-        'value': elem['value'],
-        'ID': elem['ID']
+        'Name': elem.get('name'),
+        'Value': elem.get('value'),
+        'ID': elem.get('id')
     } for elem in lst]
 
 
@@ -333,60 +348,50 @@ def data_to_demisto_format(data, obj_type):
 
 def indicator_data_to_demisto_format(data):
     ret = {
-        'type': 'indicator',
-        'ID': data['ID'],
-        'UpdatedAt': data['updated_at'],
-        'CreatedAt': data['created_at'],
-        'value': data['value'],
-        'status': STATUS_ID_TO_STATUS[data['status_id']],
-        'IndicatorType': TYPE_ID_TO_IOC_TYPE[data['type_id']],
-        'URL': '{0}/indicators/{1}/details'.format(SERVER_URL, data['id'])
+        'Type': 'indicator',
+        'ID': data.get('id'),
+        'UpdatedAt': data.get('updated_at'),
+        'CreatedAt': data.get('created_at'),
+        'Value': data.get('value'),
+        'status': STATUS_ID_TO_STATUS[data.get('status_id')],
+        'IndicatorType': TYPE_ID_TO_IOC_TYPE[data.get('type_id')],
+        'URL': '{0}/indicators/{1}/details'.format(SERVER_URL, data.get('id')),
+        'TQScore': get_tq_score_from_response(data.get('score')),
+        'Description': clean_html_from_string(data.get('description')),
+        'Sources': sources_to_demisto_format(data.get('sources')),
+        'Attributes': attributes_to_demisto_format(data.get('attributes'))
     }
-
-    if 'score' in data:
-        ret['TQScore'] = get_tq_score_from_response(data['score'])
-    if 'description' in data:
-        ret['description'] = clean_html_from_string(data['description'])
-    if 'sources' in data:
-        ret['sources'] = sources_to_demisto_format(data['sources'])
-    if 'attributes' in data:
-        ret['attributes'] = attributes_to_demisto_format(data['attributes'])
     return ret
 
 
 def adversary_data_to_demisto_format(data):
     ret = {
-        'type': 'adversary',
-        'ID': data['ID'],
-        'UpdatedAt': data['updated_at'],
-        'CreatedAt': data['created_at'],
-        'name': data['name'],
-        'URL': '{0}/indicators/{1}/details'.format(SERVER_URL, data['id'])
+        'Type': 'adversary',
+        'ID': data.get('id'),
+        'UpdatedAt': data.get('updated_at'),
+        'CreatedAt': data.get('created_at'),
+        'Name': data.get('name'),
+        'URL': '{0}/indicators/{1}/details'.format(SERVER_URL, data.get('id')),
+        'Sources': sources_to_demisto_format(data.get('sources')),
+        'Attributes': attributes_to_demisto_format(data.get('attributes'))
     }
-    if 'sources' in data:
-        ret['sources'] = sources_to_demisto_format(data['sources'])
-    if 'attributes' in data:
-        ret['attributes'] = attributes_to_demisto_format(data['attributes'])
     return ret
 
 
 def event_data_to_demisto_format(data):
     ret = {
-        'type': 'event',
-        'ID': data['ID'],
-        'UpdatedAt': data['updated_at'],
-        'CreatedAt': data['created_at'],
-        'Title': data['Title'],
-        'Occurred': data['happened_at'],
-        'EventType': TYPE_ID_TO_EVENT_TYPE[data['type_id']],
-        'URL': '{0}/indicators/{1}/details'.format(SERVER_URL, data['id'])
+        'Type': 'event',
+        'ID': data.get('id'),
+        'UpdatedAt': data.get('updated_at'),
+        'CreatedAt': data.get('created_at'),
+        'Title': data.get('title'),
+        'Occurred': data.get('happened_at'),
+        'EventType': TYPE_ID_TO_EVENT_TYPE[data.get('type_id')],
+        'URL': '{0}/indicators/{1}/details'.format(SERVER_URL, data.get('id')),
+        'Description': clean_html_from_string(data.get('description')),
+        'Sources': sources_to_demisto_format(data.get('sources')),
+        'Attributes': attributes_to_demisto_format(data.get('attributes'))
     }
-    if 'description' in data:
-        ret['description'] = clean_html_from_string(data['description'])
-    if 'sources' in data:
-        ret['sources'] = sources_to_demisto_format(data['sources'])
-    if 'attributes' in data:
-        ret['attributes'] = attributes_to_demisto_format(data['attributes'])
     return ret
 
 
@@ -397,8 +402,8 @@ def get_pivot_id(obj1_type, obj1_id, obj2_type, obj2_id):
     res = tq_request('GET', url_suffix)
 
     for related_object in res['data']:  # res['data'] contains all the related objects of obj_id1
-        if int(related_object['ID']) == int(obj2_id):
-            return int(related_object['pivot']['ID'])
+        if int(related_object.get('id')) == int(obj2_id):
+            return int(related_object['pivot']['id'])
 
 
 def add_malicious_data(generic_context):
@@ -417,14 +422,14 @@ def get_ioc_reputation(keyword):
         return {}
 
     # Then, search for detailed information about the IOC
-    url_suffix = '/indicators/{0}?with=attributes,sources,score,type'.format(res['data'][0]['id'])
+    url_suffix = '/indicators/{0}?with=attributes,sources,score,type'.format(res['data'][0].get('id'))
     res = tq_request('GET', url_suffix)
 
     return indicator_data_to_demisto_format(res['data'])
 
 
 def set_ioc_entry_context(ioc_type, raw, dbot, generic):
-    if dbot['score'] == 3:
+    if dbot.get('Score') == 3:
         add_malicious_data(generic)
     ec = {
         outputPaths[ioc_type]: generic,
@@ -442,13 +447,13 @@ def build_readable(readable_title, obj_type, data, dbot_score=None):
                                    headerTransform=pascalToSpace, removeNull=True)
         data.pop('DBotScore')
 
-        if 'attributes' in data:
-            readable += tableToMarkdown('attributes', data['attributes'], headers=HEADERS['attrs'], removeNull=True)
-        if 'sources' in data:
-            readable += tableToMarkdown('sources', data['sources'], headers=HEADERS['sources'], removeNull=True)
-
-        url_in_markdown_format = '[{0}]({1})'.format(data['URL'], data['URL'])
-        readable = readable.replace(data['URL'], url_in_markdown_format)
+        if 'Attributes' in data:
+            readable += tableToMarkdown('Attributes', data['Attributes'], headers=HEADERS['attrs'], removeNull=True)
+        if 'Sources' in data:
+            readable += tableToMarkdown('Sources', data['Sources'], headers=HEADERS['sources'], removeNull=True)
+        if 'URL' in data:
+            url_in_markdown_format = '[{0}]({1})'.format(data['URL'], data['URL'])
+            readable = readable.replace(data['URL'], url_in_markdown_format)
 
     else:  # 'data' is a list of related objects
         readable = tableToMarkdown(readable_title, data, headers=HEADERS[obj_type],
@@ -516,6 +521,7 @@ def create_adversary_command():
         'sources': sources_to_request_format(source_lst),
         'attributes': attributes_to_request_format(attr_names_lst, attr_values_lst)
     }
+
     res = tq_request('POST', '/adversaries', params)
 
     raw = adversary_data_to_demisto_format(res['data'])
@@ -537,7 +543,7 @@ def create_event_command():
     attr_values_lst = args.get('attr_values_lst')
 
     params = {
-        'Title': title,
+        'title': title,
         'type': event_type,
         'happened_at': parse_date(date),
         'sources': sources_to_request_format(source_lst),
@@ -562,7 +568,7 @@ def edit_ioc_command():
     description = args.get('description')
 
     if isinstance(ioc_id, str) and not ioc_id.isdigit():
-        return_error('Invalid argument for indicator ID.')
+        return_error('Argument indicator_id must be an integer.')
 
     params = {
         'value': value,
@@ -578,7 +584,7 @@ def edit_ioc_command():
     raw = indicator_data_to_demisto_format(res['data'])
     entry_context = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': createContext(raw, removeNull=True)}
 
-    readable_title = 'Successfully edited indicator with id {0}'.format(ioc_id)
+    readable_title = 'Successfully edited indicator with ID {0}'.format(ioc_id)
     readable = build_readable(readable_title, 'indicator', raw)
 
     return_outputs(readable, entry_context, raw)
@@ -590,7 +596,7 @@ def edit_adversary_command():
     name = args.get('name')
 
     if isinstance(adversary_id, str) and not adversary_id.isdigit():
-        return_error('Invalid argument for adversary ID.')
+        return_error('Argument adversary_id must be an integer.')
 
     params = {
         'name': name
@@ -604,7 +610,7 @@ def edit_adversary_command():
     raw = adversary_data_to_demisto_format(res['data'])
     entry_context = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': createContext(raw, removeNull=True)}
 
-    readable_title = 'Successfully edited adversary with id {0}'.format(adversary_id)
+    readable_title = 'Successfully edited adversary with ID {0}'.format(adversary_id)
     readable = build_readable(readable_title, 'adversary', raw)
 
     return_outputs(readable, entry_context, raw)
@@ -619,10 +625,10 @@ def edit_event_command():
     description = args.get('description')
 
     if isinstance(event_id, str) and not event_id.isdigit():
-        return_error('Invalid argument for event ID.')
+        return_error('Argument event_id must be an integer.')
 
     params = {
-        'Title': title,
+        'title': title,
         'happened_at': parse_date(date) if date else None,
         'type': event_type,
         'description': description
@@ -636,7 +642,7 @@ def edit_event_command():
     raw = event_data_to_demisto_format(res['data'])
     entry_context = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': createContext(raw, removeNull=True)}
 
-    readable_title = 'Successfully edited event with id {0}'.format(event_id)
+    readable_title = 'Successfully edited event with ID {0}'.format(event_id)
     readable = build_readable(readable_title, 'event', raw)
 
     return_outputs(readable, entry_context, raw)
@@ -648,11 +654,11 @@ def delete_object_command():
     obj_id = args.get('obj_id')
 
     if isinstance(obj_id, str) and not obj_id.isdigit():
-        return_error('Invalid argument for object ID.')
+        return_error('Argument object_id must be an integer.')
 
     url_suffix = '/{0}/{1}'.format(OBJ_DIRECTORY[obj_type], obj_id)
     tq_request('DELETE', url_suffix)
-    demisto.results('Successfully deleted {0} with id {1}.'.format(obj_type, obj_id))
+    demisto.results('Successfully deleted {0} with ID {1}.'.format(obj_type, obj_id))
 
 
 def search_by_name_command():
@@ -661,12 +667,12 @@ def search_by_name_command():
     limit = args.get('limit')
 
     if limit and isinstance(limit, str) and not limit.isdigit():
-        return_error('Invalid value for limit argument.')
+        return_error('Argument limit must be an integer.')
 
     url_suffix = '/search?query={0}&limit={1}'.format(keyword, limit)
     res = tq_request('GET', url_suffix)
 
-    raw = [{'ID': e['ID'], 'type': e['object'], 'value': e['value']} for e in res['data']]
+    raw = [{'ID': e['id'], 'Type': e['object'], 'Value': e['value']} for e in res['data']]
     entry_context = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': raw} if raw else None
 
     human_readable = tableToMarkdown('Search results', raw)
@@ -679,7 +685,7 @@ def search_by_id_command():
     obj_id = args.get('obj_id')
 
     if isinstance(obj_id, str) and not obj_id.isdigit():
-        return_error('Invalid argument for object ID.')
+        return_error('Argument obj_id must be an integer.')
 
     url_suffix = '/{0}/{1}?with=attributes,sources'.format(OBJ_DIRECTORY[obj_type], obj_id)
     if obj_type == 'indicator':
@@ -694,10 +700,10 @@ def search_by_id_command():
     if obj_type == 'indicator':
         ioc_type = TQ_TO_DEMISTO_IOC_TYPES.get(raw['IndicatorType'])
         if ioc_type is not None:
-            ec['DBotScore'] = create_dbot_context(raw['value'], ioc_type, raw['TQScore'])
+            ec['DBotScore'] = create_dbot_context(raw['Value'], ioc_type, raw['TQScore'])
             dbot_score = ec['DBotScore']['Score']
 
-    readable_title = 'Search results for {0} with id {1}'.format(obj_type, obj_id)
+    readable_title = 'Search results for {0} with ID {1}'.format(obj_type, obj_id)
     readable = build_readable(readable_title, obj_type, raw, dbot_score)
 
     return_outputs(readable, ec, raw)
@@ -709,7 +715,7 @@ def get_related_indicators_command():
     obj_id = args.get('obj_id')
 
     if isinstance(obj_id, str) and not obj_id.isdigit():
-        return_error('Invalid argument for object ID.')
+        return_error('Argument obj_id must be an integer.')
 
     url_suffix = '/{0}/{1}/indicators?with=sources,score'.format(OBJ_DIRECTORY[obj_type], obj_id)
     res = tq_request('GET', url_suffix)
@@ -718,11 +724,11 @@ def get_related_indicators_command():
     raw = {
         'RelatedIndicators': createContext(info, removeNull=True),
         'ID': int(obj_id),
-        'type': obj_type
+        'Type': obj_type
     }
     ec = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': raw} if info else {}
 
-    readable_title = 'Related indicators for {0} with id {1}'.format(obj_type, obj_id)
+    readable_title = 'Related indicators for {0} with ID {1}'.format(obj_type, obj_id)
     readable = build_readable(readable_title, 'indicator', raw['RelatedIndicators'])
 
     return_outputs(readable, ec, raw)
@@ -734,7 +740,7 @@ def get_related_adversaries_command():
     obj_id = args.get('obj_id')
 
     if isinstance(obj_id, str) and not obj_id.isdigit():
-        return_error('Invalid argument for object ID.')
+        return_error('Argument obj_id must be an integer.')
 
     url_suffix = '/{0}/{1}/adversaries?with=sources'.format(OBJ_DIRECTORY[obj_type], obj_id)
     res = tq_request('GET', url_suffix)
@@ -743,11 +749,11 @@ def get_related_adversaries_command():
     raw = {
         'RelatedAdversaries': createContext(info, removeNull=True),
         'ID': int(obj_id),
-        'type': obj_type
+        'Type': obj_type
     }
     ec = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': raw} if info else {}
 
-    readable_title = 'Related adversaries for {0} with id {1}'.format(obj_type, obj_id)
+    readable_title = 'Related adversaries for {0} with ID {1}'.format(obj_type, obj_id)
     readable = build_readable(readable_title, 'adversary', raw['RelatedAdversaries'])
 
     return_outputs(readable, ec, raw)
@@ -759,7 +765,7 @@ def get_related_events_command():
     obj_id = args.get('obj_id')
 
     if isinstance(obj_id, str) and not obj_id.isdigit():
-        return_error('Invalid argument for object ID.')
+        return_error('Argument obj_id must be an integer.')
 
     url_suffix = '/{0}/{1}/events?with=sources'.format(OBJ_DIRECTORY[obj_type], obj_id)
     res = tq_request('GET', url_suffix)
@@ -768,11 +774,11 @@ def get_related_events_command():
     raw = {
         'RelatedEvents': createContext(info, removeNull=True),
         'ID': int(obj_id),
-        'type': obj_type
+        'Type': obj_type
     }
     ec = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': raw} if info else {}
 
-    readable_title = 'Related events for {0} with id {1}'.format(obj_type, obj_id)
+    readable_title = 'Related events for {0} with ID {1}'.format(obj_type, obj_id)
     readable = build_readable(readable_title, 'event', raw['RelatedEvents'])
 
     return_outputs(readable, ec, raw)
@@ -786,18 +792,18 @@ def link_objects_command():
     obj2_id = args.get('obj2_id')
 
     if isinstance(obj1_id, str) and not obj1_id.isdigit() or isinstance(obj2_id, str) and not obj2_id.isdigit():
-        return_error('Invalid argument for one of the objects\' ID.')
+        return_error('Arguments obj1_id, obj2_id must be integers.')
 
     if obj1_type == obj2_type and obj1_id == obj2_id:
         return_error('Cannot link an object to itself.')
 
     url_suffix = '/{0}/{1}/{2}'.format(OBJ_DIRECTORY[obj1_type], obj1_id, OBJ_DIRECTORY[obj2_type])
     params = {
-        'ID': obj2_id
+        'id': obj2_id
     }
     tq_request('POST', url_suffix, params)
     demisto.results(
-        'Successfully linked {0} with id {1} and {2} with id {3}.'.format(obj1_type, obj1_id, obj2_type, obj2_id))
+        'Successfully linked {0} with ID {1} and {2} with ID {3}.'.format(obj1_type, obj1_id, obj2_type, obj2_id))
 
 
 def unlink_objects_command():
@@ -808,19 +814,19 @@ def unlink_objects_command():
     obj2_id = args.get('obj2_id')
 
     if isinstance(obj1_id, str) and not obj1_id.isdigit() or isinstance(obj2_id, str) and not obj2_id.isdigit():
-        return_error('Invalid argument for one of the objects\' ID.')
+        return_error('Arguments obj1_id, obj2_id must be integers.')
 
     if obj1_type == obj2_type and obj1_id == obj2_id:
         return_error('An object cannot be linked to itself.')
 
     p_id = get_pivot_id(obj1_type, obj1_id, obj2_type, obj2_id)
     if p_id is None:
-        demisto.results('Command failed - Objects are not related.')
+        demisto.results('Command failed - objects are not related.')
     else:
         url_suffix = '/{0}/{1}/{2}'.format(OBJ_DIRECTORY[obj1_type], obj1_id, OBJ_DIRECTORY[obj2_type])
         tq_request('DELETE', url_suffix, params=[p_id])
         demisto.results(
-            'Successfully unlinked {0} with id {1} and {2} with id {3}.'.format(obj1_type, obj1_id, obj2_type, obj2_id))
+            'Successfully unlinked {0} with ID {1} and {2} with ID {3}.'.format(obj1_type, obj1_id, obj2_type, obj2_id))
 
 
 def add_source_command():
@@ -830,7 +836,7 @@ def add_source_command():
     obj_type = args.get('obj_type')
 
     if isinstance(obj_id, str) and not obj_id.isdigit():
-        return_error('Invalid argument for object ID.')
+        return_error('Argument obj_id must be an integer.')
 
     url_suffix = '/{0}/{1}/sources'.format(OBJ_DIRECTORY[obj_type], obj_id)
     params = {
@@ -838,7 +844,7 @@ def add_source_command():
     }
 
     tq_request('POST', url_suffix, params)
-    demisto.results('Successfully added source {0} to {1} with id {2}.'.format(source, obj_type, obj_id))
+    demisto.results('Successfully added source {0} to {1} with ID {2}.'.format(source, obj_type, obj_id))
 
 
 def delete_source_command():
@@ -848,14 +854,14 @@ def delete_source_command():
     obj_type = args.get('obj_type')
 
     if isinstance(obj_id, str) and not obj_id.isdigit():
-        return_error('Invalid argument for object ID.')
+        return_error('Argument obj_id must be an integer.')
     if isinstance(source_id, str) and not source_id.isdigit():
-        return_error('Invalid argument for source ID.')
+        return_error('Argument source_id must be an integer.')
 
     url_suffix = '/{0}/{1}/sources/{2}'.format(OBJ_DIRECTORY[obj_type], obj_id, source_id)
 
     tq_request('DELETE', url_suffix)
-    demisto.results('Successfully deleted source #{0} from {1} with id {2}.'.format(source_id, obj_type, obj_id))
+    demisto.results('Successfully deleted source #{0} from {1} with ID {2}.'.format(source_id, obj_type, obj_id))
 
 
 def add_attr_command():
@@ -866,7 +872,7 @@ def add_attr_command():
     obj_id = args.get('obj_id')
 
     if isinstance(obj_id, str) and not obj_id.isdigit():
-        return_error('Invalid argument for object ID.')
+        return_error('Argument obj_id must be an integer.')
 
     url_suffix = '/{0}/{1}/attributes'.format(OBJ_DIRECTORY[obj_type], obj_id)
     params = {
@@ -875,7 +881,7 @@ def add_attr_command():
     }
 
     tq_request('POST', url_suffix, params)
-    demisto.results('Successfully added attribute to {0} with id {1}.'.format(obj_type, obj_id))
+    demisto.results('Successfully added attribute to {0} with ID {1}.'.format(obj_type, obj_id))
 
 
 def modify_attr_command():
@@ -886,16 +892,16 @@ def modify_attr_command():
     obj_id = args.get('obj_id')
 
     if isinstance(obj_id, str) and not obj_id.isdigit():
-        return_error('Invalid argument for object ID.')
+        return_error('Argument obj_id must be an integer.')
     if isinstance(attr_id, str) and not attr_id.isdigit():
-        return_error('Invalid argument for attribute ID.')
+        return_error('Argument attr_id must be an integer.')
 
     url_suffix = '/{0}/{1}/attributes/{2}'.format(OBJ_DIRECTORY[obj_type], obj_id, attr_id)
     params = {'value': attr_value}
 
     tq_request('PUT', url_suffix, params)
 
-    demisto.results('Successfully modified attribute #{0} of {1} with id {2}.'.format(attr_id, obj_type, obj_id))
+    demisto.results('Successfully modified attribute #{0} of {1} with ID {2}.'.format(attr_id, obj_type, obj_id))
 
 
 def delete_attr_command():
@@ -905,25 +911,50 @@ def delete_attr_command():
     obj_id = args.get('obj_id')
 
     if isinstance(obj_id, str) and not obj_id.isdigit():
-        return_error('Invalid argument for object ID.')
+        return_error('Argument obj_id must be an integer.')
     if isinstance(attr_id, str) and not attr_id.isdigit():
-        return_error('Invalid argument for attribute ID.')
+        return_error('Argument attr_id must be an integer.')
 
     url_suffix = '/{0}/{1}/attributes/{2}'.format(OBJ_DIRECTORY[obj_type], obj_id, attr_id)
 
     tq_request('DELETE', url_suffix)
-    demisto.results('Successfully deleted attribute #{0} from {1} with id {2}.'.format(attr_id, obj_type, obj_id))
+    demisto.results('Successfully deleted attribute #{0} from {1} with ID {2}.'.format(attr_id, obj_type, obj_id))
 
 
 def upload_file_command():
     args = demisto.args()
-    file_id = args.get('file_id')
-    file_info = demisto.getFilePath(file_id)
-    with open(file_info['path'], 'rb') as f:
-        files = {'file': (file_info['name'], f)}
-        url_suffix = '/attachments/upload'
-        tq_request('POST', url_suffix, files=files)
-        demisto.results('Successfully uploaded the file.')
+    entry_id = args.get('entry_id')
+    title = args.get('title')
+    type = args.get('type')
+    source = args.get('source')
+    malware_safety_lock = args.get('malware_safety_lock')
+
+    file_info = demisto.getFilePath(entry_id)
+    file_path = file_info['path']
+    file_name = file_info['name']
+
+    params = {
+        'malware_locked': 0,
+        'name': file_info['name'],
+        'sources': [] if not sources else ,
+        'title': file_info['name'],
+        'type': type
+    }
+
+    try:
+        shutil.copy(file_info['path'], file_info['name'])
+    except Exception:
+        return_error('Failed to prepare file for upload.')
+
+    try:
+        demisto.log(str(file_info['name']))
+        with open(file_name, 'rb') as f:
+            files = {'file': file_info['name']}
+            url_suffix = '/attachments'
+            tq_request('POST', url_suffix, params, files=files)
+            demisto.results('Successfully uploaded the file.')
+    finally:
+        shutil.rmtree(file_info['name'], ignore_errors=True)
 
 
 def update_status_command():
@@ -932,7 +963,7 @@ def update_status_command():
     status = args.get('status')
 
     if isinstance(ioc_id, str) and not ioc_id.isdigit():
-        return_error('Invalid argument for indicator ID.')
+        return_error('Argument ioc_id must be an integer.')
 
     url_suffix = '/indicators/{0}'.format(ioc_id)
     params = {'status': status}
@@ -940,14 +971,14 @@ def update_status_command():
     res = tq_request('PUT', url_suffix, params)
 
     raw = {
-        'type': 'indicator',
+        'Type': 'indicator',
         'ID': int(ioc_id),
-        'status': STATUS_ID_TO_STATUS[res['data']['status_id']],
+        'Status': STATUS_ID_TO_STATUS[res['data'].get('status_id')],
     }
 
     ec = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': raw}
 
-    readable = 'Successfully updated status of indicator with id {0} to {1}.'.format(ioc_id, status)
+    readable = 'Successfully updated status of indicator with ID {0} to {1}.'.format(ioc_id, status)
 
     return_outputs(readable, ec, raw)
 
@@ -959,7 +990,7 @@ def update_score_command():
     score = args.get('score')
 
     if isinstance(ioc_id, str) and not ioc_id.isdigit():
-        return_error('Invalid argument for indicator ID.')
+        return_error('Argument ioc_id must be an integer.')
 
     if isinstance(score, str) and not score.isdigit():  # User chose 'Generated Score' option
         manual_score = None
@@ -972,14 +1003,14 @@ def update_score_command():
     res = tq_request('PUT', url_suffix, params)
 
     raw = {
-        'type': 'indicator',
+        'Type': 'indicator',
         'ID': int(ioc_id),
         'TQScore': get_tq_score_from_response(res['data'])
     }
 
     ec = {'ThreatQ(val.ID === obj.ID && val.Type === obj.Type)': raw}
 
-    readable = 'Successfully updated score of indicator with id {0} to {1}. '\
+    readable = 'Successfully updated score of indicator with ID {0} to {1}. '\
                'Notice that final score is the maximum between ' \
                'manual and generated scores.'.format(ioc_id, int(raw['TQScore']))
 
@@ -995,15 +1026,13 @@ def get_ip_reputation():
 
     generic_context = {'Address': ip}
     raw_context = get_ioc_reputation(ip)
-    if not raw_context:
-        demisto.results('No results.')
-    else:
-        dbot_context = create_dbot_context(ip, 'ip', raw_context.get('TQScore'))
-        entry_context = set_ioc_entry_context('ip', raw_context, dbot_context, generic_context)
-        readable_title = 'Search results for IP {0}'.format(ip)
-        readable = build_readable(readable_title, 'indicator', raw_context)
+    dbot_context = create_dbot_context(ip, 'ip', raw_context.get('TQScore', -1))
+    entry_context = set_ioc_entry_context('ip', raw_context, dbot_context, generic_context)
 
-        return_outputs(readable, entry_context, raw_context)
+    readable_title = 'Search results for IP {0}'.format(ip)
+    readable = build_readable(readable_title, 'indicator', raw_context)
+
+    return_outputs(readable, entry_context, raw_context)
 
 
 def get_url_reputation():
@@ -1013,17 +1042,15 @@ def get_url_reputation():
     if not REGEX_MAP['url'].match(url):
         return_error('Argument {0} is not a valid URL.'.format(url))
 
-    generic_context = {'data': url}
+    generic_context = {'Data': url}
     raw_context = get_ioc_reputation(url)
-    if not raw_context:
-        demisto.results('No results.')
-    else:
-        dbot_context = create_dbot_context(url, 'url', raw_context.get('TQScore'))
-        entry_context = set_ioc_entry_context('url', raw_context, dbot_context, generic_context)
-        readable_title = 'Search results for URL {0}'.format(url)
-        readable = build_readable(readable_title, 'indicator', raw_context)
+    dbot_context = create_dbot_context(url, 'url', raw_context.get('TQScore', -1))
+    entry_context = set_ioc_entry_context('url', raw_context, dbot_context, generic_context)
 
-        return_outputs(readable, entry_context, raw_context)
+    readable_title = 'Search results for URL {0}'.format(url)
+    readable = build_readable(readable_title, 'indicator', raw_context)
+
+    return_outputs(readable, entry_context, raw_context)
 
 
 def get_email_reputation():
@@ -1035,15 +1062,13 @@ def get_email_reputation():
 
     generic_context = {'Address': email}
     raw_context = get_ioc_reputation(email)
-    if not raw_context:
-        demisto.results('No results.')
-    else:
-        dbot_context = create_dbot_context(email, 'email', raw_context.get('TQScore'))
-        entry_context = set_ioc_entry_context('email', raw_context, dbot_context, generic_context)
-        readable_title = 'Search results for email {0}'.format(email)
-        readable = build_readable(readable_title, 'indicator', raw_context)
+    dbot_context = create_dbot_context(email, 'email', raw_context.get('TQScore', -1))
+    entry_context = set_ioc_entry_context('email', raw_context, dbot_context, generic_context)
 
-        return_outputs(readable, entry_context, raw_context)
+    readable_title = 'Search results for email {0}'.format(email)
+    readable = build_readable(readable_title, 'indicator', raw_context)
+
+    return_outputs(readable, entry_context, raw_context)
 
 
 def get_domain_reputation():
@@ -1053,17 +1078,15 @@ def get_domain_reputation():
     if not REGEX_MAP['domain'].match(domain):
         return_error('Argument {0} is not a valid domain.'.format(domain))
 
-    generic_context = {'name': domain}
+    generic_context = {'Name': domain}
     raw_context = get_ioc_reputation(domain)
-    if not raw_context:
-        demisto.results('No results.')
-    else:
-        dbot_context = create_dbot_context(domain, 'domain', raw_context.get('TQScore'))
-        entry_context = set_ioc_entry_context('domain', raw_context, dbot_context, generic_context)
-        readable_title = 'Search results for domain {0}'.format(domain)
-        readable = build_readable(readable_title, 'indicator', raw_context)
+    dbot_context = create_dbot_context(domain, 'domain', raw_context.get('TQScore', -1))
+    entry_context = set_ioc_entry_context('domain', raw_context, dbot_context, generic_context)
 
-        return_outputs(readable, entry_context, raw_context)
+    readable_title = 'Search results for domain {0}'.format(domain)
+    readable = build_readable(readable_title, 'indicator', raw_context)
+
+    return_outputs(readable, entry_context, raw_context)
 
 
 def get_file_reputation():
@@ -1082,15 +1105,13 @@ def get_file_reputation():
         'SHA256': file if fmt == 'sha256' else None
     }, removeNull=True)
     raw_context = get_ioc_reputation(file)
-    if not raw_context:
-        demisto.results('No results.')
-    else:
-        dbot_context = create_dbot_context(file, 'file', raw_context.get('TQScore'))
-        entry_context = set_ioc_entry_context('file', raw_context, dbot_context, generic_context)
-        readable_title = 'Search results for file {0}'.format(file)
-        readable = build_readable(readable_title, 'indicator', raw_context)
+    dbot_context = create_dbot_context(file, 'file', raw_context.get('TQScore', -1))
+    entry_context = set_ioc_entry_context('file', raw_context, dbot_context, generic_context)
 
-        return_outputs(readable, entry_context, raw_context)
+    readable_title = 'Search results for file {0}'.format(file)
+    readable = build_readable(readable_title, 'indicator', raw_context)
+
+    return_outputs(readable, entry_context, raw_context)
 
 
 ''' EXECUTION CODE '''
@@ -1150,7 +1171,7 @@ try:
         get_domain_reputation()
     elif command == 'email':
         get_email_reputation()
-    elif command == 'URL':
+    elif command == 'url':
         get_url_reputation()
     elif command == 'file':
         get_file_reputation()
