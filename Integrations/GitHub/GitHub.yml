@@ -44,6 +44,11 @@ configuration:
   name: stale_time
   required: false
   type: 0
+- defaultvalue: Content-Wizard
+  display: The name of the bot
+  name: bot_name
+  required: false
+  type: 0
 description: Integration to GitHub API
 display: GitHub
 name: GitHub

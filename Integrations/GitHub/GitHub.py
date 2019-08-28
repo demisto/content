@@ -18,6 +18,7 @@ TOKEN = demisto.params().get('token')
 BASE_URL = 'https://api.github.com'
 REPOSITORY = demisto.params().get('repository')
 CONTRIBUTION_LABEL = demisto.params().get('contribution_label')
+BOT_NAME = demisto.params().get('bot_name')
 STALE_TIME = demisto.params().get('stale_time', '3 days')
 USE_SSL = not demisto.params().get('insecure', False)
 FETCH_TIME = demisto.params().get('fetch_time', '30 days')
@@ -40,13 +41,18 @@ REVIEWERS = ['Itay4', 'yaakovi', 'yuvalbenshalom', 'ronykoz']
 
 WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
               'wizard @reviewer will very shortly look over your proposed changes.'
+NEEDS_REVIEW_MSG = '@reviewer This PR won\'t review itself and I\'m not going to do it for you (I bet you\'d like ' \
+                   'that wouldn\'t you) - look it over, eh?'
 LOTR_NUDGE_MSG = '"And some things that should not have been forgotten were lost. History became legend. Legend ' \
                  'became myth. And for two and a half thousand years", @reviewer had not looked at this beautiful PR ' \
                  '- as they were meant to do.'
 NUDGE_AUTHOR_MSG = 'A lengthy period of time has transpired since the PR was reviewed. @author Please address the ' \
-                   'reviewer\'s comments and push your committed changes. '
+                   'reviewer\'s comments and push your committed changes.'
 APPROVED_UNMERGED_MSG = 'The PR was approved but doesn\'t seem to have been merged. @author Please verify that there ' \
-                        'aren\'t any outstanding requested changes. '
+                        'aren\'t any outstanding requested changes.'
+SUGGEST_CLOSE_MSG = 'These reminders don\'t seem to be working and the issue is getting pretty stale - @reviewer - ' \
+                    'consider whether this PR is still relevant or should be closed.'
+STALE_MSG = 'This PR is starting to get a little stale and possibly even a little moldy and smelly.'
 
 
 ''' HELPER FUNCTIONS '''
@@ -221,6 +227,61 @@ def get_last_event(commit_timestamp: str = '', comment_timestamp: str = '', revi
     elif last_event == 'commit' and review_date > commit_date:
         last_event = 'review'
     return last_event
+
+
+def alert_appropriate_party(pr: dict, commit_data: dict, reviews_data: list, comments_data: list):
+    requested_reviewers = [requested_reviewer.get('login') for requested_reviewer in pr.get('requested_reviewers')]
+    reviewers_with_prefix = ' '.join(['@' + reviewer for reviewer in requested_reviewers])
+
+    commit_author = commit_data.get('author', {}).get('login')
+    commit_time = commit_data.get('commit', {}).get('author', {}).get('date', '')
+
+    last_review = reviews_data[-1] if len(reviews_data) >= 1 else {}
+    review_time = last_review.get('submitted_at', '')
+    review_status = last_review.get('state')
+
+    comments = list(filter(lambda comment: not (comment.get('body', '').startswith('Thank', 'Hey') and
+                                           comment.get('user', {}).get('login', '').endswith('[bot]')), comments_data))
+    last_comment = comments[-1] if len(comments) >= 1 else {}
+    comment_time = last_comment.get('updated_at', '')
+    comment_body = last_comment.get('body', '')
+    commenter = last_comment.get('user', {}).get('login')
+
+    msg = ''
+    issue_number = pr.get('number')
+    last_event = get_last_event(commit_time, comment_time, review_time)
+    if last_event == 'commit':
+        msg = NEEDS_REVIEW_MSG.replace('@reviewer', reviewers_with_prefix)
+    elif last_event == 'review':
+        if review_status !=  'APPROVED':
+            msg = NUDGE_AUTHOR_MSG.replace('author', commit_author)
+        else:
+            msg = APPROVED_UNMERGED_MSG.replace('author', commit_author)
+    else:  # last_event == 'comment'
+        # Actions if the last comment was by the bot itself
+        if commenter == BOT_NAME:
+            lotr_nudge = LOTR_NUDGE_MSG.replace('@reviewer', reviewers_with_prefix)
+            suggest_close = SUGGEST_CLOSE_MSG.replace('@reviewer', reviewers_with_prefix)
+            if review_status == 'PENDING' and (comment_body != lotr_nudge and comment_body != suggest_close):
+                msg = lotr_nudge
+            elif comment_body == suggest_close:
+                # PR already has comment from our bot to consider closing the issue so skip commenting
+                return
+            else:
+                msg = suggest_close
+        # Determine who the last commenter was - assume that whichever party was not the commenter needs a reminder
+        elif commenter != commit_author:
+            # The last comment wasn't made by the PR opener (and is probably one of the requested reviewers) assume
+            # that the PR opener needs a nudge
+            nudge_author = f' @{commit_author} are there any changes you wanted to make since @{commenter}\'s last ' \
+                f'comment? '
+            msg = STALE_MSG + nudge_author
+        else:
+            # Else assume the person who opened the PR is waiting on the response of one of the reviewers
+            nudge_reviewer = reviewers_with_prefix + f' what\'s new since @{commenter}\'s last comment?'
+            msg = STALE_MSG + nudge_reviewer
+    create_issue_comment(issue_number, msg)
+
 
 
 ''' REQUESTS FUNCTIONS '''
@@ -411,10 +472,10 @@ def fetch_incidents_command():
     inactive_prs = [get_pull_request(issue.get('number')) for issue in ongoing_external_prs]
     for pr in inactive_prs:
         issue_number = pr.get('number')
-        requested_reviewers = [requested_reviewer.get('login') for requested_reviewer in pr.get('requested_reviewers')]
         commit_data = get_commit(pr.get('head', {}).get('sha'))
         reviews_data = get_pr_reviews(issue_number)
         comments_data = list_issue_comments(issue_number)
+        alert_appropriate_party(pr, commit_data, reviews_data, comments_data)
 
     # label and assign reviewer to new external PRs
     incidents = []
