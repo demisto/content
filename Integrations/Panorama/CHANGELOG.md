@@ -1,12 +1,12 @@
 ## [Unreleased]
-  - Added 3 new commands:
+  - Added 3 commands.
     - ***panorama-query-logs***
     - ***panorama-check-logs-status***
     - ***panorama-get-logs***
   - Added the **Panorama Query Logs** playbook.
   - Added *log-forwarding* as an option for the *element_to_change* argument in the ***panorama-edit-rule*** command.
-  - Added support for Shared objects and Rules in Panorama instances
-  - Added the device-group argument to all relevant commands
+  - Added support for Shared objects and Rules in Panorama instances.
+  - Added the device-group argument to all relevant commands.
   
 
 ## [19.8.2] - 2019-08-22
