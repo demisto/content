@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- ews-get-items-from-folder command - support fetching item attachment
 
 ## [19.8.0] - 2019-08-06
   - Improved memory resource usage.
