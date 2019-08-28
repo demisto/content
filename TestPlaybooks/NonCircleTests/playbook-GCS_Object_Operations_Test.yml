@@ -5,22 +5,22 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 92ee8687-6e2e-4aa9-8dab-211b26217316
+    taskid: bdf650db-5b82-483b-8992-9277a81bed10
     type: start
     task:
-      id: 92ee8687-6e2e-4aa9-8dab-211b26217316
+      id: bdf650db-5b82-483b-8992-9277a81bed10
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "25"
+      - "21"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 50
         }
       }
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 28748e80-66b1-40c5-89f4-4e7f35f9fba7
+    taskid: 3fd0ebec-72e5-4fef-81bf-056a12d0bf2b
     type: regular
     task:
-      id: 28748e80-66b1-40c5-89f4-4e7f35f9fba7
+      id: 3fd0ebec-72e5-4fef-81bf-056a12d0bf2b
       version: -1
       name: Create bucket demisto-test-2
       description: Creates a new bucket
@@ -52,7 +52,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 1215
         }
       }
@@ -61,10 +61,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 0d57885f-667a-4bed-8463-0a4c4413065c
+    taskid: 15a221a5-8554-4661-8f62-9f7b978f6147
     type: regular
     task:
-      id: 0d57885f-667a-4bed-8463-0a4c4413065c
+      id: 15a221a5-8554-4661-8f62-9f7b978f6147
       version: -1
       name: List objects in bucket
       description: Retrieves the list of objects in a bucket
@@ -82,7 +82,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 1390
         }
       }
@@ -91,10 +91,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 4e1e181a-aa8e-4452-844a-31439897720c
+    taskid: d1bdfab5-fd80-4e74-833a-5dfd1ec0b603
     type: regular
     task:
-      id: 4e1e181a-aa8e-4452-844a-31439897720c
+      id: d1bdfab5-fd80-4e74-833a-5dfd1ec0b603
       version: -1
       name: Upload test.txt (create object)
       description: Uploads a file (object) into a bucket
@@ -117,7 +117,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 1915
         }
       }
@@ -126,10 +126,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 391843f1-24de-4e7f-8b09-aca8f2dea98e
+    taskid: 29779a24-31d1-4e7e-8731-48fe0334a337
     type: regular
     task:
-      id: 391843f1-24de-4e7f-8b09-aca8f2dea98e
+      id: 29779a24-31d1-4e7e-8731-48fe0334a337
       version: -1
       name: List objects in bucket
       description: Retrieves the list of objects in a bucket
@@ -147,7 +147,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 2090
         }
       }
@@ -156,10 +156,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 8cbb8f3f-0846-4ab0-86fa-e0020afb828e
+    taskid: 186182d0-b4fd-4b70-84b5-3d81b7a02829
     type: regular
     task:
-      id: 8cbb8f3f-0846-4ab0-86fa-e0020afb828e
+      id: 186182d0-b4fd-4b70-84b5-3d81b7a02829
       version: -1
       name: Delete bucket with force=True
       description: Permanently deletes a bucket
@@ -179,7 +179,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 3255
         }
       }
@@ -188,10 +188,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: ae6ec309-f90b-47c1-8e21-3d26638ff714
+    taskid: 19b9e980-5e2a-4048-8b3c-bc7a0e9f98f8
     type: regular
     task:
-      id: ae6ec309-f90b-47c1-8e21-3d26638ff714
+      id: 19b9e980-5e2a-4048-8b3c-bc7a0e9f98f8
       version: -1
       name: Create test.txt file
       description: |
@@ -213,7 +213,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 1740
         }
       }
@@ -222,10 +222,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 6da829fd-4247-4789-809b-4f9ebf87cf8e
+    taskid: d505c96a-6337-4e68-854b-4c79b5a24c3b
     type: title
     task:
-      id: 6da829fd-4247-4789-809b-4f9ebf87cf8e
+      id: d505c96a-6337-4e68-854b-4c79b5a24c3b
       version: -1
       name: Done
       type: title
@@ -235,7 +235,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 3955
         }
       }
@@ -244,10 +244,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: bc6c978a-1bc2-4bd8-8ffd-bebc1c7f8e57
+    taskid: c7e6c250-d0a5-45a2-85b5-22f16a4920b6
     type: regular
     task:
-      id: bc6c978a-1bc2-4bd8-8ffd-bebc1c7f8e57
+      id: c7e6c250-d0a5-45a2-85b5-22f16a4920b6
       version: -1
       name: Clear context
       description: Delete field from context
@@ -257,7 +257,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "29"
     scriptarguments:
       all: {}
       index: {}
@@ -271,7 +271,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1040
+          "y": 720
         }
       }
     note: false
@@ -279,10 +279,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 2312fa3e-a7d8-4df5-80ba-bf54058be63f
+    taskid: 4fc13b70-309c-4c03-8afe-a820b7554a57
     type: condition
     task:
-      id: 2312fa3e-a7d8-4df5-80ba-bf54058be63f
+      id: 4fc13b70-309c-4c03-8afe-a820b7554a57
       version: -1
       name: Verify no objects in bucket
       type: condition
@@ -314,7 +314,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 1565
         }
       }
@@ -323,10 +323,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 7f6b6a7a-10c5-4b0b-87b5-7b7f063a028f
+    taskid: 479aae91-be0f-48b6-8f92-359265f232cd
     type: condition
     task:
-      id: 7f6b6a7a-10c5-4b0b-87b5-7b7f063a028f
+      id: 479aae91-be0f-48b6-8f92-359265f232cd
       version: -1
       name: Verify object created
       type: condition
@@ -366,7 +366,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 2265
         }
       }
@@ -375,10 +375,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 78dd590a-b62c-4fd2-819b-ca4a4e3ca3c1
+    taskid: 4336ae3b-9a18-4c17-8f62-bad1b6f0d3ff
     type: condition
     task:
-      id: 78dd590a-b62c-4fd2-819b-ca4a4e3ca3c1
+      id: 4336ae3b-9a18-4c17-8f62-bad1b6f0d3ff
       version: -1
       name: Verify downloaded file name and size
       type: condition
@@ -410,7 +410,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 2935
         }
       }
@@ -419,10 +419,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 18a8a322-7e34-4b6a-8f6e-3016d0704e72
+    taskid: a630d29f-1cad-4dfb-8d3c-38406daa3e2b
     type: condition
     task:
-      id: 18a8a322-7e34-4b6a-8f6e-3016d0704e72
+      id: a630d29f-1cad-4dfb-8d3c-38406daa3e2b
       version: -1
       name: Verify bucket was force-deleted
       type: condition
@@ -454,7 +454,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 3780
         }
       }
@@ -463,10 +463,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 27dc165b-c32d-45d8-8d10-d8cb7043b6b2
+    taskid: 1432e563-9b87-43b9-8380-ef9c3714215e
     type: regular
     task:
-      id: 27dc165b-c32d-45d8-8d10-d8cb7043b6b2
+      id: 1432e563-9b87-43b9-8380-ef9c3714215e
       version: -1
       name: Clear context
       description: Delete field from context
@@ -489,7 +489,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 3430
         }
       }
@@ -498,10 +498,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 67139e39-83c5-4250-8284-3a99b3cbdbf4
+    taskid: a77d921e-91c8-43e9-8d6b-b89719587c4c
     type: regular
     task:
-      id: 67139e39-83c5-4250-8284-3a99b3cbdbf4
+      id: a77d921e-91c8-43e9-8d6b-b89719587c4c
       version: -1
       name: gcs-list-buckets
       description: Retrieves the list of buckets in the project
@@ -516,7 +516,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 3605
         }
       }
@@ -525,10 +525,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 5372ba6d-fb13-44b0-8081-9ebc3d024cd6
+    taskid: ba111847-892d-4e8a-8356-b4bda64bef9c
     type: regular
     task:
-      id: 5372ba6d-fb13-44b0-8081-9ebc3d024cd6
+      id: ba111847-892d-4e8a-8356-b4bda64bef9c
       version: -1
       name: Clear context
       description: Delete field from context
@@ -551,7 +551,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 2585
         }
       }
@@ -560,10 +560,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: c26ae322-9c0f-40af-8a1b-f5f59865f5dc
+    taskid: 154407db-c656-408b-8c39-b24af6191839
     type: regular
     task:
-      id: c26ae322-9c0f-40af-8a1b-f5f59865f5dc
+      id: 154407db-c656-408b-8c39-b24af6191839
       version: -1
       name: List buckets
       description: Retrieves the list of buckets in the project
@@ -578,8 +578,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 370
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -587,10 +587,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: 13c4349c-0c96-4376-8eba-6d870fe583bf
+    taskid: 0a74a50b-3ddd-414d-89a2-7c349ca35b6f
     type: condition
     task:
-      id: 13c4349c-0c96-4376-8eba-6d870fe583bf
+      id: 0a74a50b-3ddd-414d-89a2-7c349ca35b6f
       version: -1
       name: Bucket demisto-test-2 exists?
       type: condition
@@ -616,8 +616,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 545
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -625,10 +625,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: 11a12c52-1e6f-4dc9-88ac-85175995494a
+    taskid: 76d80703-7260-4947-8b8b-ddd750be40e6
     type: regular
     task:
-      id: 11a12c52-1e6f-4dc9-88ac-85175995494a
+      id: 76d80703-7260-4947-8b8b-ddd750be40e6
       version: -1
       name: Delete bucket
       description: Permanently deletes a bucket
@@ -638,7 +638,7 @@ tasks:
       brand: Google Cloud Storage
     nexttasks:
       '#none#':
-      - "24"
+      - "13"
     scriptarguments:
       bucket_name:
         simple: demisto-test-2
@@ -648,8 +648,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 162.5,
+          "y": 545
         }
       }
     note: false
@@ -657,10 +657,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: 3bf20a6d-dfea-41a9-856e-bd78b17c9abc
+    taskid: 6da2fdb7-3313-4e77-8bb9-84be2a6a6321
     type: title
     task:
-      id: 3bf20a6d-dfea-41a9-856e-bd78b17c9abc
+      id: 6da2fdb7-3313-4e77-8bb9-84be2a6a6321
       version: -1
       name: 'Test: List Objects + Upload File'
       type: title
@@ -668,49 +668,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "2"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "25":
-    id: "25"
-    taskid: a4df8703-1422-4abf-8bb3-cf2e3e9d2cd5
-    type: regular
-    task:
-      id: a4df8703-1422-4abf-8bb3-cf2e3e9d2cd5
-      version: -1
-      name: Clear context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key:
-        simple: GCS
-      keysToKeep: {}
-      subplaybook:
-        simple: "yes"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 195
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -718,10 +682,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: d52fb8d1-35e0-460a-8d48-17bfcc20ab9e
+    taskid: 91a5bb2c-a3b2-4d64-8b1a-f5a592afaf89
     type: regular
     task:
-      id: d52fb8d1-35e0-460a-8d48-17bfcc20ab9e
+      id: 91a5bb2c-a3b2-4d64-8b1a-f5a592afaf89
       version: -1
       name: Download the object
       description: Retrieves object data into a file
@@ -741,7 +705,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 2760
         }
       }
@@ -750,10 +714,10 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: c6cf7d0d-e273-4138-84f9-f4ed0c97674f
+    taskid: 0c26f405-8f2c-46fa-8e9a-75930c8cb759
     type: title
     task:
-      id: c6cf7d0d-e273-4138-84f9-f4ed0c97674f
+      id: 0c26f405-8f2c-46fa-8e9a-75930c8cb759
       version: -1
       name: 'Test: Download File'
       type: title
@@ -766,7 +730,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 2440
         }
       }
@@ -775,10 +739,10 @@ tasks:
     ignoreworker: false
   "28":
     id: "28"
-    taskid: c285141e-45b1-4891-8d24-94494bfcd6f8
+    taskid: 0da256be-7a13-43ff-86f4-dd0d744c412f
     type: title
     task:
-      id: c285141e-45b1-4891-8d24-94494bfcd6f8
+      id: 0da256be-7a13-43ff-86f4-dd0d744c412f
       version: -1
       name: 'Test: Force-delete Bucket'
       type: title
@@ -791,8 +755,41 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: cd7fa3c2-0d60-4a0b-899d-745d688822e5
+    type: condition
+    task:
+      id: cd7fa3c2-0d60-4a0b-899d-745d688822e5
+      version: -1
+      name: Test sanity - verify context cleared
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: GCS
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
         }
       }
     note: false
