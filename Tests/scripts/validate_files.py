@@ -16,6 +16,7 @@ import glob
 import logging
 import argparse
 import subprocess
+import yaml
 
 from Tests.scripts.constants import *
 from Tests.scripts.hook_validations.id import IDSetValidator
@@ -126,7 +127,7 @@ class FilesValidator(object):
 
         return modified_files_list, added_files_list, deleted_files, old_format_files
 
-    def get_modified_and_added_files(self, branch_name, is_circle, tag='master'):
+    def get_modified_and_added_files(self, branch_name, is_circle, tag='origin/master'):
         """Get lists of the modified and added files in your branch according to the git diff output.
 
         Args:
@@ -139,16 +140,16 @@ class FilesValidator(object):
         """
         compare_type = '.' if tag == "master" else ''
         all_changed_files_string = run_command(
-            "git diff --name-status origin/{tag}..{compare_type}refs/heads/{branch}".format(tag=tag,
-                                                                                            branch=branch_name,
-                                                                                            compare_type=compare_type))
+            "git diff --name-status {tag}..{compare_type}refs/heads/{branch}".format(tag=tag,
+                                                                                     branch=branch_name,
+                                                                                     compare_type=compare_type))
         modified_files, added_files, _, old_format_files = self.get_modified_files(all_changed_files_string, tag=tag)
 
         if not is_circle:
             files_string = run_command("git diff --name-status --no-merges HEAD")
             non_committed_modified_files, non_committed_added_files, non_committed_deleted_files, \
-                non_committed_old_format_files = self.get_modified_files(files_string)
-            all_changed_files_string = run_command("git diff --name-status origin/{}".format(tag))
+            non_committed_old_format_files = self.get_modified_files(files_string)
+            all_changed_files_string = run_command("git diff --name-status {}".format(tag))
             modified_files_from_tag, added_files_from_tag, _, _ = \
                 self.get_modified_files(all_changed_files_string)
 
@@ -172,44 +173,6 @@ class FilesValidator(object):
             # added_files = new_added_files
 
         return modified_files, added_files, old_format_files
-
-    @staticmethod
-    def get_previous_release_branch(release_branch_name):
-        """Get previous release branch
-
-        Args:
-            release_branch_name (string): Release branch to compare to
-
-        Returns:
-            (string). Release version prior to release_branch_name
-        """
-        try:
-            year, month, ver = release_branch_name.split('.')
-            if ver == '0':
-                month = int(month) - 1
-                if month < 1:
-                    month = 12
-                    year = int(year) - 1
-                prev_ver_prefix = 'origin/{year}.{month}.*'.format(year=year, month=month)
-                git_prev_versions = run_command("git branch -a --list {}".format(prev_ver_prefix)).decode(
-                    'utf8').strip().split('\n')
-                git_prev_versions.sort()
-                # No branches were found
-                if not git_prev_versions:
-                    return ''
-                # Deal with branches of type 'year.month.ver*' whereas * is not empty
-                i = -1
-                prev_ver = git_prev_versions[i]
-                # TODO: Discuss this solution, and try to think of a better one
-                while len(git_prev_versions[i]) != len(git_prev_versions[0]):
-                    prev_ver = git_prev_versions[i]
-                    i -= 1
-                return prev_ver
-            ver = int(ver) - 1
-            return '{year}.{month}.{ver}'.format(year=year, month=month, ver=ver)
-        except ValueError:
-            # Wrong input
-            return ''
 
     def validate_modified_files(self, modified_files, is_backward_check=True, old_branch='master'):
         """Validate the modified files from your branch.
@@ -265,7 +228,7 @@ class FilesValidator(object):
                     re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
 
                 yml_path, _ = get_script_package_data(os.path.dirname(file_path))
-                script_validator = ScriptValidator(yml_path, old_file_path=old_file_path)
+                script_validator = ScriptValidator(yml_path, old_file_path=old_file_path, old_git_branch=old_branch)
                 if is_backward_check and not script_validator.is_backward_compatible():
                     self._is_valid = False
 
@@ -390,11 +353,12 @@ class FilesValidator(object):
                         if not structure_validator.is_valid_scheme():
                             self._is_valid = False
 
-    def is_valid_structure(self, branch_name, is_backward_check=True):
+    def is_valid_structure(self, branch_name, is_backward_check=True, prev_ver=None):
         """Check if the structure is valid for the case we are in, master - all files, branch - changed files.
 
         Args:
             branch_name (string): The name of the branch we are working on.
+            prev_ver (string): The name or SHA1 of the previous content version
 
         Returns:
             (bool). Whether the structure is valid or not.
@@ -402,38 +366,31 @@ class FilesValidator(object):
         if not self.conf_json_validator.is_valid_conf_json():
             self._is_valid = False
 
+        self.validate_against_previous_version(branch_name, prev_ver)
         if branch_name != 'master' and not branch_name.startswith('19.') and not branch_name.startswith('20.'):
             # validates only committed files
             self.validate_committed_files(branch_name, is_backward_check=is_backward_check)
         else:
             # validates all of Content repo directories according to their schemas
             self.validate_all_files()
-            if branch_name != 'master':
-                self.validate_against_previous_version(branch_name)
 
         return self._is_valid
 
-    def validate_against_previous_version(self, branch_name, prev_branch_name=None):
-        """Validate all files from previous version
+    def validate_against_previous_version(self, branch_sha, prev_branch_sha=None):
+        """Validate all files that were changed between previous version and branch_sha
 
         Args:
-            branch_name (str): Current branch name to validate
-            prev_branch_name (str): Previous branch name to validate against
+            branch_sha (str): Current branch SHA1 to validate
+            prev_branch_sha (str): Previous branch SHA1 to validate against
         """
-        if not prev_branch_name:
-            # Will only work for release branches
-            prev_branch_name = self.get_previous_release_branch(release_branch_name=branch_name)
-        # Validate previous version only if found it
-        if prev_branch_name:
-            modified_files, added_files, old_format_files = \
-                self.get_modified_and_added_files(branch_name, self.is_circle, prev_branch_name)
-            # TODO: Ask whether I should limit the tests
-            self.validate_modified_files(modified_files, is_backward_check=True, old_branch=prev_branch_name)
-        else:
-            print_color(
-                "Failed BC check. No release version prior to {} found in git.".format(branch_name),
-                LOG_COLORS.RED)
-            sys.exit(1)
+        if not prev_branch_sha:
+            with open('./.circleci/config.yml') as f:
+                config = yaml.safe_load(f)
+                prev_branch_sha = config['jobs']['build']['environment']['GIT_SHA1']
+
+        print_color("Starting validation against {}".format(prev_branch_sha), LOG_COLORS.GREEN)
+        modified_files, _, _ = self.get_modified_and_added_files(branch_sha, self.is_circle, prev_branch_sha)
+        self.validate_modified_files(modified_files, is_backward_check=True, old_branch=prev_branch_sha)
 
 
 def main():
@@ -452,7 +409,7 @@ def main():
     parser.add_argument('-c', '--circle', type=str2bool, default=False, help='Is CircleCi or not')
     parser.add_argument('-b', '--backwardComp', type=str2bool, default=True, help='To check backward compatibility.')
     parser.add_argument('-t', '--test-filter', type=str2bool, default=False, help='Check that tests are valid.')
-    parser.add_argument('-p', '--prev-ver', help='Previous version to run checks against.')
+    parser.add_argument('-p', '--prev-ver', help='Previous branch or SHA1 commit to run checks against.')
     options = parser.parse_args()
     is_circle = options.circle
     is_backward_check = options.backwardComp
@@ -461,11 +418,9 @@ def main():
 
     print_color("Starting validating files structure", LOG_COLORS.GREEN)
     files_validator = FilesValidator(is_circle)
-    if not files_validator.is_valid_structure(branch_name, is_backward_check=is_backward_check):
+    if not files_validator.is_valid_structure(branch_name, is_backward_check=is_backward_check,
+                                              prev_ver=options.prev_ver):
         sys.exit(1)
-    if options.prev_ver:
-        print_color("Starting validation against {}".format(options.prev_ver), LOG_COLORS.GREEN)
-        files_validator.validate_against_previous_version(branch_name, prev_branch_name=options.prev_ver)
     if options.test_filter:
         try:
             print_color("Updating idset. Be patient if this is the first time...", LOG_COLORS.YELLOW)

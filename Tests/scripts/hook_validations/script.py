@@ -34,8 +34,9 @@ class ScriptValidator(object):
                 git_hub_path = os.path.join(old_git_link, file_path).replace("\\", "/")
 
             try:
-                file_content = requests.get(git_hub_path, verify=False).content
-                self.old_script = yaml.safe_load(file_content)
+                res = requests.get(git_hub_path, verify=False)
+                res.raise_for_status()
+                self.old_script = yaml.safe_load(res.content)
             except Exception as e:
                 print(str(e))
                 print_error("Could not find the old script please make sure that you did not break "

@@ -36,7 +36,9 @@ class IntegrationValidator(object):
             else:
                 try:
                     file_path_from_old_branch = os.path.join(old_git_link, file_path).replace("\\", "/")
-                    self.old_integration = yaml.safe_load(requests.get(file_path_from_old_branch, verify=False).content)
+                    res = requests.get(file_path_from_old_branch, verify=False)
+                    res.raise_for_status()
+                    self.old_integration = yaml.safe_load(res.content)
                 except Exception as e:
                     print(str(e))
                     print_error("Could not find the old integration please make sure that you did not break "
