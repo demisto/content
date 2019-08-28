@@ -854,10 +854,10 @@ script:
         be blank.
       type: string
     - contextPath: Domain.Malicious.Vendor
-      description: For malicious domains, the vendor that made the decision
+      description: For malicious domains, the vendor that made the decision.
       type: string
     - contextPath: Domain.Malicious.Description
-      description: For malicious domains, the reason for the vendor to make the decision
+      description: For malicious domains, the reason for the vendor to make the decision.
       type: string
     - contextPath: Domain.Admin.Country
       description: The domain admininistrator's country.
@@ -872,16 +872,16 @@ script:
       description: The domain admininistrator's phone number.
       type: String
     - contextPath: Domain.Registrant.Country
-      description: The registrant's country
+      description: The registrant's country.
       type: String
     - contextPath: Domain.Registrant.Email
-      description: The registrant's email address
+      description: The registrant's email address.
       type: String
     - contextPath: Domain.Registrant.Name
-      description: The registrant's name
+      description: The registrant's name.
       type: String
     - contextPath: Domain.Registrant.Phone
-      description: The registrant's phone number
+      description: The registrant's phone number.
       type: String
     - contextPath: Domain.CreationDate
       description: The date that the domain was created.
@@ -893,7 +893,7 @@ script:
       description: The date that the domain was last updated.
       type: Date
     - contextPath: Domain.ExpirationDate
-      description: The expiration date of the domain
+      description: The expiration date of the domain.
       type: Date
   - arguments:
     - default: false
@@ -1283,31 +1283,31 @@ script:
       description: Domain's name.
       type: string
     - contextPath: Domain.Umbrella.Whois.RegistrarName
-      description: Domain registrar name
+      description: Domain registrar name.
       type: string
     - contextPath: Domain.Umbrella.Whois.LastRetrieved
-      description: Domain last retrieved date
+      description: Domain last retrieved date.
       type: string
     - contextPath: Domain.Umbrella.Whois.Created
-      description: Domain created date
+      description: Domain created date.
       type: string
     - contextPath: Domain.Umbrella.Whois.Updated
-      description: Domain updated date
+      description: Domain updated date.
       type: string
     - contextPath: Domain.Umbrella.Whois.Expires
-      description: Domain expiry date
+      description: Domain expiry date.
       type: string
     - contextPath: Domain.Umbrella.Whois.IANAID
-      description: IANA ID
+      description: IANA ID.
       type: string
     - contextPath: Domain.Umbrella.Whois.LastObserved
-      description: Domain last observed
+      description: Domain last observed.
       type: string
     - contextPath: Domain.Umbrella.Whois.Nameservers.Name
-      description: Domain's name servers
+      description: Domain's name servers.
       type: string
     - contextPath: Domain.Umbrella.Whois.Emails.Name
-      description: Domain's email
+      description: Domain's email.
       type: string
     - contextPath: Domain.Name
       description: The domain name e.g. google.com
@@ -1325,16 +1325,16 @@ script:
       description: The domain admininistrator's phone number.
       type: String
     - contextPath: Domain.Registrant.Country
-      description: The registrant's country
+      description: The registrant's country.
       type: String
     - contextPath: Domain.Registrant.Email
-      description: The registrant's email address
+      description: The registrant's email address.
       type: String
     - contextPath: Domain.Registrant.Name
-      description: The registrant's name
+      description: The registrant's name.
       type: String
     - contextPath: Domain.Registrant.Phone
-      description: The registrant's phone number
+      description: The registrant's phone number.
       type: String
     - contextPath: Domain.CreationDate
       description: The date that the domain was created.
@@ -1346,7 +1346,7 @@ script:
       description: The date that the domain was last updated.
       type: Date
     - contextPath: Domain.ExpirationDate
-      description: The expiration date of the domain
+      description: The expiration date of the domain.
       type: Date
   - arguments:
     - default: false
