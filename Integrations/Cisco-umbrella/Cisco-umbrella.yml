@@ -860,40 +860,40 @@ script:
       description: For malicious domains, the reason for the vendor to make the decision
       type: string
     - contextPath: Domain.Admin.Country
-      description: Admin's country.
+      description: The domain admininistrator's country.
       type: String
     - contextPath: Domain.Admin.Email
-      description: Admin's email address
+      description: The domain admininistrator's email address.
       type: String
     - contextPath: Domain.Admin.Name
-      description: Admin's Name
+      description: The domain admininistrator's name.
       type: String
     - contextPath: Domain.Admin.Phone
-      description: Admin's phone number
+      description: The domain admininistrator's phone number.
       type: String
     - contextPath: Domain.Registrant.Country
-      description: Registrant's country
+      description: The registrant's country
       type: String
     - contextPath: Domain.Registrant.Email
-      description: Registrant's email address
+      description: The registrant's email address
       type: String
     - contextPath: Domain.Registrant.Name
-      description: Registrant's name
+      description: The registrant's name
       type: String
     - contextPath: Domain.Registrant.Phone
-      description: Registrant's phone number
+      description: The registrant's phone number
       type: String
     - contextPath: Domain.CreationDate
-      description: Creation date of the domain
+      description: The date that the domain was created.
       type: Date
     - contextPath: Domain.DomainStatus
-      description: Status of the domain
+      description: The status of the domain.
       type: String
     - contextPath: Domain.UpdatedDate
-      description: Last update date of the domain
+      description: The date that the domain was last updated.
       type: Date
     - contextPath: Domain.ExpirationDate
-      description: Expiration date of the domain
+      description: The expiration date of the domain
       type: Date
   - arguments:
     - default: false
@@ -1313,43 +1313,40 @@ script:
       description: The domain name e.g. google.com
       type: Unknown
     - contextPath: Domain.Admin.Country
-      description: Admin's country
+      description: The domain admininistrator's country.
       type: String
     - contextPath: Domain.Admin.Email
-      description: Admin's email address
+      description: The domain admininistrator's email address.
       type: String
     - contextPath: Domain.Admin.Name
-      description: Admin's Name
+      description: The domain admininistrator's name.
       type: String
     - contextPath: Domain.Admin.Phone
-      description: Admin's phone number
+      description: The domain admininistrator's phone number.
       type: String
     - contextPath: Domain.Registrant.Country
-      description: Registrant's country
+      description: The registrant's country
       type: String
     - contextPath: Domain.Registrant.Email
-      description: Registrant's email address
+      description: The registrant's email address
       type: String
     - contextPath: Domain.Registrant.Name
-      description: Registrant's name
+      description: The registrant's name
       type: String
     - contextPath: Domain.Registrant.Phone
-      description: Registrant's phone number
+      description: The registrant's phone number
       type: String
     - contextPath: Domain.CreationDate
-      description: Creation date of the domain
+      description: The date that the domain was created.
       type: Date
-    - contextPath: Domain.Registrar.Name
-      description: Registrar's name
-      type: String
     - contextPath: Domain.DomainStatus
-      description: Status of the domain
+      description: The status of the domain.
       type: String
     - contextPath: Domain.UpdatedDate
-      description: Last update date of the domain
+      description: The date that the domain was last updated.
       type: Date
     - contextPath: Domain.ExpirationDate
-      description: Expiration date of the domain
+      description: The expiration date of the domain
       type: Date
   - arguments:
     - default: false
