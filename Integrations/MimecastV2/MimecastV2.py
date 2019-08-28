@@ -290,7 +290,7 @@ def query_request(query_xml):
 
 
 def url_decode():
-    headers = []
+    headers = []  # type: List[str]
     contents = {}
     context = {}
     protected_url = demisto.args().get('url').encode('utf-8')
@@ -555,7 +555,6 @@ def delete_policy_request(policy_id=None):
 
 def manage_sender():
     headers = []
-    contents = []
     context = {}
     sender = demisto.args().get('sender').encode('utf-8')
     recipient = demisto.args().get('recipient').encode('utf-8')
