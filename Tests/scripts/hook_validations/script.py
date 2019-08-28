@@ -2,7 +2,7 @@ import os
 import yaml
 import requests
 
-from Tests.scripts.constants import CONTENT_GITHUB_MASTER_LINK
+from Tests.scripts.constants import CONTENT_GITHUB_LINK, CONTENT_GITHUB_MASTER_LINK
 from Tests.test_utils import print_error, get_yaml
 
 # disable insecure warnings
@@ -19,18 +19,19 @@ class ScriptValidator(object):
        old_script (dict): Json representation of the current script from master.
     """
 
-    def __init__(self, file_path, check_git=True, old_file_path=None):
+    def __init__(self, file_path, check_git=True, old_file_path=None, old_git_branch='master'):
         self.file_path = file_path
         self.current_script = {}
         self.old_script = {}
 
         if check_git:
             self.current_script = get_yaml(file_path)
+            old_git_link = '{root}/{branch}'.format(root=CONTENT_GITHUB_LINK, branch=old_git_branch)
             # The replace in the end is for Windows support
             if old_file_path:
-                git_hub_path = os.path.join(CONTENT_GITHUB_MASTER_LINK, old_file_path).replace("\\", "/")
+                git_hub_path = os.path.join(old_git_link, old_file_path).replace("\\", "/")
             else:
-                git_hub_path = os.path.join(CONTENT_GITHUB_MASTER_LINK, file_path).replace("\\", "/")
+                git_hub_path = os.path.join(old_git_link, file_path).replace("\\", "/")
 
             try:
                 file_content = requests.get(git_hub_path, verify=False).content

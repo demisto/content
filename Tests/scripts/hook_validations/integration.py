@@ -3,7 +3,7 @@ import os
 import requests
 import yaml
 
-from Tests.scripts.constants import CONTENT_GITHUB_MASTER_LINK
+from Tests.scripts.constants import CONTENT_GITHUB_LINK
 from Tests.test_utils import print_error, get_yaml
 
 # disable insecure warnings
@@ -21,21 +21,22 @@ class IntegrationValidator(object):
        old_integration (dict): Json representation of the current integration from master.
     """
 
-    def __init__(self, file_path, check_git=True, old_file_path=None):
+    def __init__(self, file_path, check_git=True, old_file_path=None, old_git_branch='master'):
         self._is_valid = True
 
         self.file_path = file_path
         if check_git:
             self.current_integration = get_yaml(file_path)
+            old_git_link = '{root}/{branch}'.format(root=CONTENT_GITHUB_LINK, branch=old_git_branch)
             # The replace in the end is for Windows support
             if old_file_path:
-                git_hub_path = os.path.join(CONTENT_GITHUB_MASTER_LINK, old_file_path).replace("\\", "/")
+                git_hub_path = os.path.join(old_git_link, old_file_path).replace("\\", "/")
                 file_content = requests.get(git_hub_path, verify=False).content
                 self.old_integration = yaml.safe_load(file_content)
             else:
                 try:
-                    file_path_from_master = os.path.join(CONTENT_GITHUB_MASTER_LINK, file_path).replace("\\", "/")
-                    self.old_integration = yaml.safe_load(requests.get(file_path_from_master, verify=False).content)
+                    file_path_from_old_branch = os.path.join(old_git_link, file_path).replace("\\", "/")
+                    self.old_integration = yaml.safe_load(requests.get(file_path_from_old_branch, verify=False).content)
                 except Exception as e:
                     print(str(e))
                     print_error("Could not find the old integration please make sure that you did not break "
