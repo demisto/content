@@ -288,6 +288,12 @@ script:
     - contextPath: AutoFocus.Sessions.UploadSource
       description: Source that uploaded the sample.
       type: String
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
   - arguments:
     - default: false
       description: SHA256 hash of the sample to analyze.
