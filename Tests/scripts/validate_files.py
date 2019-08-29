@@ -360,7 +360,7 @@ class FilesValidator(object):
 
         Args:
             branch_name (string): The name of the branch we are working on.
-            prev_ver (string): The name or SHA1 of the previous content version
+            prev_ver (string): The name or SHA1 of the previous content version, which will be validated against.
 
         Returns:
             (bool). Whether the structure is valid or not.
@@ -376,7 +376,7 @@ class FilesValidator(object):
                 prev_ver = 'master'
             self.validate_against_previous_version(branch_name, prev_ver)
         else:
-            self.validate_against_previous_version(branch_name, prev_ver, no_error=(branch_name == 'master'))
+            self.validate_against_previous_version(branch_name, prev_ver, no_error=True)
             # validates all of Content repo directories according to their schemas
             self.validate_all_files()
 
