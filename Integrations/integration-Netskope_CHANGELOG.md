@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Returning full raw response data for the **netskpoe-alerts** command
+The ***netskope-alerts*** command now returns full raw response data.
