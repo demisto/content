@@ -4,7 +4,7 @@ import requests
 import yaml
 
 from Tests.scripts.constants import CONTENT_GITHUB_MASTER_LINK, PYTHON_SUBTYPES
-from Tests.test_utils import print_error, get_yaml
+from Tests.test_utils import print_error, print_warning, get_yaml
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -105,8 +105,10 @@ class IntegrationValidator(object):
             # look for reputations commands
             if command_name in ['domain', 'email', 'file', 'ip', 'url']:
                 context_outputs_paths = []
+                context_outputs_descriptions = []
                 for output in command.get('outputs', []):
                     context_outputs_paths.append(output.get('contextPath'))
+                    context_outputs_descriptions.append(output.get('description'))
 
                 # validate DBotScore outputs
                 DBot_Score_outputs = {'DBotScore.Indicator', 'DBotScore.Type', 'DBotScore.Vendor', 'DBotScore.Score'}
@@ -118,6 +120,23 @@ class IntegrationValidator(object):
                 if missing_outputs:
                     print_error("The DBotScore outputs of the reputation command aren't valid. Missing: {}."
                                 " Fix according to context standard {} ".format(missing_outputs, context_standard))
+
+                # validate DBotScore descriptions
+                DBot_Score_descriptions = {
+                    'The indicator that was tested.',
+                    'The indicator type.',
+                    'Vendor used to calculate the score.'
+                    'The actual score.'
+                }
+                missing_descriptions = []
+                for DBot_Score_description in DBot_Score_descriptions:
+                    if DBot_Score_descriptions not in context_outputs_descriptions:
+                        missing_descriptions.append(DBot_Score_output)
+                        # self._is_valid = False - Do not fail build over wrong description
+                if missing_descriptions:
+                    print_warning("The DBotScore description of the reputation command aren't valid. Missing: {}."
+                                  " Fix according to context standard {} "
+                                  .format(missing_descriptions, context_standard))
 
                 # validate the IOC output
                 command_to_output = {
