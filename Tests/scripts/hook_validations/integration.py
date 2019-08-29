@@ -42,7 +42,7 @@ class IntegrationValidator(object):
                 except Exception as e:
                     print_warning(str(e))
                     print_warning("Could not find the old integration please make sure that you did not break "
-                                "backward compatibility")
+                                  "backward compatibility")
                     self.old_integration = None
 
     def is_backward_compatible(self):
