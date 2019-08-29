@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed an issue in which the qradar-get-search-results command would fail if the root of the result contained a non-ascii character
+Fixed an issue in which the ***qradar-get-search-results*** command failed when the root of the result contained a non-ascii character.
 
 ## [19.8.2] - 2019-08-22
   - Fixed an issue in which users would receive an error message for missing SEC headers.
