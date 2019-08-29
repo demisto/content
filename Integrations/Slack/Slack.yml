@@ -49,7 +49,7 @@ configuration:
   required: false
   type: 8
 description: Sends messages and notifications to your Slack Team.
-display: Slack V2
+display: Slack v2
 name: SlackV2
 script:
   commands:
@@ -192,12 +192,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Send a direct message to a Slack user by specifying a Slack user
-        name.
+      description: Sends a direct message to a Slack user by specifying a Slack user name.
       isArray: false
       name: to
-      predefined:
-      - ''
       required: false
       secret: false
     - default: false
@@ -208,8 +205,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Sends a link of a War Room entry to Slack by specifying an entry
-        ID.
+      description: Sends a link of a War Room entry to Slack by specifying an entry ID.
       isArray: false
       name: entry
       required: false
@@ -353,9 +349,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Sends a file to a user, channel, or group. If a user, channel, 
-    or group is not specified, the file is sent to the mirrored investigation channel. If the mirrored investigation channel does 
-    not exist, Demisto displays an error message in the War Room that the mirrored channel was not found.  
+    description: Sends a file to a either a user, channel, or group. If none are specified, the file is sent to the mirrored investigation channel (if the channel exists).
     execution: false
     name: slack-send-file
   - arguments:
@@ -395,13 +389,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: A CSV list of users to invite to a channel.
+      description: A CSV list of users to invite to a channel, for example, ("user1, user2...")
       isArray: false
       name: users
       required: false
       secret: false
     deprecated: false
-    description: Create a channel in Slack.
+    description: Creates a channel in Slack.
     execution: false
     name: slack-create-channel
   - arguments:
@@ -412,9 +406,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the channel. If the name of the channel is not specified, Slack uses the name of the mirrored investigation 
-      channel. If the mirrored investigation does not exist, Demisto displays an error message 
-      in the War Room that the mirrored channel was not found. 
+      description: The name of the channel. If the name of the channel is not specified, the name of the mirrored investigation channel is used (if the channel exists).
       name: channel
       required: false
       secret: false
@@ -424,15 +416,13 @@ script:
     name: slack-invite-to-channel
   - arguments:
     - default: true
-      description: A CSV list of users to kick out of a channel.
+      description: A CSV list of users to kick out of a channel, for example, "user1, user2..."
       isArray: false
       name: users
       required: true
       secret: false
     - default: false
-      description: The name of the channel. If the name of the channel is not specified, Slack uses the name of the mirrored investigation 
-      channel. If the mirrored investigation does not exist, Demisto displays an error message in the War Room 
-      that the mirrored channel was not found.
+      description: The name of the channel. If the name of the channel is not specified, the mirrored investigation channel is used (if the channel exists).
       isArray: false
       name: channel
       required: false
@@ -449,9 +439,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the channel. If not specified, Slack sets the name of the mirrored investigation
-        channel. If the mirrored investigation does not exist, Demisto displays an error message in the War Room 
-      that the mirrored channel was not found.
+      description: The name of the channel. If the name of the channel is not specified, the mirrored investigation channel is used (if the channel exists).
       isArray: false
       name: channel
       required: false
