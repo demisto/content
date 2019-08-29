@@ -160,16 +160,16 @@ script:
     name: ip
     outputs:
     - contextPath: DBotScore.Indicator
-      description: STRING, The indicator that was tested.
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: STRING, The indicator type.
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: STRING, Vendor used to calculate the score.
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: INT, The actual score.
+      description: The actual score.
       type: number
     - contextPath: IP.Malicious.Vendor
       description: For malicious IPs, the vendor that made the decision
@@ -235,16 +235,16 @@ script:
     name: file
     outputs:
     - contextPath: DBotScore.Indicator
-      description: STRING, The indicator that was tested.
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: STRING, The indicator type.
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: STRING, Vendor used to calculate the score.
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: INT, The actual score.
+      description: The actual score.
       type: number
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision
@@ -316,16 +316,16 @@ script:
     name: domain
     outputs:
     - contextPath: DBotScore.Indicator
-      description: STRING, The indicator that was tested.
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: STRING, The indicator type.
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: STRING, Vendor used to calculate the score.
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: INT, The actual score.
+      description: The actual score.
       type: number
     - contextPath: Domain.Malicious.Vendor
       description: For malicious Domains, the vendor that made the decision
@@ -391,16 +391,16 @@ script:
     name: url
     outputs:
     - contextPath: DBotScore.Indicator
-      description: STRING, The indicator that was tested.
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: STRING, The indicator type.
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: STRING, Vendor used to calculate the score.
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: INT, The actual score.
+      description: The actual score.
       type: number
     - contextPath: URL.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
