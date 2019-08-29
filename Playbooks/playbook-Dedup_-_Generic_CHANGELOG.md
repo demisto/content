@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added the *Time field* argument.
+Added the *TimeField* input.
