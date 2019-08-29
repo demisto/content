@@ -895,6 +895,9 @@ script:
     - contextPath: Domain.ExpirationDate
       description: The expiration date of the domain
       type: Date
+    - contextPath: Domain.Registrar.Name
+      description: 'The registrar''s name, for example: "GoDaddy"."'
+      type: String
   - arguments:
     - default: false
       description: 'The domain name you would like see related domains for. (e.g.
@@ -1348,6 +1351,9 @@ script:
     - contextPath: Domain.ExpirationDate
       description: The expiration date of the domain
       type: Date
+    - contextPath: Domain.Registrar.Name
+      description: 'The registrar''s name, for example: "GoDaddy"."'
+      type: String
   - arguments:
     - default: false
       description: IP Address to check for malicious domains.
