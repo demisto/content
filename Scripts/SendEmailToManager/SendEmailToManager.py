@@ -1,6 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from string import Template
+import textwrap
 email = demisto.get(demisto.args(), 'email')
 if not email:
     for t in demisto.incidents()[0]['labels']:
@@ -46,8 +48,6 @@ if allowReply:
     subject = demisto.gets(demisto.incidents()[0], 'name') + ' - #' + demisto.investigation()['id'] + ' ' + entitlement
 else:
     subject = demisto.gets(demisto.incidents()[0], 'name') + ' - #' + demisto.investigation()['id']
-from string import Template
-import textwrap
 
 body = demisto.get(demisto.args(), 'body')
 if not body:

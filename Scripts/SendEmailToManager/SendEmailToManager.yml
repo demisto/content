@@ -1,6 +1,6 @@
 commonfields:
   id: SendEmailToManager
-  version: 1
+  version: -1
 name: SendEmailToManager
 fromversion: 3.5.0
 script: '-'
@@ -45,3 +45,5 @@ dependson:
   - ad-search
   - send-mail
 timeout: 0s
+tests:
+  - No test
