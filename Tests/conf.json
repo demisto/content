@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "ZeroFox",
+            "playbookID": "ZeroFox-Test",
+            "fromversion": "4.1.0"
+        },
+        {
             "integrations": "SlackV2",
             "playbookID": "Slack Test Playbook",
             "fromversion": "5.0.0"
@@ -1826,6 +1831,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "google-vault": "Error when creating exports (Issue 18866)",
         "Lastline": "Temporally moved to skipped inorder to not fail nightly",
         "Anomali ThreatStream v2": "Credentials are invalid (issue 18561)",
         "Anomali ThreatStream": "Credentials are invalid (issue 18561)",
