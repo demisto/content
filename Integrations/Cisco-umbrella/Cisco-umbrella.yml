@@ -822,7 +822,7 @@ script:
         "1" if the domain is believed to be benign, "0" if it hasn't been classified
         yet.
       type: number
-    - contextPath: Domain.Umbrella.SecureRank 
+    - contextPath: Domain.Umbrella.SecureRank
       description: Suspicious rank for a domain that reviews based on the lookup behavior
         of client IP for the domain. Securerank is designed to identify hostnames
         requested by known infected clients but never requested by clean clients,
@@ -896,7 +896,7 @@ script:
       description: The expiration date of the domain.
       type: Date
     - contextPath: Domain.Registrar.Name
-      description: The registrar's name, for example 'GoDaddy'.
+      description: The name of the registrar, such as "GoDaddy".
       type: String
   - arguments:
     - default: false
