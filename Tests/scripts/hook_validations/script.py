@@ -37,9 +37,8 @@ class ScriptValidator(object):
                 res.raise_for_status()
                 self.old_script = yaml.safe_load(res.content)
             except Exception as e:
-                print_warning(str(e))
-                print_warning("Could not find the old script please make sure that you did not break "
-                              "backward compatibility")
+                print_warning("{}\nCould not find the old script please make sure that you did not break "
+                              "backward compatibility".format(str(e)))
 
     @classmethod
     def _is_sub_set(cls, supposed_bigger_list, supposed_smaller_list):

@@ -40,9 +40,8 @@ class IntegrationValidator(object):
                     res.raise_for_status()
                     self.old_integration = yaml.safe_load(res.content)
                 except Exception as e:
-                    print_warning(str(e))
-                    print_warning("Could not find the old integration please make sure that you did not break "
-                                  "backward compatibility")
+                    print_warning("{}\nCould not find the old integration please make sure that you did not break "
+                                  "backward compatibility".format(str(e)))
                     self.old_integration = None
 
     def is_backward_compatible(self):
