@@ -240,8 +240,8 @@ try:
 except ResponseParserError as e:
     return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
         error=type(e)))
-    LOG(e.message)
+    LOG(e)
 
 except Exception as e:
     return_error('Error has occurred in the AWS Athena Integration: {error}\n {message}'.format(
-        error=type(e), message=e.message))
+        error=type(e), message=e))
