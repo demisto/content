@@ -110,29 +110,27 @@ class IntegrationValidator(object):
                     context_outputs_paths.append(output.get('contextPath'))
                     context_outputs_descriptions.append(output.get('description'))
 
-                # validate DBotScore outputs
-                DBot_Score_outputs = {'DBotScore.Indicator', 'DBotScore.Type', 'DBotScore.Vendor', 'DBotScore.Score'}
+                # validate DBotScore outputs and descriptions
+                DBot_Score = {
+                    'DBotScore.Indicator': 'The indicator that was tested.',
+                    'DBotScore.Type': 'The indicator type.',
+                    'DBotScore.Vendor': 'Vendor used to calculate the score.',
+                    'DBotScore.Score': 'The actual score.'
+                }
                 missing_outputs = []
-                for DBot_Score_output in DBot_Score_outputs:
+                missing_descriptions = []
+                for DBot_Score_output in DBot_Score.keys():
                     if DBot_Score_output not in context_outputs_paths:
                         missing_outputs.append(DBot_Score_output)
                         self._is_valid = False
+                    else:  # DBot Score output path is in the outputs
+                        if DBot_Score.get(DBot_Score_output) not in context_outputs_descriptions:
+                            missing_descriptions.append(DBot_Score_output)
+                            # self._is_valid = False - Do not fail build over wrong description
+
                 if missing_outputs:
                     print_error("The DBotScore outputs of the reputation command aren't valid. Missing: {}."
                                 " Fix according to context standard {} ".format(missing_outputs, context_standard))
-
-                # validate DBotScore descriptions
-                DBot_Score_descriptions = {
-                    'The indicator that was tested.',
-                    'The indicator type.',
-                    'Vendor used to calculate the score.'
-                    'The actual score.'
-                }
-                missing_descriptions = []
-                for DBot_Score_description in DBot_Score_descriptions:
-                    if DBot_Score_description not in context_outputs_descriptions:
-                        missing_descriptions.append(DBot_Score_output)
-                        # self._is_valid = False - Do not fail build over wrong description
                 if missing_descriptions:
                     print_warning("The DBotScore description of the reputation command aren't valid. Missing: {}."
                                   " Fix according to context standard {} "
