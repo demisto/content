@@ -1,6 +1,6 @@
 ## [Unreleased]
   - Fixed an issue in which the ***qradar-get-search-results*** command failed when the root of the result contained a non-ascii character.
-  - Fixed an issue in which the ***qradar-offense-by-id*** command failed when trying to get offense type with a missing SEC header.
+  - Fixed an issue in which the ***qradar-offense-by-id*** command failed if an SEC header was missing when trying to get an offense type.
 
 ## [19.8.2] - 2019-08-22
   - Fixed an issue in which users would receive an error message for missing SEC headers.
