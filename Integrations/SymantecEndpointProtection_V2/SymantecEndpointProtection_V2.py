@@ -425,7 +425,8 @@ def get_endpoints_info(token, computer_name, last_update, os, page_size, columns
 
 def create_endpints_filter_string(computer_name, last_update, os, page_size, group_name=None):
     md = '## Endpoints Information'
-    md += ', filtered for last updated status: {}'.format(last_update) if last_update else ''
+    if last_update != '0':
+        md += ', filtered for last updated status: {}'.format(last_update) if last_update else ''
     md += ', filtered for hostname: {}'.format(computer_name) if computer_name else ''
     md += ', filtered for os: {}'.format(os) if os else ''
     md += ', filtered for group name: {}'.format(group_name) if group_name else ''
