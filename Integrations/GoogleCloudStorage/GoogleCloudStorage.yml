@@ -149,7 +149,7 @@ script:
       description: Object deletion time (available if the object is archived).
       type: Date
     - contextPath: GCS.BucketObject.Size
-      description: Number of objects in bytes.
+      description: Object size in bytes.
       type: Number
     - contextPath: GCS.BucketObject.MD5
       description: MD5 hash of the data in Base64.
