@@ -94,19 +94,19 @@ script:
       type: String
     - contextPath: AbuseIPDB.IP.Address
       description: IP address
-      type: Unknown
+      type: String
     - contextPath: AbuseIPDB.IP.AbuseConfidenceScore
       description: Confidence score fetched from AbuseIPDB
-      type: Unknown
+      type: String
     - contextPath: AbuseIPDB.IP.TotalReports
       description: The number of times this address has been reported
-      type: Unknown
+      type: Number
     - contextPath: AbuseIPDB.IP.Geo.Country
       description: Country associated with this IP Address
-      type: Unknown
+      type: String
     - contextPath: AbuseIPDB.IP.Reports
       description: Reports summary (for "verbose" reports)
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
@@ -121,10 +121,10 @@ script:
       type: String
     - contextPath: AbuseIPDB.IP.Malicious.Vendor
       description: The vendor that determined this IP address to be malicious
-      type: Unknown
+      type: String
     - contextPath: AbuseIPDB.IP.Malicious.Detections
       description: The Detections that led to the verdict
-      type: Unknown
+      type: String
     - contextPath: IP.Malicious.Description
       description: A description explaining why the IP address was reported as malicious.
       type: String
@@ -167,19 +167,19 @@ script:
     outputs:
     - contextPath: IP.Address
       description: IP address
-      type: Unknown
+      type: String
     - contextPath: IP.Geo.Country
-      description: Country associated with this IP Address
-      type: Unknown
+      description: The country in which the IP address is located.
+      type: String
     - contextPath: IP.Malicious.Vendor
-      description: The vendor that determined this IP address to be malicious
-      type: Unknown
+      description: The vendor reporting the IP address as malicious.
+      type: String
     - contextPath: IP.Malicious.Detections
       description: The Detections that led to the verdict
-      type: Unknown
+      type: String
     - contextPath: AbuseIPDB.IP.Address
       description: IP address
-      type: Unknown
+      type: String
     - contextPath: AbuseIPDB.IP.AbuseConfidenceScore
       description: Confidence score fetched from AbuseIPDB
       type: Unknown
@@ -193,23 +193,26 @@ script:
       description: Reports summary (for "verbose" reports)
       type: Unknown
     - contextPath: DBotScore.Score
-      description: Analysis score
-      type: Unknown
+      description: The actual score.
+      type: Number
     - contextPath: DBotScore.Vendor
-      description: Vendor name (AbuseIPDB)
-      type: Unknown
+      description: Vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Indicator
-      description: The IP address
-      type: Unknown
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: The type (ip)
-      type: Unknown
+      description: The indicator type.
+      type: String
     - contextPath: AbuseIPDB.IP.Malicious.Vendor
-      description: The vendor that determined this IP address to be malicious
-      type: Unknown
+      description: Vendor used to calculate the score.
+      type: String
     - contextPath: AbuseIPDB.IP.Malicious.Detections
       description: The Detections that led to the verdict
-      type: Unknown
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
   - arguments:
     - default: false
       description: ' The IP address to report'
@@ -274,5 +277,6 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
 - AbuseIPDB Test
