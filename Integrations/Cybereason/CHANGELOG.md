@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Filter bug fix in `!cybereason-query-malops`
+- Fixed the *Filters* argument in the ***cybereason-query-malops*** command.
