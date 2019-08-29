@@ -78,8 +78,6 @@ def nested_dict_flatted(d, parent_key='', sep='.'):
         items = []  # type: ignore
         for k, v in d.items():
             new_key = parent_key + sep + k if parent_key else k
-            if isinstance(v, list) and len(v) > 0:
-                v = v[0]
             if isinstance(v, collections.MutableMapping) and len(v) > 0:
                 items.extend(nested_dict_flatted(v, new_key, sep=sep).items())
             else:
@@ -131,12 +129,12 @@ def get_incidents_by_keys(similar_incident_keys, incident_time, incident_id, hou
                           max_number_of_results, extra_query, applied_condition):
     condition_string = ' %s ' % applied_condition.lower()
     similar_keys_query = condition_string.join(
-        map(lambda t: '%s:"%s"' % (t[0], t[1].replace('"', r'\"').replace("\n", " ").replace("\r", " ")),
+        map(lambda t: '%s:"%s"' % (t[0], t[1].replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r")),
             similar_incident_keys.items()))
     incident_time = parse_datetime(incident_time)
     max_date = incident_time
     min_date = incident_time - timedelta(hours=hours_back)
-    hours_back_query = '{0}:>="{1}" and {0}:<="{2}"'.format(TIME_FIELD, min_date.isoformat(), max_date.isoformat())
+    hours_back_query = '{0}:>="{1}" and {0}:<"{2}"'.format(TIME_FIELD, min_date.isoformat(), max_date.isoformat())
 
     if similar_keys_query:
         query = "(%s) and (%s)" % (similar_keys_query, hours_back_query)
