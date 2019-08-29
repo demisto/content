@@ -800,7 +800,7 @@ script:
       description: Matching Umbrella Security Categories
       type: Unknown
   - arguments:
-    - default: false
+    - default: true
       description: 'The domain name you would like to categorize. (e.g. : www.amazon.com)
         Comma separated list allowed. (e.g. : www.amazon.com,www.facebook.com,www.yahoo.com)'
       isArray: false
@@ -859,6 +859,45 @@ script:
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason for the vendor to make the decision
       type: string
+    - contextPath: Domain.Admin.Country
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Email
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Name
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Phone
+      description: The phone number of the domain administrator.
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Email
+      description: The email address of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Phone
+      description: The phone number of the registrant.
+      type: String
+    - contextPath: Domain.CreationDate
+      description: The date on which the domain was created.
+      type: Date
+    - contextPath: Domain.DomainStatus
+      description: The status of the domain.
+      type: String
+    - contextPath: Domain.UpdatedDate
+      description: The date on which the domain was last updated.
+      type: Date
+    - contextPath: Domain.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.Registrar.Name
+      description: The name of the registrar, such as "GoDaddy".
+      type: String
   - arguments:
     - default: false
       description: 'The domain name you would like see related domains for. (e.g.
@@ -964,8 +1003,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: all
-      description: 'Valid options are: exact, component, or all (default).     1.Using
-        "cisco.com" as an example, "exact" only gives results for cisco.com.    2.
+      description: 'Valid options are: exact, component, or all (default).     1.Using
+        "cisco.com" as an example, "exact" only gives results for cisco.com.    2.
         Component gives results for every component of cisco.com, but not cisco.com.
         Examples are www.cisco.com, mail.cisco.com, wwwin.cisco.com, something.else.cisco.com.     3.All
         returns the sum of component and exact, this is the default.'
@@ -1096,7 +1135,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: 'Email address following rfc5322 conventions. (e.g. : admin@google.com)
+      description: 'Email address following rfc5322 conventions. (e.g. : admin@google.com)
         Comma separated list allowed. (e.g. : admin@google.com, dns-admin@google.com,
         hostmaster@charter.com)'
       isArray: true
@@ -1164,7 +1203,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: 'Enter the Nameserver’s domain name. (e.g. : ns2.google.com) Comma
+      description: 'Enter the Nameserver’s domain name. (e.g. : ns2.google.com) Comma
         separated list allowed. (e.g. : ns2.google.com, ns1.google.com)'
       isArray: true
       name: nameservers
@@ -1239,7 +1278,7 @@ script:
       secret: false
     deprecated: false
     description: This command will provide a standard WHOIS response record for a
-      single domain with all available WHOIS data returned. 
+      single domain with all available WHOIS data returned.
     execution: false
     name: umbrella-get-whois-for-domain
     outputs:
@@ -1273,6 +1312,48 @@ script:
     - contextPath: Domain.Umbrella.Whois.Emails.Name
       description: Domain's email
       type: string
+    - contextPath: Domain.Name
+      description: The domain name e.g. google.com
+      type: Unknown
+    - contextPath: Domain.Admin.Country
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Email
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Name
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Phone
+      description: The phone number of the domain administrator.
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Email
+      description: The email address of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Phone
+      description: The phone number of the registrant.
+      type: String
+    - contextPath: Domain.CreationDate
+      description: The date on which the domain was created.
+      type: Date
+    - contextPath: Domain.DomainStatus
+      description: The status of the domain.
+      type: String
+    - contextPath: Domain.UpdatedDate
+      description: The date on which the domain was last updated.
+      type: Date
+    - contextPath: Domain.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.Registrar.Name
+      description: The name of the registrar, such as "GoDaddy".
+      type: String
   - arguments:
     - default: false
       description: IP Address to check for malicious domains.
@@ -1369,7 +1450,7 @@ script:
     outputs:
     - contextPath: Umbrella.DomainSearch.TotalResults
       description: Total results from this search string. The default number of results
-        is 100 and can be expanded using the limit parameter. 
+        is 100 and can be expanded using the limit parameter.
       type: number
     - contextPath: Umbrella.DomainSearch.Data.Name
       description: Name of the domain found.
@@ -1406,7 +1487,7 @@ script:
       description: Which threat type, if any, matched in the input.
       type: string
     - contextPath: Umbrella.Timeline.Data.Timestamp
-      description: The time when the attribution for this Domain changed. 
+      description: The time when the attribution for this Domain changed.
       type: string
   - arguments:
     - default: false
@@ -1435,7 +1516,7 @@ script:
       description: Which threat type, if any, matched in the input.
       type: string
     - contextPath: Umbrella.Timeline.Data.Timestamp
-      description: The time when the attribution for this IP changed. 
+      description: The time when the attribution for this IP changed.
       type: string
   - arguments:
     - default: false
@@ -1463,7 +1544,7 @@ script:
       description: Which threat type, if any, matched in the input.
       type: string
     - contextPath: Umbrella.Timeline.Data.Timestamp
-      description: The time when the attribution for this URL changed. 
+      description: The time when the attribution for this URL changed.
       type: date
   isfetch: false
   longRunning: false
