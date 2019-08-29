@@ -138,6 +138,8 @@ class FilesValidator(object):
         Returns:
             (modified_files, added_files). Tuple of sets.
         """
+        # Two dots is the default in git diff, it will compare with the last known commit as the base
+        # Three dots will compare with the last known shared commit as the base
         compare_type = '.' if 'master' in tag else ''
         all_changed_files_string = run_command(
             "git diff --name-status {tag}..{compare_type}refs/heads/{branch}".format(tag=tag,

@@ -26,12 +26,11 @@ class ScriptValidator(object):
 
         if check_git:
             self.current_script = get_yaml(file_path)
-            old_git_link = '{root}/{branch}'.format(root=CONTENT_GITHUB_LINK, branch=old_git_branch)
             # The replace in the end is for Windows support
             if old_file_path:
-                git_hub_path = os.path.join(old_git_link, old_file_path).replace("\\", "/")
+                git_hub_path = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, old_file_path).replace("\\", "/")
             else:
-                git_hub_path = os.path.join(old_git_link, file_path).replace("\\", "/")
+                git_hub_path = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, file_path).replace("\\", "/")
 
             try:
                 res = requests.get(git_hub_path, verify=False)
