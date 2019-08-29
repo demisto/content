@@ -23,9 +23,9 @@ USE_SSL = not demisto.params().get('insecure')
 # determine a vsys or a device-group
 VSYS = demisto.params().get('vsys')
 if demisto.args() and demisto.args().get('device-group', None):
-    DEVICE_GROUP = demisto.args().get('device-group').lower()
+    DEVICE_GROUP = demisto.args().get('device-group')
 else:
-    DEVICE_GROUP = demisto.params().get('device_group').lower()
+    DEVICE_GROUP = demisto.params().get('device_group', None)
 
 # configuration check
 if DEVICE_GROUP and VSYS:
@@ -35,6 +35,7 @@ if not DEVICE_GROUP and not VSYS:
 
 # setting security xpath relevant to FW or panorama management
 if DEVICE_GROUP:
+    DEVICE_GROUP = DEVICE_GROUP.lower()
     if DEVICE_GROUP == 'shared':
         XPATH_SECURITY_RULES = "/config/shared/"
     else:
