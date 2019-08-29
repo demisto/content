@@ -2,5 +2,5 @@
 
  - Added DbotScore calculation to the following commands.
    - threat-crowd-ip
-   - thrat-crowd-domain
+   - threat-crowd-domain
  
