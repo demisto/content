@@ -222,12 +222,10 @@ The following is the format for an Account entity.
 "Account": {
     "Type": "STRING, The account type. The most common value is "AD", but can be "LocalOS", "Google", "AppleID", ... ",
     "ID": "STRING, The unique ID for the account (integration specific). For AD accounts this is the Distinguished Name (DN).",
-    "Email": "STRING, The email address of the account.",
     "Username": "STRING, The username in the relevant system.",
     "DisplayName": "STRING, The display name",
     "Groups": "STRING, Groups to which the account belongs (integration specific). For example, for AD these are groups of which the account is memberOf.",
     "Domain": "STRING, The domain of the account.",
-    "Username": "STRING, The username of the account.",
     "OrganizationUnit": "STRING, The Organization Unit (OU) of the account.",
     "Email": {
         "Address": "STRING, The email address of the account."
