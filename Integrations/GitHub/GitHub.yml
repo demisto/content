@@ -377,6 +377,36 @@ script:
     - contextPath: GitHub.Release.Published_at
       description: Date when the release was published.
       type: Date
+  - arguments:
+    - default: true
+      defaultValue: 3 days
+      description: Time of inactivity after which a PR is considered stale and requires
+        the assigned reviewer's attention
+      isArray: false
+      name: stale_time
+      required: false
+      secret: false
+    - default: true
+      defaultValue: Contribution
+      description: The label used to identify external PRs
+      isArray: false
+      name: label
+      required: false
+      secret: false
+    deprecated: false
+    description: Get PRs and the requested reviewers
+    execution: false
+    name: GitHub-get-stale-prs-reviewers
+    outputs:
+    - contextPath: GitHub.PR.URL
+      description: The html URL of the PR
+      type: String
+    - contextPath: GitHub.PR.Number
+      description: The GitHub pull request number
+      type: Number
+    - contextPath: GitHub.PR.RequestedReviewer
+      description: A list of the PR's requested reviewers
+      type: Unknown
   dockerimage: demisto/python3:3.7.3.286
   subtype: python3
   isfetch: true
