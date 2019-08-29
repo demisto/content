@@ -604,6 +604,7 @@ script:
       - indicator
       - event
       - adversary
+      - attachment
       required: true
       secret: false
     - default: false
@@ -615,7 +616,7 @@ script:
     deprecated: false
     description: Add an attribute to an object in ThreatQ
     execution: false
-    name: threatq-add-attr
+    name: threatq-add-attribute
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -626,6 +627,7 @@ script:
       - indicator
       - adversary
       - event
+      - attachment
       required: true
       secret: false
     - default: false
@@ -649,7 +651,7 @@ script:
     deprecated: false
     description: Modify an attribute on an object in ThreatQ
     execution: false
-    name: threatq-modify-attr
+    name: threatq-modify-attribute
   - arguments:
     - default: false
       description: First object's ID
@@ -1129,27 +1131,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Source(s) name(s)
-      isArray: true
-      name: source_lst
+      description: Source name
+      isArray: false
+      name: source
       required: false
       secret: false
     - default: false
       description: File title - by default, value would be the file name
       isArray: false
       name: title
-      required: false
-      secret: false
-    - default: false
-      description: Add attributes
-      isArray: true
-      name: attr_names_lst
-      required: false
-      secret: false
-    - default: false
-      description: Attributes values
-      isArray: true
-      name: attr_values_lst
       required: false
       secret: false
     deprecated: false
@@ -1389,6 +1379,7 @@ script:
       - indicator
       - adversary
       - event
+      - attachment
       required: true
       secret: false
     - default: false
@@ -1423,6 +1414,7 @@ script:
       - indicator
       - adversary
       - event
+      - attachment
       required: true
       secret: false
     deprecated: false
@@ -1451,12 +1443,13 @@ script:
       - indicator
       - adversary
       - event
+      - attachment
       required: true
       secret: false
     deprecated: false
     description: Delete an attribute from an object in ThreatQ
     execution: false
-    name: threatq-delete-attr
+    name: threatq-delete-attribute
   - arguments:
     - default: false
       description: Adversary ID
