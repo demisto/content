@@ -29,6 +29,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
     taskid: 48f0cedf-fad2-47db-81fd-348b062f41fe
@@ -92,12 +94,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: ebe7bb7e-6956-4392-83fd-265b59ba73cb
+    taskid: e533da63-e23f-43b2-8b12-e709e62401c0
     type: regular
     task:
-      id: ebe7bb7e-6956-4392-83fd-265b59ba73cb
+      id: e533da63-e23f-43b2-8b12-e709e62401c0
       version: -1
       description: ""
       name: Find duplicates by text
@@ -111,11 +115,16 @@ tasks:
     scriptarguments:
       ignoreClosedIncidents:
         simple: ${inputs.IgnoreCloseIncidents}
+      maxResults: {}
       maximumNumberOfIncidents:
         simple: ${inputs.MaxNumberOfCandidates}
-      textFields: {}
+      minTextLength: {}
+      textFields:
+        simple: name,details
       threshold:
         simple: ${inputs.DuplicateThreshold}
+      timeField:
+        simple: ${inputs.Time field}
       timeFrameHours:
         simple: ${inputs.TimeFrameHours}
     separatecontext: false
@@ -127,6 +136,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: 54a58f44-4f47-452c-8a4a-c7f64d5c499a
@@ -166,12 +177,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: 15ca6629-8830-44ec-84d4-4f3bcef19011
+    taskid: bcc06547-4ca6-4ef4-8f3d-71c170f48218
     type: regular
     task:
-      id: 15ca6629-8830-44ec-84d4-4f3bcef19011
+      id: bcc06547-4ca6-4ef4-8f3d-71c170f48218
       version: -1
       description: ""
       name: Find similar incidents by rules
@@ -183,23 +196,25 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
+      filterQuery: {}
       hoursBack:
         simple: ${inputs.TimeFrameHours}
       ignoreClosedIncidents:
         simple: ${inputs.IgnoreCloseIncidents}
+      incidentFieldsAppliedCondition: {}
       maxNumberOfIncidents:
         simple: ${inputs.MaxNumberOfCandidates}
       maxResults: {}
       similarContextKeys: {}
       similarCustomFields: {}
-      similarIncidentKeys:
+      similarIncidentFields:
         simple: type
+      similarIncidentKeys: {}
       similarLabelsKeys:
         simple: Email/subject:*,Email/from
+      skipMissingValues: {}
       timeField:
-        simple: occurred
-    results:
-    - isSimilarIncidentFound
+        simple: ${inputs.Time field}
     separatecontext: false
     view: |-
       {
@@ -209,12 +224,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: ee12b870-3892-4dd8-8635-0c5f13b30ea3
+    taskid: 8148ea43-d8fd-44ea-8390-1d9661014141
     type: regular
     task:
-      id: ee12b870-3892-4dd8-8635-0c5f13b30ea3
+      id: 8148ea43-d8fd-44ea-8390-1d9661014141
       version: -1
       description: ""
       name: Find duplicates by ml
@@ -237,12 +254,13 @@ tasks:
       maxCandidates: {}
       maxNumberOfIncidents:
         simple: ${inputs.MaxNumberOfCandidates}
+      maxResults: {}
       threshold:
         simple: ${inputs.DuplicateThreshold}
+      timeField:
+        simple: ${inputs.Time field}
       timeFrameHours:
         simple: ${inputs.TimeFrameHours}
-    results:
-    - isSimilarIncidentFound
     separatecontext: false
     view: |-
       {
@@ -252,6 +270,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
     taskid: 857267ed-a8bf-4d65-8a80-967656990b57
@@ -281,6 +301,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
     taskid: c1f06a79-d539-4853-8140-f1f879a8f137
@@ -302,6 +324,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -346,6 +370,12 @@ inputs:
     simple: "true"
   required: false
   description: If duplicate found - close the incident as duplicate (true\false)
+- key: Time field
+  value:
+    simple: created
+  required: false
+  description: 'Time field to consider while query past incidents as duplicate candidates.
+    Values: created, occurred, modified'
 outputs:
 - contextPath: isSimilarIncidentFound
   description: Is similar incident found? (true\false)
@@ -354,4 +384,4 @@ outputs:
   description: Similar incident.
   type: unknown
 tests:
-  - No Test
+  - dedup_-_generic_-_test

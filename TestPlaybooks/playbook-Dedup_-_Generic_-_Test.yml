@@ -1,18 +1,16 @@
 id: dedup_-_generic_-_test
 version: -1
 name: Dedup - Generic - Test
-description: ""
-fromversion: "3.5.0"
+description: Dedup - Generic - Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0f9f0001-f51d-4ebc-8e8f-24f795695442
+    taskid: f8be0cc9-862b-46d4-890b-4c544fae2a86
     type: start
     task:
-      id: 0f9f0001-f51d-4ebc-8e8f-24f795695442
+      id: f8be0cc9-862b-46d4-890b-4c544fae2a86
       version: -1
-      description: ""
       name: ""
       iscommand: false
       brand: ""
@@ -28,14 +26,15 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 690bd015-1e9e-4ac5-81ac-0f91db1be8bb
+    taskid: d5d7a8f4-3f33-40ca-8c4c-2efcf05c18a6
     type: regular
     task:
-      id: 690bd015-1e9e-4ac5-81ac-0f91db1be8bb
+      id: d5d7a8f4-3f33-40ca-8c4c-2efcf05c18a6
       version: -1
-      description: ""
       name: Add labels
       script: Builtin|||setIncident
       type: regular
@@ -190,14 +189,15 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: d6261998-bc4f-414a-8503-da1e817b90dc
+    taskid: d39fded2-6952-4d23-83fa-52b88ffbff02
     type: regular
     task:
-      id: d6261998-bc4f-414a-8503-da1e817b90dc
+      id: d39fded2-6952-4d23-83fa-52b88ffbff02
       version: -1
-      description: ""
       name: Create duplicate incident
       scriptName: CreateDuplicateIncident
       type: regular
@@ -205,7 +205,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "13"
     separatecontext: false
     view: |-
       {
@@ -215,56 +215,15 @@ tasks:
         }
       }
     note: false
-  "3":
-    id: "3"
-    taskid: baa68d89-2c81-48d6-895b-b7b3dded73b8
-    type: playbook
-    task:
-      id: baa68d89-2c81-48d6-895b-b7b3dded73b8
-      version: -1
-      description: ""
-      name: Dedup - Generic
-      playbookName: Dedup - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      CloseAsDuplicate:
-        simple: "false"
-      DuplicateMethod:
-        simple: ml
-      DuplicateThreshold:
-        simple: "0.5"
-      IgnoreCloseIncidents:
-        simple: "yes"
-      MaxNumberOfCandidates:
-        simple: "1000"
-      TimeFrameHours:
-        simple: "72"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: b36012be-3c91-4b8a-813e-845e82f472ae
+    taskid: 583eb9d1-3bf8-40fe-8bd1-8b5f8b5ea95a
     type: title
     task:
-      id: b36012be-3c91-4b8a-813e-845e82f472ae
+      id: 583eb9d1-3bf8-40fe-8bd1-8b5f8b5ea95a
       version: -1
-      description: ""
       name: Done
       type: title
       iscommand: false
@@ -278,14 +237,15 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: 69a48f34-f4ff-4221-8f44-2d395535f6ea
+    taskid: a68f0286-03d4-4efe-8c4f-171992f94c69
     type: regular
     task:
-      id: 69a48f34-f4ff-4221-8f44-2d395535f6ea
+      id: a68f0286-03d4-4efe-8c4f-171992f94c69
       version: -1
-      description: ""
       name: Clear context
       scriptName: DeleteContext
       type: regular
@@ -307,14 +267,15 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: ada9cd62-6c06-4716-8518-08fd341b54cd
+    taskid: 4fd47061-a541-4b79-82dc-53ec24e22a7d
     type: regular
     task:
-      id: ada9cd62-6c06-4716-8518-08fd341b54cd
+      id: 4fd47061-a541-4b79-82dc-53ec24e22a7d
       version: -1
-      description: ""
       name: Clear context
       scriptName: DeleteContext
       type: regular
@@ -322,7 +283,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "14"
     scriptarguments:
       all:
         simple: "yes"
@@ -336,14 +297,45 @@ tasks:
         }
       }
     note: false
-  "7":
-    id: "7"
-    taskid: 8353cb66-0be4-49d4-8ddb-5060abb93a91
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: c2c728ce-95bf-4806-8093-99af479d5f41
+    type: regular
+    task:
+      id: c2c728ce-95bf-4806-8093-99af479d5f41
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 416e8ba9-c12e-4d68-8ddd-2aa75fc70768
     type: playbook
     task:
-      id: 8353cb66-0be4-49d4-8ddb-5060abb93a91
+      id: 416e8ba9-c12e-4d68-8ddd-2aa75fc70768
       version: -1
-      description: ""
       name: Dedup - Generic
       playbookName: Dedup - Generic
       type: playbook
@@ -351,7 +343,52 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "16"
+    scriptarguments:
+      CloseAsDuplicate:
+        simple: "false"
+      DuplicateMethod:
+        simple: ml
+      DuplicateThreshold:
+        simple: "0.5"
+      IgnoreCloseIncidents:
+        simple: "yes"
+      MaxNumberOfCandidates:
+        simple: "1000"
+      Time field:
+        simple: occurred
+      TimeFrameHours:
+        simple: "72"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 93d4fe55-e59f-4ce9-8b7e-8918cc824160
+    type: playbook
+    task:
+      id: 93d4fe55-e59f-4ce9-8b7e-8918cc824160
+      version: -1
+      name: Dedup - Generic
+      playbookName: Dedup - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
     scriptarguments:
       CloseAsDuplicate:
         simple: "false"
@@ -363,6 +400,8 @@ tasks:
         simple: "yes"
       MaxNumberOfCandidates:
         simple: "1000"
+      Time field:
+        simple: occurred
       TimeFrameHours:
         simple: "72"
     separatecontext: true
@@ -378,43 +417,15 @@ tasks:
         }
       }
     note: false
-  "8":
-    id: "8"
-    taskid: 9dd00bf3-239b-49c5-87ff-f900bd3b1ca4
-    type: regular
-    task:
-      id: 9dd00bf3-239b-49c5-87ff-f900bd3b1ca4
-      version: -1
-      description: ""
-      name: Clear context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-  "9":
-    id: "9"
-    taskid: 5766451a-e9bc-4255-8cca-306c46633328
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: d54e8ebc-4968-4df4-8f13-3d90e561a014
     type: playbook
     task:
-      id: 5766451a-e9bc-4255-8cca-306c46633328
+      id: d54e8ebc-4968-4df4-8f13-3d90e561a014
       version: -1
-      description: ""
       name: Dedup - Generic
       playbookName: Dedup - Generic
       type: playbook
@@ -422,7 +433,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "18"
     scriptarguments:
       CloseAsDuplicate:
         simple: "false"
@@ -434,6 +445,8 @@ tasks:
         simple: "yes"
       MaxNumberOfCandidates:
         simple: "1000"
+      Time field:
+        simple: occurred
       TimeFrameHours:
         simple: "72"
     separatecontext: true
@@ -449,29 +462,31 @@ tasks:
         }
       }
     note: false
-  "10":
-    id: "10"
-    taskid: b4732449-c2d6-4099-8b0a-a2e14af8b1c0
-    type: regular
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 5e303a56-bab1-4118-8186-2f551e3d1140
+    type: condition
     task:
-      id: b4732449-c2d6-4099-8b0a-a2e14af8b1c0
+      id: 5e303a56-bab1-4118-8186-2f551e3d1140
       version: -1
-      description: ""
       name: Check similar incident found
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "6"
-    scriptarguments:
-      expectedValue:
-        simple: "true"
-      fields: {}
-      path:
-        simple: isSimilarIncidentFound
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: isSimilarIncidentFound
+            iscontext: true
     view: |-
       {
         "position": {
@@ -480,29 +495,31 @@ tasks:
         }
       }
     note: false
-  "11":
-    id: "11"
-    taskid: 79690319-7cf4-4949-8ee4-506e446df7b5
-    type: regular
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: aab53110-15f4-412d-89da-450f118053d8
+    type: condition
     task:
-      id: 79690319-7cf4-4949-8ee4-506e446df7b5
+      id: aab53110-15f4-412d-89da-450f118053d8
       version: -1
-      description: ""
       name: Check similar incident found
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "8"
-    scriptarguments:
-      expectedValue:
-        simple: "true"
-      fields: {}
-      path:
-        simple: isSimilarIncidentFound
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: isSimilarIncidentFound
+            iscontext: true
     view: |-
       {
         "position": {
@@ -511,29 +528,31 @@ tasks:
         }
       }
     note: false
-  "12":
-    id: "12"
-    taskid: 3dc82d04-d6f1-46de-846b-c6e43ff6663b
-    type: regular
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 7f12569b-35ba-4d36-88e8-005a1d419bd5
+    type: condition
     task:
-      id: 3dc82d04-d6f1-46de-846b-c6e43ff6663b
+      id: 7f12569b-35ba-4d36-88e8-005a1d419bd5
       version: -1
-      description: ""
       name: Check similar incident found
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "4"
-    scriptarguments:
-      expectedValue:
-        simple: "true"
-      fields: {}
-      path:
-        simple: isSimilarIncidentFound
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: isSimilarIncidentFound
+            iscontext: true
     view: |-
       {
         "position": {
@@ -542,6 +561,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
