@@ -51,18 +51,24 @@ def epoch_seconds(d: datetime = None) -> int:
     return int((d - datetime.utcfromtimestamp(0)).total_seconds())
 
 
-def error_parser(resp_err: requests.Response) -> str:
+def error_parser(resp_err: requests.Response, api: str = 'graph') -> str:
     """
-    Parses error message from Requests response
+    Parses Microsoft API error message from Requests response
     :param resp_err: response with error
+    :param api: API to query (graph/bot)
     :return: string of error
     """
     try:
-        response = resp_err.json()
-        error = response.get('error', {})
-        err_str = f"{error.get('code')}: {error.get('message')}"
-        if err_str:
-            return err_str
+        response: dict = resp_err.json()
+        if api == 'graph':
+            error: dict = response.get('error', {})
+            err_str: str = f"{error.get('code', '')}: {error.get('message', '')}"
+            if err_str:
+                return err_str
+        elif api == 'bot':
+            error_description: str = response.get('error_description', '')
+            if error_description:
+                return error_description
         # If no error message
         raise ValueError()
     except ValueError:
@@ -393,7 +399,7 @@ def get_bot_access_token() -> str:
         verify=USE_SSL
     )
     if not response.ok:
-        error = error_parser(response)
+        error = error_parser(response, 'bot')
         raise ValueError(f'Failed to get bot access token [{response.status_code}] - {error}')
     try:
         response_json: dict = response.json()
@@ -490,7 +496,7 @@ def http_request(
         )
 
         if not response.ok:
-            error = error_parser(response)
+            error: str = error_parser(response, api)
             raise ValueError(f'Error in API call to Microsoft Teams: [{response.status_code}] - {error}')
 
         if response.status_code in {202, 204}:
