@@ -152,7 +152,7 @@ script:
       description: ip
       isArray: false
       name: ip
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Search for ip on miners
@@ -227,7 +227,7 @@ script:
       description: file
       isArray: false
       name: file
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Search for file on lists
@@ -308,7 +308,7 @@ script:
       description: domain
       isArray: false
       name: domain
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Search for domain on lists
@@ -383,7 +383,7 @@ script:
       description: url
       isArray: false
       name: url
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Search for url on lists
