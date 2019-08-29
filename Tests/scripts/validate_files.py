@@ -306,6 +306,8 @@ class FilesValidator(object):
         modified_files, added_files, old_format_files = self.get_modified_and_added_files(branch_name, self.is_circle)
         schema_changed = False
         for f in modified_files:
+            if isinstance(f, tuple):
+                _, f = f
             if checked_type(f, [SCHEMA_REGEX]):
                 schema_changed = True
         # Ensure schema change did not break BC
