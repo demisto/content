@@ -1719,6 +1719,10 @@ def get_all_scan_results():
 def get_all_scan_results_command():
     res = get_all_scan_results()
     get_manageable_results = demisto.args().get('manageable', 'false').lower()  # 'true' or 'false'
+    page = int(demisto.args().get('page'))
+    page_size = int(demisto.args().get('page_size'))
+    if page_size > 200:
+        page_size = 200
 
     if not res or 'response' not in res or not res['response']:
         return_message('Scan results not found')
@@ -1743,9 +1747,10 @@ def get_all_scan_results_command():
         'ScannedIPs': elem['scannedIPs'],
         'Owner': elem['owner'].get('username'),
         'RepositoryName': elem['repository'].get('name')
-    } for elem in elements]
-
-    hr = tableToMarkdown('Tenable.sc Scan results', scan_results, headers, removeNull=True,
+    } for elem in elements[page:page + page_size]]
+    demisto.results(len(scan_results))
+    readable_title = 'Tenable.sc Scan results - {0}-{1}'.format(page, page + page_size - 1)
+    hr = tableToMarkdown(readable_title, scan_results, headers, removeNull=True,
                          metadata='Total number of elements is {}'.format(len(elements)))
 
     demisto.results({
