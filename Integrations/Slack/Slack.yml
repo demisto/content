@@ -57,8 +57,8 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: all
-      description: Sets the mirroring type. Can be "all" to mirror all relevant communications,
-        "chat" to mirror chatting, or "none" to stop mirroring.
+      description: The mirroring type. Can be "all", which mirrors everything, "chat",
+        which mirrors only chats (not commands), or "none", which stops all mirroring.
       isArray: false
       name: type
       predefined:
@@ -70,7 +70,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to auto-close the channel when the incident is closed.
+      description: Whether the channel is auto-closed when an investigation is closed.
+        Can be "true" or "false". Default is "true".
       isArray: false
       name: autoclose
       predefined:
@@ -81,8 +82,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: both
-      description: Determines the mirroring direction. Can be "FromDemisto", "ToDemisto",
-        or "Both". Default is "Both".
+      description: The mirroring direction. Can be "FromDemisto", "ToDemisto", or
+        "Both". Default is "Both".
       isArray: false
       name: direction
       predefined:
@@ -94,7 +95,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: group
-      description: Mirrors an incident to a channel (public) or a group (private).
+      description: The channel type. Can be a channel (public) or a group (private).
       isArray: false
       name: mirrorTo
       predefined:
@@ -110,8 +111,8 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: all
-      description: Sets the mirroring type. Can be "all" to mirror all relevant communications,
-        "chat" to mirror all chatting, or "none" to stop mirroring. Default is "all".
+      description: The mirroring type. Can be "all", which mirrors everything, "chat",
+        which mirrors only chats (not commands), or "none", which stops all mirroring.
       isArray: false
       name: type
       predefined:
@@ -123,7 +124,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether the channel is auto-closed when an incident is closed.
+      description: Whether the channel is auto-closed when an investigation is closed.
         Can be "true" or "false". Default is "true".
       isArray: false
       name: autoclose
@@ -135,8 +136,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: both
-      description: Determines the mirroring direction. Can be "FromDemisto", "ToDemisto",
-        or "Both". Default value is "Both".
+      description: The mirroring direction. Can be "FromDemisto", "ToDemisto", or
+        "Both". Default value is "Both".
       isArray: false
       name: direction
       predefined:
@@ -148,7 +149,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: group
-      description: Mirrors an incident. Can be "channel" or "group". The default value
+      description: The channel type. Can be "channel" or "group". The default value
         is "group".
       isArray: false
       name: mirrorTo
@@ -172,7 +173,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Lets a Demisto security analyst kick the the administrator (channel creator) out of a channel.
+      description: Whether to kick the Slack administrator (channel creator) out of
+        the mirrored channel.
       isArray: false
       name: kickAdmin
       predefined:
@@ -186,26 +188,25 @@ script:
     name: mirror-investigation
   - arguments:
     - default: true
-      description: Displays the message content.
+      description: The message content.
       isArray: false
       name: message
       required: false
       secret: false
     - default: false
-      description: Sends a direct message to a Slack user by specifying a Slack user name.
+      description: Either a name or email of a Slack user to send to.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: Sends a message to a Slack channel by specifying a Slack channel
-        name.
+      description: A Slack channel name to send to.
       isArray: false
       name: channel
       required: false
       secret: false
     - default: false
-      description: Sends a link of a War Room entry to Slack by specifying an entry ID.
+      description: An entry ID to send as a link.
       isArray: false
       name: entry
       required: false
@@ -223,7 +224,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies the ID of the thread to reply to.
+      description: The ID of the thread to reply to.
       isArray: false
       name: threadID
       required: false
@@ -234,40 +235,35 @@ script:
     name: send-notification
     outputs:
     - contextPath: Slack.Thread.ID
-      description: Displays the thread ID.
+      description: The Slack thread ID.
       type: String
   - arguments:
     - default: true
-      description: Displays the text content of the message.
+      description: The text content of the message.
       isArray: false
       name: message
       required: false
       secret: false
     - default: false
-      description: Send a direct message to a Slack user by specifying a Slack user
-        name.
+      description: Either a user name or email of a Slack user to send to.
       isArray: false
       name: to
-      predefined:
-      - ''
       required: false
       secret: false
     - default: false
-      description: Sends a message to a channel by specifying a channel name.
+      description: A Slack channel name to send to.
       isArray: false
       name: channel
       required: false
       secret: false
     - default: false
-      description: Sends a message to a Slack channel by specifying a Slack channel
-        name.
+      description: A Slack group (private channel) name to send to.
       isArray: false
       name: group
       required: false
       secret: false
     - default: false
-      description: Sends a link of a War Room entry to Slack by specifying an entry
-        ID.
+      description: An entry ID to send as a link.
       isArray: false
       name: entry
       required: false
@@ -275,7 +271,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to add a URL in Slack to the Demisto management console.
+      description: Whether to add a URL in Slack to the relevant component in Demisto.
         Default is "false".
       isArray: false
       name: IgnoreAddURL
@@ -285,7 +281,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies the ID of the thread to reply to.
+      description: The ID of the thread to reply to.
       isArray: false
       name: threadID
       required: false
@@ -300,56 +296,56 @@ script:
     name: slack-close-channel
   - arguments:
     - default: false
-      description: The channel to archive.
+      description: The name of the channel to archive. If not provided, the mirrored
+        investigation channel is archived (if the channel exists).
       isArray: false
       name: channel
       required: false
       secret: false
     deprecated: false
-    description: Archives a channel. If the channel does not exist, Slack archives the incident's mirrored
-      channel. If the mirrored channel does not exist, Demisto displays an error message in the War Room 
-      that the mirrored channel was not found.
+    description: Archives a Slack channel.
     execution: false
     name: close-channel
   - arguments:
     - default: true
-      description: The ID of the file entry.
+      description: The ID of the file entry to send.
       isArray: false
       name: file
       required: true
       secret: false
     - default: false
-      description: The user name of the file recipient.
+      description: Either a name or an email of the Slack user to send the file to.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: The group name of the file recipient.
+      description: The Slack group (private channel) name to send the file to.
       isArray: false
       name: group
       required: false
       secret: false
     - default: false
-      description: The channel name of the file recipient.
+      description: The Slack channel name to send the file to.
       isArray: false
       name: channel
       required: false
       secret: false
     - default: false
-      description: The ID of the thread to which a reply is sent.
+      description: The thread ID to send the file as a reply.
       isArray: false
       name: threadID
       required: false
       secret: false
     - default: false
-      description: A comment to add to a file.
+      description: A comment to add to the file.
       isArray: false
       name: comment
       required: false
       secret: false
     deprecated: false
-    description: Sends a file to a either a user, channel, or group. If none are specified, the file is sent to the mirrored investigation channel (if the channel exists).
+    description: Sends a file to a either a user, channel, or group. If none are specified,
+      the file is sent to the mirrored investigation channel (if the channel exists).
     execution: false
     name: slack-send-file
   - arguments:
@@ -374,7 +370,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: private
-      description: The channel type. Can be "Private" or "Public".
+      description: The channel type. Can be "private" or "public".
       isArray: false
       name: type
       predefined:
@@ -389,7 +385,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A CSV list of users to invite to a channel, for example, ("user1, user2...")
+      description: A CSV list of user names or emails to invite to the channel, for
+        example, "user1, user2..."
       isArray: false
       name: users
       required: false
@@ -400,35 +397,40 @@ script:
     name: slack-create-channel
   - arguments:
     - default: true
-      description: A CSV list of users to invite to a channel.
+      description: A CSV list of user names or emails to invite to the channel, for
+        example, "user1, user2..."
       isArray: false
       name: users
       required: true
       secret: false
     - default: false
-      description: The name of the channel. If the name of the channel is not specified, the name of the mirrored investigation channel is used (if the channel exists).
+      description: The name of the channel. If the name of the channel is not specified,
+        the name of the mirrored investigation channel is used (if the channel exists).
+      isArray: false
       name: channel
       required: false
       secret: false
     deprecated: false
-    description: Invites a user to a channel.
+    description: Invites users to a channel.
     execution: false
     name: slack-invite-to-channel
   - arguments:
     - default: true
-      description: A CSV list of users to kick out of a channel, for example, "user1, user2..."
+      description: A CSV list of user names or emails to kick out of a channel, for
+        example, "user1, user2..."
       isArray: false
       name: users
       required: true
       secret: false
     - default: false
-      description: The name of the channel. If the name of the channel is not specified, the mirrored investigation channel is used (if the channel exists).
+      description: The name of the channel. If the name of the channel is not specified,
+        the mirrored investigation channel is used (if the channel exists).
       isArray: false
       name: channel
       required: false
       secret: false
     deprecated: false
-    description: Kicks a user out of a channel.
+    description: Kicks users out of a channel.
     execution: false
     name: slack-kick-from-channel
   - arguments:
@@ -439,7 +441,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the channel. If the name of the channel is not specified, the mirrored investigation channel is used (if the channel exists).
+      description: The name of the channel. If the name of the channel is not specified,
+        the mirrored investigation channel is used (if the channel exists).
       isArray: false
       name: channel
       required: false
@@ -450,7 +453,7 @@ script:
     name: slack-rename-channel
   - arguments:
     - default: true
-      description: The username of the user.
+      description: The Slack user (name or email).
       isArray: false
       name: user
       required: true
