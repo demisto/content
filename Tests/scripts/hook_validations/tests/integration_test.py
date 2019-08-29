@@ -648,6 +648,34 @@ def test_is_default_arguments_non_default():
     assert validator.is_default_arguments() is False, \
         "The integration validator did not find invalid arg (needed to be default and not required)"
 
+
+def test_is_default_arguments_is_required():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "domain",
+                    "arguments": [
+                        {
+                            "name": "domain",
+                            "required": True,
+                            "default": True
+                        },
+                        {
+                            "name": "verbose"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    validator.old_integration = None
+
+    assert validator.is_default_arguments() is True, \
+        "The integration validator find an invalid arg although it is valid"
+
+
 def test_is_default_arguments_ok():
     validator = IntegrationValidator("temp_file", check_git=False)
     validator.current_integration = {
