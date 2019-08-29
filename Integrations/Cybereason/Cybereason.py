@@ -123,10 +123,10 @@ def http_request(method, url_suffix, data=None, json=None, headers=HEADERS):
             verify=USE_SSL
         )
         if res.status_code not in {200, 204}:
-            raise Exception('Your request failed with the following error: ' + res.content + str(res.status_code))
+            return_error('Your request failed with the following error: ' + res.content + str(res.status_code))
     except Exception, e:
         LOG(e)
-        raise
+        return_error('Your request failed with the following error: ' + res.content + str(res.status_code))
 
     return res
 
@@ -552,7 +552,7 @@ def query_malops(total_result_limit=None, per_group_limit=None, template_context
     try:
         return response.json()
     except Exception:
-        raise Exception('Failed to parse query malop response as JSON: {}'.format(response.text))
+        return_error('Failed to parse query malop response as JSON: {}'.format(response.text))
 
 
 def isolate_machine_command():
@@ -1469,7 +1469,7 @@ try:
 except Exception as e:
     LOG(e.message)
     LOG.print_log()
-    raise
+    return_error(e.message)
 finally:
     logout()
     if AUTH == 'CERT':
