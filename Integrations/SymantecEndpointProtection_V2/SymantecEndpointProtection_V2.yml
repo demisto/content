@@ -49,6 +49,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '0'
       description: Indicates when a computer's status was last updated (default is
         0, which returns all the results)
       isArray: false
@@ -108,28 +109,28 @@ script:
     outputs:
     - contextPath: SEPM.Endpoint.Hostname
       description: Endpoint's hostname
-      type: string
+      type: String
     - contextPath: SEPM.Endpoint.Domain
       description: Endpoint's domain
-      type: string
+      type: String
     - contextPath: SEPM.Endpoint.IPAddresses
       description: Endpoint's IP addresses
-      type: string
+      type: String
     - contextPath: SEPM.Endpoint.OS
       description: Endpoint's OS information
-      type: string
+      type: String
     - contextPath: SEPM.Endpoint.Description
       description: Endpoint's description
-      type: string
+      type: String
     - contextPath: SEPM.Endpoint.MACAddresses
       description: Endpoint's MAC address
-      type: string
+      type: String
     - contextPath: SEPM.Endpoint.BIOSVersion
       description: Endpoint's BIOS version
-      type: string
+      type: String
     - contextPath: SEPM.Endpoint.DHCPServer
       description: Endpoint's DHCP server address
-      type: string
+      type: String
     - contextPath: SEPM.Endpoint.HardwareKey
       description: ' Hardware-Key of the client to be moved'
       type: String
@@ -138,16 +139,16 @@ script:
       type: String
     - contextPath: SEPM.Endpoint.RunningVersion
       description: The endpoint's running version
-      type: Unknown
+      type: String
     - contextPath: SEPM.Endpoint.TargetVersion
       description: The endpoint's target version
-      type: Unknown
+      type: String
     - contextPath: IP.Address
       description: IP Address
-      type: Unknown
+      type: String
     - contextPath: IP.Host
       description: IP Host
-      type: Unknown
+      type: String
     - contextPath: Enpoint.Hostname
       description: The endpoint's hostname
       type: Unknown
@@ -165,19 +166,22 @@ script:
       type: Unknown
     - contextPath: Endpoint.OS
       description: OS
-      type: Unknown
+      type: String
     - contextPath: Endpoint.OSVersion
       description: OSVersion
-      type: Unknown
+      type: String
     - contextPath: Endpoint.BIOSVersion
       description: BIOSVersion
-      type: Unknown
+      type: String
     - contextPath: Endpoint.Memory
       description: Memory
-      type: Unknown
+      type: String
     - contextPath: Endpoint.Processors
       description: Processors
-      type: Unknown
+      type: String
+    - contextPath: IP.Hostname
+      description: The hostname that is mapped to this IP address.
+      type: String
   - arguments:
     - default: false
       description: The columns to display
