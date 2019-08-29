@@ -37,7 +37,8 @@ HEADERS = {
     'Authorization': "Bearer " + TOKEN
 }
 
-REVIEWERS = ['Itay4', 'yaakovi', 'yuvalbenshalom', 'ronykoz']
+# REVIEWERS = ['Itay4', 'yaakovi', 'yuvalbenshalom', 'ronykoz']
+REVIEWERS = ['avidan-H']
 
 WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
               'wizard @reviewer will very shortly look over your proposed changes.'
@@ -53,6 +54,11 @@ APPROVED_UNMERGED_MSG = 'The PR was approved but doesn\'t seem to have been merg
 SUGGEST_CLOSE_MSG = 'These reminders don\'t seem to be working and the issue is getting pretty stale - @reviewer - ' \
                     'consider whether this PR is still relevant or should be closed.'
 STALE_MSG = 'This PR is starting to get a little stale and possibly even a little moldy and smelly.'
+UNIT_TEST_MSG = ' It is very likely that the reviewer will want you to add a unittest for your '\
+        'code changes in the `$unittest$` file - please refer to the documentation '\
+        'https://github.com/demisto/content/tree/master/docs/tests/unit-testing for more details.'
+CHANGELOG_MSG = ' Because of your changes you will also need to update the `$changelog$` file - please refer '\
+        'to the documentation https://github.com/demisto/content/tree/master/docs/release_notes for more details.'
 
 ''' HELPER FUNCTIONS '''
 
@@ -289,6 +295,39 @@ def alert_appropriate_party(pr: dict, commit_data: dict, reviews_data: list, com
     create_issue_comment(issue_number, msg)
 
 
+def check_pr_files(pull_number, pull_author):
+    pr_files = get_pr_files(pull_number)
+    filenames = [fileobject.get('filename') for fileobject in pr_files]
+    filenames_str = '\n'.join(filenames)
+    demisto.info('**********************')
+    demisto.info('filenames: ' + json.dumps(filenames, indent=4))
+    # accepted_path_prefixes = ['content/Integrations/', 'content/Scripts/']
+    py_yml_reg = r"(Integrations|Scripts)/(.*)/(\2\.(?:py|yml))"
+    modified_files = re.findall(py_yml_reg, filenames_str)
+    demisto.info('######################')
+    demisto.info('modified_files: ' + json.dumps(modified_files, indent=4))
+    requires = {}
+    if modified_files:
+        warning = f'Hey @{pull_author}, it appears you made changes ' \
+                  f'to {" and ".join(["/".join(mod) for mod in modified_files])}.'
+        for modded in modified_files:
+            path_prefix, dir_name, file = [modded[0], modded[1], modded[2]]
+            test_file = path_prefix + '/' + dir_name + '/' + dir_name + '_test.py'
+            changelog_file = path_prefix + '/' + dir_name + '/' + 'CHANGELOG.md'
+            if file.endswith('.py') and test_file not in filenames:
+                requires['unittest'] = test_file
+            if changelog_file not in filenames:
+                requires['changelog'] = changelog_file
+        if not requires:
+            return
+        else:
+            unit_test = requires.get('unittest')
+            changelog = requires.get('changelog')
+            warning += UNIT_TEST_MSG.replace('$unittest$', unit_test) if unit_test else ''
+            warning += CHANGELOG_MSG.replace('$changelog$', changelog) if changelog else ''
+            create_issue_comment(pull_number, warning)
+
+
 ''' REQUESTS FUNCTIONS '''
 
 
@@ -306,6 +345,12 @@ def create_issue_comment(issue_number, msg: str) -> dict:
 
 def list_issue_comments(issue_number: int) -> list:
     suffix = ISSUE_SUFFIX + f'/{issue_number}/comments'
+    response = http_request('GET', url_suffix=suffix)
+    return response
+
+
+def get_pr_files(pull_number: int) -> list:
+    suffix = PULLS_SUFFIX + f'/{pull_number}/files'
     response = http_request('GET', url_suffix=suffix)
     return response
 
