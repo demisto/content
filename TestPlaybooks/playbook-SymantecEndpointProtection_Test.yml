@@ -1270,18 +1270,18 @@ tasks:
     ignoreworker: false
   "79":
     id: "79"
-    taskid: 74af733e-4356-4f9f-8589-4ee1e75f0cdd
+    taskid: b867ca0b-173b-4378-802c-a65de64bca44
     type: regular
     task:
-      id: 74af733e-4356-4f9f-8589-4ee1e75f0cdd
+      id: b867ca0b-173b-4378-802c-a65de64bca44
       version: -1
       name: sep-identify-old-clients
       description: Get endpoints with a running version that isnt the same as the
         target version or isn't consistent with the desired version (if specified).
-      script: Symantec Endpoint Protection V2|||sep-identify-old-clients
+      script: '|||sep-identify-old-clients'
       type: regular
       iscommand: true
-      brand: Symantec Endpoint Protection V2
+      brand: ""
     nexttasks:
       '#none#':
       - "33"
