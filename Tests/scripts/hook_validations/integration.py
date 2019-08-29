@@ -3,7 +3,7 @@ import os
 import requests
 import yaml
 
-from Tests.scripts.constants import CONTENT_GITHUB_MASTER_LINK
+from Tests.scripts.constants import CONTENT_GITHUB_MASTER_LINK, PYTHON_SUBTYPES
 from Tests.test_utils import print_error, get_yaml, server_version_compare
 
 # disable insecure warnings
@@ -55,6 +55,9 @@ class IntegrationValidator(object):
         self.is_there_duplicate_params()
         self.is_changed_subtype()
 
+        # will move to is_valid_integration after https://github.com/demisto/etc/issues/17949
+        self.is_outputs_for_reputations_commands_valid()
+
         return self._is_valid
 
     def is_valid_integration(self):
@@ -87,12 +90,74 @@ class IntegrationValidator(object):
                                     .format(arg_name, command_name))
         return self._is_valid
 
+    def is_outputs_for_reputations_commands_valid(self):
+        """Check if a reputation command (domain/email/file/ip/url)
+            has the correct DBotScore outputs according to the context standard
+            https://github.com/demisto/content/blob/master/docs/context_standards/README.MD
+
+        Returns:
+            bool. Whether a reputation command holds valid outputs
+        """
+        context_standard = "https://github.com/demisto/content/blob/master/docs/context_standards/README.MD"
+        commands = self.current_integration.get('script', {}).get('commands', [])
+        for command in commands:
+            command_name = command.get('name')
+            # look for reputations commands
+            if command_name in ['domain', 'email', 'file', 'ip', 'url']:
+                context_outputs_paths = []
+                context_outputs_descriptions = []
+                for output in command.get('outputs', []):
+                    context_outputs_paths.append(output.get('contextPath'))
+                    context_outputs_descriptions.append(output.get('description'))
+
+                # validate DBotScore outputs and descriptions
+                DBot_Score = {
+                    'DBotScore.Indicator': 'The indicator that was tested.',
+                    'DBotScore.Type': 'The indicator type.',
+                    'DBotScore.Vendor': 'Vendor used to calculate the score.',
+                    'DBotScore.Score': 'The actual score.'
+                }
+                missing_outputs = []
+                missing_descriptions = []
+                for DBot_Score_output in DBot_Score.keys():
+                    if DBot_Score_output not in context_outputs_paths:
+                        missing_outputs.append(DBot_Score_output)
+                        self._is_valid = False
+                    else:  # DBot Score output path is in the outputs
+                        if DBot_Score.get(DBot_Score_output) not in context_outputs_descriptions:
+                            missing_descriptions.append(DBot_Score_output)
+                            # self._is_valid = False - Do not fail build over wrong description
+
+                if missing_outputs:
+                    print_error("The DBotScore outputs of the reputation command aren't valid. Missing: {}."
+                                " Fix according to context standard {} ".format(missing_outputs, context_standard))
+                if missing_descriptions:
+                    print_warning("The DBotScore description of the reputation command aren't valid. Missing: {}."
+                                  " Fix according to context standard {} "
+                                  .format(missing_descriptions, context_standard))
+
+                # validate the IOC output
+                command_to_output = {
+                    'domain': 'Domain.Name',
+                    'file': 'File.Name',
+                    'ip': 'IP.Address',
+                    'url': 'URL.Data'
+                }
+                reputation_output = command_to_output.get(command_name)
+                if reputation_output and reputation_output not in context_outputs_paths:
+                    self._is_valid = False
+                    print_error("The outputs of the {} command aren't valid. The {} outputs is missing"
+                                "Fix according to context standard {} "
+                                .format(command_name, reputation_output, context_standard))
+
+        return self._is_valid
+
     def is_valid_subtype(self):
         """Validate that the subtype is python2 or python3."""
         type_ = self.current_integration.get('script', {}).get('type')
         if type_ == 'python':
             subtype = self.current_integration.get('script', {}).get('subtype')
-            if not subtype or subtype not in ['python3', 'python2']:
+            if subtype not in PYTHON_SUBTYPES:
                 print_error("The subtype for our yml files should be either python2 or python3, "
                             "please update the file {}.".format(self.current_integration.get('name')))
                 self._is_valid = False
@@ -106,7 +171,7 @@ class IntegrationValidator(object):
             subtype = self.current_integration.get('script', {}).get('subtype')
             if self.old_integration:
                 old_subtype = self.old_integration.get('script', {}).get('subtype', "")
-                if len(old_subtype) > 0 and old_subtype != subtype:
+                if old_subtype and old_subtype != subtype:
                     print_error("Possible backwards compatibility break, You've changed the subtype"
                                 " of the file {}".format(self.file_path))
                     self._is_valid = False
