@@ -23,9 +23,9 @@ USE_SSL = not demisto.params().get('insecure')
 # determine a vsys or a device-group
 VSYS = demisto.params().get('vsys')
 if demisto.args() and demisto.args().get('device-group', None):
-    DEVICE_GROUP = demisto.args().get('device-group')
+    DEVICE_GROUP = demisto.args().get('device-group').lower()
 else:
-    DEVICE_GROUP = demisto.params().get('device_group')
+    DEVICE_GROUP = demisto.params().get('device_group').lower()
 
 # configuration check
 if DEVICE_GROUP and VSYS:
