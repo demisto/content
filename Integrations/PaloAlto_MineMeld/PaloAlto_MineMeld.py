@@ -9,7 +9,6 @@ import os.path
 import os
 import time
 import re
-from urlparse import urljoin  # type: ignore
 
 # globals and constants
 IPV4_CLASS = 'minemeld.ft.local.YamlIPv4FT'
