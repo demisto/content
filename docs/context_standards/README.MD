@@ -340,9 +340,9 @@ The following is the expected format for an InfoFile
 The following is the format for a DBot Score entry.
 ```python
 "DBotScore": {
-    "Indicator": "STRING, The indicator that was tested.",
-    "Type": "STRING, The indicator type.",
-    "Vendor": "STRING, Vendor used to calculate the score.",
-    "Score": "INT, The actual score.",
+    "DBotScore.Indicator": "The indicator that was tested.",
+    "DBotScore.Type": "The indicator type.",
+    "DBotScore.Vendor": "Vendor used to calculate the score.",
+    "DBotScore.Score": "The actual score."
 }
 ```
