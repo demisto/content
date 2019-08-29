@@ -1052,6 +1052,20 @@ script:
       - 'false'
       required: false
       secret: false
+    - default: false
+      defaultValue: '0'
+      description: The page to return, starting from 0.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The number of objects to return in the response (limit is 200).
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
     deprecated: false
     description: Returns all scan results in Tenable.sc
     execution: false
