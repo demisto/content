@@ -2,8 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import boto3
-import io
-import math
 import json
 from datetime import datetime, date
 from botocore.config import Config
@@ -211,7 +209,6 @@ def get_query_results_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {'QueryExecutionId': args.get('QueryExecutionId')}
-    data = []
     response = client.get_query_results(**kwargs)
     ec = {'AWS.Athena.Query(val.QueryExecutionId === obj.QueryExecutionId)': response}
     human_readable = tableToMarkdown('AWS Athena Query', response)
