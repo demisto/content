@@ -45,8 +45,8 @@ def options_handler():
     parser.add_argument('-g', '--buildName', help='The build name', required=True)
     parser.add_argument('-i', '--isAMI', type=str2bool, help='is AMI build or not', default=False)
     parser.add_argument('-m', '--memCheck', type=str2bool,
-                        help='Should trigger memory checks or not. The slack channel to check the data is: dmst_content_nightly_memory_data',
-                        default=False)
+                        help='Should trigger memory checks or not. The slack channel to check the data is: '
+                             'dmst_content_nightly_memory_data',default=False)
     parser.add_argument('-d', '--serverVersion', help='Which server version to run the '
                                                       'tests on(Valid only when using AMI)', default="NonAMI")
 
