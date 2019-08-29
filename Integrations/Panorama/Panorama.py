@@ -35,9 +35,10 @@ if not DEVICE_GROUP and not VSYS:
 
 # setting security xpath relevant to FW or panorama management
 if DEVICE_GROUP:
-    DEVICE_GROUP = DEVICE_GROUP.lower()
-    if DEVICE_GROUP == 'shared':
+    device_group_shared = DEVICE_GROUP.lower()
+    if device_group_shared == 'shared':
         XPATH_SECURITY_RULES = "/config/shared/"
+        DEVICE_GROUP = device_group_shared
     else:
         XPATH_SECURITY_RULES = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
 else:
@@ -45,8 +46,10 @@ else:
 
 # setting objects xpath relevant to FW or panorama management
 if DEVICE_GROUP:
+    device_group_shared = DEVICE_GROUP.lower()
     if DEVICE_GROUP == 'shared':
         XPATH_OBJECTS = "/config/shared/"
+        DEVICE_GROUP = device_group_shared
     else:
         XPATH_OBJECTS = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
 else:
