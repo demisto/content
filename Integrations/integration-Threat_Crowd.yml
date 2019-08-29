@@ -122,8 +122,7 @@ script:
             if (dbotScore == 3) {
                 res.Malicious = {
                    "Vendor": 'Threat Crowd',
-                   "Description": '
-                   us'
+                   "Description": 'Most users have voted this entity malicious'
                 };
             }
             return res;
