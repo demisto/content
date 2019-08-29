@@ -1,4 +1,8 @@
 # type: ignore
+import dateutil.parser
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import linear_kernel
+
 from CommonServerPython import *
 
 HOURS_TIME_FRAME = float(demisto.args()['timeFrameHours'])
@@ -10,10 +14,6 @@ INCIDENT_TEXT_FIELD = 'incident_text_for_tfidf'
 MIN_TEXT_LENGTH = int(demisto.args()['minTextLength'])
 MAX_CANDIDATES_IN_LIST = int(demisto.args()['maxResults'])
 TIME_FIELD = demisto.args()['timeField']
-
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import linear_kernel
-import dateutil.parser
 
 
 def parse_datetime(datetime_str):
