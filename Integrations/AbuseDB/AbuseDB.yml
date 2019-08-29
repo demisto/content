@@ -6,7 +6,7 @@ display: AbuseIPDB
 category: Data Enrichment & Threat Intelligence
 description: Central repository to report and identify IP addresses that have been
   associated with malicious activity online. Check the Detailed Information section
-  for more information on how to configure the integration.-
+  for more information on how to configure the integration.
 configuration:
 - display: AbuseIP server URL
   name: server
