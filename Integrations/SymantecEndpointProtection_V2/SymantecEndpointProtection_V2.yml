@@ -149,7 +149,7 @@ script:
     - contextPath: IP.Host
       description: IP Host
       type: String
-    - contextPath: Enpoint.Hostname
+    - contextPath: Endpoint.Hostname
       description: The endpoint's hostname
       type: Unknown
     - contextPath: Endpoint.MACAddress
@@ -181,6 +181,18 @@ script:
       type: String
     - contextPath: IP.Hostname
       description: The hostname that is mapped to this IP address.
+      type: String
+    - contextPath: SEPM.Endpoint.Group
+      description: The Endpoint's Group
+      type: String
+    - contextPath: SEPM.Endpoint.PatternIdx
+      description: The Endpoint's PatternIdx
+      type: String
+    - contextPath: SEPM.Endpoint.OnlineStatus
+      description: The Endpoint's Online Status
+      type: String
+    - contextPath: SEPM.Endpoint.UpdateTime
+      description: The endpoint's update time.
       type: String
   - arguments:
     - default: false
