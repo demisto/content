@@ -84,7 +84,7 @@ class IntegrationValidator(object):
                         or (command_name == 'domain' and arg_name == 'domain')
                         or (command_name == 'url' and arg_name == 'url')
                         or (command_name == 'ip' and arg_name == 'ip')):
-                    if arg.get('default') is False or arg.get('required') is True:
+                    if arg.get('default') is False:
                         self._is_valid = False
                         print_error("The argument '{}' of the command '{}' is either non default or required"
                                     .format(arg_name, command_name))
