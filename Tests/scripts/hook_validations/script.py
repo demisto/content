@@ -3,7 +3,7 @@ import yaml
 import requests
 
 from Tests.scripts.constants import CONTENT_GITHUB_LINK
-from Tests.test_utils import print_error, get_yaml
+from Tests.test_utils import print_error, print_warning, get_yaml
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -38,7 +38,7 @@ class ScriptValidator(object):
                 res.raise_for_status()
                 self.old_script = yaml.safe_load(res.content)
             except Exception as e:
-                print(str(e))
+                print_warning(str(e))
                 print_error("Could not find the old script please make sure that you did not break "
                             "backward compatibility")
 
