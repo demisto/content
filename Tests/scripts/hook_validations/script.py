@@ -40,7 +40,7 @@ class ScriptValidator(object):
             except Exception as e:
                 print_warning(str(e))
                 print_warning("Could not find the old script please make sure that you did not break "
-                            "backward compatibility")
+                              "backward compatibility")
 
     @classmethod
     def _is_sub_set(cls, supposed_bigger_list, supposed_smaller_list):
