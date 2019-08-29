@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "ZeroFox",
+            "playbookID": "ZeroFox-Test",
+            "fromversion": "4.1.0"
+        },
+        {
             "integrations": "SlackV2",
             "playbookID": "Slack Test Playbook",
             "fromversion": "5.0.0"
@@ -1756,6 +1761,10 @@
         {
             "integrations": "VulnDB",
             "playbookID": "Test-VulnDB"
+        },
+        {
+            "integrations": "Threat Crowd",
+            "playbookID": "ThreatCrowd - Test"
         }
     ],
     "skipped_tests": {
@@ -1826,8 +1835,9 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "Jask": "Returning 401 (issue 18879)",
+        "google-vault": "Error when creating exports (Issue 18866)",
         "Lastline": "Temporally moved to skipped inorder to not fail nightly",
-        "vmray": "VMRay license expired (Issue 18752)",
         "Anomali ThreatStream v2": "Credentials are invalid (issue 18561)",
         "Anomali ThreatStream": "Credentials are invalid (issue 18561)",
         "RSA Archer": "Instance does not seem to be working, Arian is checking",
