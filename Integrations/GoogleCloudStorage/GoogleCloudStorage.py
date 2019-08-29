@@ -4,15 +4,12 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 from google.cloud import storage
-
-import datetime
-import json
-import re
-import requests
+from typing import Any, Dict
 import traceback
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 ''' GLOBALS/PARAMS '''
@@ -20,13 +17,12 @@ requests.packages.urllib3.disable_warnings()
 
 def init_storage_client():
     """Creates the Python API client for Google Cloud Storage."""
-    service_account_json = demisto.params()['service_account_json']
     cur_directory_path = os.getcwd()
     credentials_file_name = demisto.uniqueFile() + '.json'
     credentials_file_path = os.path.join(cur_directory_path, credentials_file_name)
 
     with open(credentials_file_path, 'w') as creds_file:
-        json_object = json.loads(service_account_json)
+        json_object = json.loads(SERVICE_ACCOUNT_JSON)
         json.dump(json_object, creds_file)
 
     return storage.Client.from_service_account_json(credentials_file_path)
@@ -35,7 +31,11 @@ def init_storage_client():
 RFC3339_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 DEMISTO_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
-CLIENT = init_storage_client()
+SERVICE_ACCOUNT_JSON = demisto.params().get('service_account_json', '')
+
+# Allow an un-initialized client for the sake of unit tests
+if SERVICE_ACCOUNT_JSON:
+    CLIENT = init_storage_client()
 
 # Remove proxy if not set to true in params
 handle_proxy()
@@ -61,7 +61,7 @@ def ec_key(path, *merge_by):
 
 def reformat_datetime_str(dt_str):
     """Reformats a date/time string from Google's RFC 3339 format to our format."""
-    dt = None if not dt_str else datetime.datetime.strptime(dt_str, RFC3339_DATETIME_FORMAT)
+    dt = None if not dt_str else datetime.strptime(dt_str, RFC3339_DATETIME_FORMAT)
     return datetime2str(dt)
 
 
@@ -76,7 +76,7 @@ def human_readable_table(title, contents):
     def header_transform(header):
         return re.sub(r'([a-z])([A-Z])', '\\1 \\2', header)
 
-    first_dict = {}
+    first_dict: Dict[str, Any] = {}
     if isinstance(contents, list) and contents:
         first_dict = contents[0]
     elif isinstance(contents, dict):
@@ -105,7 +105,7 @@ def format_error(ex):
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module():
+def module_test():
     next(CLIENT.list_buckets().pages)
 
 
@@ -288,8 +288,7 @@ def acl2dict(acl_entry, include_object_name=False):
 def get_acl_entries(acl):
     """Retrieves the entries of the given ACL (access control list) in their raw dictionary form."""
     path = acl.reload_path
-    query_params = {}
-    parsed_json = CLIENT._connection.api_request(method='GET', path=path, query_params=query_params)
+    parsed_json = CLIENT._connection.api_request(method='GET', path=path)
     return parsed_json.get('items', ())
 
 
@@ -462,7 +461,7 @@ LOG('Command being called is ' + demisto.command())
 
 try:
     if demisto.command() == 'test-module':
-        test_module()
+        module_test()
         demisto.results('ok')
 
     #
