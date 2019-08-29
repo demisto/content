@@ -868,10 +868,10 @@ def kill_process_command():
     for process_guid in processes:
         response = kill_process(malop_guid, machine_guid, process_guid)
         status_log = response['statusLog'][0]
-        status_log['status']
+        status = status_log['status']
         # response
         demisto.results('Request to kill process {0} was sent successfully and now in status {1}'.format(process_guid,
-                                                                                                         status_log))
+                                                                                                         status))
 
 
 def kill_process(malop_guid, machine_guid, process_guid):
