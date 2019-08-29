@@ -1213,10 +1213,10 @@ tasks:
     ignoreworker: false
   "37":
     id: "37"
-    taskid: 3367d401-1681-4e80-845e-3aafd05781c3
+    taskid: 7a694dee-71a1-4562-894f-bc1741dd0a09
     type: condition
     task:
-      id: 3367d401-1681-4e80-845e-3aafd05781c3
+      id: 7a694dee-71a1-4562-894f-bc1741dd0a09
       version: -1
       name: Verify Autoreply
       type: condition
@@ -1229,14 +1229,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isTrue
           left:
             value:
               simple: Autoreply.EnableAutoReply
             iscontext: true
-          right:
-            value:
-              simple: "true"
       - - operator: isEqualString
           left:
             value:
