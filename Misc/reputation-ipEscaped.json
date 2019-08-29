@@ -18,7 +18,7 @@
     ],
     "system": true,
     "locked": false,
-    "disabled": false,
+    "disabled": true,
     "file": false,
     "updateAfter": 0,
     "mergeContext": false,
