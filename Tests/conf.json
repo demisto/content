@@ -1759,6 +1759,7 @@
         }
     ],
     "skipped_tests": {
+        "Panorama Query Logs - Test": "Should be skipped until this PR will be merged https://github.com/demisto/content/pull/4215",
         "TestParseEmailHeaders": "Fails on conditional task (Issue 18815)",
         "VxStream Test": "crowdstrike-detonate-file fails with Bad request code (Issue 18791)",
         "Extract Indicators From File - Generic v2 - Test": "issue with extract indicators. (probably regex) (Issue 18795)",
