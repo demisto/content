@@ -822,7 +822,7 @@ script:
         "1" if the domain is believed to be benign, "0" if it hasn't been classified
         yet.
       type: number
-    - contextPath: Domain.Umbrella.SecureRank 
+    - contextPath: Domain.Umbrella.SecureRank 
       description: Suspicious rank for a domain that reviews based on the lookup behavior
         of client IP for the domain. Securerank is designed to identify hostnames
         requested by known infected clients but never requested by clean clients,
@@ -854,49 +854,49 @@ script:
         be blank.
       type: string
     - contextPath: Domain.Malicious.Vendor
-      description: For malicious domains, the vendor that made the decision.
+      description: For malicious domains, the vendor that made the decision
       type: string
     - contextPath: Domain.Malicious.Description
-      description: For malicious domains, the reason for the vendor to make the decision.
+      description: For malicious domains, the reason for the vendor to make the decision
       type: string
     - contextPath: Domain.Admin.Country
-      description: The domain admininistrator's country.
+      description: The country of the domain administrator.
       type: String
     - contextPath: Domain.Admin.Email
-      description: The domain admininistrator's email address.
+      description: The email address of the domain administrator.
       type: String
     - contextPath: Domain.Admin.Name
-      description: The domain admininistrator's name.
+      description: The name of the domain administrator.
       type: String
     - contextPath: Domain.Admin.Phone
-      description: The domain admininistrator's phone number.
+      description: The phone number of the domain administrator.
       type: String
     - contextPath: Domain.Registrant.Country
-      description: The registrant's country.
+      description: The country of the registrant.
       type: String
     - contextPath: Domain.Registrant.Email
-      description: The registrant's email address.
+      description: The email address of the registrant.
       type: String
     - contextPath: Domain.Registrant.Name
-      description: The registrant's name.
+      description: The name of the registrant.
       type: String
     - contextPath: Domain.Registrant.Phone
-      description: The registrant's phone number.
+      description: The phone number of the registrant.
       type: String
     - contextPath: Domain.CreationDate
-      description: The date that the domain was created.
+      description: The date on which the domain was created.
       type: Date
     - contextPath: Domain.DomainStatus
       description: The status of the domain.
       type: String
     - contextPath: Domain.UpdatedDate
-      description: The date that the domain was last updated.
+      description: The date on which the domain was last updated.
       type: Date
     - contextPath: Domain.ExpirationDate
       description: The expiration date of the domain.
       type: Date
     - contextPath: Domain.Registrar.Name
-      description: 'The registrar''s name, for example: "GoDaddy"."'
+      description: The name of the registrar, such as "GoDaddy".
       type: String
   - arguments:
     - default: false
@@ -1003,8 +1003,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: all
-      description: 'Valid options are: exact, component, or all (default).     1.Using
-        "cisco.com" as an example, "exact" only gives results for cisco.com.    2.
+      description: 'Valid options are: exact, component, or all (default).     1.Using
+        "cisco.com" as an example, "exact" only gives results for cisco.com.    2.
         Component gives results for every component of cisco.com, but not cisco.com.
         Examples are www.cisco.com, mail.cisco.com, wwwin.cisco.com, something.else.cisco.com.     3.All
         returns the sum of component and exact, this is the default.'
@@ -1080,7 +1080,7 @@ script:
       description: The number of bits required to encode the domain name, as a score.
         This score is to be used in conjunction with DGA and Perplexity.
       type: number
-    - contextPath: Umbrella.DomainDetails.Data.SecureRank 
+    - contextPath: Umbrella.DomainDetails.Data.SecureRank 
       description: Suspicious rank for a domain that reviews based on the lookup behavior
         of client IP for the domain. Securerank is designed to identify hostnames
         requested by known infected clients but never requested by clean clients,
@@ -1135,7 +1135,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: 'Email address following rfc5322 conventions. (e.g. : admin@google.com)
+      description: 'Email address following rfc5322 conventions. (e.g. : admin@google.com)
         Comma separated list allowed. (e.g. : admin@google.com, dns-admin@google.com,
         hostmaster@charter.com)'
       isArray: true
@@ -1203,7 +1203,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: 'Enter the Nameserver’s domain name. (e.g. : ns2.google.com) Comma
+      description: 'Enter the Nameserver’s domain name. (e.g. : ns2.google.com) Comma
         separated list allowed. (e.g. : ns2.google.com, ns1.google.com)'
       isArray: true
       name: nameservers
@@ -1278,7 +1278,7 @@ script:
       secret: false
     deprecated: false
     description: This command will provide a standard WHOIS response record for a
-      single domain with all available WHOIS data returned. 
+      single domain with all available WHOIS data returned. 
     execution: false
     name: umbrella-get-whois-for-domain
     outputs:
@@ -1286,74 +1286,71 @@ script:
       description: Domain's name.
       type: string
     - contextPath: Domain.Umbrella.Whois.RegistrarName
-      description: Domain registrar name.
+      description: Domain registrar name
       type: string
     - contextPath: Domain.Umbrella.Whois.LastRetrieved
-      description: Domain last retrieved date.
+      description: Domain last retrieved date
       type: string
     - contextPath: Domain.Umbrella.Whois.Created
-      description: Domain created date.
+      description: Domain created date
       type: string
     - contextPath: Domain.Umbrella.Whois.Updated
-      description: Domain updated date.
+      description: Domain updated date
       type: string
     - contextPath: Domain.Umbrella.Whois.Expires
-      description: Domain expiry date.
+      description: Domain expiry date
       type: string
     - contextPath: Domain.Umbrella.Whois.IANAID
-      description: IANA ID.
+      description: IANA ID
       type: string
     - contextPath: Domain.Umbrella.Whois.LastObserved
-      description: Domain last observed.
+      description: Domain last observed
       type: string
     - contextPath: Domain.Umbrella.Whois.Nameservers.Name
-      description: Domain's name servers.
+      description: Domain's name servers
       type: string
     - contextPath: Domain.Umbrella.Whois.Emails.Name
-      description: Domain's email.
+      description: Domain's email
       type: string
     - contextPath: Domain.Name
       description: The domain name e.g. google.com
       type: Unknown
     - contextPath: Domain.Admin.Country
-      description: The domain admininistrator's country.
+      description: The country of the domain administrator.
       type: String
     - contextPath: Domain.Admin.Email
-      description: The domain admininistrator's email address.
+      description: The email address of the domain administrator.
       type: String
     - contextPath: Domain.Admin.Name
-      description: The domain admininistrator's name.
+      description: The name of the domain administrator.
       type: String
     - contextPath: Domain.Admin.Phone
-      description: The domain admininistrator's phone number.
+      description: The phone number of the domain administrator.
       type: String
     - contextPath: Domain.Registrant.Country
-      description: The registrant's country.
+      description: The country of the registrant.
       type: String
     - contextPath: Domain.Registrant.Email
-      description: The registrant's email address.
+      description: The email address of the registrant.
       type: String
     - contextPath: Domain.Registrant.Name
-      description: The registrant's name.
+      description: The name of the registrant.
       type: String
     - contextPath: Domain.Registrant.Phone
-      description: The registrant's phone number.
+      description: The phone number of the registrant.
       type: String
     - contextPath: Domain.CreationDate
-      description: The date that the domain was created.
+      description: The date on which the domain was created.
       type: Date
     - contextPath: Domain.DomainStatus
       description: The status of the domain.
       type: String
     - contextPath: Domain.UpdatedDate
-      description: The date that the domain was last updated.
+      description: The date on which the domain was last updated.
       type: Date
     - contextPath: Domain.ExpirationDate
       description: The expiration date of the domain.
       type: Date
-    - contextPath: Domain.Registrar.Name
-      description: 'The registrar''s name, for example: "GoDaddy"."'
-      type: String
   - arguments:
     - default: false
       description: IP Address to check for malicious domains.
@@ -1450,7 +1447,7 @@ script:
     outputs:
     - contextPath: Umbrella.DomainSearch.TotalResults
       description: Total results from this search string. The default number of results
-        is 100 and can be expanded using the limit parameter. 
+        is 100 and can be expanded using the limit parameter. 
       type: number
     - contextPath: Umbrella.DomainSearch.Data.Name
       description: Name of the domain found.
@@ -1487,7 +1484,7 @@ script:
       description: Which threat type, if any, matched in the input.
       type: string
     - contextPath: Umbrella.Timeline.Data.Timestamp
-      description: The time when the attribution for this Domain changed. 
+      description: The time when the attribution for this Domain changed. 
       type: string
   - arguments:
     - default: false
@@ -1516,7 +1513,7 @@ script:
       description: Which threat type, if any, matched in the input.
       type: string
     - contextPath: Umbrella.Timeline.Data.Timestamp
-      description: The time when the attribution for this IP changed. 
+      description: The time when the attribution for this IP changed. 
       type: string
   - arguments:
     - default: false
@@ -1544,7 +1541,7 @@ script:
       description: Which threat type, if any, matched in the input.
       type: string
     - contextPath: Umbrella.Timeline.Data.Timestamp
-      description: The time when the attribution for this URL changed. 
+      description: The time when the attribution for this URL changed. 
       type: date
   isfetch: false
   longRunning: false
