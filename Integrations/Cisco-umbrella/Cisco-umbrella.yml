@@ -822,7 +822,7 @@ script:
         "1" if the domain is believed to be benign, "0" if it hasn't been classified
         yet.
       type: number
-    - contextPath: Domain.Umbrella.SecureRank
+    - contextPath: Domain.Umbrella.SecureRank 
       description: Suspicious rank for a domain that reviews based on the lookup behavior
         of client IP for the domain. Securerank is designed to identify hostnames
         requested by known infected clients but never requested by clean clients,
