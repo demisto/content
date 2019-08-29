@@ -49,7 +49,7 @@ configuration:
   required: false
   type: 8
 description: Sends messages and notifications to your Slack Team.
-display: Slack v2
+display: Slack V2
 name: SlackV2
 script:
   commands:
@@ -148,7 +148,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: group
-      description: Mirrors an incident. Can be "channel" or "group". Default value
+      description: Mirrors an incident. Can be "channel" or "group". The default value
         is "group".
       isArray: false
       name: mirrorTo
@@ -172,7 +172,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Kick the Slack admin(the channel creator).
+      description: Lets a Demisto security analyst kick the the administrator (channel creator) out of a channel.
       isArray: false
       name: kickAdmin
       predefined:
@@ -310,8 +310,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Archives a slack channel. If no channel is provided, the mirrored
-      channel for the incident is archived (if it exists).
+    description: Archives a channel. If the channel does not exist, Slack archives the incident's mirrored
+      channel. If the mirrored channel does not exist, Demisto displays an error message in the War Room 
+      that the mirrored channel was not found.
     execution: false
     name: close-channel
   - arguments:
@@ -352,9 +353,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Sends a file in Slack to a user, channel, or group. If a user, channel,
-      or group is not specified, the file is sent to the mirrored investigation channel
-      (if it exists).
+    description: Sends a file to a user, channel, or group. If a user, channel, 
+    or group is not specified, the file is sent to the mirrored investigation channel. If the mirrored investigation channel does 
+    not exist, Demisto displays an error message in the War Room that the mirrored channel was not found.  
     execution: false
     name: slack-send-file
   - arguments:
@@ -366,7 +367,7 @@ script:
       required: false
       secret: false
     - default: true
-      description: The topic for  the channel.
+      description: The topic for the channel.
       isArray: false
       name: topic
       required: true
@@ -379,7 +380,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: private
-      description: The channel type, either private or public.
+      description: The channel type. Can be "Private" or "Public".
       isArray: false
       name: type
       predefined:
@@ -388,21 +389,15 @@ script:
       required: false
       secret: false
     - default: true
-      description: The channel name.
+      description: The name of the channel.
       isArray: false
       name: name
       required: true
       secret: false
     - default: false
-      description: CSV list of users to invite to the channel, e.g., "user1,user2..."
+      description: A CSV list of users to invite to a channel.
       isArray: false
       name: users
-      required: false
-      secret: false
-    - default: false
-      description: The channel topic.
-      isArray: false
-      name: topic
       required: false
       secret: false
     deprecated: false
@@ -411,50 +406,52 @@ script:
     name: slack-create-channel
   - arguments:
     - default: true
-      description: CSV list of the users to invite.
+      description: A CSV list of users to invite to a channel.
       isArray: false
       name: users
       required: true
       secret: false
     - default: false
-      description: The channel name. If not specified, the mirrored investigation
-        channel is used (if the channel exists).
-      isArray: false
+      description: The name of the channel. If the name of the channel is not specified, Slack uses the name of the mirrored investigation 
+      channel. If the mirrored investigation does not exist, Demisto displays an error message 
+      in the War Room that the mirrored channel was not found. 
       name: channel
       required: false
       secret: false
     deprecated: false
-    description: Invite a user to a channel in Slack.
+    description: Invites a user to a channel.
     execution: false
     name: slack-invite-to-channel
   - arguments:
     - default: true
-      description: CSV list of users to kick.
+      description: A CSV list of users to kick out of a channel.
       isArray: false
       name: users
       required: true
       secret: false
     - default: false
-      description: The channel name. If not specified, the mirrored investigation
-        channel is used (if the channel exists).
+      description: The name of the channel. If the name of the channel is not specified, Slack uses the name of the mirrored investigation 
+      channel. If the mirrored investigation does not exist, Demisto displays an error message in the War Room 
+      that the mirrored channel was not found.
       isArray: false
       name: channel
       required: false
       secret: false
     deprecated: false
-    description: Kick a user from a channel in Slack.
+    description: Kicks a user out of a channel.
     execution: false
     name: slack-kick-from-channel
   - arguments:
     - default: true
-      description: The new name to use.
+      description: The new name of the channel.
       isArray: false
       name: name
       required: true
       secret: false
     - default: false
-      description: The channel name. If not specified, the name of the mirrored investigation
-        channel is set (if the channel exists).
+      description: The name of the channel. If not specified, Slack sets the name of the mirrored investigation
+        channel. If the mirrored investigation does not exist, Demisto displays an error message in the War Room 
+      that the mirrored channel was not found.
       isArray: false
       name: channel
       required: false
@@ -465,32 +462,32 @@ script:
     name: slack-rename-channel
   - arguments:
     - default: true
-      description: The Slack user.
+      description: The username of the user.
       isArray: false
       name: user
       required: true
       secret: false
     deprecated: false
-    description: Get details for a given Slack user.
+    description: Get details about a specified user.
     execution: false
     name: slack-get-user-details
     outputs:
     - contextPath: Slack.User.ID
-      description: The user's Slack ID.
+      description: The ID of the user.
       type: String
     - contextPath: Slack.User.Username
-      description: The user's username.
+      description: The username of the user.
       type: String
     - contextPath: Slack.User.Name
-      description: The user's name.
+      description: The actual name of the user.
       type: String
     - contextPath: Slack.User.DisplayName
-      description: The user's display name.
+      description: The display name of the user.
       type: String
     - contextPath: Slack.User.Email
-      description: The user's email.
+      description: The email address of the user.
       type: String
-  dockerimage: demisto/slack:1.0.0.1560
+  dockerimage: demisto/slack:1.0.0.814
   isfetch: false
   longRunning: true
   runonce: false
