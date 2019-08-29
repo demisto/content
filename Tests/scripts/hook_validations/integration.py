@@ -130,7 +130,7 @@ class IntegrationValidator(object):
                 }
                 missing_descriptions = []
                 for DBot_Score_description in DBot_Score_descriptions:
-                    if DBot_Score_descriptions not in context_outputs_descriptions:
+                    if DBot_Score_description not in context_outputs_descriptions:
                         missing_descriptions.append(DBot_Score_output)
                         # self._is_valid = False - Do not fail build over wrong description
                 if missing_descriptions:
