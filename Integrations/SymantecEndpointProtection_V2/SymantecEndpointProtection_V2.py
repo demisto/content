@@ -55,45 +55,35 @@ def fix_url(base):
 
 
 def endpoint_ip_extract(raw_json):
-    IPs = []
+    ips_array = []
     for content in raw_json:
-        ip = {}
-        if content.get('ipAddresses'):
-            ip['Address'] = content.get('ipAddresses')[0]
-        if content.get('macAddresses'):
-            ip['Mac'] = content.get('computerName')
-        if ip != {}:
-            IPs.append(ip)
-    return IPs
+        ip = {'Address': content.get('ipAddresses', [''])[0],
+              'Mac': content.get('computerName')
+              }
+        ip = createContext(ip, removeNull=True)
+        if ip:
+            ips_array.append(ip)
+    return ips_array
 
 
 def endpoint_endpoint_extract(raw_json):
-    Endpoints = []
+    endpoints_arr = []
     for content in raw_json:
-        endpoint = {}
-        if content.get('computerName'):
-            endpoint['Hostname'] = content.get('computerName')
-        if content.get('macAddresses'):
-            endpoint['MACAddress'] = content.get('macAddresses')[0]
-        if content.get('domainOrWorkgroup'):
-            endpoint['Domain'] = content.get('domainOrWorkgroup')
-        if content.get('ipAddresses'):
-            endpoint['IPAddress'] = content.get('ipAddresses')[0]
-        if content.get('dhcpServer'):
-            endpoint['DHCPServer'] = content.get('dhcpServer')
-        if content.get('operatingSystem'):
-            endpoint['OS'] = content.get('operatingSystem')
-        if content.get('osVersion'):
-            endpoint['OSVersion'] = content.get('osVersion')
-        if content.get('biosVersion'):
-            endpoint['BIOSVersion'] = content.get('biosVersion')
-        if content.get('memory'):
-            endpoint['Memory'] = content.get('memory')
-        if content.get('processorType'):
-            endpoint['Processors'] = content.get('processorType')
-        if endpoint != {}:
-            Endpoints.append(endpoint)
-    return Endpoints
+        endpoint = {'Hostname': content.get('computerName'),
+                    'MACAddress': content.get('macAddresses', [''])[0],
+                    'Domain': content.get('domainOrWorkgroup'),
+                    'IPAddress': content.get('ipAddresses', [''])[0],
+                    'DHCPServer': content.get('dhcpServer'),
+                    'OS': content.get('operatingSystem'),
+                    'OSVersion': content.get('osVersion'),
+                    'BIOSVersion': content.get('biosVersion'),
+                    'Memory': content.get('memory'),
+                    'Processors': content.get('processorType')
+                    }
+        endpoint = createContext(endpoint, removeNull=True)
+        if endpoint:
+            endpoints_arr.append(endpoint)
+    return endpoints_arr
 
 
 def build_query_params(params):
@@ -414,7 +404,7 @@ def get_endpoints_info(token, computer_name, last_update, os, page_size, columns
                 'Hostname': content.get('computerName'),
                 'Domain': content.get('domainOrWorkgroup'),
                 'IPAddresses': content.get('ipAddresses'),
-                'OS': content.get('operatingSystem') + ' | ' + content.get('osBitness'),
+                'OS': content.get('operatingSystem', '') + ' | ' + content.get('osBitness', ''),
                 'Description': content.get('content.description'),
                 'MACAddresses': content.get('macAddresses'),
                 'BIOSVesrsion': content.get('biosVersion'),
@@ -553,7 +543,6 @@ def system_info_command(token):
 
 
 def old_clients_command(token):
-
     computer_name = demisto.getArg('computerName')
     last_update = demisto.getArg('lastUpdate')
     os = demisto.getArg('os')
@@ -567,6 +556,7 @@ def old_clients_command(token):
     filtered_json_response = filter_only_old_clients(filtered_json_response, desired_version)
     md = create_endpints_filter_string(computer_name, last_update, os, page_size, group_name)
     md += tableToMarkdown('Old Endpoints', filtered_json_response, columns_list)
+
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
