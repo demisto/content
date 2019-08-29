@@ -1,1 +1,1 @@
-Fix `servicenow-upload-file` command when the file is info file.
+Fixed an issue with the **servicenow-upload-file*** command when the uploaded file is an info file.
