@@ -548,7 +548,8 @@ class IntegrationLogger(object):
     """
       a logger for python integrations:
       use LOG(<message>) to add a record to the logger (message can be any object with __str__)
-      use LOG.print_log() to display all records in War-Room and server log.
+      use LOG.print_log(verbose=True/False) to display all records in War-Room (if verbose) and server log.
+      use add_repalce_strs to add sensitive strings that should be replaced before going to the log.
 
       :type message: ``str``
       :param message: The message to be logged
@@ -561,6 +562,8 @@ class IntegrationLogger(object):
         self.messages = []  # type: list
         self.write_buf = []  # type: list
         self.replace_strs = []  # type: list
+        # if for some reason you don't want to auto add credentails.password to replace strings
+        # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
         if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')
                 and isinstance(demisto.getParam('credentials'), dict)
                 and demisto.getParam('credentials').get('password')):
