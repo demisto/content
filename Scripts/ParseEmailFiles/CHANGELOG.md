@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Improved EML file type detection.
+Improved EML file type detection.
 
 ## [19.8.2] - 2019-08-22
 - Fixed an issue in which special characters were missing from MSG emails.
