@@ -305,9 +305,18 @@ class FilesValidator(object):
         """
         modified_files, added_files, old_format_files = self.get_modified_and_added_files(branch_name, self.is_circle)
         schema_changed = False
-        for f in modified_files:
-            if checked_type(f, [SCHEMA_REGEX]):
-                schema_changed = True
+        for files in modified_files:
+            # when there is a rename files will contain a tuple other wise just a string
+            if isinstance(files, basestring):
+                files = [files]
+            for f in files:
+                try:
+                    if checked_type(f, [SCHEMA_REGEX]):
+                        schema_changed = True
+                except Exception:
+                    print_color("Failed checked_type for file: {}".format(f), LOG_COLORS.RED)
+                    raise
+
         # Ensure schema change did not break BC
         if schema_changed:
             self.validate_all_files()
