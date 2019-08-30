@@ -2,7 +2,7 @@ import os
 import yaml
 import requests
 
-from Tests.scripts.constants import CONTENT_GITHUB_MASTER_LINK
+from Tests.scripts.constants import CONTENT_GITHUB_MASTER_LINK, PYTHON_SUBTYPES
 from Tests.test_utils import print_error, get_yaml
 
 # disable insecure warnings
@@ -60,10 +60,18 @@ class ScriptValidator(object):
             self.is_added_required_args(),
             self.is_arg_changed(),
             self.is_there_duplicates_args(),
-            self.is_invalid_subtype()
+            self.is_changed_subtype()
         ])
 
         return not is_bc_broke
+
+    def is_valid_script(self):
+        """Check whether the Integration is valid or not, update the _is_valid field to determine that"""
+        is_script_valid = any([
+            self.is_valid_subtype()
+        ])
+
+        return is_script_valid
 
     @classmethod
     def _get_arg_to_required_dict(cls, script_json):
@@ -82,22 +90,30 @@ class ScriptValidator(object):
 
         return arg_to_required
 
-    def is_invalid_subtype(self):
-        """Validate that the subtype is python2 or python3."""
+    def is_changed_subtype(self):
+        """Validate that the subtype was not changed."""
         type_ = self.current_script.get('type')
         if type_ == 'python':
             subtype = self.current_script.get('subtype')
-            if not subtype or subtype not in ['python3', 'python2']:
-                print_error("The subtype for our yml files should be either python2 or python3, "
-                            "please update the file {}.".format(self.current_script.get('name')))
-                return True
             if self.old_script:
                 old_subtype = self.old_script.get('subtype', "")
-                if len(old_subtype) > 0 and old_subtype != subtype:
+                if old_subtype and old_subtype != subtype:
                     print_error("Possible backwards compatibility break, You've changed the subtype"
                                 " of the file {}".format(self.file_path))
                     return True
         return False
+
+    def is_valid_subtype(self):
+        """Validate that the subtype is python2 or python3."""
+        type_ = self.current_script.get('type')
+        if type_ == 'python':
+            subtype = self.current_script.get('subtype')
+            if subtype not in PYTHON_SUBTYPES:
+                print_error("The subtype for our yml files should be either python2 or python3, "
+                            "please update the file {}.".format(self.file_path))
+                return False
+
+        return True
 
     def is_added_required_args(self):
         """Check if required arg were added."""
