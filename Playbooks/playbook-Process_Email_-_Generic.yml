@@ -14,6 +14,7 @@ tasks:
       id: 5bfb4aa2-96ee-40a9-8806-51f5317a9be3
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -77,6 +78,7 @@ tasks:
       id: 586e1b42-4e1a-4c98-812c-f5e68a37abde
       version: -1
       name: Add original email details to context
+      description: ""
       scriptName: Set
       type: regular
       iscommand: false
@@ -149,6 +151,7 @@ tasks:
       id: 96f1a90d-aed3-4905-82bd-eb8b75204ffc
       version: -1
       name: Is there an HTML label in the email?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -191,6 +194,7 @@ tasks:
       id: 79efc198-1523-4a55-89ad-668e64fba48c
       version: -1
       name: Render HTML to an image
+      description: ""
       tags:
       - email_html_image
       script: Rasterize|||rasterize-email
@@ -228,6 +232,7 @@ tasks:
       id: 811ebf69-5fe0-4314-8cff-ca8e91774fe8
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -250,6 +255,7 @@ tasks:
       id: 599cbc26-9525-4dd7-8692-3b572ef01c53
       version: -1
       name: Advance features
+      description: ""
       type: title
       iscommand: false
       brand: ""

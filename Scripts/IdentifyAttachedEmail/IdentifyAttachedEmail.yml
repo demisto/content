@@ -30,3 +30,5 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+tests:
+- process_email_-_generic_-_test
