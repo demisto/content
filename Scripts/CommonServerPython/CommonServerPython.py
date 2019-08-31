@@ -549,7 +549,7 @@ class IntegrationLogger(object):
       a logger for python integrations:
       use LOG(<message>) to add a record to the logger (message can be any object with __str__)
       use LOG.print_log(verbose=True/False) to display all records in War-Room (if verbose) and server log.
-      use add_repalce_strs to add sensitive strings that should be replaced before going to the log.
+      use add_replace_strs to add sensitive strings that should be replaced before going to the log.
 
       :type message: ``str``
       :param message: The message to be logged
