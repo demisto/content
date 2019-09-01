@@ -1775,7 +1775,6 @@
     ],
     "skipped_tests": {
         "TestParseEmailHeaders": "Fails on conditional task (Issue 18815)",
-        "VxStream Test": "crowdstrike-detonate-file fails with Bad request code (Issue 18791)",
         "Extract Indicators From File - Generic v2 - Test": "issue with extract indicators. (probably regex) (Issue 18795)",
         "Pwned v2 test": "Pwned v2 test fails on conditional task (Issue 18793).",
         "CheckpointFW-test": "Test is not stable (Issue 18643)",
