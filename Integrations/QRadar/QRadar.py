@@ -373,7 +373,7 @@ def get_offense_types():
     url = '{0}/api/siem/offense_types'.format(SERVER)
     # Due to a bug in QRadar, this functions does not work if username/password was not provided
     if USERNAME and PASSWORD:
-        return send_request('GET', url, headers=None)
+        return send_request('GET', url)
     return {}
 
 
@@ -710,7 +710,7 @@ def get_search_results_command():
     search_id = demisto.args().get('search_id')
     raw_search_results = get_search_results(search_id, demisto.args().get('range'))
     result_key = raw_search_results.keys()[0]
-    title = 'QRadar Search Results from ' + result_key
+    title = 'QRadar Search Results from {}'.format(convert_to_str(result_key))
     context_key = demisto.args().get('output_path') if demisto.args().get(
         'output_path') else 'QRadar.Search(val.ID === "{0}").Result.{1}'.format(search_id, result_key)
     context_obj = unicode_to_str_recur(raw_search_results[result_key])
@@ -1059,7 +1059,7 @@ try:
     elif demisto.command() == 'qradar-get-domain-by-id':
         demisto.results(get_domains_by_id_command())
 except Exception as e:
-    message = e.message if hasattr(e, 'message') else ''
+    message = e.message if hasattr(e, 'message') else convert_to_str(e)
     error = 'Error has occurred in the QRadar Integration: {error}\n {message}'.format(error=type(e), message=message)
     LOG(traceback.format_exc())
     if demisto.command() == 'fetch-incidents':
