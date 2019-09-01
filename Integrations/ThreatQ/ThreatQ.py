@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
-import datetime
 import requests
 import json
 import shutil
@@ -301,7 +300,7 @@ def make_ioc_reputation_request(ioc_type, value, generic_context):
     url_suffix = '/search?query={0}&limit=1'.format(value)
     res = tq_request('GET', url_suffix)
 
-    raw_context = {}
+    raw_context = {}  # type: Dict[str, Any]
     if res['data']:
         # Search for detailed information about the IOC
         url_suffix = '/indicators/{0}?with=attributes,sources,score,type'.format(res['data'][0].get('id'))
@@ -453,7 +452,7 @@ def parse_date(text):
     valid_formats = ['%Y-%m-%d %H:%M:%S', '%Y-%m-%d']
     for fmt in valid_formats:
         try:
-            return str(datetime.datetime.strptime(text, fmt))
+            return str(datetime.strptime(text, fmt))
         except ValueError:
             pass
     return_error('Time data \'{0}\' does not match any valid format.'.format(text))
