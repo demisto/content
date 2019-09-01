@@ -545,7 +545,7 @@ def get_request_status_command():
 
 def test_module():
     try:
-        result = get_ip_data("5.79.86.16")
+        get_ip_data("5.79.86.16")
     except Exception:
         raise Exception("Test failed: API request did not succeed")
     demisto.results('ok')
