@@ -1758,6 +1758,10 @@
             "playbookID": "Test-VulnDB"
         },
         {
+            "integrations": "Threat Crowd",
+            "playbookID": "ThreatCrowd - Test"
+        },
+        {
             "integrations": "Hybrid Analysis",
             "playbookID": "HybridAnalysis-Test",
             "timeout": 1000
