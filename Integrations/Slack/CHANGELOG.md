@@ -1,6 +1,6 @@
 ## [Unreleased]
   - Added 6 new commands:
-    - ***slack-close-channel*** (now with optional channel argument)
+    - ***close-channel*** (now with optional channel argument)
     - ***slack-create-channel***
     - ***slack-invite-to-channel***
     - ***slack-kick-from-channel***
