@@ -135,7 +135,7 @@ HEADERS = {
     'adversary': ['ID', 'Name', 'CreatedAt', 'UpdatedAt', 'URL'],
     'event': ['ID', 'EventType', 'Title', 'Description', 'Occurred', 'CreatedAt', 'UpdatedAt', 'URL'],
     'attachment': ['ID', 'Name', 'Title', 'FileType', 'Size', 'Description', 'MD5', 'CreatedAt', 'UpdatedAt',
-             'MalwareLocked', 'ContentType', 'URL'],
+                   'MalwareLocked', 'ContentType', 'URL'],
     'attrs': ['ID', 'Name', 'Value'],
     'sources': ['ID', 'Name']
 }
