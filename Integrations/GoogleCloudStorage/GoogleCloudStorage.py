@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 
 from google.cloud import storage
 from typing import Any, Dict
+import requests
 import traceback
 import urllib3
 
@@ -15,6 +16,7 @@ RFC3339_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 DEMISTO_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
 SERVICE_ACCOUNT_JSON = demisto.params().get('service_account_json', '')
+INSECURE = demisto.params().get('insecure', False)
 
 client = None
 
@@ -29,8 +31,8 @@ def initialize_module():
     if SERVICE_ACCOUNT_JSON:
         client = init_storage_client()
 
-    # Disable insecure warnings
-    urllib3.disable_warnings()
+    if INSECURE:
+        disable_tls_verification()
 
     # Remove proxy if not set to true in params
     handle_proxy()
@@ -47,6 +49,20 @@ def init_storage_client():
         json.dump(json_object, creds_file)
 
     return storage.Client.from_service_account_json(credentials_file_path)
+
+
+def disable_tls_verification():
+
+    original_method = requests.Session.merge_environment_settings
+
+    def merge_environment_settings(self, url, proxies, stream, verify, cert):
+        settings = original_method(self, url, proxies, stream, verify, cert)
+        settings['verify'] = False
+        return settings
+
+    requests.Session.merge_environment_settings = merge_environment_settings
+
+    urllib3.disable_warnings(category=urllib3.exceptions.InsecureRequestWarning)
 
 
 def ec_key(path, *merge_by):

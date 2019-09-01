@@ -11,6 +11,10 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
 description: Google Cloud Storage is a RESTful online file storage web service for
   storing and accessing data on Google Cloud Platform infrastructure.
 display: Google Cloud Storage
