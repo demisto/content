@@ -73,7 +73,14 @@ API_PARAM_DICT = {
         'Malware Family': 'malware_family'
 
     },
-
+    'file_indicators': {
+        'Size': 'Size',
+        'SHA1': 'SHA1',
+        'SHA256': 'SHA256',
+        'FileType': 'Type',
+        'Tags': 'Tags',
+        'FileName': 'Name'
+    },
     'search_results': {
         'sha1': 'SHA1',
         'sha256': 'SHA256',
@@ -522,6 +529,62 @@ def print_hr_by_category(category_name, category_data):
             })
 
 
+def get_files_data_from_results(results):
+    """
+    Gets a list of results and for each result returns a file object includes all relevant file indicators exists
+    in that result
+    :param results: a list of dictionaries
+    :return: a list of file objects
+    """
+    files = []
+    for result in results:
+        raw_file = get_fields_from_hit_object(result, 'file_indicators')
+        file_data = filter_object_entries_by_dict_values(raw_file, 'file_indicators')
+        files.append(file_data)
+    return files
+
+
+def filter_object_entries_by_dict_values(result_object, response_dict_name):
+    """
+    Gets a dictionary (result_object) and filters it's keys by the values of another
+    dictionary (response_dict_name)
+    input: response_dict_name = 'file_indicators' - see API_PARAM_DICT above
+           result_object = {
+                              "app": "web-browsing",
+                              "vsys": 1,
+                              "SHA256": "18c9acd34a3aea09121f027857e0004a3ea33a372b213a8361e8a978330f0dc8",
+                              "UploadSource": "Firewall",
+                              "src_port": 80,
+                              "device_serial": "007051000050926",
+                              "Seen": "2019-07-24T09:37:04",
+                              "Name": "wildfire-test-pe-file.exe",
+                              "user_id": "unknown",
+                              "src_country": "United States",
+                              "src_countrycode": "US",
+                              "dst_port": 65168,
+                              "device_countrycode": "US",
+                              "Industry": "High Tech",
+                              "Region": "us",
+                              "device_country": "United States",
+                              "ID": "179972200903"
+                            }
+    output: {
+                "SHA256": "18c9acd34a3aea09121f027857e0004a3ea33a372b213a8361e8a978330f0dc8",
+                "Name": "wildfire-test-pe-file.exe"
+            }
+    :param result_object: a dictionary representing an object
+    :param response_dict_name: a dictionary which it's values are the relevant fields (filters)
+    :return: the result_object filtered by the relevant fields
+    """
+    af_params_dict = API_PARAM_DICT.get(response_dict_name)
+    result_object_filtered = {}
+    if af_params_dict:
+        for key in result_object.keys():
+            if key in af_params_dict.values():
+                result_object_filtered[key] = result_object.get(key)
+    return result_object_filtered
+
+
 ''' COMMANDS'''
 
 
@@ -583,17 +646,21 @@ def samples_search_results_command():
     args = demisto.args()
     af_cookie = args.get('af_cookie')
     results, status = get_search_results('samples', af_cookie)
+    files = get_files_data_from_results(results)
     if len(results) < 1:
         md = results = 'No entries found that match the query'
     else:
         md = tableToMarkdown(f'Search Samples Results is {status}', results)
+    context = {
+        'AutoFocus.SamplesResults(val.ID === obj.ID)': results,
+        'AutoFocus.SamplesSearch(val.AFCookie ==== obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
+        outputPaths['file']: files
+    }
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': results,
-        'EntryContext': {'AutoFocus.SamplesResults(val.ID == obj.ID)': results,
-                         'AutoFocus.SamplesSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
-                                                                                   'AFCookie': af_cookie}},
+        'EntryContext': context,
         'HumanReadable': md
     })
 
@@ -602,17 +669,21 @@ def sessions_search_results_command():
     args = demisto.args()
     af_cookie = args.get('af_cookie')
     results, status = get_search_results('sessions', af_cookie)
+    files = get_files_data_from_results(results)
     if len(results) < 1:
         md = results = 'No entries found that match the query'
     else:
         md = tableToMarkdown(f'Search Samples Results is {status}', results)
+    context = {
+        'AutoFocus.SessionsResults(val.ID === obj.ID)': results,
+        'AutoFocus.SessionsSearch(val.AFCookie === obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
+        outputPaths['file']: files
+    }
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': results,
-        'EntryContext': {'AutoFocus.SessionsResults(val.ID == obj.ID)': results,
-                         'AutoFocus.SessionsSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
-                                                                                    'AFCookie': af_cookie}},
+        'EntryContext': context,
         'HumanReadable': md
     })
 
@@ -621,12 +692,17 @@ def get_session_details_command():
     args = demisto.args()
     session_id = args.get('session_id')
     result = get_session_details(session_id)
+    files = get_files_data_from_results(result)
     md = tableToMarkdown(f'Session {session_id}:', result)
+    context = {
+        'AutoFocus.Sessions(val.ID === obj.ID)': result,
+        outputPaths['file']: files
+    }
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': result,
-        'EntryContext': {'AutoFocus.Sessions(val.ID == obj.ID)': result},
+        'EntryContext': context,
         'HumanReadable': md
     })
 

@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-from MailSenderNew import create_msg
+import MailSenderNew
 import demistomock as demisto
 import pytest
+
+RETURN_ERROR_TARGET = 'MailSenderNew.return_error'
 
 
 @pytest.mark.parametrize('subject,subj_include,headers', [
@@ -23,7 +25,7 @@ def test_create_msg(mocker, subject, subj_include, headers):
     mocker.patch.object(demisto, 'params', return_value={
         'from': 'test@test.com',
     })
-    (msg, to, cc, bcc) = create_msg()
+    (msg, to, cc, bcc) = MailSenderNew.create_msg()
     assert to == ['test@test.com', 'test1@test.com']  # disable-secrets-detection
     assert cc == ['cc@test.com']  # disable-secrets-detection
     assert bcc == ['bcc@test.com']  # disable-secrets-detection
@@ -31,3 +33,20 @@ def test_create_msg(mocker, subject, subj_include, headers):
     subj = [x for x in lines if 'Subject' in x][0]
     assert subj_include in subj
     assert 'foo' in msg
+
+
+def test_debug_smtp(mocker):
+    '''
+    Test that when we do test-module and fail we collect the server debug log
+    '''
+    mocker.patch.object(demisto, 'params', return_value={
+        'from': 'test@test.com',
+        'host': 'localhost',
+        'port': '2025'
+    })
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    MailSenderNew.main()
+    assert return_error_mock.call_count == 1
+    # LOG should at least contain: "connect: " with port
+    assert MailSenderNew.LOG.messages and '2025' in MailSenderNew.LOG.messages[0]
