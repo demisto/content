@@ -1748,7 +1748,7 @@ def get_all_scan_results_command():
         'Owner': elem['owner'].get('username'),
         'RepositoryName': elem['repository'].get('name')
     } for elem in elements[page:page + page_size]]
-    demisto.results(len(scan_results))
+
     readable_title = 'Tenable.sc Scan results - {0}-{1}'.format(page, page + page_size - 1)
     hr = tableToMarkdown(readable_title, scan_results, headers, removeNull=True,
                          metadata='Total number of elements is {}'.format(len(elements)))
