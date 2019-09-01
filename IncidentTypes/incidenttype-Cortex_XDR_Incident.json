@@ -11,7 +11,7 @@
 	"id": "Cortex XDR Incident",
 	"locked": false,
 	"name": "Cortex XDR Incident",
-	"playbookId": "Cortex XDR Blueprint",
+	"playbookId": "Cortex XDR Incident Sync",
 	"preProcessingScript": "",
 	"readonly": false,
 	"reputationCalc": 0,
