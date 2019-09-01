@@ -1870,7 +1870,7 @@
         "LogRhythm": "Need to fix SOAP api",
         "ANYRUN": "No instance",
         "Snowflake": "Looks like account expired, needs looking into",
-        "Cisco Spark": "No instance",
+        "Cisco Spark": "No instance (Issue 18940)",
         "Phish.AI": "Unauthorized. will be re-branded soon as Cofense (Issue 17291)",
         "QRadar": "No license (issue 17794)",
         "MaxMind GeoIP2": "License has expired (Issue 18932).",
