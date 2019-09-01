@@ -736,7 +736,6 @@ script:
       required: true
       description: The MD5, SHA1, or SHA256 hash of the file.
     - name: malicious_threat_levels
-      default: true
       description: Threat level values, which will determine if the file is malicious.
       isArray: true
       defaultValue: "2"
@@ -840,7 +839,7 @@ script:
     - name: env_id
       description: The environment ID.
     - name: country
-      description: 'The ISO code of the country by which to filter results, for example: swe'.
+      description: 'The ISO code of the country by which to filter results, for example: swe'
     - name: verdict
       description: 'The verdict by which to filter results. Can be "1- whitelisted", "2- no verdict",
         "3- "no specific threat", "4- suspicious", or "5- malicious".'
@@ -869,9 +868,7 @@ script:
     - name: authentihash
       description: The authentication hash.
     - name: min_malicious_scanners
-      default: true
       description: The number of scanners that report the file as malicious to determine whether the file is malicious. Default is "2".
-      isArray: true
       defaultValue: "2"
     outputs:
     - contextPath: HybridAnalysis.Search.SHA256
@@ -962,7 +959,6 @@ script:
   - name: hybrid-analysis-quick-scan-url
     arguments:
     - name: scan_type
-      default: true
       description: The type of scan. Run the hybrid-analysis-scan-states command to view available
         scanners.
       defaultValue: all
@@ -1031,7 +1027,6 @@ script:
       required: true
       description: The ID of the scanned URL.
     - name: min_malicious_scanners
-      default: true
       description: The number of scanners that report the file as malicious to determine whether the file is malicious. Default is "2".
       defaultValue: "2"
     outputs:
