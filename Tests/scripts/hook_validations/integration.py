@@ -3,8 +3,8 @@ import os
 import requests
 import yaml
 
-from Tests.scripts.constants import CONTENT_GITHUB_MASTER_LINK, PYTHON_SUBTYPES
-from Tests.test_utils import print_error, print_warning, get_yaml
+from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare
+from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -21,7 +21,7 @@ class IntegrationValidator(object):
        old_integration (dict): Json representation of the current integration from master.
     """
 
-    def __init__(self, file_path, check_git=True, old_file_path=None):
+    def __init__(self, file_path, check_git=True, old_file_path=None, old_git_branch='master'):
         self._is_valid = True
 
         self.file_path = file_path
@@ -29,18 +29,19 @@ class IntegrationValidator(object):
             self.current_integration = get_yaml(file_path)
             # The replace in the end is for Windows support
             if old_file_path:
-                git_hub_path = os.path.join(CONTENT_GITHUB_MASTER_LINK, old_file_path).replace("\\", "/")
+                git_hub_path = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, old_file_path).replace("\\", "/")
                 file_content = requests.get(git_hub_path, verify=False).content
                 self.old_integration = yaml.safe_load(file_content)
             else:
                 try:
-                    file_path_from_master = os.path.join(CONTENT_GITHUB_MASTER_LINK, file_path).replace("\\", "/")
-                    file_content = requests.get(file_path_from_master, verify=False).content
-                    self.old_integration = yaml.safe_load(file_content)
+                    file_path_from_old_branch = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, file_path).replace(
+                        "\\", "/")
+                    res = requests.get(file_path_from_old_branch, verify=False)
+                    res.raise_for_status()
+                    self.old_integration = yaml.safe_load(res.content)
                 except Exception as e:
-                    print(str(e))
-                    print_error("Could not find the old integration please make sure that you did not break "
-                                "backward compatibility")
+                    print_warning("{}\nCould not find the old integration please make sure that you did not break "
+                                  "backward compatibility".format(str(e)))
                     self.old_integration = None
 
     def is_backward_compatible(self):
@@ -366,11 +367,13 @@ class IntegrationValidator(object):
 
     def is_docker_image_changed(self):
         """Check if the Docker image was changed or not."""
-        if self.old_integration.get('script', {}).get('dockerimage', "") != \
-                self.current_integration.get('script', {}).get('dockerimage', ""):
-            print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
-                        " this is not allowed.".format(self.file_path))
-            self._is_valid = False
-            return True
+        # Unnecessary to check docker image only on 5.0 and up
+        if server_version_compare(self.old_integration.get('fromversion', '0'), '5.0.0') < 0:
+            if self.old_integration.get('script', {}).get('dockerimage', "") != \
+                    self.current_integration.get('script', {}).get('dockerimage', ""):
+                print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
+                            " this is not allowed.".format(self.file_path))
+                self._is_valid = False
+                return True
 
         return False
