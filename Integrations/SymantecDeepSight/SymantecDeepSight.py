@@ -489,7 +489,7 @@ def get_url_data_command():
     }
 
     if dbotscore == 3:
-        generic_url_entry_context["Malicious"] = create_malicious_data(data_from_api_json)
+        generic_url_entry_context["Malicious"] = create_malicious_data(url_data_json)
 
     dbotscore_context = {
         'Indicator': url,
