@@ -44,7 +44,8 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Long running instance
+  display: Long running instance. Required for investigation mirroring and direct
+    messages.
   name: longRunning
   required: false
   type: 8
@@ -194,7 +195,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The user to whom to send the message. Can be either the username or email address.
+      description: The user to whom to send the message. Can be either the username
+        or email address.
       isArray: false
       name: to
       required: false
@@ -314,13 +316,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: The user to whom to send the file. Can be the username or the email address.
+      description: The user to whom to send the file. Can be the username or the email
+        address.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: The name of the Slack group (private channel) to which to send the file.
+      description: The name of the Slack group (private channel) to which to send
+        the file.
       isArray: false
       name: group
       required: false
@@ -344,8 +348,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Sends a file to a user, channel, or group. If not specified,
-      the file is sent to the mirrored investigation channel (if the channel exists).
+    description: Sends a file to a user, channel, or group. If not specified, the
+      file is sent to the mirrored investigation channel (if the channel exists).
     execution: false
     name: slack-send-file
   - arguments:
@@ -385,7 +389,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A CSV list of user names or email addresses to invite to the channel. For example: "user1, user2...".'
+      description: 'A CSV list of user names or email addresses to invite to the channel.
+        For example: "user1, user2...".'
       isArray: false
       name: users
       required: false
@@ -396,14 +401,16 @@ script:
     name: slack-create-channel
   - arguments:
     - default: true
-      description: 'A CSV list of usernames or email addresses to invite to join the channel. For example: "user1, user2...".'
+      description: 'A CSV list of usernames or email addresses to invite to join the
+        channel. For example: "user1, user2...".'
       isArray: false
       name: users
       required: true
       secret: false
     - default: false
-      description: The name of the channel to which to invite the users. If the name of the channel is not specified,
-        the name of the mirrored investigation channel is used (if the channel exists).
+      description: The name of the channel to which to invite the users. If the name
+        of the channel is not specified, the name of the mirrored investigation channel
+        is used (if the channel exists).
       isArray: false
       name: channel
       required: false
@@ -414,14 +421,16 @@ script:
     name: slack-invite-to-channel
   - arguments:
     - default: true
-      description: 'A CSV list of usernames or email addresses to remove from the a channel. For example: "user1, user2..."'
+      description: 'A CSV list of usernames or email addresses to remove from the
+        a channel. For example: "user1, user2..."'
       isArray: false
       name: users
       required: true
       secret: false
     - default: false
-      description: The name of the channel from which to remove the users. If the name of the channel is not specified,
-        the mirrored investigation channel is used (if the channel exists).
+      description: The name of the channel from which to remove the users. If the
+        name of the channel is not specified, the mirrored investigation channel is
+        used (if the channel exists).
       isArray: false
       name: channel
       required: false
@@ -438,8 +447,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The current name of the channel. If the name of the channel is not specified,
-        the mirrored investigation channel is used (if the channel exists).
+      description: The current name of the channel. If the name of the channel is
+        not specified, the mirrored investigation channel is used (if the channel
+        exists).
       isArray: false
       name: channel
       required: false
