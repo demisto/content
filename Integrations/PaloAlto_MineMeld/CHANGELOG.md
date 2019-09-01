@@ -1,2 +1,2 @@
 ## [Unreleased]
-  - Added support to non root URL structures.
+Added support for non-root URL structures.
