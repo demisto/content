@@ -630,7 +630,8 @@ def wildfire_get_report(file_hash):
         demisto.results('Report not found')
         sys.exit(0)
 
-    reports = json_res["wildfire"].get('task_info', None).get('report', None)
+    task_info = json_res["wildfire"].get('task_info', None)
+    reports = task_info.get('report', None) if task_info else None
     file_info = json_res["wildfire"].get('file_info', None)
 
     if not reports or not file_info:
