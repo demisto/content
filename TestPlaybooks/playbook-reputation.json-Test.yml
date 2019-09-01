@@ -1091,7 +1091,7 @@ tasks:
       key:
         simple: valid_ips
       value:
-        simple: '"19[.]117.63.126", "255.255.253.0", "19.117.63.253", "192.168.1.1",
+        simple: '"255.255.253.0", "19.117.63.253", "192.168.1.1",
           "0[.]0[.]0[.]0"'
     separatecontext: false
     view: |-
@@ -1153,14 +1153,6 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsString
-          left:
-            value:
-              simple: ${IP.Address}
-            iscontext: true
-          right:
-            value:
-              simple: 19.117.63.126
       - - operator: containsString
           left:
             value:
