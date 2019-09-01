@@ -4,7 +4,7 @@ import requests
 import yaml
 
 from Tests.scripts.constants import CONTENT_GITHUB_MASTER_LINK, PYTHON_SUBTYPES
-from Tests.test_utils import print_error, get_yaml, server_version_compare
+from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
