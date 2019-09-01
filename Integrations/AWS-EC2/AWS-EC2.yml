@@ -3614,6 +3614,124 @@ script:
       name: roleSessionDuration
       required: false
       secret: false
+    - default: false
+      description: The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6
+        type number. A value of -1 indicates all ICMP/ICMPv6 types. If you specify
+        all ICMP/ICMPv6 types, you must specify all codes.
+      isArray: false
+      name: IpPermissionsfromPort
+      required: false
+      secret: false
+    - default: false
+      description: The IP protocol name (tcp, udp, icmp, icmpv6) or number.
+      isArray: false
+      name: IpPermissionsIpProtocol
+      required: false
+      secret: false
+    - default: false
+      description: The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6
+        code. A value of -1 indicates all ICMP/ICMPv6 codes. If you specify all ICMP/ICMPv6
+        types, you must specify all codes.
+      isArray: false
+      name: IpPermissionsToPort
+      required: false
+      secret: false
+    - default: false
+      description: The IPv4 CIDR range. You can either specify a CIDR range or a source
+        security group, not both. To specify a single IPv4 address, use the /32 prefix
+        length.
+      isArray: false
+      name: IpRangesCidrIp
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A description for the security group rule that references this IPv4 address range.
+
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*
+      isArray: false
+      name: IpRangesDesc
+      required: false
+      secret: false
+    - default: false
+      description: The IPv6 CIDR range. You can either specify a CIDR range or a source
+        security group, not both. To specify a single IPv6 address, use the /128 prefix
+        length.
+      isArray: false
+      name: Ipv6RangesCidrIp
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A description for the security group rule that references this IPv6 address range.
+
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*
+      isArray: false
+      name: Ipv6RangesDesc
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the prefix.
+      isArray: false
+      name: PrefixListId
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A description for the security group rule that references this prefix list ID.
+
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*
+      isArray: false
+      name: PrefixListIdDesc
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A description for the security group rule that references this user ID group pair.
+
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*
+      isArray: false
+      name: UserIdGroupPairsDescription
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the security group.
+      isArray: false
+      name: UserIdGroupPairsGroupId
+      required: false
+      secret: false
+    - default: false
+      description: The name of the security group. In a request, use this parameter
+        for a security group in EC2-Classic or a default VPC only. For a security
+        group in a nondefault VPC, use the security group ID.
+      isArray: false
+      name: UserIdGroupPairsGroupName
+      required: false
+      secret: false
+    - default: false
+      description: The status of a VPC peering connection, if applicable.
+      isArray: false
+      name: UserIdGroupPairsPeeringStatus
+      required: false
+      secret: false
+    - default: false
+      description: The ID of an AWS account.
+      isArray: false
+      name: UserIdGroupPairsUserId
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the VPC for the referenced security group, if applicable.
+      isArray: false
+      name: UserIdGroupPairsVpcId
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the VPC peering connection, if applicable.
+      isArray: false
+      name: UserIdGroupPairsVpcPeeringConnectionId
+      required: false
+      secret: false
     deprecated: false
     description: Adds ingress rule to a security group.
     execution: true
@@ -6029,5 +6147,6 @@ script:
   runonce: false
   script: ''
   type: python
+  subtype: python2
 tests:
 - 2142f8de-29d5-4288-8426-0db39abe988b

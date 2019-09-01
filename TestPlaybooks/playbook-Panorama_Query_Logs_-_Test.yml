@@ -16,11 +16,12 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+      - "4"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -29,12 +30,14 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 7456e61f-27a3-4ae6-8c03-82c6946bd1e7
+    taskid: 911a0327-695e-4cb3-8048-96028d9b37ec
     type: playbook
     task:
-      id: 7456e61f-27a3-4ae6-8c03-82c6946bd1e7
+      id: 911a0327-695e-4cb3-8048-96028d9b37ec
       version: -1
       name: Panorama Query Logs
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
+        and wildfire.'
       playbookName: Panorama Query Logs
       type: playbook
       iscommand: false
@@ -74,10 +77,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: b7f0068b-88cb-462c-89f0-f17b868126fa
+    taskid: 14d9a35e-e454-4a95-8553-b6ac388551c5
     type: condition
     task:
-      id: b7f0068b-88cb-462c-89f0-f17b868126fa
+      id: 14d9a35e-e454-4a95-8553-b6ac388551c5
       version: -1
       name: Exist context
       type: condition
@@ -98,7 +101,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
         }
       }
@@ -120,8 +123,55 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 8277bf0e-402e-414f-8be1-5cfc7806fc40
+    type: playbook
+    task:
+      id: 8277bf0e-402e-414f-8be1-5cfc7806fc40
+      version: -1
+      name: Panorama Query Logs
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
+        and wildfire.'
+      playbookName: Panorama Query Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      action:
+        simple: allow
+      addr-dst: {}
+      addr-src: {}
+      filedigest: {}
+      log_type:
+        simple: traffic
+      port-dst: {}
+      query: {}
+      rule: {}
+      time-generated: {}
+      url: {}
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
         }
       }
     note: false
@@ -133,7 +183,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 560,
-        "width": 380,
+        "width": 810,
         "x": 50,
         "y": 50
       }
