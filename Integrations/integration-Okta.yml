@@ -74,10 +74,10 @@ script:
         'manager'
     ];
 
-    var API_POSTFIX = 'api/v1/'
+    var API_POSTFIX = 'api/v1/';
     var SERVER_URL = fixUrl(params.url) + API_POSTFIX;
     var DEFAULT_SEARCH_LIMIT = 200;
-    var CLIENT_USERAGENT = 'Demisto/1.0'
+    var CLIENT_USERAGENT = 'Demisto/1.0';
 
     function createReadableLog(log){
         var logObject = {};
@@ -239,8 +239,8 @@ script:
             }
         } else {
             md += 'ID|Login|First Name|Last Name|Mobile Phone|Last Login|Status\n-|-|-|-|-|-|-\n';
-            for (var i=0;i<users.length;i++) {
-                user = users[i];
+            for (var j=0; j<users.length; j++) {
+                user = users[j];
                 md += user.id + '|';
                 md += user.profile.login + '|';
                 md += user.profile.firstName+'|';
@@ -261,7 +261,7 @@ script:
         }
         for (var i=0;i<users.length;i++) {
             var user=users[i];
-            var ecItem={id:user.id, ID:user.id,Type:'Okta'};
+            var ecItem={id:user.id, ID:user.id, Type:'Okta'};
             if (user.profile.firstName || user.profile.lastName) {
                 var displayName='';
                 displayName += (user.profile.firstName)? user.profile.firstName + ' ' : '';
@@ -273,6 +273,9 @@ script:
             }
             if (user.profile.login) {
                 ecItem.Username = user.profile.login;
+            }
+            if (user.status) {
+                ecItem.Status = user.status;
             }
             if (user.objectClass) {
                 ecItem.Groups = user.objectClass;
@@ -327,7 +330,7 @@ script:
         if(pagination){
             return {
                 body: JSON.parse(res.Body),
-                link: res.Headers['Link']
+                link: res.Headers.Link
             };
         }
 
@@ -474,7 +477,7 @@ script:
         };
 
         var md = '### Okta groups for user ' + args.username + '\n';
-        md += 'User ID: ' + userId + '\n';;
+        md += 'User ID: ' + userId + '\n';
         md += tableToMarkdown('Groups', hr);
         return {
             Type: entryTypes.note,
@@ -585,7 +588,7 @@ script:
     }
 
     function getGroupMembers(groupId, limit){
-        queryParams = {}
+        queryParams = {};
 
         if(limit){
             queryParams.limit = limit;
@@ -791,7 +794,7 @@ script:
             EntryContext: {
                 'Account(val.ID===obj.ID)': account
             }
-        }
+        };
     }
 
     function getUserFactors(userId){
@@ -987,7 +990,7 @@ script:
             queryParams.limit = limit;
         }
 
-        return getPagedResults('logs', queryParams)
+        return getPagedResults('logs', queryParams);
     }
 
     function getFailedLoginsCommand(){
@@ -1414,6 +1417,9 @@ script:
       type: string
     - contextPath: Account.Type
       description: Account type - Okta
+      type: string
+    - contextPath: Account.Status
+      description: Okta account status
       type: string
     description: Fetches a specific user given you know the user’s login, please note
       that one of the parameters bellow is mandatory.
