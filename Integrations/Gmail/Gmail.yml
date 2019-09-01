@@ -124,18 +124,11 @@ script:
       description: The unique ID for the account (integration specific). For AD accounts
         this is the Distinguished Name (DN).
       type: String
-    - contextPath: Account.UserName
-      description: The username in the relevant system.
-      type: string
     - contextPath: Account.DisplayName
       description: The display name
       type: string
     - contextPath: Account.Gmail.Address
       description: Email assigned with current account
-      type: string
-    - contextPath: Account.Group
-      description: Groups to which the account belongs (integration specific). For
-        example, for AD these are groups of which the account is memberOf.
       type: string
     - contextPath: Account.Email.Address
       description: The email address of the account.
@@ -808,18 +801,11 @@ script:
       description: The unique ID for the account (integration specific). For AD accounts
         this is the Distinguished Name (DN).
       type: String
-    - contextPath: Account.UserName
-      description: The username of the account.
-      type: String
     - contextPath: Account.DisplayName
       description: The display name
       type: String
     - contextPath: Account.Gmail.Address
       description: Email assigned with current account
-      type: string
-    - contextPath: Account.Group
-      description: Groups to which the account belongs (integration specific). For
-        example, for AD these are groups of which the account is memberOf.
       type: string
     - contextPath: Account.Email.Adderss
       description: The email address of the account.
@@ -896,19 +882,12 @@ script:
       description: The unique ID for the account (integration specific). For AD accounts
         this is the Distinguished Name (DN).
       type: String
-    - contextPath: Account.UserName
-      description: The username of the account.
-      type: string
     - contextPath: Account.DisplayName
       description: The display name
       type: string
     - contextPath: Account.Gmail.Address
       description: Email assigned with current account
       type: string
-    - contextPath: Account.Group
-      description: Groups to which the account belongs (integration specific). For
-        example, for AD these are groups of which the account is memberOf.
-      type: String
     - contextPath: Account.Email.Address
       description: The email address of the account.
       type: String
@@ -1465,9 +1444,6 @@ script:
       description: The unique ID for the account (integration specific). For AD accounts
         this is the Distinguished Name (DN).
       type: String
-    - contextPath: Account.UserName
-      description: The username of the account.
-      type: String
     - contextPath: Account.DisplayName
       description: The display name
       type: String
@@ -1477,10 +1453,6 @@ script:
     - contextPath: Account.Gmail.Address
       description: Email assigned with current account
       type: Unknown
-    - contextPath: Account.Group
-      description: Groups to which the account belongs (integration specific). For
-        example, for AD these are groups of which the account is memberOf.
-      type: String
     - contextPath: Account.Domain
       description: The domain of the account.
       type: String
@@ -1529,28 +1501,31 @@ script:
     execution: false
     name: gmail-get-autoreply
     outputs:
-    - contextPath: Autoreply.Type
+    - contextPath: Account.Gmail.AutoReply.Type
       description: The service from which autoreply is set
       type: String
-    - contextPath: Autoreply.EnableAutoReply
+    - contextPath: Account.Gmail.AutoReply.EnableAutoReply
       description: Flag that controls whether Gmail automatically replies to messages.
       type: String
-    - contextPath: Autoreply.ResponseBody
+    - contextPath: Account.Gmail.AutoReply.ResponseBody
       description: Response body in plain text format.
       type: String
-    - contextPath: Autoreply.ResponseSubject
+    - contextPath: Account.Gmail.AutoReply.ResponseSubject
       description: Optional text to prepend to the subject line in vacation responses.
         In order to enable auto-replies, either the response subject or the response
         body must be nonempty.
       type: String
-    - contextPath: Autoreply.RestrictToContact
+    - contextPath: Account.Gmail.AutoReply.RestrictToContact
       description: Flag that determines whether responses are sent to recipients who
         are not in the user's list of contacts.
       type: String
-    - contextPath: Autoreply.RestrcitToDomain
+    - contextPath: Account.Gmail.AutoReply.RestrcitToDomain
       description: Flag that determines whether responses are sent to recipients who
         are outside of the user's domain. This feature is only available for G Suite
         users.
+      type: String
+    - contextPath: Account.Gmail.Address
+      description: Email assigned with current account
       type: String
   - arguments:
     - default: false
@@ -1565,7 +1540,7 @@ script:
       defaultValue: 'true'
       description: Flag that controls whether Gmail automatically replies to messages.
       isArray: false
-      name: enableAutoReply
+      name: enable-autoReply
       predefined:
       - 'true'
       - 'false'
@@ -1576,42 +1551,46 @@ script:
         In order to enable auto-replies, either the response subject or the response
         body must be nonempty.
       isArray: false
-      name: responseSubject
+      name: response-subject
       required: false
       secret: false
     - default: false
       description: Response body in plain text format.
       isArray: false
-      name: responseBodyPlainText
+      name: response-body
       required: false
       secret: false
     deprecated: false
-    description: Set auto-reply for the user
+    description: 'Set auto-reply for the user. Note: if body is not inserted the current
+      body'
     execution: false
     name: gmail-set-autoreply
     outputs:
-    - contextPath: Autoreply.Type
+    - contextPath: Account.Gmail.AutoReply.Type
       description: The service from which autoreply is set
       type: String
-    - contextPath: Autoreply.EnableAutoReply
+    - contextPath: Account.Gmail.AutoReply.EnableAutoReply
       description: Flag that controls whether Gmail automatically replies to messages.
       type: String
-    - contextPath: Autoreply.ResponseBody
+    - contextPath: Account.Gmail.AutoReply.ResponseBody
       description: Response body in plain text format.
       type: String
-    - contextPath: Autoreply.ResponseSubject
+    - contextPath: Account.Gmail.AutoReply.ResponseSubject
       description: Optional text to prepend to the subject line in vacation responses.
         In order to enable auto-replies, either the response subject or the response
         body must be nonempty.
       type: String
-    - contextPath: Autoreply.RestrictToContact
+    - contextPath: Account.Gmail.AutoReply.RestrictToContact
       description: Flag that determines whether responses are sent to recipients who
         are not in the user's list of contacts.
       type: String
-    - contextPath: Autoreply.RestrcitToDomain
+    - contextPath: Account.Gmail.AutoReply.RestrcitToDomain
       description: Flag that determines whether responses are sent to recipients who
         are outside of the user's domain. This feature is only available for G Suite
         users.
+      type: String
+    - contextPath: Account.Gmail.Address
+      description: Email assigned with current account
       type: String
   - arguments:
     - default: false
@@ -1622,24 +1601,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The email address of the delegate or remove
+      description: The email address of the delegate
       isArray: false
-      name: delegateEmail
+      name: delegate-email
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'True'
-      description: Set to True to delegate the mail and False to remove it.
-      isArray: false
-      name: delegateToken
-      predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
     deprecated: false
-    description: Adds or removes a delegate to the mailbox, without sending any verification
+    description: Adds a delegate to the mailbox, without sending any verification
       email. The delegate user must be a member of the same G Suite organization as
       the delegator user.  Note that a delegate user must be referred to by their
       primary email address, and not an email alias.
@@ -1690,13 +1658,13 @@ script:
     execution: false
     name: gmail-send-mail
     outputs:
-    - contextPath: SentMail.MessageId
+    - contextPath: Gmail.SentMail.MessageId
       description: The immutable ID of the message.
       type: String
-    - contextPath: SentMail.labelIds
+    - contextPath: Gmail.SentMail.Labels
       description: List of IDs of labels applied to this message.
       type: String
-    - contextPath: SentMail.threadId
+    - contextPath: Gmail.SentMail.ThreadId
       description: The ID of the thread the message belongs to
       type: String
   - arguments:
@@ -1744,15 +1712,36 @@ script:
     execution: false
     name: send-mail
     outputs:
-    - contextPath: SentMail.MessageId
+    - contextPath: Gmail.SentMail.MessageId
       description: The immutable ID of the message.
       type: String
-    - contextPath: SentMail.labelIds
+    - contextPath: Gmail.SentMail.Labels
       description: List of IDs of labels applied to this message.
       type: String
-    - contextPath: SentMail.threadId
+    - contextPath: Gmail.SentMail.ThreadId
       description: The ID of the thread the message belongs to
       type: String
+  - arguments:
+    - default: false
+      description: The user's email address. The special value me can be used to indicate
+        the authenticated user.
+      isArray: false
+      name: user-id
+      required: true
+      secret: false
+    - default: false
+      description: The email address to remove from delagation
+      isArray: false
+      name: remove-mail
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes a delegate from the mailbox, without sending any verification
+      email. The delegate user must be a member of the same G Suite organization as
+      the delegator user.  Note that a delegate user must be referred to by their
+      primary email address, and not an email alias.
+    execution: false
+    name: gmail-remove-delegated-mailbox
   dockerimage: demisto/google-api:1.0
   isfetch: true
   runonce: false
