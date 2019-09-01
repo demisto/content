@@ -1719,9 +1719,6 @@ script:
     - contextPath: TC.Group.DateAdded
       description: The date that the attribute was added.
       type: Date
-    - contextPath: TC.Group.ID
-      description: Group ID to which the attribute was added.
-      type: Number
     - contextPath: TC.Group.LastModified
       description: The date that the attribute was last modified.
       type: Date
@@ -1783,9 +1780,6 @@ script:
     - contextPath: TC.Group.EventDate
       description: Event date.
       type: Date
-    - contextPath: TC.Group.ID
-      description: Group ID.
-      type: Number
     - contextPath: TC.Group.Name
       description: Group name.
       type: String
@@ -2008,9 +2002,6 @@ script:
     execution: false
     name: tc-create-document-group
     outputs:
-    - contextPath: TC.Group.ID
-      description: Group ID.
-      type: Number
     - contextPath: TC.Group.Name
       description: Group name.
       type: String
@@ -2064,19 +2055,16 @@ script:
     - contextPath: TC.Group.EventDate
       description: Event date.
       type: Date
-    - contextPath: TC.Group.ID
-      description: Group ID.
-      type: Number
     - contextPath: TC.Group.Name
       description: Group name.
       type: String
-    - contextPath: TC.Group.Owner.id
+    - contextPath: TC.Group.Owner.ID
       description: The owner ID.
       type: Number
-    - contextPath: TC.Group.Owner.name
+    - contextPath: TC.Group.Owner.Name
       description: The owner name
       type: String
-    - contextPath: TC.Group.Owner.type
+    - contextPath: TC.Group.Owner.Type
       description: The type of the owner
       type: String
     - contextPath: TC.Group.Status
@@ -2114,22 +2102,22 @@ script:
     execution: false
     name: tc-get-group-attributes
     outputs:
-    - contextPath: TC.Group.DateAdded
+    - contextPath: TC.Group.Attribute.DateAdded
       description: The date that the group was added.
       type: Date
-    - contextPath: TC.Group.Displayed
+    - contextPath: TC.Group.Attribute.Displayed
       description: Is the attribute displayed.
       type: Boolean
-    - contextPath: TC.Group.ID
+    - contextPath: TC.Group.Attribute.AttributeID
       description: Attribute ID.
       type: Number
-    - contextPath: TC.Group.LastModified
+    - contextPath: TC.Group.Attribute.LastModified
       description: Attribute last modified date.
       type: Date
-    - contextPath: TC.Group.Type
+    - contextPath: TC.Group.Attribute.Type
       description: Attribute type.
       type: String
-    - contextPath: TC.Group.Value
+    - contextPath: TC.Group.Attribute.Value
       description: Attribute value
       type: String
   - arguments:
@@ -2164,13 +2152,13 @@ script:
     execution: false
     name: tc-get-group-security-labels
     outputs:
-    - contextPath: TC.Group.Name
+    - contextPath: TC.Group.SecurityLabel.Name
       description: Security label name.
       type: String
-    - contextPath: TC.Group.Description
+    - contextPath: TC.Group.SecurityLabel.Description
       description: Security label description
       type: String
-    - contextPath: TC.Group.DateAdded
+    - contextPath: TC.Group.SecurityLabel.DateAdded
       description: Security label added date.
       type: Date
   - arguments:
@@ -2205,16 +2193,25 @@ script:
     execution: false
     name: tc-get-group-tags
     outputs:
-    - contextPath: TC.Group.ID
-      description: Group ID.
-      type: Number
-    - contextPath: TC.Group.Name
+    - contextPath: TC.Group.Tag.Name
       description: Tag name.
       type: String
+  - arguments:
+    - default: false
+      description: Document ID.
+      isArray: false
+      name: document_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Download the contents of a Document
+    execution: false
+    name: tc-download-document
   dockerimage: demisto/threatconnect-sdk
   isfetch: false
   runonce: false
   script: '-'
   type: python
+  subtype: python2
 tests:
 - test-ThreatConnect

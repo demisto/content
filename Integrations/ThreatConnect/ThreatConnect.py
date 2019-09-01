@@ -1315,47 +1315,50 @@ def get_group():
     group_type = demisto.args().get('group_type')
     group_id = int(demisto.args().get('group_id'))
 
-    response = get_group_request(group_type, group_id)
+    response = get_group_request(group_type, group_id).get('data', {})
     if group_type == 'adversaries':
-        data = response.get('data', {}).get('adversarie', {})
+        data = response.get('adversarie', {})
     if group_type == 'campaigns':
-        data = response.get('data', {}).get('campaign', {})
+        data = response.get('campaign', {})
     if group_type == 'documents':
-        data = response.get('data', {}).get('document', {})
+        data = response.get('document', {})
     if group_type == 'emails':
-        data = response.get('data', {}).get('email', {})
+        data = response.get('email', {})
     if group_type == 'events':
-        data = response.get('data', {}).get('event', {})
+        data = response.get('event', {})
     if group_type == 'incidents':
-        data = response.get('data', {}).get('incident', {})
+        data = response.get('incident', {})
     if group_type == 'intrusionSets':
-        data = response.get('data', {}).get('intrusionSet', {})
+        data = response.get('intrusionSet', {})
     if group_type == 'reports':
-        data = response.get('data', {}).get('report', {})
+        data = response.get('report', {})
     if group_type == 'signatures':
-        data = response.get('data', {}).get('signature', {})
+        data = response.get('signature', {})
     if group_type == 'threats':
-        data = response.get('data', {}).get('threat', {})
+        data = response.get('threat', {})
 
-    if response.get('status') == 'Success':
-        contents = {
-            'ID': data.get('id'),
-            'Name': data.get('name'),
-            'Owner': data.get('owner'),
-            'DateAdded': data.get('dateAdded'),
-            'EventDate': data.get('eventDate'),
-            'Status': data.get('status')
-        }
-    else:
-        return_error(response.get('message'))
+    owner = {
+        'Name': data.get('owner').get('name'),
+        'ID': data.get('owner').get('id'),
+        'Type': data.get('owner').get('type')
+    }
+    contents = {
+        'ID': data.get('id'),
+        'Name': data.get('name'),
+        'Owner': owner,
+        'DateAdded': data.get('dateAdded'),
+        'EventDate': data.get('eventDate'),
+        'Status': data.get('status')
+    }
 
     context = {
         'TC.Group(val.ID && val.ID === obj.ID)': contents
     }
 
     return_outputs(
-        tableToMarkdown('Group information', contents, removeNull=True),
-        context
+        tableToMarkdown('ThreatConnect Group information', contents, removeNull=True),
+        context,
+        response
     )
 
 
@@ -1375,14 +1378,14 @@ def get_group_attributes():
     group_type = demisto.args().get('group_type')
     group_id = int(demisto.args().get('group_id'))
     contents = []
-    headers = ['ID', 'Type', 'Value', 'DateAdded', 'LastModified', 'Displayed']
+    headers = ['AttributeID', 'Type', 'Value', 'DateAdded', 'LastModified', 'Displayed']
     response = get_group_attributes_request(group_type, group_id)
     data = response.get('data', {}).get('attribute', [])
 
     if response.get('status') == 'Success':
         for attribute in data:
             contents.append({
-                'ID': attribute.get('id'),
+                'AttributeID': attribute.get('id'),
                 'Type': attribute.get('type'),
                 'Value': attribute.get('value'),
                 'DateAdded': attribute.get('dateAdded'),
@@ -1394,12 +1397,13 @@ def get_group_attributes():
         return_error(response.get('message'))
 
     context = {
-        'TC.Group(val.ID && val.ID === obj.ID)': contents
+        'TC.Group.Attribute(val.AttributeID && val.AttributeID === obj.AttributeID)': contents
     }
 
     return_outputs(
-        tableToMarkdown('Group Attributes', contents, headers, removeNull=True),
-        context
+        tableToMarkdown('ThreatConnect Group Attributes', contents, headers, removeNull=True),
+        context,
+        response
     )
 
 
@@ -1435,11 +1439,11 @@ def get_group_security_labels():
         return_error(response.get('message'))
 
     context = {
-        'TC.Group(val.Name && val.Name === obj.Name)': contents
+        'TC.Group.SecurityLabel(val.Name && val.Name === obj.Name)': contents
     }
 
     return_outputs(
-        tableToMarkdown('Group Security Labels', contents, headers, removeNull=True),
+        tableToMarkdown('ThreatConnect Group Security Labels', contents, headers, removeNull=True),
         context
     )
 
@@ -1460,7 +1464,6 @@ def get_group_tags():
     group_type = demisto.args().get('group_type')
     group_id = int(demisto.args().get('group_id'))
     contents = []
-    context_entries = []
     response = get_group_tags_request(group_type, group_id)
     data = response.get('data', {}).get('tag', [])
 
@@ -1470,21 +1473,17 @@ def get_group_tags():
                 'Name': tags.get('name')
             })
 
-            context_entries.append({
-                'ID': group_id,
-                'Name': tags.get('name')
-            })
-
     else:
         return_error(response.get('message'))
 
     context = {
-        'TC.Group(val.Name && val.Name === obj.Name)': context_entries
+        'TC.Group.Tag(val.Name && val.Name === obj.Name)': contents
     }
 
     return_outputs(
-        tableToMarkdown('Group tags', contents, removeNull=True),
-        context
+        tableToMarkdown('ThreatConnect Group Tags', contents, removeNull=True),
+        context,
+        response
     )
 
 
@@ -1544,6 +1543,31 @@ def create_document_group():
                    raw_document)
 
 
+def get_document_request(document_id):
+    tc = get_client()
+    ro = RequestObject()
+    ro.set_http_method('GET')
+    ro.set_request_uri('/v2/groups/documents/{}/download'.format(document_id))
+
+    return tc.api_request(ro).json()
+
+
+# def download_document():
+#     """
+#     Download the contents of a Document
+#     """
+#
+#     document_id = demisto.args().get('document_id')
+#     response = get_document_request(document_id)
+#     print(json.dumps(response))
+#     sys.exit(0)
+#     demisto.results(response)
+#     # demisto.results(fileResult(
+#     #     'Alert ID_' + alert_id + '.pcap',
+#     #     response,
+#     #     file_type=entryTypes['file']))
+
+
 def test_integration():
     tc = get_client()
     owners = tc.owners()
@@ -1589,7 +1613,8 @@ COMMANDS = {
     'tc-get-group': get_group,
     'tc-get-group-attributes': get_group_attributes,
     'tc-get-group-security-labels': get_group_security_labels,
-    'tc-get-group-tags': get_group_tags
+    'tc-get-group-tags': get_group_tags,
+    # 'tc-download-document': download_document
 }
 
 try:
