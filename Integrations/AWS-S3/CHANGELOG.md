@@ -1,2 +1,2 @@
 ## [Unreleased]
-* Bugfix for Proxy/Insecure issues.
+Bugfix for Proxy/Insecure issues.
