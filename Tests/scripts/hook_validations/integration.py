@@ -104,11 +104,11 @@ class IntegrationValidator(object):
             command_name = command.get('name')
             # look for reputations commands
             if command_name in ['domain', 'email', 'file', 'ip', 'url']:
-                context_outputs_paths = []
-                context_outputs_descriptions = []
+                context_outputs_paths = set()
+                context_outputs_descriptions = set()
                 for output in command.get('outputs', []):
-                    context_outputs_paths.append(output.get('contextPath'))
-                    context_outputs_descriptions.append(output.get('description'))
+                    context_outputs_paths.add(output.get('contextPath'))
+                    context_outputs_descriptions.add(output.get('description'))
 
                 # validate DBotScore outputs and descriptions
                 DBot_Score = {
@@ -117,36 +117,37 @@ class IntegrationValidator(object):
                     'DBotScore.Vendor': 'Vendor used to calculate the score.',
                     'DBotScore.Score': 'The actual score.'
                 }
-                missing_outputs = []
-                missing_descriptions = []
-                for DBot_Score_output in DBot_Score.keys():
+                missing_outputs = set()
+                missing_descriptions = set()
+                for DBot_Score_output in DBot_Score:
                     if DBot_Score_output not in context_outputs_paths:
-                        missing_outputs.append(DBot_Score_output)
+                        missing_outputs.add(DBot_Score_output)
                         self._is_valid = False
                     else:  # DBot Score output path is in the outputs
                         if DBot_Score.get(DBot_Score_output) not in context_outputs_descriptions:
-                            missing_descriptions.append(DBot_Score_output)
+                            missing_descriptions.add(DBot_Score_output)
                             # self._is_valid = False - Do not fail build over wrong description
 
                 if missing_outputs:
-                    print_error("The DBotScore outputs of the reputation command aren't valid. Missing: {}."
-                                " Fix according to context standard {} ".format(missing_outputs, context_standard))
+                    print_error("The DBotScore outputs of the reputation command {} aren't valid. Missing: {}."
+                                " Fix according to context standard {} "
+                                .format(command_name, missing_outputs, context_standard))
                 if missing_descriptions:
-                    print_warning("The DBotScore description of the reputation command aren't valid. Missing: {}."
+                    print_warning("The DBotScore description of the reputation command {} aren't valid. Missing: {}."
                                   " Fix according to context standard {} "
-                                  .format(missing_descriptions, context_standard))
+                                  .format(command_name, missing_descriptions, context_standard))
 
                 # validate the IOC output
                 command_to_output = {
-                    'domain': 'Domain.Name',
-                    'file': 'File.Name',
-                    'ip': 'IP.Address',
-                    'url': 'URL.Data'
+                    'domain': {'Domain.Name'},
+                    'file': {'File.MD5', 'File.SHA1', 'File.SHA256'},
+                    'ip': {'IP.Address'},
+                    'url': {'URL.Data'}
                 }
                 reputation_output = command_to_output.get(command_name)
-                if reputation_output and reputation_output not in context_outputs_paths:
+                if reputation_output and not reputation_output.intersection(context_outputs_paths):
                     self._is_valid = False
-                    print_error("The outputs of the {} command aren't valid. The {} outputs is missing"
+                    print_error("The outputs of the reputation command {} aren't valid. The {} outputs is missing"
                                 "Fix according to context standard {} "
                                 .format(command_name, reputation_output, context_standard))
 
