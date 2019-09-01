@@ -48,7 +48,8 @@ script:
       name: computerName
       required: false
       secret: false
-    - default: '0'
+    - default: false
+      defaultValue: '0'
       description: Indicates when a computer's status was last updated. The default is "0", which returns all results.
       isArray: false
       name: lastUpdate
