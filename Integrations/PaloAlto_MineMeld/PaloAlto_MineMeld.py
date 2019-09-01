@@ -9,7 +9,6 @@ import os.path
 import os
 import time
 import re
-from urlparse import urljoin  # type: ignore
 
 # globals and constants
 IPV4_CLASS = 'minemeld.ft.local.YamlIPv4FT'
@@ -63,7 +62,7 @@ class APIClient(object):
         if headers is None:
             headers = {}
 
-        api_url = urljoin(self.url, uri)
+        api_url = ''.join([self.url, uri])
         api_request = urllib2.Request(api_url, headers=headers)
         basic_authorization = base64.b64encode('{}:{}'.format(self.username, self.password))
         api_request.add_header(
