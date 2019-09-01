@@ -3418,7 +3418,7 @@ def build_array_query(query, arg_string, string, operator):
         query += '('
 
     for i, item in enumerate(list_string):
-        query += f'({string} {operator} {item})'
+        query += f'({string} {operator} \'{item}\')'
         if i < list_string_length - 1:
             query += ' or '
 
