@@ -61,61 +61,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
-    taskid: c77d4092-498f-4e65-8d41-670b1a2d38a4
-    type: playbook
-    task:
-      id: c77d4092-498f-4e65-8d41-670b1a2d38a4
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continually running the command in Step #2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
-      Ids:
-        complex:
-          root: HybridAnalysis
-          accessor: URL.ID
-      Interval:
-        simple: "1"
-      PollingCommandArgName:
-        simple: ID
-      PollingCommandName:
-        simple: hybrid-analysis-quick-scan-url-results
-      Timeout:
-        simple: "10"
-      dt:
-        simple: HybridAnalysis.URL(val.Finished != 'true').ID
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "3":
     id: "3"
     taskid: d4315d15-5eac-4619-82a9-b9b3605b5cab
@@ -699,10 +644,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: ee72f01a-0ef2-48ef-87f0-63a5b7d8d7be
+    taskid: e90dcd61-7d08-47c2-878c-9d283b1064b7
     type: regular
     task:
-      id: ee72f01a-0ef2-48ef-87f0-63a5b7d8d7be
+      id: e90dcd61-7d08-47c2-878c-9d283b1064b7
       version: -1
       name: hybrid-analysis-quick-scan-url-results
       description: Get the scan results of given url ID
@@ -717,6 +662,8 @@ tasks:
       ID:
         simple: ${HybridAnalysis.URL.ID}
       min_malicious_scanners: {}
+      scanID:
+        simple: ${HybridAnalysis.URL.ScanID}
     separatecontext: false
     view: |-
       {
@@ -730,12 +677,20 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: c2126e82-2e37-46f6-8213-f0b9b4bd290e
+    taskid: 288dfce5-2aeb-4256-87a2-83a78bdd971b
     type: playbook
     task:
-      id: c2126e82-2e37-46f6-8213-f0b9b4bd290e
+      id: 288dfce5-2aeb-4256-87a2-83a78bdd971b
       version: -1
       name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -747,17 +702,17 @@ tasks:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
       Ids:
-        simple: ${HybridAnalysis.URL.ID}
+        simple: ${HybridAnalysis.URL.ScanID}
       Interval:
         simple: "1"
       PollingCommandArgName:
-        simple: ID
+        simple: scanID
       PollingCommandName:
         simple: hybrid-analysis-quick-scan-url-results
       Timeout:
         simple: "10"
       dt:
-        simple: HybridAnalysis.URL(val.Finished != 'true').ID
+        simple: HybridAnalysis.URL(val.Finished != 'true').ScanID
     separatecontext: true
     loop:
       iscommand: false
@@ -766,7 +721,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 260,
+          "x": 265,
           "y": 1430
         }
       }
