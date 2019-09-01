@@ -213,6 +213,9 @@ def create_generic_domain_entry_context(domain_data_json):
         'WHOIS': gen_whois_data_dict(domain_data_json),
         'Name': domain_data_json.get('domain', "")
     }
+    whois_data = domain_entry_context.get('WHOIS', {})
+    for key, value in whois_data.items():
+        domain_entry_context[key] = value
     return domain_entry_context
 
 

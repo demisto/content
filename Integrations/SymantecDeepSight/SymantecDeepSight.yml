@@ -29,6 +29,7 @@ configuration:
 script:
   script: ''
   type: python
+  subtype: python2
   commands:
   - name: ip
     arguments:
@@ -264,6 +265,27 @@ script:
     - contextPath: Deepsight.Domain.Malicious.Vendor
       description: Vendor of the malicious domain
       type: string
+    - contextPath: Domain.CreationDate
+      description: The date that the domain was created.
+      type: Date
+    - contextPath: Domain.UpdatedDate
+      description: The date that the domain was last updated.
+      type: Date
+    - contextPath: Domain.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.NameServers
+      description: Name servers of the domain.
+      type: String
+    - contextPath: Domain.Registrar.Name
+      description: 'The registrar''s name, for example: "GoDaddy"."'
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The registrant's name.
+      type: String
+    - contextPath: Domain.Registrant.Email
+      description: The registrant's email address.
+      type: String
     description: Enrich a domain from Symantec Deepsight intelligence
   - name: file
     arguments:
