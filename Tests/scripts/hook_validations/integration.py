@@ -27,15 +27,15 @@ class IntegrationValidator(object):
         self.file_path = file_path
         if check_git:
             self.current_integration = get_yaml(file_path)
-            old_git_link = '{root}/{branch}'.format(root=CONTENT_GITHUB_LINK, branch=old_git_branch)
             # The replace in the end is for Windows support
             if old_file_path:
-                git_hub_path = os.path.join(old_git_link, old_file_path).replace("\\", "/")
+                git_hub_path = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, old_file_path).replace("\\", "/")
                 file_content = requests.get(git_hub_path, verify=False).content
                 self.old_integration = yaml.safe_load(file_content)
             else:
                 try:
-                    file_path_from_old_branch = os.path.join(old_git_link, file_path).replace("\\", "/")
+                    file_path_from_old_branch = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, file_path).replace(
+                        "\\", "/")
                     res = requests.get(file_path_from_old_branch, verify=False)
                     res.raise_for_status()
                     self.old_integration = yaml.safe_load(res.content)
