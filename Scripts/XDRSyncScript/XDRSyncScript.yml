@@ -19,6 +19,7 @@ args:
   name: playbook_to_run
   required: false
   secret: false
+  deprecated: true
 - default: false
   defaultValue: xdrassignedusermail
   description: assigned_user_mail field name in Demisto
