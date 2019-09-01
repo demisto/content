@@ -339,6 +339,22 @@ def check_pr_files(pull_number, pull_author):
 ''' REQUESTS FUNCTIONS '''
 
 
+def get_branch(branch: str) -> dict:
+    suffix = USER_SUFFIX + f'/branches/{branch}'
+    response = http_request('GET', url_suffix=suffix)
+    return response
+
+
+def create_branch(name: str, sha: str) -> dict:
+    suffix = USER_SUFFIX + '/git/refs'
+    data = {
+        'ref': f'ref/heads/{name}',
+        'sha': sha
+    }
+    response = http_request('POST', url_suffix=suffix, data=data)
+    return response
+
+
 def get_team_membership(team_id: int, user_name: str) -> dict:
     suffix = f'/teams/{team_id}/memberships/{user_name}'
     response = http_request('GET', url_suffix=suffix)
