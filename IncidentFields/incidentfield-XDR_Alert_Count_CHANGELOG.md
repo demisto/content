@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Added new incident field **XDR Alert Count** associated to **Cortex XDR Incident** incident type. Available from Demsito 5.0  
+- Added the **XDR Alert Count** incident field, which is associated to the **Cortex XDR Incident** incident type. **(Available from Demsito 5.0)**
