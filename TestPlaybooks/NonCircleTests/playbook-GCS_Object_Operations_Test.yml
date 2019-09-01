@@ -161,7 +161,7 @@ tasks:
     task:
       id: 186182d0-b4fd-4b70-84b5-3d81b7a02829
       version: -1
-      name: Delete bucket with force=True
+      name: Delete bucket with force=true
       description: Permanently deletes a bucket
       script: Google Cloud Storage|||gcs-delete-bucket
       type: regular
@@ -174,7 +174,7 @@ tasks:
       bucket_name:
         simple: demisto-test-2
       force:
-        simple: "True"
+        simple: "true"
     separatecontext: false
     view: |-
       {
@@ -643,7 +643,7 @@ tasks:
       bucket_name:
         simple: demisto-test-2
       force:
-        simple: "True"
+        simple: "true"
     separatecontext: false
     view: |-
       {

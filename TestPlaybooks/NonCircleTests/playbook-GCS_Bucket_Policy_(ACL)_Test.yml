@@ -782,7 +782,7 @@ tasks:
       bucket_name:
         simple: demisto-test-3
       force:
-        simple: "True"
+        simple: "true"
     separatecontext: false
     view: |-
       {
