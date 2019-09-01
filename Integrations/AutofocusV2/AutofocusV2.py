@@ -576,7 +576,6 @@ def filter_object_entries_by_dict_values(result_object, response_dict_name):
     :param response_dict_name: a dictionary which it's values are the relevant fields (filters)
     :return: the result_object filtered by the relevant fields
     """
-    print(result_object)
     af_params_dict = API_PARAM_DICT.get(response_dict_name)
     result_object_filtered = {}
     if af_params_dict:
@@ -653,8 +652,8 @@ def samples_search_results_command():
     else:
         md = tableToMarkdown(f'Search Samples Results is {status}', results)
     context = {
-        'AutoFocus.SamplesResults(val.ID == obj.ID)': results,
-        'AutoFocus.SamplesSearch(val.AFCookie == obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
+        'AutoFocus.SamplesResults(val.ID === obj.ID)': results,
+        'AutoFocus.SamplesSearch(val.AFCookie ==== obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
         outputPaths['file']: files
     }
     demisto.results({
@@ -676,8 +675,8 @@ def sessions_search_results_command():
     else:
         md = tableToMarkdown(f'Search Samples Results is {status}', results)
     context = {
-        'AutoFocus.SessionsResults(val.ID == obj.ID)': results,
-        'AutoFocus.SessionsSearch(val.AFCookie == obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
+        'AutoFocus.SessionsResults(val.ID === obj.ID)': results,
+        'AutoFocus.SessionsSearch(val.AFCookie === obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
         outputPaths['file']: files
     }
     demisto.results({
@@ -696,7 +695,7 @@ def get_session_details_command():
     files = get_files_data_from_results(result)
     md = tableToMarkdown(f'Session {session_id}:', result)
     context = {
-        'AutoFocus.Sessions(val.ID == obj.ID)': result,
+        'AutoFocus.Sessions(val.ID === obj.ID)': result,
         outputPaths['file']: files
     }
     demisto.results({
