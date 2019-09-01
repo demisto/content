@@ -18,7 +18,7 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
+  required: true
   type: 8
 - display: Use system proxy settings
   name: proxy
