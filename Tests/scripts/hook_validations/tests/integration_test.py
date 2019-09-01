@@ -799,8 +799,8 @@ def test_is_outputs_for_reputations_commands_valid():
                             "type": "int"
                         },
                         {
-                            "contextPath": "File.name",
-                            "description": "File name",
+                            "contextPath": "File.Md5",
+                            "description": "The MD5 hash of the file.",
                             "type": "string"
                         },
                     ]
@@ -811,7 +811,7 @@ def test_is_outputs_for_reputations_commands_valid():
     validator_file.old_integration = None
 
     assert validator_file.is_outputs_for_reputations_commands_valid() is False, \
-        "The integration validator did not find the invalid command output - File.name"
+        "The integration validator did not find the invalid command output - File.Md5"
 
     validator_ip = IntegrationValidator("temp_file", check_git=False)
     validator_ip.current_integration = {
