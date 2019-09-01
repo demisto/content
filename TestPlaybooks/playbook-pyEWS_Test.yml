@@ -230,7 +230,7 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: phoneNumbers,displayName,emailAddresses
+        simple: displayName,id
       path:
         simple: Account.Email.EwsContacts
     separatecontext: false
