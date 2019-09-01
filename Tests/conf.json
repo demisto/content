@@ -1872,7 +1872,7 @@
         "Cisco Spark": "No instance",
         "Phish.AI": "Unauthorized. will be re-branded soon as Cofense (Issue 17291)",
         "QRadar": "No license (issue 17794)",
-        "MaxMind GeoIP2": "License has expired.",
+        "MaxMind GeoIP2": "License has expired (Issue 18932).",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
