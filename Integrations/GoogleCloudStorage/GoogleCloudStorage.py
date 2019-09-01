@@ -9,8 +9,8 @@ import requests
 import traceback
 import urllib3
 
-''' GLOBALS/PARAMS '''
 
+''' GLOBALS/PARAMS '''
 
 RFC3339_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 DEMISTO_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
