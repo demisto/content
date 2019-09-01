@@ -122,8 +122,8 @@ def search_command():
         'Type': entryTypes['note'],
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Search Metadata:', search_context, meta_headers) + '\n' +
-        tableToMarkdown('Hits:', hit_tables, hit_headers),
+        'HumanReadable': tableToMarkdown('Search Metadata:', search_context, meta_headers) + '\n'
+        + tableToMarkdown('Hits:', hit_tables, hit_headers),
         'EntryContext': {
             'Elasticsearch.Search(val.Query == obj.Query && val.Index == obj.Index'
             '&& val.Server == obj.Server && val.Page == obj.Page'
@@ -136,8 +136,7 @@ def test_func():
     try:
         res = requests.get(SERVER, auth=(USERNAME, PASSWORD), verify=INSECURE)
         if res.status_code >= 400:
-            return_error("Failed to connect, Error code: " +
-                         HTTP_ERRORS[int(res.status_code)])
+            return_error("Failed to connect, Error code: " + HTTP_ERRORS[int(res.status_code)])
 
     except requests.exceptions.RequestException:
         return_error("Failed to connect, Check Server URL and Port number")
@@ -199,13 +198,13 @@ def fetch_incidents():
                 # avoid duplication due to weak time query
                 if temp_date > current_fetch:
                     inc = {
-                            'type': 'Elasticsearch',
-                            'sourceBrand': 'Elasticsearch',
-                            'name': 'Elasticsearch: Index: ' + str(FETCH_INDEX) + ", ID: " + str(hit.get('_id')),
-                            'details': json.dumps(hit.get('_source')),
-                            'rawJSON': json.dumps(hit),
-                            'labels': incident_label_maker(hit.get('_source')),
-                            'occurred': temp_date.isoformat() + 'Z'
+                        'type': 'Elasticsearch',
+                        'sourceBrand': 'Elasticsearch',
+                        'name': 'Elasticsearch: Index: ' + str(FETCH_INDEX) + ", ID: " + str(hit.get('_id')),
+                        'details': json.dumps(hit.get('_source')),
+                        'rawJSON': json.dumps(hit),
+                        'labels': incident_label_maker(hit.get('_source')),
+                        'occurred': temp_date.isoformat() + 'Z'
                     }
                     incidents.append(inc)
 
