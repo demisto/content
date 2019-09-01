@@ -4,7 +4,7 @@ import requests
 import yaml
 
 from Tests.scripts.constants import CONTENT_GITHUB_MASTER_LINK, PYTHON_SUBTYPES
-from Tests.test_utils import print_error, print_warning, get_yaml
+from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -366,11 +366,13 @@ class IntegrationValidator(object):
 
     def is_docker_image_changed(self):
         """Check if the Docker image was changed or not."""
-        if self.old_integration.get('script', {}).get('dockerimage', "") != \
-                self.current_integration.get('script', {}).get('dockerimage', ""):
-            print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
-                        " this is not allowed.".format(self.file_path))
-            self._is_valid = False
-            return True
+        # Unnecessary to check docker image only on 5.0 and up
+        if server_version_compare(self.old_integration.get('fromversion', '0'), '5.0.0') < 0:
+            if self.old_integration.get('script', {}).get('dockerimage', "") != \
+                    self.current_integration.get('script', {}).get('dockerimage', ""):
+                print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
+                            " this is not allowed.".format(self.file_path))
+                self._is_valid = False
+                return True
 
         return False
