@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Widget presents pie of low, medium and high alert number in Cortex XDR Incident
+Displays a pie chart of alerts for a specified Cortex XDR incident by alert severity (low, medium, and high).
