@@ -2,6 +2,7 @@
 	"typeId": "Phishing",
 	"kind": "details",
 	"fromVersion": "4.1.0",
+	"toVersion": "4.5.0",
 	"layout": {
 		"id": "Phishing",
 		"typeId": "Phishing",
