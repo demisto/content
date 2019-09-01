@@ -14,3 +14,5 @@ dockerimage: demisto/python3:3.7.3.286
 runas: DBotWeakRole
 fromversion: 5.0.0
 comment: Entry widget that returns number of users in Cortex XDR incident
+tests:
+- No test - no need to test widget

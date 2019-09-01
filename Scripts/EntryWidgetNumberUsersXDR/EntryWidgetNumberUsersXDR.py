@@ -1,5 +1,5 @@
 import demistomock as demisto
-from CommonServerPython import *
+
 incident = demisto.incidents()
 data = {
     "Type": 17,

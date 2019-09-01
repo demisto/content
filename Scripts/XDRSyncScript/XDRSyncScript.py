@@ -364,7 +364,7 @@ def main():
 
     try:
         latest_incident_in_xdr = xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_run,
-                                                   first_run, interval, xdr_alerts_field, xdr_file_artifacts_field,
+                                                   first_run, xdr_alerts_field, xdr_file_artifacts_field,
                                                    xdr_network_artifacts_field, verbose)
     except Exception as ex:
         return_error(str(ex), ex)
