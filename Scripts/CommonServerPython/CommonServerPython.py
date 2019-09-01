@@ -1,3 +1,5 @@
+import socket
+
 import demistomock as demisto
 # Common functions script
 # =======================
@@ -9,6 +11,7 @@ import json
 import sys
 import os
 import re
+import base64
 from collections import OrderedDict
 
 import xml.etree.cElementTree as ET
@@ -545,7 +548,8 @@ class IntegrationLogger(object):
     """
       a logger for python integrations:
       use LOG(<message>) to add a record to the logger (message can be any object with __str__)
-      use LOG.print_log() to display all records in War-Room and server log.
+      use LOG.print_log(verbose=True/False) to display all records in War-Room (if verbose) and server log.
+      use add_replace_strs to add sensitive strings that should be replaced before going to the log.
 
       :type message: ``str``
       :param message: The message to be logged
@@ -556,29 +560,70 @@ class IntegrationLogger(object):
 
     def __init__(self, ):
         self.messages = []  # type: list
+        self.write_buf = []  # type: list
+        self.replace_strs = []  # type: list
+        # if for some reason you don't want to auto add credentails.password to replace strings
+        # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
+        if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')
+                and isinstance(demisto.getParam('credentials'), dict)
+                and demisto.getParam('credentials').get('password')):
+            pswrd = self.encode(demisto.getParam('credentials').get('password'))
+            to_encode = pswrd
+            if IS_PY3:
+                to_encode = pswrd.encode('utf-8', 'ignore')
+            self.add_repalce_strs(pswrd, base64.b64encode(to_encode))
 
-    def __call__(self, message):
+    def encode(self, message):
         try:
-            self.messages.append(str(message))
-
+            res = str(message)
         except UnicodeEncodeError as ex:
             # could not decode the message
             # if message is an Exception, try encode the exception's message
             if isinstance(message, Exception) and message.args and isinstance(message.args[0], STRING_OBJ_TYPES):
-                self.messages.append(message.args[0].encode('utf-8', 'replace'))
+                res = message.args[0].encode('utf-8', 'replace')  # type: ignore
             elif isinstance(message, STRING_OBJ_TYPES):
                 # try encode the message itself
-                self.messages.append(message.encode('utf-8', 'replace'))
+                res = message.encode('utf-8', 'replace')  # type: ignore
             else:
-                self.messages.append("Failed encoding message with error: {}".format(ex))
+                res = "Failed encoding message with error: {}".format(ex)
+        for s in self.replace_strs:
+            res = res.replace(s, '<XX_REPLACED>')
+        return res
+
+    def __call__(self, message):
+        self.messages.append(self.encode(message))
+
+    def add_repalce_strs(self, *args):
+        '''
+            Add strings which will be replaced when logging.
+            Meant for avoiding passwords and so forth in the log.
+        '''
+        to_add = [self.encode(a) for a in args]
+        self.replace_strs.extend(to_add)
 
     def print_log(self, verbose=False):
+        if self.write_buf:
+            self.messages.append("".join(self.write_buf))
         if self.messages:
             text = 'Full Integration Log:\n' + '\n'.join(self.messages)
             if verbose:
                 demisto.log(text)
             demisto.info(text)
             self.messages = []
+
+    def write(self, msg):
+        # same as __call__ but allows IntegrationLogger to act as a File like object.
+        msg = self.encode(msg)
+        has_newline = False
+        if '\n' in msg:
+            has_newline = True
+            # if new line is last char we trim it out
+            if msg[-1] == '\n':
+                msg = msg[:-1]
+        self.write_buf.append(msg)
+        if has_newline:
+            self.messages.append("".join(self.write_buf))
+            self.write_buf = []
 
 
 """
@@ -1297,26 +1342,50 @@ def is_mac_address(mac):
         return False
 
 
-def is_ip_valid(s):
+def is_ipv6_valid(address):
     """
-       Checks if the given string represents a valid IPv4 address
+    Checks if the given string represents a valid IPv6 address.
+
+    :type address: str
+    :param address: The string to check.
+
+    :return: True if the given string represents a valid IPv6 address.
+    :rtype: ``bool``
+    """
+    try:
+        socket.inet_pton(socket.AF_INET6, address)
+    except socket.error:  # not a valid address
+        return False
+    return True
+
+
+def is_ip_valid(s, accept_v6_ips=False):
+    """
+       Checks if the given string represents a valid IP address.
+       By default, will only return 'True' for IPv4 addresses.
 
        :type s: ``str``
        :param s: The string to be checked (required)
+       :type accept_v6_ips: ``bool``
+       :param accept_v6_ips: A boolean determining whether the
+       function should accept IPv6 addresses
 
        :return: True if the given string represents a valid IP address, False otherwise
        :rtype: ``bool``
     """
     a = s.split('.')
-    if len(a) != 4:
+    if accept_v6_ips and is_ipv6_valid(s):
+        return True
+    elif len(a) != 4:
         return False
-    for x in a:
-        if not x.isdigit():
-            return False
-        i = int(x)
-        if i < 0 or i > 255:
-            return False
-    return True
+    else:
+        for x in a:
+            if not x.isdigit():
+                return False
+            i = int(x)
+            if i < 0 or i > 255:
+                return False
+        return True
 
 
 def return_outputs(readable_output, outputs, raw_response=None):
@@ -1359,7 +1428,7 @@ def return_error(message, error='', outputs=None):
         :type message: ``str``
         :param message: The message to return in the entry (required)
 
-        :type error: ``str``
+        :type error: ``str`` or Exception
         :param error: The raw error message to log (optional)
 
         :type outputs: ``dict or None``
@@ -1370,20 +1439,26 @@ def return_error(message, error='', outputs=None):
     """
     LOG(message)
     if error:
-        LOG(error)
+        LOG(str(error))
     LOG.print_log()
-    demisto.results({
-        'Type': entryTypes['error'],
-        'ContentsFormat': formats['text'],
-        'Contents': str(message),
-        "EntryContext": outputs
-    })
-    sys.exit(0)
+    if not isinstance(message, str):
+        message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
+
+    if hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents', 'long-running-execution'):
+        raise Exception(message)
+    else:
+        demisto.results({
+            'Type': entryTypes['error'],
+            'ContentsFormat': formats['text'],
+            'Contents': message,
+            'EntryContext': outputs
+        })
+        sys.exit(0)
 
 
 def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_extract=False):
     """
-        Returns an error entry with the specified message, and exits the script.
+        Returns a warning entry with the specified message, and exits the script.
 
         :type message: ``str``
         :param message: The message to return in the entry (required).
@@ -1409,7 +1484,7 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
     LOG.print_log()
 
     demisto.results({
-        'Type': 11,
+        'Type': entryTypes['warning'],
         'ContentsFormat': formats['text'],
         'IgnoreAutoExtract': ignore_auto_extract,
         'Contents': str(message),
@@ -1720,3 +1795,16 @@ def remove_nulls_from_dictionary(dict):
     for key in list_of_keys:
         if dict[key] in ('', None, [], {}, ()):
             del dict[key]
+
+
+def get_demisto_version():
+    """
+        Returns the Demisto version and build number.
+
+        :return: Demisto version object if Demisto class has attribute demistoVersion, else raises AttributeError
+        :rtype: ``dict``
+    """
+    if hasattr(demisto, 'demistoVersion'):
+        return demisto.demistoVersion()
+    else:
+        raise AttributeError('demistoVersion attribute not found.')
