@@ -114,7 +114,6 @@ def create_reputation_values_context(data_from_api_json):
 
 
 def return_mati_report_entry_context(data_from_api_json):
-    mati_entry_context = {}
     mati_reports = data_from_api_json.get('matiReports', [])
     all_mati_reports_contexts = []
 
@@ -153,7 +152,7 @@ def create_deepsight_domain_entry_context(generic_domain_entry_context, domain_d
     }
 
     if network_data:
-        deepsight_ip_entry_context['ProxyType'] = network_data.get("proxyType", "")
+        deepsight_domain_entry_context['ProxyType'] = network_data.get("proxyType", "")
 
     deepsight_domain_entry_context = merge_two_dicts(deepsight_domain_entry_context, generic_domain_entry_context)
     return deepsight_domain_entry_context
@@ -474,7 +473,8 @@ def get_url_data(url):
 
 
 # Search for intel based on an URL
-# if behaviour has value other than SPAM => malicous (possible values are Attack, Bot, CnC, Fraud, Malware, Phish_host or SPAM)
+# if behaviour has value other than SPAM => malicous (possible values are Attack, Bot, CnC, Fraud, Malware,
+# Phish_host or SPAM)
 #  else if behaviour is SPAM => suspicious
 #  if no behaviour, then unknown
 def get_url_data_command():
@@ -546,8 +546,7 @@ def get_request_status_command():
 def test_module():
     try:
         result = get_ip_data("5.79.86.16")
-        ip = result["ip"]
-    except Exception, e:
+    except Exception:
         raise Exception("Test failed: API request did not succeed")
     demisto.results('ok')
 
@@ -565,6 +564,6 @@ try:
     elif demisto.command() == 'url':
         get_url_data_command()
     elif demisto.command() == 'deepsight-get-request-status':
-        request_status_command()
+        get_request_status_command()
 except Exception as e:
     return_error(str(e))
