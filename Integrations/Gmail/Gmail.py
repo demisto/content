@@ -163,7 +163,9 @@ def parse_mail_parts(parts):
     return body, html, attachments
 
 
-def utc_extract(time_from_mail, time_from_stamp):
+def utc_extract(time_from_mail):
+    if time_from_mail is None or len(time_from_mail)<5:
+        return '-0000', 0
     utc = time_from_mail[-5:]
     if utc[0] != '-' and utc[0] != '+':
         return '-0000', 0
@@ -177,7 +179,7 @@ def utc_extract(time_from_mail, time_from_stamp):
 def create_base_time(internal_date_timestamp, header_date):
     if len(str(internal_date_timestamp)) > 10:
         internal_date_timestamp = int(str(internal_date_timestamp)[:10])
-    utc, delta_in_seconds = utc_extract(header_date, datetime.utcfromtimestamp(internal_date_timestamp))
+    utc, delta_in_seconds = utc_extract(header_date)
     base_time = datetime.utcfromtimestamp(internal_date_timestamp) + timedelta(
         seconds=delta_in_seconds)
     base_time = str(base_time.strftime('%a, %d %b %Y %H:%M:%S')) + " " + utc
@@ -327,7 +329,7 @@ def emails_to_entry(title, raw_emails, format_data, mailbox):
         'Type': entryTypes['note'],
         'Contents': gmail_emails,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, gmail_emails, headers[format_data]),
+        'HumanReadable': tableToMarkdown(title, gmail_emails, headers[format_data], removeNull=True),
         'EntryContext': {'Gmail(val.ID && val.ID == obj.ID)': gmail_emails,
                          'Email(val.ID && val.ID == obj.ID)': emails}
     }
@@ -410,19 +412,23 @@ def users_to_entry(title, response):
             'VisibleInDirectory': user_data.get('includeInGlobalAddressList'),
 
         })
-    headers = ['Type', 'ID', 'UserName',
-               'DisplayName', 'Email', 'Group', 'CustomerId', 'Email',
-               'Groups', 'Domain', 'Username', 'OrganizationUnit', 'VisibleInDirectory']
+    headers = ['Type', 'ID', 'Username',
+               'DisplayName', 'Groups', 'CustomerId', 'Domain', 'OrganizationUnit', 'Email', 'VisibleInDirectory']
 
-    return_outputs(tableToMarkdown(title, context, headers),
-                   {'Account(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': context},
-                   response)
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(title, context, headers, removeNull=True),
+        'EntryContext': {'Account(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': context}
+    }
 
 
-def autoreply_to_entry(title, response):
-    context = []
+def autoreply_to_entry(title, response, user_id):
+    autoreply_context = []
     for autoreply_data in response:
-        context.append({
+        autoreply_context.append({
             'Type': 'Google',
             'EnableAutoReply': autoreply_data.get('enableAutoReply'),
             'ResponseBody': autoreply_data.get('responseBodyPlainText'),
@@ -434,13 +440,18 @@ def autoreply_to_entry(title, response):
     headers = ['Type', 'EnableAutoReply', 'ResponseBody',
                'ResponseSubject', 'RestrictToContact', 'RestrcitToDomain']
 
+    account_context = {
+        "Address": user_id,
+        "AutoReply": autoreply_context
+    }
+
     return {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
-        'Contents': context,
+        'Contents': autoreply_context,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, context, headers),
-        'EntryContext': {'Autoreply(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': context}
+        'HumanReadable': tableToMarkdown(title, autoreply_context, headers, removeNull=True),
+        'EntryContext': {'Account.Gmail(val.Address == obj.Address)': account_context}
     }
 
 
@@ -461,7 +472,7 @@ def mail_results_to_entry(title, response):
         'Type': entryTypes['note'],
         'Contents': context,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, context, headers),
+        'HumanReadable': tableToMarkdown(title, context, headers, removeNull=True),
         'EntryContext': {'SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': context}
     }
 
@@ -485,7 +496,7 @@ def roles_to_entry(title, response):
         'Type': entryTypes['note'],
         'Contents': context,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, context, headers),
+        'HumanReadable': tableToMarkdown(title, context, headers, removeNull=True),
         'EntryContext': {'Gmail.Role(val.ID && val.ID == obj.ID)': context}
     }
 
@@ -508,7 +519,7 @@ def tokens_to_entry(title, response):
         'Type': entryTypes['note'],
         'Contents': context,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, context, headers),
+        'HumanReadable': tableToMarkdown(title, context, headers, removeNull=True),
         'EntryContext': {'Tokens(val.ClientId && val.ClientId == obj.ClientId)': context}
     }
 
@@ -530,7 +541,7 @@ def filters_to_entry(title, mailbox, response):
         'Type': entryTypes['note'],
         'Contents': context,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, context, headers),
+        'HumanReadable': tableToMarkdown(title, context, headers, removeNull=True),
         'EntryContext': {'GmailFilter(val.ID && val.ID == obj.ID)': context}
     }
 
@@ -656,7 +667,7 @@ def get_autoreply_command():
 
     autoreply_message = get_autoreply(user_id)
 
-    return autoreply_to_entry('User {}:'.format(user_id), [autoreply_message])
+    return autoreply_to_entry('User {}:'.format(user_id), [autoreply_message], user_id)
 
 
 def get_autoreply(user_id):
@@ -678,9 +689,9 @@ def set_autoreply_command():
     args = demisto.args()
 
     user_id = args.get('user-id')
-    enable_autoreply = args.get('enableAutoReply')
-    response_subject = args.get('responseSubject')
-    response_body_plain_text = args.get('responseBodyPlainText')
+    enable_autoreply = args.get('enable-autoReply')
+    response_subject = args.get('response-subject')
+    response_body_plain_text = args.get('response-body')
 
     autoreply_message = set_autoreply(user_id, enable_autoreply, response_subject, response_body_plain_text)
 
@@ -701,12 +712,18 @@ def set_autoreply(user_id, enable_autoreply, response_subject, response_body_pla
     return result
 
 
+def remove_delegate_user_mailbox_command():
+    args = demisto.args()
+    user_id = args.get('user-id')
+    delegate_email = args.get('remove-mail')
+    return delegate_user_mailbox(user_id, delegate_email, False)
+
+
 def delegate_user_mailbox_command():
     args = demisto.args()
     user_id = args.get('user-id')
-    delegate_email = args.get('delegateEmail')
-    delegate_token = args.get('delegateToken')
-    return delegate_user_mailbox(user_id, delegate_email, delegate_token)
+    delegate_email = args.get('delegate-email')
+    return delegate_user_mailbox(user_id, delegate_email, True)
 
 
 def delegate_user_mailbox(user_id, delegate_email, delegate_token):
@@ -1436,6 +1453,7 @@ def main():
         'gmail-get-autoreply': get_autoreply_command,
         'gmail-set-autoreply': set_autoreply_command,
         'gmail-delegate-user-mailbox': delegate_user_mailbox_command,
+        'gmail-remove-delegated-mailbox': remove_delegate_user_mailbox_command,
         'gmail-send-mail': send_mail_command,
         'send-mail': send_mail_command
     }
