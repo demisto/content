@@ -485,7 +485,7 @@ script:
     - contextPath: Slack.User.Email
       description: The email address of the user.
       type: String
-  dockerimage: demisto/slack:1.0.0.814
+  dockerimage: demisto/slack:1.0.0.1560
   isfetch: false
   longRunning: true
   runonce: false
