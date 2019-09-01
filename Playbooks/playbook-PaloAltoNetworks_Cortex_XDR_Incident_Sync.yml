@@ -67,8 +67,7 @@ tasks:
       manual_severity: {}
       med_severity_alert_count: {}
       notes: {}
-      playbook_to_run:
-        simple: Cortex XDR Incident Sync
+      playbook_to_run: {}
       resolve_comment: {}
       severity: {}
       status: {}
@@ -77,8 +76,6 @@ tasks:
       xdr_alerts: {}
       xdr_file_artifacts: {}
       xdr_incident_from_previous_run: {}
-      xdr_incident_markdown_field:
-        simple: xdralertstable
       xdr_network_artifacts: {}
       xdr_url: {}
     separatecontext: false

@@ -13,8 +13,7 @@ args:
   required: true
   secret: false
 - default: false
-  description: In case incident in XDR is the latest, incident in Demisto will be
-    updated accordingly and rerun this playbook
+  description: DEPRECATED
   isArray: false
   name: playbook_to_run
   required: false
@@ -119,11 +118,10 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'Field name in Demisto - of type markdown - which will represent the
-    hole XDR incident with alerts and file artifacts and network artifacts. '
+  description: DEPRECATED
   isArray: false
   name: xdr_incident_markdown_field
-  required: true
+  required: false
   secret: false
   deprecated: true
 - auto: PREDEFINED

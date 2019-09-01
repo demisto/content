@@ -8,7 +8,7 @@ data = {
         "stats": [
             {
                 "data": [
-                    int(incident[0].get('CustomFields', {}).get('xdrhighseverityalerts', 0))
+                    int(incident[0].get('CustomFields', {}).get('xdrhighseverityalertcount', 0))
                 ],
                 "groups": None,
                 "name": "high",
@@ -17,7 +17,7 @@ data = {
             },
             {
                 "data": [
-                    int(incident[0].get('CustomFields', {}).get('xdrmediumseverityalerts', 0))
+                    int(incident[0].get('CustomFields', {}).get('xdrmediumseverityalertcount', 0))
                 ],
                 "groups": None,
                 "name": "medium",
@@ -26,7 +26,7 @@ data = {
             },
             {
                 "data": [
-                    int(incident[0].get('CustomFields', {}).get('xdrlowseverityalerts', 0))
+                    int(incident[0].get('CustomFields', {}).get('xdrlowseverityalertcount', 0))
                 ],
                 "groups": None,
                 "name": "low",
