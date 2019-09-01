@@ -649,33 +649,6 @@ def test_is_default_arguments_non_default():
         "The integration validator did not find invalid arg (needed to be default and not required)"
 
 
-def test_is_default_arguments_is_required():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.current_integration = {
-        "script": {
-            "commands": [
-                {
-                    "name": "domain",
-                    "arguments": [
-                        {
-                            "name": "domain",
-                            "required": True,
-                            "default": True
-                        },
-                        {
-                            "name": "verbose"
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-    validator.old_integration = None
-
-    assert validator.is_default_arguments() is False, \
-        "The integration validator did not find invalid arg (need not to be required)"
-
-
 def test_is_default_arguments_ok():
     validator = IntegrationValidator("temp_file", check_git=False)
     validator.current_integration = {
@@ -701,3 +674,156 @@ def test_is_default_arguments_ok():
 
     assert validator.is_default_arguments() is True, \
         "The integration validator found an invalid command arg while it is valid"
+
+
+def test_is_outputs_for_reputations_commands_valid():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "panorama-commit-status",
+                    "outputs": [
+                        {
+                            "contextPath": "Panorama.Commit.JobID",
+                            "description": "Job ID of the configuration to be committed",
+                            "type": "number"
+                        },
+                        {
+                            "contextPath": "DBotScore.does.not.matter"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    validator.old_integration = None
+
+    assert validator.is_outputs_for_reputations_commands_valid() is True, \
+        "The integration validator found invalid command outputs while it is valid"
+
+    validator_email = IntegrationValidator("temp_file", check_git=False)
+    validator_email.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "email",
+                    "outputs": [
+                        {
+                            "contextPath": "DBotScore.Indicator",
+                            "description": "The indicator that was tested.",
+                            "type": "string"
+                        },
+                        {
+                            "contextPath": "DBotScore.Type",
+                            "description": "The indicator type.",
+                            "type": "string"
+                        },
+                        {
+                            "contextPath": "DBotScore.Vendor",
+                            "description": "Vendor used to calculate the score.",
+                            "type": "string"
+                        },
+                        {
+                            "contextPath": "DBotScore.Sc0re",
+                            "description": "The actual score.",
+                            "type": "int"
+                        },
+                        {
+                            "contextPath": "Email.To",
+                            "description": "email to",
+                            "type": "string"
+                        },
+                    ]
+                }
+            ]
+        }
+    }
+    validator_email.old_integration = None
+
+    assert validator_email.is_outputs_for_reputations_commands_valid() is False, \
+        "The integration validator did not find the invalid command output - DBotScore.Sc0re"
+
+    validator_file = IntegrationValidator("temp_file", check_git=False)
+    validator_file.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "file",
+                    "outputs": [
+                        {
+                            "contextPath": "DBotScore.Indicator",
+                            "description": "The indicator that was tested.",
+                            "type": "string"
+                        },
+                        {
+                            "contextPath": "DBotScore.Type",
+                            "description": "The indicator type.",
+                            "type": "string"
+                        },
+                        {
+                            "contextPath": "DBotScore.Vendor",
+                            "description": "Vendor used to calculate the score.",
+                            "type": "string"
+                        },
+                        {
+                            "contextPath": "DBotScore.Score",
+                            "description": "The actual score.",
+                            "type": "int"
+                        },
+                        {
+                            "contextPath": "File.Md5",
+                            "description": "The MD5 hash of the file.",
+                            "type": "string"
+                        },
+                    ]
+                }
+            ]
+        }
+    }
+    validator_file.old_integration = None
+
+    assert validator_file.is_outputs_for_reputations_commands_valid() is False, \
+        "The integration validator did not find the invalid command output - File.Md5"
+
+    validator_ip = IntegrationValidator("temp_file", check_git=False)
+    validator_ip.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "ip",
+                    "outputs": [
+                        {
+                            "contextPath": "DBotScore.Indicator",
+                            "description": "The indicator that was tested.",
+                            "type": "string"
+                        },
+                        {
+                            "contextPath": "DBotScore.Type",
+                            "description": "The indicator type.",
+                            "type": "string"
+                        },
+                        {
+                            "contextPath": "DBotScore.Vendor",
+                            "description": "Vendor used to calculate the score.",
+                            "type": "string"
+                        },
+                        {
+                            "contextPath": "DBotScore.Score",
+                            "description": "The actual score.",
+                            "type": "int"
+                        },
+                        {
+                            "contextPath": "IP.Address",
+                            "description": "IP address",
+                            "type": "string"
+                        },
+                    ]
+                }
+            ]
+        }
+    }
+    validator_ip.old_integration = None
+
+    assert validator_ip.is_outputs_for_reputations_commands_valid() is True, \
+        "The integration validator found invalid command outputs while it is valid"
