@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added a layout for the Cortex XDR Incident.
+Added a layout for the **Cortex XDR Incident** incident type.
