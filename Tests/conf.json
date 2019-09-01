@@ -990,11 +990,6 @@
             "timeout": 1200
         },
         {
-            "integrations": "Recorded Future",
-            "playbookID": "Recorded Future Test",
-            "nightly": true
-        },
-        {
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Test",
             "instance_names": "ms_graph_security_dev"
@@ -1818,7 +1813,8 @@
         "Intezer Testing": "Old test for old version of inteze",
         "Test - Windows Defender Advanced Threat Protection": "One of the commands has an internal server error. Check again 20/08/2019. Issue - #18552",
         "CarbonBlackLiveResponseTest": "Task: cb-session-create-and-wait fails (issue 18691)",
-        "nexpose_test": "Failed to create site (issue 18694)"
+        "nexpose_test": "Failed to create site (issue 18694)",
+        "Recorded Future Test": "Looks like a bug in the product, pending support answer (issue 18922)"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1871,6 +1867,7 @@
         "Minerva Labs Anti-Evasion Platform": "No instance",
         "Phish.AI": "Unauthorized. will be re-branded soon as Cofense",
         "QRadar": "No license (issue 17794)",
+        "MaxMind GeoIP2": "License has expired.",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -1899,6 +1896,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
         "Whois": "Mocks does not support sockets",
         "Panorama": "Exception: Proxy process took to long to go up. https://circleci.com/gh/demisto/content/24826",
@@ -1909,7 +1907,6 @@
         "VxStream": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544. Detonate URL: Large mock file.",
         "PagerDuty v2": "Integration requires SSL",
         "TCPIPUtils": "Integration requires SSL",
-        "AWS - S3": "Integration requires SSL",
         "Luminate": "Integration has no proxy checkbox",
         "Pwned": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
@@ -1934,8 +1931,6 @@
         "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
         "Anomali ThreatStream": "'proxy' parameter not working",
         "Palo Alto Networks Cortex": "SDK",
-        "AWS - EC2": "SSL Validation fails for STS",
-        "AWS - Lambda": "AWS not accepting self-signed certs",
         "Recorded Future": "might be dynamic test",
         "AlphaSOC Wisdom": "Test module issue",
         "Microsoft Graph": "Test direct access to oproxy",

@@ -35,7 +35,8 @@ class IntegrationValidator(object):
             else:
                 try:
                     file_path_from_master = os.path.join(CONTENT_GITHUB_MASTER_LINK, file_path).replace("\\", "/")
-                    self.old_integration = yaml.safe_load(requests.get(file_path_from_master, verify=False).content)
+                    file_content = requests.get(file_path_from_master, verify=False).content
+                    self.old_integration = yaml.safe_load(file_content)
                 except Exception as e:
                     print(str(e))
                     print_error("Could not find the old integration please make sure that you did not break "
@@ -84,9 +85,9 @@ class IntegrationValidator(object):
                         or (command_name == 'domain' and arg_name == 'domain')
                         or (command_name == 'url' and arg_name == 'url')
                         or (command_name == 'ip' and arg_name == 'ip')):
-                    if arg.get('default') is False or arg.get('required') is True:
+                    if arg.get('default') is False:
                         self._is_valid = False
-                        print_error("The argument '{}' of the command '{}' is either non default or required"
+                        print_error("The argument '{}' of the command '{}' is not configured as default"
                                     .format(arg_name, command_name))
         return self._is_valid
 
