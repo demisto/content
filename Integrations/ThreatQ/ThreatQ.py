@@ -226,16 +226,10 @@ def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_resp
     if not files:
         params = json.dumps(params)
 
-    '''demisto.results(API_URL + url_suffix)  # todo: delete
-    demisto.results(params)'''
-
     response = requests.request(method, API_URL + url_suffix, data=params,
                                 headers=api_call_headers, verify=USE_SSL, files=files)
 
-    '''demisto.results(response.status_code)  # todo: delete
-    demisto.results(response.text)'''
-
-    if response.status_code not in [200, 201, 204]:
+    if response.status_code >= 400:
         errors_string = get_errors_string_from_bad_request(response)
         error_message = 'Received and error - status code [{0}].\n{1}'.format(response.status_code, errors_string)
         return_error(error_message)
@@ -246,7 +240,7 @@ def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_resp
         return json.loads(response.text)
 
 
-def make_general_create_request(obj_type, params):
+def make_create_object_request(obj_type, params):
     url_suffix = '/{0}'.format(OBJ_DIRECTORY[obj_type])
     res = tq_request('POST', url_suffix, params)
 
@@ -263,7 +257,7 @@ def make_general_create_request(obj_type, params):
     return_outputs(readable, entry_context, raw)
 
 
-def make_general_edit_request(obj_id, obj_type, params):
+def make_edit_request_for_an_object(obj_id, obj_type, params):
     # Remove items with empty values:
     params = {k: v for k, v in params.items() if v is not None}
 
@@ -281,7 +275,7 @@ def make_general_edit_request(obj_id, obj_type, params):
     return_outputs(readable, entry_context, raw)
 
 
-def make_general_related_objects_request(obj_type, obj_id, related_type):
+def make_get_related_objects_request_for_an_object(obj_type, obj_id, related_type):
     url_suffix = '/{0}/{1}/{2}?with=sources'.format(OBJ_DIRECTORY[obj_type], obj_id, OBJ_DIRECTORY[related_type])
     if related_type == 'indicator':
         url_suffix += ',score'
@@ -302,8 +296,18 @@ def make_general_related_objects_request(obj_type, obj_id, related_type):
     return_outputs(readable, ec, raw)
 
 
-def make_general_ioc_reputation_request(ioc_type, value, generic_context):
-    raw_context = get_ioc_reputation(value)
+def make_ioc_reputation_request(ioc_type, value, generic_context):
+    # Search for the IOC ID by keyword:
+    url_suffix = '/search?query={0}&limit=1'.format(value)
+    res = tq_request('GET', url_suffix)
+
+    raw_context = {}
+    if res['data']:
+        # Search for detailed information about the IOC
+        url_suffix = '/indicators/{0}?with=attributes,sources,score,type'.format(res['data'][0].get('id'))
+        res = tq_request('GET', url_suffix)
+        raw_context = indicator_data_to_demisto_format(res['data'])
+
     dbot_context = create_dbot_context(value, ioc_type, raw_context.get('TQScore', -1))
     entry_context = set_ioc_entry_context(ioc_type, raw_context, dbot_context, generic_context)
 
@@ -554,21 +558,6 @@ def add_malicious_data(generic_context):
     }
 
 
-def get_ioc_reputation(keyword):
-    # First, search for the IOC ID by keyword:
-    url_suffix = '/search?query={0}&limit=1'.format(keyword)
-    res = tq_request('GET', url_suffix)
-
-    if not res['data']:
-        return {}
-
-    # Then, search for detailed information about the IOC
-    url_suffix = '/indicators/{0}?with=attributes,sources,score,type'.format(res['data'][0].get('id'))
-    res = tq_request('GET', url_suffix)
-
-    return indicator_data_to_demisto_format(res['data'])
-
-
 def set_ioc_entry_context(ioc_type, raw, dbot, generic):
     if dbot.get('Score') == 3:
         add_malicious_data(generic)
@@ -583,7 +572,7 @@ def set_ioc_entry_context(ioc_type, raw, dbot, generic):
 
 def build_readable(readable_title, obj_type, data, dbot_score=None):
     if isinstance(data, dict):  # One object data
-        data['DBotScore'] = dbot_score  # only for readable output - then we pop it back
+        data['DBotScore'] = dbot_score  # We add DBot Score data only for the readable output - then we pop it back
         readable = tableToMarkdown(readable_title, data, headers=HEADERS[obj_type],
                                    headerTransform=pascalToSpace, removeNull=True)
         data.pop('DBotScore')
@@ -687,7 +676,7 @@ def create_ioc_command():
         'attributes': attributes_to_request_format(attr_names_lst, attr_values_lst)
     }
 
-    make_general_create_request('indicator', params)
+    make_create_object_request('indicator', params)
 
 
 def create_adversary_command():
@@ -703,7 +692,7 @@ def create_adversary_command():
         'attributes': attributes_to_request_format(attr_names_lst, attr_values_lst)
     }
 
-    make_general_create_request('adversary', params)
+    make_create_object_request('adversary', params)
 
 
 def create_event_command():
@@ -723,7 +712,7 @@ def create_event_command():
         'attributes': attributes_to_request_format(attr_names_lst, attr_values_lst)
     }
 
-    make_general_create_request('event', params)
+    make_create_object_request('event', params)
 
 
 def edit_ioc_command():
@@ -742,7 +731,7 @@ def edit_ioc_command():
         'description': description
     }
 
-    make_general_edit_request(ioc_id, 'indicator', params)
+    make_edit_request_for_an_object(ioc_id, 'indicator', params)
 
 
 def edit_adversary_command():
@@ -757,7 +746,7 @@ def edit_adversary_command():
         'name': name
     }
 
-    make_general_edit_request(adversary_id, 'adversary', params)
+    make_edit_request_for_an_object(adversary_id, 'adversary', params)
 
 
 def edit_event_command():
@@ -778,7 +767,7 @@ def edit_event_command():
         'description': description
     }
 
-    make_general_edit_request(event_id, 'event', params)
+    make_edit_request_for_an_object(event_id, 'event', params)
 
 
 def delete_object_command():
@@ -802,7 +791,7 @@ def get_related_indicators_command():
     if isinstance(obj_id, str) and not obj_id.isdigit():
         return_error('Argument obj_id must be an integer.')
 
-    make_general_related_objects_request(obj_type, obj_id, related_type='indicator')
+    make_get_related_objects_request_for_an_object(obj_type, obj_id, related_type='indicator')
 
 
 def get_related_adversaries_command():
@@ -813,7 +802,7 @@ def get_related_adversaries_command():
     if isinstance(obj_id, str) and not obj_id.isdigit():
         return_error('Argument obj_id must be an integer.')
 
-    make_general_related_objects_request(obj_type, obj_id, related_type='adversary')
+    make_get_related_objects_request_for_an_object(obj_type, obj_id, related_type='adversary')
 
 
 def get_related_events_command():
@@ -824,7 +813,7 @@ def get_related_events_command():
     if isinstance(obj_id, str) and not obj_id.isdigit():
         return_error('Argument obj_id must be an integer.')
 
-    make_general_related_objects_request(obj_type, obj_id, related_type='event')
+    make_get_related_objects_request_for_an_object(obj_type, obj_id, related_type='event')
 
 
 def link_objects_command():
@@ -1088,7 +1077,7 @@ def edit_file_command():
         'name': name
     }
 
-    make_general_edit_request(file_id, 'attachment', params)
+    make_edit_request_for_an_object(file_id, 'attachment', params)
 
 
 def download_file_command():
@@ -1116,7 +1105,7 @@ def get_ip_reputation():
 
     generic_context = {'Address': ip}
 
-    make_general_ioc_reputation_request(ioc_type='ip', value=ip, generic_context=generic_context)
+    make_ioc_reputation_request(ioc_type='ip', value=ip, generic_context=generic_context)
 
 
 def get_url_reputation():
@@ -1128,7 +1117,7 @@ def get_url_reputation():
 
     generic_context = {'Data': url}
 
-    make_general_ioc_reputation_request(ioc_type='url', value=url, generic_context=generic_context)
+    make_ioc_reputation_request(ioc_type='url', value=url, generic_context=generic_context)
 
 
 def get_email_reputation():
@@ -1140,7 +1129,7 @@ def get_email_reputation():
 
     generic_context = {'Address': email}
 
-    make_general_ioc_reputation_request(ioc_type='email', value=email, generic_context=generic_context)
+    make_ioc_reputation_request(ioc_type='email', value=email, generic_context=generic_context)
 
 
 def get_domain_reputation():
@@ -1152,7 +1141,7 @@ def get_domain_reputation():
 
     generic_context = {'Name': domain}
 
-    make_general_ioc_reputation_request(ioc_type='domain', value=domain, generic_context=generic_context)
+    make_ioc_reputation_request(ioc_type='domain', value=domain, generic_context=generic_context)
 
 
 def get_file_reputation():
@@ -1171,7 +1160,7 @@ def get_file_reputation():
         'SHA256': file if fmt == 'sha256' else None
     }, removeNull=True)
 
-    make_general_ioc_reputation_request(ioc_type='file', value=file, generic_context=generic_context)
+    make_ioc_reputation_request(ioc_type='file', value=file, generic_context=generic_context)
 
 
 ''' EXECUTION CODE '''
