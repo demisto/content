@@ -679,7 +679,7 @@ script:
             Contents: result,
             ReadableContentsFormat: formats.markdown,
             HumanReadable: '### Scanner:\n' + tableToMarkdown(null, scannersContext, ['Name', 'Available', 'Description'], undefined, headerTransform=undefined, removeNull=true),
-            EntryContext: {'HybridAnalysis.Scanner(val.name && val.name == obj.name) :' : scannersContext}
+            EntryContext: {'HybridAnalysis.Scanner(val.Name && val.Name == obj.Name) :' : scannersContext}
         };
 
     }
