@@ -373,7 +373,7 @@ def get_offense_types():
     url = '{0}/api/siem/offense_types'.format(SERVER)
     # Due to a bug in QRadar, this functions does not work if username/password was not provided
     if USERNAME and PASSWORD:
-        return send_request('GET', url, headers=None)
+        return send_request('GET', url)
     return {}
 
 
