@@ -1,1 +1,1 @@
-set default encoding to utf-8
+Fixed an issue with Intsights integration when the server URL is wrong.
