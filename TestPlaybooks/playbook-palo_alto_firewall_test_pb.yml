@@ -41,6 +41,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
     scriptarguments:
       action: {}
       category: {}
@@ -68,7 +71,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 695,
           "y": 370
         }
       }
@@ -92,7 +95,6 @@ tasks:
       '#none#':
       - "1"
       - "88"
-      - "13"
     scriptarguments:
       all:
         simple: "yes"
@@ -129,8 +131,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 385
+          "x": 910,
+          "y": 690
         }
       }
     note: false
@@ -138,24 +140,25 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 819f723c-9f23-45ee-8215-54987f3c7582
+    taskid: 0dd28e0e-7fc0-4a88-81b2-dd9520740250
     type: title
     task:
-      id: 819f723c-9f23-45ee-8215-54987f3c7582
+      id: 0dd28e0e-7fc0-4a88-81b2-dd9520740250
       version: -1
-      name: Address Groups
+      name: Addresses and Address Groups
       type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "21"
+      - "13"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1420
+          "y": 545
         }
       }
     note: false
@@ -180,7 +183,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3765
+          "y": 3065
         }
       }
     note: false
@@ -214,8 +217,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 720
+          "x": 910,
+          "y": 1010
         }
       }
     note: false
@@ -234,7 +237,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "91"
+      - "92"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -252,8 +255,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
+          "x": 910,
+          "y": 1185
         }
       }
     note: false
@@ -278,8 +281,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 910,
+          "y": 835
         }
       }
     note: false
@@ -299,7 +302,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "93"
     scriptarguments:
       name:
         simple: address_test_pb
@@ -307,8 +310,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1245
+          "x": 910,
+          "y": 2235
         }
       }
     note: false
@@ -334,8 +337,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1565
+          "x": 265,
+          "y": 835
         }
       }
     note: false
@@ -370,8 +373,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 1885
+          "x": 50,
+          "y": 1185
         }
       }
     note: false
@@ -406,8 +409,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1885
+          "x": 480,
+          "y": 1185
         }
       }
     note: false
@@ -435,8 +438,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2760
+          "x": 50,
+          "y": 2060
         }
       }
     note: false
@@ -464,8 +467,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2935
+          "x": 50,
+          "y": 2235
         }
       }
     note: false
@@ -502,8 +505,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2235
+          "x": 480,
+          "y": 1535
         }
       }
     note: false
@@ -539,8 +542,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2410
+          "x": 480,
+          "y": 1710
         }
       }
     note: false
@@ -577,8 +580,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2760
+          "x": 480,
+          "y": 2060
         }
       }
     note: false
@@ -606,8 +609,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2935
+          "x": 480,
+          "y": 2235
         }
       }
     note: false
@@ -636,7 +639,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3925
+          "y": 3225
         }
       }
     note: false
@@ -669,7 +672,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4100
+          "y": 3400
         }
       }
     note: false
@@ -698,8 +701,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2585
+          "x": 480,
+          "y": 1885
         }
       }
     note: false
@@ -728,7 +731,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3575
+          "y": 2875
         }
       }
     note: false
@@ -776,7 +779,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3750
+          "y": 3050
         }
       }
     note: false
@@ -798,7 +801,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 5615
+          "y": 4915
         }
       }
     note: false
@@ -823,7 +826,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3415
+          "y": 2715
         }
       }
     note: false
@@ -848,7 +851,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4420
+          "y": 3720
         }
       }
     note: false
@@ -872,8 +875,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 1740
+          "x": 50,
+          "y": 1025
         }
       }
     note: false
@@ -897,8 +900,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1740
+          "x": 480,
+          "y": 1025
         }
       }
     note: false
@@ -942,7 +945,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4565
+          "y": 3865
         }
       }
     note: false
@@ -979,7 +982,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5090
+          "y": 4390
         }
       }
     note: false
@@ -1012,7 +1015,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5265
+          "y": 4565
         }
       }
     note: false
@@ -1042,7 +1045,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3925
+          "y": 3225
         }
       }
     note: false
@@ -1067,7 +1070,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 4930
+          "y": 4230
         }
       }
     note: false
@@ -1105,7 +1108,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 5265
+          "y": 4565
         }
       }
     note: false
@@ -1137,7 +1140,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 5090
+          "y": 4390
         }
       }
     note: false
@@ -1162,7 +1165,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 3255
+          "y": 2555
         }
       }
     note: false
@@ -1189,7 +1192,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 3400
+          "y": 2700
         }
       }
     note: false
@@ -1219,7 +1222,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 3575
+          "y": 2875
         }
       }
     note: false
@@ -1257,7 +1260,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 3750
+          "y": 3050
         }
       }
     note: false
@@ -1287,7 +1290,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 3925
+          "y": 3225
         }
       }
     note: false
@@ -1306,6 +1309,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
     scriptarguments:
       IPs:
         simple: 10.10.10.10
@@ -1317,7 +1323,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 265,
           "y": 370
         }
       }
@@ -1350,7 +1356,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 5440
+          "y": 4740
         }
       }
     note: false
@@ -1379,33 +1385,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4915
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "91":
-    id: "91"
-    taskid: 2d9155be-3c63-4b7d-858d-dd437c879ede
-    type: playbook
-    task:
-      id: 2d9155be-3c63-4b7d-858d-dd437c879ede
-      version: -1
-      name: PAN-OS Commit Configuration
-      playbookName: PAN-OS Commit Configuration
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1070
+          "y": 4215
         }
       }
     note: false
@@ -1427,12 +1407,13 @@ tasks:
       '#none#':
       - "25"
       - "27"
+      - "20"
     separatecontext: true
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 2060
+          "y": 1360
         }
       }
     note: false
@@ -1459,7 +1440,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3110
+          "y": 2410
         }
       }
     note: false
@@ -1485,7 +1466,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4275
+          "y": 3575
         }
       }
     note: false
@@ -1515,7 +1496,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4740
+          "y": 4040
         }
       }
     note: false
@@ -1529,7 +1510,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5630,
+        "height": 4930,
         "width": 1240,
         "x": 50,
         "y": 50
