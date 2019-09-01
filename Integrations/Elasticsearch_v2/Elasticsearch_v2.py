@@ -106,7 +106,7 @@ def search_command():
         'timed_out': response.get('timed_out')
     }
 
-    hit_headers = []  # type: List[String]
+    hit_headers = []  # type: List
     hit_tables = []
     if total_results > 0:
         for hit in response.get('hits').get('hits'):
