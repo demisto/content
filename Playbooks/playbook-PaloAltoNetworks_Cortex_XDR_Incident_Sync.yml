@@ -3,7 +3,7 @@ version: -1
 name: Cortex XDR Incident Sync
 fromversion: 5.0.0
 description: Compares incidents in Palo Alto Networks Cortex XDR and Demisto, and
-  updates the incidents properly. When an incident is updated in Demisto, the XDRSyncScript
+  updates the incidents appropriately. When an incident is updated in Demisto, the XDRSyncScript
   will update the incident in XDR. When an incident is updated in XDR, the XDRSyncScript
   will update the incident fields in Demisto and rerun the current playbook.
 starttaskid: "0"
@@ -42,7 +42,7 @@ tasks:
       version: -1
       name: Perform Sync
       description: Continuously syncs an incident that exists in both Demisto and
-        XDR, by monitoring the incident for modifications, and updates each system
+        XDR by monitoring the incident for modifications, and updates each system
         accordingly.
       scriptName: XDRSyncScript
       type: regular
@@ -97,8 +97,8 @@ tasks:
       id: 41c70e0d-eb9d-47cf-8f6e-fabf3555c7d0
       version: -1
       name: Manual Investigation
-      description: Perform manual investigation of the XDR incident. Enter the Cortex
-        XDR Incident page through the **XDR URL** incident field. Analyze the indicent
+      description: Performs manual investigation of the XDR incident. Enter the Cortex
+        XDR Incident page through the **XDR URL** incident field. Analyze the incident
         alerts, and perform the necessary remediation steps.
       type: regular
       iscommand: false
@@ -125,7 +125,7 @@ tasks:
       id: 70b87045-b9ed-48ef-8e4f-0d3be2eb60db
       version: -1
       name: Stop sync
-      description: This stops the scheduled task whose ID is given in the taskID argument.
+      description: Stops the scheduled task whose ID is supplied in the taskID argument.
       scriptName: StopScheduledTask
       type: regular
       iscommand: false
@@ -156,9 +156,9 @@ tasks:
       version: -1
       name: MODIFY THIS TASK - Close XDR incident (choose status)
       description: |-
-        Update a specific field / multiple fields of a specific incident
-        Missing fields are ignored
-        In order to unassign incident pass null in assignee email.
+        Updates one or more fields of the specified incident.
+        Missing fields are ignored.
+        In order to unassign incident pass null in the assignee email argument.
       script: '|||xdr-update-incident'
       type: regular
       iscommand: true
@@ -195,7 +195,7 @@ tasks:
       id: f6ab1c58-7140-4fbc-8782-ab3cfd8d2f5c
       version: -1
       name: Close investigation in Demisto
-      description: Close the investigation
+      description: Closes the investigation.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
