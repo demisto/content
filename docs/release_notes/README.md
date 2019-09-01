@@ -60,21 +60,11 @@ For multiple line RNs with nested content, follow this format:
   - Release note 2 here.
 ```
 
-## What MUST Be Mentioned
-one must specify in the corresponding change log file the following changes:
+## What Should Be Logged
+One should specify in the corresponding change log file the following changes:
   - everything
   - adding command
   - adding/updating parameters
   - adding/updating arguments
   - updating outputs
   - fixing customer bugs
-
-**Thumb Rule**
-if you are not sure, add it and let the Reviewer (or team leader) decide in the review.
-
-
-## Exceptions: What Shouldn't Be Mentioned
-the following changes should not appear in the change log file:
-  - converting to package
-  - typo fixes
-  - new entities: if notes are specified, it will override it.
