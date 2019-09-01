@@ -166,7 +166,7 @@ def gcs_create_bucket():
 
 def gcs_delete_bucket():
     bucket_name = demisto.args()['bucket_name']
-    force = demisto.args().get('force', '') == 'True'
+    force = demisto.args().get('force', '') == 'true'
 
     bucket = CLIENT.get_bucket(bucket_name)
     bucket.delete(force)
