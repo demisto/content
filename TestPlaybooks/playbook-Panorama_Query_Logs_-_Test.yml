@@ -16,11 +16,12 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+      - "4"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 265,
           "y": 50
         }
       }
@@ -29,16 +30,21 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 7456e61f-27a3-4ae6-8c03-82c6946bd1e7
+    taskid: 911a0327-695e-4cb3-8048-96028d9b37ec
     type: playbook
     task:
-      id: 7456e61f-27a3-4ae6-8c03-82c6946bd1e7
+      id: 911a0327-695e-4cb3-8048-96028d9b37ec
       version: -1
       name: Panorama Query Logs
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
+        and wildfire.'
       playbookName: Panorama Query Logs
       type: playbook
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
     scriptarguments:
       action: {}
       addr-dst: {}
@@ -62,8 +68,110 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 14d9a35e-e454-4a95-8553-b6ac388551c5
+    type: condition
+    task:
+      id: 14d9a35e-e454-4a95-8553-b6ac388551c5
+      version: -1
+      name: Exist context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Panorama.Monitor.Logs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 0f95f6ff-42bd-4e34-82e5-5f0a444b7bf9
+    type: title
+    task:
+      id: 0f95f6ff-42bd-4e34-82e5-5f0a444b7bf9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 8277bf0e-402e-414f-8be1-5cfc7806fc40
+    type: playbook
+    task:
+      id: 8277bf0e-402e-414f-8be1-5cfc7806fc40
+      version: -1
+      name: Panorama Query Logs
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
+        and wildfire.'
+      playbookName: Panorama Query Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      action:
+        simple: allow
+      addr-dst: {}
+      addr-src: {}
+      filedigest: {}
+      log_type:
+        simple: traffic
+      port-dst: {}
+      query: {}
+      rule: {}
+      time-generated: {}
+      url: {}
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
         }
       }
     note: false
@@ -74,9 +182,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 275,
-        "width": 380,
-        "x": 450,
+        "height": 560,
+        "width": 810,
+        "x": 50,
         "y": 50
       }
     }
