@@ -38,7 +38,7 @@ script:
       description: The email address to check.
       isArray: false
       name: email
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Checks if an email address was compromised.
@@ -79,7 +79,7 @@ script:
       description: The domain to check.
       isArray: false
       name: domain
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Checks if a domain was compromised.
@@ -119,7 +119,7 @@ script:
       description: The email address to check.
       isArray: false
       name: email
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Checks if an email address was compromised.
@@ -160,7 +160,7 @@ script:
       description: The domain to check.
       isArray: false
       name: domain
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Checks if a domain was compromised.
