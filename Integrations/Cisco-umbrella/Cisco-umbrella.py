@@ -729,14 +729,11 @@ def get_domain_command():
     # Initialize
     contents = []
     context = {}
-    headers = []  # type: ignore
+    headers = []
     results = []
 
-    # Get vars
     domain = extract_domain_name(demisto.args()['domain'])
 
-    # Fetch data
-    # whois data
     whois = get_whois_for_domain(domain)
     admin = {
         'Country': whois.get('administrativeContactCountry'),
@@ -750,9 +747,9 @@ def get_domain_command():
         'Name': whois.get('registrantName'),
         'Phone': whois.get('registrantTelephone')
     }
-    first_queried = whois.get('created')  # type: ignore
-    name_servers = whois.get('nameServers')  # type: ignore
-    emails = whois.get('emails')  # type: ignore
+    first_queried = whois.get('created')
+    name_servers = whois.get('nameServers')
+    emails = whois.get('emails')
     registrar = {'Name': whois.get('registrarName')}
     creation_date = first_queried
     domain_status = whois.get('status')
@@ -760,34 +757,32 @@ def get_domain_command():
     expiration_date = whois.get('expires')
 
     whois = {
-        'Name': whois.get('domainName'),  # type: ignore
-        'Registrar Name': whois.get('registrarName'),  # type: ignore
-        'Last Retrieved': timestamp_to_date(whois.get('timeOfLatestRealtimeCheck')),  # type: ignore
-        'Created': whois.get('created'),  # type: ignore
-        'Updated': whois.get('updated'),  # type: ignore
-        'Expires': whois.get('expires'),  # type: ignore
-        'IANAID': whois.get('registrarIANAID'),  # type: ignore
-        'Last Observed': whois.get('auditUpdatedDate')  # type: ignore
+        'Name': whois.get('domainName'),
+        'Registrar Name': whois.get('registrarName'),
+        'Last Retrieved': timestamp_to_date(whois.get('timeOfLatestRealtimeCheck')),
+        'Created': whois.get('created'),
+        'Updated': whois.get('updated'),
+        'Expires': whois.get('expires'),
+        'IANAID': whois.get('registrarIANAID'),
+        'Last Observed': whois.get('auditUpdatedDate')
     }
-    # domain categorization data
-    domain_categorization = []  # type: ignore
+    
+    domain_categorization = []
     domain_categorization = get_domain_categorization(domain)
-    content_categories = domain_categorization.get('content_categories')  # type: ignore
-    malware_categories = domain_categorization.get('security_categories')  # type: ignore
-    risk_score = domain_categorization.get('status')  # type: ignore
+    content_categories = domain_categorization.get('content_categories')
+    malware_categories = domain_categorization.get('security_categories')
+    risk_score = domain_categorization.get('status')
     domain_categorization_table = {
         'Content Categories': content_categories,
         'Malware Categories': malware_categories
     }
-    # domain details data
-    domain_details = []  # type: ignore
+    
+    domain_details = []
     domain_details = get_domain_details(domain)
-    popularity = domain_details.get('popularity')  # type: ignore
-    secure_rank = domain_details.get('securerank2')  # type: ignore
+    popularity = domain_details.get('popularity')
+    secure_rank = domain_details.get('securerank2')
     dbotscore = securerank_to_dbotscore(secure_rank)
 
-    # context entry
-    # Domain
     context[outputPaths['domain']] = {
         'Name': domain,
         'Admin': admin,
@@ -814,7 +809,6 @@ def get_domain_command():
         }
         dbotscore = 3
 
-    # DbotScore
     context[outputPaths['dbotscore']] = {
         'Indicator': domain,
         'Type': 'domain',
@@ -822,7 +816,6 @@ def get_domain_command():
         'Score': dbotscore
     }
 
-    # contents entry
     contents.append({
         'Risk Score': risk_score,
         'Secure Rank': secure_rank,
@@ -1371,14 +1364,14 @@ def get_domains_for_nameserver(nameservers, offset, sort, limit):
 def get_whois_for_domain_command():
     # Initialize
     context = {}
-    headers = []  # type: ignore
+    headers = []
     results = []
-    contents_nameserver = {}  # type: ignore
-    contents_email = {}  # type: ignore
-    # Get vars
+    contents_nameserver = {}
+    contents_email = {}
+
     original_domain = demisto.args()['domain']
     domain = extract_domain_name(original_domain)
-    # Fetch data
+
     res = get_whois_for_domain(domain)
     if res:
         # Process response - build context and markdown table
@@ -1424,8 +1417,6 @@ def get_whois_for_domain_command():
         updated_date = res.get('updated')
         expiration_date = res.get('expires')
 
-        # context entry
-        # Domain
         context[outputPaths['domain']] = {
             'Name': domain,
             'Admin': admin,
