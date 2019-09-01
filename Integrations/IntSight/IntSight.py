@@ -53,8 +53,8 @@ SEVERITY_LEVEL = {
 def is_json(myjson):
     demisto.info('walla')
     try:
-        json_object = json.loads(myjson)
-    except ValueError as e:
+        json.loads(myjson)
+    except ValueError:
         return False
     return True
 
