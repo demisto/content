@@ -1761,6 +1761,10 @@
         {
             "integrations": "VulnDB",
             "playbookID": "Test-VulnDB"
+        },
+        {
+            "integrations": "Threat Crowd",
+            "playbookID": "ThreatCrowd - Test"
         }
     ],
     "skipped_tests": {
@@ -1831,6 +1835,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "Jask": "Returning 401 (issue 18879)",
         "google-vault": "Error when creating exports (Issue 18866)",
         "Lastline": "Temporally moved to skipped inorder to not fail nightly",
         "Anomali ThreatStream v2": "Credentials are invalid (issue 18561)",
@@ -1866,6 +1871,7 @@
         "Minerva Labs Anti-Evasion Platform": "No instance",
         "Phish.AI": "Unauthorized. will be re-branded soon as Cofense",
         "QRadar": "No license (issue 17794)",
+        "MaxMind GeoIP2": "License has expired.",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",

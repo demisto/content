@@ -22,7 +22,11 @@ USE_SSL = not demisto.params().get('insecure')
 
 # determine a vsys or a device-group
 VSYS = demisto.params().get('vsys')
-DEVICE_GROUP = demisto.params().get('device_group')
+if demisto.args() and demisto.args().get('device-group', None):
+    DEVICE_GROUP = demisto.args().get('device-group')
+else:
+    DEVICE_GROUP = demisto.params().get('device_group', None)
+
 # configuration check
 if DEVICE_GROUP and VSYS:
     return_error('Cannot configure both vsys and Device group. Set vsys for firewall, set Device group for Panorama')
@@ -31,13 +35,23 @@ if not DEVICE_GROUP and not VSYS:
 
 # setting security xpath relevant to FW or panorama management
 if DEVICE_GROUP:
-    XPATH_SECURITY_RULES = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
+    device_group_shared = DEVICE_GROUP.lower()
+    if device_group_shared == 'shared':
+        XPATH_SECURITY_RULES = "/config/shared/"
+        DEVICE_GROUP = device_group_shared
+    else:
+        XPATH_SECURITY_RULES = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
 else:
     XPATH_SECURITY_RULES = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/rulebase/security/rules/entry"
 
 # setting objects xpath relevant to FW or panorama management
 if DEVICE_GROUP:
-    XPATH_OBJECTS = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
+    device_group_shared = DEVICE_GROUP.lower()
+    if DEVICE_GROUP == 'shared':
+        XPATH_OBJECTS = "/config/shared/"
+        DEVICE_GROUP = device_group_shared
+    else:
+        XPATH_OBJECTS = "/config/devices/entry/device-group/entry[@name=\'" + DEVICE_GROUP + "\']/"
 else:
     XPATH_OBJECTS = "/config/devices/entry/vsys/entry[@name=\'" + VSYS + "\']/"
 
@@ -295,7 +309,44 @@ def panorama_test():
         params=params
     )
 
+    if DEVICE_GROUP and DEVICE_GROUP != 'shared':
+        device_group_test()
+
     demisto.results('ok')
+
+
+def device_group_test():
+    """
+    Test module for the Device group specified
+    """
+    params = {
+        'action': 'get',
+        'type': 'config',
+        'xpath': "/config/devices/entry/device-group/entry",
+        'key': API_KEY
+    }
+
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+
+    device_groups = result['response']['result']['entry']
+    if isinstance(device_groups, dict):
+        # only one device group in the panorama
+        device_group_name = device_groups.get('@name')
+        if device_group_name != DEVICE_GROUP:
+            return_error(f'Device Group: {DEVICE_GROUP} does not exist.'
+                         f'These is the available Device Group for this instance: {device_group_name}')
+    else:
+        # panorama has more than one device group configured
+        device_groups_arr = []
+        for device_group in device_groups:
+            device_groups_arr.append(device_group.get('@name'))
+        if DEVICE_GROUP not in device_groups_arr:
+            return_error(f'Device Group: {DEVICE_GROUP} does not exist.'
+                         f'These are the available Device Groups for this instance: {str(device_groups_arr)}')
 
 
 @logger
@@ -519,9 +570,9 @@ def prettify_addresses_arr(addresses_arr: list) -> List:
         return prettify_address(addresses_arr)
     pretty_addresses_arr = []
     for address in addresses_arr:
-        pretty_address = {
-            'Name': address['@name'],
-        }
+        pretty_address = {'Name': address['@name']}
+        if DEVICE_GROUP:
+            pretty_address['DeviceGroup'] = DEVICE_GROUP
         if 'description' in address:
             pretty_address['Description'] = address['description']
 
@@ -577,9 +628,9 @@ def panorama_list_addresses_command():
 
 
 def prettify_address(address: Dict) -> Dict:
-    pretty_address = {
-        'Name': address['@name'],
-    }
+    pretty_address = {'Name': address['@name']}
+    if DEVICE_GROUP:
+        pretty_address['DeviceGroup'] = DEVICE_GROUP
     if 'description' in address:
         pretty_address['Description'] = address['description']
 
@@ -596,7 +647,7 @@ def prettify_address(address: Dict) -> Dict:
 
 
 @logger
-def panorama_get_address(address_name: Dict) -> Dict:
+def panorama_get_address(address_name: str) -> Dict:
     params = {
         'action': 'show',
         'type': 'config',
@@ -676,6 +727,8 @@ def panorama_create_address_command():
     address = panorama_create_address(address_name, fqdn, ip_netmask, ip_range, description)
 
     address_output = {'Name': address_name}
+    if DEVICE_GROUP:
+        address_output['DeviceGroup'] = DEVICE_GROUP
     if fqdn:
         address_output['FQDN'] = fqdn
     if ip_netmask:
@@ -723,6 +776,8 @@ def panorama_delete_address_command():
 
     address = panorama_delete_address(address_name)
     address_output = {'Name': address_name}
+    if DEVICE_GROUP:
+        address_output['DeviceGroup'] = DEVICE_GROUP
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -746,8 +801,10 @@ def prettify_address_groups_arr(address_groups_arr: list) -> List:
     for address_group in address_groups_arr:
         pretty_address_group = {
             'Name': address_group['@name'],
-            'Type': 'static' if 'static' in address_group else 'dynamic',
+            'Type': 'static' if 'static' in address_group else 'dynamic'
         }
+        if DEVICE_GROUP:
+            pretty_address_group['DeviceGroup'] = DEVICE_GROUP
         if 'description' in address_group:
             pretty_address_group['Description'] = address_group['description']
 
@@ -803,8 +860,10 @@ def panorama_list_address_groups_command():
 def prettify_address_group(address_group: Dict) -> Dict:
     pretty_address_group = {
         'Name': address_group['@name'],
-        'Type': 'static' if 'static' in address_group else 'dynamic',
+        'Type': 'static' if 'static' in address_group else 'dynamic'
     }
+    if DEVICE_GROUP:
+        pretty_address_group['DeviceGroup'] = DEVICE_GROUP
 
     if 'description' in address_group:
         pretty_address_group['Description'] = address_group['description']
@@ -918,6 +977,8 @@ def panorama_create_address_group_command():
         'Name': address_group_name,
         'Type': type_
     }
+    if DEVICE_GROUP:
+        address_group_output['DeviceGroup'] = DEVICE_GROUP
     if match:
         address_group_output['Match'] = match
     if addresses:
@@ -963,6 +1024,8 @@ def panorama_delete_address_group_command():
 
     address_group = panorama_delete_address_group(address_group_name)
     address_group_output = {'Name': address_group_name}
+    if DEVICE_GROUP:
+        address_group_output['DeviceGroup'] = DEVICE_GROUP
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1022,6 +1085,8 @@ def panorama_edit_address_group_command():
     }
 
     address_group_output = {'Name': address_group_name}
+    if DEVICE_GROUP:
+        address_group_output['DeviceGroup'] = DEVICE_GROUP
 
     if match:
         params['xpath'] = match_path
@@ -1069,9 +1134,9 @@ def panorama_edit_address_group_command():
 def prettify_services_arr(services_arr: Dict):
     pretty_services_arr = []
     for service in services_arr:
-        pretty_service = {
-            'Name': service['@name'],
-        }
+        pretty_service = {'Name': service['@name']}
+        if DEVICE_GROUP:
+            pretty_service['DeviceGroup'] = DEVICE_GROUP
         if 'description' in service:
             pretty_service['Description'] = service['description']
 
@@ -1137,6 +1202,8 @@ def prettify_service(service: Dict):
     pretty_service = {
         'Name': service['@name'],
     }
+    if DEVICE_GROUP:
+        pretty_service['DeviceGroup'] = DEVICE_GROUP
     if 'description' in service:
         pretty_service['Description'] = service['description']
 
@@ -1240,6 +1307,8 @@ def panorama_create_service_command():
         'Protocol': protocol,
         'DestinationPort': destination_port
     }
+    if DEVICE_GROUP:
+        service_output['DeviceGroup'] = DEVICE_GROUP
     if source_port:
         service_output['SourcePort'] = source_port
     if description:
@@ -1283,6 +1352,8 @@ def panorama_delete_service_command():
 
     service = panorama_delete_service(service_name)
     service_output = {'Name': service_name}
+    if DEVICE_GROUP:
+        service_output['DeviceGroup'] = DEVICE_GROUP
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1306,6 +1377,9 @@ def prettify_service_groups_arr(service_groups_arr: Dict):
             'Name': service_group['@name'],
             'Services': service_group['members']['member']
         }
+        if DEVICE_GROUP:
+            pretty_service_group['DeviceGroup'] = DEVICE_GROUP
+
         pretty_service_groups_arr.append(pretty_service_group)
 
     return pretty_service_groups_arr
@@ -1353,6 +1427,9 @@ def prettify_service_group(service_group):
         'Name': service_group['@name'],
         'Services': service_group['members']['member']
     }
+    if DEVICE_GROUP:
+        pretty_service_group['DeviceGroup'] = DEVICE_GROUP
+
     return pretty_service_group
 
 
@@ -1424,6 +1501,8 @@ def panorama_create_service_group_command():
         'Name': service_group_name,
         'Services': services
     }
+    if DEVICE_GROUP:
+        service_group_output['DeviceGroup'] = DEVICE_GROUP
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1463,6 +1542,8 @@ def panorama_delete_service_group_command():
 
     service_group = panorama_delete_service_group(service_group_name)
     service_group_output = {'Name': service_group_name}
+    if DEVICE_GROUP:
+        service_group_output['DeviceGroup'] = DEVICE_GROUP
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1522,6 +1603,8 @@ def panorama_edit_service_group_command():
         'Name': service_group_name,
         'Services': services
     }
+    if DEVICE_GROUP:
+        service_group_output['DeviceGroup'] = DEVICE_GROUP
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1542,6 +1625,8 @@ def prettify_custom_url_category(custom_url_category):
     pretty_custom_url_category = {
         'Name': custom_url_category['@name'],
     }
+    if DEVICE_GROUP:
+        pretty_custom_url_category['DeviceGroup'] = DEVICE_GROUP
 
     if 'description' in custom_url_category:
         pretty_custom_url_category['Description'] = custom_url_category['description']
@@ -1607,6 +1692,8 @@ def panorama_create_custom_url_category(custom_url_category_name, sites=None, de
     )
 
     custom_url_category_output = {'Name': custom_url_category_name}
+    if DEVICE_GROUP:
+        custom_url_category_output['DeviceGroup'] = DEVICE_GROUP
     if sites:
         custom_url_category_output['Sites'] = sites
     if description:
@@ -1665,6 +1752,8 @@ def panorama_delete_custom_url_category_command():
 
     result = panorama_delete_custom_url_category(custom_url_category_name)
     custom_url_category_output = {'Name': custom_url_category_name}
+    if DEVICE_GROUP:
+        custom_url_category_output['DeviceGroup'] = DEVICE_GROUP
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1696,6 +1785,8 @@ def panorama_edit_custom_url_category(custom_url_category_name, sites, descripti
     )
 
     custom_url_category_output = {'Name': custom_url_category_name}
+    if DEVICE_GROUP:
+        custom_url_category_output['DeviceGroup'] = DEVICE_GROUP
     if sites:
         custom_url_category_output['Sites'] = sites
     if description:
@@ -1760,8 +1851,8 @@ def panorama_custom_url_category_remove_sites_command():
 
     sites = argToList(demisto.args()['sites'])
 
-    substructed_sites = [item for item in custom_url_category_sites if item not in sites]
-    result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, substructed_sites,
+    subtracted_sites = [item for item in custom_url_category_sites if item not in sites]
+    result, custom_url_category_output = panorama_edit_custom_url_category(custom_url_category_name, subtracted_sites,
                                                                            description)
 
     demisto.results({
@@ -1850,6 +1941,8 @@ def panorama_get_url_category_command():
 
 def prettify_get_url_filter(url_filter):
     pretty_url_filter = {'Name': url_filter['@name']}
+    if DEVICE_GROUP:
+        pretty_url_filter['DeviceGroup'] = DEVICE_GROUP
     if 'description' in url_filter:
         pretty_url_filter['Description'] = url_filter['description']
 
@@ -1971,6 +2064,8 @@ def panorama_create_url_filter_command():
                                         override_block_list, description)
 
     url_filter_output = {'Name': url_filter_name}
+    if DEVICE_GROUP:
+        url_filter_output['DeviceGroup'] = DEVICE_GROUP
     url_filter_output['Category'] = []
     for category in url_category_list:
         url_filter_output['Category'].append({
@@ -2003,6 +2098,8 @@ def panorama_edit_url_filter(url_filter_name, element_to_change, element_value, 
         return_error('Please commit the instance prior to editing the URL Filter')
 
     url_filter_output = {'Name': url_filter_name}
+    if DEVICE_GROUP:
+        url_filter_output['DeviceGroup'] = DEVICE_GROUP
     params = {
         'action': 'edit',
         'type': 'config',
@@ -2094,12 +2191,19 @@ def panorama_delete_url_filter_command():
     url_filter_name = demisto.args()['name']
     result = panorama_delete_url_filter(url_filter_name)
 
+    url_filter_output = {'Name': url_filter_name}
+    if DEVICE_GROUP:
+        url_filter_output['DeviceGroup'] = DEVICE_GROUP
+
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['text'],
         'HumanReadable': 'URL Filter was deleted successfully',
+        'EntryContext': {
+            "Panorama.URLFilter(val.Name == obj.Name)": url_filter_output
+        }
     })
 
 
@@ -2111,6 +2215,8 @@ def prettify_rule(rule):
         'Name': rule['@name'],
         'Action': rule['action']
     }
+    if DEVICE_GROUP:
+        pretty_rule['DeviceGroup'] = DEVICE_GROUP
     if '@loc' in rule:
         pretty_rule['Location'] = rule['@loc']
     if 'category' in rule and 'member' in rule['category']:
@@ -2203,6 +2309,8 @@ def panorama_move_rule_command():
 
     result = http_request(URL, 'POST', params=params)
     rule_output = {'Name': rulename}
+    if DEVICE_GROUP:
+        rule_output['DeviceGroup'] = DEVICE_GROUP
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -2260,6 +2368,8 @@ def panorama_create_rule_command():
 
     rule_output = {SECURITY_RULE_ARGS[key]: value for key, value in demisto.args().items() if key in SECURITY_RULE_ARGS}
     rule_output['Name'] = rulename
+    if DEVICE_GROUP:
+        rule_output['DeviceGroup'] = DEVICE_GROUP
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -2321,6 +2431,8 @@ def panorama_edit_rule_command():
         params=params
     )
     rule_output = {'Name': rulename}
+    if DEVICE_GROUP:
+        rule_output['DeviceGroup'] = DEVICE_GROUP
     rule_output[SECURITY_RULE_ARGS[element_to_change]] = element_value
 
     demisto.results({
@@ -2396,6 +2508,8 @@ def panorama_custom_block_rule_command():
         'Direction': direction,
         'Disabled': False
     }
+    if DEVICE_GROUP:
+        custom_block_output['DeviceGroup'] = DEVICE_GROUP
     if log_forwarding:
         custom_block_output['LogForwarding'] = log_forwarding
     if target:
@@ -2627,6 +2741,9 @@ def prettify_edls_arr(edls_arr):
             if 'description' in edl['type'][edl_type]:
                 pretty_edl['Description'] = edl['type'][edl_type]['description']
 
+        if DEVICE_GROUP:
+            pretty_edl['DeviceGroup'] = DEVICE_GROUP
+
         pretty_edls_arr.append(pretty_edl)
 
     return pretty_edls_arr
@@ -2685,6 +2802,9 @@ def prettify_edl(edl):
             pretty_edl['Recurring'] = ''.join(edl['type'][edl_type]['recurring'].keys())
         if 'description' in edl['type'][edl_type]:
             pretty_edl['Description'] = edl['type'][edl_type]['description']
+
+    if DEVICE_GROUP:
+        pretty_edl['DeviceGroup'] = DEVICE_GROUP
 
     return pretty_edl
 
@@ -2769,6 +2889,8 @@ def panorama_create_edl_command():
         'Recurring': recurring
     }
 
+    if DEVICE_GROUP:
+        edl_output['DeviceGroup'] = DEVICE_GROUP
     if description:
         edl_output['Description'] = description
     if certificate_profile:
@@ -2793,6 +2915,8 @@ def panorama_edit_edl(edl_name, element_to_change, element_value):
         return_error('Please commit the instance prior to editing the External Dynamic List')
     edl_type = ''.join(edl_prev['type'].keys())
     edl_output = {'Name': edl_name}
+    if DEVICE_GROUP:
+        edl_output['DeviceGroup'] = DEVICE_GROUP
     params = {
         'action': 'edit',
         'type': 'config',
@@ -2876,6 +3000,8 @@ def panorama_delete_edl_command():
 
     edl = panorama_delete_edl(edl_name)
     edl_output = {'Name': edl_name}
+    if DEVICE_GROUP:
+        edl_output['DeviceGroup'] = DEVICE_GROUP
 
     demisto.results({
         'Type': entryTypes['note'],
