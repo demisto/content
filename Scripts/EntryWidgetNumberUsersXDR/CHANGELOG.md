@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Widget presents number of users of Cortex XDR Incident
+Displays the number of users that particpated in a **Cortex XDR** incident.
