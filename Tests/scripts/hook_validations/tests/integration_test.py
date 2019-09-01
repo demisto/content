@@ -649,33 +649,6 @@ def test_is_default_arguments_non_default():
         "The integration validator did not find invalid arg (needed to be default and not required)"
 
 
-def test_is_default_arguments_is_required():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.current_integration = {
-        "script": {
-            "commands": [
-                {
-                    "name": "domain",
-                    "arguments": [
-                        {
-                            "name": "domain",
-                            "required": True,
-                            "default": True
-                        },
-                        {
-                            "name": "verbose"
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-    validator.old_integration = None
-
-    assert validator.is_default_arguments() is False, \
-        "The integration validator did not find invalid arg (need not to be required)"
-
-
 def test_is_default_arguments_ok():
     validator = IntegrationValidator("temp_file", check_git=False)
     validator.current_integration = {
@@ -799,8 +772,8 @@ def test_is_outputs_for_reputations_commands_valid():
                             "type": "int"
                         },
                         {
-                            "contextPath": "File.name",
-                            "description": "File name",
+                            "contextPath": "File.Md5",
+                            "description": "The MD5 hash of the file.",
                             "type": "string"
                         },
                     ]
@@ -811,7 +784,7 @@ def test_is_outputs_for_reputations_commands_valid():
     validator_file.old_integration = None
 
     assert validator_file.is_outputs_for_reputations_commands_valid() is False, \
-        "The integration validator did not find the invalid command output - File.name"
+        "The integration validator did not find the invalid command output - File.Md5"
 
     validator_ip = IntegrationValidator("temp_file", check_git=False)
     validator_ip.current_integration = {
