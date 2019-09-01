@@ -729,7 +729,7 @@ def get_domain_command():
     # Initialize
     contents = []
     context = {}
-    headers = []
+    headers = []  # type: ignore
     results = []
 
     domain = extract_domain_name(demisto.args()['domain'])
@@ -767,20 +767,20 @@ def get_domain_command():
         'Last Observed': whois.get('auditUpdatedDate')
     }
 
-    domain_categorization = []
+    domain_categorization = []  # type: ignore
     domain_categorization = get_domain_categorization(domain)
-    content_categories = domain_categorization.get('content_categories')
-    malware_categories = domain_categorization.get('security_categories')
-    risk_score = domain_categorization.get('status')
+    content_categories = domain_categorization.get('content_categories')  # type: ignore
+    malware_categories = domain_categorization.get('security_categories')  # type: ignore
+    risk_score = domain_categorization.get('status')  # type: ignore
     domain_categorization_table = {
         'Content Categories': content_categories,
         'Malware Categories': malware_categories
     }
 
-    domain_details = []
+    domain_details = []  # type: ignore
     domain_details = get_domain_details(domain)
-    popularity = domain_details.get('popularity')
-    secure_rank = domain_details.get('securerank2')
+    popularity = domain_details.get('popularity')  # type: ignore
+    secure_rank = domain_details.get('securerank2')  # type: ignore
     dbotscore = securerank_to_dbotscore(secure_rank)
 
     context[outputPaths['domain']] = {
@@ -1364,10 +1364,10 @@ def get_domains_for_nameserver(nameservers, offset, sort, limit):
 def get_whois_for_domain_command():
     # Initialize
     context = {}
-    headers = []
+    headers = []  # type: ignore
     results = []
-    contents_nameserver = {}
-    contents_email = {}
+    contents_nameserver = {}  # type: ignore
+    contents_email = {}  # type: ignore
 
     original_domain = demisto.args()['domain']
     domain = extract_domain_name(original_domain)
