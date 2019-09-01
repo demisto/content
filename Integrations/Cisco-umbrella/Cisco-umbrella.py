@@ -766,7 +766,7 @@ def get_domain_command():
         'IANAID': whois.get('registrarIANAID'),
         'Last Observed': whois.get('auditUpdatedDate')
     }
-    
+
     domain_categorization = []
     domain_categorization = get_domain_categorization(domain)
     content_categories = domain_categorization.get('content_categories')
@@ -776,7 +776,7 @@ def get_domain_command():
         'Content Categories': content_categories,
         'Malware Categories': malware_categories
     }
-    
+
     domain_details = []
     domain_details = get_domain_details(domain)
     popularity = domain_details.get('popularity')
