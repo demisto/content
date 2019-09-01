@@ -1061,9 +1061,10 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of objects to return in the response (limit is 200).
+      description: The number of objects to return in one response (maximum limit
+        is 200).
       isArray: false
-      name: page_size
+      name: limit
       required: false
       secret: false
     deprecated: false
