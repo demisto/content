@@ -89,7 +89,8 @@ def create_behaviours_context(data_json):
 def create_malicious_data(data_from_api_json):
     malicious_description = ""
     if 'reputationValues' in data_from_api_json:
-        malicious_description = 'Reputation: {}'.format(data_from_api_json['reputationValues'].get("reputation", "Unknown")),
+        malicious_description = 'Reputation: {}'.format(data_from_api_json['reputationValues']
+                                                        .get("reputation", "Unknown"))
     malicious_data = {
         'Description': malicious_description,
         'Vendor': 'Symantec Deepsight Intelligence'
@@ -184,7 +185,7 @@ def get_nameservers_data(whois_data_from_api):
 
 # generate whois data dict
 def gen_whois_data_dict(domain_data_json):
-    whois_data_for_entry_context = {}
+    whois_data_for_entry_context = {}  # type: ignore
     whois_data_from_api = domain_data_json.get("whois", None)
 
     if whois_data_from_api:
@@ -285,7 +286,7 @@ def create_deepsight_ip_entry_context(generic_entry_context, ip_data_json):
 
 
 def gen_geo_data_dict(data_from_api):
-    geo_data_dict = {}
+    geo_data_dict = {}  # type: ignore
     geo_data_from_api = data_from_api.get('geolocation', None)
     if geo_data_from_api:
         keys = geo_data_from_api.keys()
