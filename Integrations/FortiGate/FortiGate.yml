@@ -154,7 +154,7 @@ script:
       description: Policy description
       type: string
     - contextPath: Fortigate.Policy.Status
-      description: The status of the poilcy (Enabled or Disabled)
+      description: The status of the policy (Enabled or Disabled)
       type: string
     - contextPath: Fortigate.Policy.Source
       description: Source address
@@ -224,7 +224,7 @@ script:
       description: Policy description
       type: string
     - contextPath: Fortigate.Policy.Status
-      description: The status of the poilcy (Enabled or Disabled)
+      description: The status of the policy (Enabled or Disabled)
       type: string
     - contextPath: Fortigate.Policy.Source
       description: Source address
@@ -302,7 +302,7 @@ script:
       description: Policy description
       type: string
     - contextPath: Fortigate.Policy.Status
-      description: The status of the poilcy (Enabled or Disabled)
+      description: The status of the policy (Enabled or Disabled)
       type: string
     - contextPath: Fortigate.Policy.Source.Address
       description: Source address
@@ -437,6 +437,40 @@ script:
       description: Was address group deleted
       type: boolean
     description: Delete an address group from FortiGate firewall
+  - name: fortigate-ban-ip
+    arguments:
+    - name: ip_address
+      required: true
+      description: CSV list of IP addresses to ban. IPv4 and IPv6 addresses
+        are supported. For example, "1.1.1.1,6.7.8.9".
+      isArray: true
+    - name: expiry
+      description: Time until ban expires in seconds. 0 for indefinite ban.
+    description: Adds IP addresses to the banned list.
+  - name: fortigate-unban-ip
+    arguments:
+    - name: ip_address
+      required: true
+      description: CSV list of banned user IP addresses to clear. IPv4 and IPv6
+        addresses are supported. For example, "1.1.1.1,6.7.8.9".
+      isArray: true
+    description: Clears a list of specific banned IP addresses.
+  - name: fortigate-get-banned-ips
+    arguments: []
+    outputs:
+    - contextPath: Fortigate.BannedIP.IP
+      description: The IP address.
+      type: string
+    - contextPath: Fortigate.BannedIP.Created
+      description: Date/time the IP address was added to the banned list.
+      type: string
+    - contextPath: Fortigate.BannedIP.Expires
+      description: Date/time the IP address expires from the banned list.
+      type: string
+    - contextPath: Fortigate.BannedIP.Source
+      description: Source of the ban.
+      type: string
+    description: Returns a list of banned IP addresses.
   runonce: false
 tests:
 - Fortigate Test

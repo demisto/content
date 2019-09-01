@@ -3579,6 +3579,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 'Headers': header_list,
                 'HeadersMap': headers_map,
                 'Attachments': ','.join(attachment_names) if attachment_names else '',
+                'AttachmentNames': attachment_names if attachment_names else [],
                 'Format': eml.get_content_type(),
                 'Depth': MAX_DEPTH_CONST - max_depth
             }
@@ -3648,7 +3649,7 @@ def main():
             output = create_email_output(email_data, attached_emails)
 
         elif ('ascii text' in file_type_lower or 'unicode text' in file_type_lower
-              or ('data' == file_type_lower and file_name and file_name.lower().endswith('.eml'))):
+              or ('data' == file_type_lower.strip() and file_name and file_name.lower().strip().endswith('.eml'))):
             try:
                 # Try to open the email as-is
                 with open(file_path, 'rb') as f:
@@ -3673,7 +3674,7 @@ def main():
                 return_error("Exception while trying to decode email from within base64: {}\n\nTrace:\n{}"
                              .format(str(e), traceback.format_exc()))
         else:
-            return_error("Unknown file format: " + file_type)
+            return_error("Unknown file format: [{}] for file: [{}]".format(file_type, file_name))
         output = recursive_convert_to_unicode(output)
         email = output  # output may be a single email
         if isinstance(output, list) and len(output) > 0:

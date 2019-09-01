@@ -58,6 +58,20 @@ def run_command(command, is_silenced=True, exit_on_error=True):
     return output
 
 
+def get_remote_file(full_file_path, tag='master'):
+    github_path = os.path.join(CONTENT_GITHUB_LINK, tag, full_file_path).replace('\\', '/')
+    res = requests.get(github_path, verify=False)
+    if res.status_code != 200:
+        return {}
+
+    if full_file_path.endswith('json'):
+        details = json.loads(res.content)
+    else:
+        details = yaml.safe_load(res.content)
+
+    return details
+
+
 def filter_packagify_changes(modified_files, added_files, removed_files, tag='master'):
     """
     Mark scripts/integrations that were removed and added as modifiied.
@@ -73,10 +87,8 @@ def filter_packagify_changes(modified_files, added_files, removed_files, tag='ma
     packagify_diff = {}  # type: dict
     for file_path in removed_files:
         if file_path.split("/")[0] in PACKAGE_SUPPORTING_DIRECTORIES:
-            github_path = os.path.join(CONTENT_GITHUB_LINK, tag, file_path).replace('\\', '/')
-            file_content = requests.get(github_path, verify=False).content
-            details = yaml.safe_load(file_content)
-            if 404 not in details:
+            details = get_remote_file(file_path, tag)
+            if details:
                 uniq_identifier = '_'.join([details['name'],
                                            details.get('fromversion', '0.0.0'),
                                            details.get('toversion', '99.99.99')])
