@@ -322,7 +322,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 480,
           "y": 2205
         }
       }
@@ -358,7 +358,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 2205
         }
       }
@@ -598,7 +598,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 6285
+          "y": 5935
         }
       }
     note: false
@@ -823,7 +823,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 480,
           "y": 2060
         }
       }
@@ -848,7 +848,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 2060
         }
       }
@@ -928,42 +928,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "68":
-    id: "68"
-    taskid: 4a76357d-e0ad-44a2-89d0-f2f01a50efdf
-    type: regular
-    task:
-      id: 4a76357d-e0ad-44a2-89d0-f2f01a50efdf
-      version: -1
-      name: panorama-edit-rule - application
-      description: Edit a policy rule in Palo Alto Firewall or Panorama
-      script: '|||panorama-edit-rule'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "94"
-    scriptarguments:
-      element_to_change:
-        simple: application
-      element_value:
-        simple: backweb
-      pre_post:
-        simple: post-rulebase
-      rulename:
-        simple: temp_pano_test_pb_rule
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 5410
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "69":
     id: "69"
     taskid: 978c1627-fd3f-447a-80b6-1e17dd58ebce
@@ -978,7 +942,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "68"
+      - "83"
     scriptarguments:
       seconds:
         simple: "10"
@@ -1019,7 +983,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 6110
+          "y": 5760
         }
       }
     note: false
@@ -1278,7 +1242,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "95"
+      - "97"
     scriptarguments:
       element_to_change:
         simple: log-forwarding
@@ -1293,7 +1257,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 5760
+          "y": 5410
         }
       }
     note: false
@@ -1580,41 +1544,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "94":
-    id: "94"
-    taskid: bfc4aa3c-7e5b-4da1-88c0-0abdd7524fcc
+  "97":
+    id: "97"
+    taskid: de2e9efa-e40d-4788-8c36-398247382292
     type: playbook
     task:
-      id: bfc4aa3c-7e5b-4da1-88c0-0abdd7524fcc
+      id: de2e9efa-e40d-4788-8c36-398247382292
       version: -1
-      name: PAN-OS Commit Configuration
-      playbookName: PAN-OS Commit Configuration
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "83"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 5585
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "95":
-    id: "95"
-    taskid: 8e869968-949e-433f-8587-d741935c4832
-    type: playbook
-    task:
-      id: 8e869968-949e-433f-8587-d741935c4832
-      version: -1
-      name: PAN-OS Commit Configuration
-      playbookName: PAN-OS Commit Configuration
+      name: PanoramaCommitConfiguration
+      playbookName: PanoramaCommitConfiguration
       type: playbook
       iscommand: false
       brand: ""
@@ -1626,7 +1564,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 5935
+          "y": 5585
         }
       }
     note: false
@@ -1639,7 +1577,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 6300,
+        "height": 5950,
         "width": 1670,
         "x": 50,
         "y": 50
