@@ -1837,6 +1837,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "Jask": "Returning 401 (issue 18879)",
         "SumoLogic": "No credentials (Issue 18441)",
         "Lastline": "Temporally moved to skipped in order to not fail nightly",
         "vmray": "VMRay license expired (Issue 18752)",
