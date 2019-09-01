@@ -124,7 +124,7 @@ tasks:
       threshold:
         simple: ${inputs.DuplicateThreshold}
       timeField:
-        simple: ${inputs.Time field}
+        simple: ${inputs.TimeField}
       timeFrameHours:
         simple: ${inputs.TimeFrameHours}
     separatecontext: false
@@ -214,7 +214,7 @@ tasks:
         simple: Email/subject:*,Email/from
       skipMissingValues: {}
       timeField:
-        simple: ${inputs.Time field}
+        simple: ${inputs.TimeField}
     separatecontext: false
     view: |-
       {
@@ -258,7 +258,7 @@ tasks:
       threshold:
         simple: ${inputs.DuplicateThreshold}
       timeField:
-        simple: ${inputs.Time field}
+        simple: ${inputs.TimeField}
       timeFrameHours:
         simple: ${inputs.TimeFrameHours}
     separatecontext: false
@@ -370,7 +370,7 @@ inputs:
     simple: "true"
   required: false
   description: If duplicate found - close the incident as duplicate (true\false)
-- key: Time field
+- key: TimeField
   value:
     simple: created
   required: false
