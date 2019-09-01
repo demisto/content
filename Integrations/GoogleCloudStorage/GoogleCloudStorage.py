@@ -18,7 +18,7 @@ DEMISTO_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
 SERVICE_ACCOUNT_JSON = demisto.params().get('service_account_json', '')
 INSECURE = demisto.params().get('insecure', False)
 
-client = None
+client: storage.Client
 
 
 ''' HELPER FUNCTIONS '''
@@ -60,7 +60,8 @@ def disable_tls_verification():
         settings['verify'] = False
         return settings
 
-    requests.Session.merge_environment_settings = merge_environment_settings
+    # noinspection PyTypeHints
+    requests.Session.merge_environment_settings = merge_environment_settings  # type: ignore
 
     urllib3.disable_warnings(category=urllib3.exceptions.InsecureRequestWarning)
 
