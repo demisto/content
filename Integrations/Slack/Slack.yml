@@ -49,7 +49,7 @@ configuration:
   name: longRunning
   required: false
   type: 8
-description: Sends messages and notifications to your Slack Team.
+description: Send messages and notifications to your Slack team.
 display: Slack v2
 name: SlackV2
 script:
