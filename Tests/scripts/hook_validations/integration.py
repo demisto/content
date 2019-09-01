@@ -87,7 +87,7 @@ class IntegrationValidator(object):
                         or (command_name == 'ip' and arg_name == 'ip')):
                     if arg.get('default') is False:
                         self._is_valid = False
-                        print_error("The argument '{}' of the command '{}' is either non default or required"
+                        print_error("The argument '{}' of the command '{}' is not configured as default"
                                     .format(arg_name, command_name))
         return self._is_valid
 
