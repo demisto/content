@@ -1060,10 +1060,10 @@ def get_analysis(query, scan_results_id):
 def get_vulnerability_command():
     vuln_id = demisto.args()['vulnerability_id']
     scan_results_id = demisto.args()['scan_results_id']
-    limit = demisto.args().get('limit', '50')
-    if isinstance(limit, str) and not limit.isdigit():
-        return_error('Error: \'limit\' argument must be an integer.')
-    limit = int(limit)
+    page = int(demisto.args().get('page'))
+    limit = int(demisto.args().get('limit'))
+    if limit > 200:
+        limit = 200
 
     vuln_filter = [{
         'filterName': 'pluginID',
@@ -1076,8 +1076,8 @@ def get_vulnerability_command():
         'filters': vuln_filter,
         'tool': 'vulndetails',
         'type': 'vuln',
-        'startOffset': 0,  # Lower bound for the results list (must be specified)
-        'endOffset': limit  # Upper bound for the results list (must be specified)
+        'startOffset': page,  # Lower bound for the results list (must be specified)
+        'endOffset': page + limit  # Upper bound for the results list (must be specified)
     }
 
     analysis = get_analysis(query, scan_results_id)

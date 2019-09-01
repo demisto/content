@@ -130,9 +130,17 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Maximum results count
+      description: The number of objects to return in one response (maximum limit
+        is 200).
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The page to return, starting from 0.
+      isArray: false
+      name: page
       required: false
       secret: false
     deprecated: false
