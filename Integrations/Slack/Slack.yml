@@ -95,7 +95,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: group
-      description: The channel type. Can be a channel (public) or a group (private).
+      description: The channel type. Can be "channel" (public) or "group" (private).
       isArray: false
       name: mirrorTo
       predefined:
@@ -173,7 +173,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to kick the Slack administrator (channel creator) out of
+      description: Whether to remove the Slack administrator (channel creator) from
         the mirrored channel.
       isArray: false
       name: kickAdmin
@@ -194,13 +194,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Either a name or email of a Slack user to send to.
+      description: The user to whom to send the message. Can be either the username or email address.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: A Slack channel name to send to.
+      description: The name of the Slack channel to which to send the message.
       isArray: false
       name: channel
       required: false
@@ -224,7 +224,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The ID of the thread to reply to.
+      description: The ID of the thread to which to reply.
       isArray: false
       name: threadID
       required: false
@@ -281,7 +281,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The ID of the thread to reply to.
+      description: The ID of the thread to which to reply.
       isArray: false
       name: threadID
       required: false
@@ -314,25 +314,25 @@ script:
       required: true
       secret: false
     - default: false
-      description: Either a name or an email of the Slack user to send the file to.
+      description: The user to whom to send the file. Can be the username or the email address.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: The Slack group (private channel) name to send the file to.
+      description: The name of the Slack group (private channel) to which to send the file.
       isArray: false
       name: group
       required: false
       secret: false
     - default: false
-      description: The Slack channel name to send the file to.
+      description: The name of the Slack channel to which to send the file.
       isArray: false
       name: channel
       required: false
       secret: false
     - default: false
-      description: The thread ID to send the file as a reply.
+      description: The thread ID to which to send the file as a reply.
       isArray: false
       name: threadID
       required: false
@@ -344,7 +344,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Sends a file to a either a user, channel, or group. If none are specified,
+    description: Sends a file to a user, channel, or group. If not specified,
       the file is sent to the mirrored investigation channel (if the channel exists).
     execution: false
     name: slack-send-file
@@ -385,8 +385,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: A CSV list of user names or emails to invite to the channel, for
-        example, "user1, user2..."
+      description: 'A CSV list of user names or email addresses to invite to the channel. For example: "user1, user2...".'
       isArray: false
       name: users
       required: false
@@ -397,40 +396,38 @@ script:
     name: slack-create-channel
   - arguments:
     - default: true
-      description: A CSV list of user names or emails to invite to the channel, for
-        example, "user1, user2..."
+      description: 'A CSV list of usernames or email addresses to invite to join the channel. For example: "user1, user2...".'
       isArray: false
       name: users
       required: true
       secret: false
     - default: false
-      description: The name of the channel. If the name of the channel is not specified,
+      description: The name of the channel to which to invite the users. If the name of the channel is not specified,
         the name of the mirrored investigation channel is used (if the channel exists).
       isArray: false
       name: channel
       required: false
       secret: false
     deprecated: false
-    description: Invites users to a channel.
+    description: Invites users to join a channel.
     execution: false
     name: slack-invite-to-channel
   - arguments:
     - default: true
-      description: A CSV list of user names or emails to kick out of a channel, for
-        example, "user1, user2..."
+      description: 'A CSV list of usernames or email addresses to remove from the a channel. For example: "user1, user2..."'
       isArray: false
       name: users
       required: true
       secret: false
     - default: false
-      description: The name of the channel. If the name of the channel is not specified,
+      description: The name of the channel from which to remove the users. If the name of the channel is not specified,
         the mirrored investigation channel is used (if the channel exists).
       isArray: false
       name: channel
       required: false
       secret: false
     deprecated: false
-    description: Kicks users out of a channel.
+    description: Removes users from the specified channel.
     execution: false
     name: slack-kick-from-channel
   - arguments:
@@ -441,19 +438,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the channel. If the name of the channel is not specified,
+      description: The current name of the channel. If the name of the channel is not specified,
         the mirrored investigation channel is used (if the channel exists).
       isArray: false
       name: channel
       required: false
       secret: false
     deprecated: false
-    description: Rename a channel in Slack.
+    description: Renames a channel in Slack.
     execution: false
     name: slack-rename-channel
   - arguments:
     - default: true
-      description: The Slack user (name or email).
+      description: The Slack user (username or email).
       isArray: false
       name: user
       required: true
