@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 
 import json
 import requests
+from typing import Union
 from datetime import datetime
 
 # Disable insecure warnings
@@ -39,14 +40,15 @@ HEADERS = {
 
 # REVIEWERS = ['Itay4', 'yaakovi', 'yuvalbenshalom', 'ronykoz']
 REVIEWERS = ['avidan-H']
+CONTENT_TEAM_ID = 3043448
 
 WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
               'wizard @reviewer will very shortly look over your proposed changes.'
 NEEDS_REVIEW_MSG = '@reviewer This PR won\'t review itself and I\'m not going to do it for you (I bet you\'d like ' \
                    'that wouldn\'t you) - look it over, eh?'
 LOTR_NUDGE_MSG = '"And some things that should not have been forgotten were lost. History became legend. Legend ' \
-                 'became myth. And for two and a half thousand years", @reviewer had not looked at this beautiful PR ' \
-                 '- as they were meant to do.'
+                 'became myth. And for two and a half thousand years...", @reviewer had not looked at this ' \
+                 'beautiful PR - as they were meant to do.'
 NUDGE_AUTHOR_MSG = 'A lengthy period of time has transpired since the PR was reviewed. @author Please address the ' \
                    'reviewer\'s comments and push your committed changes.'
 APPROVED_UNMERGED_MSG = 'The PR was approved but doesn\'t seem to have been merged. @author Please verify that there ' \
@@ -241,7 +243,8 @@ def alert_appropriate_party(pr: dict, commit_data: dict, reviews_data: list, com
     requested_reviewers = [requested_reviewer.get('login') for requested_reviewer in pr.get('requested_reviewers', [])]
     reviewers_with_prefix = ' '.join(['@' + reviewer for reviewer in requested_reviewers])
 
-    commit_author = commit_data.get('author', {}).get('login')
+    head_author = pr.get('head', {}).get('user', {}).get('login')
+    # commit_author = commit_data.get('author', {}).get('login')
     commit_time = commit_data.get('author', {}).get('date', '')
 
     demisto.info('REVIEWS: ' + json.dumps(reviews_data, indent=4))
@@ -259,9 +262,10 @@ def alert_appropriate_party(pr: dict, commit_data: dict, reviews_data: list, com
     commenter = last_comment.get('user', {}).get('login')
 
     demisto.info('-----------------------------------')
-    demisto.info('commit_time: ' + comment_time + ' comment_time: ' + comment_time + ' review_time: ' + review_time)
+    demisto.info('commit_time: ' + commit_time + ' comment_time: ' + comment_time + ' review_time: ' + review_time)
     demisto.info('last_comment: ' + json.dumps(last_comment, indent=4))
     demisto.info(f'commenter: {commenter}')
+    demisto.info(f'head_author: {head_author}')
 
     msg = ''
     issue_number = pr.get('number')
@@ -270,9 +274,9 @@ def alert_appropriate_party(pr: dict, commit_data: dict, reviews_data: list, com
         msg = NEEDS_REVIEW_MSG.replace('@reviewer', reviewers_with_prefix)
     elif last_event == 'review':
         if review_status != 'APPROVED':
-            msg = NUDGE_AUTHOR_MSG.replace('author', commit_author)
+            msg = NUDGE_AUTHOR_MSG.replace('author', head_author)
         else:
-            msg = APPROVED_UNMERGED_MSG.replace('author', commit_author)
+            msg = APPROVED_UNMERGED_MSG.replace('author', head_author)
     else:  # last_event == 'comment'
         # Actions if the last comment was by the bot itself
         if commenter == BOT_NAME:
@@ -286,15 +290,15 @@ def alert_appropriate_party(pr: dict, commit_data: dict, reviews_data: list, com
             else:
                 msg = suggest_close
         # Determine who the last commenter was - assume that whichever party was not the commenter needs a reminder
-        elif commenter != commit_author:
+        elif commenter != head_author:
             # The last comment wasn't made by the PR opener (and is probably one of the requested reviewers) assume
             # that the PR opener needs a nudge
-            nudge_author = f' @{commit_author} are there any changes you wanted to make since @{commenter}\'s last ' \
+            nudge_author = f' @{head_author} are there any changes you wanted to make since @{commenter}\'s last ' \
                 f'comment? '
             msg = STALE_MSG + nudge_author
         else:
             # Else assume the person who opened the PR is waiting on the response of one of the reviewers
-            nudge_reviewer = reviewers_with_prefix + f' what\'s new since @{commenter}\'s last comment?'
+            nudge_reviewer = ' ' + reviewers_with_prefix + f' what\'s new since @{commenter}\'s last comment?'
             msg = STALE_MSG + nudge_reviewer
     create_issue_comment(issue_number, msg)
 
@@ -333,6 +337,12 @@ def check_pr_files(pull_number, pull_author):
 
 
 ''' REQUESTS FUNCTIONS '''
+
+
+def get_team_membership(team_id: int, user_name: str) -> dict:
+    suffix = f'/teams/{team_id}/memberships/{user_name}'
+    response = http_request('GET', url_suffix=suffix)
+    return response
 
 
 def assign_reviewer(pull_number: int, reviewers: list) -> dict:
@@ -458,10 +468,19 @@ def get_download_count():
                    response)
 
 
-def get_relevant_prs(time_span, label, query):
+def get_relevant_prs(time_or_period: Union[str, datetime], label: str, query: str) -> list:
     reg = re.compile("\.\d{6}$")
-    # time_range_start, _ = parse_date_range(time_span)
-    timestamp, _ = reg.subn('', time_span.isoformat())
+    try:
+        now = datetime.now()
+        # try to parse 'time_or_period' into a starting datetime object
+        time_range_start, _ = parse_date_range(time_or_period)
+        start_delta = now - time_range_start
+        start_time = now - start_delta
+        time_or_period = start_time
+    except Exception:
+        # if parse_date_range threw an exception it means that 'time_or_period' was already in the right format
+        pass
+    timestamp, _ = reg.subn('', time_or_period.isoformat())
     query = query.replace('{USER}', USER).replace('{REPOSITORY}', REPOSITORY)
     query = query.replace('{timestamp}', timestamp).replace('{label}', label)
     matching_issues = search_issue(query).get('items', [])
@@ -482,22 +501,25 @@ def get_stale_prs_reviewers(args={}):
 def get_stale_prs_reviewers_command():
     args = demisto.args()
     results = get_stale_prs_reviewers(args)
-    formatted_results = []
-    for pr in results:
-        requested_reviewers = [
-            requested_reviewer.get('login') for requested_reviewer in pr.get('requested_reviewers', [])
-        ]
-        formatted_pr = {
-            'URL': pr.get('html_url'),
-            'Number': pr.get('number'),
-            'RequestedReviewer': requested_reviewers
+    if results:
+        formatted_results = []
+        for pr in results:
+            requested_reviewers = [
+                requested_reviewer.get('login') for requested_reviewer in pr.get('requested_reviewers', [])
+            ]
+            formatted_pr = {
+                'URL': pr.get('html_url'),
+                'Number': pr.get('number'),
+                'RequestedReviewer': requested_reviewers
+            }
+            formatted_results.append(formatted_pr)
+        ec = {
+            'GitHub.PR(val.Number === obj.Number)': formatted_results
         }
-        formatted_results.append(formatted_pr)
-    ec = {
-        'GitHub.PR': formatted_results
-    }
-    human_readable = tableToMarkdown('Stale PRs', formatted_results, removeNull=True)
-    return_outputs(readable_output=human_readable, outputs=ec, raw_response=results)
+        human_readable = tableToMarkdown('Stale PRs', formatted_results, removeNull=True)
+        return_outputs(readable_output=human_readable, outputs=ec, raw_response=results)
+    else:
+        demisto.results('No stale external PRs found')
 
 
 
@@ -557,23 +579,14 @@ def fetch_incidents_command():
 
     last_time = start_time
 
-    # reg = re.compile("\.\d{6}$")
-    # timestamp, _ = reg.subn('', start_time.isoformat())
-    # query = f'repo:{USER}/{REPOSITORY} is:open updated:>{timestamp} is:pr -label:{CONTRIBUTION_LABEL}'
-    # newly_opened_prs = search_issue(query).get('items', [])
-    # opened_prs = [get_pull_request(issue.get('number')) for issue in newly_opened_prs]
     opened_query = 'repo:{USER}/{REPOSITORY} is:open updated:>{timestamp} is:pr -label:{label}'
     opened_prs = get_relevant_prs(start_time, CONTRIBUTION_LABEL, opened_query)
 
     time_range_start, _ = parse_date_range(STALE_TIME)
-    # timestamp, _ = reg.subn('', time_range_start.isoformat())
-    # query = f'repo:{USER}/{REPOSITORY} is:open updated:<{timestamp} is:pr label:{CONTRIBUTION_LABEL}'
-    # ongoing_external_prs = search_issue(query).get('items', [])
-    # inactive_prs = [get_pull_request(issue.get('number')) for issue in ongoing_external_prs]
     inactive_query = 'repo:{USER}/{REPOSITORY} is:open updated:<{timestamp} is:pr label:{label}'
     inactive_prs = get_relevant_prs(time_range_start, CONTRIBUTION_LABEL, inactive_query)
     for pr in inactive_prs:
-        # demisto.info('PR: ' + json.dumps(pr))
+        # demisto.info('PR: ' + json.dumps(pr, indent=4))
         issue_number = pr.get('number')
         sha = pr.get('head', {}).get('sha')
         demisto.info('SHA: ' + sha)
@@ -588,8 +601,10 @@ def fetch_incidents_command():
     for pr in opened_prs:
         updated_at_str = pr.get('created_at')
         updated_at = datetime.strptime(updated_at_str, '%Y-%m-%dT%H:%M:%SZ')
+        pr_opener = pr.get('head', {}).get('user', {}).get('login')
+        not_content_member = get_team_membership(CONTENT_TEAM_ID, pr_opener).get('state', '') != 'active'
         is_fork = pr.get('head', {}).get('repo', {}).get('fork')
-        if is_fork:
+        if is_fork or not_content_member:
             issue_number = pr.get('number')
             add_label(issue_number, [CONTRIBUTION_LABEL])
             selected_reviewer = REVIEWERS[issue_number % len(REVIEWERS)]
