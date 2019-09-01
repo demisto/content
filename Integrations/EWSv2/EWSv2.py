@@ -19,7 +19,7 @@ from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, Transpor
     ErrorInvalidIdMalformed, \
     ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, \
     AutoDiscoverFailed, ErrorNameResolutionNoResults
-from exchangelib.items import Item, Message
+from exchangelib.items import Item, Message, Contact
 from exchangelib.services import EWSService, EWSAccountService
 from exchangelib.util import create_element, add_xml_child
 from exchangelib import IMPERSONATION, DELEGATE, Account, Credentials, \
@@ -1502,11 +1502,11 @@ def get_contacts(limit, target_mailbox=None):
         contact_dict = dict((k, v if not isinstance(v, EWSDateTime) else v.ewsformat())
                             for k, v in contact.__dict__.items()
                             if isinstance(v, basestring) or isinstance(v, EWSDateTime))
-        if contact.physical_addresses:
+        if isinstance(contact, Contact) and contact.physical_addresses:
             contact_dict['physical_addresses'] = map(parse_physical_address, contact.physical_addresses)
-        if contact.phone_numbers:
+        if isinstance(contact, Contact) and contact.phone_numbers:
             contact_dict['phone_numbers'] = map(parse_phone_number, contact.phone_numbers)
-        if contact.email_addresses and len(contact.email_addresses) > 0:
+        if isinstance(contact, Contact) and contact.email_addresses and len(contact.email_addresses) > 0:
             contact_dict['emailAddresses'] = map(lambda x: x.email, contact.email_addresses)
         contact_dict = keys_to_camel_case(contact_dict)
         contact_dict = dict((k, v) for k, v in contact_dict.items() if v)
@@ -1516,10 +1516,8 @@ def get_contacts(limit, target_mailbox=None):
 
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     contacts = []
-    count = 0
-    for contact in account.contacts.all():  # pylint: disable=E1101
-        if count >= limit:
-            break
+
+    for contact in account.contacts.all()[:int(limit)]:  # pylint: disable=E1101
         contacts.append(parse_contact(contact))
     return get_entry_for_object('Email contacts for %s' % target_mailbox,
                                 'Account.Email(val.Address == obj.originMailbox).EwsContacts',

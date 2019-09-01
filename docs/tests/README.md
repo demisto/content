@@ -3,7 +3,7 @@ We use *CircleCI* to test our integrations. The tests for **your** integration r
 
 When creating a test playbook:
 * Every pull request _must_ have a test playbook.
-* Unit tests should be used to test smaller units of code. For more information, see [Unit Testing](docs/unit-testing/README.md).
+* Unit tests should be used to test smaller units of code. For more information, see [Unit Testing](unit-testing/README.md).
 
 # Create a Test Playbook
 After you create a test playbook, there are several tests you should run, including testing commands, verifying the results, and closing the investigation.

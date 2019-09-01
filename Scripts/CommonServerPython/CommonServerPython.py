@@ -11,6 +11,7 @@ import json
 import sys
 import os
 import re
+import base64
 from collections import OrderedDict
 
 import xml.etree.cElementTree as ET
@@ -547,7 +548,8 @@ class IntegrationLogger(object):
     """
       a logger for python integrations:
       use LOG(<message>) to add a record to the logger (message can be any object with __str__)
-      use LOG.print_log() to display all records in War-Room and server log.
+      use LOG.print_log(verbose=True/False) to display all records in War-Room (if verbose) and server log.
+      use add_replace_strs to add sensitive strings that should be replaced before going to the log.
 
       :type message: ``str``
       :param message: The message to be logged
@@ -558,29 +560,70 @@ class IntegrationLogger(object):
 
     def __init__(self, ):
         self.messages = []  # type: list
+        self.write_buf = []  # type: list
+        self.replace_strs = []  # type: list
+        # if for some reason you don't want to auto add credentails.password to replace strings
+        # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
+        if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')
+                and isinstance(demisto.getParam('credentials'), dict)
+                and demisto.getParam('credentials').get('password')):
+            pswrd = self.encode(demisto.getParam('credentials').get('password'))
+            to_encode = pswrd
+            if IS_PY3:
+                to_encode = pswrd.encode('utf-8', 'ignore')
+            self.add_repalce_strs(pswrd, base64.b64encode(to_encode))
 
-    def __call__(self, message):
+    def encode(self, message):
         try:
-            self.messages.append(str(message))
-
+            res = str(message)
         except UnicodeEncodeError as ex:
             # could not decode the message
             # if message is an Exception, try encode the exception's message
             if isinstance(message, Exception) and message.args and isinstance(message.args[0], STRING_OBJ_TYPES):
-                self.messages.append(message.args[0].encode('utf-8', 'replace'))
+                res = message.args[0].encode('utf-8', 'replace')  # type: ignore
             elif isinstance(message, STRING_OBJ_TYPES):
                 # try encode the message itself
-                self.messages.append(message.encode('utf-8', 'replace'))
+                res = message.encode('utf-8', 'replace')  # type: ignore
             else:
-                self.messages.append("Failed encoding message with error: {}".format(ex))
+                res = "Failed encoding message with error: {}".format(ex)
+        for s in self.replace_strs:
+            res = res.replace(s, '<XX_REPLACED>')
+        return res
+
+    def __call__(self, message):
+        self.messages.append(self.encode(message))
+
+    def add_repalce_strs(self, *args):
+        '''
+            Add strings which will be replaced when logging.
+            Meant for avoiding passwords and so forth in the log.
+        '''
+        to_add = [self.encode(a) for a in args]
+        self.replace_strs.extend(to_add)
 
     def print_log(self, verbose=False):
+        if self.write_buf:
+            self.messages.append("".join(self.write_buf))
         if self.messages:
             text = 'Full Integration Log:\n' + '\n'.join(self.messages)
             if verbose:
                 demisto.log(text)
             demisto.info(text)
             self.messages = []
+
+    def write(self, msg):
+        # same as __call__ but allows IntegrationLogger to act as a File like object.
+        msg = self.encode(msg)
+        has_newline = False
+        if '\n' in msg:
+            has_newline = True
+            # if new line is last char we trim it out
+            if msg[-1] == '\n':
+                msg = msg[:-1]
+        self.write_buf.append(msg)
+        if has_newline:
+            self.messages.append("".join(self.write_buf))
+            self.write_buf = []
 
 
 """
@@ -1415,7 +1458,7 @@ def return_error(message, error='', outputs=None):
 
 def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_extract=False):
     """
-        Returns an error entry with the specified message, and exits the script.
+        Returns a warning entry with the specified message, and exits the script.
 
         :type message: ``str``
         :param message: The message to return in the entry (required).
@@ -1441,7 +1484,7 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
     LOG.print_log()
 
     demisto.results({
-        'Type': 11,
+        'Type': entryTypes['warning'],
         'ContentsFormat': formats['text'],
         'IgnoreAutoExtract': ignore_auto_extract,
         'Contents': str(message),
