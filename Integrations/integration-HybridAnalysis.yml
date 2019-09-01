@@ -460,7 +460,7 @@ script:
         }
 
         context= {
-            'HybridAnalysis.URL(val.ID && val.ID == obj.ID)' : baseContext,
+            'HybridAnalysis.URL(val.ScanID && val.ScanID == obj.ScanID)' : baseContext,
             'URL(val.Data && val.Data == obj.Data)' : urlContext,
             'File(val.SHA256 && val.SHA256 == obj.SHA256)' : fileContext,
             'DBotScore' : DbotContext
@@ -473,7 +473,7 @@ script:
     function createQuickScanContext(response, scanners, dbotScore, whitelist, maliciousDescription){
 
         var baseContext = {
-            'ID': response.id,
+            'ScanID': response.id,
             'SHA256': response.sha256,
             'Scanner' : scanners,
             'Finished': response.finished,
@@ -492,7 +492,7 @@ script:
         if (dbotScore == 3){
             var maliciousContext = {
                 Vendor: 'Hybrid Analysis',
-                Description: maliciousDescription
+                Description: 'The following scanners reported this url as malicious: ' + maliciousDescription
             };
             urlContext.Malicious = maliciousContext;
         }
@@ -506,7 +506,7 @@ script:
         else {
             DbotContext.Indicator = url;
             context = {
-                'HybridAnalysis.URL(val.ID && val.ID == obj.ID)' : baseContext,
+                'HybridAnalysis.URL(val.ScanID && val.ScanID == obj.ScanID)' : baseContext,
                 'URL(val.Data && val.Data == obj.Data)' : urlContext,
                 'DBotScore' : DbotContext
             }
@@ -517,7 +517,12 @@ script:
 
 
     function createQuickScanHumanReadable (response, scannersContext, whitelist, headers){
-        var md = '### Scan Results: \n ##### ID: ' + response.id + '\n' + '##### SHA256: ' + response.sha256 + '\n' + '##### finished: ' + response.finished + '\n' ;
+        var mdTable = {
+            'ScanID': response.id,
+            'SHA256': response.sha256,
+            'Finished': response.finished
+        };
+        var md = '### Scan Results:\n' + tableToMarkdown(null, mdTable, ['ScanID', 'SHA256', 'Finished'], undefined, headerTransform=undefined, removeNull=true);
         var scanTable = '##### scanners:\n' + tableToMarkdown(null, scannersContext, headers, undefined, headerTransform=undefined, removeNull=true);
         var whitelistTable = '##### whitelist:\n' + tableToMarkdown(null, whitelist, headers, undefined, headerTransform=undefined, removeNull=true);
 
@@ -593,7 +598,7 @@ script:
         var url = hybrid_context.Url;
         if (response.submission_type == 'page_url') {
             var context = {
-                'HybridAnalysis.URL(val.id && val.id == obj.id)': hybrid_context,
+                'HybridAnalysis.URL(val.ScanID && val.ScanID == obj.ScanID)': hybrid_context,
                 'URL(val.Data && val.Data == obj.Data)':{
                     'Data': url
                 }
@@ -603,11 +608,11 @@ script:
         else {
             var filename = url.replace(/^.*[\\\/]/, '');
             var context = {
-                'HybridAnalysis.URL(val.id && val.id == obj.id)': hybrid_context,
+                'HybridAnalysis.URL(val.ScanID && val.ScanID == obj.ScanID)': hybrid_context,
                 'URL(val.Data && val.Data == obj.Data)':{
                     'Data': url
                 },
-                'File(val.id && val.id == obj.id)' : {
+                'File(val.SHA256 && val.SHA256 == obj.SHA256)' : {
                     'SHA256': response.sha256,
                     'Name': filename,
                 }
@@ -620,10 +625,10 @@ script:
 
     //create table entry from response after 'quick-scan-url/file' command
     function quickScanToEntry(response, url) {
-        var id = response.id;
+        var ScanID = response.id;
         var hybrid_context = {
             'Url': url,
-            'ID': response.id,
+            'ScanID': response.id,
             'SHA256': response.sha256,
             'Finished': response.finished,
             'SubmissionType' : response.submission_type
@@ -631,20 +636,19 @@ script:
 
         var context = createContext(response, hybrid_context)
 
-        // adding { ID : url } to the integration context for future use
+        // adding { ScanID : url } to the integration context for future use
         var addToContext = {};
-        addToContext[id] = url;
+        addToContext[ScanID] = url;
         addToContext[url] = response.submission_type;
         setIntegrationContext(addToContext);
 
         return createTableEntry('Scan information:', response,
         {
-            'ID':  response.id,
-            'SHA256': response.sha256,
+            'ScanID':  response.id,
             'Finished': response.finished,
+            'SHA256': response.sha256,
             'SubmissionType' : response.submission_type
-
-        }, context);
+        }, context, ['ScanID', 'Finished', 'SHA256', 'SubmissionType']);
     }
 
 
@@ -716,7 +720,7 @@ script:
             var res = quickScanUrl(args.scan_type, args.url, '/api/v2/quick-scan/url');
             return quickScanToEntry(res, args.url);
         case 'hybrid-analysis-quick-scan-url-results':
-            var res = quickScanId(args.ID);
+            var res = quickScanId(args.scanID);
             return quickScanResultToEntry(res, args.min_malicious_scanners);
         case 'hybrid-analysis-list-scanners':
             return scanStates();
@@ -803,7 +807,8 @@ script:
     - contextPath: DBotScore.Score
       description: The DBot score.
       type: number
-    description: Returns summary information for a given MD5, SHA1 or SHA256 hash, and all reports generated for any environment ID.
+    description: Returns summary information for a given MD5, SHA1 or SHA256 hash,
+      and all reports generated for any environment ID.
   - name: hybrid-analysis-submit-sample
     arguments:
     - name: entryId
@@ -812,7 +817,8 @@ script:
       description: TheWar-room entry ID of sample file
     - name: environmentID
       required: true
-      description: The environment ID to which to submit the file. Run the vx-get-environments command to get all environment IDs.
+      description: The environment ID to which to submit the file. Run the vx-get-environments
+        command to get all environment IDs.
     outputs:
     - contextPath: HybridAnalysis.Submit.JobID
       description: JobID of the submission
@@ -828,8 +834,9 @@ script:
   - name: hybrid-analysis-search
     arguments:
     - name: query
-      description: 'The query to run, in the Hybrid Analysis query syntax. For more information, see `<server url>/faq#advanced-search-options`.
-         For example: url:google, host:95.181.53.78.'
+      description: 'The query to run, in the Hybrid Analysis query syntax. For more
+        information, see `<server url>/faq#advanced-search-options`. For example:
+        url:google, host:95.181.53.78.'
     - name: filename
       description: The full file name, including the file extension.
     - name: filetype
@@ -868,7 +875,8 @@ script:
     - name: authentihash
       description: The authentication hash.
     - name: min_malicious_scanners
-      description: The number of scanners that report the file as malicious to determine whether the file is malicious. Default is "2".
+      description: The number of scanners that report the file as malicious to determine
+        whether the file is malicious. Default is "2".
       defaultValue: "2"
     outputs:
     - contextPath: HybridAnalysis.Search.SHA256
@@ -931,8 +939,9 @@ script:
       required: true
       description: The War Room entry ID of the sample file you want to detonate.
     - name: environmentID
-      description: The environment ID to which to submit the file for detonation. Run the vx-get-environments command to get all environment IDs.
-        Default is 100, or other WINDOWS ID.
+      description: The environment ID to which to submit the file for detonation.
+        Run the vx-get-environments command to get all environment IDs. Default is
+        100, or other WINDOWS ID.
     - name: delay
       description: The amount of time (in seconds) to wait between calls. Default is "3".
       defaultValue: "3"
@@ -959,7 +968,7 @@ script:
   - name: hybrid-analysis-quick-scan-url
     arguments:
     - name: scan_type
-      description: The type of scan. Run the hybrid-analysis-scan-states command to view available
+      description: The type of scan. Run the hybrid-analysis-list-scanners command to view available
         scanners.
       defaultValue: all
     - name: url
@@ -969,8 +978,8 @@ script:
     - contextPath: HybridAnalysis.URL.Data
       description: The URL.
       type: string
-    - contextPath: HybridAnalysis.URL.ID
-      description: The url ID.
+    - contextPath: HybridAnalysis.URL.ScanID
+      description: The scan ID.
       type: string
     - contextPath: HybridAnalysis.URL.SHA256
       description: The SHA256 hash of the URL.
@@ -1023,15 +1032,15 @@ script:
     description: ' Returns a list of available scanners.'
   - name: hybrid-analysis-quick-scan-url-results
     arguments:
-    - name: ID
+    - name: scanID
       required: true
-      description: The ID of the scanned URL.
+      description: The scan ID of the scanned URL.
     - name: min_malicious_scanners
       description: The number of scanners that report the file as malicious to determine whether the file is malicious. Default is "2".
       defaultValue: "2"
     outputs:
-    - contextPath: HybridAnalysis.URL.ID
-      description: The scan ID result.
+    - contextPath: HybridAnalysis.URL.ScanID
+      description: The scan ID.
       type: string
     - contextPath: HybridAnalysis.URL.SHA256
       description: The SHA256 hash of the indicator.
