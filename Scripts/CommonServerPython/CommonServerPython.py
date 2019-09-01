@@ -877,7 +877,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
             try:
                 mdResult += '|'.join(vals)
             except UnicodeDecodeError:
-                vals = [v.encode('utf-8') for v in vals]
+                vals = [str(v) for v in vals]
                 mdResult += '|'.join(vals)
             mdResult += '|\n'
 
