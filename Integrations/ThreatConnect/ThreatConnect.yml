@@ -56,20 +56,22 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A CSV list of client organizations, or any sources or communities to which a
-        client’s API user has been granted permission. For example: owner1,owner2,owner3.'
+      description: 'A CSV list of client organizations, or any sources or communities
+        to which a client’s API user has been granted permission. For example: owner1,owner2,owner3.'
       isArray: false
       name: owners
       required: false
       secret: false
     - default: false
-      description: Filter results by indicators whose rating is greater than the specified value (0-5).
+      description: Filter results by indicators whose rating is greater than the specified
+        value (0-5).
       isArray: false
       name: ratingThreshold
       required: false
       secret: false
     - default: false
-      description: Filter results by indicators whose confidence is greater than the specified value (0-100).
+      description: Filter results by indicators whose confidence is greater than the
+        specified value (0-100).
       isArray: false
       name: confidenceThreshold
       required: false
@@ -135,20 +137,22 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A CSV list of client organizations, or any sources or communities to which a
-        client’s API user has been granted permission. For example: owner1,owner2,owner3.'
+      description: 'A CSV list of client organizations, or any sources or communities
+        to which a client’s API user has been granted permission. For example: owner1,owner2,owner3.'
       isArray: false
       name: owners
       required: false
       secret: false
     - default: false
-      description: Filter results by indicators whose rating is greater than the specified value (0-5).
+      description: Filter results by indicators whose rating is greater than the specified
+        value (0-5).
       isArray: false
       name: ratingThreshold
       required: false
       secret: false
     - default: false
-      description: Filter results by indicators whose confidence is greater than the specified value (0-100).
+      description: Filter results by indicators whose confidence is greater than the
+        specified value (0-100).
       isArray: false
       name: confidenceThreshold
       required: false
@@ -214,20 +218,22 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A CSV list of client organizations, or any sources or communities to which a
-        client’s API user has been granted permission. For example: owner1,owner2,owner3.'
+      description: 'A CSV list of client organizations, or any sources or communities
+        to which a client’s API user has been granted permission. For example: owner1,owner2,owner3.'
       isArray: false
       name: owners
       required: false
       secret: false
     - default: false
-      description: Filter results by indicators whose rating is greater than the specified value (0-5).
+      description: Filter results by indicators whose rating is greater than the specified
+        value (0-5).
       isArray: false
       name: ratingThreshold
       required: false
       secret: false
     - default: false
-      description: Filter results by indicators whose confidence is greater than the specified value (0-100).
+      description: Filter results by indicators whose confidence is greater than the
+        specified value (0-100).
       isArray: false
       name: confidenceThreshold
       required: false
@@ -458,19 +464,22 @@ script:
     name: tc-tag-indicator
   - arguments:
     - default: true
-      description: Indicator value by which to search. Can be an IP address, URL, or file hash. The command retrieves from all owners.
+      description: Indicator value by which to search. Can be an IP address, URL,
+        or file hash. The command retrieves from all owners.
       isArray: false
       name: indicator
       required: true
       secret: false
     - default: false
-      description: Filter results by indicators whose rating is greater than the specified value (0-5).
+      description: Filter results by indicators whose rating is greater than the specified
+        value (0-5).
       isArray: false
       name: ratingThreshold
       required: false
       secret: false
     - default: false
-      description: Filter results by indicators whose confidence is greater than the specified value (0-100).
+      description: Filter results by indicators whose confidence is greater than the
+        specified value (0-100).
       isArray: false
       name: confidenceThreshold
       required: false
@@ -686,13 +695,14 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The indicator to add to ThreatConnect, for example "hash", "ip", "domain", "url", "email address", and so on.
+      description: The indicator to add to ThreatConnect, for example "hash", "ip",
+        "domain", "url", "email address", and so on.
       isArray: false
       name: indicator
       required: true
       secret: false
     - default: false
-      description: 'Indicator rating (0-5).'
+      description: Indicator rating (0-5).
       isArray: false
       name: rating
       required: false
@@ -822,7 +832,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Security label to apply to the incident. Can be "TLP:RED", "TLP:GREEN", "TLP:AMBER", or "TLP:WHITE".
+      description: Security label to apply to the incident. Can be "TLP:RED", "TLP:GREEN",
+        "TLP:AMBER", or "TLP:WHITE".
       isArray: false
       name: securityLabel
       predefined:
@@ -897,7 +908,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Indicator type. Can be "ADDRESSES", "EMAIL_ADDRESSES", "URLS", "HOSTS", "FILES", or "CUSTOM_INDICATORS".
+      description: Indicator type. Can be "ADDRESSES", "EMAIL_ADDRESSES", "URLS",
+        "HOSTS", "FILES", or "CUSTOM_INDICATORS".
       isArray: false
       name: indicatorType
       predefined:
@@ -928,8 +940,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Associates an indicator to an existing incident. The indicator
-      must exist before running this command. To add an indicator, run the tc-add-indicator command.
+    description: Associates an indicator to an existing incident. The indicator must
+      exist before running this command. To add an indicator, run the tc-add-indicator
+      command.
     execution: false
     name: tc-incident-associate-indicator
     outputs:
@@ -1022,20 +1035,22 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A CSV list of client organizations, or any sources or communities to which a
-        client’s API user has been granted permission. For example: owner1,owner2,owner3.'
+      description: 'A CSV list of client organizations, or any sources or communities
+        to which a client’s API user has been granted permission. For example: owner1,owner2,owner3.'
       isArray: false
       name: owners
       required: false
       secret: false
     - default: false
-      description: Filter results by indicators whose rating is greater than the specified value (0-5).
+      description: Filter results by indicators whose rating is greater than the specified
+        value (0-5).
       isArray: false
       name: ratingThreshold
       required: false
       secret: false
     - default: false
-      description: Filter results by indicators whose confidence is greater than the specified value (0-100).
+      description: Filter results by indicators whose confidence is greater than the
+        specified value (0-100).
       isArray: false
       name: confidenceThreshold
       required: false
@@ -1245,8 +1260,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A CSV list of field:value pairs to update. For example:
-        "rating=3,confidence=42,description=helloWorld"'
+      description: 'A CSV list of field:value pairs to update. For example: "rating=3,confidence=42,description=helloWorld"'
       isArray: false
       name: updatedValues
       required: false
@@ -1269,7 +1283,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Security label to apply to the incident. Can be "TLP:RED", "TLP:GREEN", "TLP:AMBER", or "TLP:WHITE".
+      description: Security label to apply to the incident. Can be "TLP:RED", "TLP:GREEN",
+        "TLP:AMBER", or "TLP:WHITE".
       isArray: false
       name: securityLabel
       predefined:
@@ -1640,7 +1655,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Group type to delete. Can be "Incidents", "Events", "Campaigns", or "Threats".
+      description: Group type to delete. Can be "Incidents", "Events", "Campaigns",
+        or "Threats".
       isArray: false
       name: type
       predefined:
@@ -1656,14 +1672,15 @@ script:
     name: tc-delete-group
   - arguments:
     - default: false
-      description: The ID of the group to which to add attributes. To get the ID, run the tc-get-groups command.
+      description: The ID of the group to which to add attributes. To get the ID,
+        run the tc-get-groups command.
       isArray: false
       name: group_id
       required: true
       secret: false
     - default: false
-      description: The attribute type to add to the group. Can be found in the UI within a specific
-        group or under organization settings.
+      description: The attribute type to add to the group. Can be found in the UI
+        within a specific group or under organization settings.
       isArray: false
       name: attribute_type
       required: true
@@ -1676,7 +1693,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The group type. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
+      description: The group type. Can be "adversaries", "campaigns", "documents",
+        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+        or "threats".
       isArray: false
       name: group_type
       predefined:
@@ -1735,7 +1754,9 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The group type to return. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".'
+      description: The group type to return. Can be "adversaries", "campaigns", "documents",
+        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+        or "threats".
       isArray: false
       name: group_type
       predefined:
@@ -1783,7 +1804,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The group type. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
+      description: The group type. Can be "adversaries", "campaigns", "documents",
+        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+        or "threats".
       isArray: false
       name: group_type
       predefined:
@@ -1800,7 +1823,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the security label to add to the group, for example, "TLP:GREEN".
+      description: The name of the security label to add to the group, for example,
+        "TLP:GREEN".
       isArray: false
       name: security_label_name
       required: true
@@ -1818,7 +1842,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The group type. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
+      description: The group type. Can be "adversaries", "campaigns", "documents",
+        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+        or "threats".
       isArray: false
       name: group_type
       predefined:
@@ -1872,7 +1898,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The indicator type. To get the available types, run the tc-get-indicator-types command (API branch column).
+      description: The indicator type. To get the available types, run the tc-get-indicator-types
+        command (API branch column).
       isArray: false
       name: indicator_type
       required: true
@@ -1886,7 +1913,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The group type. Can be "adversaries", "campaigns", "documents", "emails", "events", "incidents", "intrusionSets", "reports", "signatures", or "threats".
+      description: The group type. Can be "adversaries", "campaigns", "documents",
+        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+        or "threats".
       isArray: false
       name: group_type
       predefined:
@@ -1940,8 +1969,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the file is malware. If "true", creates a password-protected ZIP file
-        on your local machine that contains the sample, and then uploads the ZIP file.
+      description: Whether the file is malware. If "true", creates a password-protected
+        ZIP file on your local machine that contains the sample, and then uploads
+        the ZIP file.
       isArray: false
       name: malware
       predefined:
@@ -1995,6 +2025,191 @@ script:
       type: String
     - contextPath: TC.Group.SecurityLabel
       description: Group security label.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The group type to return. Can be "adversaries", "campaigns", "documents",
+        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+        or "threats".
+      isArray: false
+      name: group_type
+      predefined:
+      - adversaries
+      - campaigns
+      - documents
+      - emails
+      - events
+      - incidents
+      - intrusionSets
+      - reports
+      - signatures
+      - threats
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the group to retrieve
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve a single Group
+    execution: false
+    name: tc-get-group
+    outputs:
+    - contextPath: TC.Group.DateAdded
+      description: The date that the group was added.
+      type: Date
+    - contextPath: TC.Group.EventDate
+      description: Event date.
+      type: Date
+    - contextPath: TC.Group.ID
+      description: Group ID.
+      type: Number
+    - contextPath: TC.Group.Name
+      description: Group name.
+      type: String
+    - contextPath: TC.Group.Owner.id
+      description: The owner ID.
+      type: Number
+    - contextPath: TC.Group.Owner.name
+      description: The owner name
+      type: String
+    - contextPath: TC.Group.Owner.type
+      description: The type of the owner
+      type: String
+    - contextPath: TC.Group.Status
+      description: Group status.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The group type to return. Can be "adversaries", "campaigns", "documents",
+        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+        or "threats".
+      isArray: false
+      name: group_type
+      predefined:
+      - adversaries
+      - campaigns
+      - documents
+      - emails
+      - events
+      - incidents
+      - intrusionSets
+      - reports
+      - signatures
+      - threats
+      required: true
+      secret: false
+    - default: false
+      description: Group ID.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve a Group’s Attributes
+    execution: false
+    name: tc-get-group-attributes
+    outputs:
+    - contextPath: TC.Group.DateAdded
+      description: The date that the group was added.
+      type: Date
+    - contextPath: TC.Group.Displayed
+      description: Is the attribute displayed.
+      type: Boolean
+    - contextPath: TC.Group.ID
+      description: Attribute ID.
+      type: Number
+    - contextPath: TC.Group.LastModified
+      description: Attribute last modified date.
+      type: Date
+    - contextPath: TC.Group.Type
+      description: Attribute type.
+      type: String
+    - contextPath: TC.Group.Value
+      description: Attribute value
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The group type to return. Can be "adversaries", "campaigns", "documents",
+        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+        or "threats".
+      isArray: false
+      name: group_type
+      predefined:
+      - adversaries
+      - campaigns
+      - documents
+      - emails
+      - events
+      - incidents
+      - intrusionSets
+      - reports
+      - signatures
+      - threats
+      required: true
+      secret: false
+    - default: false
+      description: Group ID.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve a Group’s Security Labels
+    execution: false
+    name: tc-get-group-security-labels
+    outputs:
+    - contextPath: TC.Group.Name
+      description: Security label name.
+      type: String
+    - contextPath: TC.Group.Description
+      description: Security label description
+      type: String
+    - contextPath: TC.Group.DateAdded
+      description: Security label added date.
+      type: Date
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The group type to return. Can be "adversaries", "campaigns", "documents",
+        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+        or "threats".
+      isArray: false
+      name: group_type
+      predefined:
+      - adversaries
+      - campaigns
+      - documents
+      - emails
+      - events
+      - incidents
+      - intrusionSets
+      - reports
+      - signatures
+      - threats
+      required: true
+      secret: false
+    - default: false
+      description: Group ID.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve the Tags for a Group
+    execution: false
+    name: tc-get-group-tags
+    outputs:
+    - contextPath: TC.Group.ID
+      description: Group ID.
+      type: Number
+    - contextPath: TC.Group.Name
+      description: Tag name.
       type: String
   dockerimage: demisto/threatconnect-sdk
   isfetch: false

@@ -1299,6 +1299,195 @@ def tc_get_groups():
     )
 
 
+def get_group_request(group_type, group_id):
+    tc = get_client()
+    ro = RequestObject()
+    ro.set_http_method('GET')
+    ro.set_request_uri('/v2/groups/{}/{}'.format(group_type, group_id))
+
+    return tc.api_request(ro).json()
+
+
+def get_group():
+    """
+    retrieve a single Group
+    """
+    group_type = demisto.args().get('group_type')
+    group_id = int(demisto.args().get('group_id'))
+
+    response = get_group_request(group_type, group_id)
+    if group_type == 'adversaries':
+        data = response.get('data', {}).get('adversarie', {})
+    if group_type == 'campaigns':
+        data = response.get('data', {}).get('campaign', {})
+    if group_type == 'documents':
+        data = response.get('data', {}).get('document', {})
+    if group_type == 'emails':
+        data = response.get('data', {}).get('email', {})
+    if group_type == 'events':
+        data = response.get('data', {}).get('event', {})
+    if group_type == 'incidents':
+        data = response.get('data', {}).get('incident', {})
+    if group_type == 'intrusionSets':
+        data = response.get('data', {}).get('intrusionSet', {})
+    if group_type == 'reports':
+        data = response.get('data', {}).get('report', {})
+    if group_type == 'signatures':
+        data = response.get('data', {}).get('signature', {})
+    if group_type == 'threats':
+        data = response.get('data', {}).get('threat', {})
+
+    if response.get('status') == 'Success':
+        contents = {
+            'ID': data.get('id'),
+            'Name': data.get('name'),
+            'Owner': data.get('owner'),
+            'DateAdded': data.get('dateAdded'),
+            'EventDate': data.get('eventDate'),
+            'Status': data.get('status')
+        }
+    else:
+        return_error(response.get('message'))
+
+    context = {
+        'TC.Group(val.ID && val.ID === obj.ID)': contents
+    }
+
+    return_outputs(
+        tableToMarkdown('Group information', contents, removeNull=True),
+        context
+    )
+
+
+def get_group_attributes_request(group_type, group_id):
+    tc = get_client()
+    ro = RequestObject()
+    ro.set_http_method('GET')
+    ro.set_request_uri('/v2/groups/{}/{}/attributes'.format(group_type, group_id))
+
+    return tc.api_request(ro).json()
+
+
+def get_group_attributes():
+    """
+    Retrieve a Group’s Attributes
+    """
+    group_type = demisto.args().get('group_type')
+    group_id = int(demisto.args().get('group_id'))
+    contents = []
+    headers = ['ID', 'Type', 'Value', 'DateAdded', 'LastModified', 'Displayed']
+    response = get_group_attributes_request(group_type, group_id)
+    data = response.get('data', {}).get('attribute', [])
+
+    if response.get('status') == 'Success':
+        for attribute in data:
+            contents.append({
+                'ID': attribute.get('id'),
+                'Type': attribute.get('type'),
+                'Value': attribute.get('value'),
+                'DateAdded': attribute.get('dateAdded'),
+                'LastModified': attribute.get('lastModified'),
+                'Displayed': attribute.get('displayed')
+            })
+
+    else:
+        return_error(response.get('message'))
+
+    context = {
+        'TC.Group(val.ID && val.ID === obj.ID)': contents
+    }
+
+    return_outputs(
+        tableToMarkdown('Group Attributes', contents, headers, removeNull=True),
+        context
+    )
+
+
+def get_group_security_labels_request(group_type, group_id):
+    tc = get_client()
+    ro = RequestObject()
+    ro.set_http_method('GET')
+    ro.set_request_uri('/v2/groups/{}/{}/securityLabels'.format(group_type, group_id))
+
+    return tc.api_request(ro).json()
+
+
+def get_group_security_labels():
+    """
+    Retrieve a Group’s Security Labels
+    """
+    group_type = demisto.args().get('group_type')
+    group_id = int(demisto.args().get('group_id'))
+    contents = []
+    headers = ['Name', 'Description', 'DateAdded']
+    response = get_group_security_labels_request(group_type, group_id)
+    data = response.get('data', {}).get('securityLabel', [])
+
+    if response.get('status') == 'Success':
+        for security_label in data:
+            contents.append({
+                'Name': security_label.get('name'),
+                'Description': security_label.get('description'),
+                'DateAdded': security_label.get('dateAdded')
+            })
+
+    else:
+        return_error(response.get('message'))
+
+    context = {
+        'TC.Group(val.Name && val.Name === obj.Name)': contents
+    }
+
+    return_outputs(
+        tableToMarkdown('Group Security Labels', contents, headers, removeNull=True),
+        context
+    )
+
+
+def get_group_tags_request(group_type, group_id):
+    tc = get_client()
+    ro = RequestObject()
+    ro.set_http_method('GET')
+    ro.set_request_uri('/v2/groups/{}/{}/tags'.format(group_type, group_id))
+
+    return tc.api_request(ro).json()
+
+
+def get_group_tags():
+    """
+    Retrieve the Tags for a Group
+    """
+    group_type = demisto.args().get('group_type')
+    group_id = int(demisto.args().get('group_id'))
+    contents = []
+    context_entries = []
+    response = get_group_tags_request(group_type, group_id)
+    data = response.get('data', {}).get('tag', [])
+
+    if response.get('status') == 'Success':
+        for tags in data:
+            contents.append({
+                'Name': tags.get('name')
+            })
+
+            context_entries.append({
+                'ID': group_id,
+                'Name': tags.get('name')
+            })
+
+    else:
+        return_error(response.get('message'))
+
+    context = {
+        'TC.Group(val.Name && val.Name === obj.Name)': context_entries
+    }
+
+    return_outputs(
+        tableToMarkdown('Group tags', contents, removeNull=True),
+        context
+    )
+
+
 def create_document_group_request(contents, file_name, name, owner, res, malware, password, security_label,
                                   description):
     tc = get_client()
@@ -1396,7 +1585,11 @@ COMMANDS = {
     'tc-add-group-tag': add_group_tag,
     'tc-get-indicator-types': tc_get_indicator_types,
     'tc-group-associate-indicator': associate_indicator,
-    'tc-create-document-group': create_document_group
+    'tc-create-document-group': create_document_group,
+    'tc-get-group': get_group,
+    'tc-get-group-attributes': get_group_attributes,
+    'tc-get-group-security-labels': get_group_security_labels,
+    'tc-get-group-tags': get_group_tags
 }
 
 try:
