@@ -1765,6 +1765,10 @@
         {
             "integrations": "Threat Crowd",
             "playbookID": "ThreatCrowd - Test"
+        },
+        {
+            "integrations": "Elasticsearch v2",
+            "playbookID": "Elasticsearch_v2_test"
         }
     ],
     "skipped_tests": {
