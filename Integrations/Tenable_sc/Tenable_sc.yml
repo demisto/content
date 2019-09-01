@@ -1076,51 +1076,51 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns all scan results in Tenable.sc
+    description: Returns all scan results in Tenable.sc.
     execution: false
     name: tenable-sc-get-all-scan-results
     outputs:
     - contextPath: TenableSC.ScanResults.ID
-      description: Scan ID
+      description: Scan ID.
       type: Number
     - contextPath: TenableSC.ScanResults.Name
-      description: Scan name
+      description: Scan name.
       type: string
     - contextPath: TenableSC.ScanResults.Status
-      description: Scan status
+      description: Scan status.
       type: string
     - contextPath: TenableSC.ScanResults.Description
-      description: Scan description
+      description: Scan description.
       type: string
     - contextPath: TenableSC.ScanResults.Policy
-      description: Scan policy
+      description: Scan policy.
       type: string
     - contextPath: TenableSC.ScanResults.Group
-      description: Scan group name
+      description: Scan group name.
       type: string
     - contextPath: TenableSC.ScanResults.Checks
-      description: Scan completed number of checks
+      description: Scan completed number of checks.
       type: number
     - contextPath: TenableSC.ScanResults.StartTime
-      description: Scan results start time
+      description: Scan results start time.
       type: date
     - contextPath: TenableSC.ScanResults.EndTime
-      description: Scan results end time
+      description: Scan results end time.
       type: date
     - contextPath: TenableSC.ScanResults.Duration
-      description: Scan duration in minutes
+      description: Scan duration in minutes.
       type: number
     - contextPath: TenableSC.ScanResults.ImportTime
-      description: Scan import time
+      description: Scan import time.
       type: date
     - contextPath: TenableSC.ScanResults.ScannedIPs
-      description: Number of scanned IPs
+      description: Number of scanned IPs.
       type: number
     - contextPath: TenableSC.ScanResults.Owner
-      description: Scan owner name
+      description: Scan owner name.
       type: string
     - contextPath: TenableSC.ScanResults.RepositoryName
-      description: Scan repository name
+      description: Scan repository name.
       type: string
   isfetch: true
   runonce: false
