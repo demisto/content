@@ -7,6 +7,12 @@
   "widgetType": "bar",
   "query": "-category:job and -status:archived and -status:closed",
   "isPredefined": true,
+  "sort": [
+    {
+      "asc": true,
+      "field": "severity"
+    }
+  ],
   "dateRange": {
     "fromDate": "0001-01-01T00:00:00Z",
     "toDate": "0001-01-01T00:00:00Z",
