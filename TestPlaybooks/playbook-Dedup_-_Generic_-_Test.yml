@@ -355,7 +355,7 @@ tasks:
         simple: "yes"
       MaxNumberOfCandidates:
         simple: "1000"
-      Time field:
+      TimeField:
         simple: occurred
       TimeFrameHours:
         simple: "72"
@@ -400,7 +400,7 @@ tasks:
         simple: "yes"
       MaxNumberOfCandidates:
         simple: "1000"
-      Time field:
+      TimeField:
         simple: occurred
       TimeFrameHours:
         simple: "72"
@@ -445,7 +445,7 @@ tasks:
         simple: "yes"
       MaxNumberOfCandidates:
         simple: "1000"
-      Time field:
+      TimeField:
         simple: occurred
       TimeFrameHours:
         simple: "72"
