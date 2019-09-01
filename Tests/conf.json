@@ -1501,7 +1501,7 @@
             "integrations": "Pwned"
         },
         {
-            "integrations": "Symantec Deepsight Intelligence",
+            "integrations": "Symantec Deepsight Intelligence (Beta)",
             "playbookID": "Symantec Deepsight Test"
         },
         {
