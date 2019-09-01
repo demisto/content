@@ -2374,55 +2374,55 @@ script:
       secret: false
     - default: false
       description: Source address.
-      isArray: false
+      isArray: true
       name: addr-src
       required: false
       secret: false
     - default: false
       description: Destination address.
-      isArray: false
+      isArray: true
       name: addr-dst
       required: false
       secret: false
     - default: false
       description: Source zone.
-      isArray: false
+      isArray: true
       name: zone-src
       required: false
       secret: false
     - default: false
       description: Destination Source.
-      isArray: false
+      isArray: true
       name: zone-dst
       required: false
       secret: false
     - default: false
       description: Rule action.
-      isArray: false
+      isArray: true
       name: action
       required: false
       secret: false
     - default: false
       description: Destination port.
-      isArray: false
+      isArray: true
       name: port-dst
       required: false
       secret: false
     - default: false
       description: Rule name, e.g "Allow all outbound".
-      isArray: false
+      isArray: true
       name: rule
       required: false
       secret: false
     - default: false
       description: URL, e.g "safebrowsing.googleapis.com".
-      isArray: false
+      isArray: true
       name: url
       required: false
       secret: false
     - default: false
-      description: File hash (for WildFIre logs only).
-      isArray: false
+      description: File hash (for WildFire logs only).
+      isArray: true
       name: filedigest
       required: false
       secret: false
