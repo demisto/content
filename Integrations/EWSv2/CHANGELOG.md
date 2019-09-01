@@ -1,4 +1,5 @@
 ## [Unreleased]
+Improved implementation of the ***ews-get-contacts*** command.
 
 
 ## [19.8.0] - 2019-08-06
