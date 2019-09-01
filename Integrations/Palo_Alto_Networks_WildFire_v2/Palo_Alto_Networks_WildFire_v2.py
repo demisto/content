@@ -635,7 +635,7 @@ def wildfire_get_report(file_hash):
     file_info = json_res["wildfire"].get('file_info', None)
 
     if not reports or not file_info:
-        demisto.results('No results yet')
+        demisto.results('The sample is still being analyzed. Please wait to download the report')
         sys.exit(0)
     return file_hash, reports, file_info
 
