@@ -1,8 +1,10 @@
 import os
-import yaml
-import requests
 
-from Tests.test_utils import print_error, get_yaml
+import requests
+import yaml
+
+from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare
+from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -18,9 +20,8 @@ class IntegrationValidator(object):
        current_integration (dict): Json representation of the current integration from the branch.
        old_integration (dict): Json representation of the current integration from master.
     """
-    CONTENT_GIT_HUB_LINK = "https://raw.githubusercontent.com/demisto/content/master/"
 
-    def __init__(self, file_path, check_git=True, old_file_path=None):
+    def __init__(self, file_path, check_git=True, old_file_path=None, old_git_branch='master'):
         self._is_valid = True
 
         self.file_path = file_path
@@ -28,17 +29,19 @@ class IntegrationValidator(object):
             self.current_integration = get_yaml(file_path)
             # The replace in the end is for Windows support
             if old_file_path:
-                git_hub_path = os.path.join(self.CONTENT_GIT_HUB_LINK, old_file_path).replace("\\", "/")
+                git_hub_path = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, old_file_path).replace("\\", "/")
                 file_content = requests.get(git_hub_path, verify=False).content
                 self.old_integration = yaml.safe_load(file_content)
             else:
                 try:
-                    file_path_from_master = os.path.join(self.CONTENT_GIT_HUB_LINK, file_path).replace("\\", "/")
-                    self.old_integration = yaml.safe_load(requests.get(file_path_from_master, verify=False).content)
+                    file_path_from_old_branch = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, file_path).replace(
+                        "\\", "/")
+                    res = requests.get(file_path_from_old_branch, verify=False)
+                    res.raise_for_status()
+                    self.old_integration = yaml.safe_load(res.content)
                 except Exception as e:
-                    print(str(e))
-                    print_error("Could not find the old integration please make sure that you did not break "
-                                "backward compatibility")
+                    print_warning("{}\nCould not find the old integration please make sure that you did not break "
+                                  "backward compatibility".format(str(e)))
                     self.old_integration = None
 
     def is_backward_compatible(self):
@@ -52,6 +55,129 @@ class IntegrationValidator(object):
         self.is_changed_command_name_or_arg()
         self.is_there_duplicate_args()
         self.is_there_duplicate_params()
+        self.is_changed_subtype()
+
+        # will move to is_valid_integration after https://github.com/demisto/etc/issues/17949
+        self.is_outputs_for_reputations_commands_valid()
+
+        return self._is_valid
+
+    def is_valid_integration(self):
+        """Check whether the Integration is valid or not, update the _is_valid field to determine that"""
+        self.is_valid_subtype()
+        self.is_default_arguments()
+
+        return self._is_valid
+
+    def is_default_arguments(self):
+        """Check if a reputation command (domain/email/file/ip/url)
+            has a default non required argument with the same name
+
+        Returns:
+            bool. Whether a reputation command hold a valid argument
+        """
+        commands = self.current_integration.get('script', {}).get('commands', [])
+        for command in commands:
+            command_name = command.get('name')
+            for arg in command.get('arguments', []):
+                arg_name = arg.get('name')
+                if ((command_name == 'file' and arg_name == 'file')
+                        or (command_name == 'email' and arg_name == 'email')
+                        or (command_name == 'domain' and arg_name == 'domain')
+                        or (command_name == 'url' and arg_name == 'url')
+                        or (command_name == 'ip' and arg_name == 'ip')):
+                    if arg.get('default') is False:
+                        self._is_valid = False
+                        print_error("The argument '{}' of the command '{}' is not configured as default"
+                                    .format(arg_name, command_name))
+        return self._is_valid
+
+    def is_outputs_for_reputations_commands_valid(self):
+        """Check if a reputation command (domain/email/file/ip/url)
+            has the correct DBotScore outputs according to the context standard
+            https://github.com/demisto/content/blob/master/docs/context_standards/README.MD
+
+        Returns:
+            bool. Whether a reputation command holds valid outputs
+        """
+        context_standard = "https://github.com/demisto/content/blob/master/docs/context_standards/README.MD"
+        commands = self.current_integration.get('script', {}).get('commands', [])
+        for command in commands:
+            command_name = command.get('name')
+            # look for reputations commands
+            if command_name in ['domain', 'email', 'file', 'ip', 'url']:
+                context_outputs_paths = set()
+                context_outputs_descriptions = set()
+                for output in command.get('outputs', []):
+                    context_outputs_paths.add(output.get('contextPath'))
+                    context_outputs_descriptions.add(output.get('description'))
+
+                # validate DBotScore outputs and descriptions
+                DBot_Score = {
+                    'DBotScore.Indicator': 'The indicator that was tested.',
+                    'DBotScore.Type': 'The indicator type.',
+                    'DBotScore.Vendor': 'Vendor used to calculate the score.',
+                    'DBotScore.Score': 'The actual score.'
+                }
+                missing_outputs = set()
+                missing_descriptions = set()
+                for DBot_Score_output in DBot_Score:
+                    if DBot_Score_output not in context_outputs_paths:
+                        missing_outputs.add(DBot_Score_output)
+                        self._is_valid = False
+                    else:  # DBot Score output path is in the outputs
+                        if DBot_Score.get(DBot_Score_output) not in context_outputs_descriptions:
+                            missing_descriptions.add(DBot_Score_output)
+                            # self._is_valid = False - Do not fail build over wrong description
+
+                if missing_outputs:
+                    print_error("The DBotScore outputs of the reputation command {} aren't valid. Missing: {}."
+                                " Fix according to context standard {} "
+                                .format(command_name, missing_outputs, context_standard))
+                if missing_descriptions:
+                    print_warning("The DBotScore description of the reputation command {} aren't valid. Missing: {}."
+                                  " Fix according to context standard {} "
+                                  .format(command_name, missing_descriptions, context_standard))
+
+                # validate the IOC output
+                command_to_output = {
+                    'domain': {'Domain.Name'},
+                    'file': {'File.MD5', 'File.SHA1', 'File.SHA256'},
+                    'ip': {'IP.Address'},
+                    'url': {'URL.Data'}
+                }
+                reputation_output = command_to_output.get(command_name)
+                if reputation_output and not reputation_output.intersection(context_outputs_paths):
+                    self._is_valid = False
+                    print_error("The outputs of the reputation command {} aren't valid. The {} outputs is missing"
+                                "Fix according to context standard {} "
+                                .format(command_name, reputation_output, context_standard))
+
+        return self._is_valid
+
+    def is_valid_subtype(self):
+        """Validate that the subtype is python2 or python3."""
+        type_ = self.current_integration.get('script', {}).get('type')
+        if type_ == 'python':
+            subtype = self.current_integration.get('script', {}).get('subtype')
+            if subtype not in PYTHON_SUBTYPES:
+                print_error("The subtype for our yml files should be either python2 or python3, "
+                            "please update the file {}.".format(self.current_integration.get('name')))
+                self._is_valid = False
+
+        return self._is_valid
+
+    def is_changed_subtype(self):
+        """Validate that the subtype was not changed."""
+        type_ = self.current_integration.get('script', {}).get('type')
+        if type_ == 'python':
+            subtype = self.current_integration.get('script', {}).get('subtype')
+            if self.old_integration:
+                old_subtype = self.old_integration.get('script', {}).get('subtype', "")
+                if old_subtype and old_subtype != subtype:
+                    print_error("Possible backwards compatibility break, You've changed the subtype"
+                                " of the file {}".format(self.file_path))
+                    self._is_valid = False
 
         return self._is_valid
 
@@ -241,11 +367,13 @@ class IntegrationValidator(object):
 
     def is_docker_image_changed(self):
         """Check if the Docker image was changed or not."""
-        if self.old_integration.get('script', {}).get('dockerimage', "") != \
-                self.current_integration.get('script', {}).get('dockerimage', ""):
-            print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
-                        " this is not allowed.".format(self.file_path))
-            self._is_valid = False
-            return True
+        # Unnecessary to check docker image only on 5.0 and up
+        if server_version_compare(self.old_integration.get('fromversion', '0'), '5.0.0') < 0:
+            if self.old_integration.get('script', {}).get('dockerimage', "") != \
+                    self.current_integration.get('script', {}).get('dockerimage', ""):
+                print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
+                            " this is not allowed.".format(self.file_path))
+                self._is_valid = False
+                return True
 
         return False

@@ -286,8 +286,7 @@ def create_phishlabs_object(indicator: dict) -> dict:
     return {
         'ID': indicator.get('id'),
         'CreatedAt': indicator.get('createdAt'),
-        'UpdatedAt': indicator['updatedAt'] if indicator.get('updatedAt', '') != NONE_DATE else '',
-        # 'Type': indicator.get('type'),
+        'UpdatedAt': indicator['updatedAt'] if indicator.get('updatedAt', NONE_DATE) != NONE_DATE else '',
         'Attribute': [{
             'Name': a.get('name'),
             'Type': a.get('type'),
@@ -309,7 +308,7 @@ def create_indicator_content(indicator: dict) -> dict:
         'Indicator': indicator.get('value'),
         'Type': indicator.get('type'),
         'CreatedAt': indicator.get('createdAt'),
-        'UpdatedAt': indicator['updatedAt'] if indicator.get('updatedAt', '') != NONE_DATE else '',
+        'UpdatedAt': indicator['updatedAt'] if indicator.get('updatedAt', NONE_DATE) != NONE_DATE else '',
         'FalsePositive': indicator.get('falsePositive')
     }
 

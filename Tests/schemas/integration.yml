@@ -2,20 +2,28 @@ type: map
 mapping:
   commonfields:
     type: map
-    required: yes
+    required: true
     mapping:
       id:
         type: str
-        required: yes
+        required: true
       version:
         type: int
-        required: yes
+        required: true
+      sortvalues:
+        type: seq
+        sequence:
+        - include: sortvalue_schema
   name:
     type: str
-    required: yes
+    required: true
   display:
       type: str
-      required: yes
+      required: true
+  deprecated:
+    type: bool
+  beta:
+    type: bool
   category:
     type: str
     enum: [
@@ -23,7 +31,7 @@ mapping:
     'Vulnerability Management', 'Case Management',
     'Forensics & Malware Analysis', 'IT Services', 'Data Enrichment & Threat Intelligence',
      'Authentication', 'Database', 'Deception', 'Email Gateway']
-    required: yes
+    required: true
   fromversion:
     type: str
   toversion:
@@ -32,25 +40,25 @@ mapping:
     type: str
   description:
     type: str
-    required: yes
+    required: true
   detaileddescription:
     type: str
   configuration:
     type: seq
-    required: yes
+    required: true
     sequence:
     - include: configuration_schema
   script:
     type: map
-    required: yes
+    required: true
     mapping:
       script:
         type: str
-        required: yes
+        required: true
       type:
         type: str
-        enum: ['javascript', 'python', 'powershell']
-        required: yes
+        enum: ['javascript', 'python']
+        required: true
       dockerimage:
         type: str
       alt_dockerimages:
@@ -58,6 +66,10 @@ mapping:
         sequence:
         - type: str
       isfetch:
+        type: bool
+      longRunning:
+        type: bool
+      longRunningPort:
         type: bool
       commands:
         type: seq
@@ -76,8 +88,6 @@ mapping:
     type: any
   defaultEnabled:
     type: bool
-  releaseNotes:
-    type: str
   tests:
     type: seq
     sequence:
@@ -87,22 +97,24 @@ mapping:
 
 schema;commonfields_schema:
 
+schema;sortvalue_schema:
+
 # integration->configuration
 schema;configuration_schema:
   type: map
-  required: yes
+  required: true
   mapping:
     display:
       type: str
-      required: yes
+      required: true
     defaultvalue:
       type: any
     name:
       type: str
-      required: yes
+      required: true
     type:
       type: int
-      required: yes
+      required: true
     required:
       type: bool
     hidden:
@@ -118,12 +130,12 @@ schema;command_schema:
   mapping:
     name:
       type: str
-      required: yes
+      required: true
     execution:
       type: bool
     description:
       type: str
-      required: yes
+      required: true
     deprecated:
       type: bool
     system:
@@ -149,14 +161,14 @@ schema;argument_schema:
   mapping:
     name:
       type: str
-      required: yes
+      required: true
     required:
       type: bool
     default:
       type: bool
     description:
       type: str
-      required: yes
+      required: true
     auto:
       type: str
       enum: ['PREDEFINED']
@@ -184,7 +196,7 @@ schema;output_schema:
       type: str
     description:
       type: str
-      required: yes
+      required: true
     important:
       type: bool
     importantDescription:
@@ -198,9 +210,9 @@ schema;important_schema:
   mapping:
     contextPath:
       type: str
-      required: yes
+      required: true
     description:
       type: str
-      required: yes
+      required: true
     related:
       type: str

@@ -1,21 +1,19 @@
 type: map
 mapping:
-  releaseNotes:
-    type: str
   fromVersion:
     type: str
   toVersion:
     type: str
   id:
     type: str
-    required: yes
+    required: True
   version:
     type: number
   modified:
     type: str
   name:
     type: str
-    required: yes
+    required: True
   ownerOnly:
     type: bool
   placeholder:
@@ -26,10 +24,10 @@ mapping:
     type: str
   cliName:
     type: str
-    required: yes
+    required: True
   type:
     type: str
-    required: yes
+    required: True
   closeForm:
     type: bool
   editForm:

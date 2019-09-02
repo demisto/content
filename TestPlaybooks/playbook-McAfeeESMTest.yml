@@ -22,11 +22,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
+          "x": 1340,
           "y": 50
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
     taskid: 308e35ee-825b-4990-8ed8-60ffc89013e6
@@ -54,11 +56,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 480,
           "y": 690
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
     taskid: 3ae4d425-f495-4933-83c9-1743b219cf71
@@ -92,11 +96,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 480,
           "y": 340
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
     taskid: 5b144d8b-8570-4b8f-8b64-d9ee85136bef
@@ -134,11 +140,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 480,
           "y": 865
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
     taskid: cf5f24bd-5ac7-4d32-84fb-a6fb79eda330
@@ -169,11 +177,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 480,
           "y": 1740
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
     taskid: 5ed048f9-e4cb-4749-8ef8-c6f970e635c0
@@ -204,11 +214,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 480,
           "y": 1390
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
     taskid: d88b9072-9c2a-4301-8672-3bd1517a8db6
@@ -238,11 +250,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 480,
           "y": 1565
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
     taskid: cf9dae43-8c4c-41c6-8247-711a819694e0
@@ -268,11 +282,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 480,
           "y": 1915
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
     taskid: ab491efa-5956-40bf-8b5c-492222572987
@@ -295,11 +311,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 480,
           "y": 2440
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "18":
     id: "18"
     taskid: 59ba0557-874b-45f9-8260-1cde3ebba3d3
@@ -324,11 +342,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 480,
           "y": 2090
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "19":
     id: "19"
     taskid: f48b645d-18b9-4d5d-84b5-b391e8c4e034
@@ -355,11 +375,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 480,
           "y": 2265
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "20":
     id: "20"
     taskid: b9bd2237-14eb-4cfe-8ceb-09af44759de4
@@ -382,11 +404,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 480,
           "y": 2615
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "22":
     id: "22"
     taskid: d51965c9-43bc-44af-8a99-c4becd316916
@@ -407,11 +431,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 480,
           "y": 2805
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "23":
     id: "23"
     taskid: 7d222eac-395c-47ec-88f4-db036d572bbd
@@ -431,11 +457,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1882.5,
+          "x": 50,
           "y": 2965
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "25":
     id: "25"
     taskid: 40e5d7d2-1ea1-417f-8110-c78fff946029
@@ -455,11 +483,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 480,
           "y": 2965
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "26":
     id: "26"
     taskid: 6047d94f-2aa4-4313-8712-6cd570b5706c
@@ -479,11 +509,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
+          "x": 910,
           "y": 2965
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "27":
     id: "27"
     taskid: ef0596aa-cc23-4d2b-8376-e4a1909a7333
@@ -519,11 +551,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 480,
           "y": 1215
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "28":
     id: "28"
     taskid: 59b77a71-31e8-445a-84b8-f8502ea9a3fa
@@ -555,11 +589,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 660,
-          "y": 2470
+          "x": 1340,
+          "y": 2965
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "29":
     id: "29"
     taskid: e4c94277-90dc-4b83-8553-202cdf791a0c
@@ -583,11 +619,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 480,
           "y": 1040
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "30":
     id: "30"
     taskid: 363dde45-3b64-4ef4-8ebf-2b4830341f9a
@@ -615,11 +653,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 480,
           "y": 515
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "31":
     id: "31"
     taskid: 042fcf01-2e7f-47c9-8c7f-6e570b018375
@@ -645,11 +685,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2265
+          "x": 1790,
+          "y": 2090
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "32":
     id: "32"
     taskid: 62f6307a-b8f5-4cae-8aec-4a465bb872b7
@@ -668,11 +710,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
+          "x": 480,
           "y": 195
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "33":
     id: "33"
     taskid: 392e98ab-9297-4248-88f7-8a76953ae881
@@ -691,11 +735,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2105
+          "x": 1790,
+          "y": 1930
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "34":
     id: "34"
     taskid: 0d0d5658-85a3-4310-85db-0da3f51d9668
@@ -728,11 +774,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2440
+          "x": 1790,
+          "y": 2265
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "35":
     id: "35"
     taskid: 1f3e40a9-f6fb-47ee-8287-407ed886738a
@@ -747,7 +795,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "36"
+      - "39"
     scriptarguments:
       alarmId:
         complex:
@@ -759,11 +807,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2615
+          "x": 1902.5,
+          "y": 2440
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "36":
     id: "36"
     taskid: 528e4d17-1a54-441c-8be6-5cfeb8f0ea8b
@@ -788,11 +838,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 1790,
           "y": 2790
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "37":
     id: "37"
     taskid: 2d666b32-9a98-4e65-84b2-f385d009fd16
@@ -808,11 +860,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 807.5,
+          "x": 1340,
           "y": 3140
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "38":
     id: "38"
     taskid: ee474fc6-a791-447b-8dcf-2eff1c323ae4
@@ -837,18 +891,59 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 1790,
           "y": 2965
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+  "39":
+    id: "39"
+    taskid: 028ccce3-d5f1-4238-8310-4f7cafe28997
+    type: condition
+    task:
+      id: 028ccce3-d5f1-4238-8310-4f7cafe28997
+      version: -1
+      name: Check if we got results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "36"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path: {}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: EsmAlarmEvent.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1902.5,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 3155,
-        "width": 2212.5,
+        "width": 2232.5,
         "x": 50,
         "y": 50
       }

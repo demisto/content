@@ -23,3 +23,6 @@ if [ -f "/etc/alpine-release" ]; then
     apk del .build-dependencies
 fi
 
+mkdir /devwork
+chown :4000 /devwork
+chmod 775 /devwork
