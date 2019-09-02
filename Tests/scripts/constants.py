@@ -107,6 +107,9 @@ FILE_TYPES_FOR_TESTING = [
     '.yml'
 ]
 
+# python subtypes
+PYTHON_SUBTYPES = {'python3', 'python2'}
+
 # github repository url
 CONTENT_GITHUB_LINK = r'https://raw.githubusercontent.com/demisto/content'
 CONTENT_GITHUB_MASTER_LINK = CONTENT_GITHUB_LINK + '/master'

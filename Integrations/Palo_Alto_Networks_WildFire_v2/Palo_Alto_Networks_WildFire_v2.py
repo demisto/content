@@ -603,7 +603,7 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
         if verbose:
             for report in reports:
                 if isinstance(report, dict):
-                    md += tableToMarkdown('Report ', report, report.keys(), removeNull=True)
+                    md += tableToMarkdown('Report ', report, list(report), removeNull=True)
 
         demisto.results({
             'Type': entryTypes['note'],

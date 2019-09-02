@@ -1,4 +1,8 @@
 ## [Unreleased]
+- Improved implementation of the ***ews-get-contacts*** command.
+- More secure exchange 365 compliance search.
+
+- Improved security inside the docker container.
 - ews-get-items-from-folder command - support fetching item attachment
 
 ## [19.8.0] - 2019-08-06

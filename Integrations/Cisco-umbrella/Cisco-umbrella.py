@@ -732,27 +732,41 @@ def get_domain_command():
     headers = []  # type: ignore
     results = []
 
-    # Get vars
     domain = extract_domain_name(demisto.args()['domain'])
 
-    # Fetch data
-    # whois data
-    whois = []  # type: ignore
     whois = get_whois_for_domain(domain)
-    first_queried = whois.get('created')  # type: ignore
-    name_servers = whois.get('nameServers')  # type: ignore
-    emails = whois.get('emails')  # type: ignore
-    whois = {
-        'Name': whois['domainName'],  # type: ignore
-        'Registrar Name': whois['registrantName'],  # type: ignore
-        'Last Retrieved': timestamp_to_date(whois['timeOfLatestRealtimeCheck']),  # type: ignore
-        'Created': whois['created'],  # type: ignore
-        'Updated': whois['updated'],  # type: ignore
-        'Expires': whois['expires'],  # type: ignore
-        'IANAID': whois['registrarIANAID'],  # type: ignore
-        'Last Observed': whois['auditUpdatedDate']  # type: ignore
+    admin = {
+        'Country': whois.get('administrativeContactCountry'),
+        'Email': whois.get('administrativeContactEmail'),
+        'Name': whois.get('administrativeContactName'),
+        'Phone': whois.get('administrativeContactTelephone')
     }
-    # domain categorization data
+    registrant = {
+        'Country': whois.get('registrantCountry'),
+        'Email': whois.get('registrantEmail'),
+        'Name': whois.get('registrantName'),
+        'Phone': whois.get('registrantTelephone')
+    }
+    first_queried = whois.get('created')
+    name_servers = whois.get('nameServers')
+    emails = whois.get('emails')
+    registrar = {'Name': whois.get('registrarName')}
+    creation_date = first_queried
+    domain_status = whois.get('status')
+    updated_date = whois.get('updated')
+    expiration_date = whois.get('expires')
+
+    whois = {
+        'Name': whois.get('domainName'),
+        'Registrar Name': whois.get('registrarName'),
+        'Last Retrieved': timestamp_to_date(whois.get('timeOfLatestRealtimeCheck')),
+        'Created': whois.get('created'),
+        'Updated': whois.get('updated'),
+        'Expires': whois.get('expires'),
+        'IANAID': whois.get('registrarIANAID'),
+        'Last Observed': whois.get('auditUpdatedDate')
+    }
+
     domain_categorization = []  # type: ignore
     domain_categorization = get_domain_categorization(domain)
     content_categories = domain_categorization.get('content_categories')  # type: ignore
@@ -762,17 +776,22 @@ def get_domain_command():
         'Content Categories': content_categories,
         'Malware Categories': malware_categories
     }
-    # domain details data
+
     domain_details = []  # type: ignore
     domain_details = get_domain_details(domain)
     popularity = domain_details.get('popularity')  # type: ignore
     secure_rank = domain_details.get('securerank2')  # type: ignore
     dbotscore = securerank_to_dbotscore(secure_rank)
 
-    # context entry
-    # Domain
     context[outputPaths['domain']] = {
         'Name': domain,
+        'Admin': admin,
+        'Registrant': registrant,
+        'Registrar': registrar,
+        'CreationDate': creation_date,
+        'DomainStatus': domain_status,
+        'UpdatedDate': updated_date,
+        'ExpirationDate': expiration_date,
         'Umbrella': {
             'RiskScore': risk_score,
             'SecureRank': secure_rank,
@@ -790,7 +809,6 @@ def get_domain_command():
         }
         dbotscore = 3
 
-    # DbotScore
     context[outputPaths['dbotscore']] = {
         'Indicator': domain,
         'Type': 'domain',
@@ -798,7 +816,6 @@ def get_domain_command():
         'Score': dbotscore
     }
 
-    # contents entry
     contents.append({
         'Risk Score': risk_score,
         'Secure Rank': secure_rank,
@@ -1351,35 +1368,64 @@ def get_whois_for_domain_command():
     results = []
     contents_nameserver = {}  # type: ignore
     contents_email = {}  # type: ignore
-    # Get vars
+
     original_domain = demisto.args()['domain']
     domain = extract_domain_name(original_domain)
-    # Fetch data
+
     res = get_whois_for_domain(domain)
     if res:
         # Process response - build context and markdown table
         nameservers = res.get('nameServers')
         emails = res.get('emails')
         whois = {
-            'Name': res['domainName'],
-            'RegistrarName': res['registrarName'],
+            'Name': res.get('domainName'),
+            'RegistrarName': res.get('registrarName'),
             'LastRetrieved': res.get('timeOfLatestRealtimeCheck'),
-            'Created': res['created'],
-            'Updated': res['updated'],
-            'Expires': res['expires'],
-            'IANAID': res['registrarIANAID'],
-            'LastObserved': res['auditUpdatedDate'],
+            'Created': res.get('created'),
+            'Updated': res.get('updated'),
+            'Expires': res.get('expires'),
+            'IANAID': res.get('registrarIANAID'),
+            'LastObserved': res.get('auditUpdatedDate')
         }
 
         table_whois = {
-            'Name': whois['Name'],
-            'Registrar Name': whois['RegistrarName'],
-            'Last Retrieved': timestamp_to_date(whois['LastRetrieved']),
-            'Created': whois['Created'],
-            'Updated': whois['Updated'],
-            'Expires': whois['Expires'],
-            'IANAID': whois['IANAID'],
-            'Last Observed': whois['LastObserved'],
+            'Name': whois.get('Name'),
+            'Registrar Name': whois.get('RegistrarName'),
+            'Last Retrieved': timestamp_to_date(whois.get('LastRetrieved')),
+            'Created': whois.get('Created'),
+            'Updated': whois.get('Updated'),
+            'Expires': whois.get('Expires'),
+            'IANAID': whois.get('IANAID'),
+            'Last Observed': whois.get('LastObserved')
+        }
+
+        admin = {
+            'Country': res.get('administrativeContactCountry', ),
+            'Email': res.get('administrativeContactEmail', ),
+            'Name': res.get('administrativeContactName'),
+            'Phone': res.get('administrativeContactTelephone')
+        }
+        registrant = {
+            'Country': res.get('registrantCountry'),
+            'Email': res.get('registrantEmail'),
+            'Name': res.get('registrantName'),
+            'Phone': res.get('registrantTelephone'),
+        }
+        creation_date = res.get('created')
+        registrar = {'Name': res.get('registrarName')}
+        domain_status = res.get('status')
+        updated_date = res.get('updated')
+        expiration_date = res.get('expires')
+
+        context[outputPaths['domain']] = {
+            'Name': domain,
+            'Admin': admin,
+            'Registrant': registrant,
+            'Registrar': registrar,
+            'CreationDate': creation_date,
+            'DomainStatus': domain_status,
+            'UpdatedDate': updated_date,
+            'ExpirationDate': expiration_date,
         }
 
         contents_nameserver = {'Nameservers': nameservers}
