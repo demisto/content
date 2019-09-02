@@ -157,12 +157,15 @@ RELATED_KEY = {
 ''' HELPER FUNCTIONS '''
 
 
-def get_errors_string_from_bad_request(bad_request_results):
+def get_errors_string_from_bad_request(bad_request_results, status_code):
+    if status_code == 404:
+        return 'Object does not exist.\n'
+
     # Errors could be retrieved in two forms:
     # 1. A dictionary of fields and errors list related to the fields, all under 'data' key in the response json object
     # 2. A list, directly within the response object
 
-    errors_string = 'Errors from server:\n\n'
+    errors_string = 'Errors from service:\n\n'
 
     # First form
     errors_dict = bad_request_results.json().get('data', {}).get('errors', {})
@@ -176,20 +179,23 @@ def get_errors_string_from_bad_request(bad_request_results):
     errors_list = bad_request_results.json().get('errors', [])
     if errors_list:
         for error_num, error in enumerate(errors_list, 1):
-            errors_string += 'Error #{0}: {1}\n'.format(error_num, error)
+            if isinstance(error, str):
+                errors_string += 'Error #{0}: {1}\n'.format(error_num, error)
+            else:  # error is a list
+                for i in range(len(error)):
+                    errors_string += 'Error #{0}.{1}: {2}\n'.format(error_num, i, error[i])
         return errors_string
 
-    return str()  # Server did not provide any errors.
+    return str()  # Service did not provide any errors.
 
 
-# ThreatQ auth based on OAuth 2.0 credential grand method
 def request_new_access_token():
     data = {'grant_type': 'password', 'email': EMAIL, 'password': PASSWORD, 'client_id': CLIENT_ID}
     access_token_response = requests.post(API_TOKEN_URL, data=data, verify=USE_SSL, allow_redirects=False)
 
     res = json.loads(access_token_response.text)
     if int(access_token_response.status_code) >= 400:
-        errors_string = get_errors_string_from_bad_request(access_token_response)
+        errors_string = get_errors_string_from_bad_request(access_token_response, access_token_response.status_code)
         error_message = 'Authentication failed, unable to retrieve an access token.\n{}'.format(errors_string)
         return_error(error_message)
 
@@ -230,7 +236,7 @@ def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_resp
                                 headers=api_call_headers, verify=USE_SSL, files=files)
 
     if response.status_code >= 400:
-        errors_string = get_errors_string_from_bad_request(response)
+        errors_string = get_errors_string_from_bad_request(response, response.status_code)
         error_message = 'Received and error - status code [{0}].\n{1}'.format(response.status_code, errors_string)
         return_error(error_message)
 
@@ -477,7 +483,7 @@ def indicator_data_to_demisto_format(data):
         'UpdatedAt': data.get('updated_at'),
         'CreatedAt': data.get('created_at'),
         'Value': data.get('value'),
-        'status': STATUS_ID_TO_STATUS[data.get('status_id')],
+        'Status': STATUS_ID_TO_STATUS[data.get('status_id')],
         'IndicatorType': TYPE_ID_TO_IOC_TYPE[data.get('type_id')],
         'URL': '{0}/indicators/{1}/details'.format(SERVER_URL, data.get('id')),
         'TQScore': get_tq_score_from_response(data.get('score')),
@@ -551,16 +557,16 @@ def get_pivot_id(obj1_type, obj1_id, obj2_type, obj2_id):
             return int(related_object['pivot']['id'])
 
 
-def add_malicious_data(generic_context):
+def add_malicious_data(generic_context, tq_score):
     generic_context['Malicious'] = {
         'Vendor': 'ThreatQ',
-        'description': 'High risk'
+        'Description': 'Score from ThreatQ is {0}'.format(tq_score)
     }
 
 
 def set_ioc_entry_context(ioc_type, raw, dbot, generic):
     if dbot.get('Score') == 3:
-        add_malicious_data(generic)
+        add_malicious_data(generic, raw.get('TQScore', -1))
     ec = {
         outputPaths[ioc_type]: generic,
         'DBotScore': dbot
@@ -1019,7 +1025,6 @@ def upload_file_command():
     title = args.get('title')
     malware_safety_lock = args.get('malware_safety_lock')
     file_type = args.get('file_type')
-    source = args.get('source')
 
     file_info = demisto.getFilePath(entry_id)
 
@@ -1030,8 +1035,7 @@ def upload_file_command():
         'name': file_info['name'],
         'title': title,
         'type': file_type,
-        'malware_locked': malware_locked_to_request_format(malware_safety_lock),
-        'sources': [source] if source else []
+        'malware_locked': malware_locked_to_request_format(malware_safety_lock)
     }
 
     try:
