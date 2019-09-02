@@ -1,0 +1,56 @@
+category: Authentication
+commonfields:
+  id: Tanium-Rest
+  version: -1
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+- defaultvalue: 'true'
+  display: Trust any certificate (insecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- display: domain
+  name: domain
+  required: false
+  type: 0
+- display: credentials
+  name: credentials
+  required: false
+  type: 9
+description: Integration Template
+display: Tanium-Rest
+name: Tanium-Rest
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: name
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: id
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: get package
+    execution: false
+    name: tn-get-package
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
