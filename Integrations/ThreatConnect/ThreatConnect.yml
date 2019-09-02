@@ -2039,7 +2039,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the group to retrieve
+      description: The ID of the group to retrieve. To get the ID, run the tc-get-groups
+        command.
       isArray: false
       name: group_id
       required: true
@@ -2092,7 +2093,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Group ID.
+      description: Group ID. To get the ID, run the tc-get-groups command.
       isArray: false
       name: group_id
       required: true
@@ -2142,7 +2143,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Group ID.
+      description: Group ID. To get the ID, run the tc-get-groups command.
       isArray: false
       name: group_id
       required: true
@@ -2183,7 +2184,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Group ID.
+      description: Group ID. To get the ID, run the tc-get-groups command.
       isArray: false
       name: group_id
       required: true
@@ -2207,11 +2208,41 @@ script:
     description: Download the contents of a Document
     execution: false
     name: tc-download-document
+    outputs:
+    - contextPath: File.Size
+      description: File size.
+      type: Number
+    - contextPath: File.SHA1
+      description: File SHA1
+      type: String
+    - contextPath: File.SHA256
+      description: File SHA256.
+      type: String
+    - contextPath: File.Name
+      description: File name.
+      type: String
+    - contextPath: File.SSDeep
+      description: File SSDeep.
+      type: String
+    - contextPath: File.EntryID
+      description: File entry ID.
+      type: String
+    - contextPath: File.Info
+      description: File info.
+      type: String
+    - contextPath: File.Type
+      description: File type.
+      type: String
+    - contextPath: File.MD5
+      description: File MD5
+      type: String
+    - contextPath: File.Extension
+      description: File extension.
+      type: String
   dockerimage: demisto/threatconnect-sdk
   isfetch: false
   runonce: false
   script: '-'
   type: python
-  subtype: python2
 tests:
 - test-ThreatConnect

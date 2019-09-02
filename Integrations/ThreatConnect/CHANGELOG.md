@@ -4,6 +4,7 @@ Added 5 new commands.
    - ***tc-get-group-attributes***
    - ***tc-get-group-security-labels***
    - ***tc-get-group-tags***
+   - ***tc-download-document***
 
 
 ## [19.8.2] - 2019-08-22
