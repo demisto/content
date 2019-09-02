@@ -21,6 +21,10 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
 - display: Fetch incidents
   name: isFetch
   defaultvalue: ""

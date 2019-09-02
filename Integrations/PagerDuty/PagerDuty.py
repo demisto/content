@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 USE_SSL = True
 
 USE_PROXY = demisto.params().get('proxy', True)
+USE_SSL = not demisto.params().get('insecure', False)
 API_KEY = demisto.params()['APIKey']
 SERVICE_KEY = demisto.params()['ServiceKey']
 FETCH_INTERVAL = demisto.params()['FetchInterval']
@@ -22,13 +23,6 @@ DEFAULT_HEADERS = {
     'Authorization': 'Token token=' + API_KEY,
     'Accept': 'application/vnd.pagerduty+json;version=2'
 }
-
-'''HANDLE PROXY'''
-if not USE_PROXY:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 '''PARAMS'''
 UTC_PARAM = '&time_zone=UTC'
@@ -698,6 +692,7 @@ def get_service_keys():
 LOG('command is %s' % (demisto.command(), ))
 
 try:
+    handle_proxy()
     if demisto.command() == 'test-module':
         test_module()
     elif demisto.command() == 'fetch-incidents':
