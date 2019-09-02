@@ -497,26 +497,39 @@ def get_relevant_prs(time_or_period: Union[str, datetime], label: str, query: st
         # if parse_date_range threw an exception it means that 'time_or_period' was already in the right format
         pass
     timestamp, _ = reg.subn('', time_or_period.isoformat())
-    query = query.replace('{USER}', USER).replace('{REPOSITORY}', REPOSITORY)
-    query = query.replace('{timestamp}', timestamp).replace('{label}', label)
+    query = query.replace('{USER}', USER).replace('{REPOSITORY}', REPOSITORY).replace('{timestamp}', timestamp)
+
+    # if label was passed then use it in the query otherwise remove that part of the query
+    if label:
+        query = query.replace('{label}', label)
+    elif ' label:{label}' in query:
+        query = query.replace(' label:{label}', '')
+    elif ' -label:{label}' in query:
+        query = query.replace(' -label:{label}', '')
+
     matching_issues = search_issue(query).get('items', [])
     relevant_prs = [get_pull_request(issue.get('number')) for issue in matching_issues]
     return relevant_prs
 
 
-def get_stale_prs_reviewers(args={}):
+def get_stale_prs(args={}):
     stale_time = args.get('stale_time')
     label = args.get('label')
     query = 'repo:{USER}/{REPOSITORY} is:open updated:<{timestamp} is:pr label:{label}'
     return get_relevant_prs(stale_time, label, query)
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+''' COMMANDS '''
 
 
-def get_stale_prs_reviewers_command():
+def test_module():
+    http_request(method='GET', url_suffix=ISSUE_SUFFIX, params={'state': 'all'})
+    demisto.results("ok")
+
+
+def get_stale_prs_command():
     args = demisto.args()
-    results = get_stale_prs_reviewers(args)
+    results = get_stale_prs(args)
     if results:
         formatted_results = []
         for pr in results:
@@ -645,6 +658,21 @@ def fetch_incidents_command():
     demisto.incidents(incidents)
 
 
+''' COMMANDS MANAGER / SWITCH PANEL '''
+
+COMMANDS = {
+    'test-module': test_module,
+    'fetch-incidents': fetch_incidents_command,
+    'GitHub-create-issue': create_command,
+    'GitHub-close-issue': close_command,
+    'GitHub-update-issue': update_command,
+    'GitHub-list-all-issues': list_all_command,
+    'GitHub-search-issues': search_command,
+    'GitHub-get-download-count': get_download_count,
+    'GitHub-get-stale-prs': get_stale_prs_command
+}
+
+
 '''EXECUTION'''
 
 
@@ -653,8 +681,7 @@ def main():
     LOG('command is %s' % (demisto.command(),))
     try:
         if demisto.command() == 'test-module':
-            http_request(method='GET', url_suffix=ISSUE_SUFFIX, params={'state': 'all'})
-            demisto.results("ok")
+            test_module()
         elif demisto.command() == 'fetch-incidents':
             fetch_incidents_command()
         elif demisto.command() == 'GitHub-create-issue':
@@ -669,8 +696,8 @@ def main():
             search_command()
         elif demisto.command() == 'GitHub-get-download-count':
             get_download_count()
-        elif demisto.command() == 'GitHub-get-stale-prs-reviewers':
-            get_stale_prs_reviewers_command()
+        elif demisto.command() == 'GitHub-get-stale-prs':
+            get_stale_prs_command()
 
     except Exception as e:
         LOG(str(e))
