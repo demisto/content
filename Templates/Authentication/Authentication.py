@@ -3,9 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from typing import cast, Any, Dict, Tuple, List, AnyStr
-from xml.etree import ElementTree
-
+from typing import cast, Any, Dict, Tuple, List, AnyStr, Optional
 import requests
 import urllib3
 
@@ -21,10 +19,14 @@ INTEGRATION_NAME_CONTEXT: str = 'AuthenticationIntegration'
 
 
 class Client:
-    def __init__(self, server: str, use_ssl: bool):
-        self.server: str = server.rstrip(chars='/')
-        self.use_ssl: bool = use_ssl
-        self.base_url: str = self.server + '/api/v2.0/'
+    def __init__(self, server: str, use_ssl: bool, proxy: Optional[bool]):
+        self._server: str = server.rstrip(chars='/')
+        self._use_ssl: bool = use_ssl
+        if proxy:
+            self._proxies: Optional[Dict] = handle_proxy()
+        else:
+            self._proxies = None
+        self._base_url: str = self._server + '/api/v2.0/'
 
     def _http_request(self, method: str, url_suffix: str, full_url: str = None, headers: Dict = None,
                       auth: Tuple = None, params: Dict = None, data: Dict = None, files: Dict = None,
@@ -63,17 +65,18 @@ class Client:
                 Response JSON from having made the request.
         """
         try:
-            address = full_url if full_url else self.base_url + url_suffix
+            address = full_url if full_url else self._base_url + url_suffix
             res = requests.request(
                 method,
                 address,
-                verify=self.use_ssl,
+                verify=self._use_ssl,
                 params=params,
                 data=data,
                 files=files,
                 headers=headers,
                 auth=auth,
-                timeout=timeout
+                timeout=timeout,
+                proxies=self._proxies
             )
 
             # Handle error responses gracefully
@@ -82,15 +85,8 @@ class Client:
                 try:
                     # Try to parse json error response
                     res_json = res.json()
-                    message = res_json.get('message')
-                    return_error(message)
+                    return_error(res_json)
                 except json.decoder.JSONDecodeError:
-                    if res.status_code in (400, 401, 501):
-                        # Try to parse xml error response
-                        resp_xml = ElementTree.fromstring(res.content)
-                        codes = [child.text for child in resp_xml.iter() if child.tag == 'CODE']
-                        messages = [child.text for child in resp_xml.iter() if child.tag == 'MESSAGE']
-                        err_msg += ''.join([f'\n{code}: {msg}' for code, msg in zip(codes, messages)])
                     return_error(err_msg)
 
             resp_type = resp_type.casefold()
@@ -396,7 +392,8 @@ def list_credentials(client: Client):
 def main():
     server: str = demisto.getParam('url')
     use_ssl: bool = not demisto.params().get('insecure', False)
-    client: Client = Client(server, use_ssl)
+    proxy: Optional[bool] = demisto.params().get('proxy')
+    client: Client = Client(server, use_ssl, proxy)
     command: str = demisto.command()
     demisto.info(f'Command being called is {command}')
     commands: Dict = {

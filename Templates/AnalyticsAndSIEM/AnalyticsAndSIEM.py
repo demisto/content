@@ -147,12 +147,13 @@ def built_context(events: Union[Dict, List]) -> Union[Dict, List]:
 ''' COMMANDS '''
 
 
-def test_module(client: Client):
+def test_module(client: Client) -> str:
     """
     Performs basic get request to get item samples
     """
     if client.test_module():
         return 'ok'
+    raise DemistoException('Test module failed')
 
 
 def fetch_incidents(client: Client):
@@ -275,7 +276,7 @@ def create_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def query(client: Client, args: Dict):
-    query_dict: Dict = {
+    query_dict = {
         'eventId': args.get('event_id'),
         'sinceTime': args.get('since_time'),
         'assignee': argToList(args.get('assignee')),
@@ -318,7 +319,7 @@ def main():
                             base_suffix=base_suffix,
                             verify=verify_ssl,
                             proxy=proxy)
-    command: str = demisto.command()
+    command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
     # Switch case
@@ -346,6 +347,5 @@ if __name__ == '__builtin__':
     main()
 
 # TODO: add pip file
-# Return fro mevery function
 # Threahold
 #

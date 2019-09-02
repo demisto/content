@@ -13,6 +13,10 @@ configuration:
   name: insecure
   required: false
   type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
 description: Integration Template
 display: DataEnrichmentThreatIntelligence
 name: DataEnrichmentThreatIntelligence

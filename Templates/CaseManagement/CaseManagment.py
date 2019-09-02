@@ -13,19 +13,22 @@ import urllib3
 urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-INTEGRATION_NAME: str = 'Analytics & SIEM Integration'
+INTEGRATION_NAME: str = 'Case Management Integration'
 # lowercase with `-` dividers
-INTEGRATION_NAME_COMMAND: str = 'analytics-and-siem'
+INTEGRATION_NAME_COMMAND: str = 'case-management'
 # No dividers
-INTEGRATION_NAME_CONTEXT: str = 'AnalyticsAndSIEM'
+INTEGRATION_NAME_CONTEXT: str = 'CaseManagement'
 
 
 class Client:
-    def __init__(self, server: str, use_ssl: bool, fetch_time: Optional[str] = None):
-        self._server: str = server.rstrip(chars='/')
-        self._use_ssl: bool = use_ssl
-        self._fetch_time: Optional[str] = fetch_time
-        self._base_url: str = self._server + '/api/v2.0/'
+    def __init__(self, server: str, use_ssl: bool, proxy: Optional[bool]):
+        self.server: str = server.rstrip(chars='/')
+        self.use_ssl: bool = use_ssl
+        if proxy:
+            self._proxies: Optional[Dict] = handle_proxy()
+        else:
+            self._proxies = None
+        self.base_url: str = self.server + '/api/v2.0/'
 
     def _http_request(self, method: str, url_suffix: str, full_url: str = None, headers: Dict = None,
                       auth: Tuple = None, params: Dict = None, data: Dict = None, files: Dict = None,
@@ -64,17 +67,18 @@ class Client:
                 Response JSON from having made the request.
         """
         try:
-            address = full_url if full_url else self._base_url + url_suffix
+            address = full_url if full_url else self.base_url + url_suffix
             res = requests.request(
                 method,
                 address,
-                verify=self._use_ssl,
+                verify=self.use_ssl,
                 params=params,
                 data=data,
                 files=files,
                 headers=headers,
                 auth=auth,
-                timeout=timeout
+                timeout=timeout,
+                proxies=self._proxies
             )
 
             # Handle error responses gracefully
@@ -131,9 +135,6 @@ class Client:
                       f' is correct and that you have access to the server from your host.'
             return_error(err_msg)
 
-    def get_last_fetch(self):
-        return self._fetch_time
-
     def test_module(self) -> bool:
         """Performs basic get request to get item samples
 
@@ -143,101 +144,96 @@ class Client:
         self._http_request('GET', 'version')
         return True
 
-    def fetch_incidents(self, timestamp: datetime) -> Dict:
+    def list_tickets_request(self, limit: Optional[AnyStr]) -> Dict:
         """Gets all credentials from API.
-        Args:
-            timestamp: timestamp to start pull events from
+
         Returns:
-            events from sinceTime
+            credentials
         """
-        time_format: str = '%Y-%m-%dT%H:%M:%S.%fZ"'
-        suffix: str = 'event'
-        timestamp_str = timestamp.strftime(time_format)
-        params = {
-            'sinceTime': timestamp_str
-        }
+        suffix = 'ticket'
+        params = dict()
+        if limit:
+            params['limit'] = limit
         return self._http_request('GET', suffix, params=params)
 
-    def get_event_request(self, event_id: AnyStr) -> Dict:
+    def lock_account_request(self, account: AnyStr) -> Dict:
         """Gets events from given IDS
 
         Args:
-            event_id: event id to get
+            account: account to lock
 
         Returns:
-            event details
+            locked account
         """
         # The service endpoint to request from
-        suffix: str = 'event'
+        suffix: str = 'account/lock'
         # Dictionary of params for the request
         params = {
-            'eventId': event_id
+            'account': account
         }
-        return self._http_request('GET', suffix, params=params)
+        return self._http_request('POST', suffix, params=params)
 
-    def close_event_request(self, event_id: AnyStr) -> requests.Response:
+    def unlock_account_request(self, account: AnyStr):
         """Gets events from given IDS
 
         Args:
-            event_id: event to delete
+            account: account to unlock
 
         Returns:
             response json
         """
         # The service endpoint to request from
-        suffix: str = 'event'
+        suffix: str = 'account/unlock'
         # Dictionary of params for the request
         params = {
-            'eventId': event_id
+            'account': account
         }
         # Send a request using our http_request wrapper
-        return self._http_request('DELETE', suffix, params=params, resp_type='response')
+        return self._http_request('POST', suffix, params=params)
 
-    def update_event_request(self, event_id: AnyStr, description: Optional[AnyStr] = None,
-                             assignee: Optional[List[str]] = None) -> Dict:
-        """Update given event
+    def reset_account_request(self, account: str):
+        """Gets events from given IDS
 
         Args:
-            description: change description of event
-            assignee: User to assign event to
-            event_id: event ID
+            account: account to unlock
 
         Returns:
             response json
         """
-        suffix: str = 'event'
+        # The service endpoint to request from
+        suffix: str = 'account/reset'
+        # Dictionary of params for the request
         params = {
-            'eventId': event_id,
+            'account': account
         }
-
-        if description:
-            params['description'] = description
-        if assignee:
-            params['assignee'] = assignee
-
+        # Send a request using our http_request wrapper
         return self._http_request('POST', suffix, params=params)
 
-    def create_event_request(self, description: str, assignee: List[str] = None) -> Dict:
-        """Update given event
+    def unlock_vault_request(self, vault_to_lock) -> Dict:
+        """Unlocks vault
 
         Args:
-            description: change description of event
-            assignee: User to assign event to
+            vault_to_lock: vault to lock
 
         Returns:
-            requests.Response
+            locked state
         """
-        suffix = 'event'
-        params = {
-            'description': description,
-            'assignee': assignee
-        }
-
+        suffix = 'vault/unlock'
+        params = {'vault_id': vault_to_lock}
         return self._http_request('POST', suffix, params=params)
 
-    def query_request(self, **kwargs):
-        suffix: str = 'query'
-        return self._http_request('GET', suffix, params=kwargs)
+    def lock_vault_request(self, vault_to_lock: AnyStr) -> Dict:
+        """Locks vault
+
+        Args:
+            vault_to_lock: vault to lock
+
+        Returns:
+            locked state
+        """
+        suffix = 'vault/lock'
+        params = {'vault_id': vault_to_lock}
+        return self._http_request('POST', suffix, params=params)
 
 
 ''' HELPER FUNCTIONS '''
@@ -253,182 +249,168 @@ def test_module(client: Client):
         demisto.results('ok')
 
 
-def fetch_incidents(client: Client):
-    """Uses to fetch credentials into Demisto
-    Documentation: https://github.com/demisto/content/tree/master/docs/fetching_credentials
-    """
-    # Get credentials from api
-    last_run = demisto.getLastRun()
-    if not last_run:  # if first time running
-        last_run, _ = parse_date_range(client.get_last_fetch())
-    raw_response: Dict = client.fetch_incidents(last_run)
-    events: List[Dict] = raw_response.get('incidents', [])
-    if events:
-        # Creates incident entry
-        incidents = [{
-            'name': event.get('title'),
-            'occurred': event.get('created'),
-            'rawJSON': json.dumps(event)
-        } for event in events]
-        demisto.setLastRun(datetime.now())
-        demisto.incidents(incidents)
-
-
-def get_event(client: Client):
+def get_ticket(client: Client):
     """
     Gets details about a raw_response using IDs or some other filters
     """
     # Initialize main vars
     context: Dict = dict()
     # Get arguments from user
-    event_id: str = demisto.args().get('event_id', '')
+    account_to_lock: str = demisto.args().get('account_id', '')
     # Make request and get raw response
-    raw_response: Dict = client.get_event_request(event_id)
+    raw_response: Dict = client.lock_account_request(account_to_lock)
     # Parse response into context & content entries
-    event: Dict = raw_response.get('event', {})
-    if event:
-        title: str = f'{INTEGRATION_NAME} - Event `{event_id}`:'
+    if raw_response.get('locked_account') == account_to_lock:
+        title: str = f'{INTEGRATION_NAME} - Account `{account_to_lock}` has been locked.'
         context_entry = {
-            'ID': event_id,
-            'Description': event.get('description'),
-            'Created': event.get('createdAt'),
-            'IsActive': event.get('isActive'),
-            'Assignee': event.get('assignee')
+            'IsLocked': True,
+            'ID': account_to_lock
         }
-        context[f'{INTEGRATION_NAME_CONTEXT}.Event(val.ID && val.ID === obj.ID)'] = context_entry
+        context[f'{INTEGRATION_NAME_CONTEXT}.Account(val.ID && val.ID === obj.ID)'] = context_entry
         # Creating human readable for War room
         human_readable: str = tableToMarkdown(title, context_entry)
         # Return data to Demisto
         return_outputs(human_readable, context, raw_response)
     else:
-        return_error(f'{INTEGRATION_NAME} - Could not find event `{event_id}`')
+        return_error(f'{INTEGRATION_NAME} - Could not lock account `{account_to_lock}`')
 
 
-def close_event(client: Client):
+def create_ticket(client: Client):
     """
     Gets details about a raw_response using IDs or some other filters
     """
     # Initialize main vars
     context: Dict = dict()
     # Get arguments from user
-    event_id: str = demisto.args().get('event_id', '')
+    account_to_unlock: str = demisto.args().get('account_id', '')
     # Make request and get raw response
-    response: requests.Response = client.close_event_request(event_id)
+    unlocked_account: str = client.unlock_account_request(account_to_unlock)
     # Parse response into context & content entries
-    if response.status_code == 200:
-        title: str = f'{INTEGRATION_NAME} - Event `{event_id}` has been deleted.'
+    if unlocked_account == account_to_unlock:
+        title: str = f'{INTEGRATION_NAME} - Account `{unlocked_account}` has been unlocked.'
         context_entry = {
-            'ID': event_id,
-            'IsActive': False
+            'IsLocked': False,
+            'ID': account_to_unlock
         }
 
-        context[f'{INTEGRATION_NAME_CONTEXT}.Event(val.ID && val.ID === obj.ID)'] = context_entry
+        context[f'{INTEGRATION_NAME_CONTEXT}.Account(val.ID && val.ID === obj.ID)'] = context_entry
         # Creating human readable for War room
         human_readable: str = tableToMarkdown(title, context_entry)
         # Return data to Demisto
         return_outputs(human_readable, context)
     else:
-        return_error(f'{INTEGRATION_NAME} - Could not delete event `{event_id}`')
+        return_error(f'{INTEGRATION_NAME} - Could not unlock account `{account_to_unlock}`')
 
 
-def update_event(client: Client):
-    event_id: str = demisto.args().get('event_id', '')
-    description: str = demisto.args().get('description', '')
-    assignee: List[str] = argToList(demisto.args().get('assignee', ''))
-    raw_response = client.update_event_request(event_id, description=description, assignee=assignee)
-    event = raw_response.get('event')
-    if event:
-        title: str = f'{INTEGRATION_NAME} - Event `{event_id}` has been updated.'
+def assign_ticket(client: Client):
+    vault_to_lock: str = demisto.args().get('vault', '')
+    raw_response = client.lock_vault_request(vault_to_lock)
+    if 'is_locked' in raw_response and raw_response['is_locked'] is True:
+        title: str = f'{INTEGRATION_NAME} - Vault {vault_to_lock} has been locked'
         context_entry = {
-            'ID': event_id,
-            'Description': event.get('description'),
-            'Created': event.get('createdAt'),
-            'IsActive': event.get('isActive'),
-            'Assignee': event.get('assignee')
+            'ID': vault_to_lock,
+            'IsLocked': True
         }
         context = {
-            f'{INTEGRATION_NAME_CONTEXT}.Event(val.ID && val.ID === obj.ID)': context_entry
+            f'{INTEGRATION_NAME_CONTEXT}.Vault(val.ID && val.ID === obj.ID)': context_entry
         }
         human_readable = tableToMarkdown(title, context_entry)
         return_outputs(human_readable, context, raw_response)
     else:
-        return_error(f'{INTEGRATION_NAME} - Could not update event `{event_id}`')
+        return_error(f'{INTEGRATION_NAME} - Could not lock vault ID: {vault_to_lock}')
 
 
-def create_event(client: Client):
-    description: str = demisto.args().get('description', '')
-    assignee: List[str] = argToList(demisto.args().get('assignee', ''))
-    raw_response: Dict = client.create_event_request(description, assignee)
-    event: Dict = raw_response.get('event', {})
-    if event:
-        event_id: str = event.get('eventId', '')
-        title: str = f'{INTEGRATION_NAME} - Event `{event_id}` has been created.'
+def list_users(client: Client):
+    vault_to_lock: str = demisto.args().get('vault', '')
+    raw_response = client.unlock_vault_request(vault_to_lock)
+    if 'is_locked' in raw_response and raw_response['is_locked'] is True:
+        title: str = f'{INTEGRATION_NAME} - Vault {vault_to_lock} has been unlocked'
         context_entry = {
-            'ID': event_id,
-            'Description': event.get('description'),
-            'Created': event.get('createdAt'),
-            'IsActive': event.get('isActive'),
-            'Assignee': event.get('assignee')
+            'ID': vault_to_lock,
+            'IsLocked': True
         }
         context = {
-            f'{INTEGRATION_NAME_CONTEXT}.Event(val.ID && val.ID === obj.ID)': context_entry
+            f'{INTEGRATION_NAME_CONTEXT}.Vault(val.ID && val.ID === obj.ID)': context_entry
         }
         human_readable = tableToMarkdown(title, context_entry)
         return_outputs(human_readable, context, raw_response)
     else:
-        return_error(f'{INTEGRATION_NAME} - Could not create new event.')
+        return_error(f'{INTEGRATION_NAME} - Could not lock vault ID: {vault_to_lock}')
 
 
-def query(client: Client):
-    query_dict: Dict = {
-        'eventId': demisto.args().get('event_id', ''),
-        'sinceTime': demisto.args().get('since_time', ''),
-        'assignee': argToList(demisto.args().get('assignee')),
-        'isActive': demisto.args().get('is_active') == 'true'
-    }
-    # filter dictionary
-    query_dict = {key: value for key, value in query_dict.items() if vault is not None}
-    if not query_dict.get('assignee'):
-        del query_dict['assignee']
-    raw_response: Dict = client.query_request()
-    events: List = raw_response.get('event', [])
-    if events:
-        title: str = f'{INTEGRATION_NAME} - Results for given query'
-        context_entry = [{
-            'ID': event.get('id'),
-            'Description': event.get('description'),
-            'Created': event.get('createdAt'),
-            'IsActive': event.get('isActive'),
-            'Assignee': event.get('assignee')
-        } for event in events]
-        context = {
-            f'{INTEGRATION_NAME_CONTEXT}.Event(val.ID && val.ID === obj.ID)': context_entry
+def close_ticket(client: Client):
+    """
+    Gets details about a raw_response using IDs or some other filters
+    """
+    # Initialize main vars
+    context: Dict = dict()
+    # Get arguments from user
+    account_to_reset: str = demisto.args().get('account_id', '')
+    # Make request and get raw response
+    defaulted_account: str = client.reset_account_request(account_to_reset)
+    # Parse response into context & content entries
+    if defaulted_account == account_to_reset:
+        title: str = f'{INTEGRATION_NAME} - Account `{defaulted_account}` has been returned to default.'
+        context_entry = {
+            'IsLocked': False,
+            'ID': account_to_reset
         }
+
+        context[f'{INTEGRATION_NAME_CONTEXT}.Account(val.ID && val.ID === obj.ID)'] = context_entry
+        # Creating human readable for War room
         human_readable: str = tableToMarkdown(title, context_entry)
-        return_outputs(human_readable, context, raw_response)
+        # Return data to Demisto
+        return_outputs(human_readable, context)
     else:
-        return_warning(f'{INTEGRATION_NAME} - Could not find any results for given query')
+        return_error(f'{INTEGRATION_NAME} - Could not reset account `{account_to_reset}`')
+
+
+def list_tickets(client: Client):
+    limit: Optional[str] = demisto.args().get('limit')
+    raw_response: Dict = client.list_tickets_request(limit)
+    tickets: List[Dict] = raw_response.get('tickets', [])
+    if tickets:
+        title: str = f'{INTEGRATION_NAME} - Tickets list'
+        context_entry = [
+            {
+                'ID': ticket.get('id'),
+                'Name': ticket.get('name'),
+                'Category': ticket.get('category'),
+                'Assignee': [
+                    {
+                        'ID': assignee.get('id'),
+                        'Name': assignee.get('name')
+                    } for assignee in ticket.get('assignee', [])
+                ]
+            } for ticket in tickets
+        ]
+        context = {
+            f'{INTEGRATION_NAME_CONTEXT}.Ticket(val.ID && val.Name ==== obj.ID)': context_entry
+        }
+        human_readable = tableToMarkdown(title, context_entry)
+        return_outputs(human_readable, context, context)
+    else:
+        return_warning(f'{INTEGRATION_NAME} - Could not find any tickets.')
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
 def main():
-    server: str = demisto.params().get('url', '')
-    fetch_time: str = demisto.params().get('fetch_time', '')
+    server: str = demisto.params().get('url')
     use_ssl: bool = not demisto.params().get('insecure', False)
-
-    client: Client = Client(server, use_ssl, fetch_time)
+    proxy: Optional[bool] = demisto.params().get('proxy')
+    client: Client = Client(server, use_ssl=use_ssl, proxy=proxy)
     command: str = demisto.command()
     demisto.info(f'Command being called is {command}')
     commands: Dict = {
         'test-module': test_module,
-        'fetch-incidents': fetch_incidents,
-        f'{INTEGRATION_NAME_COMMAND}-get-event': get_event,
-        f'{INTEGRATION_NAME_COMMAND}-delete-event': close_event,
-        f'{INTEGRATION_NAME_COMMAND}-update-event': update_event,
-        f'{INTEGRATION_NAME_COMMAND}-create-event': create_event,
-        f'{INTEGRATION_NAME_COMMAND}-query': query
+        f'{INTEGRATION_NAME_COMMAND}-list-tickets': list_tickets,
+        f'{INTEGRATION_NAME_COMMAND}-get-ticket': get_ticket,
+        f'{INTEGRATION_NAME_COMMAND}-create-ticket': create_ticket,
+        f'{INTEGRATION_NAME_COMMAND}-close-ticket': close_ticket,
+        f'{INTEGRATION_NAME_COMMAND}-assign-ticket': assign_ticket,
+        f'{INTEGRATION_NAME_COMMAND}-list-users': list_users
     }
     try:
         if command in commands:
