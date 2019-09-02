@@ -217,12 +217,12 @@ def return_self(return_date):
 
 
 @patch('ProofpointTAP_v2.parse_date_range')
-@patch("ProofpointTAP_v2.get_now", return_self("2010-01-01T00:00:00Z"))
+@patch("ProofpointTAP_v2.get_now", get_mocked_time)
 def test_first_fetch_incidents(mocked_parse_date_range, requests_mock):
     mock_date = "2010-01-01T00:00:00Z"
     mocked_parse_date_range.return_value = (mock_date, "never mind")
     requests_mock.get(
-        MOCK_URL + '/v2/siem/all?format=json&interval=2010-01-01T00%3A00%3A00Z%2F2019-09-02T11%3A04%3A20Z',
+        MOCK_URL + '/v2/siem/all?format=json&interval=2010-01-01T00%3A00%3A00Z%2F2010-01-01T00%3A00%3A00Z',
         json=MOCK_ALL_EVENTS)
 
     client = Client(
@@ -247,7 +247,7 @@ def test_first_fetch_incidents(mocked_parse_date_range, requests_mock):
     assert json.loads(incidents[0]['rawJSON'])["messageID"] == "1111@evil.zz"
 
 
-@patch("ProofpointTAP_v2.get_now", get_mocked_time())
+@patch("ProofpointTAP_v2.get_now", get_mocked_time)
 def test_next_fetch(requests_mock, ):
     mock_date = "2010-01-01T00:00:00Z"
     requests_mock.get('http://123-fake-api.com/v2/siem/all?format=json&interval=2010-01-01T00%3A00%3A00Z%2F2010-01-01T00%3A00%3A00Z&threatStatus=active&threatStatus=cleared',
@@ -282,4 +282,4 @@ def test_get_fetch_times():
     now = datetime.now()
     before_two_hours = now - timedelta(hours=2)
     times = get_fetch_times(before_two_hours)
-    assert len(times) == 3
+    assert len(times) == 2
