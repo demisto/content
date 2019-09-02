@@ -1,12 +1,14 @@
 import os
-import yaml
 import json
 import argparse
 from datetime import datetime
+import yaml
 
-from Tests.scripts.validate_files import FilesValidator
+from Tests.scripts.constants import UNRELEASE_HEADER, INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR,\
+    DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR
 from Tests.test_utils import server_version_compare, run_command, get_release_notes_file_path, print_warning
-from Tests.scripts.constants import UNRELEASE_HEADER
+from Tests.scripts.validate_files import FilesValidator
+from release_notes import LAYOUT_TYPE_TO_NAME
 
 
 CHANGE_LOG_FORMAT = UNRELEASE_HEADER + '\n\n## [{version}] - {date}\n'
@@ -23,26 +25,64 @@ def get_changed_content_entities(modified_files, added_files):
                               for file_path in modified_files])
 
 
+def get_file_data(file_path):
+    extension = os.path.splitext(file_path)[1]
+    if extension not in FILE_TYPE_DICT:
+        return False
+
+    load_function = FILE_TYPE_DICT[extension]
+    with open(file_path, 'r') as file_obj:
+        data = load_function(file_obj)
+
+    return data
+
+
 def should_clear(file_path, current_server_version="0.0.0"):
     """
     scan folder and remove all references to release notes
     :param file_path: path of the yml/json file
     :param current_server_version: current server version
     """
-    extension = os.path.splitext(file_path)[1]
-    if extension not in FILE_TYPE_DICT:
-        return False
+    data = get_file_data(file_path)
 
-    load_function = FILE_TYPE_DICT[extension]
-    with open(file_path, 'r') as f:
-        data = load_function(f)
-
-    v = data.get('fromversion') or data.get('fromVersion')
-    if v and server_version_compare(current_server_version, str(v)) < 0:
-        print_warning('keeping release notes for ({})\nto be published on {} version release'.format(file_path, str(v)))
+    version = data.get('fromversion') or data.get('fromVersion')
+    if version and server_version_compare(current_server_version, str(version)) < 0:
+        print_warning('keeping release notes for ({})\nto be published on {} version release'.format(file_path,
+                                                                                                     version))
         return False
 
     return True
+
+
+def get_new_header(file_path):
+    data = get_file_data(file_path)
+    mapping = {
+        # description
+        INTEGRATIONS_DIR: ('Integration', data.get('description', '')),
+        PLAYBOOKS_DIR: ('Playbook', data.get('description', '')),
+        REPORTS_DIR: ('Report', data.get('description', '')),
+        DASHBOARDS_DIR: ('Dashboard', data.get('description', '')),
+        WIDGETS_DIR: ('Widget', data.get('description', '')),
+
+        # comment
+        SCRIPTS_DIR: ('Script', data.get('comment', '')),
+
+        # custom
+        LAYOUTS_DIR: ('Layout', '{} - {}'.format(data.get('typeId'), LAYOUT_TYPE_TO_NAME.get(data.get('kind', '')))),
+
+        # should have RN when added
+        INCIDENT_FIELDS_DIR: ('Incident Field', data.get('name', '')),
+        CLASSIFIERS_DIR: ('Classifier', data.get('brandName', '')),
+        MISC_DIR: ('Reputation', data.get('id', data.get('name', ''))),  # reputations.json has name at first layer
+    }
+
+    for entity_dir in mapping:
+        if entity_dir in file_path:
+            entity_type, description = mapping[entity_dir]
+            return '#### New {}\n{}'.format(entity_type, description)
+
+    # should never get here
+    return '#### New Content File'
 
 
 def main():
@@ -56,9 +96,9 @@ def main():
     date = args.date if args.date else datetime.now().strftime('%Y-%m-%d')
 
     # get changed yaml/json files (filter only relevant changed files)
-    fv = FilesValidator()
+    files_validator = FilesValidator()
     change_log = run_command('git diff --name-status {}'.format(args.git_sha1))
-    modified_files, added_files, _, _ = fv.get_modified_files(change_log)
+    modified_files, added_files, _, _ = files_validator.get_modified_files(change_log)
 
     for file_path in get_changed_content_entities(modified_files, added_files):
         if not should_clear(file_path, args.server_version):
@@ -71,6 +111,12 @@ def main():
                 rn_file.seek(0)
                 text = text.replace(UNRELEASE_HEADER, CHANGE_LOG_FORMAT.format(version=args.version, date=date))
                 rn_file.write(text)
+        else:
+            # if file doesn't exist, create it with new header
+            with open(rn_path, 'w') as rn_file:
+                text = CHANGE_LOG_FORMAT.format(version=args.version, date=date) + get_new_header(file_path)
+                rn_file.write(text)
+            run_command('git add {}'.format(rn_path))
 
 
 if __name__ == '__main__':

@@ -85,8 +85,6 @@ def nested_dict_flatted(d, parent_key='', sep='.'):
         items = []  # type: ignore
         for k, v in d.items():
             new_key = parent_key + sep + k if parent_key else k
-            if isinstance(v, list) and len(v) > 0:
-                v = v[0]
             if isinstance(v, collections.MutableMapping) and len(v) > 0:
                 items.extend(nested_dict_flatted(v, new_key, sep=sep).items())
             else:
