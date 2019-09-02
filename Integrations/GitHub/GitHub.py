@@ -551,6 +551,23 @@ def get_branch_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
+def create_branch_command():
+    args = demisto.args()
+    branch_name = args.get('branch_name')
+    sha = args.get('sha')
+    response = create_branch(branch_name, sha)
+
+    ec_object = {
+        'Ref': response.get('ref'),
+        'NodeID': response.get('node_id')
+    }
+    ec = {
+        'GitHub.Branch(val.Ref === obj.Ref && val.NodeID === obj.NodeID)': ec_object
+    }
+    human_readable = tableToMarkdown('Created Branch Details', ec_object, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
 def get_stale_prs_command():
     args = demisto.args()
     results = get_stale_prs(args)
@@ -694,7 +711,8 @@ COMMANDS = {
     'GitHub-search-issues': search_command,
     'GitHub-get-download-count': get_download_count,
     'GitHub-get-stale-prs': get_stale_prs_command,
-    'GitHub-get-branch': get_branch_command
+    'GitHub-get-branch': get_branch_command,
+    'GitHub-create-branch': create_branch_command
 }
 
 

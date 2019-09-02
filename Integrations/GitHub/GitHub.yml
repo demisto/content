@@ -438,6 +438,30 @@ script:
     - contextPath: Github.Branch.Protected
       description: Whether the branch is a protected one or not
       type: Boolean
+  - arguments:
+    - default: false
+      description: The name for the new branch
+      isArray: false
+      name: branch_name
+      required: true
+      secret: false
+    - default: false
+      description: The SHA hash of the commit to reference
+      isArray: false
+      name: sha
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a new branch
+    execution: false
+    name: GitHub-create-branch
+    outputs:
+    - contextPath: GitHub.Branch.Ref
+      description: The name of the fully qualified branch reference
+      type: String
+    - contextPath: GitHub.Branch.NodeID
+      description: The branch reference's node ID
+      type: String
   dockerimage: demisto/python3:3.7.3.286
   subtype: python3
   isfetch: true
