@@ -1648,6 +1648,13 @@ def pascalToSpace(s):
 
     # split and join: to remove double spacing caused by previous workaround
     s = ' '.join(s.split())
+
+    # fix special cases:
+    rep = {'D Bot': 'DBot'}
+    rep = dict((re.escape(k), v) for k, v in rep.items())
+    pattern = re.compile('|'.join(rep.keys()))
+    s = pattern.sub(lambda m: rep[re.escape(m.group(0))], s)
+
     return s
 
 
