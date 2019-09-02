@@ -123,11 +123,10 @@ def http_request(method, url_suffix, data=None, json=None, headers=HEADERS):
             verify=USE_SSL
         )
         if res.status_code not in {200, 204}:
-            return_error('Your request failed with the following error: ' + res.content + str(res.status_code))
+            raise Exception('Your request failed with the following error: ' + res.content + str(res.status_code))
     except Exception, e:
         LOG(e)
-        return_error('Your request failed with the following error: ' + res.content + str(res.status_code))
-
+        raise
     return res
 
 
@@ -552,7 +551,7 @@ def query_malops(total_result_limit=None, per_group_limit=None, template_context
     try:
         return response.json()
     except Exception:
-        return_error('Failed to parse query malop response as JSON: {}'.format(response.text))
+        raise Exception('Failed to parse query malop response as JSON: {}'.format(response.text))
 
 
 def isolate_machine_command():
@@ -798,7 +797,7 @@ def prevent_file_command():
         }
         demisto.results(entry)
     else:
-        return_error('Failed to prevent file')
+        raise ('Failed to prevent file')
 
 
 def prevent_file(file_hash):
