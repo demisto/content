@@ -32,6 +32,14 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use System Proxy
+  name: proxy
+  required: false
+  type: 8
 - display: Incident type
   name: incidentType
   defaultvalue: ""

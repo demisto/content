@@ -1,0 +1,78 @@
+args:
+- default: false
+  description: Question (message) to send to the specified team member or channel.
+  isArray: false
+  name: message
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: false
+  description: Indicates whether to use one-time entitlement or persistent entitlement.
+  isArray: false
+  name: persistent
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- default: false
+  defaultValue: 'yes'
+  description: First reply option.
+  isArray: false
+  name: option1
+  required: false
+  secret: false
+- default: false
+  defaultValue: 'no'
+  description: Second reply option.
+  isArray: false
+  name: option2
+  required: false
+  secret: false
+- default: false
+  description: A CSV list of additional options (in case more than 2 options
+    are required).
+  isArray: false
+  name: additional_options
+  required: false
+  secret: false
+- default: true
+  description: Team member to which to send the question.
+  isArray: false
+  name: team_member
+  required: false
+  secret: false
+- default: false
+  description: Task ID of the playbook task to close with the reply. If not provided, no playbook
+    task will be closed.
+  isArray: false
+  name: task_id
+  required: false
+  secret: false
+- default: false
+  description: Channel to which to send the question.
+  isArray: false
+  name: channel
+  required: false
+  secret: false
+comment: Send a team member or channel a question with predefined response options on Microsoft Teams. The response
+  can be used to close a task (might be conditional) in a playbook.
+commonfields:
+  id: MicrosoftTeamsAsk
+  version: -1
+enabled: false
+name: MicrosoftTeamsAsk
+script: '-'
+system: false
+tags:
+- microsoftteams
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.7.4.1150
+tests:
+- No test
+dependson:
+  must:
+  - Microsoft Teams|||send-notification
+subtype: python3
+fromversion: 5.0.0

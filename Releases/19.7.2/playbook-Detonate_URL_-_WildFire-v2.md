@@ -1,0 +1,1 @@
+Add Detonate URL playbook for WildFire that handles both webpage and remote file URLs.

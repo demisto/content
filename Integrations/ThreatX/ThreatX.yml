@@ -1,0 +1,234 @@
+category: Network Security
+commonfields:
+  id: ThreatX
+  version: -1
+configuration:
+- display: Customer Name
+  name: customer_name
+  required: true
+  type: 0
+- defaultvalue: https://provision.threatx.io
+  display: ThreatX Server URL (e.g., https://provision.threatx.io)
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: api_key
+  required: true
+  type: 4
+- defaultvalue: '70'
+  display: IP Threshold. Minimum risk score from ThreatX to consider the IP malicious.
+  name: dbot_threshold
+  required: true
+  type: 0
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: The ThreatX integration allows automated enforcement and intel gathering
+  actions.
+display: ThreatX
+name: ThreatX
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: 'IP address or CIDR, for example: "10.1.1.1" or "10.1.1.0/24".'
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Temporarily blocks an IP address or CIDR. Default is 30 minutes.
+    execution: true
+    name: threatx-block-ip
+    outputs:
+    - contextPath: IP.Address
+      description: IP address or CIDR that was blocked.
+      type: string
+  - arguments:
+    - default: false
+      description: 'IP address or CIDR, for example: "10.1.1.1" or "10.1.1.0/24".'
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Unblocks a blocked IP address or CIDR.
+    execution: true
+    name: threatx-unblock-ip
+    outputs:
+    - contextPath: IP.Address
+      description: IP address or CIDR that was unblocked.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: 'IP address or CIDR, for example: "10.1.1.1" or "10.1.1.0/24".'
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds an IP address or CIDR to the blacklist.
+    execution: true
+    name: threatx-blacklist-ip
+    outputs:
+    - contextPath: IP.Address
+      description: IP address or CIDR that was added to the blacklist.
+      type: string
+  - arguments:
+    - default: false
+      description: 'IP address or CIDR, for example: "10.1.1.1" or "10.1.1.0/24".'
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes an IP or CIDR from the blacklist.
+    execution: true
+    name: threatx-unblacklist-ip
+    outputs:
+    - contextPath: IP.Address
+      description: IP address or CIDR that was removed from the blacklist.
+      type: string
+  - arguments:
+    - default: false
+      description: 'IP address or CIDR, for example: "10.1.1.1" or "10.1.1.0/24".'
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds an IP address or CIDR to the whitelist.
+    execution: true
+    name: threatx-whitelist-ip
+    outputs:
+    - contextPath: IP.Address
+      description: IP address or CIDR was added to the whitelist.
+      type: string
+  - arguments:
+    - default: false
+      description: 'IP address or CIDR, for example: "10.1.1.1" or "10.1.1.0/24".'
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes an IP address or CIDR from the whitelist.
+    execution: true
+    name: threatx-unwhitelist-ip
+    outputs:
+    - contextPath: IP.Address
+      description: IP address or CIDR that was removed from the whitelist.
+      type: string
+  - arguments:
+    - default: false
+      description: CSV list of Entity names.
+      isArray: false
+      name: entity_name
+      required: false
+      secret: false
+    - default: false
+      description: CSV list of Entity ID hashes.
+      isArray: false
+      name: entity_id
+      required: false
+      secret: false
+    - default: false
+      description: CSV list of Entity IP addresses.
+      isArray: false
+      name: entity_ip
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 1-Hour
+      description: 'Look-back timeframe for the query. Options are 1-Hour, 1-Day,
+        1-Week, 1-Month, or 3-Months. Note: long look-back timeframes for a large
+        number of Entities can timeout.'
+      isArray: false
+      name: timeframe
+      predefined:
+      - 1-Hour
+      - 1-Day
+      - 1-Week
+      - 1-Month
+      - 3-Months
+      required: true
+      secret: false
+    deprecated: false
+    description: 'Get high-level Entity information using the Entity ID, Entity Name,
+      or Entity IP. For example: !threatx-get-entities timeframe=1-Day entity_name=CynicalGraaf,MJ12Bot
+      entity_id= 566056709675514809 entity_ip=12.12.12.12,14.14.14.14. Note: long
+      look-back timeframes for a large number of Entities can timeout.'
+    execution: false
+    name: threatx-get-entities
+    outputs:
+    - contextPath: Threatx.Entity.ID
+      description: ID hash of the entity.
+      type: string
+    - contextPath: Threatx.Entity.Name
+      description: Name of the entity.
+      type: string
+    - contextPath: Threatx.Entity.IP
+      description: IP address of the entity.
+      type: string
+    - contextPath: Threatx.Entity.Risk
+      description: Risk score of the entity.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: 'ID hash of the Entity. Note: this value can be retrieved using
+        the "!threatx-get-entities" command.'
+      isArray: false
+      name: entity_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the notes attached to an Entity, by Entity ID.
+    execution: false
+    name: threatx-get-entity-notes
+    outputs:
+    - contextPath: Threatx.Entity.Note
+      description: Notes attached to the entity.
+      type: number
+    - contextPath: Threatx.Entity.ID
+      description: ID hash of the entity.
+      type: Unknown
+    - contextPath: Threatx.Entity.Note.content
+      description: Content of the note.
+      type: Unknown
+    - contextPath: Threatx.Entity.Note.timestamp
+      description: Timestamp of the note.
+      type: Unknown
+    - contextPath: Threatx.Entity.Note.username
+      description: Author of the note.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: 'ID hash of the Entity. To retrieve this value, run the "!threatx-get-entities" command.'
+      isArray: false
+      name: entity_id
+      required: true
+      secret: false
+    - default: false
+      description: Contents of the note
+      isArray: false
+      name: message
+      required: true
+      secret: false
+    deprecated: false
+    description: 'Add a new note to the entity. For example: !threatx-add-entity-note
+      entity_id=566056709695514809 message="test note"'
+    execution: true
+    name: threatx-add-entity-note
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python

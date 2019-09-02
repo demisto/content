@@ -118,8 +118,7 @@ tasks:
       queryId:
         simple: a7561571-c786-4fb7-93d0-e2f2c74c190d
       skip: {}
-      to:
-        simple: 2018-10-07T10:00:00Z
+      to: {}
       writeToContext: {}
     separatecontext: false
     view: |-

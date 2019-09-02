@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import re
 import os
 import glob
@@ -270,7 +272,11 @@ def get_code_file(package_path, script_type):
 def get_script_package_data(package_path):
     if package_path[-1] != os.sep:
         package_path = os.path.join(package_path, '')
-    yml_path = glob.glob(package_path + '*.yml')[0]
+    yml_files = glob.glob(package_path + '*.yml')
+    if not yml_files:
+        raise Exception("No yml files found in package path: {}. "
+                        "Is this really a package dir? If not remove it.".format(package_path))
+    yml_path = yml_files[0]
     code_type = get_yaml(yml_path).get('type')
     code_path = get_code_file(package_path, TYPE_TO_EXTENSION[code_type])
     with open(code_path, 'r') as code_file:
@@ -357,7 +363,7 @@ def re_create_id_set():
     for arr in pool.map(process_integration, integration_files):
         integration_list.extend(arr)
     print_color("Starting iterating over Playbooks", LOG_COLORS.GREEN)
-    for arr in pool.map(process_playbook, glob.glob(os.path.join('Playbooks', '*'))):
+    for arr in pool.map(process_playbook, glob.glob(os.path.join('Playbooks', '*.yml'))):
         playbooks_list.extend(arr)
     print_color("Starting iterating over Scripts", LOG_COLORS.GREEN)
     for arr in pool.map(process_script, glob.glob(os.path.join('Scripts', '*'))):
@@ -509,5 +515,9 @@ if __name__ == '__main__':
         re_create_id_set()
 
     else:
-        print("Updating the id_set.json")
-        update_id_set()
+        if os.path.isfile('./Tests/id_set.json'):
+            print("Updating the id_set.json")
+            update_id_set()
+        else:
+            print("./Tests/id_set.json is missing. Recreating...")
+            re_create_id_set()

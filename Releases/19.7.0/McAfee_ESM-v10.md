@@ -1,0 +1,2 @@
+- Added support for version 11.1
+- fixed error handling messages
