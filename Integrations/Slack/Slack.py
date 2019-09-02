@@ -616,17 +616,19 @@ async def listen(**payload):
         user_id = data.get('user', '')
         channel = data.get('channel', '')
         message_bot_id = data.get('bot_id', '')
+        thread = data.get('thread_ts', '')
+        message = data.get('message', {})
 
-        if subtype == 'bot_message' or message_bot_id:
+        if subtype == 'bot_message' or message_bot_id or message.get('subtype') == 'bot_message':
             return
 
         integration_context = demisto.getIntegrationContext()
         user = await get_user_by_id_async(client, integration_context, user_id)
-        if channel and channel[0] == 'D':
+        if await check_and_handle_entitlement(text, user, thread):
+            await client.chat_postMessage(channel=channel, text='Thank you for your response')
+        elif channel and channel[0] == 'D':
             # DM
             await handle_dm(user, text, client)
-        elif await check_and_handle_entitlement(text, user):
-            await client.chat_postMessage(channel=channel, text='Response received by {}'.format(user.get('name')))
         else:
             if not integration_context or 'mirrors' not in integration_context:
                 return
@@ -700,23 +702,57 @@ async def handle_text(client: slack.WebClient, investigation_id: str, text: str,
                          )
 
 
-async def check_and_handle_entitlement(text: str, user: dict) -> bool:
+async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) -> bool:
+    """
+    Handles an entitlement message (a reply to a question)
+    :param text: The message text
+    :param user: The user who sent the reply
+    :param thread_id: The thread ID
+    :return: Whether the message is a reply to a question or not
+    """
+
     entitlement_match = re.search(ENTITLEMENT_REGEX, text)
     if entitlement_match:
-        entitlement = entitlement_match.group()
-        parts = entitlement.split('@')
-        guid = parts[0]
-        id_and_task = parts[1].split('|')
-        incident_id = id_and_task[0]
-        task_id = ''
-        if len(id_and_task) > 1:
-            task_id = id_and_task[1]
-        content = text.replace(entitlement, '', 1)
+        content, guid, incident_id, task_id = await extract_entitlement(entitlement_match.group(), text)
         demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'), content, task_id)
 
         return True
+    else:
+        integration_context = demisto.getIntegrationContext()
+        questions = integration_context.get('questions')
+        if questions:
+            questions = json.loads(questions)
+            question_filter = list(filter(lambda q: q.get('thread') == thread_id, questions))
+            if question_filter:
+                entitlement = question_filter[0]['entitlement']
+                content, guid, incident_id, task_id = await extract_entitlement(entitlement, text)
+                demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'), content,
+                                                 task_id)
+                questions.remove(question_filter[0])
+                set_to_latest_integration_context('questions', questions)
+
+                return True
 
     return False
+
+
+async def extract_entitlement(entitlement, text):
+    """
+    Extracts entitlement components from an entitlement string
+    :param entitlement: The entitlement itself
+    :param text: The actual reply text
+    :return: Entitlement components
+    """
+    parts = entitlement.split('@')
+    guid = parts[0]
+    id_and_task = parts[1].split('|')
+    incident_id = id_and_task[0]
+    task_id = ''
+    if len(id_and_task) > 1:
+        task_id = id_and_task[1]
+    content = text.replace(entitlement, '', 1)
+
+    return content, guid, incident_id, task_id
 
 
 ''' SEND '''
@@ -760,6 +796,7 @@ def slack_send():
     ignore_add_url = demisto.args().get('ignoreAddURL', False) or demisto.args().get('IgnoreAddURL', False)
     thread_id = demisto.args().get('threadID', '')
     severity = demisto.args().get('severity')  # From server
+    entitlement = ''
 
     if message_type == MIRROR_TYPE and original_message.find(MESSAGE_FOOTER) != -1:
         # return so there will not be a loop of messages
@@ -785,10 +822,27 @@ def slack_send():
     if not (to or group or channel):
         return_error('Either a user, group or channel must be provided.')
 
+    entitlement_match = re.search(ENTITLEMENT_REGEX, message)
+    if entitlement_match:
+        entitlement = entitlement_match.group()
+        message = message.replace(entitlement, '', 1)
+        message.strip()
+
     response = slack_send_request(to, channel, group, entry, ignore_add_url, thread_id, message=message)
 
     if response:
         thread = response.get('ts')
+        if entitlement:
+            integration_context = demisto.getIntegrationContext()
+            questions = integration_context.get('questions', [])
+            if questions:
+                questions = json.loads(integration_context['questions'])
+            questions.append({
+                'thread': thread,
+                'entitlement': entitlement
+            })
+            set_to_latest_integration_context('questions', questions)
+
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': 'Message sent to Slack successfully.\nThread ID is: {}'.format(thread),
