@@ -250,7 +250,8 @@ def test_first_fetch_incidents(mocked_parse_date_range, requests_mock):
 @patch("ProofpointTAP_v2.get_now", get_mocked_time)
 def test_next_fetch(requests_mock, ):
     mock_date = "2010-01-01T00:00:00Z"
-    requests_mock.get('http://123-fake-api.com/v2/siem/all?format=json&interval=2010-01-01T00%3A00%3A00Z%2F2010-01-01T00%3A00%3A00Z&threatStatus=active&threatStatus=cleared',
+    requests_mock.get(MOCK_URL + '/v2/siem/all?format=json&interval=2010-01-01T00%3A00%3A00Z%'
+                                 '2F2010-01-01T00%3A00%3A00Z&threatStatus=active&threatStatus=cleared',
                       json=MOCK_ALL_EVENTS)
 
     client = Client(
