@@ -2,10 +2,12 @@
 import demistomock as demisto
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
-    remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult
+    remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
+    IntegrationLogger
 
 import copy
 import os
+import sys
 import pytest
 
 INFO = {'b': 1,
@@ -144,6 +146,24 @@ def test_tbl_to_md_single_column():
 |a3|
 '''
     assert table_single_column == expected_table_single_column
+
+
+def test_is_ip_valid():
+    valid_ip_v6 = "FE80:0000:0000:0000:0202:B3FF:FE1E:8329"
+    valid_ip_v6_b = "FE80::0202:B3FF:FE1E:8329"
+    invalid_ip_v6 = "KKKK:0000:0000:0000:0202:B3FF:FE1E:8329"
+    valid_ip_v4 = "10.10.10.10"
+    invalid_ip_v4 = "10.10.10.9999"
+    invalid_not_ip_with_ip_structure = "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1"
+    not_ip = "Demisto"
+    assert not is_ip_valid(valid_ip_v6)
+    assert is_ip_valid(valid_ip_v6, True)
+    assert is_ip_valid(valid_ip_v6_b, True)
+    assert not is_ip_valid(invalid_ip_v6, True)
+    assert not is_ip_valid(not_ip, True)
+    assert is_ip_valid(valid_ip_v4)
+    assert not is_ip_valid(invalid_ip_v4)
+    assert not is_ip_valid(invalid_not_ip_with_ip_structure)
 
 
 def test_tbl_to_md_list_values():
@@ -429,17 +449,20 @@ def test_get_error_need_raise_error_on_non_error_input():
             "Contents": "this is not an error"
         }
     ]
-    with pytest.raises(ValueError) as exception:
+    try:
         get_error(execute_command_results)
+    except ValueError as exception:
+        assert "execute_command_result has no error entry. before using get_error use is_error" in str(exception)
+        return
 
-    assert "execute_command_result has no error entry. before using get_error use is_error" in str(exception)
+    assert False
 
 
 @pytest.mark.parametrize('data,data_expected', [
-                        ("this is a test", b"this is a test"),
-                        (u"עברית", u"עברית".encode('utf-8')),
-                        (b"binary data\x15\x00", b"binary data\x15\x00"),
-                        ])  # noqa: E124
+    ("this is a test", b"this is a test"),
+    (u"עברית", u"עברית".encode('utf-8')),
+    (b"binary data\x15\x00", b"binary data\x15\x00"),
+])  # noqa: E124
 def test_fileResult(mocker, request, data, data_expected):
     mocker.patch.object(demisto, 'uniqueFile', return_value="test_file_result")
     mocker.patch.object(demisto, 'investigation', return_value={'id': '1'})
@@ -469,3 +492,128 @@ def test_logger():
     LOG(u'€')
     LOG(Exception(u'€'))
     LOG(SpecialErr(12))
+
+
+def test_logger_write(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'credentials': {'password': 'my_password'},
+    })
+    mocker.patch.object(demisto, 'info')
+    ilog = IntegrationLogger()
+    ilog.write("This is a test with my_password")
+    ilog.print_log()
+    # assert that the print doesn't contain my_password
+    # call_args is tuple (args list, kwargs). we only need the args
+    args = demisto.info.call_args[0]
+    assert 'This is a test' in args[0]
+    assert 'my_password' not in args[0]
+    assert '<XX_REPLACED>' in args[0]
+
+
+def test_is_mac_address():
+    from CommonServerPython import is_mac_address
+
+    mac_address_false = 'AA:BB:CC:00:11'
+    mac_address_true = 'AA:BB:CC:00:11:22'
+
+    assert (is_mac_address(mac_address_false) is False)
+    assert (is_mac_address(mac_address_true))
+
+
+def test_return_error_command(mocker):
+    from CommonServerPython import return_error
+    err_msg = "Testing unicode Ё"
+    outputs = {'output': 'error'}
+    expected_error = {
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'Contents': err_msg,
+        "EntryContext": outputs
+    }
+
+    # Test command that is not fetch-incidents
+    mocker.patch.object(demisto, 'command', return_value="test-command")
+    mocker.patch.object(sys, 'exit')
+    mocker.spy(demisto, 'results')
+    return_error(err_msg, '', outputs)
+    assert str(demisto.results.call_args) == "call({})".format(expected_error)
+
+
+def test_return_error_fetch_incidents(mocker):
+    from CommonServerPython import return_error
+    err_msg = "Testing unicode Ё"
+
+    # Test fetch-incidents
+    mocker.patch.object(demisto, 'command', return_value="fetch-incidents")
+    returned_error = False
+    try:
+        return_error(err_msg)
+    except Exception as e:
+        returned_error = True
+        assert str(e) == err_msg
+    assert returned_error
+
+
+def test_return_error_long_running_execution(mocker):
+    from CommonServerPython import return_error
+    err_msg = "Testing unicode Ё"
+
+    # Test fetch-incidents
+    mocker.patch.object(demisto, 'command', return_value="long-running-execution")
+    returned_error = False
+    try:
+        return_error(err_msg)
+    except Exception as e:
+        returned_error = True
+        assert str(e) == err_msg
+    assert returned_error
+
+
+def test_return_error_script(mocker, monkeypatch):
+    from CommonServerPython import return_error
+    mocker.patch.object(sys, 'exit')
+    mocker.spy(demisto, 'results')
+    monkeypatch.delattr(demisto, 'command')
+    err_msg = "Testing unicode Ё"
+    outputs = {'output': 'error'}
+    expected_error = {
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'Contents': err_msg,
+        "EntryContext": outputs
+    }
+
+    assert not hasattr(demisto, 'command')
+    return_error(err_msg, '', outputs)
+    assert str(demisto.results.call_args) == "call({})".format(expected_error)
+
+
+def test_exception_in_return_error(mocker):
+    from CommonServerPython import return_error, IntegrationLogger
+
+    expected = {'EntryContext': None, 'Type': 4, 'ContentsFormat': 'text', 'Contents': 'Message'}
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(IntegrationLogger, '__call__')
+    with pytest.raises(SystemExit, match='0'):
+        return_error("Message", error=ValueError("Error!"))
+    results = demisto.results.call_args[0][0]
+    assert expected == results
+    # IntegrationLogger = LOG (2 times if exception supplied)
+    assert IntegrationLogger.__call__.call_count == 2
+
+
+def test_get_demisto_version(mocker):
+
+    # verify expected server version and build returned in case Demisto class has attribute demistoVersion
+    mocker.patch.object(
+        demisto,
+        'demistoVersion',
+        return_value={
+            'version': '5.0.0',
+            'buildNumber': '50000'
+        }
+    )
+    assert get_demisto_version() == {
+        'version': '5.0.0',
+        'buildNumber': '50000'
+    }

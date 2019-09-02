@@ -1,0 +1,357 @@
+id: Test XDR Playbook
+version: -1
+name: Test XDR Playbook
+starttaskid: "0"
+fromversion: 4.1.0
+tasks:
+  "0":
+    id: "0"
+    taskid: 33db173a-2d40-4383-8036-36f132e1b7d0
+    type: start
+    task:
+      id: 33db173a-2d40-4383-8036-36f132e1b7d0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 2f1cbbde-bbeb-4082-8098-6ea9844a225d
+    type: regular
+    task:
+      id: 2f1cbbde-bbeb-4082-8098-6ea9844a225d
+      version: -1
+      name: xdr-get-incidents
+      description: |-
+        Get a list of incidents, filtering by a list of incident IDs, modification time, creation time
+        Filtering by multiple fields will be concatenated using AND condition, OR is not supported
+        Size of incident IDs list <= 100
+      script: '|||xdr-get-incidents'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      gte_creation_time: {}
+      gte_modification_time: {}
+      incident_id_list: {}
+      limit:
+        simple: "3"
+      lte_creation_time: {}
+      lte_modification_time: {}
+      page: {}
+      since_creation_time:
+        simple: 3 month
+      since_modification_time: {}
+      sort_by_creation_time: {}
+      sort_by_modification_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 0c04872d-0791-4d53-81bb-36e6cac9a4da
+    type: regular
+    task:
+      id: 0c04872d-0791-4d53-81bb-36e6cac9a4da
+      version: -1
+      name: xdr-get-incident-extra-data
+      description: Returns extra data for incident. Like alerts related to incident,
+        file artifacts, network artifacts.
+      script: '|||xdr-get-incident-extra-data'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      alerts_limit:
+        simple: "10"
+      incident_id:
+        simple: ${PaloAltoNetworksXDR.Incident.incident_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 2032acf0-b95f-487d-8d25-c541294d97d6
+    type: regular
+    task:
+      id: 2032acf0-b95f-487d-8d25-c541294d97d6
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 63a6c592-5e1d-4816-800b-73ccd20a713f
+    type: condition
+    task:
+      id: 63a6c592-5e1d-4816-800b-73ccd20a713f
+      version: -1
+      name: Validate outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.xdr_url
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.severity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.file_artifacts.file_name
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.network_artifacts.network_domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 8bb68314-293a-4eed-89d4-7daf1d2c3832
+    type: regular
+    task:
+      id: 8bb68314-293a-4eed-89d4-7daf1d2c3832
+      version: -1
+      name: update-incident
+      description: |-
+        Update a specific field / multiple fields of a specific incident
+        Missing fields are ignored
+        In order to unassign incident pass null in assignee email
+      script: '|||xdr-update-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      assigned_user_mail:
+        simple: woo@demisto.com
+      assigned_user_pretty_name: {}
+      incident_id:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: Incident.incident_id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      manual_severity:
+        simple: MEDIUM
+      resolve_comment: {}
+      status: {}
+      unassign_user: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 3456d8f1-c15e-4d83-89d9-03b535bfe85b
+    type: regular
+    task:
+      id: 3456d8f1-c15e-4d83-89d9-03b535bfe85b
+      version: -1
+      name: get the updated incident from xdr
+      description: Returns extra data for incident. Like alerts related to incident,
+        file artifacts, network artifacts.
+      script: '|||xdr-get-incident-extra-data'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      alerts_limit: {}
+      incident_id:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: Incident.incident_id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: f88c172b-a906-49ed-8e4f-ac8b140f3963
+    type: condition
+    task:
+      id: f88c172b-a906-49ed-8e4f-ac8b140f3963
+      version: -1
+      name: validate severity
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR
+                accessor: Incident.[0].severity
+            iscontext: true
+          right:
+            value:
+              simple: medium
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 93aa7685-6938-4419-82a8-6294c3565862
+    type: title
+    task:
+      id: 93aa7685-6938-4419-82a8-6294c3565862
+      version: -1
+      name: Success - Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
