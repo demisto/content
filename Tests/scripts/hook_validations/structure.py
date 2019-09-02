@@ -1,16 +1,15 @@
 import os
 import re
 import sys
-import json
-import yaml
 
 from Tests.scripts.constants import *
-from Tests.test_utils import print_error, print_warning, run_command, get_yaml, get_json, checked_type
+from Tests.test_utils import print_error, print_warning, run_command, get_yaml, get_json, checked_type, \
+    get_release_notes_file_path, get_latest_release_notes_text
 
 try:
     from pykwalify.core import Core
 except ImportError:
-    print "Please install pykwalify, you can do it by running: `pip install -I pykwalify`"
+    print('Please install pykwalify, you can do it by running: `pip install -I pykwalify`')
     sys.exit(1)
 
 
@@ -32,7 +31,8 @@ class StructureValidator(object):
         CLASSIFIER_REGEX,
         SCRIPT_YML_REGEX,
         INCIDENT_FIELD_REGEX,
-        MISC_REGEX
+        MISC_REGEX,
+        REPUTATION_REGEX
     ]
     SKIPPED_SCHEMAS = [
         TEST_DATA_REGEX,
@@ -44,7 +44,8 @@ class StructureValidator(object):
         SCRIPT_PY_REGEX,
         SCRIPT_JS_REGEX,
         INTEGRATION_JS_REGEX,
-        INTEGRATION_PY_REGEX
+        INTEGRATION_PY_REGEX,
+        REPUTATION_REGEX
     ]
     REGEXES_TO_SCHEMA_DICT = {
         INTEGRATION_REGEX: "integration",
@@ -59,7 +60,7 @@ class StructureValidator(object):
         CLASSIFIER_REGEX: "classifier",
         LAYOUT_REGEX: "layout",
         INCIDENT_FIELDS_REGEX: "incidentfields",
-        INCIDENT_FIELD_REGEX: "incidentfield"
+        INCIDENT_FIELD_REGEX: "incidentfield",
     }
 
     SCHEMAS_PATH = "Tests/schemas/"
@@ -223,20 +224,13 @@ class StructureValidator(object):
             print_warning("You might need RN please make sure to check that.")
             return
 
-        data_dictionary = None
         if os.path.isfile(self.file_path):
-            with open(os.path.expanduser(self.file_path), "r") as f:
-                if self.file_path.endswith(".json"):
-                    data_dictionary = json.load(f)
-                elif self.file_path.endswith(".yaml") or self.file_path.endswith('.yml'):
-                    try:
-                        data_dictionary = yaml.safe_load(f)
-                    except Exception as e:
-                        print_error(self.file_path + " has yml structure issue. Error was: " + str(e))
-                        self._is_valid = False
+            rn_path = get_release_notes_file_path(self.file_path)
+            rn = get_latest_release_notes_text(rn_path)
 
-            if data_dictionary and data_dictionary.get('releaseNotes') is None:
-                print_error("File " + self.file_path + " is missing releaseNotes, please add.")
+            # check rn file exists and contain text
+            if rn is None:
+                print_error('File {} is missing releaseNotes, Please add it under {}'.format(self.file_path, rn_path))
                 self._is_valid = False
 
     def is_id_not_modified(self, change_string=None):

@@ -1,0 +1,174 @@
+id: stripChars - Test
+version: -1
+name: stripChars - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c0ca7dbc-a438-4ab3-8e33-5c5abb66efec
+    type: start
+    task:
+      id: c0ca7dbc-a438-4ab3-8e33-5c5abb66efec
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: c1a82697-2dd6-4707-8dcb-339869453d9b
+    type: regular
+    task:
+      id: c1a82697-2dd6-4707-8dcb-339869453d9b
+      version: -1
+      name: StripChars
+      description: |-
+        Strip set of characters from prefix and/or suffix
+        e.g. StipChar value=~!!~www.mydomain.com~!~!~  chars=!~ will return www.mydomain.com
+      scriptName: StripChars
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      chars:
+        simple: "~"
+      value:
+        simple: ~~How I need a drink after the heavy lectures involving quantum mechanics~
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 3028e6d1-583b-44a8-8459-97573efefa51
+    type: regular
+    task:
+      id: 3028e6d1-583b-44a8-8459-97573efefa51
+      version: -1
+      name: comments to context
+      description: "Takes the comments of a given entry ID and stores them in the
+        incident context, under a provided context key. \nFor accessing the last executed
+        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
+        the entryId input parameter."
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      contextKey:
+        simple: StripChars
+      entryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      listSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 30d0394c-6b50-4dc5-88b0-0d011a6b84a0
+    type: condition
+    task:
+      id: 30d0394c-6b50-4dc5-88b0-0d011a6b84a0
+      version: -1
+      name: Check StripChars
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: StripChars
+            iscontext: true
+          right:
+            value:
+              simple: How I need a drink after the heavy lectures involving quantum
+                mechanics
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: f02bb24b-b784-4b8d-8431-eccb07b30cdd
+    type: title
+    task:
+      id: f02bb24b-b784-4b8d-8431-eccb07b30cdd
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

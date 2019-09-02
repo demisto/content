@@ -105,7 +105,7 @@ tasks:
         simple: '*/1 * * * *'
       endDate: {}
       times:
-        simple: "10"
+        simple: "20"
     separatecontext: false
     view: |-
       {
