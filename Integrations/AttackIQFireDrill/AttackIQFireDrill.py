@@ -17,15 +17,45 @@ requests.packages.urllib3.disable_warnings()
 TOKEN = demisto.params().get('token')
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = demisto.params()['url'][:-1] \
-    if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
+    if ('url' in demisto.params() and demisto.params()['url'].endswith('/')) else demisto.params().get('url')
 # Should we use SSL
 USE_SSL = not demisto.params().get('insecure', False)
 # Headers to be sent in requests
 HEADERS = {
-    'Authorization': 'Token ' + TOKEN,
+    'Authorization': f'Token {TOKEN}',
     'Content-Type': 'application/json',
     'Accept': 'application/json'
 }
+ASSESSMENTS_TRANS = {
+    'id': 'Id',
+    'name': 'Name',
+    'user': 'User',
+    'users': 'Users',
+    'owner': 'Owner',
+    'groups': 'Groups',
+    'creator': 'Creator',
+    'created': 'Created',
+    'end_date': 'EndDate',
+    'modified': 'Modified',
+    'start_date': 'StartDate',
+    'description': 'Description',
+    'project_state': 'ProjectState',
+    'master_job_count': 'MasterJobCount',
+    'default_schedule': 'DefaultSchedule',
+    'default_asset_count': 'DefaultAssetCount',
+    'project_template.id': 'ProjectTemplate.Id',
+    'default_asset_group_count': 'DefaultAssetCount',
+    'project_template.company': 'ProjectTemplate.Company',
+    'project_template.created': 'ProjectTemplate.Created',
+    'project_template.modified': 'ProjectTemplate.Modified',
+    'project_template.template_name': 'ProjectTemplate.TemplateName',
+    'project_template.default_schedule': 'ProjectTemplate.DefaultSchedule',
+    'project_template.template_description': 'ProjectTemplate.TemplateDescription',
+    'project_template.project_template_type.id': 'ProjectTemplate.ProjectTemplateType.Id',
+    'project_template.project_template_type.name': 'ProjectTemplate.ProjectTemplateType.Name',
+    'project_template.project_template_type.description': 'ProjectTemplate.ProjectTemplateType.Description',
+}
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -52,6 +82,23 @@ def http_request(method, url_suffix, params=None, data=None):
                      error=f'attackiq response body:\n{res.content}')
 
 
+def build_transformed_dict(src, trans_dict):
+    """Builds a dictionary according to a conversion map
+
+    Args:
+        src (dict): original dictionary to build from
+        trans_dict (dict): dict in the format { 'OldKey': 'NewKey', ...}
+
+    Returns: src copy with changed keys
+    """
+    if isinstance(src, list):
+        return [build_transformed_dict(x, trans_dict) for x in src]
+    res = {}
+    for key, val in trans_dict.items():
+        res[val] = demisto.get(src, key)
+    return res
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -60,7 +107,7 @@ def test_module():
     Performs basic get request to get item samples
     """
     http_request('GET', '/v1/assessments')
-    return 'ok'
+    demisto.results('ok')
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -68,49 +115,58 @@ def test_module():
 
 def activate_assement_command():
     """ Implements attackiq-activate-assessment command
-    Returns: Result of command
     """
     pass
 
 
 def get_assessment_execution_status_command():
     """ Implements attackiq-get-assessment-execution-status command
-    Returns: Result of command
     """
     pass
 
 
 def get_test_execution_status_command():
     """ Implements attackiq-get-test-execution-status command
-    Returns: Result of command
     """
     pass
 
 
 def get_test_results_command():
     """ Implements attackiq-get-test-results command
-    Returns: Result of command
     """
     pass
+
+
+def list_assessments(assessment_id, page):
+    if assessment_id:
+        return http_request('GET', f'/v1/assessments/{assessment_id}')
+    return http_request('GET', '/v1/assessments', params={'page': page})
 
 
 def list_assessments_command():
     """ Implements attackiq-list-assessments command
-    Returns: Result of command
     """
-    pass
+    args = demisto.args()
+    assessment_id = args.get('assessment_id')
+    page = args.get('page_number', '1')
+    raw_assessments = list_assessments(assessment_id, page)
+    if assessment_id:
+        assessments_res = build_transformed_dict(raw_assessments, ASSESSMENTS_TRANS)
+    else:
+        assessments_res = build_transformed_dict(raw_assessments.get('results'), ASSESSMENTS_TRANS)
+    hr = tableToMarkdown(f'AttackIQ Assessments Page #{page}', assessments_res)
+    return_outputs(hr, assessments_res, raw_assessments)
 
 
 def list_tests_by_assessment_command():
     """ Implements attackiq-list-tests-by-assessment command
-    Returns: Result of command
     """
     pass
 
 
 def run_all_tests_in_assessment_command():
     """ Implements attackiq-run-all-tests-in-assessment
-    Returns: Result of command"""
+    """
     pass
 
 
@@ -120,21 +176,21 @@ def main():
     LOG(f'Command being called is {command}')
     try:
         if command == 'test-module':
-            demisto.results(test_module())
+            test_module()
         elif command == 'attackiq-activate-assessment':
-            demisto.results(activate_assement_command())
+            activate_assement_command()
         elif command == 'attackiq-get-assessment-execution-status':
-            demisto.results(get_assessment_execution_status_command())
+            get_assessment_execution_status_command()
         elif command == 'attackiq-get-test-execution-status':
-            demisto.results(get_test_execution_status_command())
+            get_test_execution_status_command()
         elif command == 'attackiq-get-test-results':
-            demisto.results(get_test_results_command())
+            get_test_results_command()
         elif command == 'attackiq-list-assessments':
-            demisto.results(list_assessments_command())
+            list_assessments_command()
         elif command == 'attackiq-list-tests-by-assessment':
-            demisto.results(list_tests_by_assessment_command())
+            list_tests_by_assessment_command()
         elif command == 'attackiq-run-all-tests-in-assessment':
-            demisto.results(run_all_tests_in_assessment_command())
+            run_all_tests_in_assessment_command()
         else:
             return_error(f'Command {command} is not supported.')
     except Exception as e:

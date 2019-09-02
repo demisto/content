@@ -1,0 +1,22 @@
+from Integrations.AttackIQFireDrill.AttackIQFireDrill import build_transformed_dict
+
+# Constants
+DICT_1to5 = {'1': 1, '2': 2, '3': 3, '4': 4, '5': 5}
+DICT_NESTED_123 = {'nested': {'1': 1, '2': 2, '3': 3}}
+
+TRANS_DICT_134 = {'1': 'one', '3': 'three', '4': 'four'}
+TRANS_DICT_NESTED_12 = {'nested.1': 'one', 'nested.2': 'two'}
+
+
+def test_replace_keys():
+    res = build_transformed_dict(DICT_1to5, TRANS_DICT_134)
+    assert len(res) == 3
+    assert 'one' in res and 'three' in res and 'four' in res
+    assert 'one' not in DICT_1to5
+    assert '1' not in res
+
+
+def test_build_transformed_dict_nested():
+    res = build_transformed_dict(DICT_NESTED_123, TRANS_DICT_NESTED_12)
+    assert len(res) == 2
+    assert 'one' in res and 'two' in res
