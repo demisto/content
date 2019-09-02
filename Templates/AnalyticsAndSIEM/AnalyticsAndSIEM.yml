@@ -1,0 +1,208 @@
+category: Authentication
+commonfields:
+  id: AnalyticsAndSIEM
+  version: -1
+configuration:
+- defaultvalue: https://example.com
+  display: Server URL (e.g. https://example.com)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: 'true'
+  display: Trust any certificate (not secured)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+description: Integration Template
+display: AnalyticsAndSIEM
+name: AnalyticsAndSIEM
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: ID of event
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets an event from service
+    execution: false
+    name: analytics-and-siem-get-event
+    outputs:
+    - contextPath: AnalyticsAndSIEM.Event.ID
+      description: ID of Event
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Description
+      description: Description of event
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Created
+      description: Time of event creation
+      type: Date
+    - contextPath: AnalyticsAndSIEM.Event.IsActive
+      description: Status of event
+      type: Boolean
+    - contextPath: AnalyticsAndSIEM.Event.Assignee.Name
+      description: Name of assigned user
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Assignee.ID
+      description: ID of assigned user
+      type: String
+  - arguments:
+    - default: false
+      description: ID of event to close
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Close event in service
+    execution: false
+    name: analytics-and-siem-close-event
+    outputs:
+    - contextPath: AnalyticsAndSIEM.Event.ID
+      description: ID of event
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Assignee.IsActive
+      description: Is event active
+      type: Boolean
+  - arguments:
+    - default: false
+      description: ID of an event
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    - default: false
+      description: description of the event
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: A CSV list of user ID to assigne
+      isArray: true
+      name: assignee
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates a given event
+    execution: false
+    name: analytics-and-siem-update-event
+    outputs:
+    - contextPath: AnalyticsAndSIEM.Event.ID
+      description: ID of Event
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Description
+      description: Description of event
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Created
+      description: Time of event creation
+      type: Date
+    - contextPath: AnalyticsAndSIEM.Event.IsActive
+      description: Status of event
+      type: Boolean
+    - contextPath: AnalyticsAndSIEM.Event.Assignee.Name
+      description: Name of assigned user
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Assignee.ID
+      description: ID of assigned user
+      type: String
+  - arguments:
+    - default: false
+      description: description of the event
+      isArray: false
+      name: description
+      required: true
+      secret: false
+    - default: false
+      description: A CSV list of user ID to assigne
+      isArray: true
+      name: assignee
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates a given event
+    execution: false
+    name: analytics-and-siem-create-event
+    outputs:
+    - contextPath: AnalyticsAndSIEM.Event.ID
+      description: ID of Event
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Description
+      description: Description of event
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Created
+      description: Time of event creation
+      type: Date
+    - contextPath: AnalyticsAndSIEM.Event.IsActive
+      description: Status of event
+      type: Boolean
+    - contextPath: AnalyticsAndSIEM.Event.Assignee.Name
+      description: Name of assigned user
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Assignee.ID
+      description: ID of assigned user
+      type: String
+  - arguments:
+    - default: false
+      description: ID of event
+      isArray: false
+      name: event_id
+      required: false
+      secret: false
+    - default: false
+      description: Timestamp to search from
+      isArray: false
+      name: since_time
+      required: false
+      secret: false
+    - default: false
+      description: A CSV list of user ID to assigne
+      isArray: false
+      name: assignee
+      required: false
+      secret: false
+    - default: false
+      description: Search for active or incative events
+      isArray: false
+      name: is_active
+      required: false
+      secret: false
+    deprecated: false
+    description: Return event matches query
+    execution: false
+    name: analytics-and-siem-query
+    outputs:
+      - contextPath: AnalyticsAndSIEM.Event.ID
+        description: ID of Event
+        type: String
+      - contextPath: AnalyticsAndSIEM.Event.Description
+        description: Description of event
+        type: String
+      - contextPath: AnalyticsAndSIEM.Event.Created
+        description: Time of event creation
+        type: Date
+      - contextPath: AnalyticsAndSIEM.Event.IsActive
+        description: Status of event
+        type: Boolean
+      - contextPath: AnalyticsAndSIEM.Event.Assignee.Name
+        description: Name of assigned user
+        type: String
+      - contextPath: AnalyticsAndSIEM.Event.Assignee.ID
+        description: ID of assigned user
+        type: String
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python

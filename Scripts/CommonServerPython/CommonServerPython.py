@@ -1,5 +1,7 @@
 import socket
 
+from typing import cast, Any
+
 import demistomock as demisto
 # Common functions script
 # =======================
@@ -11,6 +13,7 @@ import json
 import sys
 import os
 import re
+import requests
 from collections import OrderedDict
 
 import xml.etree.cElementTree as ET
@@ -19,7 +22,7 @@ IS_PY3 = sys.version_info[0] == 3
 # pylint: disable=undefined-variable
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
-    STRING_OBJ_TYPES = (str, )
+    STRING_OBJ_TYPES = (str,)
 else:
     STRING_TYPES = (str, unicode)  # type: ignore
     STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
@@ -76,7 +79,6 @@ dbotscores = {
     'Informational': 0.5
 }
 
-
 # ===== Fix fetching credentials from vault instances =====
 # ====================================================================================
 try:
@@ -90,6 +92,7 @@ try:
 
 except Exception:
     pass
+
 
 # ====================================================================================
 
@@ -279,7 +282,7 @@ def shortCrowdStrike(entry):
                 csRes += '\nName|Created|Last Valid'
                 csRes += '\n----|-------|----------'
                 for label in labels:
-                    csRes += '\n' + demisto.gets(label, 'name') + '|' +\
+                    csRes += '\n' + demisto.gets(label, 'name') + '|' + \
                              formatEpochDate(demisto.get(label, 'created_on')) + '|' + \
                              formatEpochDate(demisto.get(label, 'last_valid_on'))
 
@@ -481,7 +484,7 @@ def FormatADTimestamp(ts):
        :return: A string represeting the time
        :rtype: ``str``
     """
-    return (datetime(year=1601, month=1, day=1) + timedelta(seconds=int(ts) / 10**7)).ctime()
+    return (datetime(year=1601, month=1, day=1) + timedelta(seconds=int(ts) / 10 ** 7)).ctime()
 
 
 def PrettifyCompactedTimestamp(x):
@@ -618,6 +621,7 @@ def logger(func):
     :return: returns the func return value.
     :rtype: ``any``
     """
+
     def func_wrapper(*args, **kwargs):
         LOG('calling {}({})'.format(func.__name__, formatAllArgs(args, kwargs)))
         return func(*args, **kwargs)
@@ -1169,7 +1173,6 @@ def elem_to_internal(elem, strip_ns=1, strip=1):
 
 
 def internal_to_elem(pfsh, factory=ET.Element):
-
     """Convert an internal dictionary (not JSON!) into an Element.
     Whatever Element implementation we could import will be
     used by default; if you want to use something else, pass the
@@ -1209,7 +1212,6 @@ def internal_to_elem(pfsh, factory=ET.Element):
 
 
 def elem2json(elem, options, strip_ns=1, strip=1):
-
     """Convert an ElementTree or Element into a JSON string."""
 
     if hasattr(elem, 'getroot'):
@@ -1222,7 +1224,6 @@ def elem2json(elem, options, strip_ns=1, strip=1):
 
 
 def json2elem(json_data, factory=ET.Element):
-
     """Convert a JSON string into an Element.
     Whatever Element implementation we could import will be used by
     default; if you want to use something else, pass the Element class
@@ -1247,7 +1248,6 @@ def xml2json(xmlstring, options={}, strip_ns=1, strip=1):
 
 
 def json2xml(json_data, factory=ET.Element):
-
     """Convert a JSON string into an XML string.
     Whatever Element implementation we could import will be used by
     default; if you want to use something else, pass the Element class
@@ -1506,6 +1506,7 @@ def replace_in_keys(src, existing='.', new='_'):
         :return: The dictionary (or list of dictionaries) with keys after substring replacement.
         :rtype: ``dict`` or ``list``
     """
+
     def replace_str(src_str):
         if callable(getattr(src_str, "decode", None)):
             src_str = src_str.decode('utf-8')
@@ -1532,6 +1533,7 @@ sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
 sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
 
 pascalRegex = re.compile('([A-Z]?[a-z]+)')
+
 
 # ############################## REGEX FORMATTING end ###############################
 
@@ -1718,8 +1720,8 @@ def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
 
 def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
     """
-      Parses date_str_or_dt in the given format (default: %Y-%m-%dT%H:%M:%S) to miliseconds
-      Examples: ('2018-11-06T08:56:41', '2018-11-06T08:56:41', etc.)
+      Parses date_str_or_dt in the given format (default: %Y-%m-%dT%H:%M:%S) to milliseconds
+            Examples: ('2018-11-06T08:56:41', '2018-11-06T08:56:41', etc.)
 
       :type date_str_or_dt: ``str`` or ``datetime.datetime``
       :param date_str_or_dt: The date to be parsed. (required)
@@ -1738,7 +1740,7 @@ def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
     return int(time.mktime(date_str_or_dt.timetuple()) * 1000)
 
 
-def remove_nulls_from_dictionary(dict):
+def remove_nulls_from_dictionary(data):
     """
         Remove Null values from a dictionary. (updating the given dictionary)
 
@@ -1748,7 +1750,145 @@ def remove_nulls_from_dictionary(dict):
         :return: No data returned
         :rtype: ``None``
     """
-    list_of_keys = list(dict.keys())[:]
+    list_of_keys = list(data.keys())[:]
     for key in list_of_keys:
-        if dict[key] in ('', None, [], {}, ()):
-            del dict[key]
+        if data[key] in ('', None, [], {}, ()):
+            del data[key]
+
+
+class BaseClient:
+    def __init__(self,
+                 server,
+                 base_suffix,
+                 integration_name,
+                 integration_name_command,
+                 integration_name_context,
+                 verify,
+                 proxy
+                 ):
+        """Base Client for use in new integrations
+
+        Args:
+            server (str): Base server address
+            base_suffix (str): suffix of API (`/api/v2/`)
+            integration_name (str): Name as shown in UI (`Integration Name`)
+            integration_name_command (str): lower case with `-` divider (`integration-name`)
+            integration_name_context (str): camelcase with no dividers (`IntegrationName`)
+            verify (bool): Verify SSL
+            proxy (bool): Use system proxy
+        """
+        self._server = server.rstrip(chars='/')
+        self.verify = verify
+        self._integration_name = str(integration_name)
+        self._integration_name_command = str(integration_name_command)
+        self._integration_name_context = str(integration_name_context)
+        if proxy:
+            self._proxies = handle_proxy()
+        else:
+            self._proxies = None
+        self._base_url = '{}{}'.format(self._server, base_suffix)
+
+    def get_integration_name(self):
+        return self._integration_name
+
+    def get_integration_context(self):
+        return self._integration_name_context
+
+    def get_integration_command(self):
+        return self._integration_name_command
+
+    def _http_request(self, method, url_suffix, full_url=None, headers=None,
+                      auth=None, params=None, data=None, files=None,
+                      timeout=10, resp_type='json', **kwargs):
+        """A wrapper for requests lib to send our requests and handle requests
+        and responses better
+
+        Args:
+            method: (str) HTTP method, e.g. 'GET', 'POST' ... etc.
+            url_suffix (str): API endpoint.
+            full_url (str):
+                Bypasses the use of BASE_URL + url_suffix. Useful if there is a need to
+                make a request to an address outside of the scope of the integration
+                API.
+            headers (dict): Headers to send in the request.
+            auth: (tuple) Auth tuple to enable Basic/Digest/Custom HTTP Auth.
+            params (dict): URL parameters.
+            data (dict): Data to be sent in a 'POST' request.
+            files (dict): File data to be sent in a 'POST' request.
+            timeout (float):
+                The amount of time in seconds a Request will wait for a client to
+                establish a connection to a remote machine.
+            resp_type (str):
+                Determines what to return from having made the HTTP request. The default
+                is 'json'. Other options are 'text', 'content' or 'response' if the user
+                would like the full response object returned.
+
+        Returns:
+                Response JSON from having made the request.
+        """
+        try:
+            address = full_url if full_url else self._base_url + url_suffix
+            res = requests.request(
+                method,
+                address,
+                verify=self.verify,
+                params=params,
+                data=data,
+                files=files,
+                headers=headers,
+                auth=auth,
+                timeout=timeout,
+                proxies=self._proxies,
+                **kwargs
+            )
+            # Handle error responses gracefully
+            if res.ok:
+                try:
+                    # Try to parse json error response
+                    return DemistoException(res.json())
+                except ValueError:
+                    err_msg = 'Error in {} API call [{}] - {}' \
+                        .format(self._integration_name, res.status_code, res.reason)
+                    raise DemistoException(err_msg)
+
+            resp_type = resp_type.lower()
+            try:
+                if resp_type == 'json':
+                    return res.json()
+                elif resp_type == 'text':
+                    return res.text
+                elif resp_type == 'content':
+                    return res.content
+                else:
+                    return res
+            except ValueError:
+                raise DemistoException('Failed to parse json object from response: {}'.format(res.content))
+
+        except requests.exceptions.ConnectTimeout:
+            err_msg = 'Connection Timeout Error - potential reasons may be that the Server URL parameter' \
+                      ' is incorrect or that the Server is not accessible from your host.'
+            raise DemistoException(err_msg)
+        except requests.exceptions.SSLError:
+            err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' in' \
+                      ' the integration configuration.'
+            raise DemistoException(err_msg)
+        except requests.exceptions.ProxyError:
+            err_msg = 'Proxy Error - if \'Use system proxy\' in the integration configuration has been' \
+                      ' selected, try deselecting it.'
+            raise DemistoException(err_msg)
+        except requests.exceptions.ConnectionError as e:
+            # Get originating Exception in Exception chain
+            while '__context__' in dir(e) and e.__context__:
+                e = cast(Any, e.__context__)
+
+            error_class = str(e.__class__)
+            err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+            err_msg = '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
+                      'Verify that the server URL parameter' \
+                      ' is correct and that you have access to the server from your host.' \
+                .format(err_type, e.errno, e.strerror)
+            raise DemistoException(err_msg)
+
+
+class DemistoException(Exception):
+    """ Custom Exception """
