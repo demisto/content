@@ -990,6 +990,11 @@
             "timeout": 1200
         },
         {
+            "integrations": "Recorded Future",
+            "playbookID": "Recorded Future Test",
+            "nightly": true
+        },
+        {
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Test",
             "instance_names": "ms_graph_security_dev"
@@ -1770,7 +1775,6 @@
     ],
     "skipped_tests": {
         "TestParseEmailHeaders": "Fails on conditional task (Issue 18815)",
-        "VxStream Test": "crowdstrike-detonate-file fails with Bad request code (Issue 18791)",
         "Extract Indicators From File - Generic v2 - Test": "issue with extract indicators. (probably regex) (Issue 18795)",
         "Pwned v2 test": "Pwned v2 test fails on conditional task (Issue 18793).",
         "CheckpointFW-test": "Test is not stable (Issue 18643)",
@@ -1834,12 +1838,14 @@
         "FireEye ETP": "No instance",
         "ProofpointTAP_v2": "No instance",
         "remedy_sr_beta": "No instance",
+        "Minerva Labs Anti-Evasion Platform": "No instance (Issue 18835)",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
         "Jask": "Returning 401 (issue 18879)",
-        "google-vault": "Error when creating exports (Issue 18866)",
-        "Lastline": "Temporally moved to skipped inorder to not fail nightly",
+        "SumoLogic": "No credentials (Issue 18441)",
+        "Lastline": "Temporally moved to skipped in order to not fail nightly",
+        "vmray": "VMRay license expired (Issue 18752)",
         "Anomali ThreatStream v2": "Credentials are invalid (issue 18561)",
         "Anomali ThreatStream": "Credentials are invalid (issue 18561)",
         "RSA Archer": "Instance does not seem to be working, Arian is checking",
@@ -1869,11 +1875,10 @@
         "LogRhythm": "Need to fix SOAP api",
         "ANYRUN": "No instance",
         "Snowflake": "Looks like account expired, needs looking into",
-        "Cisco Spark": "No instance",
-        "Minerva Labs Anti-Evasion Platform": "No instance",
-        "Phish.AI": "Unauthorized. will be re-branded soon as Cofense",
+        "Cisco Spark": "No instance (Issue 18940)",
+        "Phish.AI": "Unauthorized. will be re-branded soon as Cofense (Issue 17291)",
         "QRadar": "No license (issue 17794)",
-        "MaxMind GeoIP2": "License has expired.",
+        "MaxMind GeoIP2": "License has expired (Issue 18932).",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -1884,10 +1889,9 @@
       "_comment": "~~~ OTHER ~~~",
         "EclecticIQ Platform": "Old API is deprecated (Issue 8821)",
         "Pwned": "Old API is deprecated",
-        "SumoLogic": "Shelly working on fixing it",
         "iDefense": "DevOps investigation",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
-        "BitDam": "Changes in service (issue #16247)",
+        "BitDam": "Changes in service (issue #17247)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
         "MailListener - POP3": "Failing test module (issue 18580)",
 
