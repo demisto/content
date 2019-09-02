@@ -3,8 +3,10 @@ from CommonServerPython import *
 import re
 from requests import Session
 import requests
+import functools
 import json
 from datetime import datetime
+from requests import cookies
 
 
 # disable insecure warnings
@@ -20,10 +22,16 @@ if not demisto.params().get('proxy', False):
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 VERIFY_SSL = not demisto.params().get('unsecure', False)
+
+MAX_REQUEST_RETRIES = 3
+
 FETCH_TIME_DEFAULT = '3 days'
 FETCH_TIME = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT)
 FETCH_TIME = FETCH_TIME if FETCH_TIME and FETCH_TIME.strip() else FETCH_TIME_DEFAULT
+
 SESSION = Session()
+TOKEN = demisto.getIntegrationContext().get('token')
+COOKIE = demisto.getIntegrationContext().get('cookie')
 
 
 def get_server_url():
@@ -48,28 +56,41 @@ ACTION_TYPE_TO_VALUE = {
 ''' HELPER FUNCTIONS '''
 
 
-def send_request(path, method='get', body=None, params=None, headers=None):
+def send_request(path, method='get', body=None, params=None, headers=None, try_number=1):
     body = body if body is not None else {}
     params = params if params is not None else {}
+    headers = headers if headers is not None else get_headers()
 
+    headers['X-SecurityCenter'] = TOKEN
     url = '{}/{}'.format(SERVER_URL, path)
 
-    headers = headers if headers is not None else get_headers()
-    res = SESSION.request(method, url, data=json.dumps(body), params=params, verify=VERIFY_SSL)
-    if res.status_code < 200 or res.status_code >= 300:
+    session_cookie = cookies.create_cookie('TNS_SESSIONID', COOKIE)
+    SESSION.cookies.set_cookie(session_cookie)  # type: ignore
+
+    res = SESSION.request(method, url, data=json.dumps(body), params=params, headers=headers, verify=VERIFY_SSL)
+
+    if res.status_code == 403 and try_number <= MAX_REQUEST_RETRIES:
+        login()
+        headers['X-SecurityCenter'] = TOKEN  # The Token is being updated in the login
+        return send_request(path, method, body, params, headers, try_number + 1)
+
+    elif res.status_code < 200 or res.status_code >= 300:
         try:
             error = res.json()
         except Exception:
-            return_error('Got status code {} with url {} with body {} with headers {}'.format(
+            return_error('Error: Got status code {} with url {} with body {} with headers {}'.format(
                 str(res.status_code), url, res.content, str(res.headers)))
-        return_error('Got an error from TenableSC, code: {}, details: {}'.format(error['error_code'], error['error_msg']))
+
+        return_error('Error: Got an error from TenableSC, code: {}, details: {}'.format(error['error_code'],
+                                                                                        error['error_msg']))
     return res.json()
 
 
 def get_headers():
-    headers = {}
-    headers['Accept'] = 'application/json'
-    headers['Content-Type'] = 'application/json'
+    headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    }
 
     return headers
 
@@ -80,34 +101,41 @@ def send_login_request(login_body):
 
     headers = get_headers()
     res = SESSION.request('post', url, headers=headers, data=json.dumps(login_body), verify=VERIFY_SSL)
+
     if res.status_code < 200 or res.status_code >= 300:
-        return_error('Got status code {} with url {} with body {} with headers {}'.format(
+        return_error('Error: Got status code {} with url {} with body {} with headers {}'.format(
             str(res.status_code), url, res.content, str(res.headers)))
+
+    global COOKIE
+    COOKIE = res.cookies.get('TNS_SESSIONID', COOKIE)
+    demisto.setIntegrationContext({'cookie': COOKIE})
 
     return res.json()
 
 
-def login(user_name, password):
+def login():
     login_body = {
-        'username': user_name,
-        'password': password
+        'username': USERNAME,
+        'password': PASSWORD
     }
     login_response = send_login_request(login_body)
 
     if 'response' not in login_response:
-        return_error('Could not retrieve login token')
+        return_error('Error: Could not retrieve login token')
 
     token = login_response['response'].get('token')
-    # There might be a case where the API does not return a token because there are too many sessions with the same user.
+    # There might be a case where the API does not return a token because there are too many sessions with the same user
     # In that case we need to add 'releaseSession = true'
     if not token:
         login_body['releaseSession'] = 'true'
         login_response = send_login_request(login_body)
         if 'response' not in login_response or 'token' not in login_response['response']:
-            return_error('Could not retrieve login token')
+            return_error('Error: Could not retrieve login token')
         token = login_response['response']['token']
 
-    return token
+    global TOKEN
+    TOKEN = str(token)
+    demisto.setIntegrationContext({'token': TOKEN})
 
 
 def logout():
@@ -150,7 +178,7 @@ def list_scans_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Tenable.sc Scans", mapped_scans, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('Tenable.sc Scans', mapped_scans, headers, removeNull=True),
         'EntryContext': {
             'TenableSC.Scan(val.ID===obj.ID)': createContext(mapped_scans, removeNull=True)
         }
@@ -192,8 +220,7 @@ def list_policies_command():
         'Type': p['policyTemplate'].get('name'),
         'Group': p['ownerGroup'].get('name'),
         'Owner': p['owner'].get('username'),
-        'LastModified': datetime.utcfromtimestamp(int(p['modifiedTime'])).strftime(
-            '%Y-%m-%dT%H:%M:%SZ') if p['modifiedTime'] else ''
+        'LastModified': timestamp_to_utc(p['modifiedTime'])
     } for p in policies]
 
     demisto.results({
@@ -201,7 +228,7 @@ def list_policies_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Tenable.sc Scan Policies", mapped_policies, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('Tenable.sc Scan Policies', mapped_policies, headers, removeNull=True),
         'EntryContext': {
             'TenableSC.ScanPolicy(val.ID===obj.ID)': createContext(mapped_policies, removeNull=True)
         }
@@ -244,7 +271,7 @@ def list_repositories_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Tenable.sc Scan Repositories", mapped_repositories, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('Tenable.sc Scan Repositories', mapped_repositories, headers, removeNull=True),
         'EntryContext': {
             'TenableSC.ScanRepository(val.ID===obj.ID)': createContext(mapped_repositories, removeNull=True)
         }
@@ -280,8 +307,7 @@ def list_credentials_command():
         'Tag': c['tags'],
         'Group': c.get('ownerGroup', {}).get('name'),
         'Owner': c.get('owner', {}).get('name'),
-        'LastModified': datetime.utcfromtimestamp(int(c['modifiedTime'])).strftime(
-            '%Y-%m-%dT%H:%M:%SZ') if c['modifiedTime'] else ''
+        'LastModified': timestamp_to_utc(c['modifiedTime'])
     } for c in credentials]
 
     demisto.results({
@@ -289,7 +315,7 @@ def list_credentials_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Tenable.sc Credentials", mapped_credentials, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('Tenable.sc Credentials', mapped_credentials, headers, removeNull=True),
         'EntryContext': {
             'TenableSC.Credential(val.ID===obj.ID)': createContext(mapped_credentials, removeNull=True)
         }
@@ -331,8 +357,7 @@ def list_assets_command():
         'Type': a['type'],
         'Group': a.get('ownerGroup', {}).get('name'),
         'HostCount': a['ipCount'],
-        'LastModified': datetime.utcfromtimestamp(int(a['modifiedTime'])).strftime(
-            '%Y-%m-%dT%H:%M:%SZ') if a['modifiedTime'] else ''
+        'LastModified': timestamp_to_utc(a['modifiedTime'])
     } for a in assets]
 
     demisto.results({
@@ -340,7 +365,7 @@ def list_assets_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Tenable.sc Assets", mapped_assets, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('Tenable.sc Assets', mapped_assets, headers, removeNull=True),
         'EntryContext': {
             'TenableSC.Asset(val.ID===obj.ID)': createContext(mapped_assets, removeNull=True)
         }
@@ -383,10 +408,8 @@ def get_asset_command():
         'Name': asset['name'],
         'Description': asset['description'],
         'Tag': asset['tags'],
-        'Created': datetime.utcfromtimestamp(int(asset['createdTime'])).strftime(
-            '%Y-%m-%dT%H:%M:%SZ') if asset['createdTime'] else '',
-        'Modified': datetime.utcfromtimestamp(int(asset['modifiedTime'])).strftime(
-            '%Y-%m-%dT%H:%M:%SZ') if asset['modifiedTime'] else '',
+        'Created': timestamp_to_utc(asset['createdTime']),
+        'Modified': timestamp_to_utc(asset['modifiedTime']),
         'Owner': asset.get('owner', {}).get('username'),
         'Group': asset.get('ownerGroup', {}).get('name'),
         'IPs': ips
@@ -397,7 +420,7 @@ def get_asset_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Tenable.sc Asset", mapped_asset, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('Tenable.sc Asset', mapped_asset, headers, removeNull=True),
         'EntryContext': {
             'TenableSC.Asset(val.ID===obj.ID)': createContext(mapped_asset, removeNull=True)
         }
@@ -424,7 +447,7 @@ def create_asset_command():
     res = create_asset(name, description, owner_id, tags, ips)
 
     if not res or 'response' not in res:
-        return_error('Could not retrieve the asset')
+        return_error('Error: Could not retrieve the asset')
 
     asset = res['response']
 
@@ -481,7 +504,7 @@ def delete_asset_command():
     res = delete_asset(asset_id)
 
     if not res:
-        return_error('Could not delete the asset')
+        return_error('Error: Could not delete the asset')
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -508,8 +531,8 @@ def list_report_definitions_command():
 
     reports = get_elements(res['response'], manageable)
     # Remove duplicates, take latest
-    reports = [reduce(lambda x, y: x if int(x['modifiedTime']) > int(y['modifiedTime']) else y,
-                      filter(lambda e: e['name'] == n, reports)) for n in {r['name'] for r in reports}]
+    reports = [functools.reduce(lambda x, y: x if int(x['modifiedTime']) > int(y['modifiedTime']) else y,
+                                filter(lambda e: e['name'] == n, reports)) for n in {r['name'] for r in reports}]
 
     if len(reports) == 0:
         return_message('No report definitions found')
@@ -525,7 +548,7 @@ def list_report_definitions_command():
         'Owner': r.get('owner', {}).get('username')
     } for r in reports]
 
-    hr = tableToMarkdown("Tenable.sc Report Definitions", mapped_reports, headers, removeNull=True)
+    hr = tableToMarkdown('Tenable.sc Report Definitions', mapped_reports, headers, removeNull=True)
     for r in mapped_reports:
         del r['Description']
 
@@ -584,7 +607,7 @@ def list_zones_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Tenable.sc Scan Zones", mapped_zones, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('Tenable.sc Scan Zones', mapped_zones, headers, removeNull=True),
         'EntryContext': {
             'TenableSC.ScanZone(val.ID===obj.ID)': createContext(mapped_zones, removeNull=True)
         }
@@ -623,21 +646,18 @@ def create_scan_command():
     rollover_type = demisto.args().get('rollover_type')
     dependent = demisto.args().get('dependent_id')
 
-    # if not policy_id and not plugin_id:
-    # return_error('Policy and/or Plugin ID must be provided')
-
     if not asset_ids and not ips:
-        return_error('Assets and/or IPs must be provided')
+        return_error('Error: Assets and/or IPs must be provided')
 
     if schedule == 'dependent' and not dependent:
-        return_error('Dependent schedule must include a dependent scan ID')
+        return_error('Error: Dependent schedule must include a dependent scan ID')
 
     res = create_scan(name, repo_id, policy_id, plugin_id, description, zone_id, schedule, asset_ids,
                       ips, scan_virtual_hosts, report_ids, credentials, timeout_action, max_scan_time,
                       dhcp_track, rollover_type, dependent)
 
     if not res or 'response' not in res:
-        return_error('Could not retrieve the scan')
+        return_error('Error: Could not retrieve the scan')
 
     scan = res['response']
 
@@ -656,8 +676,7 @@ def create_scan_command():
         'CreatorID': scan['creator'].get('id'),
         'Name': scan['name'],
         'Type': scan['type'],
-        'CreationTime': datetime.utcfromtimestamp(int(scan['createdTime'])).strftime(
-            '%Y-%m-%dT%H:%M:%SZ') if scan['createdTime'] else '',
+        'CreationTime': timestamp_to_utc(scan['createdTime']),
         'OwnerName': scan['owner'].get('name'),
         'Reports': demisto.dt(scan['reports'], 'id')
     }
@@ -667,7 +686,7 @@ def create_scan_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Scan created successfully", mapped_scan, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('Scan created successfully', mapped_scan, headers, removeNull=True),
         'EntryContext': {
             'TenableSC.Scan(val.ID===obj.ID)': createContext(mapped_scan, removeNull=True)
         }
@@ -754,12 +773,12 @@ def launch_scan_command():
     target_password = demisto.args().get('diagnostic_password')
 
     if (target_address and not target_password) or (target_password and not target_address):
-        return_error('If a target is provided, both IP/Hostname and the password must be provided')
+        return_error('Error: If a target is provided, both IP/Hostname and the password must be provided')
 
     res = launch_scan(scan_id, {'address': target_address, 'password': target_password})
 
     if not res or 'response' not in res or not res['response'] or 'scanResult' not in res['response']:
-        return_error('Could not retrieve the scan')
+        return_error('Error: Could not retrieve the scan')
 
     scan_result = res['response']['scanResult']
 
@@ -784,7 +803,7 @@ def launch_scan_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Tenable.sc Scan", mapped_scan, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('Tenable.sc Scan', mapped_scan, headers, removeNull=True),
         'EntryContext': {
             'TenableSC.ScanResults(val.ID===obj.ID)': createContext(mapped_scan, removeNull=True)
         }
@@ -828,7 +847,7 @@ def get_scan_status_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Tenable.sc Scan Status", mapped_scans_results, headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('Tenable.sc Scan Status', mapped_scans_results, headers, removeNull=True),
         'EntryContext': {
             'TenableSC.ScanResults(val.ID===obj.ID)': createContext(mapped_scans_results, removeNull=True)
         }
@@ -852,8 +871,8 @@ def get_scan_report_command():
 
     scan_results = res['response']
 
-    headers = ['ID', 'Name', 'Description', 'Policy', 'Group', 'Owner', 'Group', 'ScannedIPs',
-               'StartTime', 'EndTime', 'Duration', 'Checks', 'ImportTime''RepositoryName', 'Status']
+    headers = ['ID', 'Name', 'Description', 'Policy', 'Group', 'Owner', 'ScannedIPs',
+               'StartTime', 'EndTime', 'Duration', 'Checks', 'ImportTime', 'RepositoryName', 'Status']
     vuln_headers = ['ID', 'Name', 'Family', 'Severity', 'Total']
 
     mapped_results = {
@@ -864,13 +883,10 @@ def get_scan_report_command():
         'Policy': scan_results['details'],
         'Group': scan_results.get('ownerGroup', {}).get('name'),
         'Checks': scan_results['completedChecks'],
-        'StartTime': datetime.utcfromtimestamp(int(scan_results['startTime'])).strftime(
-            '%Y-%m-%dT%H:%M:%SZ') if scan_results['startTime'] else '',
-        'EndTime': datetime.utcfromtimestamp(int(scan_results['finishTime'])).strftime(
-            '%Y-%m-%dT%H:%M:%SZ') if scan_results['finishTime'] else '',
-        'Duration': float(scan_results['scanDuration']) / 60 if scan_results['scanDuration'] else '',
-        'ImportTime': datetime.utcfromtimestamp(int(scan_results['importStart'])).strftime(
-            '%Y-%m-%dT%H:%M:%SZ') if scan_results['importStart'] else '',
+        'StartTime': timestamp_to_utc(scan_results['startTime']),
+        'EndTime': timestamp_to_utc(scan_results['finishTime']),
+        'Duration': scan_duration_to_demisto_format(scan_results['scanDuration']),
+        'ImportTime': timestamp_to_utc(scan_results['importStart']),
         'ScannedIPs': scan_results['scannedIPs'],
         'Owner': scan_results['owner'].get('username'),
         'RepositoryName': scan_results['repository'].get('name')
@@ -992,15 +1008,15 @@ def get_vulnearbilites(scan_results_id):
 
         mapped_vulns.append(mapped_vuln)
 
-    sv = [
-        'Critical',
-        'High',
-        'Medium',
-        'Low',
-        'Info'
-    ]
+    sv_level = {
+        'Critical': 4,
+        'High': 3,
+        'Medium': 2,
+        'Low': 1,
+        'Info': 0
+    }
 
-    mapped_vulns.sort(key=lambda r: r['Severity'], cmp=lambda a, b: sv.index(str(a)) - sv.index(str(a)))
+    mapped_vulns.sort(key=lambda r: sv_level[r['Severity']])
 
     return mapped_vulns
 
@@ -1021,14 +1037,18 @@ def create_query(scan_id, tool, query_filters=None):
     return send_request(path, method='post', body=body)
 
 
-def get_analysis(query_id, scan_results_id):
+def get_analysis(query, scan_results_id):
     path = 'analysis'
+
+    # This function can receive 'query' argument either as a dict (as in get_vulnerability_command),
+    # or as an ID of an existing query (as in get_vulnearbilites).
+    # Here we form the query field in the request body as a dict, as required.
+    if not isinstance(query, dict):
+        query = {'id': query}
 
     body = {
         'type': 'vuln',
-        'query': {
-            'id': query_id
-        },
+        'query': query,
         'sourceType': 'individual',
         'scanID': scan_results_id,
         'view': 'all'
@@ -1040,6 +1060,10 @@ def get_analysis(query_id, scan_results_id):
 def get_vulnerability_command():
     vuln_id = demisto.args()['vulnerability_id']
     scan_results_id = demisto.args()['scan_results_id']
+    page = int(demisto.args().get('page'))
+    limit = int(demisto.args().get('limit'))
+    if limit > 200:
+        limit = 200
 
     vuln_filter = [{
         'filterName': 'pluginID',
@@ -1047,20 +1071,24 @@ def get_vulnerability_command():
         'value': vuln_id
     }]
 
-    query = create_query(scan_results_id, 'vulnipdetail', vuln_filter)
+    query = {
+        'scanID': scan_results_id,
+        'filters': vuln_filter,
+        'tool': 'vulndetails',
+        'type': 'vuln',
+        'startOffset': page,  # Lower bound for the results list (must be specified)
+        'endOffset': page + limit  # Upper bound for the results list (must be specified)
+    }
 
-    if not query or 'response' not in query:
-        return_error('Could not get vulnerability query')
-
-    analysis = get_analysis(query['response']['id'], scan_results_id)
+    analysis = get_analysis(query, scan_results_id)
 
     if not analysis or 'response' not in analysis:
-        return_error('Could not get vulnerability analysis')
+        return_error('Error: Could not get vulnerability analysis')
 
     results = analysis['response']['results']
 
     if not results or len(results) == 0:
-        return_error('Vulnerability not found in the scan results')
+        return_error('Error: Vulnerability not found in the scan results')
 
     vuln_response = get_vulnerability(vuln_id)
 
@@ -1068,13 +1096,9 @@ def get_vulnerability_command():
         return_message('Vulnerability not found')
 
     vuln = vuln_response['response']
+    vuln['severity'] = results[0]['severity']  # The vulnerability severity is the same in all the results
 
-    vuln['severity'] = results[0]['severity']
-    vuln['hosts'] = results[0]['hosts']
-
-    vuln_hosts = vuln['hosts']
-    severity = vuln['severity'].get('name')
-    hosts = [{'IP': h['ip'], 'MAC': h['macAddress']} for h in demisto.dt(vuln_hosts, 'iplist')]
+    hosts = get_vulnerability_hosts_from_analysis(results)
 
     cves = None
     cves_output = []  # type: List[dict]
@@ -1092,15 +1116,13 @@ def get_vulnerability_command():
         'Name': vuln['name'],
         'Description': vuln['description'],
         'Type': vuln['type'],
-        'Severity': severity,
+        'Severity': vuln['severity'].get('name'),
         'Synopsis': vuln['synopsis'],
-        'Solution': vuln['solution'],
-
+        'Solution': vuln['solution']
     }
 
     vuln_info = {
-        'Published': datetime.utcfromtimestamp(int(vuln['vulnPubDate'])).strftime(
-            '%Y-%m-%dT%H:%M:%SZ') if vuln['vulnPubDate'] else '',
+        'Published': timestamp_to_utc(vuln['vulnPubDate']),
         'CPE': vuln['cpe'],
         'CVE': cves
     }
@@ -1119,10 +1141,8 @@ def get_vulnerability_command():
 
     plugin_details = {
         'Family': vuln['family'].get('name'),
-        'Published': datetime.utcfromtimestamp(int(vuln['pluginPubDate'])).strftime(
-            '%Y-%m-%dT%H:%M:%SZ') if vuln['pluginPubDate'] else '',
-        'Modified': datetime.utcfromtimestamp(int(vuln['pluginModDate'])).strftime(
-            '%Y-%m-%dT%H:%M:%SZ') if vuln['pluginModDate'] else '',
+        'Published': timestamp_to_utc(vuln['pluginPubDate']),
+        'Modified': timestamp_to_utc(vuln['pluginModDate']),
         'CheckType': vuln['checkType']
     }
 
@@ -1139,6 +1159,7 @@ def get_vulnerability_command():
     mapped_vuln.update(exploit_info)
     mapped_vuln.update(risk_info)
     mapped_vuln['PluginDetails'] = plugin_details
+    mapped_vuln['Host'] = hosts
 
     scan_result = {
         'ID': scan_results_id,
@@ -1172,13 +1193,22 @@ def get_vulnerability(vuln_id):
     return send_request(path, params=params)
 
 
+def get_vulnerability_hosts_from_analysis(results):
+    return [{
+        'IP': host['ip'],
+        'MAC': host['macAddress'],
+        'Port': host['port'],
+        'Protocol': host['protocol']
+    } for host in results]
+
+
 def stop_scan_command():
     scan_results_id = demisto.args()['scanResultsID']
 
     res = change_scan_status(scan_results_id, 'stop')
 
     if not res:
-        return_error('Could not stop the scan')
+        return_error('Error: Could not stop the scan')
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1195,7 +1225,7 @@ def pause_scan_command():
     res = change_scan_status(scan_results_id, 'pause')
 
     if not res:
-        return_error('Could not pause the scan')
+        return_error('Error: Could not pause the scan')
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1212,7 +1242,7 @@ def resume_scan_command():
     res = change_scan_status(scan_results_id, 'resume')
 
     if not res:
-        return_error('Could not resume the scan')
+        return_error('Error: Could not resume the scan')
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1235,7 +1265,7 @@ def delete_scan_command():
     res = delete_scan(scan_id)
 
     if not res:
-        return_error('Could not delete the scan')
+        return_error('Error: Could not delete the scan')
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -1293,8 +1323,7 @@ def get_device_command():
         'DNSName': device.get('dnsName'),
         'OS': re.sub('<[^<]+?>', ' ', device['os']).lstrip() if device.get('os') else '',
         'OsCPE': device.get('osCPE'),
-        'LastScan': datetime.utcfromtimestamp(int(device.get('lastScan'))).strftime(
-            '%Y-%m-%dT%H:%M:%SZ') if device.get('lastScan') and int(device['lastScan']) > 0 else '',
+        'LastScan': timestamp_to_utc(device['lastScan']),
         'TotalScore': device.get('total'),
         'LowSeverity': device.get('severityLow'),
         'MediumSeverity': device.get('severityMedium'),
@@ -1383,12 +1412,9 @@ def list_users_command():
         'LastName': u['lastname'],
         'Title': u['title'],
         'Email': u['email'],
-        'Created': datetime.utcfromtimestamp(int(u['createdTime'])).strftime(
-            '%Y-%m-%dT%H:%M:%SZ') if u['createdTime'] else '',
-        'Modified': datetime.utcfromtimestamp(int(u['modifiedTime'])).strftime(
-            '%Y-%m-%dT%H:%M:%SZ') if u['modifiedTime'] else '',
-        'LastLogin': datetime.utcfromtimestamp(int(u['lastLogin'])).strftime(
-            '%Y-%m-%dT%H:%M:%SZ') if u['lastLogin'] else '',
+        'Created': timestamp_to_utc(u['createdTime']),
+        'Modified': timestamp_to_utc(u['modifiedTime']),
+        'LastLogin': timestamp_to_utc(u['lastLogin']),
         'Role': u['role'].get('name')
     } for u in users]
 
@@ -1424,7 +1450,7 @@ def get_system_licensing_command():
     res = get_system_licensing()
 
     if not res or 'response' not in res:
-        return_error('Could not retrieve system licensing')
+        return_error('Error: Could not retrieve system licensing')
 
     status = res['response']
 
@@ -1463,12 +1489,12 @@ def get_system_information_command():
     sys_res = get_system()
 
     if not sys_res or 'response' not in sys_res:
-        return_error('Could not retrieve system information')
+        return_error('Error: Could not retrieve system information')
 
     diag_res = get_system_diagnostics()
 
     if not diag_res or 'response' not in diag_res:
-        return_error('Could not retrieve system information')
+        return_error('Error: Could not retrieve system information')
 
     sys_res.update(diag_res)
     diagnostics = diag_res['response']
@@ -1483,8 +1509,7 @@ def get_system_information_command():
         'JavaStatus': diagnostics['statusJava'],
         'DiskStatus': diagnostics['statusDisk'],
         'DiskThreshold': diagnostics['statusThresholdDisk'],
-        'LastCheck': datetime.utcfromtimestamp(int(diagnostics['statusLastChecked'])).strftime(
-            '%Y-%m-%dT%H:%M:%SZ') if diagnostics['statusLastChecked'] else '',
+        'LastCheck': timestamp_to_utc(diagnostics['statusLastChecked']),
     }
 
     headers = [
@@ -1543,10 +1568,8 @@ def list_alerts_command():
         'Name': a['name'],
         'State': 'Triggered' if a['didTriggerLastEvaluation'] == 'true' else 'Not Triggered',
         'Actions': demisto.dt(a['action'], 'type'),
-        'LastTriggered': datetime.utcfromtimestamp(int(a['lastTriggered'])).strftime(
-            '%Y-%m-%dT%H:%M:%SZ') if a['lastTriggered'] and int(a['lastTriggered']) > 0 else 'Never',
-        'LastEvaluated': datetime.utcfromtimestamp(int(a['lastEvaluated'])).strftime(
-            '%Y-%m-%dT%H:%M:%SZ') if a['lastEvaluated'] else '',
+        'LastTriggered': timestamp_to_utc(a['lastTriggered'], default_returned_value='Never'),
+        'LastEvaluated': timestamp_to_utc(a['lastEvaluated']),
         'Group': a['ownerGroup'].get('name'),
         'Owner': a['owner'].get('username')
     } for a in alerts]
@@ -1583,8 +1606,7 @@ def get_alert_command():
         'ID': alert['id'],
         'Name': alert['name'],
         'Description': alert['description'],
-        'LastTriggered': datetime.utcfromtimestamp(int(alert['lastTriggered'])).strftime(
-            '%Y-%m-%dT%H:%M:%SZ') if alert['lastTriggered'] and int(alert['lastTriggered']) > 0 else 'Never',
+        'LastTriggered': timestamp_to_utc(alert['lastTriggered'], default_returned_value='Never'),
         'State': 'Triggered' if alert['didTriggerLastEvaluation'] == 'true' else 'Not Triggered',
         'Behavior': 'Execute on every trigger ' if alert['executeOnEveryTrigger'] == 'true' else 'Execute only on'
                                                                                                  ' first trigger'
@@ -1674,25 +1696,97 @@ def fetch_incidents():
         if int(alert.get('lastTriggered', 0)) > timestamp:
             incidents.append({
                 'name': 'Tenable.sc Alert Triggered - ' + alert['name'],
-                'occurred': datetime.utcfromtimestamp(int(alert['lastTriggered'])).strftime('%Y-%m-%dT%H:%M:%SZ'),
+                'occurred': timestamp_to_utc(alert['lastTriggered']),
                 'rawJSON': json.dumps(alert)
             })
 
-            if(int(alert['lastTriggered']) > max_timestamp):
+            if int(alert['lastTriggered']) > max_timestamp:
                 max_timestamp = int(alert['lastTriggered'])
 
     demisto.incidents(incidents)
     demisto.setLastRun({'time': max_timestamp})
 
 
+def get_all_scan_results():
+    path = 'scanResult'
+    params = {
+        'fields': 'name,description,details,status,scannedIPs,startTime,scanDuration,importStart,'
+                  'finishTime,completedChecks,owner,ownerGroup,repository'
+    }
+    return send_request(path, params=params)
+
+
+def get_all_scan_results_command():
+    res = get_all_scan_results()
+    get_manageable_results = demisto.args().get('manageable', 'false').lower()  # 'true' or 'false'
+    page = int(demisto.args().get('page'))
+    limit = int(demisto.args().get('limit'))
+    if limit > 200:
+        limit = 200
+
+    if not res or 'response' not in res or not res['response']:
+        return_message('Scan results not found')
+
+    elements = get_elements(res['response'], get_manageable_results)
+
+    headers = ['ID', 'Name', 'Status', 'Description', 'Policy', 'Group', 'Owner', 'ScannedIPs',
+               'StartTime', 'EndTime', 'Duration', 'Checks', 'ImportTime', 'RepositoryName']
+
+    scan_results = [{
+        'ID': elem['id'],
+        'Name': elem['name'],
+        'Status': elem['status'],
+        'Description': elem.get('description', None),
+        'Policy': elem['details'],
+        'Group': elem.get('ownerGroup', {}).get('name'),
+        'Checks': elem.get('completedChecks', None),
+        'StartTime': timestamp_to_utc(elem['startTime']),
+        'EndTime': timestamp_to_utc(elem['finishTime']),
+        'Duration': scan_duration_to_demisto_format(elem['scanDuration']),
+        'ImportTime': timestamp_to_utc(elem['importStart']),
+        'ScannedIPs': elem['scannedIPs'],
+        'Owner': elem['owner'].get('username'),
+        'RepositoryName': elem['repository'].get('name')
+    } for elem in elements[page:page + limit]]
+
+    readable_title = 'Tenable.sc Scan results - {0}-{1}'.format(page, page + limit - 1)
+    hr = tableToMarkdown(readable_title, scan_results, headers, removeNull=True,
+                         metadata='Total number of elements is {}'.format(len(elements)))
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': res,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': hr,
+        'EntryContext': {
+            'TenableSC.ScanResults(val.ID===obj.ID)': createContext(scan_results, removeNull=True)
+        }
+    })
+
+
+def timestamp_to_utc(timestamp_str, default_returned_value=''):
+    if timestamp_str and (int(timestamp_str) > 0):  # no value is when timestamp_str == '-1'
+        return datetime.utcfromtimestamp(int(timestamp_str)).strftime(
+            '%Y-%m-%dT%H:%M:%SZ')
+    return default_returned_value
+
+
+def scan_duration_to_demisto_format(duration, default_returned_value=''):
+    if duration:
+        return float(duration) / 60
+    return default_returned_value
+
+
 ''' LOGIC '''
 
 LOG('Executing command ' + demisto.command())
 
-token = login(USERNAME, PASSWORD)
-SESSION.headers.update({'X-SecurityCenter': str(token)})
 
 try:
+    if not TOKEN or not COOKIE:
+        login()
+
     if demisto.command() == 'test-module':
         demisto.results('ok')
     elif demisto.command() == 'fetch-incidents':
@@ -1743,9 +1837,11 @@ try:
         get_system_information_command()
     elif demisto.command() == 'tenable-sc-get-system-licensing':
         get_system_licensing_command()
+    elif demisto.command() == 'tenable-sc-get-all-scan-results':
+        get_all_scan_results_command()
 except Exception as e:
     LOG(e)
     LOG.print_log(False)
-    return_error(e.message)
+    return_error(str(e))
 finally:
     logout()
