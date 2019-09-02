@@ -527,6 +527,28 @@ def test_module():
     demisto.results("ok")
 
 
+def get_team_membership_command():
+    args = demisto.args()
+    team_id = 0
+    try:
+        team_id = int(args.get('team_id'))
+    except ValueError as e:
+        return_error('"team_id" command argument must be an integer value.', e)
+    user_name = args.get('user_name')
+    response = get_team_membership(team_id, user_name)
+
+    ec_object = {
+        'Role': response.get('role'),
+        'State': response.get('state'),
+        'ID': team_id
+    }
+    ec = {
+        'GitHub.Team': ec_object
+    }
+    human_readable = tableToMarkdown(f'Team Membership of {user_name}', ec_object, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
 def get_branch_command():
     args = demisto.args()
     branch_name = args.get('branch_name')
@@ -712,7 +734,8 @@ COMMANDS = {
     'GitHub-get-download-count': get_download_count,
     'GitHub-get-stale-prs': get_stale_prs_command,
     'GitHub-get-branch': get_branch_command,
-    'GitHub-create-branch': create_branch_command
+    'GitHub-create-branch': create_branch_command,
+    'GitHub-get-team-membership': get_team_membership_command
 }
 
 

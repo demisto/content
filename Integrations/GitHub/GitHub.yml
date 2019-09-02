@@ -462,6 +462,33 @@ script:
     - contextPath: GitHub.Branch.NodeID
       description: The branch reference's node ID
       type: String
+  - arguments:
+    - default: false
+      description: The ID number by which the team is identified
+      isArray: false
+      name: team_id
+      required: true
+      secret: false
+    - default: false
+      description: The login of the user whose membership you wish to check
+      isArray: false
+      name: user_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve a user's membership status with a team
+    execution: false
+    name: GitHub-get-team-membership
+    outputs:
+    - contextPath: GitHub.Team.Role
+      description: The user's role on a team
+      type: String
+    - contextPath: GitHub.Team.State
+      description: The user's state for a team
+      type: String
+    - contextPath: GitHub.Team.ID
+      description: The ID number of the team
+      type: Number
   dockerimage: demisto/python3:3.7.3.286
   subtype: python3
   isfetch: true
