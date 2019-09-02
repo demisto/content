@@ -13,20 +13,20 @@ configuration:
   required: false
   type: 0
   required: false
-description: Provides data enrichment for domains and IP addresses.
+description: Provides data enrichment for domains.
 display: Whois
 name: Whois
 script:
   commands:
   - arguments:
     - default: false
-      description: URL, IP, or domain to be enriched
+      description: Domain to be enriched
       isArray: false
       name: query
       required: true
       secret: false
     deprecated: false
-    description: Provides data enrichment for Domains, URLs, and IP addresses.
+    description: Provides data enrichment for Domains.
     execution: false
     name: whois
     outputs:
