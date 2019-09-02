@@ -14,6 +14,7 @@ class Client(BaseClient):
     """
     Wrapper class for BaseClient with added functionality for the integration.
     """
+
     def test_module(self) -> bool:
         """Performs basic get request to get item samples
 
@@ -23,7 +24,7 @@ class Client(BaseClient):
         self._http_request('GET', 'version')
         return True
 
-    def list_events_request(self, limit: Union[int, AnyStr] = None, since_time: Optional[str] = None) -> Dict:
+    def list_events_request(self, limit: Union[int, str] = None, since_time: Optional[str] = None) -> Dict:
         """Gets all credentials from API.
         Args:
             limit: limit results
@@ -31,7 +32,7 @@ class Client(BaseClient):
         Returns:
             events from sinceTime
         """
-        suffix: str = 'event'
+        suffix = 'event'
         params = dict()
         if since_time:
             params['sinceTime'] = since_time
@@ -49,7 +50,7 @@ class Client(BaseClient):
             event details
         """
         # The service endpoint to request from
-        suffix: str = 'event'
+        suffix = 'event'
         # Dictionary of params for the request
         params = {
             'eventId': event_id
@@ -87,7 +88,7 @@ class Client(BaseClient):
             response json
         """
         suffix = 'event'
-        params: Dict[str, Union[List, AnyStr]] = {
+        params: Dict = {
             'eventId': event_id,
         }
 
@@ -124,21 +125,38 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def built_context(events: Union[Dict, List]) -> Union[Dict, List]:
-    def build_dict(event: Dict) -> Dict:
-        return {
-            'ID': event.get('eventId'),
-            'Description': event.get('description'),
-            'Created': event.get('createdAt'),
-            'IsActive': event.get('isActive'),
-            'Assignee': [
-                {
-                    'Name': user.get('name'),
-                    'ID': user.get('id')
-                } for user in event.get('assignee', [])
-            ]
-        }
+def build_dict(event: Dict) -> Dict:
+    """Builds Dict formatted for Demisto
 
+    Args:
+        event: One event from API
+
+    Returns:
+        Dict formatted for Demisto
+    """
+    return {
+        'ID': event.get('eventId'),
+        'Description': event.get('description'),
+        'Created': event.get('createdAt'),
+        'IsActive': event.get('isActive'),
+        'Assignee': [
+            {
+                'Name': user.get('name'),
+                'ID': user.get('id')
+            } for user in event.get('assignee', [])
+        ]
+    }
+
+
+def build_context(events: Union[Dict, List]) -> Union[Dict, List]:
+    """Formatting API response to Demisto Context
+
+    Args:
+        events: Raw response from API call, can be List or Dict
+
+    Returns:
+        formatted Dict/List (according to the input type)
+    """
     if isinstance(events, list):
         return [build_dict(event) for event in events]
     return build_dict(events)
@@ -187,10 +205,10 @@ def fetch_incidents(client: Client):
 def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit: Optional[str] = args.get('limit')
     raw_response = client.list_events_request(limit=limit)
-    events: List[Dict] = raw_response.get('incidents', [])
+    events = raw_response.get('incidents', [])
     if events:
         title: str = f'{client.get_integration_name()} - List events:'
-        context_entry = built_context(events)
+        context_entry = build_context(events)
         context = {f'{client.get_integration_context()}.Event(val.ID && val.ID === obj.ID)': context_entry}
         # Creating human readable for War room
         human_readable = tableToMarkdown(title, context_entry)
@@ -212,7 +230,7 @@ def get_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     event: Dict = raw_response.get('event', {})
     if event:
         title: str = f'{client.get_integration_name()} - Event `{event_id}`:'
-        context_entry = built_context(event)
+        context_entry = build_context(event)
         context = {f'{client.get_integration_context()}.Event(val.ID && val.ID === obj.ID)': context_entry}
         # Creating human readable for War room
         human_readable = tableToMarkdown(title, context_entry)
@@ -233,7 +251,7 @@ def close_event(client: Client, args: Dict) -> Tuple[str, Dict, None]:
     # Parse response into context & content entries
     if event:
         title = f'{client.get_integration_name()} - Event `{event_id}` has been deleted.'
-        context_entry = built_context(event)
+        context_entry = build_context(event)
         context = {f'{client.get_integration_context()}.Event(val.ID && val.ID === obj.ID)': context_entry}
         # Creating human readable for War room
         human_readable: str = tableToMarkdown(title, context_entry)
@@ -251,7 +269,7 @@ def update_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     event = raw_response.get('event')
     if event:
         title: str = f'{client.get_integration_name()} - Event `{event_id}` has been updated.'
-        context_entry = built_context(event)
+        context_entry = build_context(event)
         context = {f'{client.get_integration_context()}.Event(val.ID && val.ID === obj.ID)': context_entry}
         human_readable = tableToMarkdown(title, context_entry)
         return human_readable, context, raw_response
@@ -267,7 +285,7 @@ def create_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if event:
         event_id: str = event.get('eventId', '')
         title = f'{client.get_integration_name()} - Event `{event_id}` has been created.'
-        context_entry = built_context(event)
+        context_entry = build_context(event)
         context = {f'{client.get_integration_context()}.Event(val.ID && val.ID === obj.ID)': context_entry}
         human_readable = tableToMarkdown(title, context_entry)
         return human_readable, context, raw_response
@@ -290,7 +308,7 @@ def query(client: Client, args: Dict):
     events: List = raw_response.get('event', [])
     if events:
         title = f'{client.get_integration_name()} - Results for given query'
-        context_entry = built_context(events)
+        context_entry = build_context(events)
         context = {f'{client.get_integration_context()}.Event(val.ID && val.ID === obj.ID)': context_entry}
         human_readable: str = tableToMarkdown(title, context_entry)
         return human_readable, context, raw_response
