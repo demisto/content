@@ -1313,7 +1313,10 @@ def get_group():
     retrieve a single Group
     """
     group_type = demisto.args().get('group_type')
-    group_id = int(demisto.args().get('group_id'))
+    try:
+        group_id = int(demisto.args().get('group_id'))
+    except TypeError as t:
+        return_error('group_id must be a number', t)
 
     response = get_group_request(group_type, group_id).get('data', {})
     if group_type == 'adversaries':
@@ -1376,7 +1379,10 @@ def get_group_attributes():
     Retrieve a Group’s Attributes
     """
     group_type = demisto.args().get('group_type')
-    group_id = int(demisto.args().get('group_id'))
+    try:
+        group_id = int(demisto.args().get('group_id'))
+    except TypeError as t:
+        return_error('group_id must be a number', t)
     contents = []
     headers = ['AttributeID', 'Type', 'Value', 'DateAdded', 'LastModified', 'Displayed']
     response = get_group_attributes_request(group_type, group_id)
@@ -1421,7 +1427,10 @@ def get_group_security_labels():
     Retrieve a Group’s Security Labels
     """
     group_type = demisto.args().get('group_type')
-    group_id = int(demisto.args().get('group_id'))
+    try:
+        group_id = int(demisto.args().get('group_id'))
+    except TypeError as t:
+        return_error('group_id must be a number', t)
     contents = []
     headers = ['Name', 'Description', 'DateAdded']
     response = get_group_security_labels_request(group_type, group_id)
@@ -1462,7 +1471,10 @@ def get_group_tags():
     Retrieve the Tags for a Group
     """
     group_type = demisto.args().get('group_type')
-    group_id = int(demisto.args().get('group_id'))
+    try:
+        group_id = int(demisto.args().get('group_id'))
+    except TypeError as t:
+        return_error('group_id must be a number', t)
     contents = []
     response = get_group_tags_request(group_type, group_id)
     data = response.get('data', {}).get('tag', [])
@@ -1544,28 +1556,38 @@ def create_document_group():
 
 
 def get_document_request(document_id):
+
     tc = get_client()
-    ro = RequestObject()
-    ro.set_http_method('GET')
-    ro.set_request_uri('/v2/groups/documents/{}/download'.format(document_id))
+    documents = tc.documents()
+    # set a filter to retrieve only the Document with ID: 123456
+    filter1 = documents.add_filter()
+    filter1.add_id(document_id)
+    try:
+        # retrieve the Document
+        documents.retrieve()
+    except RuntimeError as e:
+        print('Error: {0}'.format(e))
 
-    return tc.api_request(ro).json()
+    # iterate through the retrieved Documents (in this case there should only be one) and print its properties
+    for document in documents:
+        document.download()
+        if document.contents is not None:
+            return document
 
 
-# def download_document():
-#     """
-#     Download the contents of a Document
-#     """
-#
-#     document_id = demisto.args().get('document_id')
-#     response = get_document_request(document_id)
-#     print(json.dumps(response))
-#     sys.exit(0)
-#     demisto.results(response)
-#     # demisto.results(fileResult(
-#     #     'Alert ID_' + alert_id + '.pcap',
-#     #     response,
-#     #     file_type=entryTypes['file']))
+def download_document():
+    """
+    Download the contents of a Document
+    """
+    try:
+        document_id = int(demisto.args().get('document_id'))
+    except TypeError as t:
+        return_error('document_id must be a number', t)
+    document = get_document_request(document_id)
+
+    file_name = document.file_name
+    file_content = document.contents
+    demisto.results(fileResult(file_name, file_content))
 
 
 def test_integration():
@@ -1614,7 +1636,7 @@ COMMANDS = {
     'tc-get-group-attributes': get_group_attributes,
     'tc-get-group-security-labels': get_group_security_labels,
     'tc-get-group-tags': get_group_tags,
-    # 'tc-download-document': download_document
+    'tc-download-document': download_document
 }
 
 try:
