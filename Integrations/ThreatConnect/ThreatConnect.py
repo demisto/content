@@ -1566,7 +1566,7 @@ def get_document_request(document_id):
         # retrieve the Document
         documents.retrieve()
     except RuntimeError as e:
-        print('Error: {0}'.format(e))
+        return_error('Error: {0}'.format(e))
 
     # iterate through the retrieved Documents (in this case there should only be one) and print its properties
     for document in documents:
