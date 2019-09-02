@@ -4,6 +4,7 @@ commonfields:
 name: ParseEmailFiles
 script: ''
 type: python
+subtype: python2
 tags:
 - email
 - phishing
@@ -85,7 +86,7 @@ outputs:
 - contextPath: Email.HeadersMap.Message-ID
   description: A unique string assigned by the mail system when the message is first created. These can easily be forged. (e.g. 5c530c1b.1c69fb81.bd826.0eff@mx.google.com)
   type: String
-- contextPath: Email.Attachments
+- contextPath: Email.AttachmentNames
   description: The list of attachment names in the email
   type: string
 - contextPath: Email.Format
