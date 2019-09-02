@@ -1669,16 +1669,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The user's email address. The special value me can be used to indicate
-        the authenticated user.
-      isArray: false
-      name: user-id
-      required: true
-      secret: false
-    - default: false
-      description: Recipient email address
-      isArray: false
-      name: emailto
+      description: Email addresses for the 'To' field
+      isArray: true
+      name: to
       required: true
       secret: false
     - default: false
@@ -1686,25 +1679,59 @@ script:
       description: Email address of the sender. Generally the account setup in the
         integration. (Default value is me)
       isArray: false
-      name: emailfrom
+      name: from
       required: false
       secret: false
     - default: false
-      description: Body of the email
+      description: The contents (body) of the email to be sent in plain text
       isArray: false
       name: body
       required: false
       secret: false
     - default: false
-      description: Subject of the email
+      description: Subject for the email to be sent
       isArray: false
       name: subject
       required: true
       secret: false
     - default: false
-      description: Entry ID of the Attachment to be sent in the mail
+      description: A comma-separated list of IDs of war room entries that contain
+        the files that should be attached to the email
+      isArray: true
+      name: attachIDs
+      required: false
+      secret: false
+    - default: false
+      description: Email addresses for the 'Cc' field
+      isArray: true
+      name: cc
+      required: false
+      secret: false
+    - default: false
+      description: Email addresses for the 'Bcc' field
+      isArray: true
+      name: bcc
+      required: false
+      secret: false
+    - default: false
+      description: The contents (body) of the email to be sent in HTML format
       isArray: false
-      name: entryid
+      name: htmlBody
+      required: false
+      secret: false
+    - default: false
+      description: Address that should be used to reply to the message
+      isArray: false
+      name: replyTo
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma-separated list to rename file-names of corresponding attachments
+                IDs. (e.g. rename first two files - attachNames=file_name1,file_name2. rename
+                first and third file - attachNames=file_name1,,file_name3)
+      isArray: true
+      name: attachNames
       required: false
       secret: false
     deprecated: false
@@ -1746,7 +1773,7 @@ script:
   isfetch: true
   runonce: false
   script: '-'
-  type: python
+  type: python2
 tests:
 - Gmail Convert Html Test
 - GmailTest

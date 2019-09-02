@@ -17,6 +17,7 @@ from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.header import Header
 import mimetypes
 
 from apiclient import discovery
@@ -473,7 +474,7 @@ def mail_results_to_entry(title, response):
         'Contents': context,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(title, context, headers, removeNull=True),
-        'EntryContext': {'SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': context}
+        'EntryContext': {'Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': context}
     }
 
 
@@ -748,61 +749,81 @@ def delegate_user_mailbox(user_id, delegate_email, delegate_token):
         return 'Email {} has been removed from delegation'.format(delegate_email)
 
 
+def header(s):
+    if not s:
+        return None
+    s_no_newlines = ' '.join(s.splitlines())
+    return Header(s_no_newlines, 'utf-8')
+
+
 def send_mail_command():
     args = demisto.args()
-    emailto = args.get('emailto')
-    emailfrom = args.get('emailfrom')
+    emailto = args.get('to')
+    emailfrom = args.get('from')
     body = args.get('body')
     subject = args.get('subject')
-    entry_id = args.get('entryid')
+    entry_ids = args.get('attachIDs')
+    cc = args.get('cc')
+    bcc = args.get('bcc')
+    htmlBody = args.get('htmlBody')
+    replyTo = args.get('replyTo')
+    file_names = args.get('attachNames')
 
-    result = send_mail(emailto, emailfrom, subject, body, entry_id)
+    result = send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names)
     return mail_results_to_entry('User %s:' % (emailfrom,), [result])
 
 
-def send_mail(emailto, emailfrom, subject, body, entry_id):
-    # message = MIMEText(body)
+def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names):
     message = MIMEMultipart()
-    message['to'] = emailto
-    message['from'] = emailfrom
-    message['subject'] = subject
-    msg = MIMEText(body)
+    message['to'] = header(','.join(emailto))
+    message['cc'] = header(','.join(cc))
+    message['bcc'] = header(','.join(bcc))
+    message['from'] = header(emailfrom)
+    message['subject'] = header(subject)
+    message['reply-to'] = header(replyTo)
+    msg = MIMEText(body, 'plain', 'utf-8')
     message.attach(msg)
-    if entry_id:
-        file = demisto.getFilePath(entry_id)
-        # demisto.log(str(file_path))
-        file_path = file['path']
-        file_name = file['name']
-        content_type, encoding = mimetypes.guess_type(file_path)
-        if content_type is None or encoding is not None:
-            content_type = 'application/octet-stream'
-        main_type, sub_type = content_type.split('/', 1)
-        if main_type == 'text':
-            fp = open(file_path, 'rb')
-            file_txt = MIMEText(fp.read(), _subtype=sub_type)
-            fp.close()
-            file_txt.add_header('Content-Disposition', 'attachment', filename=file_name)
-            message.attach(file_txt)
-        elif main_type == 'image':
-            fp = open(file_path, 'rb')
-            file_img = MIMEImage(fp.read(), _subtype=sub_type)
-            fp.close()
-            file_img.add_header('Content-Disposition', 'attachment', filename=file_name)
-            message.attach(file_img)
-        elif main_type == 'audio':
-            fp = open(file_path, 'rb')
-            file_aud = MIMEAudio(fp.read(), _subtype=sub_type)
-            fp.close()
-            file_aud.add_header('Content-Disposition', 'attachment', filename=file_name)
-            message.attach(file_aud)
-        else:
-            fp = open(file_path, 'rb')
-            file_msg = MIMEBase(main_type, sub_type)
-            file_msg.set_payload(fp.read())
-            fp.close()
-        # filename = os.path.basename(file_path)
-            file_msg.add_header('Content-Disposition', 'attachment', filename=file_name)
-            message.attach(file_msg)
+    msg = MIMEText(htmlBody, 'html', 'utf-8')
+    message.attach(msg)
+    entry_number = 0
+    if entry_ids is not None and len(entry_ids) > 0:
+        for entry_id in entry_ids:
+            file = demisto.getFilePath(entry_id)
+            file_path = file['path']
+            if file_names is not None and len(file_names) > entry_number:
+                file_name = file_names[entry_number]
+            else:
+                file_name = file['name']
+            entry_number = entry_number + 1
+            content_type, encoding = mimetypes.guess_type(file_path)
+            if content_type is None or encoding is not None:
+                content_type = 'application/octet-stream'
+            main_type, sub_type = content_type.split('/', 1)
+            if main_type == 'text':
+                fp = open(file_path, 'rb')
+                file_txt = MIMEText(fp.read(), _subtype=sub_type)
+                fp.close()
+                file_txt.add_header('Content-Disposition', 'attachment', filename=file_name)
+                message.attach(file_txt)
+            elif main_type == 'image':
+                fp = open(file_path, 'rb')
+                file_img = MIMEImage(fp.read(), _subtype=sub_type)
+                fp.close()
+                file_img.add_header('Content-Disposition', 'attachment', filename=file_name)
+                message.attach(file_img)
+            elif main_type == 'audio':
+                fp = open(file_path, 'rb')
+                file_aud = MIMEAudio(fp.read(), _subtype=sub_type)
+                fp.close()
+                file_aud.add_header('Content-Disposition', 'attachment', filename=file_name)
+                message.attach(file_aud)
+            else:
+                fp = open(file_path, 'rb')
+                file_msg = MIMEBase(main_type, sub_type)
+                file_msg.set_payload(fp.read())
+                fp.close()
+                file_msg.add_header('Content-Disposition', 'attachment', filename=file_name)
+                message.attach(file_msg)
     encoded_message = base64.urlsafe_b64encode(message.as_string())
     command_args = {
         'userId': emailfrom if emailfrom != 'me' else ADMIN_EMAIL,
