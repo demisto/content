@@ -1,4 +1,7 @@
 ## [Unreleased]
+- Made malicious link not clickable.
+
+## [Unreleased]
 - Improved EML file type detection.
 - Added ***Email.AttachmentNames*** output, which contains a list of all the names of the email attachments.
 
