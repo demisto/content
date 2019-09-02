@@ -824,9 +824,12 @@ def slack_send():
 
     entitlement_match = re.search(ENTITLEMENT_REGEX, message)
     if entitlement_match:
-        entitlement = entitlement_match.group()
-        message = message.replace(entitlement, '', 1).strip()
-
+        try:
+            parsed_message = json.loads(message)
+            entitlement = parsed_message['entitlement']
+            message = parsed_message['message']
+        except Exception:
+            pass
     response = slack_send_request(to, channel, group, entry, ignore_add_url, thread_id, message=message)
 
     if response:
