@@ -669,7 +669,8 @@ COMMANDS = {
     'GitHub-list-all-issues': list_all_command,
     'GitHub-search-issues': search_command,
     'GitHub-get-download-count': get_download_count,
-    'GitHub-get-stale-prs': get_stale_prs_command
+    'GitHub-get-stale-prs': get_stale_prs_command,
+    'GitHub-get-branch': get_branch_command
 }
 
 
@@ -678,32 +679,14 @@ COMMANDS = {
 
 def main():
     handle_proxy()
-    LOG('command is %s' % (demisto.command(),))
+    cmd = demisto.command()
+    LOG(f'command is {cmd}')
     try:
-        if demisto.command() == 'test-module':
-            test_module()
-        elif demisto.command() == 'fetch-incidents':
-            fetch_incidents_command()
-        elif demisto.command() == 'GitHub-create-issue':
-            create_command()
-        elif demisto.command() == 'GitHub-close-issue':
-            close_command()
-        elif demisto.command() == 'GitHub-update-issue':
-            update_command()
-        elif demisto.command() == 'GitHub-list-all-issues':
-            list_all_command()
-        elif demisto.command() == 'GitHub-search-issues':
-            search_command()
-        elif demisto.command() == 'GitHub-get-download-count':
-            get_download_count()
-        elif demisto.command() == 'GitHub-get-stale-prs':
-            get_stale_prs_command()
-
+        if cmd in COMMANDS.keys():
+            COMMANDS[cmd]()
     except Exception as e:
-        LOG(str(e))
-        LOG.print_log()
-        raise
-
+        # raise e
+        return_error(str(e))
 
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == '__builtin__' or __name__ == 'builtins':
