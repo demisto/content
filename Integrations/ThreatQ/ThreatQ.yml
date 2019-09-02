@@ -63,14 +63,14 @@ script:
     - contextPath: ThreatQ.Event.ID
       description: Event's ID
       type: Number
-    - contextPath: ThreatQ.Event.Value
-      description: Event's value
+    - contextPath: ThreatQ.Event.Title
+      description: Event's title
       type: String
     - contextPath: ThreatQ.Adversary.ID
       description: Adversary's ID
       type: Number
-    - contextPath: ThreatQ.Adversary.Value
-      description: Adversary's value
+    - contextPath: ThreatQ.Adversary.Name
+      description: Adversary's name
       type: String
   - arguments:
     - default: false
@@ -859,51 +859,129 @@ script:
     - contextPath: ThreatQ.Indicator.RelatedIndicator.ID
       description: Related indicator's ID
       type: number
-    - contextPath: ThreatQ.RelatedIndicator.Source.ID
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.Source.ID
       description: Related indicator's source ID
       type: number
-    - contextPath: ThreatQ.RelatedIndicator.Source.Name
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.Source.Name
       description: Related indicator's source name
       type: string
-    - contextPath: ThreatQ.RelatedIndicator.Attribute.ID
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.Attribute.ID
       description: Related indicator's attribute ID
       type: number
-    - contextPath: ThreatQ.RelatedIndicator.Attribute.Name
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.Attribute.Name
       description: Related indicator's attribute name
       type: string
-    - contextPath: ThreatQ.RelatedIndicator.Attribute.Value
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.Attribute.Value
       description: Related indicator's attribute value
       type: string
-    - contextPath: ThreatQ.RelatedIndicator.UpdatedAt
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.UpdatedAt
       description: Related indicator's last update date
       type: date
-    - contextPath: ThreatQ.RelatedIndicator.CreatedAt
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.CreatedAt
       description: Related indicator's creation date
       type: date
-    - contextPath: ThreatQ.RelatedIndicator.Type
-      description: Related object type - indicator
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.Type
+      description: Related indicator's type
       type: string
-    - contextPath: ThreatQ.RelatedIndicator.Description
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.Description
       description: Description about the related indicator
       type: string
-    - contextPath: ThreatQ.RelatedIndicator.Value
-      description: Related indicator value
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.Value
+      description: Related indicator's value
       type: string
-    - contextPath: ThreatQ.RelatedIndicator.Status
-      description: Related indicator status
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.Status
+      description: Related indicator's status
       type: string
-    - contextPath: ThreatQ.RelatedIndicator.IndicatorType
-      description: Related indicator type
-      type: string
-    - contextPath: ThreatQ.RelatedIndicator.TQScore
-      description: Related indicator ThreatQ score
+    - contextPath: ThreatQ.Indicator.RelatedIndicator.TQScore
+      description: Related indicator's ThreatQ score
       type: number
-    - contextPath: ThreatQ.ID
-      description: Object ID
+    - contextPath: ThreatQ.Indicator.ID
+      description: Indicator's ID
       type: number
-    - contextPath: ThreatQ.Type
-      description: Object type
+    - contextPath: ThreatQ.Event.RelatedIndicator.ID
+      description: Related indicator's ID
+      type: number
+    - contextPath: ThreatQ.Event.RelatedIndicator.Source.ID
+      description: Related indicator's source ID
+      type: number
+    - contextPath: ThreatQ.Event.RelatedIndicator.Source.Name
+      description: Related indicator's source name
       type: string
+    - contextPath: ThreatQ.Event.RelatedIndicator.Attribute.ID
+      description: Related indicator's attribute ID
+      type: number
+    - contextPath: ThreatQ.Event.RelatedIndicator.Attribute.Name
+      description: Related indicator's attribute name
+      type: string
+    - contextPath: ThreatQ.Event.RelatedIndicator.Attribute.Value
+      description: Related indicator's attribute value
+      type: string
+    - contextPath: ThreatQ.Event.RelatedIndicator.UpdatedAt
+      description: Related indicator's last update date
+      type: date
+    - contextPath: ThreatQ.Event.RelatedIndicator.CreatedAt
+      description: Related indicator's creation date
+      type: date
+    - contextPath: ThreatQ.Event.RelatedIndicator.Type
+      description: Related indicator's type
+      type: string
+    - contextPath: ThreatQ.Event.RelatedIndicator.Description
+      description: Description about the related indicator
+      type: string
+    - contextPath: ThreatQ.Event.RelatedIndicator.Value
+      description: Related indicator's value
+      type: string
+    - contextPath: ThreatQ.Event.RelatedIndicator.Status
+      description: Related indicator's status
+      type: string
+    - contextPath: ThreatQ.Event.RelatedIndicator.TQScore
+      description: Related indicator's ThreatQ score
+      type: number
+    - contextPath: ThreatQ.Event.ID
+      description: Event's ID
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.ID
+      description: Related indicator's ID
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.Source.ID
+      description: Related indicator's source ID
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.Source.Name
+      description: Related indicator's source name
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.Attribute.ID
+      description: Related indicator's attribute ID
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.Attribute.Name
+      description: Related indicator's attribute name
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.Attribute.Value
+      description: Related indicator's attribute value
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.UpdatedAt
+      description: Related indicator's last update date
+      type: date
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.CreatedAt
+      description: Related indicator's creation date
+      type: date
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.Type
+      description: Related indicator's type
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.Description
+      description: Description about the related indicator
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.Value
+      description: Related indicator's value
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.Status
+      description: Related indicator's status
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedIndicator.TQScore
+      description: Related indicator's ThreatQ score
+      type: number
+    - contextPath: ThreatQ.Adversary.ID
+      description: Adversary's ID
+      type: number
   - arguments:
     - default: false
       description: Indicator's ID
@@ -929,13 +1007,10 @@ script:
     execution: false
     name: threatq-update-status
     outputs:
-    - contextPath: ThreatQ.ID
+    - contextPath: ThreatQ.Indicator.ID
       description: Indicator ID
       type: Number
-    - contextPath: ThreatQ.Type
-      description: Object type - indicator
-      type: String
-    - contextPath: ThreatQ.Status
+    - contextPath: ThreatQ.Indicator.Status
       description: Indicator status
       type: String
   - arguments:
@@ -961,51 +1036,123 @@ script:
     execution: false
     name: threatq-get-related-events
     outputs:
-    - contextPath: ThreatQ.RelatedEvent.ID
-      description: Related event ID
+    - contextPath: ThreatQ.Indicator.RelatedEvent.ID
+      description: Related event's ID
       type: number
-    - contextPath: ThreatQ.RelatedEvent.Source.ID
-      description: Related event source ID
+    - contextPath: ThreatQ.Indicator.RelatedEvent.Source.ID
+      description: Related event's source ID
       type: number
-    - contextPath: ThreatQ.RelatedEvent.Source.Name
-      description: Related event source name
+    - contextPath: ThreatQ.Indicator.RelatedEvent.Source.Name
+      description: Related event's source name
       type: string
-    - contextPath: ThreatQ.RelatedEvent.Attribute.ID
-      description: Related event attribute ID
+    - contextPath: ThreatQ.Indicator.RelatedEvent.Attribute.ID
+      description: Related event's attribute ID
       type: number
-    - contextPath: ThreatQ.RelatedEvent.Attribute.Name
-      description: Related event attribute name
+    - contextPath: ThreatQ.Indicator.RelatedEvent.Attribute.Name
+      description: Related event's attribute name
       type: string
-    - contextPath: ThreatQ.RelatedEvent.Attribute.Value
-      description: Related event attribute value
+    - contextPath: ThreatQ.Indicator.RelatedEvent.Attribute.Value
+      description: Related event's attribute value
       type: string
-    - contextPath: ThreatQ.RelatedEvent.UpdatedAt
-      description: Related event last update date
+    - contextPath: ThreatQ.Indicator.RelatedEvent.UpdatedAt
+      description: Related event's last update date
       type: date
-    - contextPath: ThreatQ.RelatedEvent.CreatedAt
-      description: Related event creation date
+    - contextPath: ThreatQ.Indicator.RelatedEvent.CreatedAt
+      description: Related event's creation date
       type: date
-    - contextPath: ThreatQ.RelatedEvent.Description
+    - contextPath: ThreatQ.Indicator.RelatedEvent.Description
       description: Description about the related event
       type: string
-    - contextPath: ThreatQ.RelatedEvent.Title
-      description: Related event title
+    - contextPath: ThreatQ.Indicator.RelatedEvent.Title
+      description: Related event's title
       type: string
-    - contextPath: ThreatQ.RelatedEvent.Occurred
-      description: Related event date of occurrence
+    - contextPath: ThreatQ.Indicator.RelatedEvent.Occurred
+      description: Related event's date of occurrence
       type: date
-    - contextPath: ThreatQ.RelatedEvent.EventType
-      description: Related event type
+    - contextPath: ThreatQ.Indicator.RelatedEvent.Type
+      description: Related event's type
       type: string
-    - contextPath: ThreatQ.RelatedEvent.Type
-      description: Related object type - event
-      type: string
-    - contextPath: ThreatQ.ID
-      description: Object ID
+    - contextPath: ThreatQ.Indicator.ID
+      description: Indicator's ID
       type: number
-    - contextPath: ThreatQ.Type
-      description: Object type
-      type: Unknown
+    - contextPath: ThreatQ.Event.RelatedEvent.ID
+      description: Related event's ID
+      type: number
+    - contextPath: ThreatQ.Event.RelatedEvent.Source.ID
+      description: Related event's source ID
+      type: number
+    - contextPath: ThreatQ.Event.RelatedEvent.Source.Name
+      description: Related event's source name
+      type: string
+    - contextPath: ThreatQ.Event.RelatedEvent.Attribute.ID
+      description: Related event's attribute ID
+      type: number
+    - contextPath: ThreatQ.Event.RelatedEvent.Attribute.Name
+      description: Related event's attribute name
+      type: string
+    - contextPath: ThreatQ.Event.RelatedEvent.Attribute.Value
+      description: Related event's attribute value
+      type: string
+    - contextPath: ThreatQ.Event.RelatedEvent.UpdatedAt
+      description: Related event's last update date
+      type: date
+    - contextPath: ThreatQ.Event.RelatedEvent.CreatedAt
+      description: Related event's creation date
+      type: date
+    - contextPath: ThreatQ.Event.RelatedEvent.Description
+      description: Description about the related event
+      type: string
+    - contextPath: ThreatQ.Event.RelatedEvent.Title
+      description: Related event's title
+      type: string
+    - contextPath: ThreatQ.Event.RelatedEvent.Occurred
+      description: Related event's date of occurrence
+      type: date
+    - contextPath: ThreatQ.Event.RelatedEvent.Type
+      description: Related event's type
+      type: string
+    - contextPath: ThreatQ.Event.ID
+      description: Event's ID
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedEvent.ID
+      description: Related event's ID
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedEvent.Source.ID
+      description: Related event's source ID
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedEvent.Source.Name
+      description: Related event's source name
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedEvent.Attribute.ID
+      description: Related event's attribute ID
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedEvent.Attribute.Name
+      description: Related event's attribute name
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedEvent.Attribute.Value
+      description: Related event's attribute value
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedEvent.UpdatedAt
+      description: Related event's last update date
+      type: date
+    - contextPath: ThreatQ.Adversary.RelatedEvent.CreatedAt
+      description: Related event's creation date
+      type: date
+    - contextPath: ThreatQ.Adversary.RelatedEvent.Description
+      description: Description about the related event
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedEvent.Title
+      description: Related event's title
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedEvent.Occurred
+      description: Related event's date of occurrence
+      type: date
+    - contextPath: ThreatQ.Adversary.RelatedEvent.Type
+      description: Related event's type
+      type: string
+    - contextPath: ThreatQ.Adversary.ID
+      description: Adversary's ID
+      type: number
   - arguments:
     - default: false
       description: Object's ID
@@ -1029,42 +1176,96 @@ script:
     execution: false
     name: threatq-get-related-adversaries
     outputs:
-    - contextPath: ThreatQ.RelatedAdversary.ID
-      description: Related adversary ID
+    - contextPath: ThreatQ.Indicator.RelatedAdversary.ID
+      description: Related adversary's ID
       type: number
-    - contextPath: ThreatQ.RelatedAdversary.Source.ID
-      description: Related adversary source ID
+    - contextPath: ThreatQ.Indicator.RelatedAdversary.Source.ID
+      description: Related adversary's source ID
       type: number
-    - contextPath: ThreatQ.RelatedAdversary.Source.Name
-      description: Related adversary source name
+    - contextPath: ThreatQ.Indicator.RelatedAdversary.Source.Name
+      description: Related adversary's source name
       type: string
-    - contextPath: ThreatQ.RelatedAdversary.Attribute.ID
-      description: Related adversary attribute ID
+    - contextPath: ThreatQ.Indicator.RelatedAdversary.Attribute.ID
+      description: Related adversary's attribute ID
       type: number
-    - contextPath: ThreatQ.RelatedAdversary.Attribute.Name
-      description: Related adversary attribute name
+    - contextPath: ThreatQ.Indicator.RelatedAdversary.Attribute.Name
+      description: Related adversary's attribute name
       type: string
-    - contextPath: ThreatQ.RelatedAdversary.Attribute.Value
-      description: Related adversary attribute value
+    - contextPath: ThreatQ.Indicator.RelatedAdversary.Attribute.Value
+      description: Related adversary's attribute value
       type: string
-    - contextPath: ThreatQ.RelatedAdversary.UpdatedAt
-      description: Related adversary last update date
+    - contextPath: ThreatQ.Indicator.RelatedAdversary.UpdatedAt
+      description: Related adversary's last update date
       type: date
-    - contextPath: ThreatQ.RelatedAdversary.CreatedAt
-      description: Related adversary creation date
+    - contextPath: ThreatQ.Indicator.RelatedAdversary.CreatedAt
+      description: Related adversary's creation date
       type: date
-    - contextPath: ThreatQ.RelatedAdversary.Name
-      description: Related adversary name
+    - contextPath: ThreatQ.Indicator.RelatedAdversary.Name
+      description: Related adversary's name
       type: string
-    - contextPath: ThreatQ.RelatedAdversary.Type
-      description: Related adversary type - adversary
-      type: string
-    - contextPath: ThreatQ.ID
-      description: Object ID
+    - contextPath: ThreatQ.Indicator.ID
+      description: Indicator's ID
       type: number
-    - contextPath: ThreatQ.Type
-      description: Object type
+    - contextPath: ThreatQ.Event.RelatedAdversary.ID
+      description: Related adversary's ID
+      type: number
+    - contextPath: ThreatQ.Event.RelatedAdversary.Source.ID
+      description: Related adversary's source ID
+      type: number
+    - contextPath: ThreatQ.Event.RelatedAdversary.Source.Name
+      description: Related adversary's source name
       type: string
+    - contextPath: ThreatQ.Event.RelatedAdversary.Attribute.ID
+      description: Related adversary's attribute ID
+      type: number
+    - contextPath: ThreatQ.Event.RelatedAdversary.Attribute.Name
+      description: Related adversary's attribute name
+      type: string
+    - contextPath: ThreatQ.Event.RelatedAdversary.Attribute.Value
+      description: Related adversary's attribute value
+      type: string
+    - contextPath: ThreatQ.Event.RelatedAdversary.UpdatedAt
+      description: Related adversary's last update date
+      type: date
+    - contextPath: ThreatQ.Event.RelatedAdversary.CreatedAt
+      description: Related adversary's creation date
+      type: date
+    - contextPath: ThreatQ.Event.RelatedAdversary.Name
+      description: Related adversary's name
+      type: string
+    - contextPath: ThreatQ.Event.ID
+      description: Event's ID
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedAdversary.ID
+      description: Related adversary's ID
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedAdversary.Source.ID
+      description: Related adversary's source ID
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedAdversary.Source.Name
+      description: Related adversary's source name
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedAdversary.Attribute.ID
+      description: Related adversary's attribute ID
+      type: number
+    - contextPath: ThreatQ.Adversary.RelatedAdversary.Attribute.Name
+      description: Related adversary's attribute name
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedAdversary.Attribute.Value
+      description: Related adversary's attribute value
+      type: string
+    - contextPath: ThreatQ.Adversary.RelatedAdversary.UpdatedAt
+      description: Related adversary's last update date
+      type: date
+    - contextPath: ThreatQ.Adversary.RelatedAdversary.CreatedAt
+      description: Related adversary's creation date
+      type: date
+    - contextPath: ThreatQ.Adversary.RelatedAdversary.Name
+      description: Related adversary's name
+      type: string
+    - contextPath: ThreatQ.Adversary.ID
+      description: Adversary's ID
+      type: number
   - arguments:
     - default: false
       description: The file entry ID in Demisto
@@ -1126,53 +1327,50 @@ script:
     execution: false
     name: threatq-upload-file
     outputs:
-    - contextPath: ThreatQ.CreatedAt
-      description: File upload date
+    - contextPath: ThreatQ.File.CreatedAt
+      description: File's upload date
       type: Date
-    - contextPath: ThreatQ.Size
+    - contextPath: ThreatQ.File.Size
       description: File size (in bytes)
       type: Number
-    - contextPath: ThreatQ.MD5
-      description: File MD5
+    - contextPath: ThreatQ.File.MD5
+      description: File's MD5
       type: String
-    - contextPath: ThreatQ.Type
-      description: Object type - File
-      type: String
-    - contextPath: ThreatQ.ID
-      description: File ID in ThreatQ
+    - contextPath: ThreatQ.File.ID
+      description: File's ID in ThreatQ
       type: Number
-    - contextPath: ThreatQ.Name
-      description: File name
+    - contextPath: ThreatQ.File.Name
+      description: File's name
       type: String
-    - contextPath: ThreatQ.Title
-      description: File title
+    - contextPath: ThreatQ.File.Title
+      description: File's title
       type: String
-    - contextPath: ThreatQ.UpdatedAt
-      description: File last update
+    - contextPath: ThreatQ.File.UpdatedAt
+      description: File's last update
       type: Date
-    - contextPath: ThreatQ.MalwareLocked
+    - contextPath: ThreatQ.File.MalwareLocked
       description: If enabled, malware files will be zipped for safer downloading
       type: Number
-    - contextPath: ThreatQ.ContentType
-      description: File content type
+    - contextPath: ThreatQ.File.ContentType
+      description: File's content type
       type: String
-    - contextPath: ThreatQ.FileType
-      description: File type
+    - contextPath: ThreatQ.File.Type
+      description: File's type
       type: String
-    - contextPath: ThreatQ.Source.ID
-      description: Source ID
+    - contextPath: ThreatQ.File.Source.ID
+      description: File's source ID
       type: Number
-    - contextPath: ThreatQ.Source.Name
-      description: Source name
+    - contextPath: ThreatQ.File.Source.Name
+      description: File's source name
       type: String
-    - contextPath: ThreatQ.Attribute.ID
-      description: Attribute ID
+    - contextPath: ThreatQ.File.Attribute.ID
+      description: File's attribute ID
       type: Number
-    - contextPath: ThreatQ.Attribute.Name
-      description: Attribute name
+    - contextPath: ThreatQ.File.Attribute.Name
+      description: File's attribute name
       type: String
-    - contextPath: ThreatQ.Attribute.Value
-      description: Attribute value
+    - contextPath: ThreatQ.File.Attribute.Value
+      description: File's attribute value
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -1199,87 +1397,108 @@ script:
     execution: false
     name: threatq-search-by-id
     outputs:
-    - contextPath: ThreatQ.ID
-      description: Object's ID
+    - contextPath: ThreatQ.Indicator.ID
+      description: Indicator's ID
       type: number
-    - contextPath: ThreatQ.Source.ID
-      description: Object's source ID
+    - contextPath: ThreatQ.Indicator.Source.ID
+      description: Indicator's source ID
       type: number
-    - contextPath: ThreatQ.Source.Name
-      description: Object's source name
+    - contextPath: ThreatQ.Indicator.Source.Name
+      description: Indicator's source name
       type: string
-    - contextPath: DBotScore.Indicator
-      description: Indicator value
-      type: string
-    - contextPath: DBotScore.Type
-      description: Indicator type
-      type: string
-    - contextPath: DBotScore.Vendor
-      description: Indicator vendor
-      type: string
-    - contextPath: DBotScore.Score
-      description: Indicator DBot Score
-      type: date
-    - contextPath: ThreatQ.Attribute.ID
-      description: Object's attribute ID
+    - contextPath: ThreatQ.Indicator.Attribute.ID
+      description: Indicator's attribute ID
       type: number
-    - contextPath: ThreatQ.Attribute.Name
-      description: Object's attribute name
+    - contextPath: ThreatQ.Indicator.Attribute.Name
+      description: Indicator's attribute name
       type: string
-    - contextPath: ThreatQ.Attribute.Value
-      description: Object's attribute value
+    - contextPath: ThreatQ.Indicator.Attribute.Value
+      description: Indicator's attribute value
       type: string
-    - contextPath: ThreatQ.UpdatedAt
-      description: Object's last update date
+    - contextPath: ThreatQ.Indicator.CreatedAt
+      description: Indicator's creation date
       type: date
-    - contextPath: ThreatQ.CreatedAt
-      description: Object's creation date
+    - contextPath: ThreatQ.Indicator.UpdatedAt
+      description: Indicator's last update date
       type: date
-    - contextPath: ThreatQ.Type
-      description: Object's type
+    - contextPath: ThreatQ.Indicator.Description
+      description: Description about the indicator
       type: string
-    - contextPath: ThreatQ.Description
-      description: Description about the object
+    - contextPath: ThreatQ.Indicator.Value
+      description: The indicator's value
       type: string
-    - contextPath: ThreatQ.Value
-      description: Indicator's value
+    - contextPath: ThreatQ.Indicator.Status
+      description: The indicator's status - Active/Expired/Indirect/Review/Whitelisted
       type: string
-    - contextPath: ThreatQ.Status
-      description: Indicator's status
+    - contextPath: ThreatQ.Indicator.Type
+      description: The indicator's type, e.g IP Address
       type: string
-    - contextPath: ThreatQ.IndicatorType
-      description: Indicator's type, e.g IP Address
-      type: string
-    - contextPath: ThreatQ.TQScore
-      description: Indicator's ThreatQ Score
+    - contextPath: ThreatQ.Indicator.TQScore
+      description: The indicator's ThreatQ Score
       type: number
-    - contextPath: ThreatQ.Name
-      description: Adversary's name
+    - contextPath: ThreatQ.Event.ID
+      description: The event's ID
+      type: number
+    - contextPath: ThreatQ.Event.Source.ID
+      description: The event's source ID
+      type: number
+    - contextPath: ThreatQ.Event.Source.Name
+      description: The event's source name
       type: string
-    - contextPath: ThreatQ.Title
-      description: Event's title
+    - contextPath: ThreatQ.Event.Attribute.ID
+      description: The event's attribute ID
+      type: number
+    - contextPath: ThreatQ.Event.Attribute.Name
+      description: The event's attribute name
       type: string
-    - contextPath: ThreatQ.Occurred
-      description: Event's occurrence date
+    - contextPath: ThreatQ.Event.Attribute.Value
+      description: The event's attribute value
+      type: string
+    - contextPath: ThreatQ.Event.UpdatedAt
+      description: The last update date of the event
       type: date
-    - contextPath: ThreatQ.EventType
-      description: Event's type
+    - contextPath: ThreatQ.Event.CreatedAt
+      description: The creation date of the event
+      type: date
+    - contextPath: ThreatQ.Event.Type
+      description: The object's type - event
       type: string
-    - contextPath: ThreatQ.Size
-      description: File size (in bytes)
-      type: Number
-    - contextPath: ThreatQ.MalwareLocked
-      description: If enabled, malware files will be zipped for safer downloading
-      type: String
-    - contextPath: ThreatQ.ContentType
-      description: File content type
-      type: String
-    - contextPath: ThreatQ.FileType
-      description: File type
-      type: String
-    - contextPath: ThreatQ.MD5
-      description: File MD5 value
-      type: String
+    - contextPath: ThreatQ.Event.Description
+      description: Description about the event
+      type: string
+    - contextPath: ThreatQ.Event.Title
+      description: The event's title
+      type: string
+    - contextPath: ThreatQ.Event.Occurred
+      description: The date the event happened
+      type: date
+    - contextPath: ThreatQ.Adversary.Name
+      description: The adversary's name
+      type: string
+    - contextPath: ThreatQ.Adversary.ID
+      description: The adversary's ID
+      type: number
+    - contextPath: ThreatQ.Adversary.Source.ID
+      description: The adversary's source ID
+      type: number
+    - contextPath: ThreatQ.Adversary.Source.Name
+      description: The adversary's source name
+      type: string
+    - contextPath: ThreatQ.Adversary.Attribute.ID
+      description: The adversary's attribute ID
+      type: number
+    - contextPath: ThreatQ.Adversary.Attribute.Name
+      description: The adversary's attribute name
+      type: string
+    - contextPath: ThreatQ.Adversary.Attribute.Value
+      description: The adversary's attribute value
+      type: string
+    - contextPath: ThreatQ.Adversary.UpdatedAt
+      description: The creation date of the adversary
+      type: date
+    - contextPath: ThreatQ.Adversary.CreatedAt
+      description: The last update date of the adversary
+      type: date
   - arguments:
     - default: false
       description: First object's ID
@@ -1447,18 +1666,33 @@ script:
     execution: false
     name: threatq-edit-adversary
     outputs:
-    - contextPath: ThreatQ.ID
-      description: Adversary ID
-      type: Number
-    - contextPath: ThreatQ.Type
-      description: Object type (adversary)
-      type: String
-    - contextPath: ThreatQ.Name
-      description: Adversary name
-      type: String
-    - contextPath: ThreatQ.UpdatedAt
-      description: Adversary's last update date
-      type: Date
+    - contextPath: ThreatQ.Adversary.Name
+      description: The adversary's name
+      type: string
+    - contextPath: ThreatQ.Adversary.ID
+      description: The adversary's ID
+      type: number
+    - contextPath: ThreatQ.Adversary.Source.ID
+      description: The adversary's source ID
+      type: number
+    - contextPath: ThreatQ.Adversary.Source.Name
+      description: The adversary's source name
+      type: string
+    - contextPath: ThreatQ.Adversary.Attribute.ID
+      description: The adversary's attribute ID
+      type: number
+    - contextPath: ThreatQ.Adversary.Attribute.Name
+      description: The adversary's attribute name
+      type: string
+    - contextPath: ThreatQ.Adversary.Attribute.Value
+      description: The adversary's attribute value
+      type: string
+    - contextPath: ThreatQ.Adversary.UpdatedAt
+      description: The creation date of the adversary
+      type: date
+    - contextPath: ThreatQ.Adversary.CreatedAt
+      description: The last update date of the adversary
+      type: date
   - arguments:
     - default: false
       description: Indicator ID
@@ -1523,24 +1757,45 @@ script:
     execution: false
     name: threatq-edit-ioc
     outputs:
-    - contextPath: ThreatQ.ID
-      description: Indicator ID
-      type: Number
-    - contextPath: ThreatQ.Type
-      description: Object type - indicator
-      type: String
-    - contextPath: ThreatQ.IndicatorType
-      description: Indicator type
-      type: String
-    - contextPath: ThreatQ.Value
-      description: Indicator value
-      type: String
-    - contextPath: ThreatQ.UpdatedAt
+    - contextPath: ThreatQ.Indicator.ID
+      description: Indicator's ID
+      type: number
+    - contextPath: ThreatQ.Indicator.Source.ID
+      description: Indicator's source ID
+      type: number
+    - contextPath: ThreatQ.Indicator.Source.Name
+      description: Indicator's source name
+      type: string
+    - contextPath: ThreatQ.Indicator.Attribute.ID
+      description: Indicator's attribute ID
+      type: number
+    - contextPath: ThreatQ.Indicator.Attribute.Name
+      description: Indicator's attribute name
+      type: string
+    - contextPath: ThreatQ.Indicator.Attribute.Value
+      description: Indicator's attribute value
+      type: string
+    - contextPath: ThreatQ.Indicator.CreatedAt
+      description: Indicator's creation date
+      type: date
+    - contextPath: ThreatQ.Indicator.UpdatedAt
       description: Indicator's last update date
-      type: Date
-    - contextPath: ThreatQ.Description
-      description: Indicator description
-      type: String
+      type: date
+    - contextPath: ThreatQ.Indicator.Description
+      description: Description about the indicator
+      type: string
+    - contextPath: ThreatQ.Indicator.Value
+      description: The indicator's value
+      type: string
+    - contextPath: ThreatQ.Indicator.Status
+      description: The indicator's status - Active/Expired/Indirect/Review/Whitelisted
+      type: string
+    - contextPath: ThreatQ.Indicator.Type
+      description: The indicator's type, e.g IP Address
+      type: string
+    - contextPath: ThreatQ.Indicator.TQScore
+      description: The indicator's ThreatQ Score
+      type: number
   - arguments:
     - default: false
       description: Event ID
@@ -1592,27 +1847,42 @@ script:
     execution: false
     name: threatq-edit-event
     outputs:
-    - contextPath: ThreatQ.ID
-      description: Event ID
-      type: Number
-    - contextPath: ThreatQ.Type
-      description: Object type - event
-      type: String
-    - contextPath: ThreatQ.Title
-      description: Event title
-      type: String
-    - contextPath: ThreatQ.Occurred
-      description: Event occurrence date
-      type: Date
-    - contextPath: ThreatQ.UpdatedAt
-      description: Event last update date
-      type: Date
-    - contextPath: ThreatQ.EventType
-      description: Event type
-      type: String
-    - contextPath: ThreatQ.Description
-      description: Event description
-      type: String
+    - contextPath: ThreatQ.Event.ID
+      description: The event's ID
+      type: number
+    - contextPath: ThreatQ.Event.Source.ID
+      description: The event's source ID
+      type: number
+    - contextPath: ThreatQ.Event.Source.Name
+      description: The event's source name
+      type: string
+    - contextPath: ThreatQ.Event.Attribute.ID
+      description: The event's attribute ID
+      type: number
+    - contextPath: ThreatQ.Event.Attribute.Name
+      description: The event's attribute name
+      type: string
+    - contextPath: ThreatQ.Event.Attribute.Value
+      description: The event's attribute value
+      type: string
+    - contextPath: ThreatQ.Event.UpdatedAt
+      description: The last update date of the event
+      type: date
+    - contextPath: ThreatQ.Event.CreatedAt
+      description: The creation date of the event
+      type: date
+    - contextPath: ThreatQ.Event.Type
+      description: The object's type - event
+      type: string
+    - contextPath: ThreatQ.Event.Description
+      description: Description about the event
+      type: string
+    - contextPath: ThreatQ.Event.Title
+      description: The event's title
+      type: string
+    - contextPath: ThreatQ.Event.Occurred
+      description: The date the event happened
+      type: date
   - arguments:
     - default: false
       description: Indicator's ID
@@ -1646,30 +1916,45 @@ script:
     execution: false
     name: threatq-update-score
     outputs:
-    - contextPath: ThreatQ.ID
+    - contextPath: ThreatQ.Indicator.ID
       description: Indicator's ID
-      type: Number
-    - contextPath: ThreatQ.Type
-      description: Object type - indicator
-      type: String
-    - contextPath: ThreatQ.TQScore
-      description: Indicator TQ Score
-      type: Number
-    - contextPath: ThreatQ.UpdatedAt
+      type: number
+    - contextPath: ThreatQ.Indicator.Source.ID
+      description: Indicator's source ID
+      type: number
+    - contextPath: ThreatQ.Indicator.Source.Name
+      description: Indicator's source name
+      type: string
+    - contextPath: ThreatQ.Indicator.Attribute.ID
+      description: Indicator's attribute ID
+      type: number
+    - contextPath: ThreatQ.Indicator.Attribute.Name
+      description: Indicator's attribute name
+      type: string
+    - contextPath: ThreatQ.Indicator.Attribute.Value
+      description: Indicator's attribute value
+      type: string
+    - contextPath: ThreatQ.Indicator.CreatedAt
+      description: Indicator's creation date
+      type: date
+    - contextPath: ThreatQ.Indicator.UpdatedAt
       description: Indicator's last update date
-      type: Date
-    - contextPath: DBotScore.Indicator
-      description: Indicator value
-      type: String
-    - contextPath: DBotScore.Vendor
-      description: Indicator vendor
-      type: String
-    - contextPath: DBotScore.Score
-      description: Indicator DBot score
-      type: Number
-    - contextPath: DBotScore.Type
-      description: Indicator type
-      type: String
+      type: date
+    - contextPath: ThreatQ.Indicator.Description
+      description: Description about the indicator
+      type: string
+    - contextPath: ThreatQ.Indicator.Value
+      description: The indicator's value
+      type: string
+    - contextPath: ThreatQ.Indicator.Status
+      description: The indicator's status - Active/Expired/Indirect/Review/Whitelisted
+      type: string
+    - contextPath: ThreatQ.Indicator.Type
+      description: The indicator's type, e.g IP Address
+      type: string
+    - contextPath: ThreatQ.Indicator.TQScore
+      description: The indicator's ThreatQ Score
+      type: number
   - arguments:
     - default: false
       description: File ID
@@ -1681,7 +1966,22 @@ script:
     description: Download a file from ThreatQ to Demisto
     execution: false
     name: threatq-download-file
-  - deprecated: false
+  - arguments:
+    - default: false
+      defaultValue: '0'
+      description: Index
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: limit
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: Get all indicators in ThreatQ
     execution: false
     name: threatq-get-all-iocs
@@ -1725,7 +2025,22 @@ script:
     - contextPath: ThreatQ.Indicator.TQScore
       description: The indicator's ThreatQ Score
       type: number
-  - deprecated: false
+  - arguments:
+    - default: false
+      defaultValue: '0'
+      description: Index
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: limit
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: Get all events in ThreatQ
     execution: false
     name: threatq-get-all-events
@@ -1766,7 +2081,22 @@ script:
     - contextPath: ThreatQ.Event.Occurred
       description: The date the event happened
       type: date
-  - deprecated: false
+  - arguments:
+    - default: false
+      defaultValue: '0'
+      description: The page to return, starting from 0.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The number of objects to return in one response (maximum limit is 200).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: Get all adversaries in ThreatQ
     execution: false
     name: threatq-get-all-adversaries
