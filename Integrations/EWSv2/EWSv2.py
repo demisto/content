@@ -310,7 +310,6 @@ Remove-ComplianceSearch $searchName -Confirm:$false
 Remove-PSSession $session
 """
 
-
 # initialized in main()
 EWS_SERVER = ''
 USERNAME = ''
@@ -1582,22 +1581,14 @@ def find_folders(target_mailbox=None, is_public=None):
 
 def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public=None, get_internal_item='no'):
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
-    account = get_account(target_mailbox or ACCOUNT_EMAIL)
-    limit = int(limit)
     limit = int(limit)
     get_internal_item = (get_internal_item == 'yes')
     is_public = is_default_folder(folder_path, is_public)
-    is_public = is_default_folder(folder_path, is_public)
-    folder = get_folder_by_path(account, folder_path, is_public)
     folder = get_folder_by_path(account, folder_path, is_public)
     qs = folder.filter().order_by('-datetime_created')[:limit]
-    qs = folder.filter().order_by('-datetime_created')[:limit]
     items = get_limited_number_of_messages_from_qs(qs, limit)
-    items = get_limited_number_of_messages_from_qs(qs, limit)
-    items_result = map(
-        lambda item: parse_item_as_dict(item, account.primary_smtp_address, camel_case=True, compact_fields=True),
-        items)
     items_result = []
+
     for item in items:
         item_attachment = parse_item_as_dict(item, account.primary_smtp_address, camel_case=True, compact_fields=True)
         for attachment in item.attachments:
@@ -1607,6 +1598,16 @@ def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public
                                                      compact_fields=True)
                 break
         items_result.append(item_attachment)
+
+    hm_headers = ['sender', 'subject', 'hasAttachments', 'datetimeReceived',
+                  'receivedBy', 'author', 'toRecipients', ]
+    if exchangelib.__version__ == "1.12.0":  # Docker BC
+        hm_headers.append('itemId')
+    return get_entry_for_object('Items in folder ' + folder_path,
+                                CONTEXT_UPDATE_EWS_ITEM,
+                                items_result,
+                                headers=hm_headers)
+
 
 def get_items(item_ids, target_mailbox=None):
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
