@@ -33,7 +33,7 @@ args:
   required: false
   secret: false
 comment: Copy a context key to an incident field to multiple number of incidents,
-  based on a query.
+  based on an incident query.
 commonfields:
   id: CopyContextToField
   version: -1
