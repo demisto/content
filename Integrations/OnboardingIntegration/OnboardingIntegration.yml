@@ -205,5 +205,6 @@ script:
   dockerimage: demisto/faker:0.1  
   isfetch: true
   runonce: false
+  subtype: python2
 tests:
   - No Tests
