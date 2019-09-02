@@ -801,6 +801,7 @@ tasks:
       '#none#':
       - "30"
       - "37"
+      - "42"
     scriptarguments:
       group_type:
         simple: events
@@ -851,10 +852,10 @@ tasks:
       version: -1
       name: Create Event Group
       description: Create a ThreatConnect group from type Event
-      script: '|||tc-create-event'
+      script: ThreatConnect1|||tc-create-event
       type: regular
       iscommand: true
-      brand: ""
+      brand: ThreatConnect1
     nexttasks:
       '#none#':
       - "31"
@@ -1027,10 +1028,10 @@ tasks:
       version: -1
       name: Delete Group
       description: Delete a Group from ThreatConnect (Incident, Event, Campaign, Threat)
-      script: '|||tc-delete-group'
+      script: ThreatConnect1|||tc-delete-group
       type: regular
       iscommand: true
-      brand: ""
+      brand: ThreatConnect1
     scriptarguments:
       groupID:
         simple: ${TC.Event.ID}
@@ -1261,14 +1262,110 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "42":
+    id: "42"
+    taskid: 7d7efee7-3ee6-48a9-8dec-3d286573111f
+    type: regular
+    task:
+      id: 7d7efee7-3ee6-48a9-8dec-3d286573111f
+      version: -1
+      name: Get Group Attributes
+      description: Retrieve a Group’s Attributes
+      script: '|||tc-get-group-attributes'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      group_id:
+        simple: "4406377"
+      group_type:
+        simple: events
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1440,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "43":
+    id: "43"
+    taskid: 1c039794-a036-483b-8695-e45db8d34cf1
+    type: regular
+    task:
+      id: 1c039794-a036-483b-8695-e45db8d34cf1
+      version: -1
+      name: Get Group Tags
+      description: Retrieve the Tags for a Group
+      script: '|||tc-get-group-tags'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      group_id:
+        simple: "4407228"
+      group_type:
+        simple: events
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1440,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "44":
+    id: "44"
+    taskid: 3c93e1e3-b7d8-427a-8a4a-f3d5577537e1
+    type: regular
+    task:
+      id: 3c93e1e3-b7d8-427a-8a4a-f3d5577537e1
+      version: -1
+      name: Get Group Security Labels
+      description: Retrieve a Group’s Security Labels
+      script: '|||tc-get-group-security-labels'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      group_id:
+        simple: "4406377"
+      group_type:
+        simple: events
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1440,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 2805,
-        "width": 3190,
-        "x": -980,
+        "width": 3650,
+        "x": -1440,
         "y": 50
       }
     }
