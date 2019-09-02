@@ -79,7 +79,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Team in which the specified channel exists. The team must already exist, and this value will override the default channel configured in the integration parameters.
+      description: Team in which the specified channel exists. The team must already
+        exist, and this value will override the default channel configured in the
+        integration parameters.
       isArray: false
       name: team
       required: false
@@ -98,8 +100,8 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: all
-      description: The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chatting (not commands), or "none", which stops all mirroring.
-        to mirror only chatting but not commands, or "none" to stop mirroring.
+      description: The mirroring type. Can be "all", which mirrors everything, "chat",
+        which mirrors only chats (not commands), or "none", which stops all mirroring.
       isArray: false
       name: mirror_type
       predefined:
@@ -111,7 +113,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to auto-close the channel when the incident is closed in Demisto. If "true", the channel will be auto-closed. Default is "true".
+      description: Whether to auto-close the channel when the incident is closed in
+        Demisto. If "true", the channel will be auto-closed. Default is "true".
       isArray: false
       name: autoclose
       predefined:
@@ -122,7 +125,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: both
-      description: The mirroring direction. Can be "FromDemisto", "ToDemisto", or "Both".
+      description: The mirroring direction. Can be "FromDemisto", "ToDemisto", or
+        "Both".
       isArray: false
       name: direction
       predefined:
@@ -132,14 +136,21 @@ script:
       required: false
       secret: false
     - default: false
-      description: Team in which to mirror the Demisto investigation. If not specified, the default team
-        configured in the integration parameters will be used.
+      description: Team in which to mirror the Demisto investigation. If not specified,
+        the default team configured in the integration parameters will be used.
       isArray: false
       name: team
       required: false
       secret: false
+    - default: false
+      description: The name of the channel. The default is "incident-<incidentID>".
+      isArray: false
+      name: channel_name
+      required: false
+      secret: false
     deprecated: false
-    description: Mirrors the Demisto investigation to the specified Microsoft Teams channel.
+    description: Mirrors the Demisto investigation to the specified Microsoft Teams
+      channel.
     execution: false
     name: mirror-investigation
   - arguments:
