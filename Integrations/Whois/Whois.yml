@@ -155,6 +155,7 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python2
 defaultEnabled: false
 tests:
 - whois_test
