@@ -51,18 +51,24 @@ def epoch_seconds(d: datetime = None) -> int:
     return int((d - datetime.utcfromtimestamp(0)).total_seconds())
 
 
-def error_parser(resp_err: requests.Response) -> str:
+def error_parser(resp_err: requests.Response, api: str = 'graph') -> str:
     """
-    Parses error message from Requests response
+    Parses Microsoft API error message from Requests response
     :param resp_err: response with error
+    :param api: API to query (graph/bot)
     :return: string of error
     """
     try:
-        response = resp_err.json()
-        error = response.get('error', {})
-        err_str = f"{error.get('code')}: {error.get('message')}"
-        if err_str:
-            return err_str
+        response: dict = resp_err.json()
+        if api == 'graph':
+            error: dict = response.get('error', {})
+            err_str: str = f"{error.get('code', '')}: {error.get('message', '')}"
+            if err_str:
+                return err_str
+        elif api == 'bot':
+            error_description: str = response.get('error_description', '')
+            if error_description:
+                return error_description
         # If no error message
         raise ValueError()
     except ValueError:
@@ -393,7 +399,7 @@ def get_bot_access_token() -> str:
         verify=USE_SSL
     )
     if not response.ok:
-        error = error_parser(response)
+        error = error_parser(response, 'bot')
         raise ValueError(f'Failed to get bot access token [{response.status_code}] - {error}')
     try:
         response_json: dict = response.json()
@@ -490,7 +496,7 @@ def http_request(
         )
 
         if not response.ok:
-            error = error_parser(response)
+            error: str = error_parser(response, api)
             raise ValueError(f'Error in API call to Microsoft Teams: [{response.status_code}] - {error}')
 
         if response.status_code in {202, 204}:
@@ -718,22 +724,22 @@ def create_channel(team_aad_id: str, channel_name: str, channel_description: str
     return channel_id
 
 
-def get_channel_id(channel_name: str, team_aad_id: str) -> str:
+def get_channel_id(channel_name: str, team_aad_id: str, investigation_id: str = None) -> str:
     """
     Retrieves Microsoft Teams channel ID
     :param channel_name: Name of channel to get ID of
     :param team_aad_id: AAD ID of team to search channel in
+    :param investigation_id: Demisto investigation ID to search mirrored channel of
     :return: Requested channel ID
     """
+    investigation_id = investigation_id or str()
     integration_context: dict = demisto.getIntegrationContext()
-    if integration_context.get('teams'):
-        teams: list = json.loads(integration_context['teams'])
-        for team in teams:
-            mirrored_channels: list = team.get('mirrored_channels', [])
-            for channel in mirrored_channels:
-                investigation_id: str = channel.get('investigation_id', '')
-                if channel_name == f'incident-{investigation_id}':
-                    return channel.get('channel_id')
+    teams: list = json.loads(integration_context.get('teams', '[]'))
+    for team in teams:
+        mirrored_channels: list = team.get('mirrored_channels', [])
+        for channel in mirrored_channels:
+            if channel.get('channel_name') == channel_name or channel.get('investigation_id') == investigation_id:
+                return channel.get('channel_id')
     url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_aad_id}/channels'
     response: dict = cast(Dict[Any, Any], http_request('GET', url))
     channel_id: str = ''
@@ -799,13 +805,13 @@ def close_channel():
     """
     integration_context: dict = demisto.getIntegrationContext()
     channel_name: str = demisto.args().get('channel', '')
+    investigation: dict = demisto.investigation()
+    investigation_id: str = investigation.get('id', '')
     channel_id: str = str()
     team_aad_id: str
     mirrored_channels: list
     if not channel_name:
         # Closing channel as part of autoclose in mirroring process
-        investigation: dict = demisto.investigation()
-        investigation_id: str = investigation.get('id', '')
         teams: list = json.loads(integration_context.get('teams', '[]'))
         for team in teams:
             team_aad_id = team.get('team_aad_id', '')
@@ -824,7 +830,7 @@ def close_channel():
     else:
         team_name: str = demisto.args().get('team') or demisto.params().get('team')
         team_aad_id = get_team_aad_id(team_name)
-        channel_id = get_channel_id(channel_name, team_aad_id)
+        channel_id = get_channel_id(channel_name, team_aad_id, investigation_id)
         close_channel_request(team_aad_id, channel_id)
     demisto.results('Channel was successfully closed.')
 
@@ -915,7 +921,13 @@ def send_message():
     if channel_name:
         team_name: str = demisto.args().get('team', '') or demisto.params().get('team', '')
         team_aad_id: str = get_team_aad_id(team_name)
-        channel_id = get_channel_id(channel_name, team_aad_id)
+        investigation_id: str = str()
+        if message_type == MESSAGE_TYPES['mirror_entry']:
+            # Got an entry from the War Room to mirror to Teams
+            # Getting investigation ID in case channel name is custom and not the default
+            investigation: dict = demisto.investigation()
+            investigation_id = investigation.get('id', '')
+        channel_id = get_channel_id(channel_name, team_aad_id, investigation_id)
     elif team_member:
         team_member_id: str = get_team_member_id(team_member, integration_context)
         personal_conversation_id = create_personal_conversation(integration_context, team_member_id)
@@ -994,9 +1006,20 @@ def mirror_investigation():
         mirrored_channels[investigation_mirrored_index]['mirrored'] = False
         demisto.results('Investigation mirror was updated successfully.')
     else:
-        channel_name: str = f'incident-{investigation_id}'
-        channel_description = f'Channel to mirror incident {investigation_id}'
-        channel_id = create_channel(team_aad_id, channel_name, channel_description)
+        channel_name: str = demisto.args().get('channel_name', '') or f'incident-{investigation_id}'
+        channel_description: str = f'Channel to mirror incident {investigation_id}'
+        channel_id: str = create_channel(team_aad_id, channel_name, channel_description)
+        service_url: str = integration_context.get('service_url', '')
+        server_links: dict = demisto.demistoUrls()
+        server_link: str = server_links.get('server', '')
+        warroom_link: str = f'{server_link}#/WarRoom/{investigation_id}'
+        conversation: dict = {
+            'type': 'message',
+            'text': f'This channel was created to mirror [incident {investigation_id}]({warroom_link}) '
+                    f'between Teams and Demisto. In order for your Teams messages to be mirrored in Demisto, '
+                    f'you need to mention the Demisto Bot in the message.'
+        }
+        send_message_request(service_url, channel_id, conversation)
         mirrored_channels.append({
             'channel_id': channel_id,
             'investigation_id': investigation_id,
@@ -1006,7 +1029,7 @@ def mirror_investigation():
             'mirrored': False,
             'channel_name': channel_name
         })
-        demisto.results(f'Investigation mirrored successfully in channel incident-{investigation_id}.')
+        demisto.results(f'Investigation mirrored successfully in channel {channel_name}.')
     team['mirrored_channels'] = mirrored_channels
     integration_context['teams'] = json.dumps(teams)
     demisto.setIntegrationContext(integration_context)
@@ -1153,8 +1176,8 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
             formatted_message = urlify_hyperlinks(data)
     else:
         try:
-            return_card = True
             data = demisto.directMessage(message, username, user_email, allow_external_incidents_creation)
+            return_card = True
             if data.startswith('`'):  # We got a list of incidents/tasks:
                 data_by_line: list = data.replace('```', '').strip().split('\n')
                 return_card = True

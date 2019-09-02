@@ -17,9 +17,12 @@ system: false
 tags:
 - transformer
 - number
+- entirelist
 timeout: '0'
 type: python
 runas: DBotWeakRole
 runonce: false
 subtype: python3
 dockerimage: demisto/python3:3.7.4.1150
+tests:
+  - sumList - Test
