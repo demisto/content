@@ -797,7 +797,7 @@ def prevent_file_command():
         }
         demisto.results(entry)
     else:
-        raise ('Failed to prevent file')
+        raise Exception('Failed to prevent file')
 
 
 def prevent_file(file_hash):
