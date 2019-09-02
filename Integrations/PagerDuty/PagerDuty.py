@@ -7,9 +7,6 @@ import requests
 from datetime import datetime, timedelta
 
 ''' GLOBAL VARS '''
-# PagerDuty API works only with secured communication.
-USE_SSL = True
-
 USE_PROXY = demisto.params().get('proxy', True)
 USE_SSL = not demisto.params().get('insecure', False)
 API_KEY = demisto.params()['APIKey']
