@@ -175,7 +175,7 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
                                            event_type_filter=event_type_filter,
                                            threat_status=threat_status, threat_type=threat_type)
         else:
-            raw_events = client.get_events(interval=fetch_time + "/" + datetime.now().strftime(DATE_FORMAT),
+            raw_events = client.get_events(interval=fetch_time + "/" + get_now().strftime(DATE_FORMAT),
                                            event_type_filter=event_type_filter,
                                            threat_status=threat_status, threat_type=threat_type)
 
