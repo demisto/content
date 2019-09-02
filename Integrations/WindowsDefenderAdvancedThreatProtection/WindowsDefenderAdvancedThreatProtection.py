@@ -837,7 +837,6 @@ def fetch_incidents():
         "last_ids": last_ids
 
     })
-
     demisto.incidents(incidents)
 
 
