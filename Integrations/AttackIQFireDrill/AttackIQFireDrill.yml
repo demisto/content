@@ -20,13 +20,354 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Integration Template
-display: AttackIQFireDrill
+description: AttackIQ offers continuous validation for security controls, processes and people.
+display: AttackIQ FireDrill
 name: AttackIQFireDrill
 script:
+  commands:
+  - name: attackiq-list-assessments
+    arguments:
+      - default: false
+        description: Assessment Id
+        isArray: false
+        name: assessment_id
+        required: false
+        secret: false
+    outputs:
+      - contextPath: AttackIQ.Assessment.Id
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Assessment.Name
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Assessment.Description
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Assessment.StartDate
+        description: ''
+        type: Date
+      - contextPath: AttackIQ.Assessment.EndDate
+        description: ''
+        type: Date
+      - contextPath: AttackIQ.Assessment.ProjectState
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Assessment.DefaultSchedule
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Assessment.ProjectTemplate.Id
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Assessment.ProjectTemplate.TemplateName
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Assessment.ProjectTemplate.TemplateDescription
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Assessment.ProjectTemplate.ProjectTemplateType.id
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Assessment.ProjectTemplate.ProjectTemplateType.name
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Assessment.ProjectTemplate.ProjectTemplateType.description
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Assessment.ProjectTemplate.DefaultSchedule
+        description: ''
+        type: Unknown
+      - contextPath: AttackIQ.Assessment.ProjectTemplate.Company
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Assessment.ProjectTemplate.Created
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Assessment.ProjectTemplate.Modified
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Assessment.Creator
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Assessment.Owner
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Assessment.User
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Assessment.Created
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Assessment.Modified
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Assessment.Users
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Assessment.Groups
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Assessment.DefaultAssetCount
+        description: ''
+        type: Number
+      - contextPath: AttackIQ.Assessment.DefaultAssetGroupCount
+        description: ''
+        type: Number
+      - contextPath: AttackIQ.Assessment.MasterJobCount
+        description: ''
+        type: Number
+  - name: attackiq-activate-assessment
+    description: Activates the assessment. this is required for execution.
+    arguments:
+    - default: false
+      description: The assessment to activate
+      isArray: false
+      name: assessment_id
+      required: false
+      secret: false
+  - name: attackiq-run-all-tests-in-assessment
+    description: runs all of the tests in the assessment.
+    arguments:
+      - default: false
+        description: The assessment to activate
+        isArray: false
+        name: assessment_id
+        required: false
+        secret: false
+      - default: false
+        description: Run only on-demand tests in the project, or all tests\ntrue - Execute only the on-demand tests in the project\nfalse - Execute all tests in the project (including scheduled tests)
+        isArray: false
+        name: on_demand_only
+        required: false
+        secret: false
+  - name: attackiq-get-assessment-execution-status
+    description: Get assessment execution status - supports only on demand runs.
+    arguments:
+      - default: false
+        description: The assessment to check status
+        isArray: false
+        name: assessment_id
+        required: false
+        secret: false
+    outputs:
+      - contextPath: AttackIQ.Assessment.Status
+        description: ''
+        type: Boolean
+  - name: attackiq-get-test-execution-status
+    description: Get test run status.
+    arguments:
+      - default: false
+        description: The test to check status
+        isArray: false
+        name: test_id
+        required: false
+        secret: false
+    outputs:
+      - contextPath: AttackIQ.Assessment.Status
+        description: ''
+        type: Boolean
+  - name: attackiq-list-tests-by-assessment
+    arguments:
+      - default: false
+        description: The assessment to run tests for
+        isArray: false
+        name: assessment_id
+        required: false
+        secret: false
+    outputs:
+      - contextPath: AttackIQ.Test.Id
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Test.Name
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Test.Description
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Test.Project
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Test.Scenarios.Id
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Test.Scenarios.Name
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Test.Assets.Id
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Test.Assets.Ipv4Address
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Test.Assets.Hostname
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Test.Assets.ProductName
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Test.Assets.Modified
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Test.Assets.Status
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Test.TotalAssetCount
+        description: ''
+        type: Number
+      - contextPath: AttackIQ.Test.CronExpression
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Test.Runnable
+        description: ''
+        type: Boolean
+      - contextPath: AttackIQ.Test.LastResult
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Test.ScheduledCount
+        description: ''
+        type: Number
+      - contextPath: AttackIQ.Test.User
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Test.Created
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Test.Modified
+        description: ''
+        type: String
+      - contextPath: AttackIQ.Test.LatestInstanceId
+        description: ''
+        type: Number
+      - contextPath: AttackIQ.Test.UsingDefaultAssets
+        description: ''
+        type: Boolean
+      - contextPath: AttackIQ.Test.UsingDefaultSchedule
+        description: ''
+        type: Boolean
+  - name: attackiq-get-test-results
+    arguments:
+      - default: false
+        description: The test to show results for
+        isArray: false
+        name: test_id
+        required: false
+        secret: false
+      - default: false
+        description: Only show the most recent results
+        isArray: false
+        name: show_last_result
+        required: false
+        secret: false
+    outputs:
+      - contextPath: AttackIQ.TestResult.Id
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.Modified
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.Project.Id
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.Project.Name
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.MasterJob.Id
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.MasterJob.Assets.Ipv4Address
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.MasterJob.Assets.Hostname
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.MasterJob.Assets.Id
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.MasterJob.Assets.ProductName
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.MasterJob.Assets.Modified
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.MasterJob.Assets.Status
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.MasterJob.Scenarios.Id
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.MasterJob.Scenarios.Name
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.MasterJob.Scenarios.Description
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.MasterJob.Scenarios.CategoryId
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.MasterJob.Scenarios.CategoryName
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.Run_count
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.LastLesult
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.Scenario.Id
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.Scenario.Name
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.Scenario.Description
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.Scenario.Category.Id
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.Scenario.Category.Name
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.Asset.Id
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.Asset.Ipv4Address
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.Asset.Hostname
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.Asset.category.Id
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.Asset.Category.Name
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.Asset.ProductName
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.Asset.Modified
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.Asset.Status
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.AssetGroup
+        description: ''
+        type: Unknown
+      - contextPath: AttackIQ.TestResult.JobState.Name
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.Outcome.Name
+        description: ''
+        type: String
+      - contextPath: AttackIQ.TestResult.Outcome.Deleted
+        description: ''
+        type: Boolean
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
+  subtype: python3
+  dockerimage: demisto/python3:3.7.4.977
   type: python
