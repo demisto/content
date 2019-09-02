@@ -625,7 +625,7 @@ async def listen(**payload):
         integration_context = demisto.getIntegrationContext()
         user = await get_user_by_id_async(client, integration_context, user_id)
         if await check_and_handle_entitlement(text, user, thread):
-            await client.chat_postMessage(channel=channel, text='Thank you for your response')
+            await client.chat_postMessage(channel=channel, text='Thank you for your response.', thread_ts=thread)
         elif channel and channel[0] == 'D':
             # DM
             await handle_dm(user, text, client)
