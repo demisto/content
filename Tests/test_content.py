@@ -28,7 +28,7 @@ AMI_NAMES = ["Demisto GA", "Server Master", "Demisto one before GA", "Demisto tw
 SERVICE_RESTART_TIMEOUT = 300
 SERVICE_RESTART_POLLING_INTERVAL = 5
 
-SLACK_CHANNEL_ID = 'CM55V7J8K'
+SLACK_MEM_CHANNEL_ID = 'CM55V7J8K'
 
 
 def options_handler():
@@ -44,8 +44,12 @@ def options_handler():
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     parser.add_argument('-g', '--buildName', help='The build name', required=True)
     parser.add_argument('-i', '--isAMI', type=str2bool, help='is AMI build or not', default=False)
+    parser.add_argument('-m', '--memCheck', type=str2bool,
+                        help='Should trigger memory checks or not. The slack channel to check the data is: '
+                             'dmst_content_nightly_memory_data', default=False)
     parser.add_argument('-d', '--serverVersion', help='Which server version to run the '
                                                       'tests on(Valid only when using AMI)', default="NonAMI")
+
     options = parser.parse_args()
 
     return options
@@ -112,8 +116,22 @@ def has_unmockable_integration(integrations, unmockable_integrations):
     return list(set(x['name'] for x in integrations).intersection(unmockable_integrations.keys()))
 
 
-def get_memory_data():
-    process = subprocess.Popen(['free', '-m'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+def get_docker_limit():
+    process = subprocess.Popen(['cat', '/sys/fs/cgroup/memory/memory.limit_in_bytes'], stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT)
+    stdout, stderr = process.communicate()
+    return stdout, stderr
+
+
+def get_docker_processes_data():
+    process = subprocess.Popen(['ps', 'aux'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    stdout, stderr = process.communicate()
+    return stdout, stderr
+
+
+def get_docker_memory_data():
+    process = subprocess.Popen(['cat', '/sys/fs/cgroup/memory/memory.usage_in_bytes'], stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT)
     stdout, stderr = process.communicate()
     return stdout, stderr
 
@@ -133,11 +151,6 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
 def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
                    circle_ci, build_number, server_url, build_name, is_mock_run=False):
     status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run)
-    options = options_handler()
-    stdout, stderr = get_memory_data()
-    text = stdout if not stderr else stderr
-    if options.nightly:
-        send_slack_message(slack, SLACK_CHANNEL_ID, text, 'Content CircleCI', 'False')
 
     if status == PB_Status.COMPLETED:
         print_color('PASS: {} succeed'.format(test_message), LOG_COLORS.GREEN)
@@ -469,6 +482,14 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
         return
 
     test_message = update_test_msg(integrations, test_message)
+    options = options_handler()
+    stdout, stderr = get_docker_memory_data()
+    text = 'Memory Usage: {}'.format(stdout) if not stderr else stderr
+    if options.nightly and options.memCheck:
+        send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
+        stdout, stderr = get_docker_processes_data()
+        text = stdout if not stderr else stderr
+        send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
 
     run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id,
              succeed_playbooks, test_message, test_options, slack, circle_ci,
@@ -505,6 +526,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     conf_path = options.conf
     secret_conf_path = options.secret
     is_nightly = options.nightly
+    is_memory_check = options.memCheck
     slack = options.slack
     circle_ci = options.circleci
     build_number = options.buildNumber
@@ -561,9 +583,11 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                                                     nightly_integrations)
     else:  # In case of a non AMI run we don't want to use the mocking mechanism
         mockless_tests = tests
-    if options.nightly:
-        send_slack_message(slack, SLACK_CHANNEL_ID,
-                           'Build Number: {0}\n Server Address: {1}'.format(build_number, server),
+    if is_nightly and is_memory_check:
+        mem_lim, err = get_docker_limit()
+        send_slack_message(slack, SLACK_MEM_CHANNEL_ID,
+                           'Build Number: {0}\n Server Address: {1}\nMemory Limit: {2}'.format(build_number, server,
+                                                                                               mem_lim),
                            'Content CircleCI', 'False')
     # first run the mock tests to avoid mockless side effects in container
     if is_ami and mock_tests:
