@@ -37,8 +37,8 @@ for i in incidents:
         skipped_count += 1
 
 if success_count > 0:
-    demisto.log("Update incidents: %d success" % success_count)
+    demisto.results("Update incidents: %d success" % success_count)
 if skipped_count > 0:
-    demisto.log("Skipped %d incidents due to missing value" % skipped_count)
+    demisto.results("Skipped %d incidents due to missing value" % skipped_count)
 if failed_count > 0:
-    demisto.log("Failed to update %d incidents with setIncident error" % failed_count)
+    demisto.results("Failed to update %d incidents with setIncident error" % failed_count)
