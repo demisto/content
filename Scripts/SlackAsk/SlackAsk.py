@@ -17,13 +17,16 @@ if not option2:
 entitlementString = entitlement + '@' + demisto.investigation()['id']
 if demisto.get(demisto.args(), 'task'):
     entitlementString += '|' + demisto.get(demisto.args(), 'task')
-message = '%s - Please reply to this thread with `%s` or `%s` %s' % (demisto.args()['message'], option1, option2, entitlementString)
+message = '%s - Please reply to this thread with `%s` or `%s`' % (demisto.args()['message'], option1, option2)
 
 to = demisto.get(demisto.args(), 'user')
 channel = demisto.get(demisto.args(), 'channel')
 
 args = {
-    'message': message,
+    'message': json.dumps({
+        'message': message,
+        'entitlement': entitlementString
+    }),
     'ignoreAddURL': 'true'
 }
 

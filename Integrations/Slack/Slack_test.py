@@ -1687,7 +1687,9 @@ def test_send_request_with_entitlement(mocker):
         return {'channels': json.loads(CONVERSATIONS)}
 
     mocker.patch.object(demisto, 'args', return_value={
-        'message': 'hi test@demisto.com 4404dae8-2d45-46bd-85fa-64779c12abe8@22|43',
+        'message': json.dumps({
+            'message': 'hi test@demisto.com',
+            'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22|43'}),
         'to': 'spengler'})
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
