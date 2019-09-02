@@ -5,7 +5,7 @@
 	"name": "Phishing Sub-type",
 	"ownerOnly": false,
 	"placeholder": "",
-	"description": "The sub-type of the phishing email. Multiple values can be selected.",
+	"description": "Phishing incident sub-type. Can be \"Legitimate\", \"Spam\", \"Malicious\", \"Malware\", \"Credential Harvesting\", or \"Scam\".",
 	"cliName": "phishingsubtype",
 	"type": "multiSelect",
 	"closeForm": true,
