@@ -492,7 +492,7 @@ script:
         if (dbotScore == 3){
             var maliciousContext = {
                 Vendor: 'Hybrid Analysis',
-                Description: 'The following scanners reported this url as malicious: ' + maliciousDescription
+                Description: 'The following scanners reported this URL as malicious: ' + maliciousDescription
             };
             urlContext.Malicious = maliciousContext;
         }
