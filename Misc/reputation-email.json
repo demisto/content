@@ -1,0 +1,74 @@
+{
+  "id": "emailRep",
+  "version": -1,
+  "fromVersion": "5.0.0",
+  "modified": "2019-07-18T08:56:47.982384118Z",
+  "sortValues": null,
+  "commitMessage": "",
+  "shouldPublish": false,
+  "shouldCommit": false,
+  "regex": "\\b[A-Za-z0-9._%=+\\p{L}-]+@[A-Za-z0-9\\p{L}.-]+\\.[A-Za-z]{2,}\\b",
+  "details": "Email",
+  "prevDetails": "Email",
+  "reputationScriptName": "",
+  "reputationCommand": "email",
+  "enhancementScriptNames": [
+    "EmailReputation"
+  ],
+  "system": true,
+  "locked": false,
+  "disabled": false,
+  "file": false,
+  "updateAfter": 0,
+  "mergeContext": false,
+  "formatScript": "",
+  "contextPath": "Account.Email(val.Address \u0026\u0026 val.Address === obj.Address)",
+  "contextValue": "Address",
+  "excludedBrands": [],
+  "defaultMapping": {
+    "blocked": {
+      "simple": "",
+      "complex": {
+        "root": "Account",
+        "filters": [],
+        "accessor": "Blocked",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "domainname": {
+      "simple": "",
+      "complex": {
+        "root": "Account",
+        "filters": [],
+        "accessor": "Domain",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    },
+    "emailaddress": {
+      "simple": "",
+      "complex": {
+        "root": "Account",
+        "filters": [],
+        "accessor": "Email.Address",
+        "transformers": [
+          {
+            "operator": "uniq",
+            "args": {}
+          }
+        ]
+      }
+    }
+  },
+  "manualMapping": null,
+  "fileHashesPriority": null
+}

@@ -23,6 +23,11 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: Return warning entry for unsupported file types
+  name: suppress_file_type_error
+  defaultvalue: ""
+  type: 8
+  required: false
 description: Perform malware dynamic analysis
 display: Palo Alto Networks WildFire v2
 name: WildFire-v2
@@ -351,5 +356,6 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
 - Wildfire Test

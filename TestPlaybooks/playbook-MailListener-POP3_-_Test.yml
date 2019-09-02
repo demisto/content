@@ -1,0 +1,101 @@
+id: MailListener-POP3 - Test
+version: -1
+fromversion: 4.1.0
+name: MailListener-POP3 - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9bba1aeb-398e-4807-841e-02d87c54eb8a
+    type: start
+    task:
+      id: 9bba1aeb-398e-4807-841e-02d87c54eb8a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 1bb42ce1-0326-4406-82dd-c9414d7ec4b6
+    type: regular
+    task:
+      id: 1bb42ce1-0326-4406-82dd-c9414d7ec4b6
+      version: -1
+      name: Fetch incidents
+      description: Execute FetchIncident for a given instance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      add_to_context: {}
+      brand_name:
+        simple: MailListener - POP3
+      error_msg_in_incident:
+        simple: error_msg_in_incident
+      expect_data: {}
+      instance_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: ec9bd68d-c920-4323-8d93-9f03bb48b613
+    type: title
+    task:
+      id: ec9bd68d-c920-4323-8d93-9f03bb48b613
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 425,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

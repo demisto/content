@@ -99,22 +99,22 @@ script: |-
       # sanity
       table = tableToMarkdown('tableToMarkdown test', data)
       expected_table = '''### tableToMarkdown test
-  |header_2|header_3|header_1|
+  |header_1|header_2|header_3|
   |---|---|---|
-  |b1|c1|a1|
-  |b2|c2|a2|
-  |b3|c3|a3|
+  |a1|b1|c1|
+  |a2|b2|c2|
+  |a3|b3|c3|
   '''
       tables.append((table, expected_table, ))
 
       # header transform
       table_transform = tableToMarkdown('tableToMarkdown test with headerTransform', data, headerTransform=underscoreToCamelCase)
       expected_table_transform = '''### tableToMarkdown test with headerTransform
-  |Header2|Header3|Header1|
+  |Header1|Header2|Header3|
   |---|---|---|
-  |b1|c1|a1|
-  |b2|c2|a2|
-  |b3|c3|a3|
+  |a1|b1|c1|
+  |a2|b2|c2|
+  |a3|b3|c3|
   '''
       tables.append((table_transform, expected_table_transform, ))
 
@@ -126,11 +126,11 @@ script: |-
 
       table_multiline = tableToMarkdown('tableToMarkdown test with multiline', data2)
       expected_table_multiline = '''### tableToMarkdown test with multiline
-  |header_2|header_3|header_1|
+  |header_1|header_2|header_3|
   |---|---|---|
-  |b1.1<br>b1.2|c1\|1|a1|
-  |b2.1<br>b2.2|c2\|1|a2|
-  |b3.1<br>b3.2|c3\|1|a3|
+  |a1|b1.1<br>b1.2|c1\|1|
+  |a2|b2.1<br>b2.2|c2\|1|
+  |a3|b3.1<br>b3.2|c3\|1|
   '''
       tables.append((table_multiline, expected_table_multiline, ))
 
@@ -141,11 +141,11 @@ script: |-
           d['header_2'] = None
       table_url_missing_info = tableToMarkdown('tableToMarkdown test with url and missing info', data3)
       expected_table_url_missing_info = '''### tableToMarkdown test with url and missing info
-  |header_2|header_3|header_1|
+  |header_1|header_2|header_3|
   |---|---|---|
-  ||[url](https:\\demisto.com)|a1|
-  ||[url](https:\\demisto.com)|a2|
-  ||[url](https:\\demisto.com)|a3|
+  |a1||[url](https:\\demisto.com)|
+  |a2||[url](https:\\demisto.com)|
+  |a3||[url](https:\\demisto.com)|
   '''
       tables.append((table_url_missing_info, expected_table_url_missing_info, ))
 
@@ -167,11 +167,11 @@ script: |-
           d['header_2'] = 'hi'
       table_list_field = tableToMarkdown('tableToMarkdown test with list field', data4)
       expected_table_list_field = '''### tableToMarkdown test with list field
-  |header_2|header_3|header_1|
+  |header_1|header_2|header_3|
   |---|---|---|
-  |hi|1,<br>second item|a1|
-  |hi|2,<br>second item|a2|
-  |hi|3,<br>second item|a3|
+  |a1|hi|1,<br>second item|
+  |a2|hi|2,<br>second item|
+  |a3|hi|3,<br>second item|
   '''
       tables.append((table_list_field, expected_table_list_field, ))
 
@@ -185,7 +185,7 @@ script: |-
       ]
       table_all_none = tableToMarkdown('tableToMarkdown test with all none fields', data5)
       expected_table_all_none = '''### tableToMarkdown test with all none fields
-  |a|c|b|
+  |a|b|c|
   |---|---|---|
   ||||
   ||||

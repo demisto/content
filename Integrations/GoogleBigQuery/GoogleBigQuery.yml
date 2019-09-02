@@ -90,4 +90,5 @@ script:
       type: Unknown
     description: Performs a query on BigQuery.
   dockerimage: demisto/bigquery:1.0.0.239
+  subtype: python3
   runonce: false

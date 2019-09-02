@@ -1,0 +1,47 @@
+category: Messaging
+commonfields:
+  id: Telegram_Beta
+  version: -1
+configuration:
+- display: API Token
+  name: token
+  required: true
+  type: 4
+description: Telegram integration
+display: Telegram (Beta)
+name: Telegram_Beta
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The recipient ID
+      isArray: false
+      name: userID
+      required: true
+      secret: false
+    - default: false
+      description: The recipient username
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: The message to send
+      isArray: false
+      name: message
+      required: true
+      secret: false
+    deprecated: false
+    description: Sends a message
+    execution: false
+    name: telegram-send-message
+  - deprecated: false
+    description: List users
+    execution: false
+    name: telegram-list-users
+  dockerimage: demisto/python3:3.7.3.221
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+beta: true

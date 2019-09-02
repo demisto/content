@@ -1,0 +1,351 @@
+id: Intezer - Analyze Uploaded file
+version: -1
+name: Intezer - Analyze Uploaded file
+fromversion: 4.0.0
+description: Upload a file to Intezer Analyze to analyze and enrich the file reputation.
+  (up to 32mb)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7d1e59fe-b551-41d6-8337-9d0f413c1d9b
+    type: start
+    task:
+      id: 7d1e59fe-b551-41d6-8337-9d0f413c1d9b
+      version: -1
+      name: ""
+      description: "start"
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: f9a353d1-22d1-4c1b-81eb-a78a88c3dde1
+    type: condition
+    task:
+      id: f9a353d1-22d1-4c1b-81eb-a78a88c3dde1
+      version: -1
+      name: Is Intezer enabled
+      description: Checks if there is an instance of the Intezer v2 integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Intezer v2
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: e3072dee-dd42-416e-804e-d15c5e66ac48
+    type: title
+    task:
+      id: e3072dee-dd42-416e-804e-d15c5e66ac48
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 44c99bce-45d2-4786-8fee-87fe1be01165
+    type: regular
+    task:
+      id: 44c99bce-45d2-4786-8fee-87fe1be01165
+      version: -1
+      name: Intezer - Analyze uploaded file
+      description: Checks the file reputation for the uploaded file. Max file size is 32 MB.
+      script: '|||intezer-analyze-by-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      file_entry_id:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: bc19a3b7-7876-4f90-8ce2-cf6e1da5016d
+    type: condition
+    task:
+      id: bc19a3b7-7876-4f90-8ce2-cf6e1da5016d
+      version: -1
+      name: Is there a file to analyze?
+      description: Checks if there is a file to analyze.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: be960d68-1a06-455f-8676-5d1b04402dc5
+    type: playbook
+    task:
+      id: be960d68-1a06-455f-8676-5d1b04402dc5
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: Intezer
+          accessor: Analysis.ID
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: analysis_id
+      PollingCommandName:
+        simple: intezer-get-analysis-result
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: Intezer.Analysis(val.Status !== 'Done').Status
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 139f25d7-9d3b-4bf9-8e3b-10eaf6325eef
+    type: regular
+    task:
+      id: 139f25d7-9d3b-4bf9-8e3b-10eaf6325eef
+      version: -1
+      name: Intezer - get analysis result
+      description: Wait and get analysis results. Supports file analysis and endpoint analysis.
+      script: Intezer v2|||intezer-get-analysis-result
+      type: regular
+      iscommand: true
+      brand: Intezer v2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      analysis_id:
+        complex:
+          root: Intezer
+          accessor: Analysis.ID
+      analysis_type: {}
+      indicator_name: {}
+      result_url:
+        complex:
+          root: Intezer
+          accessor: Analysis.ResultUrl
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+      accessor: EntryID
+  required: false
+  description: File object of the file to detonate.
+- key: Interval
+  value:
+    simple: "1"
+  required: true
+  description: How often the polling command should run (in minutes).
+- key: Timeout
+  value:
+    simple: "30"
+  required: true
+  description: Amount of time to wait before a timeout occurs (in minutes).
+outputs:
+- contextPath: File.SHA256
+  description: SHA256 hash of the file.
+  type: string
+- contextPath: File.Malicious
+  description: The File malicious description
+  type: unknown
+- contextPath: File.Type
+  description: 'File type, for example: "PE".'
+  type: string
+- contextPath: File.Size
+  description: File size.
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file
+  type: string
+- contextPath: File.Name
+  description: File name.
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file.
+  type: string
+- contextPath: File
+  description: The file object.
+  type: unknown
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision.
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore object.
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score.
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: number
+tests:
+  - No Tests

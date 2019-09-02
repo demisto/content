@@ -122,7 +122,6 @@ def decode_arcsight_output(d, depth=0, remove_nones=True):
     return d
 
 
-@logger
 def login():
     query_path = 'www/core-service/rest/LoginService/login'
     headers = {
@@ -153,7 +152,6 @@ def login():
         return_error('Failed to login. Please check integration parameters')
 
 
-@logger
 def send_request(query_path, body=None, params=None, json=None, headers=None, method='post', is_login=False):
     if headers is None:
         headers = HEADERS
@@ -190,7 +188,6 @@ def send_request(query_path, body=None, params=None, json=None, headers=None, me
         return_error('Connection Error. Please check integration parameters')
 
 
-@logger
 def test():
     """
     Login (already done in global).
@@ -846,5 +843,5 @@ try:
         get_all_query_viewers_command()
 
 
-except Exception, e:
+except Exception as e:
     return_error(str(e))
