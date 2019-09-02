@@ -1,14 +1,21 @@
 ## [Unreleased]
-  - Added 3 new commands:
+  - Added support for a list of arguments of the ***panorama-query-logs*** command, using an operator of logical 'or' in between them.
+  - Added 3 commands.
     - ***panorama-query-logs***
     - ***panorama-check-logs-status***
     - ***panorama-get-logs***
   - Added the **Panorama Query Logs** playbook.
-  - Improved handling of errors in cases of trying to refresh an EDL object on a Panorama instance.
-  - Handle error trying to refresh an EDL object on a Panorama instance error gracefully
+  - Added *log-forwarding* as an option for the *element_to_change* argument in the ***panorama-edit-rule*** command.
+  - Added support for Shared objects and Rules in Panorama instances.
+  - Added the device-group argument to all relevant commands.
+  
+
+## [19.8.2] - 2019-08-22
+  - Improved error handling in cases of trying to refresh an EDL object on a Panorama instance.
 
 ## [19.8.0] - 2019-08-06
   - Improved error handling for URL filtering licensing.
   - Improved error handling when trying to edit an uncommitted Custom URL category.
   - Added the ***panorama-list-rules*** command.
   - Added *edl* as an option for the *object_type* argument in the ***panorama-custom-block-rule*** command.
+
