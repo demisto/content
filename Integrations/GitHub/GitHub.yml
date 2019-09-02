@@ -380,23 +380,21 @@ script:
   - arguments:
     - default: true
       defaultValue: 3 days
-      description: Time of inactivity after which a PR is considered stale and requires
-        the assigned reviewer's attention
+      description: Time of inactivity after which a PR is considered stale
       isArray: false
       name: stale_time
-      required: false
+      required: true
       secret: false
-    - default: true
-      defaultValue: Contribution
-      description: The label used to identify external PRs
+    - default: false
+      description: The label used to identify PRs of interest
       isArray: false
       name: label
       required: false
       secret: false
     deprecated: false
-    description: Get PRs and the requested reviewers
+    description: Get inactive pull requests
     execution: false
-    name: GitHub-get-stale-prs-reviewers
+    name: GitHub-get-stale-prs
     outputs:
     - contextPath: GitHub.PR.URL
       description: The html URL of the PR
@@ -407,6 +405,39 @@ script:
     - contextPath: GitHub.PR.RequestedReviewer
       description: A list of the PR's requested reviewers
       type: Unknown
+  - arguments:
+    - default: false
+      description: The name of the branch to retrieve
+      isArray: false
+      name: branch_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a branch
+    execution: false
+    name: GitHub-get-branch
+    outputs:
+    - contextPath: Github.Branch.Name
+      description: The name of the branch
+      type: String
+    - contextPath: Github.Branch.CommitSHA
+      description: The SHA of the commit the branch references
+      type: String
+    - contextPath: Github.Branch.CommitNodeID
+      description: The Node ID of the commit the branch references
+      type: String
+    - contextPath: Github.Branch.CommitAuthorID
+      description: The GitHub ID number of the author of the commit the branch references
+      type: Number
+    - contextPath: Github.Branch.CommitAuthorLogin
+      description: The GitHub login of the author of the commit the branch references
+      type: String
+    - contextPath: Github.Branch.CommitParentSHA
+      description: The SHAs of parent commits
+      type: String
+    - contextPath: Github.Branch.Protected
+      description: Whether the branch is a protected one or not
+      type: Boolean
   dockerimage: demisto/python3:3.7.3.286
   subtype: python3
   isfetch: true

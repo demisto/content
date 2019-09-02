@@ -527,6 +527,30 @@ def test_module():
     demisto.results("ok")
 
 
+def get_branch_command():
+    args = demisto.args()
+    branch_name = args.get('branch_name')
+    response = get_branch(branch_name)
+
+    commit = response.get('commit', {})
+    author = commit.get('author', {})
+    parents = commit.get('parents', [])
+    ec_object = {
+        'Name': response.get('name'),
+        'CommitSHA': commit.get('sha'),
+        'CommitNodeID': commit.get('node_id'),
+        'CommitAuthorID': author.get('id'),
+        'CommitAuthorLogin': author.get('login'),
+        'CommitParentSHA': [parent.get('sha') for parent in parents],
+        'Protected': response.get('protected')
+    }
+    ec = {
+        'GitHub.Branch(val.Name === obj.name && val.CommitSHA === obj.CommitSHA)': ec_object
+    }
+    human_readable = tableToMarkdown('Branch', ec_object, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
 def get_stale_prs_command():
     args = demisto.args()
     results = get_stale_prs(args)
