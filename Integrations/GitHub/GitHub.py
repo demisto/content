@@ -47,7 +47,7 @@ WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are u
 NEEDS_REVIEW_MSG = '@reviewer This PR won\'t review itself and I\'m not going to do it for you (I bet you\'d like ' \
                    'that wouldn\'t you) - look it over, eh?'
 LOTR_NUDGE_MSG = '"And some things that should not have been forgotten were lost. History became legend. Legend ' \
-                 'became myth. And for two and a half thousand years...", @reviewer had not looked at this ' \
+                 'became myth. And for two and a half thousand years..." @reviewer had not looked at this ' \
                  'beautiful PR - as they were meant to do.'
 NUDGE_AUTHOR_MSG = 'A lengthy period of time has transpired since the PR was reviewed. @author Please address the ' \
                    'reviewer\'s comments and push your committed changes.'
@@ -618,7 +618,11 @@ def fetch_incidents_command():
         updated_at_str = pr.get('created_at')
         updated_at = datetime.strptime(updated_at_str, '%Y-%m-%dT%H:%M:%SZ')
         pr_opener = pr.get('head', {}).get('user', {}).get('login')
-        not_content_member = get_team_membership(CONTENT_TEAM_ID, pr_opener).get('state', '') != 'active'
+        try:
+            not_content_member = get_team_membership(CONTENT_TEAM_ID, pr_opener).get('state', '') != 'active'
+        except Exception:
+            not_content_member = True
+        demisto.info(f'not_content_member: {not_content_member}')
         is_fork = pr.get('head', {}).get('repo', {}).get('fork')
         if is_fork or not_content_member:
             issue_number = pr.get('number')
