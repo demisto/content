@@ -558,6 +558,23 @@ def set_ioc_entry_context(ioc_type, raw, dbot, generic):
     return ec
 
 
+def build_readable_for_search_by_name(ioc_context, event_context, adversary_context, file_context):
+    if not (ioc_context or event_context or adversary_context or file_context):
+        return 'No results.'
+
+    human_readable = ''
+    if ioc_context:
+        human_readable += tableToMarkdown('Search Results - Indicators', ioc_context)
+    if event_context:
+        human_readable += tableToMarkdown('Search Results - Events', event_context)
+    if adversary_context:
+        human_readable += tableToMarkdown('Search Results - Adversaries', adversary_context)
+    if file_context:
+        human_readable += tableToMarkdown('Search Results - Files', file_context)
+
+    return human_readable
+
+
 def build_readable(readable_title, obj_type, data, dbot_score=None, metadata=None):
     if isinstance(data, dict):  # One object data
         data['DBotScore'] = dbot_score  # We add DBot Score data only for the readable output - then we pop it back
@@ -623,10 +640,11 @@ def search_by_name_command():
         CONTEXT_PATH['attachment']: file_context
     }
 
-    human_readable = tableToMarkdown('Search Results - Indicators', ioc_context)
-    human_readable += tableToMarkdown('Search Results - Events', event_context)
-    human_readable += tableToMarkdown('Search Results - Adversaries', adversary_context)
-    human_readable += tableToMarkdown('Search Results - Files', file_context)
+    # Remove items with empty values:
+    entry_context = {k: v for k, v in entry_context.items() if v}
+
+    human_readable = build_readable_for_search_by_name(ioc_context, event_context, adversary_context, file_context)
+
     return_outputs(human_readable, entry_context)
 
 
