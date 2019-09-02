@@ -1399,12 +1399,12 @@ async def test_check_entitlement(mocker):
     message6 = 'hi test@demisto.com name-of-someone@mail-of-someone goodbye'
 
     # Arrange
-    result1 = await check_and_handle_entitlement(message1, user)
-    result2 = await check_and_handle_entitlement(message2, user)
-    result3 = await check_and_handle_entitlement(message3, user)
-    result4 = await check_and_handle_entitlement(message4, user)
-    result5 = await check_and_handle_entitlement(message5, user)
-    result6 = await check_and_handle_entitlement(message6, user)
+    result1 = await check_and_handle_entitlement(message1, user, '')
+    result2 = await check_and_handle_entitlement(message2, user, '')
+    result3 = await check_and_handle_entitlement(message3, user, '')
+    result4 = await check_and_handle_entitlement(message4, user, '')
+    result5 = await check_and_handle_entitlement(message5, user, '')
+    result6 = await check_and_handle_entitlement(message6, user, '')
 
     result1_args = demisto.handleEntitlementForUser.call_args_list[0][0]
     result2_args = demisto.handleEntitlementForUser.call_args_list[1][0]
@@ -1443,6 +1443,55 @@ async def test_check_entitlement(mocker):
     assert result4_args[2] == 'test@demisto.com'
     assert result4_args[3] == 'hi test@demisto.com  goodbye'
     assert result4_args[4] == '43'
+
+
+@pytest.mark.asyncio
+async def test_check_entitlement_with_context(mocker):
+    from Slack import check_and_handle_entitlement
+
+    # Set
+    mocker.patch.object(demisto, 'handleEntitlementForUser')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+
+    user = {
+        'id': 'U123456',
+        'name': 'test',
+        'profile': {
+            'email': 'test@demisto.com'
+        }
+    }
+
+    integration_context = get_integration_context()
+    integration_context['questions'] = json.dumps([{
+        'thread': 'cool',
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22|43'
+    }, {
+        'thread': 'notcool',
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+    }])
+
+    set_integration_context(integration_context)
+
+    # Arrange
+    await check_and_handle_entitlement('hola', user, 'cool')
+
+    result_args = demisto.handleEntitlementForUser.call_args_list[0][0]
+
+    # Assert
+    assert demisto.handleEntitlementForUser.call_count == 1
+
+    assert result_args[0] == '22'
+    assert result_args[1] == '4404dae8-2d45-46bd-85fa-64779c12abe8'
+    assert result_args[2] == 'test@demisto.com'
+    assert result_args[3] == 'hola'
+    assert result_args[4] == '43'
+
+    # Should delete the question
+    assert demisto.getIntegrationContext()['questions'] == json.dumps([{
+        'thread': 'notcool',
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+    }])
 
 
 def test_send_request(mocker):
@@ -1624,6 +1673,56 @@ def test_send_request_with_notification_channel(mocker):
     assert send_args[5] == ''
 
     assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+
+
+def test_send_request_with_entitlement(mocker):
+    import Slack
+
+    # Set
+
+    def users_list(**kwargs):
+        return {'members': json.loads(USERS)}
+
+    def conversations_list(**kwargs):
+        return {'channels': json.loads(CONVERSATIONS)}
+
+    mocker.patch.object(demisto, 'args', return_value={
+        'message': 'hi test@demisto.com 4404dae8-2d45-46bd-85fa-64779c12abe8@22|43',
+        'to': 'spengler'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
+    mocker.patch.object(slack.WebClient, 'conversations_list', side_effect=conversations_list)
+    mocker.patch.object(slack.WebClient, 'im_open', return_value={'channel': {'id': 'im_channel'}})
+    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+
+    questions = [{
+        'thread': 'cool',
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22|43'
+    }]
+
+    # Arrange
+    Slack.slack_send()
+
+    send_args = Slack.send_message.call_args[0]
+
+    results = demisto.results.call_args_list[0][0]
+    # Assert
+
+    assert slack.WebClient.users_list.call_count == 0
+    assert slack.WebClient.conversations_list.call_count == 0
+    assert Slack.send_message.call_count == 1
+
+    assert send_args[0] == ['im_channel']
+    assert send_args[1] is None
+    assert send_args[2] is False
+    assert send_args[4] == 'hi test@demisto.com'
+    assert send_args[5] == ''
+
+    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+
+    assert demisto.getIntegrationContext()['questions'] == json.dumps(questions)
 
 
 def test_send_to_user_lowercase(mocker):

@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 res = demisto.executeCommand('addEntitlement', {'persistent': demisto.get(demisto.args(), 'persistent'),
                                                 'replyEntriesTag': demisto.get(demisto.args(), 'replyEntriesTag')})
+
 if isError(res[0]):
     demisto.results(res)
     sys.exit(0)
@@ -16,8 +17,7 @@ if not option2:
 entitlementString = entitlement + '@' + demisto.investigation()['id']
 if demisto.get(demisto.args(), 'task'):
     entitlementString += '|' + demisto.get(demisto.args(), 'task')
-message = '%s - Please reply `%s %s` or `%s %s`' % (demisto.args()['message'], option1,
-                                                    entitlementString, option2, entitlementString)
+message = '%s - Please reply `%s` or `%s %s`' % (demisto.args()['message'], option1, option2, entitlementString)
 
 to = demisto.get(demisto.args(), 'user')
 channel = demisto.get(demisto.args(), 'channel')

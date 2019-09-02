@@ -825,8 +825,7 @@ def slack_send():
     entitlement_match = re.search(ENTITLEMENT_REGEX, message)
     if entitlement_match:
         entitlement = entitlement_match.group()
-        message = message.replace(entitlement, '', 1)
-        message.strip()
+        message = message.replace(entitlement, '', 1).strip()
 
     response = slack_send_request(to, channel, group, entry, ignore_add_url, thread_id, message=message)
 
