@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ThreatConnect
+  id: ThreatConnect1
   version: -1
 configuration:
 - display: Access ID
@@ -44,8 +44,8 @@ configuration:
   required: false
   type: 0
 description: Threat Intelligence platform
-display: ThreatConnect
-name: ThreatConnect
+display: ThreatConnect1
+name: ThreatConnect1
 script:
   commands:
   - arguments:
