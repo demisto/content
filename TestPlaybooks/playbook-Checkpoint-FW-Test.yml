@@ -6,13 +6,12 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e3d35158-80b4-479d-8818-f21a0bec14b1
+    taskid: 60faaaf9-dde5-4102-82be-635d98dbf1b2
     type: start
     task:
-      id: e3d35158-80b4-479d-8818-f21a0bec14b1
+      id: 60faaaf9-dde5-4102-82be-635d98dbf1b2
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -28,12 +27,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: e2186dc6-1834-4f1d-87f0-bd6d0627af76
+    taskid: 63c4a0b5-84b0-42a8-83e5-d48174e49851
     type: regular
     task:
-      id: e2186dc6-1834-4f1d-87f0-bd6d0627af76
+      id: 63c4a0b5-84b0-42a8-83e5-d48174e49851
       version: -1
       name: checkpoint-show-access-rule-base
       description: Show items in an access rulebase configured in Checkpoint FW.
@@ -58,15 +58,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: e4f7d667-9428-4fb2-84d2-9a32ae2138f4
+    taskid: 596137cc-b7f2-46d3-81a7-5a681a317a2f
     type: regular
     task:
-      id: e4f7d667-9428-4fb2-84d2-9a32ae2138f4
+      id: 596137cc-b7f2-46d3-81a7-5a681a317a2f
       version: -1
       name: checkpoint-set-rule
-      description: Set attributes of an access rule object configured in Checkpoint
+      description: Set attributes of an access rule object configured in Checkpoint.
         FW.
       script: '|||checkpoint-set-rule'
       type: regular
@@ -80,7 +81,7 @@ tasks:
       layer:
         simple: 8a5e96fb-c793-457f-b78f-c667074223a5
       name:
-        simple: bar-from-6.6.6.5
+        simple: bar-to-1.2.3.4
       rule_number: {}
       uid: {}
     continueonerror: true
@@ -94,12 +95,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 21584eab-4e80-492e-87f6-168bebe034a8
+    taskid: dfb5db9b-f877-4023-8c5c-9ac021802006
     type: regular
     task:
-      id: 21584eab-4e80-492e-87f6-168bebe034a8
+      id: dfb5db9b-f877-4023-8c5c-9ac021802006
       version: -1
       name: checkpoint-show-hosts
       description: Show host objects configured in Checkpoint FW.
@@ -124,12 +126,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
-    taskid: 2a854811-c614-4175-8491-b43c322f50ce
+    taskid: 25da3377-b361-4b92-8f6f-bb6cc0fabd5c
     type: condition
     task:
-      id: 2a854811-c614-4175-8491-b43c322f50ce
+      id: 25da3377-b361-4b92-8f6f-bb6cc0fabd5c
       version: -1
       name: check checkpoint-show-access-rule-base
       type: condition
@@ -145,31 +148,29 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              complex:
-                root: CheckpointFWRule
-                accessor: Name
+              simple: CheckpointFWRule.UID
             iscontext: true
           right:
             value:
-              simple: bar-from-6.6.6.5
+              simple: 69c71244-6410-49e3-9938-eb0735d07720
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1090
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
-    taskid: 4ddeef2e-763e-4e0b-8b8e-78fae1da0db0
+    taskid: a2446652-bf21-453c-857f-df804fb2e007
     type: title
     task:
-      id: 4ddeef2e-763e-4e0b-8b8e-78fae1da0db0
+      id: a2446652-bf21-453c-857f-df804fb2e007
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -183,12 +184,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "18":
     id: "18"
-    taskid: a5266082-b999-4366-8c5a-0f2516003010
+    taskid: 580e6cff-9882-48d2-8d7b-39dbe1639a5a
     type: condition
     task:
-      id: a5266082-b999-4366-8c5a-0f2516003010
+      id: 580e6cff-9882-48d2-8d7b-39dbe1639a5a
       version: -1
       name: check checkpoint-show-hosts
       type: condition
@@ -220,12 +222,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "19":
     id: "19"
-    taskid: 93e5e638-23f1-4157-82dc-00ef58e016e3
+    taskid: a9e3cbcd-e8d6-455d-88fe-cfa035d8ebae
     type: regular
     task:
-      id: 93e5e638-23f1-4157-82dc-00ef58e016e3
+      id: a9e3cbcd-e8d6-455d-88fe-cfa035d8ebae
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -252,6 +255,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},

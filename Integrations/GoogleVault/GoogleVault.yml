@@ -1,0 +1,860 @@
+category: IT Services
+commonfields:
+  id: google-vault
+  version: -1
+configuration:
+- display: Username
+  name: gsuite_credentials
+  required: true
+  type: 9
+- display: Authentication file contents
+  name: auth_json
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Archiving and eDiscovery for G Suite.
+display: Google Vault
+name: google-vault
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The matter ID
+      isArray: false
+      name: matterID
+      required: true
+      secret: false
+    - default: false
+      description: Export Name
+      isArray: false
+      name: exportName
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: All Data
+      description: Search scope, default is "All Data"; "All Data", "Held Data", "Unprocessed
+        Data"
+      isArray: false
+      name: dataScope
+      predefined:
+      - All Data
+      - Held Data
+      - Unprocessed Data
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: All Accounts
+      description: Search method, default is "All Accounts"; "All Accounts", "Specific
+        Accounts" (requires the "email" argument), "Organizational Unit" (requires
+        the "ou" argument)
+      isArray: false
+      name: searchMethod
+      predefined:
+      - All Accounts
+      - Specific Accounts(requires emails argument)
+      - Organizational Unit(requires ou argument)
+      required: false
+      secret: false
+    - default: false
+      description: CSV list of emails to search in. Use this argument if the "searchMethod"
+        argument is set to "Specific Accounts"
+      isArray: false
+      name: emails
+      required: false
+      secret: false
+    - default: false
+      description: The organizational unit. Only use this argument if the "searchMethod"
+        argument is set to "Organizational Unit"
+      isArray: false
+      name: ou
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether to include drafts in the search, default is "true"; "true"
+        or "false"
+      isArray: false
+      name: includeDrafts
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Search time frame, e.g., "1 min ago","2 weeks ago","3 months ago"
+      isArray: false
+      name: timeFrame
+      required: false
+      secret: false
+    - default: false
+      description: Search start time in UTC (2018-10-16T12:59:02.584000Z)
+      isArray: false
+      name: startTime
+      required: false
+      secret: false
+    - default: false
+      description: Search end time in UTC (2018-10-16T12:59:02.584000Z)
+      isArray: false
+      name: endTime
+      required: false
+      secret: false
+    - default: false
+      description: Apply specific terms to the search, e.g., (subject:example)
+      isArray: false
+      name: terms
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Export in PST format, default is "true"; "true" or "false"
+      isArray: false
+      name: exportPST
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Export in MBOX format, default is "false"; "true" or "false"
+      isArray: false
+      name: exportMBOX
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a Google Vault export in order to perform search actions
+      on emails
+    execution: false
+    name: gvault-create-export-mail
+    outputs:
+    - contextPath: GoogleVault.Matter.Export.MatterID
+      description: Matter ID
+      type: string
+    - contextPath: GoogleVault.Matter.Export.ExportID
+      description: Export ID
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Name
+      description: Export's name
+      type: string
+    - contextPath: GoogleVault.Matter.Export.CreateTime
+      description: Export's creation time
+      type: string
+  - arguments:
+    - default: false
+      description: A name for the new matter
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: A description for the matter
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new matter with the specified name and description. The
+      initial state is open, and the owner is the method caller. First, checks if
+      a matter with the same name already exists.
+    execution: false
+    name: gvault-create-matter
+    outputs:
+    - contextPath: GoogleVault.Matter.Name
+      description: Matter name
+      type: string
+    - contextPath: GoogleVault.Matter.ID
+      description: Matter ID
+      type: string
+    - contextPath: GoogleVault.Matter.State
+      description: Matter's state
+      type: string
+  - arguments:
+    - default: false
+      description: Matter ID
+      isArray: false
+      name: matterID
+      required: true
+      secret: false
+    - default: false
+      description: Export Name
+      isArray: false
+      name: exportName
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: All Data
+      description: Search scope, default is "All Data"; "All Data", "Held Data", "Unprocessed
+        Data"
+      isArray: false
+      name: dataScope
+      predefined:
+      - All Data
+      - Held Data
+      - Unprocessed Data
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Specific Accounts(requires emails argument)
+      description: Search method, default is "Specific Accounts"; "Specific Accounts"
+        (requires the "email" argument), "Organizational Unit" (requires the "ou"
+        argument), "Team Drive"
+      isArray: false
+      name: searchMethod
+      predefined:
+      - Specific Accounts(requires emails argument)
+      - Organizational Unit(requires ou argument)
+      - Team Drive
+      required: false
+      secret: false
+    - default: false
+      description: CSV list of emails to search in. Use this argument if the "searchMethod"
+        argument is set to "Specific Accounts"
+      isArray: false
+      name: emails
+      required: false
+      secret: false
+    - default: false
+      description: The organizational unit. Only use this argument if the "searchMethod"
+        argument is set to "Organizational Unit"
+      isArray: false
+      name: ou
+      required: false
+      secret: false
+    - default: false
+      description: If the searchMethod is set to Team Drives
+      isArray: false
+      name: teamDrive
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether to include team drives, default is "true"; "true" or "false"
+      isArray: false
+      name: includeTeamDrives
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Search time frame
+      isArray: false
+      name: timeFrame
+      required: false
+      secret: false
+    - default: false
+      description: Search start time in UTC (2018-10-16T12:59:02.584000Z)
+      isArray: false
+      name: startTime
+      required: false
+      secret: false
+    - default: false
+      description: Search end time in UTC (2018-10-16T12:59:02.584000Z)
+      isArray: false
+      name: endTime
+      required: false
+      secret: false
+    - default: false
+      description: Apply specific terms to the search
+      isArray: false
+      name: terms
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a Google Vault export in order to perform search actions
+      on drives.
+    execution: false
+    name: gvault-create-export-drive
+    outputs:
+    - contextPath: GoogleVault.Matter.Export.MatterID
+      description: Matter ID
+      type: string
+    - contextPath: GoogleVault.Matter.Export.ExportID
+      description: Export ID
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Name
+      description: Export's name
+      type: string
+    - contextPath: GoogleVault.Matter.Export.CreateTime
+      description: Export's creation time
+      type: string
+  - arguments:
+    - default: false
+      description: The matter ID
+      isArray: false
+      name: matterID
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: New matter state; "CLOSE", "DELETE", "REOPEN", "UNDELETE"
+      isArray: false
+      name: state
+      predefined:
+      - CLOSE
+      - DELETE
+      - REOPEN
+      - UNDELETE
+      required: true
+      secret: false
+    deprecated: false
+    description: Matter's updated state
+    execution: false
+    name: gvault-matter-update-state
+    outputs:
+    - contextPath: GoogleVault.Matter.Name
+      description: Matter name
+      type: string
+    - contextPath: GoogleVault.Matter.MatterID
+      description: Matter ID
+      type: string
+    - contextPath: GoogleVault.Matter.State
+      description: Matter's state
+      type: string
+  - arguments:
+    - default: false
+      description: The matter ID
+      isArray: false
+      name: matterID
+      required: true
+      secret: false
+    - default: false
+      description: Export name
+      isArray: false
+      name: exportName
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: All Data
+      description: Search scope, default is "All Data"; "All Data", "Held Data", "Unprocessed
+        Data"
+      isArray: false
+      name: dataScope
+      predefined:
+      - All Data
+      - Held Data
+      - Unprocessed Data
+      required: false
+      secret: false
+    - default: false
+      description: CSV list of groups, maximum of 50 groups
+      isArray: false
+      name: groups
+      required: true
+      secret: false
+    - default: false
+      description: Search time frame
+      isArray: false
+      name: timeFrame
+      required: false
+      secret: false
+    - default: false
+      description: Search start time in UTC (2018-10-16T12:59:02.584000Z)
+      isArray: false
+      name: startTime
+      required: false
+      secret: false
+    - default: false
+      description: Search end time in UTC (2018-10-16T12:59:02.584000Z)
+      isArray: false
+      name: endTime
+      required: false
+      secret: false
+    - default: false
+      description: Apply specific terms to the search
+      isArray: false
+      name: terms
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'true'
+      description: Export in PST format, default is "true"; "true" or "false"
+      isArray: false
+      name: exportPST
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Export in MBOX format, default is "false"; "true" or "false"
+      isArray: false
+      name: exportMBOX
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a Google Vault Export in order to perform search actions
+      on Google groups.
+    execution: false
+    name: gvault-create-export-groups
+    outputs:
+    - contextPath: GoogleVault.Matter.Export.MatterID
+      description: Matter ID
+      type: string
+    - contextPath: GoogleVault.Matter.Export.ExportID
+      description: Export ID
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Name
+      description: Export's name
+      type: string
+    - contextPath: GoogleVault.Matter.Export.CreateTime
+      description: Export's creation time
+      type: string
+  - arguments:
+    - default: false
+      description: The matter ID
+      isArray: false
+      name: matterID
+      required: true
+      secret: false
+    - default: false
+      description: Name of the new hold
+      isArray: false
+      name: holdName
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: New hold's corpus type; "Mail", "Drive", "Groups"
+      isArray: false
+      name: corpus
+      predefined:
+      - Mail
+      - Drive
+      - Groups
+      required: true
+      secret: false
+    - default: false
+      description: CSV list of accounts/group IDs to place in the hold, requires at
+        least one account/group ID
+      isArray: true
+      name: accountID
+      required: true
+      secret: false
+    - default: false
+      description: Search timeframe
+      isArray: false
+      name: timeFrame
+      required: false
+      secret: false
+    - default: false
+      description: Search start time in UTC (1994-11-05T13:15:30Z )
+      isArray: false
+      name: startTime
+      required: false
+      secret: false
+    - default: false
+      description: Search end time in UTC (1994-11-05T13:15:30Z )
+      isArray: false
+      name: endTime
+      required: false
+      secret: false
+    - default: false
+      description: The terms that must be matched for a message to be covered by this
+        hold.
+      isArray: false
+      name: terms
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a hold in the given matter. Holds are used to preserve data
+      in the organization.
+    execution: false
+    name: gvault-create-hold
+    outputs:
+    - contextPath: GoogleVaulty.Hold.Name
+      description: Hold name
+      type: string
+    - contextPath: GoogleVault.Hold.ID
+      description: Hold ID
+      type: string
+    - contextPath: GoogleVault.Hold.Account.ID
+      description: Held account ID
+      type: string
+  - arguments:
+    - default: false
+      description: The matter ID
+      isArray: false
+      name: matterID
+      required: true
+      secret: false
+    - default: false
+      description: The hold ID
+      isArray: false
+      name: holdID
+      required: true
+      secret: false
+    - default: false
+      description: The account/group ID to place in hold
+      isArray: false
+      name: accountID
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds a Held Account to a hold. This structure is immutable.
+    execution: false
+    name: gvault-add-heldAccount
+    outputs:
+    - contextPath: GoogleVault.Matter.Hold.Account.ID
+      description: The held account ID
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The matter ID
+      isArray: false
+      name: matterID
+      required: true
+      secret: false
+    - default: false
+      description: The hold ID
+      isArray: false
+      name: holdID
+      required: true
+      secret: false
+    - default: false
+      description: Account ID to remove from hold
+      isArray: false
+      name: accountID
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes a Held Account from a hold
+    execution: false
+    name: gvault-remove-heldAccount
+  - arguments:
+    - default: false
+      description: The matter ID
+      isArray: false
+      name: matterID
+      required: true
+      secret: false
+    - default: false
+      description: The hold ID
+      isArray: false
+      name: holdID
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes a hold by ID. This will release any Held Accounts on this
+      Hold.
+    execution: false
+    name: gvault-delete-hold
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: All
+      description: If set, list only matters with that specific state, default is
+        "ALL"; "ALL", "OPEN", "CLOSED", "DELETED"
+      isArray: false
+      name: state
+      predefined:
+      - All
+      - Open
+      - Closed
+      - Deleted
+      required: false
+      secret: false
+    deprecated: false
+    description: Lists matters the user has access to.
+    execution: false
+    name: gvault-list-matters
+    outputs:
+    - contextPath: GoogleVault.Matter.Name
+      description: The matter name
+      type: string
+    - contextPath: GoogleVault.Matter.MatterID
+      description: Matter ID
+      type: string
+    - contextPath: GoogleVault.Matter.State
+      description: Matter's state
+      type: string
+  - arguments:
+    - default: false
+      description: Search by matter name (multiple matters with the same name can
+        exist)
+      isArray: false
+      name: matterName
+      required: false
+      secret: false
+    - default: false
+      description: Search by matter ID
+      isArray: false
+      name: matterID
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for a matter by name or by ID
+    execution: false
+    name: gvault-get-matter
+    outputs:
+    - contextPath: GoogleVault.Matter.Name
+      description: Matter name
+      type: Unknown
+    - contextPath: GoogleVault.Matter.ID
+      description: Matter ID
+      type: Unknown
+    - contextPath: GoogleVault.Matter.State
+      description: Matter's state
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Matter ID
+      isArray: false
+      name: matterID
+      required: false
+      secret: false
+    deprecated: false
+    description: Lists all holds for a specified matter
+    execution: false
+    name: gvault-list-holds
+    outputs:
+    - contextPath: GoogleVault.Matter.ID
+      description: Matter ID
+      type: string
+    - contextPath: GoogleVault.Matter.Hold.name
+      description: Hold name
+      type: string
+    - contextPath: GoogleVault.Matter.Hold.ID
+      description: Hold ID
+      type: string
+  - arguments:
+    - default: false
+      description: The matter ID
+      isArray: false
+      name: matterId
+      required: false
+      secret: false
+    - default: false
+      description: CSV list of one or more export IDs
+      isArray: true
+      name: exportIDS
+      required: false
+      secret: false
+    - default: false
+      description: 'MatterID and ExportID concatenation separated by ''#'' (used only
+        for playbook) such: <Matter_ID>#<ExportID>'
+      isArray: false
+      name: queryIDS
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the status of one or more specified exports
+    execution: false
+    name: gvault-export-status
+    outputs:
+    - contextPath: GoogleVault.Matter.Export.MatterID
+      description: Matter ID
+      type: string
+    - contextPath: GoogleVault.Matter.Export.ExportID
+      description: Export ID
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Name
+      description: Export name
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Status
+      description: Export status
+      type: string
+    - contextPath: GoogleVault.Matter.Export.BucketName
+      description: Bucket holder name for this export
+      type: string
+    - contextPath: GoogleVault.Matter.Export.DownloadID
+      description: ID to be used by the "download-export" command
+      type: string
+    - contextPath: GoogleVault.Matter.Export.ViewID
+      description: ID to be used by the "get-X-results" command (X=drive/mail/groups)
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the bucket that holds the export
+      isArray: false
+      name: bucketName
+      required: true
+      secret: false
+    - default: false
+      description: The export download ID
+      isArray: false
+      name: downloadID
+      required: true
+      secret: false
+    deprecated: false
+    description: Downloads an export by bucket name and download ID
+    execution: false
+    name: gvault-download-results
+  - arguments:
+    - default: false
+      description: Name of the bucket that holds the export
+      isArray: false
+      name: bucketName
+      required: true
+      secret: false
+    - default: false
+      description: The export view ID
+      isArray: false
+      name: viewID
+      required: true
+      secret: false
+    - default: true
+      defaultValue: '30'
+      description: Maximum number of results to return (a high threshold can slow
+        down your browser), default is "30"
+      isArray: false
+      name: maxResult
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the results of a specified drive export
+    execution: false
+    name: gvault-get-drive-results
+    outputs:
+    - contextPath: GoogleVault.Matter.Export.Results.Title
+      description: Title of the file
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.Author
+      description: Author of the file
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.Others
+      description: Other users related to the file
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.Viewers
+      description: Viewers of the file
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.DateModified
+      description: The date the file was last modified
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.DateCreated
+      description: The date the file was created
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.DocType
+      description: File type (extension)
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.MD5
+      description: The MD5 of the file (SHA-1)
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the bucket that holds the export
+      isArray: false
+      name: bucketName
+      required: true
+      secret: false
+    - default: false
+      description: The export view ID
+      isArray: false
+      name: viewID
+      required: true
+      secret: false
+    - default: true
+      defaultValue: '30'
+      description: Maximum number of results to return (a high threshold can slow
+        down your browser), default is "30"
+      isArray: false
+      name: maxResult
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the results of a specified mail export
+    execution: false
+    name: gvault-get-mail-results
+    outputs:
+    - contextPath: GoogleVault.Matter.Export.Results.CC
+      description: Email addresses CCed on the mail
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.BCC
+      description: Email addresses BCCed on the mail
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.DateSent
+      description: The date the email was sent
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.From
+      description: The sender of the email
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.Subject
+      description: The subject of the email
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.DateReceived
+      description: The date the email was received
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.To
+      description: The address the email was sent to
+      type: string
+  - arguments:
+    - default: false
+      description: Name of the bucket that holds the export
+      isArray: false
+      name: bucketName
+      required: true
+      secret: false
+    - default: false
+      description: The export view ID
+      isArray: false
+      name: viewID
+      required: true
+      secret: false
+    - default: true
+      defaultValue: '30'
+      description: Maximum number of results to return (a high threshold can slow
+        down your browser), default is "30"
+      isArray: false
+      name: maxResult
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the results of a specified group export
+    execution: false
+    name: gvault-get-groups-results
+    outputs:
+    - contextPath: GoogleVault.Matter.Export.Results.CC
+      description: Email addresses CCed on the message
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.BCC
+      description: Email addresses BCCed on the message
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.DateSent
+      description: The date the message was sent
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.From
+      description: The sender of the message
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.Subject
+      description: The subject of the message
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.DateReceived
+      description: The date the message was received
+      type: string
+    - contextPath: GoogleVault.Matter.Export.Results.To
+      description: The address the message was sent to
+      type: string
+  dockerimage: demisto/gvault
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+tests:
+- Google-Vault-Generic-Test

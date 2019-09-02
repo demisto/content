@@ -54,7 +54,7 @@ tasks:
       telephone-number: {}
       title: {}
       user-dn:
-        simple: cn=jack,dc=demisto,dc=int
+        simple: cn=jack,dc=demisto,dc=ninja
       username:
         simple: jack
     separatecontext: false
@@ -123,7 +123,7 @@ tasks:
       attribute-value:
         simple: Jack the ripper
       contact-dn:
-        simple: cn=Jack,dc=demisto,dc=int
+        simple: cn=Jack,dc=demisto,dc=ninja
     separatecontext: false
     view: |-
       {
@@ -314,7 +314,7 @@ tasks:
     scriptarguments:
       attributes: {}
       group-dn:
-        simple: CN=Users,CN=Builtin,DC=demisto,DC=int
+        simple: CN=Users,CN=Builtin,DC=demisto,DC=ninja
       member-type:
         simple: person
     separatecontext: false
@@ -359,7 +359,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: CN=jack,DC=demisto,DC=int
+                        simple: CN=jack,DC=demisto,DC=ninja
                 accessor: Groups.members.dn
             iscontext: true
     view: |-
@@ -463,7 +463,7 @@ tasks:
       brand: ""
     scriptarguments:
       user-dn:
-        simple: cn=jack,dc=demisto,dc=int
+        simple: cn=jack,dc=demisto,dc=ninja
     separatecontext: false
     view: |-
       {
@@ -595,7 +595,7 @@ tasks:
     scriptarguments:
       attributes: {}
       group-dn:
-        simple: CN=Users,CN=Builtin,DC=demisto,DC=int
+        simple: CN=Users,CN=Builtin,DC=demisto,DC=ninja
       member-type:
         simple: person
     separatecontext: false
@@ -757,10 +757,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: 9141281e-511e-408d-82b0-5c8ed1bf048b
+    taskid: 0eeb0b05-42f2-4e12-8e63-5f1e1a2e23f9
     type: condition
     task:
-      id: 9141281e-511e-408d-82b0-5c8ed1bf048b
+      id: 0eeb0b05-42f2-4e12-8e63-5f1e1a2e23f9
       version: -1
       name: Verify results from search exist
       type: condition
@@ -780,18 +780,6 @@ tasks:
                 root: ActiveDirectory
                 accessor: Search
             iscontext: true
-      - - operator: isEqualNumber
-          left:
-            value:
-              complex:
-                root: ActiveDirectory
-                accessor: Search.dn
-                transformers:
-                - operator: count
-            iscontext: true
-          right:
-            value:
-              simple: "603"
     view: |-
       {
         "position": {
@@ -825,7 +813,7 @@ tasks:
       context-output:
         simple: "no"
       filter:
-        simple: (&(objectCategory=person)(objectClass=user)(!(cn=andy)))
+        simple: (&(objectCategory=person)(objectClass=user)(cn=jack))
       size-limit:
         simple: "5"
       time-limit: {}

@@ -16,6 +16,7 @@ import glob
 import logging
 import argparse
 import subprocess
+import yaml
 
 from Tests.scripts.constants import *
 from Tests.scripts.hook_validations.id import IDSetValidator
@@ -28,7 +29,7 @@ from Tests.scripts.hook_validations.conf_json import ConfJsonValidator
 from Tests.scripts.hook_validations.structure import StructureValidator
 from Tests.scripts.hook_validations.integration import IntegrationValidator
 from Tests.test_utils import checked_type, run_command, print_error, collect_ids, print_color, str2bool, LOG_COLORS, \
-    get_yaml
+    get_yaml, filter_packagify_changes
 
 
 class FilesValidator(object):
@@ -68,11 +69,12 @@ class FilesValidator(object):
         return False
 
     @staticmethod
-    def get_modified_files(files_string):
+    def get_modified_files(files_string, tag='master'):
         """Get lists of the modified files in your branch according to the files string.
 
         Args:
             files_string (string): String that was calculated by git using `git diff` command.
+            tag (string): String of git tag used to update modified files
 
         Returns:
             (modified_files_list, added_files_list, deleted_files). Tuple of sets.
@@ -94,7 +96,8 @@ class FilesValidator(object):
                 file_status = 'r'
                 file_path = file_data[2]
 
-            if checked_type(file_path, CODE_FILES_REGEX) and file_status.lower() != 'd' and not file_path.endswith('_test.py'):
+            if checked_type(file_path, CODE_FILES_REGEX) and file_status.lower() != 'd' \
+                    and not file_path.endswith('_test.py'):
                 # naming convention - code file and yml file in packages must have same name.
                 file_path = os.path.splitext(file_path)[0] + '.yml'
             elif file_path.endswith('.js') or file_path.endswith('.py'):
@@ -111,40 +114,53 @@ class FilesValidator(object):
                 deleted_files.add(file_path)
             elif file_status.lower().startswith('r') and checked_type(file_path):
                 modified_files_list.add((file_data[1], file_data[2]))
+            elif checked_type(file_path, [SCHEMA_REGEX]):
+                modified_files_list.add(file_path)
             elif file_status.lower() not in KNOWN_FILE_STATUSES:
                 print_error(file_path + " file status is an unknown known one, "
                                         "please check. File status was: " + file_status)
+        modified_files_list, added_files_list, deleted_files = filter_packagify_changes(
+            modified_files_list,
+            added_files_list,
+            deleted_files,
+            tag)
 
         return modified_files_list, added_files_list, deleted_files, old_format_files
 
-    def get_modified_and_added_files(self, branch_name, is_circle):
+    def get_modified_and_added_files(self, branch_name, is_circle, tag='origin/master'):
         """Get lists of the modified and added files in your branch according to the git diff output.
 
         Args:
             branch_name (string): The name of the branch we are working on.
             is_circle (bool): Whether we are running on circle or local env.
+            tag (string): String of git tag used to update modified files
 
         Returns:
             (modified_files, added_files). Tuple of sets.
         """
-        all_changed_files_string = run_command("git diff --name-status origin/master...{}".format(branch_name))
-        modified_files, added_files, _, old_format_files = self.get_modified_files(all_changed_files_string)
+        # Two dots is the default in git diff, it will compare with the last known commit as the base
+        # Three dots will compare with the last known shared commit as the base
+        compare_type = '.' if 'master' in tag else ''
+        all_changed_files_string = run_command(
+            "git diff --name-status {tag}..{compare_type}refs/heads/{branch}".format(tag=tag,
+                                                                                     branch=branch_name,
+                                                                                     compare_type=compare_type))
+        modified_files, added_files, _, old_format_files = self.get_modified_files(all_changed_files_string, tag=tag)
 
         if not is_circle:
             files_string = run_command("git diff --name-status --no-merges HEAD")
-
             non_committed_modified_files, non_committed_added_files, non_committed_deleted_files, \
                 non_committed_old_format_files = self.get_modified_files(files_string)
-            all_changed_files_string = run_command("git diff --name-status origin/master")
-            modified_files_from_master, added_files_from_master, _, _ = \
+            all_changed_files_string = run_command("git diff --name-status {}".format(tag))
+            modified_files_from_tag, added_files_from_tag, _, _ = \
                 self.get_modified_files(all_changed_files_string)
 
             old_format_files = old_format_files.union(non_committed_old_format_files)
-            for mod_file in modified_files_from_master:
+            for mod_file in modified_files_from_tag:
                 if mod_file in non_committed_modified_files:
                     modified_files.add(mod_file)
 
-            for add_file in added_files_from_master:
+            for add_file in added_files_from_tag:
                 if add_file in non_committed_added_files:
                     added_files.add(add_file)
 
@@ -160,13 +176,15 @@ class FilesValidator(object):
 
         return modified_files, added_files, old_format_files
 
-    def validate_modified_files(self, modified_files, is_backward_check=True):
+    def validate_modified_files(self, modified_files, is_backward_check=True, old_branch='master'):
         """Validate the modified files from your branch.
 
         In case we encounter an invalid file we set the self._is_valid param to False.
 
         Args:
             modified_files (set): A set of the modified files in the current branch.
+            is_backward_check (bool): When set to True will run backward compatibility checks
+            old_branch (str): Old git branch to compare backward compatibility check to
         """
         for file_path in modified_files:
             old_file_path = None
@@ -174,7 +192,7 @@ class FilesValidator(object):
                 old_file_path, file_path = file_path
 
             print("Validating {}".format(file_path))
-            structure_validator = StructureValidator(file_path, is_added_file=not(False or is_backward_check),
+            structure_validator = StructureValidator(file_path, is_added_file=not (False or is_backward_check),
                                                      is_renamed=True if old_file_path else False)
             if not structure_validator.is_file_valid():
                 self._is_valid = False
@@ -193,13 +211,18 @@ class FilesValidator(object):
                 if not description_validator.is_valid():
                     self._is_valid = False
 
-                integration_validator = IntegrationValidator(file_path, old_file_path=old_file_path)
+                integration_validator = IntegrationValidator(file_path, old_file_path=old_file_path,
+                                                             old_git_branch=old_branch)
                 if is_backward_check and not integration_validator.is_backward_compatible():
+                    self._is_valid = False
+                if not integration_validator.is_valid_integration():
                     self._is_valid = False
 
             elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
-                script_validator = ScriptValidator(file_path)
+                script_validator = ScriptValidator(file_path, old_file_path=old_file_path, old_git_branch=old_branch)
                 if is_backward_check and not script_validator.is_backward_compatible():
+                    self._is_valid = False
+                if not script_validator.is_valid_script():
                     self._is_valid = False
 
             elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
@@ -207,7 +230,7 @@ class FilesValidator(object):
                     re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
 
                 yml_path, _ = get_script_package_data(os.path.dirname(file_path))
-                script_validator = ScriptValidator(yml_path)
+                script_validator = ScriptValidator(yml_path, old_file_path=old_file_path, old_git_branch=old_branch)
                 if is_backward_check and not script_validator.is_backward_compatible():
                     self._is_valid = False
 
@@ -291,11 +314,20 @@ class FilesValidator(object):
             branch_name (string): The name of the branch you are working on.
         """
         modified_files, added_files, old_format_files = self.get_modified_and_added_files(branch_name, self.is_circle)
-
-        self.validate_no_secrets_found(branch_name)
-        self.validate_modified_files(modified_files, is_backward_check)
-        self.validate_added_files(added_files)
-        self.validate_no_old_format(old_format_files)
+        schema_changed = False
+        for f in modified_files:
+            if isinstance(f, tuple):
+                _, f = f
+            if checked_type(f, [SCHEMA_REGEX]):
+                schema_changed = True
+        # Ensure schema change did not break BC
+        if schema_changed:
+            self.validate_all_files()
+        else:
+            self.validate_no_secrets_found(branch_name)
+            self.validate_modified_files(modified_files, is_backward_check)
+            self.validate_added_files(added_files)
+            self.validate_no_old_format(old_format_files)
 
     def validate_all_files(self):
         """Validate all files in the repo are in the right format."""
@@ -325,11 +357,12 @@ class FilesValidator(object):
                         if not structure_validator.is_valid_scheme():
                             self._is_valid = False
 
-    def is_valid_structure(self, branch_name, is_backward_check=True):
+    def is_valid_structure(self, branch_name, is_backward_check=True, prev_ver=None):
         """Check if the structure is valid for the case we are in, master - all files, branch - changed files.
 
         Args:
             branch_name (string): The name of the branch we are working on.
+            prev_ver (string): The name or SHA1 of the previous content version, which will be validated against.
 
         Returns:
             (bool). Whether the structure is valid or not.
@@ -340,11 +373,36 @@ class FilesValidator(object):
         if branch_name != 'master' and not branch_name.startswith('19.') and not branch_name.startswith('20.'):
             # validates only committed files
             self.validate_committed_files(branch_name, is_backward_check=is_backward_check)
+            if not prev_ver:
+                # validate against master if no version was provided
+                prev_ver = 'master'
+            self.validate_against_previous_version(branch_name, prev_ver)
         else:
+            self.validate_against_previous_version(branch_name, prev_ver, no_error=True)
             # validates all of Content repo directories according to their schemas
             self.validate_all_files()
 
         return self._is_valid
+
+    def validate_against_previous_version(self, branch_sha, prev_branch_sha=None, no_error=False):
+        """Validate all files that were changed between previous version and branch_sha
+
+        Args:
+            branch_sha (str): Current branch SHA1 to validate
+            prev_branch_sha (str): Previous branch SHA1 to validate against
+            no_error (bool): If set to true will restore self._is_valid after run (will not return new errors)
+        """
+        if not prev_branch_sha:
+            with open('./.circleci/config.yml') as f:
+                config = yaml.safe_load(f)
+                prev_branch_sha = config['jobs']['build']['environment']['GIT_SHA1']
+
+        print_color("Starting validation against {}".format(prev_branch_sha), LOG_COLORS.GREEN)
+        modified_files, _, _ = self.get_modified_and_added_files(branch_sha, self.is_circle, prev_branch_sha)
+        prev_self_valid = self._is_valid
+        self.validate_modified_files(modified_files, is_backward_check=True, old_branch=prev_branch_sha)
+        if no_error:
+            self._is_valid = prev_self_valid
 
 
 def main():
@@ -363,6 +421,7 @@ def main():
     parser.add_argument('-c', '--circle', type=str2bool, default=False, help='Is CircleCi or not')
     parser.add_argument('-b', '--backwardComp', type=str2bool, default=True, help='To check backward compatibility.')
     parser.add_argument('-t', '--test-filter', type=str2bool, default=False, help='Check that tests are valid.')
+    parser.add_argument('-p', '--prev-ver', help='Previous branch or SHA1 commit to run checks against.')
     options = parser.parse_args()
     is_circle = options.circle
     is_backward_check = options.backwardComp
@@ -371,7 +430,8 @@ def main():
 
     print_color("Starting validating files structure", LOG_COLORS.GREEN)
     files_validator = FilesValidator(is_circle)
-    if not files_validator.is_valid_structure(branch_name, is_backward_check=is_backward_check):
+    if not files_validator.is_valid_structure(branch_name, is_backward_check=is_backward_check,
+                                              prev_ver=options.prev_ver):
         sys.exit(1)
     if options.test_filter:
         try:
