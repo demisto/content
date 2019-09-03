@@ -1310,7 +1310,7 @@ def get_group_request(group_type, group_id):
 
 def get_group():
     """
-    retrieve a single Group
+    Retrieve a single Group
     """
     group_type = demisto.args().get('group_type')
     try:
@@ -1376,7 +1376,7 @@ def get_group_attributes_request(group_type, group_id):
 
 def get_group_attributes():
     """
-    Retrieve a Group’s Attributes
+    Retrieve a Group's Attributes
     """
     group_type = demisto.args().get('group_type')
     try:
@@ -1424,7 +1424,7 @@ def get_group_security_labels_request(group_type, group_id):
 
 def get_group_security_labels():
     """
-    Retrieve a Group’s Security Labels
+    Retrieve a Group's Security Labels
     """
     group_type = demisto.args().get('group_type')
     try:
