@@ -26,6 +26,7 @@ HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
 }
+
 ASSESSMENTS_TRANS = {
     'id': 'Id',
     'name': 'Name',
@@ -56,6 +57,35 @@ ASSESSMENTS_TRANS = {
     'project_template.project_template_type.description': 'ProjectTemplate.ProjectTemplateType.Description',
 }
 
+TESTS_TRANS = {
+    'id': 'Id',
+    'name': 'Name',
+    'description': 'Description',
+    'project': 'Project',
+    'total_asset_count': 'TotalAssetCount',
+    'cron_expression': 'CronExpression',
+    'runnable': 'Runnable',
+    'last_result': 'LastResult',
+    'scheduled_count': 'ScheduledCount',
+    'user': 'User',
+    'created': 'Created',
+    'modified': 'Modified',
+    'using_default_schedule': 'UsingDefaultSchedule',
+    'using_default_assets': 'UsingDefaultAssets',
+    'latest_instance_id': 'LatestInstanceId',
+    'scenarios': {
+        'name': 'Name',
+        'id': 'Id'
+    },
+    'assets': {
+        'id': 'Id',
+        'ipv4_address': 'Ipv4Address',
+        'hostname': 'Hostname',
+        'product_name': 'ProductName',
+        'modified': 'Modified',
+        'status': 'Status'
+    }
+}
 
 ''' HELPER FUNCTIONS '''
 
@@ -114,17 +144,25 @@ def build_transformed_dict(src, trans_dict):
         return [build_transformed_dict(x, trans_dict) for x in src]
     res = {}
     for key, val in trans_dict.items():
-        if '.' in val:
+        if isinstance(val, dict):
+            # handle nested list
+            res[key.title()] = [build_transformed_dict(item, val) for item in demisto.get(src, key)]
+        elif '.' in val:
             # handle nested vals
-            sub_res = res
-            sub_val_lst = val.split('.')
-            for sub_val in sub_val_lst[:-1]:
-                if sub_val not in sub_res:
-                    sub_res[sub_val] = {}
-                sub_res = sub_res[sub_val]
-            sub_res[sub_val_lst[-1]] = demisto.get(src, key)
+            res.update(create_nested_value(src, key, val))
         else:
             res[val] = demisto.get(src, key)
+    return res
+
+
+def create_nested_value(src_dict, from_key, to_key):
+    res = {}
+    sub_res = res
+    to_key_lst = to_key.split('.')
+    for sub_to_key in to_key_lst[:-1]:
+        sub_res[sub_to_key] = {}
+        sub_res = sub_res[sub_to_key]
+    sub_res[to_key_lst[-1]] = demisto.get(src_dict, from_key)
     return res
 
 
@@ -159,7 +197,7 @@ def get_assessment_execution_status_command():
     ex_status = raw_res.get('message')
     hr = f'Assessment {ass_id} execution is {"" if ex_status else "not "}finished.'
     ec = {
-        'AttackIQ.Assessment(val.Id == obj.Id)': {
+        'AttackIQ.Assessment(val.Id === obj.Id)': {
             'Finished': ex_status,
             'Id': ass_id
         }
@@ -197,13 +235,18 @@ def list_assessments_command():
     else:
         assessments_res = build_transformed_dict(raw_assessments.get('results'), ASSESSMENTS_TRANS)
     hr = tableToMarkdown(f'AttackIQ Assessments Page #{page}', assessments_res)
-    return_outputs(hr, {'AttackIQ.Assessment(val.Id == obj.Id)': assessments_res}, raw_assessments)
+    return_outputs(hr, {'AttackIQ.Assessment(val.Id === obj.Id)': assessments_res}, raw_assessments)
 
 
 def list_tests_by_assessment_command():
     """ Implements attackiq-list-tests-by-assessment command
     """
-    pass
+    ass_id = demisto.getArg('assessment_id')
+    raw_res = http_request('GET', f'/v1/tests', params={'project': ass_id})
+    assessment_res = build_transformed_dict(raw_res.get('results'), TESTS_TRANS)
+    ec = {'AttackIQ.Test(val.Id === obj.Id)': assessment_res}
+    hr = tableToMarkdown(f'Assessment {ass_id} tests', assessment_res)
+    return_outputs(hr, ec, raw_res)  # TODO: Improve hr
 
 
 def run_all_tests_in_assessment_command():
