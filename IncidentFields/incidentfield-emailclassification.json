@@ -5,7 +5,7 @@
     "name": "Email Classification",
     "ownerOnly": false,
     "placeholder": "",
-    "description": "The category of the email.",
+    "description": "Classification of the email. Can be \"Legitimate, \"Spam\", or \"Malicious\".",
     "cliName": "emailclassification",
     "type": "singleSelect",
     "closeForm": true,
