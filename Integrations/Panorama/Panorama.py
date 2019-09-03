@@ -4,10 +4,11 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 from datetime import datetime
-import requests
-import json
-import uuid
 from typing import Dict, List, Any, Optional
+import uuid
+import json
+import requests
+
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -3583,41 +3584,41 @@ def build_logs_query(address_src=None, address_dst=None,
                      zone_src=None, zone_dst=None, time_generated=None, action=None,
                      port_dst=None, rule=None, url=None, filedigest=None):
     query = ''
-    if address_src and len(address_src) > 0:
+    if address_src:
         query += build_array_query(query, address_src, 'addr.src', 'in')
-    if address_dst and len(address_dst) > 0:
+    if address_dst:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
         query += build_array_query(query, address_dst, 'addr.dst', 'in')
-    if zone_src and len(zone_src) > 0:
+    if zone_src:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
         query += build_array_query(query, zone_src, 'zone.src', 'eq')
-    if zone_dst and len(zone_dst) > 0:
+    if zone_dst:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
         query += build_array_query(query, zone_dst, 'zone.dst', 'eq')
-    if port_dst and len(port_dst) > 0:
+    if port_dst:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
         query += build_array_query(query, port_dst, 'port.dst', 'eq')
-    if time_generated and len(time_generated) > 0:
+    if time_generated:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
         query += '(time_generated leq ' + time_generated + ')'
-    if action and len(action) > 0:
+    if action:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
         query += build_array_query(query, action, 'action', 'eq')
-    if rule and len(rule) > 0:
+    if rule:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
         query += build_array_query(query, rule, 'rule', 'eq')
-    if url and len(url) > 0:
+    if url:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
         query += build_array_query(query, url, 'url', 'eq')
-    if filedigest and len(filedigest) > 0:
+    if filedigest:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
         query += build_array_query(query, filedigest, 'filedigest', 'eq')
@@ -3640,7 +3641,7 @@ def panorama_query_logs(log_type, number_of_logs, query, address_src, address_ds
     if url and log_type == 'traffic':
         return_error('The url argument is not relevant to traffic log type.')
 
-    if query and len(query) > 0:
+    if query:
         params['query'] = query
     else:
         params['query'] = build_logs_query(address_src, address_dst,
@@ -4103,5 +4104,5 @@ def main():
         LOG.print_log()
 
 
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ["__builtin__", "builtins"]:
     main()
