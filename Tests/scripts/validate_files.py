@@ -400,7 +400,7 @@ class FilesValidator(object):
             if not prev_ver:
                 # validate against master if no version was provided
                 prev_ver = 'master'
-            self.validate_against_previous_version(branch_name, prev_ver)
+            self.validate_against_previous_version(branch_name, prev_ver, no_error=True)
         else:
             self.validate_against_previous_version(branch_name, prev_ver, no_error=True)
             # validates all of Content repo directories according to their schemas
