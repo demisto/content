@@ -26,7 +26,7 @@
 	"validationRegex": "",
 	"useAsKpi": true,
 	"locked": false,
-	"system": false,
+	"system": true,
 	"content": false,
 	"group": 0,
 	"hidden": false,
