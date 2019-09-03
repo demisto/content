@@ -73,13 +73,32 @@ def http_request(method, url_suffix, params=None, data=None):
     )
     # Handle error responses gracefully
     if res.status_code not in {200, 201}:
-        return_error(f'Error in API call to AttackIQ [{res.status_code}] - {res.reason}')
+        error_reason = get_http_error_reason(res)
+        return_error(f'Error in API call to AttackIQ [{res.status_code}] - {error_reason}')
     # TODO: Add graceful handling of various expected issues (Such as wrong URL and wrong creds)
     try:
         return res.json()
     except JSONDecodeError:
         return_error('Response contained no valid body. See logs for more information.',
                      error=f'attackiq response body:\n{res.content}')
+
+
+def get_http_error_reason(res):
+    """
+    Get error reason from an AttackIQ http error
+    Args:
+        res: AttackIQ response
+
+    Returns: Reason for http error
+    """
+    err_reason = res.reason
+    try:
+        res_json = res.json()
+        if 'detail' in res_json:
+            err_reason = f'{err_reason}. {res_json["detail"]}'
+    except JSONDecodeError:
+        pass
+    return err_reason
 
 
 def build_transformed_dict(src, trans_dict):
@@ -127,7 +146,6 @@ def activate_assessment_command():
     """ Implements attackiq-activate-assessment command
     """
     ass_id = demisto.getArg('assessment_id')
-    LOG(ass_id)
     raw_res = http_request('POST', f'/v1/assessments/{ass_id}/activate')
     hr = raw_res['message'] if 'message' in raw_res else f'Assessment {ass_id} activation was sent successfully.'
     demisto.results(hr)
@@ -136,7 +154,17 @@ def activate_assessment_command():
 def get_assessment_execution_status_command():
     """ Implements attackiq-get-assessment-execution-status command
     """
-    pass
+    ass_id = demisto.getArg('assessment_id')
+    raw_res = http_request('GET', f'/v1/assessments/{ass_id}/is_on_demand_running')
+    ex_status = raw_res.get('message')
+    hr = f'Assessment {ass_id} execution is {"" if ex_status else "not "}finished.'
+    ec = {
+        'AttackIQ.Assessment(val.Id == obj.Id)': {
+            'Finished': ex_status,
+            'Id': ass_id
+        }
+    }
+    return_outputs(hr, ec, raw_res)
 
 
 def get_test_execution_status_command():

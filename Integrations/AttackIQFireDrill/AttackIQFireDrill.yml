@@ -141,8 +141,11 @@ script:
     execution: false
     name: attackiq-get-assessment-execution-status
     outputs:
-    - contextPath: AttackIQ.Assessment.Status
+    - contextPath: AttackIQ.Assessment.Finished
       type: Boolean
+    - contextPath: AttackIQ.Assessment.Id
+      description: Assessment Id
+      type: String
   - arguments:
     - default: false
       description: The test to check status
