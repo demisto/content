@@ -73,7 +73,7 @@ def http_request(method, url_suffix, params=None, data=None):
     )
     # Handle error responses gracefully
     if res.status_code not in {200, 201}:
-        return_error(f'Error in API call to Example Integration [{res.status_code}] - {res.reason}')
+        return_error(f'Error in API call to AttackIQ [{res.status_code}] - {res.reason}')
     # TODO: Add graceful handling of various expected issues (Such as wrong URL and wrong creds)
     try:
         return res.json()
@@ -123,10 +123,14 @@ def test_module():
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-def activate_assement_command():
+def activate_assessment_command():
     """ Implements attackiq-activate-assessment command
     """
-    pass
+    ass_id = demisto.getArg('assessment_id')
+    LOG(ass_id)
+    raw_res = http_request('POST', f'/v1/assessments/{ass_id}/activate')
+    hr = raw_res['message'] if 'message' in raw_res else f'Assessment {ass_id} activation was sent successfully.'
+    demisto.results(hr)
 
 
 def get_assessment_execution_status_command():
@@ -188,7 +192,7 @@ def main():
         if command == 'test-module':
             test_module()
         elif command == 'attackiq-activate-assessment':
-            activate_assement_command()
+            activate_assessment_command()
         elif command == 'attackiq-get-assessment-execution-status':
             get_assessment_execution_status_command()
         elif command == 'attackiq-get-test-execution-status':
