@@ -1,4 +1,5 @@
 ## [Unreleased]
+  - Added support for a list of arguments of the ***panorama-query-logs*** command, using an operator of logical 'or' in between them.
   - Added 3 commands.
     - ***panorama-query-logs***
     - ***panorama-check-logs-status***
