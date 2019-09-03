@@ -86,7 +86,7 @@ outputs:
 - contextPath: PcapHttpFlows.MetaSniffTimeStamp
   description: Time the packet was sniffed (unixtime).
   type: String
-script: '-'
+script: ''
 system: false
 tags:
 - pcap
