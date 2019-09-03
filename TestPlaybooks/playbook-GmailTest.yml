@@ -978,10 +978,10 @@ tasks:
     ignoreworker: false
   "30":
     id: "30"
-    taskid: a6f46b52-bb83-4c59-8a6a-cac91a4339a8
+    taskid: c9989772-e2a5-4a6d-81c4-8607365b570b
     type: regular
     task:
-      id: a6f46b52-bb83-4c59-8a6a-cac91a4339a8
+      id: c9989772-e2a5-4a6d-81c4-8607365b570b
       version: -1
       name: gmail-create-user
       description: Creates a user.
@@ -1000,13 +1000,13 @@ tasks:
       first-name:
         simple: First
       password:
-        simple: 1q2w3e4r
+        simple: ${NEW_PASSWORD}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 880,
-          "y": 2410
+          "x": 850,
+          "y": 2565
         }
       }
     note: false
@@ -1037,8 +1037,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 2580
+          "x": 860,
+          "y": 2700
         }
       }
     note: false
@@ -1057,7 +1057,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "46"
+      - "47"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1078,8 +1078,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 2730
+          "x": 860,
+          "y": 2900
         }
       }
     note: false
@@ -1108,8 +1108,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 3280
+          "x": 860,
+          "y": 3300
         }
       }
     note: false
@@ -1139,7 +1139,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 3450
+          "y": 3560
         }
       }
     note: false
@@ -1181,7 +1181,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 3630
+          "y": 3740
         }
       }
     note: false
@@ -1211,7 +1211,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 3780
+          "y": 3900
         }
       }
     note: false
@@ -1255,7 +1255,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 3930
+          "y": 4070
         }
       }
     note: false
@@ -1297,7 +1297,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 4120
+          "y": 4300
         }
       }
     note: false
@@ -1330,7 +1330,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 4530
+          "y": 4720
         }
       }
     note: false
@@ -1390,7 +1390,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 4730
+          "y": 4910
         }
       }
     note: false
@@ -1474,57 +1474,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 5080
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "46":
-    id: "46"
-    taskid: b295b2b7-22dc-4938-8141-e60974785e4c
-    type: regular
-    task:
-      id: b295b2b7-22dc-4938-8141-e60974785e4c
-      version: -1
-      name: GeneratePassword
-      description: "This function generates a password and allows various parameters
-        to customize the properties of the password depending on the use case (e.g.
-        password complexity requirements).  The default behavior is to generate a
-        password of  *random length* including all four character classes (upper,
-        lower, digits, symbols) with at least five and at most ten characters per
-        class. \n\nThe min_* values all default to 0. This means that if the command
-        is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible that
-        a password of length zero could be generated. It is therefore recommended
-        to always include a min_* parameter that matches. \n\nThe debug parameter
-        will print certain properties of the command into the WarRoom for easy diagnostics."
-      scriptName: GeneratePassword
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "47"
-    scriptarguments:
-      debug: {}
-      max_digits: {}
-      max_lcase: {}
-      max_symbols: {}
-      max_ucase: {}
-      min_digits:
-        simple: "1"
-      min_lcase:
-        simple: "1"
-      min_symbols:
-        simple: "1"
-      min_ucase:
-        simple: "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 840,
-          "y": 2920
+          "y": 5140
         }
       }
     note: false
@@ -1532,10 +1482,10 @@ tasks:
     ignoreworker: false
   "47":
     id: "47"
-    taskid: 9ceafb93-63f8-492b-8d6b-4c5e87fa314d
+    taskid: 54af3bb4-3ea5-4181-8953-adb976c2ffd0
     type: regular
     task:
-      id: 9ceafb93-63f8-492b-8d6b-4c5e87fa314d
+      id: 54af3bb4-3ea5-4181-8953-adb976c2ffd0
       version: -1
       name: gmail-set-password
       description: Set password for the user
@@ -1555,8 +1505,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 840,
-          "y": 3110
+          "x": 860,
+          "y": 3130
         }
       }
     note: false
@@ -1577,7 +1527,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "51"
     scriptarguments:
       all:
         simple: "yes"
@@ -1589,7 +1539,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 890,
+          "x": 830,
           "y": 2265
         }
       }
@@ -1672,7 +1622,57 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 4310
+          "y": 4500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "51":
+    id: "51"
+    taskid: 084256f7-0bda-4633-87a9-08f69436a9b7
+    type: regular
+    task:
+      id: 084256f7-0bda-4633-87a9-08f69436a9b7
+      version: -1
+      name: GeneratePassword
+      description: "This function generates a password and allows various parameters
+        to customize the properties of the password depending on the use case (e.g.
+        password complexity requirements).  The default behavior is to generate a
+        password of  *random length* including all four character classes (upper,
+        lower, digits, symbols) with at least five and at most ten characters per
+        class. \n\nThe min_* values all default to 0. This means that if the command
+        is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible that
+        a password of length zero could be generated. It is therefore recommended
+        to always include a min_* parameter that matches. \n\nThe debug parameter
+        will print certain properties of the command into the WarRoom for easy diagnostics."
+      scriptName: GeneratePassword
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      debug: {}
+      max_digits: {}
+      max_lcase: {}
+      max_symbols: {}
+      max_ucase: {}
+      min_digits:
+        simple: "1"
+      min_lcase:
+        simple: "1"
+      min_symbols:
+        simple: "1"
+      min_ucase:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 2420
         }
       }
     note: false
