@@ -1,4 +1,8 @@
 ## [Unreleased]
+  - Added support for tags through objects and Rules(Addresses, Address Groups, Services, Service Groups and Rules).
+    - list commands - ability to filter by a tag
+    - create/edit commands - added the tags argument
+    - Added the output Tags to all list/create/edit/get commands
   - Added support for a list of arguments of the ***panorama-query-logs*** command, using an operator of logical 'or' in between them.
   - Improved error messaging when trying to configure a non existing Device-Group.
   
