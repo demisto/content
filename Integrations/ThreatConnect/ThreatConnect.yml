@@ -2284,7 +2284,7 @@ script:
       description: Indicator summary.
       type: String
     - contextPath: TC.Group.Indicator.ThreatAssessConfidence
-      description: Threat confidence
+      description: Threat confidence.
       type: String
     - contextPath: TC.Group.Indicator.IndicatorID
       description: Indicator ID.
