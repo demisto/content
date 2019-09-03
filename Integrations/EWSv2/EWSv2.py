@@ -385,6 +385,8 @@ def prepare_context(credentials):
             demisto.setIntegrationContext(create_context_dict(account))
         except AutoDiscoverFailed:
             return_error("Auto discovery failed. Check credentials or configure manually")
+        except Exception as e:
+            return_error(e.message)
     else:
         SERVER_BUILD = get_build_autodiscover(context_dict)
         EWS_SERVER = get_endpoint_autodiscover(context_dict)
