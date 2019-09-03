@@ -24,8 +24,8 @@
     "validationRegex": "",
     "useAsKpi": true,
     "locked": false,
-    "system": true,
-    "content": false,
+    "system": false,
+    "content": true,
     "group": 0,
     "hidden": false,
     "associatedTypes": [
