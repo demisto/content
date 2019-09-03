@@ -84,8 +84,8 @@ class StructureValidator(object):
         if not self.is_added_file:  # In case the file is modified
             self.is_id_not_modified()
             self.is_valid_fromversion_on_modified()
-
-            if not self.is_release_branch() and not self._is_beta_integration():  # In case of release branch we allow to remove release notes
+            # In case of release branch we allow to remove release notes
+            if not self.is_release_branch() and not self._is_beta_integration():
                 self.validate_file_release_notes()
 
         return self._is_valid

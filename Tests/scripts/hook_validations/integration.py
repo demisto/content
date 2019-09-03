@@ -4,7 +4,7 @@ import requests
 import yaml
 
 from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare
-from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES, BETA_INTEGRATION_REGEX
+from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -188,7 +188,7 @@ class IntegrationValidator(object):
         return self._is_valid
 
     def is_valid_beta(self, is_new=False):
-        """If integration is beta, validate that it has correct beta attributes"""
+        """Validate that that beta integration has correct beta attributes"""
         beta = self.current_integration.get('beta', False)
         if not beta:
             print_error("Beta integration yml file should have the field \"beta: true\", but was not found"
@@ -213,9 +213,6 @@ class IntegrationValidator(object):
                 "Field 'name' should NOT contain the substring \"beta\" in a new beta integration. "
                 "please change the id in the file {}".format(self.file_path)
                 self._is_valid = False
-
-
-
 
     def is_there_duplicate_args(self):
         """Check if a command has the same arg more than once
