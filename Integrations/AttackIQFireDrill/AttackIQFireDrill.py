@@ -87,6 +87,14 @@ TESTS_TRANS = {
     }
 }
 
+TEST_STATUS_TRANS = {
+    'detected': 'Detected',
+    'failed': 'Failed',
+    'finished': 'Finished',
+    'errored': 'Errored',
+    'total': 'Total'
+}
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -208,7 +216,12 @@ def get_assessment_execution_status_command():
 def get_test_execution_status_command():
     """ Implements attackiq-get-test-execution-status command
     """
-    pass
+    test_id = demisto.getArg('test_id')
+    raw_test_status = http_request('GET', f'/v1/tests/{test_id}/get_status')
+    test_status = build_transformed_dict(raw_test_status, TEST_STATUS_TRANS)
+    test_status['Id'] = test_id
+    hr = tableToMarkdown(f'Test {test_id} status', test_status)
+    return_outputs(hr, {'AttackIQ.Test(val.Id === obj.Id)': test_status}, raw_test_status)
 
 
 def get_test_results_command():

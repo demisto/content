@@ -147,19 +147,32 @@ script:
       description: Assessment Id
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: The test to check status
       isArray: false
       name: test_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Get test run status.
     execution: false
     name: attackiq-get-test-execution-status
     outputs:
-    - contextPath: AttackIQ.Assessment.Status
+    - contextPath: AttackIQ.Test.Detected
+      type: Number
+    - contextPath: AttackIQ.Test.Failed
+      type: String
+    - contextPath: AttackIQ.Test.Finished
       type: Boolean
+    - contextPath: AttackIQ.Test.Passed
+      type: Number
+    - contextPath: AttackIQ.Test.Errored
+      type: Number
+    - contextPath: AttackIQ.Test.Total
+      type: Number
+    - contextPath: AttackIQ.Test.Id
+      description: ID of the assessment test.
+      type: String
   - arguments:
     - default: false
       description: The assessment to run tests for
