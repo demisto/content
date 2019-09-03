@@ -3410,28 +3410,46 @@ def panorama_get_traffic_logs_command():
 ''' Logs '''
 
 
+def build_array_query(query, arg_string, string, operator):
+    list_string = argToList(arg_string)
+    list_string_length = len(list_string)
+
+    if list_string_length > 1:
+        query += '('
+
+    for i, item in enumerate(list_string):
+        query += f'({string} {operator} \'{item}\')'
+        if i < list_string_length - 1:
+            query += ' or '
+
+    if list_string_length > 1:
+        query += ')'
+
+    return query
+
+
 def build_logs_query(address_src=None, address_dst=None,
                      zone_src=None, zone_dst=None, time_generated=None, action=None,
                      port_dst=None, rule=None, url=None, filedigest=None):
     query = ''
     if address_src and len(address_src) > 0:
-        query += '(addr.src in ' + address_src + ')'
+        query += build_array_query(query, address_src, 'addr.src', 'in')
     if address_dst and len(address_dst) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(addr.dst in ' + address_dst + ')'
+        query += build_array_query(query, address_dst, 'addr.dst', 'in')
     if zone_src and len(zone_src) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(zone.src eq ' + zone_src + ')'
+        query += build_array_query(query, zone_src, 'zone.src', 'eq')
     if zone_dst and len(zone_dst) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(zone.dst eq ' + zone_dst + ')'
+        query += build_array_query(query, zone_dst, 'zone.dst', 'eq')
     if port_dst and len(port_dst) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(port.dst eq ' + port_dst + ')'
+        query += build_array_query(query, port_dst, 'port.dst', 'eq')
     if time_generated and len(time_generated) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
@@ -3439,19 +3457,20 @@ def build_logs_query(address_src=None, address_dst=None,
     if action and len(action) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(action eq ' + action + ')'
+        query += build_array_query(query, action, 'action', 'eq')
     if rule and len(rule) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(rule eq ' + rule + ')'
+        query += build_array_query(query, rule, 'rule', 'eq')
     if url and len(url) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(url eq ' + url + ')'
+        query += build_array_query(query, url, 'url', 'eq')
     if filedigest and len(filedigest) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(filedigest eq ' + filedigest + ')'
+        query += build_array_query(query, filedigest, 'filedigest', 'eq')
+
     return query
 
 
