@@ -561,6 +561,30 @@ def test_module():
     demisto.results("ok")
 
 
+def add_label_command():
+    args = demisto.args()
+    issue_number = args.get('issue_number')
+    labels = argToList(args.get('labels'))
+    response = add_label(issue_number, labels)
+
+    ec_object = [
+        {
+            'ID': label.get('id'),
+            'NodeID': label.get('node_id'),
+            'Name': label.get('name'),
+            'Description': label.get('description'),
+            'Color': label.get('Color'),
+            'Default': label.get('default')
+        }
+        for label in response
+    ]
+    ec = {
+        'GitHub.Label(val.ID === obj.ID)': ec_object
+    }
+    human_readable = tableToMarkdown('Added Labels', ec_object, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
 def get_commit_command():
     args = demisto.args()
     commit_sha = args.get('commit_sha')
@@ -915,7 +939,8 @@ COMMANDS = {
     'GitHub-list-issue-comments': list_issue_comments_command,
     'GitHub-list-pr-files': list_pr_files_command,
     'GitHub-list-pr-reviews': list_pr_reviews_command,
-    'GitHub-get-commit': get_commit_command
+    'GitHub-get-commit': get_commit_command,
+    'GitHub-add-label': add_label_command
 }
 
 

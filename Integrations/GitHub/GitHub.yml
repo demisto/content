@@ -690,6 +690,42 @@ script:
     - contextPath: GitHub.Commit.VerificationReason
       description: The reason why the commit was or was not verified
       type: String
+  - arguments:
+    - default: false
+      description: The number of the issue to add labels to
+      isArray: false
+      name: issue_number
+      required: true
+      secret: false
+    - default: false
+      description: A CSV list of labels to add to an issue
+      isArray: true
+      name: labels
+      required: true
+      secret: false
+    deprecated: false
+    description: Add labels to an issue
+    execution: false
+    name: GitHub-add-label
+    outputs:
+    - contextPath: GitHub.Label.ID
+      description: The ID of the label
+      type: Number
+    - contextPath: GitHub.Label.NodeID
+      description: The node ID of the label
+      type: String
+    - contextPath: GitHub.Label.Name
+      description: The name of the label
+      type: String
+    - contextPath: GitHub.Label.Description
+      description: The label description
+      type: String
+    - contextPath: GitHub.Label.Color
+      description: The label color's hex value
+      type: String
+    - contextPath: GitHub.Label.Default
+      description: Whether the label is the default or not
+      type: Boolean
   dockerimage: demisto/python3:3.7.3.286
   subtype: python3
   isfetch: true
