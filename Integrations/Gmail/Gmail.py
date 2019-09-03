@@ -1504,25 +1504,46 @@ def attachment_handler(message, attachments):
     for att in attachments:
         if att['maintype'] == 'text':
             msg_txt = MIMEText(att['data'], att['subtype'], 'utf-8')
-            msg = msg_txt
+            if att['cid'] is not None:
+                msg_txt.add_header('Content-Disposition', 'inline', filename=att['name'])
+                msg_txt.add_header('Content-ID', '<' + att['name'] + '>')
+
+            else:
+                msg_txt.add_header('Content-Disposition', 'attachment', filename=att['name'])
+            message.attach(msg_txt)
+
         elif att['maintype'] == 'image':
             msg_img = MIMEImage(att['data'], att['subtype'])
-            msg = msg_img
+            if att['cid'] is not None:
+                msg_img.add_header('Content-Disposition', 'inline', filename=att['name'])
+                msg_img.add_header('Content-ID', '<' + att['name'] + '>')
+
+            else:
+                msg_img.add_header('Content-Disposition', 'attachment', filename=att['name'])
+            message.attach(msg_img)
+
         elif att['maintype'] == 'audio':
             msg_aud = MIMEAudio(att['data'], att['subtype'])
-            msg = msg_aud
+            if att['cid'] is not None:
+                msg_aud.add_header('Content-Disposition', 'inline', filename=att['name'])
+                msg_aud.add_header('Content-ID', '<' + att['name'] + '>')
+
+            else:
+                msg_aud.add_header('Content-Disposition', 'attachment', filename=att['name'])
+            message.attach(msg_aud)
+
         else:
             msg_base = MIMEBase(att['maintype'], att['subtype'])
             msg_base.set_payload(att['data'])
-            msg = msg_base
+            if att['cid'] is not None:
+                msg_base.add_header('Content-Disposition', 'inline', filename=att['name'])
+                msg_base.add_header('Content-ID', '<' + att['name'] + '>')
 
-        if att['cid'] is not None:
-            msg.add_header('Content-Disposition', 'inline', filename=att['name'])
-            msg.add_header('Content-ID', '<' + att['name'] + '>')
+            else:
+                msg_base.add_header('Content-Disposition', 'attachment', filename=att['name'])
+            message.attach(msg_base)
 
-        else:
-            msg.add_header('Content-Disposition', 'attachment', filename=att['name'])
-        message.attach(msg)
+
 
 
 def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names, attach_cid,
