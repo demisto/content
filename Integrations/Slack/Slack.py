@@ -835,15 +835,7 @@ def slack_send():
     if response:
         thread = response.get('ts')
         if entitlement:
-            integration_context = demisto.getIntegrationContext()
-            questions = integration_context.get('questions', [])
-            if questions:
-                questions = json.loads(integration_context['questions'])
-            questions.append({
-                'thread': thread,
-                'entitlement': entitlement
-            })
-            set_to_latest_integration_context('questions', questions)
+            save_entitlement(entitlement, thread)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -857,6 +849,24 @@ def slack_send():
         })
     else:
         demisto.results('Could not send the message to Slack.')
+
+
+def save_entitlement(entitlement, thread):
+    """
+    Saves an entitlement with its thread
+    :param entitlement: The entitlement
+    :param thread: The thread
+    """
+    integration_context = demisto.getIntegrationContext()
+    questions = integration_context.get('questions', [])
+    if questions:
+        questions = json.loads(integration_context['questions'])
+    questions.append({
+        'thread': thread,
+        'entitlement': entitlement
+    })
+
+    set_to_latest_integration_context('questions', questions)
 
 
 def slack_send_file():
