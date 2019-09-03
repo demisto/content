@@ -642,6 +642,54 @@ script:
     - contextPath: GitHub.PR.Review.UserType
       description: The reviewer user type
       type: String
+  - arguments:
+    - default: false
+      description: The SHA hash of the commit
+      isArray: false
+      name: commit_sha
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a commit
+    execution: false
+    name: GitHub-get-commit
+    outputs:
+    - contextPath: GitHub.Commit.SHA
+      description: The SHA hash of the commit
+      type: String
+    - contextPath: GitHub.Commit.AuthorDate
+      description: Teh commit author date
+      type: String
+    - contextPath: GitHub.Commit.AuthorName
+      description: The name of the author
+      type: String
+    - contextPath: GitHub.Commit.AuthorEmail
+      description: The email of the author
+      type: String
+    - contextPath: GitHub.Commit.CommitterDate
+      description: The date the commiter committed
+      type: String
+    - contextPath: GitHub.Commit.CommitterName
+      description: The name of the committer
+      type: String
+    - contextPath: GitHub.Commit.CommitterEmail
+      description: The email of the committer
+      type: String
+    - contextPath: GitHub.Commit.Message
+      description: The message associated with the commit
+      type: String
+    - contextPath: GitHub.Commit.Parent
+      description: List of parent SHA hashes
+      type: Unknown
+    - contextPath: GitHub.Commit.TreeSHA
+      description: The SHA hash of the commit's tree
+      type: String
+    - contextPath: GitHub.Commit.Verified
+      description: Whether the commit was verified or not
+      type: Boolean
+    - contextPath: GitHub.Commit.VerificationReason
+      description: The reason why the commit was or was not verified
+      type: String
   dockerimage: demisto/python3:3.7.3.286
   subtype: python3
   isfetch: true

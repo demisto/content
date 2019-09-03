@@ -561,6 +561,37 @@ def test_module():
     demisto.results("ok")
 
 
+def get_commit_command():
+    args = demisto.args()
+    commit_sha = args.get('commit_sha')
+    response = get_commit(commit_sha)
+
+    author = response.get('author', {})
+    committer = response.get('committer', {})
+    parents = response.get('parents', [])
+    formatted_parents = [{'SHA': parent.get('sha')} for parent in parents]
+
+    ec_object = {
+        'SHA': response.get('sha'),
+        'AuthorDate': author.get('date'),
+        'AuthorName': author.get('name'),
+        'AuthorEmail': author.get('email'),
+        'CommitterDate': committer.get('date'),
+        'CommitterName': committer.get('name'),
+        'CommitterEmail': committer.get('email'),
+        'Message': response.get('message'),
+        'Parent': formatted_parents,
+        'TreeSHA': response.get('tree', {}).get('sha'),
+        'Verified': response.get('verification', {}).get('verified'),
+        'VerificationReason': response.get('verification', {}).get('reason')
+    }
+    ec = {
+        'GitHub.Commit(val.SHA === obj.SHA)': ec_object
+    }
+    human_readable = tableToMarkdown('Commit', ec_object, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
 def list_pr_reviews_command():
     args = demisto.args()
     pull_number = args.get('pull_number')
@@ -883,7 +914,8 @@ COMMANDS = {
     'GitHub-create-comment': create_comment_command,
     'GitHub-list-issue-comments': list_issue_comments_command,
     'GitHub-list-pr-files': list_pr_files_command,
-    'GitHub-list-pr-reviews': list_pr_reviews_command
+    'GitHub-list-pr-reviews': list_pr_reviews_command,
+    'GitHub-get-commit': get_commit_command
 }
 
 
