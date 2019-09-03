@@ -218,6 +218,27 @@ def create_issue_table(issue_list, response, limit):
     context_create_issue(response, issue_table)
 
 
+def format_comment_outputs(comment: dict) -> dict:
+    """Take GitHub API Comment data and format to expected context outputs
+
+    Args:
+        comment (dict): Comment data returned from GitHub API
+
+    Returns:
+        (dict): Comment object formatted to expected context outputs
+    """
+    ec_object = {
+        'ID': comment.get('id'),
+        'NodeID': comment.get('node_id'),
+        'Body': comment.get('body'),
+        'CommenterLogin': comment.get('user', {}).get('login'),
+        'CommenterType': comment.get('user', {}).get('type'),
+        'CreatedAt': comment.get('created_at'),
+        'UpdatedAt': comment.get('updated_at')
+    }
+    return ec_object
+
+
 def get_last_event(commit_timestamp: str = '', comment_timestamp: str = '', review_timestamp: str = '') -> str:
     """ Compare dates to determine the last event.
 
@@ -540,21 +561,26 @@ def test_module():
     demisto.results("ok")
 
 
+def list_issue_comments_command():
+    args = demisto.args()
+    issue_number = args.get('issue_number')
+    response = list_issue_comments(issue_number)
+
+    ec_object = [format_comment_outputs(comment) for comment in response]
+    ec = {
+        'GitHub.Comment(val.ID === obj.ID)': ec_object
+    }
+    human_readable = tableToMarkdown('Comments', ec_object, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
 def create_comment_command():
     args = demisto.args()
     issue_number = args.get('issue_number')
     body = args.get('body')
     response = create_comment(issue_number, body)
 
-    ec_object = {
-        'ID': response.get('id'),
-        'NodeID': response.get('node_id'),
-        'Body': response.get('body'),
-        'CommenterLogin': response.get('user', {}).get('login'),
-        'CommenterType': response.get('user', {}).get('type'),
-        'CreatedAt': response.get('created_at'),
-        'UpdatedAt': response.get('updated_at')
-    }
+    ec_object = format_comment_outputs(response)
     ec = {
         'GitHub.Comment(val.ID === obj.ID)': ec_object
     }
@@ -797,7 +823,8 @@ COMMANDS = {
     'GitHub-create-branch': create_branch_command,
     'GitHub-get-team-membership': get_team_membership_command,
     'GitHub-request-review': request_review_command,
-    'GitHub-create-comment': create_comment_command
+    'GitHub-create-comment': create_comment_command,
+    'GitHub-list-issue-comments': list_issue_comments_command
 }
 
 

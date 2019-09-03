@@ -552,6 +552,21 @@ script:
     - contextPath: GitHub.Comment.UpdatedAt
       description: The update time of the comment
       type: String
+  - arguments:
+    - default: false
+      description: The number of the issue to list comments for
+      isArray: false
+      name: issue_number
+      required: true
+      secret: false
+    deprecated: false
+    description: List comments on an issue
+    execution: false
+    name: GitHub-list-issue-comments
+    outputs:
+    - contextPath: GitHub.Comment
+      description: List of comments
+      type: Unknown
   dockerimage: demisto/python3:3.7.3.286
   subtype: python3
   isfetch: true
