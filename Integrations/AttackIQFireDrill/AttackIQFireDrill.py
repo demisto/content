@@ -263,9 +263,15 @@ def list_tests_by_assessment_command():
 
 
 def run_all_tests_in_assessment_command():
-    """ Implements attackiq-run-all-tests-in-assessment
+    """ Implements attackiq-run-all-tests-in-assessment command
     """
-    pass
+    args = demisto.args()
+    ass_id = args.get('assessment_id')
+    # TODO: Ask about on_demand_only arg
+    raw_res = http_request('POST', f'/v1/assessments/{ass_id}/run_all_tests')
+    hr = raw_res['message'] if 'message' in raw_res else \
+        f'Request to run all tests for assessment {ass_id} was sent successfully.'
+    demisto.results(hr)
 
 
 def main():
