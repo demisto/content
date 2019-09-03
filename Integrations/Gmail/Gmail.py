@@ -406,13 +406,14 @@ def organization_format(org_list):
 
 def users_to_entry(title, response):
     context = []
-    username = user_data.get('name').get('givenName') if user_data.get('name') \
-        and 'givenName' in user_data.get('name') else None
-
-    display = user_data.get('name').get('fullName') if user_data.get('name') \
-        and 'fullName' in user_data.get('name') else None
 
     for user_data in response:
+        username = user_data.get('name').get('givenName') if user_data.get('name') \
+            and 'givenName' in user_data.get('name') else None
+
+        display = user_data.get('name').get('fullName') if user_data.get('name') \
+            and 'fullName' in user_data.get('name') else None
+
         context.append({
             'Type': 'Google',
             'ID': user_data.get('id'),
