@@ -1503,14 +1503,18 @@ def attachment_handler(message, attachments):
     """
     for att in attachments:
         if att['maintype'] == 'text':
-            msg = MIMEText(att['data'], att['subtype'], 'utf-8')
+            msg_txt = MIMEText(att['data'], att['subtype'], 'utf-8')
+            msg = msg_txt
         elif att['maintype'] == 'image':
-            msg = MIMEImage(att['data'], att['subtype'])
+            msg_img = MIMEImage(att['data'], att['subtype'])
+            msg = msg_img
         elif att['maintype'] == 'audio':
-            msg = MIMEAudio(att['data'], att['subtype'])
+            msg_aud = MIMEAudio(att['data'], att['subtype'])
+            msg = msg_aud
         else:
-            msg = MIMEBase(att['maintype'], att['subtype'])
-            msg.set_payload(att['data'])
+            msg_base = MIMEBase(att['maintype'], att['subtype'])
+            msg_base.set_payload(att['data'])
+            msg = msg_base
 
         if att['cid'] is not None:
             msg.add_header('Content-Disposition', 'inline', filename=att['name'])
@@ -1545,8 +1549,8 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
 
     msg = MIMEText(body, 'plain', 'utf-8')
     message.attach(msg)
-    htmlAttachments = []
-    inlineAttachments = []
+    htmlAttachments = []  # type: list
+    inlineAttachments = []  # type: list
 
     if htmlBody is not None:
         htmlBody, htmlAttachments = handle_html(htmlBody)
