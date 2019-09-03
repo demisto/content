@@ -567,6 +567,39 @@ script:
     - contextPath: GitHub.Comment
       description: List of comments
       type: Unknown
+  - arguments:
+    - default: false
+      description: The number of the pull request
+      isArray: false
+      name: pull_number
+      required: true
+      secret: false
+    deprecated: false
+    description: List pull request files
+    execution: false
+    name: GitHub-list-pr-files
+    outputs:
+    - contextPath: GitHub.PR.Number
+      description: The number of the pull request
+      type: Number
+    - contextPath: GitHub.PR.File.SHA
+      description: The SHA hash for the last commit involving the associated file
+      type: String
+    - contextPath: GitHub.PR.File.Name
+      description: The file name
+      type: String
+    - contextPath: GitHub.PR.File.Status
+      description: The file status
+      type: String
+    - contextPath: GitHub.PR.File.Additions
+      description: The number of additions to the file
+      type: Number
+    - contextPath: GitHub.PR.File.Deletions
+      description: The number of deletions in the file
+      type: Number
+    - contextPath: GitHub.PR.File.Changes
+      description: The number of changes made in the file
+      type: Number
   dockerimage: demisto/python3:3.7.3.286
   subtype: python3
   isfetch: true

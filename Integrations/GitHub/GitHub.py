@@ -325,7 +325,7 @@ def alert_appropriate_party(pr: dict, commit_data: dict, reviews_data: list, com
 
 
 def check_pr_files(pull_number, pull_author):
-    pr_files = get_pr_files(pull_number)
+    pr_files = list_pr_files(pull_number)
     filenames = [fileobject.get('filename') for fileobject in pr_files]
     filenames_str = '\n'.join(filenames)
     demisto.info('**********************')
@@ -413,7 +413,7 @@ def list_issue_comments(issue_number: int) -> list:
     return response
 
 
-def get_pr_files(pull_number: int) -> list:
+def list_pr_files(pull_number: int) -> list:
     suffix = PULLS_SUFFIX + f'/{pull_number}/files'
     response = http_request('GET', url_suffix=suffix)
     return response
@@ -559,6 +559,33 @@ def get_stale_prs(args={}):
 def test_module():
     http_request(method='GET', url_suffix=ISSUE_SUFFIX, params={'state': 'all'})
     demisto.results("ok")
+
+
+def list_pr_files_command():
+    args = demisto.args()
+    pull_number = args.get('pull_number')
+    response = list_pr_files(pull_number)
+
+    formatted_pr_files = [
+        {
+            'SHA': pr_file.get('sha'),
+            'Name': pr_file.get('filename'),
+            'Status': pr_file.get('status'),
+            'Additions': pr_file.get('additions'),
+            'Deletions': pr_file.get('deletions'),
+            'Changes': pr_file.get('changes')
+        }
+        for pr_file in response
+    ]
+    ec_object = {
+        'Number': pull_number,
+        'File': formatted_pr_files
+    }
+    ec = {
+        'GitHub.PR(val.Number === obj.Number)': ec_object
+    }
+    human_readable = tableToMarkdown('Pull Request Files', ec_object, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
 def list_issue_comments_command():
@@ -824,7 +851,8 @@ COMMANDS = {
     'GitHub-get-team-membership': get_team_membership_command,
     'GitHub-request-review': request_review_command,
     'GitHub-create-comment': create_comment_command,
-    'GitHub-list-issue-comments': list_issue_comments_command
+    'GitHub-list-issue-comments': list_issue_comments_command,
+    'GitHub-list-pr-files': list_pr_files_command
 }
 
 
