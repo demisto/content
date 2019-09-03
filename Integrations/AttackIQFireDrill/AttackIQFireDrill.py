@@ -95,7 +95,17 @@ def build_transformed_dict(src, trans_dict):
         return [build_transformed_dict(x, trans_dict) for x in src]
     res = {}
     for key, val in trans_dict.items():
-        res[val] = demisto.get(src, key)
+        if '.' in val:
+            # handle nested vals
+            sub_res = res
+            sub_val_lst = val.split('.')
+            for sub_val in sub_val_lst[:-1]:
+                if sub_val not in sub_res:
+                    sub_res[sub_val] = {}
+                sub_res = sub_res[sub_val]
+            sub_res[sub_val_lst[-1]] = demisto.get(src, key)
+        else:
+            res[val] = demisto.get(src, key)
     return res
 
 
@@ -155,7 +165,7 @@ def list_assessments_command():
     else:
         assessments_res = build_transformed_dict(raw_assessments.get('results'), ASSESSMENTS_TRANS)
     hr = tableToMarkdown(f'AttackIQ Assessments Page #{page}', assessments_res)
-    return_outputs(hr, assessments_res, raw_assessments)
+    return_outputs(hr, {'AttackIQ.Assessment(val.Id == obj.Id)': assessments_res}, raw_assessments)
 
 
 def list_tests_by_assessment_command():
