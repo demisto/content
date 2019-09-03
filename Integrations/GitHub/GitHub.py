@@ -300,7 +300,7 @@ def alert_appropriate_party(pr: dict, commit_data: dict, reviews_data: list, com
             # Else assume the person who opened the PR is waiting on the response of one of the reviewers
             nudge_reviewer = ' ' + reviewers_with_prefix + f' what\'s new since @{commenter}\'s last comment?'
             msg = STALE_MSG + nudge_reviewer
-    create_issue_comment(issue_number, msg)
+    create_comment(issue_number, msg)
 
 
 def check_pr_files(pull_number, pull_author):
@@ -333,7 +333,7 @@ def check_pr_files(pull_number, pull_author):
             changelog = requires.get('changelog')
             warning += UNIT_TEST_MSG.replace('$unittest$', unit_test) if unit_test else ''
             warning += CHANGELOG_MSG.replace('$changelog$', changelog) if changelog else ''
-            create_issue_comment(pull_number, warning)
+            create_comment(pull_number, warning)
 
 
 ''' REQUESTS FUNCTIONS '''
@@ -380,7 +380,7 @@ def request_review(pull_number: int, reviewers: list) -> dict:
     return response
 
 
-def create_issue_comment(issue_number, msg: str) -> dict:
+def create_comment(issue_number, msg: str) -> dict:
     suffix = ISSUE_SUFFIX + f'/{issue_number}/comments'
     response = http_request('POST', url_suffix=suffix, data={'body': msg})
     return response
@@ -538,6 +538,28 @@ def get_stale_prs(args={}):
 def test_module():
     http_request(method='GET', url_suffix=ISSUE_SUFFIX, params={'state': 'all'})
     demisto.results("ok")
+
+
+def create_comment_command():
+    args = demisto.args()
+    issue_number = args.get('issue_number')
+    body = args.get('body')
+    response = create_comment(issue_number, body)
+
+    ec_object = {
+        'ID': response.get('id'),
+        'NodeID': response.get('node_id'),
+        'Body': response.get('body'),
+        'CommenterLogin': response.get('user', {}).get('login'),
+        'CommenterType': response.get('user', {}).get('type'),
+        'CreatedAt': response.get('created_at'),
+        'UpdatedAt': response.get('updated_at')
+    }
+    ec = {
+        'GitHub.Comment(val.ID === obj.ID)': ec_object
+    }
+    human_readable = tableToMarkdown('Created Comment', ec_object, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
 def request_review_command():
@@ -742,7 +764,7 @@ def fetch_incidents_command():
             issue_number = pr.get('number')
             add_label(issue_number, [CONTRIBUTION_LABEL])
             selected_reviewer = REVIEWERS[issue_number % len(REVIEWERS)]
-            create_issue_comment(issue_number, WELCOME_MSG.replace('reviewer', selected_reviewer))
+            create_comment(issue_number, WELCOME_MSG.replace('reviewer', selected_reviewer))
             request_review(issue_number, [selected_reviewer])
             check_pr_files(issue_number, pr.get('head', {}).get('user', {}).get('login', ''))
         if updated_at > start_time:
@@ -774,7 +796,8 @@ COMMANDS = {
     'GitHub-get-branch': get_branch_command,
     'GitHub-create-branch': create_branch_command,
     'GitHub-get-team-membership': get_team_membership_command,
-    'GitHub-request-review': request_review_command
+    'GitHub-request-review': request_review_command,
+    'GitHub-create-comment': create_comment_command
 }
 
 

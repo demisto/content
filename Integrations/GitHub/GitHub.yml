@@ -513,6 +513,45 @@ script:
     - contextPath: GitHub.PR.RequestedReviewer
       description: List of the requested reviewers details
       type: Unknown
+  - arguments:
+    - default: false
+      description: The number of the issue to comment on
+      isArray: false
+      name: issue_number
+      required: true
+      secret: false
+    - default: false
+      description: The contents of the comment
+      isArray: false
+      name: body
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a comment for a given issue
+    execution: false
+    name: GitHub-create-comment
+    outputs:
+    - contextPath: GitHub.Comment.ID
+      description: The ID of the comment
+      type: Number
+    - contextPath: GitHub.Comment.NodeID
+      description: The node ID of the comment
+      type: String
+    - contextPath: GitHub.Comment.Body
+      description: The contents of the comment
+      type: String
+    - contextPath: GitHub.Comment.CommenterLogin
+      description: The GitHub login of the commenter
+      type: String
+    - contextPath: GitHub.Comment.CommenterType
+      description: The type of the commenter
+      type: String
+    - contextPath: GitHub.Comment.CreatedAt
+      description: The creation time of the comment
+      type: String
+    - contextPath: GitHub.Comment.UpdatedAt
+      description: The update time of the comment
+      type: String
   dockerimage: demisto/python3:3.7.3.286
   subtype: python3
   isfetch: true
