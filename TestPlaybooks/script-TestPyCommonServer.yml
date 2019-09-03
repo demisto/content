@@ -99,22 +99,22 @@ script: |-
       # sanity
       table = tableToMarkdown('tableToMarkdown test', data)
       expected_table = '''### tableToMarkdown test
-  |header_2|header_3|header_1|
+  |header_1|header_2|header_3|
   |---|---|---|
-  |b1|c1|a1|
-  |b2|c2|a2|
-  |b3|c3|a3|
+  |a1|b1|c1|
+  |a2|b2|c2|
+  |a3|b3|c3|
   '''
       tables.append((table, expected_table, ))
 
       # header transform
       table_transform = tableToMarkdown('tableToMarkdown test with headerTransform', data, headerTransform=underscoreToCamelCase)
       expected_table_transform = '''### tableToMarkdown test with headerTransform
-  |Header2|Header3|Header1|
+  |Header1|Header2|Header3|
   |---|---|---|
-  |b1|c1|a1|
-  |b2|c2|a2|
-  |b3|c3|a3|
+  |a1|b1|c1|
+  |a2|b2|c2|
+  |a3|b3|c3|
   '''
       tables.append((table_transform, expected_table_transform, ))
 
@@ -126,11 +126,11 @@ script: |-
 
       table_multiline = tableToMarkdown('tableToMarkdown test with multiline', data2)
       expected_table_multiline = '''### tableToMarkdown test with multiline
-  |header_2|header_3|header_1|
+  |header_1|header_2|header_3|
   |---|---|---|
-  |b1.1<br>b1.2|c1\|1|a1|
-  |b2.1<br>b2.2|c2\|1|a2|
-  |b3.1<br>b3.2|c3\|1|a3|
+  |a1|b1.1<br>b1.2|c1\|1|
+  |a2|b2.1<br>b2.2|c2\|1|
+  |a3|b3.1<br>b3.2|c3\|1|
   '''
       tables.append((table_multiline, expected_table_multiline, ))
 
@@ -141,11 +141,11 @@ script: |-
           d['header_2'] = None
       table_url_missing_info = tableToMarkdown('tableToMarkdown test with url and missing info', data3)
       expected_table_url_missing_info = '''### tableToMarkdown test with url and missing info
-  |header_2|header_3|header_1|
+  |header_1|header_2|header_3|
   |---|---|---|
-  ||[url](https:\\demisto.com)|a1|
-  ||[url](https:\\demisto.com)|a2|
-  ||[url](https:\\demisto.com)|a3|
+  |a1||[url](https:\\demisto.com)|
+  |a2||[url](https:\\demisto.com)|
+  |a3||[url](https:\\demisto.com)|
   '''
       tables.append((table_url_missing_info, expected_table_url_missing_info, ))
 
@@ -167,11 +167,11 @@ script: |-
           d['header_2'] = 'hi'
       table_list_field = tableToMarkdown('tableToMarkdown test with list field', data4)
       expected_table_list_field = '''### tableToMarkdown test with list field
-  |header_2|header_3|header_1|
+  |header_1|header_2|header_3|
   |---|---|---|
-  |hi|1,<br>second item|a1|
-  |hi|2,<br>second item|a2|
-  |hi|3,<br>second item|a3|
+  |a1|hi|1,<br>second item|
+  |a2|hi|2,<br>second item|
+  |a3|hi|3,<br>second item|
   '''
       tables.append((table_list_field, expected_table_list_field, ))
 
@@ -185,7 +185,7 @@ script: |-
       ]
       table_all_none = tableToMarkdown('tableToMarkdown test with all none fields', data5)
       expected_table_all_none = '''### tableToMarkdown test with all none fields
-  |a|c|b|
+  |a|b|c|
   |---|---|---|
   ||||
   ||||
@@ -337,8 +337,9 @@ script: |-
   def test_camelize():
       assert str(camelize([{'chookity_bop': 'asdasd'}, {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}], '_')) == "[{u'ChookityBop': 'asdasd'}, {u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}]"
       assert str(camelize({'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}, '_')) == "{u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}"
-      demisto.results("Camelize test finished successfuly!")
 
+  def test_replace_in_keys():
+      assert str(replace_in_keys({'a.b': 'c', 'd.e': 'f'})) == "{u'a_b': 'c', u'd_e': 'f'}"
 
   def test_date_to_timestamp():
       assert date_to_timestamp('2018-11-06T08:56:41') == 1541494601000
@@ -386,6 +387,23 @@ script: |-
 
       return_outputs("foo", {"foo":"foo1"}, raw_response={"raw":"response"})
 
+  def test_remove_nulls():
+      temp_dictionary = {"a": "b", "c": 4, "e": [], "f": {}, "g": None, "h": "", "i": [1,], "k": ()}
+      expected_dictionary = {"a": "b", "c": 4, "i": [1,]}
+
+      removeNullsFromDictionary(temp_dictionary)
+
+      if expected_dictionary != temp_dictionary:
+          return_error('deleteNullsFromDictionary test failed, {} is not equal to {}'.format(str(deleteNullsFromDictionary), str(expected_dictionary)))
+
+      demisto.results('ok')
+
+  def test_append_context():
+      appendContext('empty_string_key', '')
+      appendContext('empty_list_key', [])
+      appendContext('zero_key', 0)
+      appendContext('none_key', None)
+      demisto.results("placeholder so the run would finish")
 
   ''' MAIN TEST RUNNER '''
   TESTS = {
@@ -396,10 +414,13 @@ script: |-
       'TBLMD' : test_tbl_to_md,
       'HASH'  : test_hash_djb2,
       'CAMELIZE': test_camelize,
+      'REPLACE_IN_KEYS': test_replace_in_keys,
       'DATE_TO_TIMESTAMP': test_date_to_timestamp,
       'PASCAL_TO_SPACE' : test_pascalToSpace,
       'ARG_TO_LIST': test_argToList,
-      'RETURN_OUTPUTS': test_return_outputs
+      'RETURN_OUTPUTS': test_return_outputs,
+      'REMOVE_DICTIONARY_NULLS': test_remove_nulls,
+      'APPEND_CONTEXT': test_append_context
   }
 
 
@@ -495,6 +516,7 @@ args:
 - name: test_type
   required: true
   default: true
+  auto: PREDEFINED
   predefined:
   - DQ
   - ENTRY
@@ -503,9 +525,12 @@ args:
   - FLTNCL
   - HASH
   - CAMELIZE
+  - REPLACE_IN_KEYS
   - DATE_TO_TIMESTAMP
   - PASCAL_TO_SPACE
   - RETURN_OUTPUTS
+  - APPEND_CONTEXT
+  - REMOVE_DICTIONARY_NULLS
   description: one of python common server testing features
   defaultValue: DQ
 scripttarget: 0

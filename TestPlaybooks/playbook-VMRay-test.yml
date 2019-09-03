@@ -1,0 +1,350 @@
+id: VMRay-Test
+version: -1
+name: VMRay-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 826ad986-cb90-458f-8958-f327f6821e2c
+    type: start
+    task:
+      id: 826ad986-cb90-458f-8958-f327f6821e2c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 25cf9ba4-0c14-4a33-8ee4-1b5779c5c146
+    type: regular
+    task:
+      id: 25cf9ba4-0c14-4a33-8ee4-1b5779c5c146
+      version: -1
+      name: Get file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/Inline_malicious.eml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: c700a3f9-f2dc-4cf1-8726-d3eb13cef76b
+    type: playbook
+    task:
+      id: c700a3f9-f2dc-4cf1-8726-d3eb13cef76b
+      version: -1
+      name: Detonate File - VMRay
+      description: Detonating file with VMRay
+      playbookName: Detonate File - VMRay
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "4"
+      - "5"
+    scriptarguments:
+      File:
+        simple: ${File}
+      archive_password: {}
+      document_password: {}
+      interval:
+        simple: "1"
+      max_jobs:
+        simple: "1"
+      reanalyze:
+        simple: "1"
+      sample_type: {}
+      shareable: {}
+      tags: {}
+      timeout:
+        simple: "10"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: ad6c2f37-174b-4c7a-8624-51ec1878f43c
+    type: regular
+    task:
+      id: ad6c2f37-174b-4c7a-8624-51ec1878f43c
+      version: -1
+      name: Get analysis by sample
+      description: Get all analysis details about a specific sample.
+      script: '|||vmray-get-analysis-by-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      limit:
+        simple: "1"
+      sample_id:
+        simple: ${VMRay.Sample.SampleID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: ae6d46a0-f1c2-40d2-832b-1d18df284e88
+    type: regular
+    task:
+      id: ae6d46a0-f1c2-40d2-832b-1d18df284e88
+      version: -1
+      name: get-threat-indicators
+      description: Get threat indicators (VTI)
+      script: '|||vmray-get-threat-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      sample_id:
+        simple: ${VMRay.Sample.SampleID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 3b6a005d-852c-4004-809a-e0aab8fbd766
+    type: regular
+    task:
+      id: 3b6a005d-852c-4004-809a-e0aab8fbd766
+      version: -1
+      name: Get IOCs
+      description: getting iocs of given sample
+      script: '|||vmray-get-iocs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      sample_id:
+        simple: ${VMRay.Sample.SampleID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 38328f86-7a51-4215-84e4-ee9c60ee5366
+    type: regular
+    task:
+      id: 38328f86-7a51-4215-84e4-ee9c60ee5366
+      version: -1
+      name: Add tag
+      description: Adds a tag to analysis and/or submission
+      script: '|||vmray-add-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      analysis_id:
+        simple: ${VMRay.Analysis.AnalysisID}
+      submission_id:
+        simple: ${VMRay.Submission.SubmissionID}
+      tag:
+        simple: test_task
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: ed6b816a-c46f-45bf-8cb3-13595b97800f
+    type: title
+    task:
+      id: ed6b816a-c46f-45bf-8cb3-13595b97800f
+      version: -1
+      name: End of test
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 53c445f1-a166-4df9-823f-430688d8b4c9
+    type: regular
+    task:
+      id: 53c445f1-a166-4df9-823f-430688d8b4c9
+      version: -1
+      name: Remove tag
+      description: Delete tags from analysis and/or submission
+      script: '|||vmray-delete-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      analysis_id:
+        simple: ${VMRay.Analysis.AnalysisID}
+      submission_id:
+        simple: ${VMRay.Submission.SubmissionID}
+      tag:
+        simple: test_task
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 4ee76f03-fa2f-4394-8e9e-e867c98c1708
+    type: regular
+    task:
+      id: 4ee76f03-fa2f-4394-8e9e-e867c98c1708
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

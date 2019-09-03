@@ -78,7 +78,7 @@ tasks:
         complex:
           root: inputs.Timeout
       dt:
-        simple: SNDBOX.Analysis(val.status != 'finished').ID
+        simple: SNDBOX.Analysis(val.Status != 'finished').ID
     separatecontext: true
     loop:
       iscommand: false

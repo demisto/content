@@ -37,6 +37,7 @@ script:
     var BASE_URL = params.server.replace(/[\/]+$/, '') + '/api/';
     var USERNAME = params.username;
     var API_KEY = params.apikey;
+
     var commandDict = {
         'test-module': {
             method: 'GET',
@@ -54,8 +55,10 @@ script:
             version: 'v1',
             headers: { 'Content-Type': ['application/json'] }
         }
-    }
-    var sendRequest = function(method, url, version, args, headers, multipart) {
+    };
+
+
+    function sendRequest (method, url, version, args, headers, multipart) {
         var fullurl = BASE_URL + version + '/' + url;
         if (method === 'GET') {
             args.username = USERNAME;
@@ -90,6 +93,7 @@ script:
                 params.insecure,
                 params.proxy
             );
+
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             if (res.StatusCode === 404) {
                 return undefined;
@@ -100,19 +104,26 @@ script:
             var urlWithoutApiKey = fullurl.replace(API_KEY, '*******');
             throw 'Failed to reach ' + urlWithoutApiKey + ' , request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
         }
+
         if (res.Body) {
             return JSON.parse(res.Body);
         } else {
             return JSON.parse(JSON.stringify(res));
         }
     }
-    var buildEmptyEntryContext = function() {
+
+
+    function buildEmptyEntryContext() {
         return {Type: entryTypes.note, Contents: null, ContentsFormat: formats.json, EntryContext: {}};
     }
-    var isStandardCommand = function(command) {
+
+
+    function isStandardCommand(command) {
         return (command == 'ip' || command == 'file' || command == 'domain');
     }
-    var fillReputationOutput = function(command, object) {
+
+
+    function fillReputationOutput(command, object) {
         var output = {};
         output['Confidence'] = object.confidence;
         output['Severity'] = object.meta.severity;
@@ -148,7 +159,9 @@ script:
         }
         return output;
     }
-    var createMapEntry = function(output) {
+
+
+    function createMapEntry(output) {
         var mapEntry;
         var lat = parseFloat(output.Latitude);
         var lng = parseFloat(output.Longitude);
@@ -158,27 +171,34 @@ script:
         }
         return mapEntry;
     }
-    var parseReputationResult = function(command, result) {
+
+
+    function parseReputationResult(command, result) {
         var outputs = [];
+        var output = {};
         var contexts = [];
+        var context = {};
+
         var objects = dq(result, 'objects');
-        objects.sort(function(x, y) {return x.created_ts < y.created_ts});
+        objects.sort(function(x, y) {return x.created_ts < y.created_ts;});
+
         for (var i = 0; i < objects.length; i++) {
-            var output = fillReputationOutput(command, objects[i]);
+            output = fillReputationOutput(command, objects[i]);
             if (!isStandardCommand(command)) {
-                var context = convertKeysToPascalCase(output);
+                context = convertKeysToPascalCase(output);
                 delete context.Details;
                 context.Details1 = objects[i].meta.detail;
                 context.Details2 = objects[i].meta.detail2;
                 context.Id = objects[i].id;
                 context['Malware Type'] = objects[i].maltype;
                 if (command == 'threatstream-email-reputation') {
-                    context['Email'] = args.value;
+                    context.Email = args.value;
                 }
                 contexts.push(context);
             }
             outputs.push(output);
         }
+
         // create human readable
         var entry = buildEmptyEntryContext();
         entry.Contents = result;
@@ -186,16 +206,15 @@ script:
         var commandTitle = isStandardCommand(command) ? command : (command.slice(command.indexOf('-', 0) + 1, command.indexOf('-', 'threatstream'.length + 1)));
         commandTitle = commandTitle[0].toUpperCase() + commandTitle.slice(1);
         entry.HumanReadable = tblToMd('Anomali ThreatStream ' + commandTitle + ' Reputation: ' + args.value, outputs);
+
         // set the context according to the newest data
-        var output = outputs[0];
-        var context;
+        output = outputs[0];
         var contextKey;
-        if (isStandardCommand(command)) {
-            var context = {};
+        if (isStandardCommand(command) && output && typeof output === 'object' && !isObjectEmpty(output)) {
             if (command == 'ip' || command == 'domain') {
                 var ipContext = {};
-                if (output['ASN']) {
-                    ipContext.ASN = output['ASN'];
+                if (output.ASN !== undefined) {
+                    ipContext.ASN = output.ASN;
                 }
                 ipContext.Geo = {};
                 ipContext.Geo.Country = output['Country'];
@@ -229,7 +248,7 @@ script:
                 var mapEntry = createMapEntry(output);
             }
         } else {
-            contextKey = 'ThreatStream.' + commandTitle + 'Reputation.';
+            contextKey = 'ThreatStream.' + commandTitle + 'Reputation';
             entry.EntryContext[contextKey] = contexts;
         }
         var dbotScore = 1;
@@ -250,14 +269,18 @@ script:
         }
         return entries;
     }
+
+
     function isObjectEmpty (obj) {
         return Object.keys(obj).length === 0;
     }
-    var parseResult = function(command, result) {
+
+
+    function parseResult(command, result) {
         if(result && !(isObjectEmpty(result)) && !(result['objects'] instanceof Array)){
             result['objects'] = [result['objects']];
         }
-        if (dq(result, 'objects').length == 0) {
+        if (dq(result, 'objects').length === 0) {
             return 'Anomali ThreatStream - No records found.';
         }
         var entry;
@@ -270,11 +293,15 @@ script:
                 entry = parseReputationResult(command, result);
                 break;
             case 'threatstream-push-indicator':
+                entry = result;
+                break;
             default:
                 entry = result;
         }
         return entry;
     }
+
+
     var apiCommand = command;
     switch (command) {
         case 'ip':
@@ -317,6 +344,7 @@ script:
                 "severity": args.severity } ] };
             break;
     }
+
     var commandData = commandDict[apiCommand];
     var result = sendRequest(
         commandData.method,
@@ -326,13 +354,16 @@ script:
         commandData.headers,
         commandData.multipart
     );
+
     if (command === 'test-module') {
         return 'ok';
     }
+
     if (result && result.meta && result.meta.next) {
         // hide the api key
         result.meta.next = result.meta.next.replace(API_KEY, '*******');
     }
+
     return parseResult(command, result);
   type: javascript
   commands:

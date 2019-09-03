@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: dd88acb0-a2ba-472a-8ea4-4728ff2e4b2c
+    taskid: 125f2585-a970-4089-80aa-a43acbaf9d4f
     type: start
     task:
-      id: dd88acb0-a2ba-472a-8ea4-4728ff2e4b2c
+      id: 125f2585-a970-4089-80aa-a43acbaf9d4f
       version: -1
       name: ""
       iscommand: false
@@ -25,14 +25,17 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: a948bde3-2f3d-4b66-8578-2e6762a9b39e
+    taskid: 9d29a99e-c268-4ada-85d1-d69c0b28390d
     type: regular
     task:
-      id: a948bde3-2f3d-4b66-8578-2e6762a9b39e
+      id: 9d29a99e-c268-4ada-85d1-d69c0b28390d
       version: -1
       name: Analyze by SHA256
+      description: Checks file reputation of the given hash, supports SHA256
       script: Intezer|||file
       type: regular
       iscommand: true
@@ -50,6 +53,7 @@ tasks:
       maxRetries: {}
       retries:
         simple: "60"
+      sha256: {}
       threshold: {}
       wait: {}
     separatecontext: false
@@ -61,12 +65,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: e6086d02-ae7a-4146-8d8f-f4963d1ac18c
+    taskid: 6c7f4d81-451b-4dfd-8d6f-8d1b6c174aff
     type: regular
     task:
-      id: e6086d02-ae7a-4146-8d8f-f4963d1ac18c
+      id: 6c7f4d81-451b-4dfd-8d6f-8d1b6c174aff
       version: -1
       name: Verify existing on Intezer
       description: |-
@@ -97,12 +103,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 10ececb2-ce02-411c-87d5-8facc6a38233
+    taskid: 724b11a8-aefe-43ff-80d5-6d2cbbcc8922
     type: title
     task:
-      id: 10ececb2-ce02-411c-87d5-8facc6a38233
+      id: 724b11a8-aefe-43ff-80d5-6d2cbbcc8922
       version: -1
       name: Success
       type: title
@@ -113,16 +121,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2760
+          "y": 4480
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: 1b25f379-4ed8-4d40-8afd-328387783263
+    taskid: 982bffce-8819-41b5-870c-3990fc5656ab
     type: regular
     task:
-      id: 1b25f379-4ed8-4d40-8afd-328387783263
+      id: 982bffce-8819-41b5-870c-3990fc5656ab
       version: -1
       name: Verify Hash on DBot score
       scriptName: VerifyContext
@@ -147,12 +157,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: bd0011df-b9be-41c1-88e3-9775e1a5c7b3
+    taskid: ed940be7-57d7-4195-8a17-2b9ea3ee0b17
     type: regular
     task:
-      id: bd0011df-b9be-41c1-88e3-9775e1a5c7b3
+      id: ed940be7-57d7-4195-8a17-2b9ea3ee0b17
       version: -1
       name: Verify Vendor
       scriptName: VerifyContext
@@ -177,12 +189,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: fce810de-3bbc-429a-8caf-4161ca191ae3
+    taskid: 1dbae718-81cf-42b8-8997-ba4951c19dd2
     type: regular
     task:
-      id: fce810de-3bbc-429a-8caf-4161ca191ae3
+      id: 1dbae718-81cf-42b8-8997-ba4951c19dd2
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -205,12 +219,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: 48224857-27ed-45d0-8087-d9e53e216a93
+    taskid: 89831672-2dbd-46cc-86e6-cb6d441c7622
     type: regular
     task:
-      id: 48224857-27ed-45d0-8087-d9e53e216a93
+      id: 89831672-2dbd-46cc-86e6-cb6d441c7622
       version: -1
       name: Verify Hash on File
       scriptName: VerifyContext
@@ -235,12 +251,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
-    taskid: 26ccde1c-ab8e-41f7-8ed1-28345a077aee
+    taskid: 36a6316a-3e15-4cd0-8453-212465405028
     type: title
     task:
-      id: 26ccde1c-ab8e-41f7-8ed1-28345a077aee
+      id: 36a6316a-3e15-4cd0-8453-212465405028
       version: -1
       name: File upload
       type: title
@@ -258,12 +276,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
-    taskid: a128409e-a719-4d5a-88a0-d21147908b19
+    taskid: 574bd895-f933-4ba3-87df-ab420021db4a
     type: title
     task:
-      id: a128409e-a719-4d5a-88a0-d21147908b19
+      id: 574bd895-f933-4ba3-87df-ab420021db4a
       version: -1
       name: Analyze file by SHA256
       type: title
@@ -281,12 +301,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
-    taskid: b89af6c9-f6cc-4754-8220-d86fbf3e1377
+    taskid: d6118392-2eda-43f5-8da6-b4a142ed15bc
     type: regular
     task:
-      id: b89af6c9-f6cc-4754-8220-d86fbf3e1377
+      id: d6118392-2eda-43f5-8da6-b4a142ed15bc
       version: -1
       name: Upload Sample File
       scriptName: http
@@ -320,18 +342,21 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
-    taskid: 67c6dead-b4f5-4ecf-83f4-cec5a1dc960a
+    taskid: a066a4a4-f57d-4cac-8ffb-3c734052bc5a
     type: regular
     task:
-      id: 67c6dead-b4f5-4ecf-83f4-cec5a1dc960a
+      id: a066a4a4-f57d-4cac-8ffb-3c734052bc5a
       version: -1
       name: 'Analyze by Upload File '
-      script: Intezer|||intezer-upload
+      description: Checks file reputation for uploaded file (up to 20MB)
+      script: '|||intezer-upload'
       type: regular
       iscommand: true
-      brand: Intezer
+      brand: ""
     nexttasks:
       '#none#':
       - "17"
@@ -351,12 +376,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
-    taskid: 4e5fbe07-dee4-4c7e-8e94-e99df9f532df
+    taskid: 679d69d0-c5a9-4a5a-8e3c-6be31cbbcb84
     type: regular
     task:
-      id: 4e5fbe07-dee4-4c7e-8e94-e99df9f532df
+      id: 679d69d0-c5a9-4a5a-8e3c-6be31cbbcb84
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -379,12 +406,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: bca2b60b-b041-47a7-8c44-6e5fadb3a701
+    taskid: 2ae3f398-0f05-44b2-8552-82a6a1008fe8
     type: regular
     task:
-      id: bca2b60b-b041-47a7-8c44-6e5fadb3a701
+      id: 2ae3f398-0f05-44b2-8552-82a6a1008fe8
       version: -1
       name: Verify Hash on File
       scriptName: VerifyContext
@@ -409,12 +438,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
-    taskid: 17211190-a676-401e-86a6-50e1fe9a9e40
+    taskid: 7859900f-336b-416a-8b74-182679a107cb
     type: regular
     task:
-      id: 17211190-a676-401e-86a6-50e1fe9a9e40
+      id: 7859900f-336b-416a-8b74-182679a107cb
       version: -1
       name: Verify Hash on DBot score
       scriptName: VerifyContext
@@ -439,12 +470,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
-    taskid: 6d946468-0860-49ea-88e9-2d2cf7d23feb
+    taskid: 6b3540b8-d216-43d8-8f50-c2dc6fb3b2b8
     type: regular
     task:
-      id: 6d946468-0860-49ea-88e9-2d2cf7d23feb
+      id: 6b3540b8-d216-43d8-8f50-c2dc6fb3b2b8
       version: -1
       name: Verify Vendor
       scriptName: VerifyContext
@@ -453,7 +486,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "18"
     scriptarguments:
       expectedValue:
         simple: Intezer
@@ -469,12 +502,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
-    taskid: a68dee3a-3fb9-4b5f-8a27-d1a8a1ed4ac8
+    taskid: 57cc0a1c-6d7f-461a-8c0d-76524b08227b
     type: regular
     task:
-      id: a68dee3a-3fb9-4b5f-8a27-d1a8a1ed4ac8
+      id: 57cc0a1c-6d7f-461a-8c0d-76524b08227b
       version: -1
       name: Verify existing on Intezer
       description: |-
@@ -505,12 +540,365 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 6d094a74-3f20-4f4c-84c5-e256f5e65383
+    type: regular
+    task:
+      id: 6d094a74-3f20-4f4c-84c5-e256f5e65383
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: a3f11892-527a-4b70-869d-5c098d4347af
+    type: regular
+    task:
+      id: a3f11892-527a-4b70-869d-5c098d4347af
+      version: -1
+      name: file (with sha1 value in the file argument)
+      description: Checks file reputation of the given hash, supports SHA256
+      script: Intezer|||file
+      type: regular
+      iscommand: true
+      brand: Intezer
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      codeItemType: {}
+      delay: {}
+      file:
+        simple: a31986a65068af86dbfeddad3e63e05f759b2b32
+      maxRetries: {}
+      sha256: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: b2bbd3e3-6b21-4562-8a58-8e59872037bb
+    type: regular
+    task:
+      id: b2bbd3e3-6b21-4562-8a58-8e59872037bb
+      version: -1
+      name: commentsTocontext
+      description: "Takes the comments of a given entry ID and stores them in the
+        incident context, under a provided context key. \nFor accessing the last executed
+        task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for
+        the entryId input parameter."
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      contextKey:
+        simple: checkNonSupportedHash
+      entryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      listSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 98116387-4217-4ae4-8460-1904044a3e04
+    type: condition
+    task:
+      id: 98116387-4217-4ae4-8460-1904044a3e04
+      version: -1
+      name: test file with sha1 input
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: checkNonSupportedHash
+            iscontext: true
+          right:
+            value:
+              simple: Intezer file hash reputation supports only SHA256
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 935f56b7-02b7-4cf2-8821-9ce5220b0eaa
+    type: regular
+    task:
+      id: 935f56b7-02b7-4cf2-8821-9ce5220b0eaa
+      version: -1
+      name: file_command_enrichment_test_script_helper
+      scriptName: file_command_enrichment_test_script_helper
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 873127a0-70d5-44d1-8ead-2bbf9776ea59
+    type: title
+    task:
+      id: 873127a0-70d5-44d1-8ead-2bbf9776ea59
+      version: -1
+      name: non supported hash values
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 446e6bef-4a7b-41c0-8d0e-02e89fadb628
+    type: regular
+    task:
+      id: 446e6bef-4a7b-41c0-8d0e-02e89fadb628
+      version: -1
+      name: deleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 6d542379-0cd3-4394-8fb7-19381788faf8
+    type: condition
+    task:
+      id: 6d542379-0cd3-4394-8fb7-19381788faf8
+      version: -1
+      name: Test enrichment with sha256 exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387
+                accessor: Indicator
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 634612d2-4e01-454e-8034-d017987543a8
+    type: condition
+    task:
+      id: 634612d2-4e01-454e-8034-d017987543a8
+      version: -1
+      name: Test enrichment of md5 does not exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 8cbf90aeab2c93b2819fcfd6262b2cdb
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Vendor
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Intezer
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: bfaaf5b7-c83b-44aa-8591-c36b0f7b799d
+    type: regular
+    task:
+      id: bfaaf5b7-c83b-44aa-8591-c36b0f7b799d
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      seconds:
+        simple: "40"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2775,
+        "height": 4495,
         "width": 380,
         "x": 50,
         "y": 50

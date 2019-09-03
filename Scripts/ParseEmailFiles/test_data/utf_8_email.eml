@@ -1,0 +1,19 @@
+To: test@test.com
+From: "test@test.com" <test@test.com>
+Subject: Test UTF Email
+Message-ID: <5b4831d0-5322-ea23-6312-864ff419a1f1@test.com>
+Date: Wed, 23 Jan 2019 18:55:56 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.4.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+
+This is a test smtp type email. With hebrew:
+
+עברית
+
+And a very long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long vvvlong long long long long long long long long long long long long long long long long long long long long long long long long long long long 
+
+Done body

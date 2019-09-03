@@ -1,0 +1,757 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: Joe Security
+  version: -1
+configuration:
+- defaultvalue: https://jbxcloud.joesecurity.org
+  display: Joe Security Url
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: api_key
+  required: true
+  type: 4
+- display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: '300'
+  display: 'Max. Polling Time (in seconds):'
+  name: maxpolls
+  required: false
+  type: 0
+- display: Verbose (show log in case of error)
+  name: verbose
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Sandbox Cloud
+display: Joe Security
+name: Joe Security
+script:
+  commands:
+  - deprecated: false
+    description: Check if Joe Sandbox is online or in maintenance mode.
+    execution: false
+    name: joe-is-online
+  - arguments:
+    - default: true
+      description: sample url
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: Should the command poll for the result of the analysis
+      isArray: false
+      name: should_wait
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: 'Comments for the analysis '
+      isArray: false
+      name: comments
+      required: false
+      secret: false
+    - default: false
+      defaultValue: w7x64
+      description: 'Operating System to run analysis on(comma separated). possible
+        values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l,
+        w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4,
+        w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs,
+        w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
+      isArray: false
+      name: systems
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'True'
+      description: Enable full internet access. Default is True
+      isArray: false
+      name: internet-access
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Submit a url for analysis.
+    execution: false
+    name: joe-analysis-submit-url
+    outputs:
+    - contextPath: Joe.Analysis.WebID
+      description: Web ID
+      type: string
+    - contextPath: Joe.Analysis.SampleName
+      description: Sample Data, could be a file name or URL
+      type: string
+    - contextPath: Joe.Analysis.Status
+      description: Analysis Status
+      type: string
+    - contextPath: Joe.Analysis.Comments
+      description: Analysis Comments
+      type: string
+    - contextPath: Joe.Analysis.Time
+      description: Submitted Time
+      type: date
+    - contextPath: Joe.Analysis.Runs
+      description: Sub-Analysis Information
+      type: Unknown
+    - contextPath: Joe.Analysis.Result
+      description: Analysis Results
+      type: string
+    - contextPath: Joe.Analysis.Errors
+      description: Raised errors during sampling
+      type: Unknown
+    - contextPath: Joe.Analysis.Systems
+      description: Analysis OS
+      type: Unknown
+    - contextPath: Joe.Analysis.MD5
+      description: MD5 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA1
+      description: SHA1 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA256
+      description: SHA256 of analysis sample
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The name of the sample file or URL
+      type: Unknown
+    - contextPath: DBotScore.Type
+      description: '''url'' for url samples, otherwise ''file'''
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: DBotScore.Malicious.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Malicious.Detections
+      description: The sub analysis detection statuses
+      type: string
+    - contextPath: DBotScore.Malicious.SHA1
+      description: The SHA1 of the file
+      type: string
+  - arguments:
+    - default: true
+      description: sample url
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    - default: false
+      description: 'Comments for the analysis '
+      isArray: false
+      name: comments
+      required: false
+      secret: false
+    - default: false
+      defaultValue: w7x64
+      description: 'Operating System to run analysis on(comma separated). possible
+        values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l,
+        w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4,
+        w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs,
+        w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
+      isArray: false
+      name: systems
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'True'
+      description: Enable full internet access. Default is True
+      isArray: false
+      name: internet-access
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: true
+    description: Submit a url for analysis.
+    execution: false
+    name: joe-detonate-url
+    outputs:
+    - contextPath: Joe.Analysis.WebID
+      description: Web ID
+      type: string
+    - contextPath: Joe.Analysis.SampleName
+      description: Sample Data, could be a file name or URL
+      type: string
+    - contextPath: Joe.Analysis.Status
+      description: Analysis Status
+      type: string
+    - contextPath: Joe.Analysis.Comments
+      description: Analysis Comments
+      type: string
+    - contextPath: Joe.Analysis.Time
+      description: Submitted Time
+      type: date
+    - contextPath: Joe.Analysis.Runs
+      description: Sub-Analysis Information
+      type: Unknown
+    - contextPath: Joe.Analysis.Result
+      description: Analysis Results
+      type: string
+    - contextPath: Joe.Analysis.Errors
+      description: Raised errors during sampling
+      type: Unknown
+    - contextPath: Joe.Analysis.Systems
+      description: Analysis OS
+      type: Unknown
+    - contextPath: Joe.Analysis.MD5
+      description: MD5 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA1
+      description: SHA1 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA256
+      description: SHA256 of analysis sample
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The name of the sample file or URL
+      type: Unknown
+    - contextPath: DBotScore.Type
+      description: '''url'' for url samples, otherwise ''file'''
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: DBotScore.Malicious.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Malicious.Detections
+      description: The sub analysis detection statuses
+      type: string
+    - contextPath: DBotScore.Malicious.SHA1
+      description: The SHA1 of the file
+      type: string
+  - arguments:
+    - default: true
+      description: Web IDs, supports comma-seperated arrays.
+      isArray: true
+      name: webid
+      required: true
+      secret: false
+    deprecated: false
+    description: Show information about an analysis.
+    execution: false
+    name: joe-analysis-info
+    outputs:
+    - contextPath: Joe.Analysis.WebID
+      description: Web ID
+      type: string
+    - contextPath: Joe.Analysis.SampleName
+      description: Sample Data, could be a file name or URL
+      type: string
+    - contextPath: Joe.Analysis.Status
+      description: Analysis Status
+      type: string
+    - contextPath: Joe.Analysis.Comments
+      description: Analysis Comments
+      type: string
+    - contextPath: Joe.Analysis.Time
+      description: Submitted Time
+      type: date
+    - contextPath: Joe.Analysis.Runs
+      description: Sub-Analysis Information
+      type: Unknown
+    - contextPath: Joe.Analysis.Result
+      description: Analysis Results
+      type: string
+    - contextPath: Joe.Analysis.Errors
+      description: Raised errors during sampling
+      type: Unknown
+    - contextPath: Joe.Analysis.Systems
+      description: Analysis OS
+      type: Unknown
+    - contextPath: Joe.Analysis.MD5
+      description: MD5 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA1
+      description: SHA1 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA256
+      description: SHA256 of analysis sample
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The name of the sample file or URL
+      type: Unknown
+    - contextPath: DBotScore.Type
+      description: '''url'' for url samples, otherwise ''file'''
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: DBotScore.Malicious.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Malicious.Detections
+      description: The sub analysis detection statuses
+      type: string
+    - contextPath: DBotScore.Malicious.SHA1
+      description: The SHA1 of the file
+      type: string
+  - deprecated: false
+    description: List all analyses.
+    execution: false
+    name: joe-list-analysis
+    outputs:
+    - contextPath: Joe.Analysis.WebID
+      description: Web ID
+      type: string
+    - contextPath: Joe.Analysis.SampleName
+      description: Sample Data, could be a file name or URL
+      type: string
+    - contextPath: Joe.Analysis.Status
+      description: Analysis Status
+      type: string
+    - contextPath: Joe.Analysis.Comments
+      description: Analysis Comments
+      type: string
+    - contextPath: Joe.Analysis.Time
+      description: Submitted Time
+      type: date
+    - contextPath: Joe.Analysis.Runs
+      description: Sub-Analysis Information
+      type: Unknown
+    - contextPath: Joe.Analysis.Result
+      description: Analysis Results
+      type: string
+    - contextPath: Joe.Analysis.Errors
+      description: Raised errors during sampling
+      type: Unknown
+    - contextPath: Joe.Analysis.Systems
+      description: Analysis OS
+      type: Unknown
+    - contextPath: Joe.Analysis.MD5
+      description: MD5 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA1
+      description: SHA1 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA256
+      description: SHA256 of analysis sample
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The name of the sample file or URL
+      type: Unknown
+    - contextPath: DBotScore.Type
+      description: '''url'' for url samples, otherwise ''file'''
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: DBotScore.Malicious.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Malicious.Detections
+      description: The sub analysis detection statuses
+      type: string
+    - contextPath: DBotScore.Malicious.SHA1
+      description: The SHA1 of the file
+      type: string
+  - arguments:
+    - default: true
+      description: War Room entry of a file (for example, 3245@4)
+      isArray: false
+      name: file_id
+      required: false
+      secret: false
+    - default: false
+      description: Url to a sample file, supports comma-seperated arrays
+      isArray: false
+      name: sample_url
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: Should the command poll for the result of the analysis
+      isArray: false
+      name: should_wait
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: Comments for the analysis
+      isArray: false
+      name: comments
+      required: false
+      secret: false
+    - default: false
+      description: 'Operating System to run analysis on(comma separated). possible
+        values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l,
+        w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4,
+        w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs,
+        w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
+      isArray: false
+      name: systems
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'True'
+      description: Enable full internet access. Default is True
+      isArray: false
+      name: internet-access
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Submit a sample for analysis.
+    execution: false
+    name: joe-analysis-submit-sample
+    outputs:
+    - contextPath: Joe.Analysis.WebID
+      description: Web ID
+      type: string
+    - contextPath: Joe.Analysis.SampleName
+      description: Sample Data, could be a file name or URL
+      type: string
+    - contextPath: Joe.Analysis.Status
+      description: Analysis Status
+      type: string
+    - contextPath: Joe.Analysis.Comments
+      description: Analysis Comments
+      type: string
+    - contextPath: Joe.Analysis.Time
+      description: Submitted Time
+      type: date
+    - contextPath: Joe.Analysis.Runs
+      description: Sub-Analysis Information
+      type: Unknown
+    - contextPath: Joe.Analysis.Result
+      description: Analysis Results
+      type: string
+    - contextPath: Joe.Analysis.Errors
+      description: Raised errors during sampling
+      type: Unknown
+    - contextPath: Joe.Analysis.Systems
+      description: Analysis OS
+      type: Unknown
+    - contextPath: Joe.Analysis.MD5
+      description: MD5 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA1
+      description: SHA1 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA256
+      description: SHA256 of analysis sample
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The name of the sample file or URL
+      type: Unknown
+    - contextPath: DBotScore.Type
+      description: '''url'' for url samples, otherwise ''file'''
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: DBotScore.Malicious.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Malicious.Detections
+      description: The sub analysis detection statuses
+      type: string
+    - contextPath: DBotScore.Malicious.SHA1
+      description: The SHA1 of the file
+      type: string
+  - arguments:
+    - default: true
+      description: Web ID
+      isArray: false
+      name: webid
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: html
+      description: The resource type to download. Defaults to html.
+      isArray: false
+      name: type
+      predefined:
+      - html
+      - json
+      - pcap
+      - pdf
+      - xml
+      required: false
+      secret: false
+    deprecated: false
+    description: Download a resource belonging to a report. This can be the full report,
+      dropped binaries, etc.
+    execution: false
+    name: joe-download-report
+    outputs:
+    - contextPath: InfoFile.Name
+      description: FileName
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: File.Extension
+      description: File Extension
+      type: string
+  - arguments:
+    - default: true
+      description: War Room entry of a file (for example, 3245@4)
+      isArray: false
+      name: file_id
+      required: false
+      secret: false
+    - default: false
+      description: Url to a sample file
+      isArray: false
+      name: sample_url
+      required: false
+      secret: false
+    - default: false
+      description: Comments for the analysis
+      isArray: false
+      name: comments
+      required: false
+      secret: false
+    - default: false
+      description: 'Operating System to run analysis on(comma separated). possible
+        values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l,
+        w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4,
+        w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs,
+        w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat'
+      isArray: false
+      name: systems
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'True'
+      description: Enable full internet access. Default is True
+      isArray: false
+      name: internet-access
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: true
+    description: Submit a sample for analysis.
+    execution: false
+    name: joe-detonate-file
+    outputs:
+    - contextPath: Joe.Analysis.WebID
+      description: Web ID
+      type: string
+    - contextPath: Joe.Analysis.SampleName
+      description: Sample Data, could be a file name or URL
+      type: string
+    - contextPath: Joe.Analysis.Status
+      description: Analysis Status
+      type: string
+    - contextPath: Joe.Analysis.Comments
+      description: Analysis Comments
+      type: string
+    - contextPath: Joe.Analysis.Time
+      description: Submitted Time
+      type: date
+    - contextPath: Joe.Analysis.Runs
+      description: Sub-Analysis Information
+      type: Unknown
+    - contextPath: Joe.Analysis.Result
+      description: Analysis Results
+      type: string
+    - contextPath: Joe.Analysis.Errors
+      description: Raised errors during sampling
+      type: Unknown
+    - contextPath: Joe.Analysis.Systems
+      description: Analysis OS
+      type: Unknown
+    - contextPath: Joe.Analysis.MD5
+      description: MD5 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA1
+      description: SHA1 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA256
+      description: SHA256 of analysis sample
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The name of the sample file or URL
+      type: Unknown
+    - contextPath: DBotScore.Type
+      description: '''url'' for url samples, otherwise ''file'''
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: DBotScore.Malicious.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Malicious.Detections
+      description: The sub analysis detection statuses
+      type: string
+    - contextPath: DBotScore.Malicious.SHA1
+      description: The SHA1 of the file
+      type: string
+  - arguments:
+    - default: true
+      description: 'Search string which will search in the following fields only:
+        webid, md5, sha1, sha256, filename, URL, comments.'
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: Search through all analyses.
+    execution: false
+    name: joe-search
+    outputs:
+    - contextPath: Joe.Analysis.WebID
+      description: Web ID
+      type: string
+    - contextPath: Joe.Analysis.SampleName
+      description: Sample Data, could be a file name or URL
+      type: string
+    - contextPath: Joe.Analysis.Status
+      description: Analysis Status
+      type: string
+    - contextPath: Joe.Analysis.Comments
+      description: Analysis Comments
+      type: string
+    - contextPath: Joe.Analysis.Time
+      description: Submitted Time
+      type: date
+    - contextPath: Joe.Analysis.Runs
+      description: Sub-Analysis Information
+      type: Unknown
+    - contextPath: Joe.Analysis.Result
+      description: Analysis Results
+      type: string
+    - contextPath: Joe.Analysis.Errors
+      description: Raised errors during sampling
+      type: Unknown
+    - contextPath: Joe.Analysis.Systems
+      description: Analysis OS
+      type: Unknown
+    - contextPath: Joe.Analysis.MD5
+      description: MD5 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA1
+      description: SHA1 of analysis sample
+      type: string
+    - contextPath: Joe.Analysis.SHA256
+      description: SHA256 of analysis sample
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The name of the sample file or URL
+      type: Unknown
+    - contextPath: DBotScore.Type
+      description: '''url'' for url samples, otherwise ''file'''
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: DBotScore.Malicious.Vendor
+      description: 'The name of the vendor: JoeSecurity'
+      type: string
+    - contextPath: DBotScore.Malicious.Detections
+      description: The sub analysis detection statuses
+      type: string
+    - contextPath: DBotScore.Malicious.SHA1
+      description: The SHA1 of the file
+      type: string
+  - arguments:
+    - default: true
+      description: Web ID
+      isArray: false
+      name: webid
+      required: true
+      secret: false
+    deprecated: false
+    description: Download the sample file of an analysis. for security reasons, the
+      extension will be "dontrun"
+    execution: false
+    name: joe-download-sample
+    outputs:
+    - contextPath: File.Size
+      description: File Size
+      type: number
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: string
+    - contextPath: File.Name
+      description: The sample name
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file
+      type: string
+    - contextPath: File.EntryID
+      description: War-Room Entry ID of the file
+      type: string
+    - contextPath: File.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: File.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: File MD5
+      description: MD5 hash of the file
+      type: string
+    - contextPath: File.Extension
+      description: File Extension
+      type: string
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+tests:
+- JoeSecurityTestPlaybook
+- JoeSecurityTestDetonation

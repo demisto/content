@@ -473,3 +473,5 @@ view: |-
     }
   }
 inputs: []
+tests:
+  - No test - old playbook

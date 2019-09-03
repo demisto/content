@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: fc2ec0f9-a350-46e6-82c6-66920f1418ec
+    taskid: 481af9ab-18cf-4136-8166-e5e8944ee635
     type: start
     task:
-      id: fc2ec0f9-a350-46e6-82c6-66920f1418ec
+      id: 481af9ab-18cf-4136-8166-e5e8944ee635
       version: -1
       name: ""
       iscommand: false
@@ -21,16 +21,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 50
+          "y": -140
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: b4c9009f-25fc-4be2-8979-9a9ebb70f9af
+    taskid: 4c8d0c27-dbda-4d46-8303-be6b77739b74
     type: title
     task:
-      id: b4c9009f-25fc-4be2-8979-9a9ebb70f9af
+      id: 4c8d0c27-dbda-4d46-8303-be6b77739b74
       version: -1
       name: Done
       type: title
@@ -45,12 +47,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
-    taskid: 9bc5325d-a4ce-4354-813c-6466dd3219db
+    taskid: 38497387-45a4-48e2-816c-c7515cec13f0
     type: regular
     task:
-      id: 9bc5325d-a4ce-4354-813c-6466dd3219db
+      id: 38497387-45a4-48e2-816c-c7515cec13f0
       version: -1
       name: PhishingIncident - Attachment
       scriptName: PhishingIncident
@@ -59,7 +63,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "21"
     scriptarguments:
       malicious_location:
         simple: attachment
@@ -68,16 +72,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 370
+          "y": 180
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
-    taskid: 7b42f99f-f88a-453e-8554-4dfbdf302ba3
+    taskid: a98152ae-e294-43c0-8c8d-0fcd5d8d061d
     type: regular
     task:
-      id: 7b42f99f-f88a-453e-8554-4dfbdf302ba3
+      id: a98152ae-e294-43c0-8c8d-0fcd5d8d061d
       version: -1
       name: Close Manual review
       scriptName: ScheduleCommand
@@ -104,12 +110,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
-    taskid: 56e1e113-22d3-4943-8de5-8bf8d1b6eb70
+    taskid: a0d311dd-acf3-4bfb-856f-5474624593c8
     type: regular
     task:
-      id: 56e1e113-22d3-4943-8de5-8bf8d1b6eb70
+      id: a0d311dd-acf3-4bfb-856f-5474624593c8
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -131,16 +139,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 195
+          "y": 5
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "19":
     id: "19"
-    taskid: 8aeed5dc-3c58-4b71-8e83-69c5b0dc92b1
+    taskid: 815c4ae8-af63-42cd-8dc7-caf0bd4bb8e9
     type: regular
     task:
-      id: 8aeed5dc-3c58-4b71-8e83-69c5b0dc92b1
+      id: 815c4ae8-af63-42cd-8dc7-caf0bd4bb8e9
       version: -1
       name: Download EML file
       description: Sends http request. Returns the response as json.
@@ -177,12 +187,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "20":
     id: "20"
-    taskid: c9adfbba-b2eb-47f1-8994-d880fd5b4713
+    taskid: 85612cdb-60c2-450f-8be1-f48fa2abc94c
     type: playbook
     task:
-      id: c9adfbba-b2eb-47f1-8994-d880fd5b4713
+      id: 85612cdb-60c2-450f-8be1-f48fa2abc94c
       version: -1
       name: Phishing Investigation - Generic
       playbookName: Phishing Investigation - Generic
@@ -201,15 +213,53 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: d7d26d34-f14a-4cde-863b-a616b309e06e
+    type: regular
+    task:
+      id: d7d26d34-f14a-4cde-863b-a616b309e06e
+      version: -1
+      name: minemeld-add-to-miner
+      description: Add indicator to a miner.
+      script: Palo Alto Minemeld|||minemeld-add-to-miner
+      type: regular
+      iscommand: true
+      brand: Palo Alto Minemeld
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      comment:
+        simple: Malicious website for test
+      indicator:
+        simple: http://tpb.crushus.com/www.paperstreetcash.com
+      miner:
+        simple: Malicious
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
+        "height": 1100,
         "width": 810,
         "x": 50,
-        "y": 50
+        "y": -140
       }
     }
   }

@@ -1,0 +1,313 @@
+category: Analytics & SIEM
+commonfields:
+  id: Microsoft Graph
+  version: -1
+configuration:
+- defaultvalue: https://graph.microsoft.com
+  display: Host URL (e.g. https://graph.microsoft.com)
+  name: host
+  required: true
+  type: 0
+- display: ID (received from the admin consent - see Detailed Instructions (?) section)
+  name: auth_id
+  required: true
+  type: 4
+- display: Token (received from the admin consent - see Detailed Instructions (?)
+    section)
+  name: tenant_id
+  required: true
+  type: 4
+- display: Key (received from the admin consent - see Detailed Instructions (?) section)
+  name: enc_key
+  required: true
+  type: 4
+- defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Unified gateway to security insights - all from a unified Microsoft Graph
+  Security API.
+display: Microsoft Graph Security
+name: Microsoft Graph
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: When the alert was last modified in the following string format
+        - YYYY-MM-DD
+      isArray: false
+      name: last_modified
+      predefined:
+      - Last24Hours
+      - Last48Hours
+      - LastWeek
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Alert severity - set by vendor/provider.
+      isArray: false
+      name: severity
+      predefined:
+      - unknown
+      - informational
+      - low
+      - medium
+      - high
+      required: false
+      secret: false
+    - default: false
+      description: Category of the alert, e.g. credentialTheft, ransomware (Categories
+        can be added or removed by vendors.)
+      isArray: false
+      name: category
+      required: false
+      secret: false
+    - default: false
+      description: The start time (creation time of alert) for the search in the following
+        string format - YYYY-MM-DD
+      isArray: false
+      name: time_from
+      required: false
+      secret: false
+    - default: false
+      description: The end time (creation time of alert) for the search in the following
+        string format -  YYYY-MM-DD
+      isArray: false
+      name: time_to
+      required: false
+      secret: false
+    - default: false
+      description: Use this field to filter on any of the alert properties in the
+        format "{property} eq '{property-value}'", e.g. "category eq 'ransomware'"
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    deprecated: false
+    description: List alerts (security issues) within a customer's tenant that Microsoft
+      or partner security solutions have identified.
+    execution: false
+    name: msg-search-alerts
+    outputs:
+    - contextPath: MsGraph.Alert.ID
+      description: Alert ID
+      type: string
+    - contextPath: MsGraph.Alert.Title
+      description: Alert title
+      type: string
+    - contextPath: MsGraph.Alert.Category
+      description: Alert category
+      type: string
+    - contextPath: MsGraph.Alert.Severity
+      description: Alert severity
+      type: string
+    - contextPath: MsGraph.Alert.CreatedDate
+      description: Alert created date
+      type: date
+    - contextPath: MsGraph.Alert.EventDate
+      description: Alert event time
+      type: date
+    - contextPath: MsGraph.Alert.Status
+      description: Alert status
+      type: string
+    - contextPath: MsGraph.Alert.Vendor
+      description: Alert vendor/provider
+      type: string
+    - contextPath: MsGraph.Alert.MalwareStates
+      description: Alert malware states
+      type: string
+    - contextPath: MsGraph.Alert.Vendor
+      description: Alert vendor
+      type: string
+    - contextPath: MsGraph.Alert.Provider
+      description: Alert provider
+      type: string
+  - arguments:
+    - default: true
+      description: The Alert ID - Provider-generated GUID/unique identifier.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: All
+      description: 'Fields to fetch for specified Alert apart from the basic properties,
+        given as comma separated values, e.g. NetworkConnections,Processes. Optional
+        values: All,NetworkConnections,Processes,RegistryKeys,UserStates,HostStates,FileStates,CloudAppStates,MalwareStates,CustomerComment,Triggers,VendorInformation,VulnerabilityStates'
+      isArray: false
+      name: fields_to_include
+      required: false
+      secret: false
+    deprecated: false
+    description: Get details for a specific alert.
+    execution: false
+    name: msg-get-alert-details
+    outputs:
+    - contextPath: MsGraph.Alert.ID
+      description: Alert ID
+      type: string
+    - contextPath: MsGraph.Alert.Title
+      description: Alert title
+      type: string
+    - contextPath: MsGraph.Alert.Category
+      description: Alert category
+      type: string
+    - contextPath: MsGraph.Alert.Severity
+      description: Alert severity
+      type: string
+    - contextPath: MsGraph.Alert.CreatedDate
+      description: Alert created date
+      type: date
+    - contextPath: MsGraph.Alert.EventDate
+      description: Alert event date
+      type: date
+    - contextPath: MsGraph.Alert.Status
+      description: Alert status
+      type: string
+    - contextPath: MsGraph.Alert.Vendor
+      description: Alert vendor
+      type: string
+    - contextPath: MsGraph.Alert.Provider
+      description: Alert provider
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The Alert ID. Provider-generated GUID/unique identifier.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    - default: false
+      description: Name of the analyst the alert is assigned to for triage, investigation,
+        or remediation.
+      isArray: false
+      name: assigned_to
+      required: false
+      secret: false
+    - default: false
+      description: Time at which the alert was closed in the following string format
+        - MM/DD/YYYY
+      isArray: false
+      name: closed_date_time
+      required: false
+      secret: false
+    - default: false
+      description: Analyst comments on the alert (for customer alert management).
+      isArray: false
+      name: comments
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Analyst feedback on the alert.
+      isArray: false
+      name: feedback
+      predefined:
+      - unknown
+      - truePositive
+      - falsePositive
+      - benignPositive
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Alert lifecycle status (stage).
+      isArray: false
+      name: status
+      predefined:
+      - unknown
+      - newAlert
+      - inProgress
+      - resolved
+      required: false
+      secret: false
+    - default: false
+      description: User-definable labels that can be applied to an alert and can serve
+        as filter conditions, e.g.  "HVA", "SAW).
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: Details about the security service vendor, e.g. Microsoft
+      isArray: false
+      name: vendor_information
+      required: true
+      secret: false
+    - default: false
+      description: Details about the security service vendor, e.g. Windows Defender
+        ATP
+      isArray: false
+      name: provider_information
+      required: true
+      secret: false
+    deprecated: false
+    description: Update an editable alert property within any integrated solution
+      to keep alert status and assignments in sync across solutions using its reference
+      ID.
+    execution: false
+    name: msg-update-alert
+    outputs:
+    - contextPath: MsGraph.Alert.ID
+      description: Alert ID
+      type: string
+    - contextPath: MsGraph.Alert.Status
+      description: Alert status
+      type: string
+  - deprecated: false
+    description: Retrieve a list of user objects.
+    execution: false
+    name: msg-get-users
+    outputs:
+    - contextPath: MsGraph.User.Email
+      description: User email address
+      type: string
+    - contextPath: MsGraph.User.ID
+      description: User ID
+      type: string
+    - contextPath: MsGraph.User.Title
+      description: User job title
+      type: string
+    - contextPath: MsGraph.User.Name
+      description: User name
+      type: string
+  - arguments:
+    - default: true
+      description: User ID of user to retreive
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve the properties and relationships of user object.
+    execution: false
+    name: msg-get-user
+    outputs:
+    - contextPath: MsGraph.User.Email
+      description: User email address
+      type: string
+    - contextPath: MsGraph.User.ID
+      description: User ID
+      type: string
+    - contextPath: MsGraph.User.Title
+      description: User job title
+      type: string
+    - contextPath: MsGraph.User.Name
+      description: User name
+      type: string
+  dockerimage: demisto/crypto:1.0.0.303
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+- Microsoft Graph Test

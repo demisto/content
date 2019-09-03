@@ -21,13 +21,14 @@ class ConfJsonValidator(object):
             return json.load(data_file)
 
     def is_valid_conf_json(self):
-        """Validate the fields skipped_tests and skipped_integrations in conf.json file."""
+        """Validate the fields skipped_tests, skipped_integrations and unmockable_integrations in conf.json file."""
         skipped_tests_conf = self.conf_data['skipped_tests']
         skipped_integrations_conf = self.conf_data['skipped_integrations']
+        unmockable_integrations_conf = self.conf_data['unmockable_integrations']
 
         self.is_valid_description_in_conf_dict(skipped_tests_conf)
         self.is_valid_description_in_conf_dict(skipped_integrations_conf)
-        # TODO: add Ben's section once he merges the mock issue, and update the test accordingly.
+        self.is_valid_description_in_conf_dict(unmockable_integrations_conf)
 
         return self._is_valid
 

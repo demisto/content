@@ -13,7 +13,7 @@ tasks:
       id: d2f4d7dc-4562-4517-8d63-3539676ca81d
       version: -1
       name: ""
-      description: "-"
+      description: start
       iscommand: false
       brand: ""
     nexttasks:
@@ -29,6 +29,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
     taskid: 1ffe1273-53cc-4196-85ee-aeb00cdc3683
@@ -71,6 +72,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
     taskid: d774d782-52bb-4667-8842-9401535bdf2f
@@ -140,6 +142,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
     taskid: 139bb8bd-8c59-483e-8632-aa1031236b24
@@ -189,6 +192,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: 7aef66ab-1f28-4a35-89d8-173760f509c5
@@ -224,6 +228,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
     taskid: 586f9a47-8d2a-4ff5-8ad5-788ddc8310ed
@@ -232,7 +237,7 @@ tasks:
       id: 586f9a47-8d2a-4ff5-8ad5-788ddc8310ed
       version: -1
       name: Done
-      description: finished
+      description: Done
       type: title
       iscommand: false
       brand: ""
@@ -246,6 +251,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
     taskid: bd6b3429-b5e0-4bf5-8aa7-5b6305b016dc
@@ -298,6 +304,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
     taskid: 35d8af19-10dd-43fa-855d-1a99e08bbf12
@@ -353,12 +360,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
-    taskid: 26775dbf-fff8-41c0-8379-28d0a99b8112
+    taskid: d9cb6357-65d3-489e-829a-32db7a9e54f1
     type: regular
     task:
-      id: 26775dbf-fff8-41c0-8379-28d0a99b8112
+      id: d9cb6357-65d3-489e-829a-32db7a9e54f1
       version: -1
       name: atd-check-status
       description: Updates the status of the tasks in the context.
@@ -374,6 +382,15 @@ tasks:
       taskId:
         complex:
           root: ATD
+          filters:
+          - - operator: isNotEqualNumber
+              left:
+                value:
+                  simple: ATD.Task.taskId
+                iscontext: true
+              right:
+                value:
+                  simple: "-1"
           accessor: Task.taskId
     separatecontext: false
     view: |-
@@ -385,12 +402,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
-    taskid: 230fe216-0869-44e5-885a-8f7f32e4a7fa
+    taskid: e67fe4e6-2060-46ff-8f61-c87a4b88cf93
     type: regular
     task:
-      id: 230fe216-0869-44e5-885a-8f7f32e4a7fa
+      id: e67fe4e6-2060-46ff-8f61-c87a4b88cf93
       version: -1
       name: Set Context
       description: '-'
@@ -408,6 +426,15 @@ tasks:
       value:
         complex:
           root: ATD
+          filters:
+          - - operator: isNotEqualNumber
+              left:
+                value:
+                  simple: ATD.Task.taskId
+                iscontext: true
+              right:
+                value:
+                  simple: "-1"
           accessor: Task
     separatecontext: false
     view: |-
@@ -419,6 +446,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -497,12 +525,6 @@ outputs:
 - contextPath: File.EntryID
   description: The Entry ID of the sample
   type: string
-- contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision
-  type: string
-- contextPath: File.Malicious.Description
-  description: For malicious files, the reason for the vendor to make the decision
-  type: string
 - contextPath: DBotScore.Indicator
   description: The indicator we tested (only in case of report type=json)
   type: string
@@ -536,6 +558,21 @@ outputs:
 - contextPath: InfoFile.Type
   description: The type of the report file
   type: string
+- contextPath: File
+  description: File object
+  type: unknown
+- contextPath: File.Malicious
+  description: File Malicious object
+  type: unknown
+- contextPath: DBotScore
+  description: DBotScore object
+  type: unknown
+- contextPath: InfoFile
+  description: Report file object
+  type: unknown
+- contextPath: URL.Malicious
+  description: URL Malicious object
+  type: unknown
 tests:
 - Test Playbook McAfee ATD
 - Detonate URL - Generic Test

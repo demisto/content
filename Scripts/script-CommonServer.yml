@@ -1,16 +1,33 @@
 commonfields:
   id: CommonServer
-  version: 1
+  version: -1
 name: CommonServer
 script: |-
   // Common functions script
   // =======================
   // This script will be appended to each server script before being executed.
   // Place here all common functions you'd like to share between server scripts.
+
+
+  // ============= Fix vault credentials =============
+  // =================================================
+  try {
+      if(params && typeof params === 'object'){
+          for(var key in params){
+              param = params[key];
+              if(typeof param === 'object' && 'credentials' in param  && param.credentials.vaultInstanceId){
+                  param.identifier = param.credentials.user;
+              }
+          }
+      }
+  }
+  catch (e) {}
+  // =================================================
+
   /**
    * Returns true if string starts with search string
    * @param {String} search - The string to be searched
-   * @param {Integer} pos - The position in this string at which to begin searching for search string; defaults to 0. 
+   * @param {Integer} pos - The position in this string at which to begin searching for search string; defaults to 0.
    * @return {Boolean} true if string starts with <search> string
    */
   if (!String.prototype.startsWith) {
@@ -633,7 +650,7 @@ script: |-
     return ok;
   }
 
-  var entryTypes = {note: 1, downloadAgent: 2, file: 3, error: 4, pinned: 5, userManagement: 6, image: 7, plagroundError: 8, entryInfoFile: 9, map: 15, playgroundError: 8};
+  var entryTypes = {note: 1, downloadAgent: 2, file: 3, error: 4, pinned: 5, userManagement: 6, image: 7, plagroundError: 8, playgroundError: 8, entryInfoFile: 9, map: 15, widget: 17};
   var formats = {html: 'html', table: 'table', json: 'json', text: 'text', dbotResponse: 'dbotCommandResponse', markdown: 'markdown'};
   var dbotscores = {critical : 4, high: 3, medium: 2, low: 1, informational: 0.5, unknown: 0};
 
@@ -1958,3 +1975,5 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
+tests:
+  - 'Test CommonServer'

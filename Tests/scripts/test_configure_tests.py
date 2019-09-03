@@ -2,9 +2,9 @@ import os
 import re
 import unittest
 
-from configure_tests import get_modified_files, get_test_list
+from Tests.scripts.configure_tests import get_modified_files, get_test_list
 
-FILTER_CONF = "filter_file.txt"
+FILTER_CONF = "Tests/filter_file.txt"
 
 
 class TestConfigureTests_ChangedTestPlaybook(unittest.TestCase):
@@ -12,7 +12,7 @@ class TestConfigureTests_ChangedTestPlaybook(unittest.TestCase):
         if 'git branch' in command:
             return "* BranchA\n BranchB"
         elif "git diff --name-status" in command:
-            return "M Playbooks.playbook-test.yml"
+            return "M Playbooks/playbook-BitDam_Scan_File.yml"
 
     def create_test_file(self):
         branches = self.run_git_command("git branch")
@@ -24,9 +24,7 @@ class TestConfigureTests_ChangedTestPlaybook(unittest.TestCase):
         if branch_name != 'master':
             files_string = self.run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
 
-            modified_files, modified_tests_list = get_modified_files(files_string)
-
-            tests = get_test_list(modified_files, modified_tests_list)
+            tests = get_test_list(files_string, branch_name)
             tests_string = '\n'.join(tests)
             print('Collected the following tests:\n{0}'.format(tests_string))
 
@@ -41,18 +39,18 @@ class TestConfigureTests_ChangedTestPlaybook(unittest.TestCase):
             filterd_tests = filter_file.readlines()
             filterd_tests = [line.strip('\n') for line in filterd_tests]
 
-        self.assertEqual(filterd_tests, ['Archer-Test-Playbook', ])
+        self.assertEquals(filterd_tests, ['Detonate File - BitDam Test'])
 
     def tearDown(self):
         os.remove(FILTER_CONF)
 
 
-class TestConfigureTests_ChangedPlaybook(unittest.TestCase):
+class TestConfigureTests_ChangedIntegration(unittest.TestCase):
     def run_git_command(self, command):
         if 'git branch' in command:
             return "* BranchA\n BranchB"
         elif "git diff --name-status" in command:
-            return "M integration-test.yml"
+            return "M Integrations/PagerDuty/PagerDuty.py"
 
     def create_test_file(self):
         branches = self.run_git_command("git branch")
@@ -64,9 +62,7 @@ class TestConfigureTests_ChangedPlaybook(unittest.TestCase):
         if branch_name != 'master':
             files_string = self.run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
 
-            modified_files, modified_tests_list = get_modified_files(files_string)
-
-            tests = get_test_list(modified_files, modified_tests_list)
+            tests = get_test_list(files_string, branch_name)
             tests_string = '\n'.join(tests)
             print('Collected the following tests:\n{0}'.format(tests_string))
 
@@ -92,7 +88,7 @@ class TestConfigureTests_ChangedBoth(unittest.TestCase):
         if 'git branch' in command:
             return "* BranchA\n BranchB"
         elif "git diff --name-status" in command:
-            return "M Playbooks.playbook-test.yml\nA integration-test.yml"
+            return "M Integrations/PagerDuty/PagerDuty.py\nM Playbooks/playbook-BitDam_Scan_File.yml"
 
     def create_test_file(self):
         branches = self.run_git_command("git branch")
@@ -104,9 +100,7 @@ class TestConfigureTests_ChangedBoth(unittest.TestCase):
         if branch_name != 'master':
             files_string = self.run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
 
-            modified_files, modified_tests_list = get_modified_files(files_string)
-
-            tests = get_test_list(modified_files, modified_tests_list)
+            tests = get_test_list(files_string, branch_name)
             tests_string = '\n'.join(tests)
             print('Collected the following tests:\n{0}'.format(tests_string))
 
@@ -121,18 +115,19 @@ class TestConfigureTests_ChangedBoth(unittest.TestCase):
             filterd_tests = filter_file.readlines()
             filterd_tests = [line.strip('\n') for line in filterd_tests]
 
-        self.assertEqual(filterd_tests, ['PagerDuty Test', 'Archer-Test-Playbook'])
+        self.assertEqual(sorted(filterd_tests),
+                         sorted(['PagerDuty Test', 'Detonate File - BitDam Test']))
 
     def tearDown(self):
         os.remove(FILTER_CONF)
 
 
-class TestConfigureTests_AllTesting(unittest.TestCase):
+class TestConfigureTests_sampleTesting(unittest.TestCase):
     def run_git_command(self, command):
         if 'git branch' in command:
             return "* BranchA\n BranchB"
         elif "git diff --name-status" in command:
-            return "M Playbooks.playbook-invalid.yml"
+            return "M Tests/scripts/integration-test.yml"
 
     def create_test_file(self):
         branches = self.run_git_command("git branch")
@@ -144,9 +139,7 @@ class TestConfigureTests_AllTesting(unittest.TestCase):
         if branch_name != 'master':
             files_string = self.run_git_command("git diff --name-status origin/master...{0}".format(branch_name))
 
-            modified_files, modified_tests_list = get_modified_files(files_string)
-
-            tests = get_test_list(modified_files, modified_tests_list)
+            tests = get_test_list(files_string, branch_name)
             tests_string = '\n'.join(tests)
             print('Collected the following tests:\n{0}'.format(tests_string))
 
@@ -161,10 +154,24 @@ class TestConfigureTests_AllTesting(unittest.TestCase):
             filterd_tests = filter_file.readlines()
             filterd_tests = [line.strip('\n') for line in filterd_tests]
 
-        self.assertEqual(filterd_tests, [])
+        self.assertEqual(len(filterd_tests), 3)
 
     def tearDown(self):
         os.remove(FILTER_CONF)
+
+
+class TestConfigureTests_PackageFilesModified(unittest.TestCase):
+
+    def test_package_modification(self):
+        active_dir_mod_git = """M       Integrations/Active_Directory_Query/Active_Directory_Query.py
+A       Integrations/Active_Directory_Query/cert.pem
+M       Integrations/Active_Directory_Query/connection_test.py
+A       Integrations/Active_Directory_Query/key.pem
+"""
+        files_list, tests_list, all_tests, is_conf_json, sample_tests, is_reputations_json, is_indicator_json = \
+            get_modified_files(active_dir_mod_git)
+        self.assertEquals(len(sample_tests), 0)
+        self.assertIn('Integrations/Active_Directory_Query/Active_Directory_Query.yml', files_list)
 
 
 if __name__ == '__main__':

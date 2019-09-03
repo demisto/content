@@ -4,7 +4,7 @@
   "name": "Top Active Playbooks",
   "dataType": "incidents",
   "widgetType": "column",
-  "query": "-status:done -category:job",
+  "query": "status:active -category:job",
   "isPredefined": true,
   "dateRange": {
     "fromDate": "0001-01-01T00:00:00Z",

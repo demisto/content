@@ -410,6 +410,7 @@ script:
                 MD5: analysis.md5,
                 SHA1: analysis.sha1,
                 SHA256: analysis.sha256,
+                Type: analysis.mime_type,
                 Malicious: {
                     Vendor: 'Lastline',
                     Description: 'Score above ' + threshold,
@@ -459,7 +460,6 @@ script:
                 'UUID': uuid,
                 'Status': 'Completed',
             };
-            //ec.Lastline.Submission.yara_signatures = '000000';
             var analysis = result.obj.data;
 
             if('report' in result.obj.data) {
@@ -518,6 +518,7 @@ script:
                         MD5: analysis.md5,
                         SHA1: analysis.sha1,
                         SHA256: analysis.sha256,
+                        Type: analysis.mime_type,
                         Malicious: {
                             Vendor: 'Lastline',
                             Description: 'Score above ' + threshold,
@@ -547,6 +548,34 @@ script:
             EntryContext: ec
         };
     }
+
+
+    function CheckStatus(uuid) {
+        var result;
+        try {
+            result = doReq('POST', '/analysis/get', {uuid: uuid});
+        } catch (err) {
+            if (err == 'Analysis report is not ready yet') {
+                return 'Report for Task UUID: ' + uuid + ' is not ready';
+            } else {
+                throw err;
+            }
+        }
+        var md = '#### Report ready for Task UUID: ' + uuid + '.\n';
+        var ec = {};
+        ec["Lastline.Submission(val.UUID===obj.UUID)"] = {
+                'UUID': uuid,
+                'Status': 'Completed',
+            };
+        return {
+            Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
+    }
+
 
     function GetTaskList(before, after) {
         var headers = {};
@@ -608,6 +637,15 @@ script:
                     if (reportResponse.error){
                         return reportResponse.error;
                     }
+                    entries.push(reportResponse);
+                }
+                return entries;
+
+            case 'lastline-check-status':
+                var uuids = argToList(args.uuid);
+                var entries = [];
+                for (var i=0; i < uuids.length; i++) {
+                    var reportResponse = CheckStatus(uuids[i]);
                     entries.push(reportResponse);
                 }
                 return entries;
@@ -781,6 +819,9 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
+    - contextPath: File.Type
+      description: File type
+      type: string
     description: Check file reputation of the given hash
   - name: lastline-upload
     deprecated: true
@@ -947,6 +988,9 @@ script:
     - contextPath: Lastline.Submission.Process.process_id
       description: The process ID
       type: string
+    - contextPath: File.Type
+      description: File type
+      type: string
     description: Get analysis report
   - name: lastline-get-task-list
     arguments:
@@ -958,8 +1002,19 @@ script:
       description: 'Tasks after in UTC. format: %Y-%m-%d %H:%M:%S. Example: 2018-07-10
         12:00:00'
     description: Gets a list of tasks
+  - name: lastline-check-status
+    arguments:
+    - name: uuid
+      required: true
+      description: Task UUID of the submitted Lastline analysis. Recieved from lastline-upload-file
+        or lastline-upload-url.
+      isArray: true
+    outputs:
+    - contextPath: Lastline.Submission.UUID
+      description: Task UUID of submitted sample
+      type: string
+    - contextPath: Lastline.Submission.Status
+      description: Status of the submission
+      type: string
+    description: Check submissions status
   runonce: false
-tests:
-- Lastline - testplaybook
-- Detonate URL - Generic Test
-- Detonate File - Generic Test

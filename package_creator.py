@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from __future__ import print_function
 import os
 import io
 import sys
@@ -11,6 +11,7 @@ import re
 
 DIR_TO_PREFIX = {
     'Integrations': 'integration',
+    'Beta_Integrations': 'integration',
     'Scripts': 'script'
 }
 
@@ -40,46 +41,88 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
     else:
         output_path = os.path.join(dir_name, output_filename)
 
-    yml_path = glob.glob(package_path + '*.yml')[0]
+    yml_paths = glob.glob(package_path + '*.yml')
+    yml_path = yml_paths[0]
+    for path in yml_paths:
+        # The plugin creates a unified YML file for the package.
+        # In case this script runs locally and there is a unified YML file in the package we need to ignore it.
+        # Also,
+        # we don't take the unified file by default because there might be packages that were not created by the plugin.
+        if 'unified' not in path:
+            yml_path = path
+            break
+
     with open(yml_path, 'r') as yml_file:
         yml_data = yaml.safe_load(yml_file)
 
     if dir_name == 'Scripts':
         script_type = TYPE_TO_EXTENSION[yml_data['type']]
-    elif dir_name == 'Integrations':
+    elif dir_name == 'Integrations' or 'Beta_Integrations':
         script_type = TYPE_TO_EXTENSION[yml_data['script']['type']]
 
     with io.open(yml_path, mode='r', encoding='utf-8') as yml_file:
         yml_text = yml_file.read()
 
     yml_text, script_path = insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data)
-    yml_text, image_path = insert_image_to_yml(dir_name, package_path, yml_data, yml_text)
+    image_path = None
+    desc_path = None
+    if dir_name == 'Integrations' or dir_name == 'Beta_Integrations':
+        yml_text, image_path = insert_image_to_yml(dir_name, package_path, yml_data, yml_text)
+        yml_text, desc_path = insert_description_to_yml(dir_name, package_path, yml_data, yml_text)
 
     with io.open(output_path, mode='w', encoding='utf-8') as f:
         f.write(yml_text)
-    return output_path, yml_path, script_path, image_path
+    return output_path, yml_path, script_path, image_path, desc_path
 
 
 def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
-    image_path = glob.glob(package_path + '*png')
-    found_img_path = None
-    if dir_name == 'Integrations' and image_path:
-        found_img_path = image_path[0]
-        with open(found_img_path, 'rb') as image_file:
-            image_data = image_file.read()
-            image_data = IMAGE_PREFIX + base64.b64encode(image_data)
+    image_data, found_img_path = get_data(dir_name, package_path, "*png")
+    image_data = IMAGE_PREFIX + base64.b64encode(image_data)
 
-        if yml_data.get('image'):
-            yml_text = yml_text.replace(yml_data['image'], image_data)
+    if yml_data.get('image'):
+        yml_text = yml_text.replace(yml_data['image'], image_data)
 
-        else:
-            yml_text = 'image: ' + image_data + '\n' + yml_text
-        # verify that our yml is good (loads and returns the image)
-        mod_yml_data = yaml.safe_load(yml_text)
-        yml_image = mod_yml_data.get('image')
-        assert yml_image.strip() == image_data.strip()
+    else:
+        yml_text = 'image: ' + image_data + '\n' + yml_text
+    # verify that our yml is good (loads and returns the image)
+    mod_yml_data = yaml.safe_load(yml_text)
+    yml_image = mod_yml_data.get('image')
+    assert yml_image.strip() == image_data.strip()
 
     return yml_text, found_img_path
+
+
+def insert_description_to_yml(dir_name, package_path, yml_data, yml_text):
+    desc_data, found_desc_path = get_data(dir_name, package_path, '*_description.md')
+
+    if yml_data.get('detaileddescription'):
+        raise ValueError('Please move the detailed description from the yml to a description file (.md)'
+                         ' in the package: {}'.format(package_path))
+    if desc_data:
+        if not desc_data.startswith('"'):
+            # for multiline detailed-description, if it's not wrapped in quotation marks
+            # add | to the beginning of the description, and shift everything to the right
+            desc_data = '|\n  ' + desc_data.replace('\n', '\n  ')
+        temp_yml_text = u"detaileddescription: "
+        temp_yml_text += desc_data.encode("utf-8")
+        temp_yml_text += u"\n"
+        temp_yml_text += yml_text
+
+        yml_text = temp_yml_text
+
+    return yml_text, found_desc_path
+
+
+def get_data(dir_name, package_path, extension):
+    data_path = glob.glob(package_path + extension)
+    data = None
+    found_data_path = None
+    if dir_name in ('Integrations', 'Beta_Integrations') and data_path:
+        found_data_path = data_path[0]
+        with open(found_data_path, 'rb') as data_file:
+            data = data_file.read()
+
+    return data, found_data_path
 
 
 def get_code_file(package_path, script_type):
@@ -93,7 +136,12 @@ def get_code_file(package_path, script_type):
     :rtype: str
     """
 
-    ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|demistomock\.py|test_.*\.py|_test\.py'
+    ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|demistomock\.py|test_.*\.py|_test\.py|conftest\.py'
+    if not package_path.endswith('/'):
+        package_path += '/'
+    if package_path.endswith('Scripts/CommonServerPython/'):
+        return package_path + 'CommonServerPython.py'
+
     script_path = list(filter(lambda x: not re.search(ignore_regex, x),
                               glob.glob(package_path + '*' + script_type)))[0]
     return script_path
@@ -112,24 +160,28 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
 
     if dir_name == 'Scripts':
         if yml_data.get('script'):
-            yml_text = yml_text.replace(yml_data.get('script'), script_code)
-        else:
-            yml_text = yml_text.replace("script: ''", "script: " + script_code)
+            if yml_data['script'] != '-' and yml_data['script'] != '':
+                raise ValueError("Please change the script to be blank or a dash(-) for package {}"
+                                 .format(package_path))
 
-    elif dir_name == 'Integrations':
+    elif dir_name == 'Integrations' or dir_name == 'Beta_Integrations':
         if yml_data.get('script', {}).get('script'):
-            yml_text = yml_text.replace(yml_data.get('script', {}).get('script'), script_code)
-        else:
-            yml_text = yml_text.replace("script: ''", "script: " + script_code)
-
+            if yml_data['script']['script'] != '-' and yml_data['script']['script'] != '':
+                raise ValueError("Please change the script to be blank or a dash(-) for package {}"
+                                 .format(package_path))
     else:
-        raise ValueError('Unknown yml type for dir: {}. Expecting: Scripts/Integrations'.format(dir_name))
+        raise ValueError('Unknown yml type for dir: {}. Expecting: Scripts/Integrations'.format(package_path))
+
+    yml_text = yml_text.replace("script: ''", "script: " + script_code)
+    yml_text = yml_text.replace("script: '-'", "script: " + script_code)
+
     # verify that our yml is good (loads and returns the code)
     mod_yml_data = yaml.safe_load(yml_text)
     if dir_name == 'Scripts':
         yml_script = mod_yml_data.get('script')
     else:
         yml_script = mod_yml_data.get('script', {}).get('script')
+
     assert yml_script.strip() == clean_code.strip()
 
     return yml_text, script_path
@@ -158,8 +210,8 @@ def get_package_path():
             directory_name = dir_name
 
     if not directory_name:
-        print "You have failed to provide a legal file path, a legal file path " \
-              "should contain either Integrations or Scripts directories"
+        print("You have failed to provide a legal file path, a legal file path "
+              "should contain either Integrations or Scripts directories")
         sys.exit(1)
 
     return package_path, directory_name, dest_path
@@ -167,5 +219,5 @@ def get_package_path():
 
 if __name__ == "__main__":
     package_path, dir_name, dest_path = get_package_path()
-    output, yml, script, image = merge_script_package_to_yml(package_path, dir_name, dest_path)
+    output, yml, script, image, desc = merge_script_package_to_yml(package_path, dir_name, dest_path)
     print("Done creating: {}, from: {}, {}, {}".format(output, yml, script, image))

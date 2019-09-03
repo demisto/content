@@ -1,0 +1,332 @@
+category: Endpoint
+commonfields:
+  id: CrowdstrikeFalcon
+  version: -1
+configuration:
+- defaultvalue: https://api.crowdstrike.com
+  display: Server URL (e.g., https://api.crowdstrike.com)
+  name: url
+  required: true
+  type: 0
+- display: Client ID
+  name: client_id
+  required: true
+  type: 0
+- display: Secret
+  name: secret
+  required: true
+  type: 4
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: '15'
+  display: Max incidents per fetch
+  name: incidents_per_fetch
+  required: false
+  type: 0
+- display: Fetch query
+  name: fetch_query
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose
+  API), enables fetching and resolving detections, searching devices, getting behaviors
+  by ID, containing hosts, and lifting host containment.
+display: CrowdStrike Falcon
+name: CrowdstrikeFalcon
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Returns devices that match the query.
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: A CSV list of device IDs to limit by which to limit the results.
+      isArray: false
+      name: ids
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Returns devices that match the specified status.
+      isArray: false
+      name: status
+      predefined:
+      - Normal
+      - containment_pending
+      - contained
+      - lift_containment_pending
+      required: false
+      secret: false
+    - default: false
+      description: Returns devices that match the specified hostname.
+      isArray: false
+      name: hostname
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Returns devices that match the specified platform name.
+      isArray: false
+      name: platform_name
+      predefined:
+      - Windows
+      - Mac
+      - Linux
+      required: false
+      secret: false
+    - default: false
+      description: Returns devices that match the specified site name.
+      isArray: false
+      name: site_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches for a device that matches the query.
+    execution: false
+    name: cs-falcon-search-device
+    outputs:
+    - contextPath: CrowdStrike.Device.ID
+      description: The ID of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.LocalIP
+      description: The local IP address of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.ExternalIP
+      description: The external IP address of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.Hostname
+      description: The hostname of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.OS
+      description: The operating system of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.MacAddress
+      description: The Mac address of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.FirstSeen
+      description: The first seen time of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.LastSeen
+      description: The last seen time of the device.
+      type: String
+    - contextPath: CrowdStrike.Device.PolicyType
+      description: The policy types of the device.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The ID of the the behavior.
+      isArray: false
+      name: behavior_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Searches for and fetches the behavior that matches the query.
+    execution: false
+    name: cs-falcon-get-behavior
+    outputs:
+    - contextPath: CrowdStrike.Behavior.FileName
+      description: The file name in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.Scenario
+      description: The scenario name in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.MD5
+      description: The MD5 hash of the IoC in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.SHA256
+      description: The SHA256 hash of the IoC in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.IOCType
+      description: Type of the indicator of compromise.
+      type: String
+    - contextPath: CrowdStrike.Behavior.IOCValue
+      description: The value of the IoC.
+      type: String
+    - contextPath: CrowdStrike.Behavior.CommandLine
+      description: The command line executed in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.UserName
+      description: The user name related to the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.SensorID
+      description: The sensor ID related to the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.ParentProcessID
+      description: The ID of the parent process.
+      type: String
+    - contextPath: CrowdStrike.Behavior.ProcessID
+      description: The process ID of the behavior.
+      type: String
+    - contextPath: CrowdStrike.Behavior.ID
+      description: The ID of the behavior.
+      type: String
+  - arguments:
+    - default: false
+      description: IDs of the detections to search. If provided, will override other arguments.
+      isArray: true
+      name: ids
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Filter detections using a query in Falcon Query Language (FQL).
+        e.g. filter="device.hostname:'CS-SE-TG-W7-01'"
+
+        The full list of valid filter options is extensive. Review it in the following URL: https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for details of specific detections, either using a filter query, or by providing the IDs of the detections.
+    execution: false
+    name: cs-falcon-search-detection
+    outputs:
+    - contextPath: CrowdStrike.Detection.Behavior.FileName
+      description: The file name in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.Scenario
+      description: The scenario name in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.MD5
+      description: The MD5 hash of the IoC in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.SHA256
+      description: The SHA256 hash of the IoC in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.IOCType
+      description: The type of the IoC.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.IOCValue
+      description: The value of the IoC.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.CommandLine
+      description: The command line executed in the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.UserName
+      description: The user name related to the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.SensorID
+      description: The sensor ID related to the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.ParentProcessID
+      description: The ID of the parent process.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.ProcessID
+      description: The process ID of the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detection.Behavior.ID
+      description: The ID of the behavior.
+      type: String
+    - contextPath: CrowdStrike.Detection.System
+      description: The system name of the detection.
+      type: String
+    - contextPath: CrowdStrike.Detection.CustomerID
+      description: The ID of the customer (CID).
+      type: String
+    - contextPath: CrowdStrike.Detection.MachineDomain
+      description: The name of the domain of the detection machine.
+      type: String
+    - contextPath: CrowdStrike.Detection.ID
+      description: The detection ID.
+      type: String
+    - contextPath: CrowdStrike.Detection.ProcessStartTime
+      description: The start time of the process that generated the detection.
+      type: Date
+  - arguments:
+    - default: false
+      description: ' A CSV list of one or more IDs to resolve.'
+      isArray: false
+      name: ids
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The status to which you want to transition a detection.
+      isArray: false
+      name: status
+      predefined:
+      - new
+      - in_progress
+      - true_positive
+      - false_positive
+      - ignored
+      required: false
+      secret: false
+    - default: false
+      description: ' A user ID, for example: 1234567891234567891. '
+      isArray: false
+      name: assigned_to_uuid
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If set to true, will display the dectection in the UI.
+      isArray: false
+      name: show_in_ui
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Resolves and updates a detection.
+    execution: false
+    name: cs-falcon-resolve-detection
+  - arguments:
+    - default: false
+      description: The host agent ID (AID) of the host to contain. Get an
+        agent ID from a detection.
+      isArray: true
+      name: ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Contains or lifts containment for a specified host. When contained,
+      a host can only communicate with the CrowdStrike cloud and any IPs specified
+      in your containment policy.
+    execution: false
+    name: cs-falcon-contain-host
+  - arguments:
+    - default: false
+      description: The host agent ID (AID) of the host you want to contain. Get an
+        agent ID from a detection
+      isArray: true
+      name: ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Lifts containment on the host, which returns its network communications to normal.
+    execution: false
+    name: cs-falcon-lift-host-containment
+  dockerimage: demisto/python3:3.7.2.200
+  isfetch: true
+  runonce: false
+  script: ''
+  type: python
+  subtype: python3
+tests:
+  - Test - CrowdStrike Falcon

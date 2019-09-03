@@ -2,7 +2,15 @@ import inspect
 import json
 import sys
 import yaml
+import os
 from parinx import parser
+from package_creator import clean_python_code
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/..')
+sys.path.append(CONTENT_DIR + '/Tests/demistomock')
+
+import demistomock  # noqa: E402
 
 jsPrivateFuncs = ["dqQueryBuilder", "toArray", "indent", "formatTableValuesRecursive", "string_to_array",
                   "array_to_hex_string", "SHA256_init", "SHA256_write", "SHA256_finalize", "SHA256_hash",
@@ -44,7 +52,7 @@ def reformatPythonOutput(output, origin, language):
             continue
 
         if a.get("description", "") == "":
-            print "Description is missing for Python function", a["name"]
+            print("Description is missing for Python function", a["name"])
             isError = True
 
         # format arguments
@@ -58,7 +66,7 @@ def reformatPythonOutput(output, origin, language):
                 argInfo["type"] = argInfo["type_name"]
                 if argInfo.get("description", "") == "":
                     isError = True
-                    print "Missing description for argument", argName, "in python function", a["name"]
+                    print("Missing description for argument", argName, "in python function", a["name"])
                 del argInfo["type_name"]
                 z.append(argInfo)
 
@@ -89,11 +97,11 @@ def createJsDocumentation(path, origin, language):
         y = {}
         y["name"] = a.get("name", "")
         if y["name"] == "":
-            print "Error extracting function name for JS fucntion with the following data:\n", a
+            print("Error extracting function name for JS fucntion with the following data:\n", a)
             isError = True
         y["description"] = a.get("description", "")
         if y["description"] == "":
-            print "Description is missing for JS function", y["name"]
+            print("Description is missing for JS function", y["name"])
             isError = True
 
         for arg in a.get("params", []):
@@ -104,8 +112,8 @@ def createJsDocumentation(path, origin, language):
                 del arg["optional"]
             if arg.get("name", "") == "" or arg.get("description", "") == "":
                 isError = True
-                print "Missing name/description for argument in JS function", y["name"], ".\n Arg name is", \
-                    arg.get("name", ""), ", args description is", arg.get("description", "")
+                print("Missing name/description for argument in JS function", y["name"], ".\n Arg name is",
+                      arg.get("name", ""), ", args description is", arg.get("description", ""))
         y["arguments"] = a.get("params", [])
 
         returns = a.get("returns", None)[0]
@@ -124,29 +132,30 @@ def createJsDocumentation(path, origin, language):
 
 def createPyDocumentation(path, origin, language):
     isErrorPy = False
-    # create commonServerPy json doc
-    commonServerPython = readYmlFile(path)
-    pyScript = commonServerPython.get("script", "")
+
+    with open(path, 'r') as file:
+        pyScript = clean_python_code(file.read())
 
     code = compile(pyScript, '<string>', 'exec')
-    ns = {}
-    exec code in ns
+    ns = {'demisto': demistomock}
+    exec(code, ns)  # guardrails-disable-line
 
     x = []
 
     for a in ns:
-        if callable(ns.get(a)) and a not in pyPrivateFuncs:
+        if a != 'demisto' and callable(ns.get(a)) and a not in pyPrivateFuncs:
             docstring = inspect.getdoc(ns.get(a))
             if not docstring:
-                print "docstring for function " + a + " is empty"
+                print("docstring for function " + a + " is empty")
                 isErrorPy = True
             else:
-                y = parser.parse_docstring(docstring)
-                y["name"] = a
-                y["argList"] = list(inspect.getargspec(ns.get(a)))[0] if pyIrregularFuncs.get(a, None) is None \
-                    else pyIrregularFuncs[a]["argList"]
+                if "tzinfo" not in docstring:
+                    y = parser.parse_docstring(docstring)
+                    y["name"] = a
+                    y["argList"] = list(inspect.getargspec(ns.get(a)))[0] if pyIrregularFuncs.get(a, None) is None \
+                        else pyIrregularFuncs[a]["argList"]
 
-                x.append(y)
+                    x.append(y)
 
     if isErrorPy:
         return None, isErrorPy
@@ -155,11 +164,12 @@ def createPyDocumentation(path, origin, language):
 
 def main(argv):
     jsDoc, isErrorJS = createJsDocumentation('./Documentation/commonServerJsDoc.json', 'CommonServerJs', 'javascript')
-    pyDoc, isErrorPy = createPyDocumentation('./Scripts/script-CommonServerPython.yml', 'CommonServerPython', 'python')
+    pyDoc, isErrorPy = createPyDocumentation('./Scripts/CommonServerPython/CommonServerPython.py',
+                                             'CommonServerPython', 'python')
     finalDoc = readJsonFile('./Documentation/commonServerConstants.json')
 
     if isErrorJS or isErrorPy or not finalDoc:
-        print "Errors found in common server docs."
+        print("Errors found in common server docs.")
         sys.exit(1)
     with open('./Documentation/doc-CommonServer.json', 'w') as fp:
         finalDoc += jsDoc

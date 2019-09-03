@@ -1,0 +1,1228 @@
+id: Cherwell - test
+version: -1
+name: Cherwell - test
+fromversion: 4.1.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a9988339-5e7b-4c4c-8613-095f0a2c7e89
+    type: start
+    task:
+      id: a9988339-5e7b-4c4c-8613-095f0a2c7e89
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 471bfe14-069f-41b1-875c-152eb5b3918a
+    type: regular
+    task:
+      id: 471bfe14-069f-41b1-875c-152eb5b3918a
+      version: -1
+      name: Create Business Object - Incident
+      description: Create a business object
+      script: '|||cherwell-create-business-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      json:
+        simple: '{"Priority": "3", "CustomerDisplayName": "Playbook customer", "Description":
+          "This incident was created by Cherwell test playbook"}'
+      type:
+        simple: Incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: ba7ae06b-53de-4b53-849f-e986d8c257cf
+    type: condition
+    task:
+      id: ba7ae06b-53de-4b53-849f-e986d8c257cf
+      version: -1
+      name: Validate ID's in the context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cherwell.BusinessObjects.RecordId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cherwell.BusinessObjects.PublicId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: aed88d3d-d08f-44df-8f26-6e211d0c239a
+    type: regular
+    task:
+      id: aed88d3d-d08f-44df-8f26-6e211d0c239a
+      version: -1
+      name: Update Business Object - Incident priority to 1
+      description: Update a business object with the given fields
+      script: '|||cherwell-update-business-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      id_type:
+        simple: record_id
+      id_value:
+        simple: ${Cherwell.BusinessObjects.RecordId}
+      json:
+        simple: '{"Priority": "1"}'
+      type:
+        simple: incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 13aaa93d-7cec-4672-8097-db2cf2032b33
+    type: condition
+    task:
+      id: 13aaa93d-7cec-4672-8097-db2cf2032b33
+      version: -1
+      name: Validate Priority is 1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Cherwell.BusinessObjects.Priority
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 0e60f9ac-23f5-4e91-80b1-f36c27f7bb9e
+    type: regular
+    task:
+      id: 0e60f9ac-23f5-4e91-80b1-f36c27f7bb9e
+      version: -1
+      name: Get Business Object - Get the last created incident
+      description: Get a business objects by an ID
+      script: '|||cherwell-get-business-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      id_type:
+        simple: public_id
+      id_value:
+        simple: ${Cherwell.BusinessObjects.PublicId}
+      type:
+        simple: incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 038d3f4c-8800-4848-85f2-f0c5cd749fda
+    type: regular
+    task:
+      id: 038d3f4c-8800-4848-85f2-f0c5cd749fda
+      version: -1
+      name: 'Create File '
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      data:
+        simple: This is dummy data for Cherwell test
+      entryId: {}
+      filename:
+        simple: CherwellTestFile.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 49a82695-9fec-44ff-8e1d-f3478488fdf4
+    type: regular
+    task:
+      id: 49a82695-9fec-44ff-8e1d-f3478488fdf4
+      version: -1
+      name: Upload Attachment to Cherwell
+      description: Upload an attachment to a given business object
+      script: '|||cherwell-upload-attachment'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      file_entry_id:
+        simple: ${File.EntryID}
+      id_type:
+        simple: record_id
+      id_value:
+        simple: ${Cherwell.BusinessObjects.RecordId}
+      type:
+        simple: incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: f3ee4068-47bb-4962-81c9-00dfa7eafb98
+    type: regular
+    task:
+      id: f3ee4068-47bb-4962-81c9-00dfa7eafb98
+      version: -1
+      name: Get Attachment Info
+      description: Get business object attachments info
+      script: '|||cherwell-get-attachments-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      attachment_type:
+        simple: imported
+      id_type:
+        simple: record_id
+      id_value:
+        simple: ${Cherwell.UploadedAttachments.RecordId}
+      type:
+        simple: incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 4121bf2e-00b6-4a81-879d-f989878c290f
+    type: regular
+    task:
+      id: 4121bf2e-00b6-4a81-879d-f989878c290f
+      version: -1
+      name: Download Attachment
+      description: Get attachements from given business object
+      script: '|||cherwell-download-attachments'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      id_type:
+        simple: record_id
+      id_value:
+        simple: ${Cherwell.UploadedAttachments.RecordId}
+      type:
+        simple: incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: c5b4b0cc-d7e0-4039-8125-adda914adb68
+    type: condition
+    task:
+      id: c5b4b0cc-d7e0-4039-8125-adda914adb68
+      version: -1
+      name: Validate Upload Attachment
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cherwell.UploadedAttachments.AttachmentFileId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cherwell.UploadedAttachments.BusinessObjectType
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Cherwell
+                accessor: UploadedAttachments.RecordId
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: Cherwell
+                accessor: BusinessObjects.RecordId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: 4ec18993-5fe6-46ba-868e-f2e9fcf395c8
+    type: condition
+    task:
+      id: 4ec18993-5fe6-46ba-868e-f2e9fcf395c8
+      version: -1
+      name: Validate Get Attachment Info
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Cherwell
+                accessor: AttachmentsInfo.AttachmentFiledId
+            iscontext: true
+          right:
+            value:
+              simple: Cherwell.UploadedAttachments.AttachmentFileId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cherwell.AttachmentsInfo.FileName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cherwell.AttachmentsInfo.AttachmentId
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Cherwell
+                accessor: AttachmentsInfo.BusinessObjectType
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+          right:
+            value:
+              simple: Cherwell.UploadedAttachments.BusinessObjectType
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: 70a75a71-05b6-4e24-882c-8606522f404b
+    type: condition
+    task:
+      id: 70a75a71-05b6-4e24-882c-8606522f404b
+      version: -1
+      name: Validate Download Attachment
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+      - "18"
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: File
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Name
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "1"
+            iscontext: true
+          right:
+            value:
+              simple: CherwellTestFile.txt
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: 000dafbd-cb7b-4fac-8a46-efcc048b7c90
+    type: regular
+    task:
+      id: 000dafbd-cb7b-4fac-8a46-efcc048b7c90
+      version: -1
+      name: Remove Attachment
+      description: Remove the given attachment from the given business object
+      script: '|||cherwell-remove-attachment'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      attachment_id:
+        simple: ${Cherwell.AttachmentsInfo.AttachmentId}
+      id_type:
+        simple: record_id
+      id_value:
+        simple: ${Cherwell.AttachmentsInfo.BusinessObjectRecordId}
+      type:
+        simple: ${Cherwell.AttachmentsInfo.BusinessObjectType}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: d6f731fe-bb81-4d3f-8334-35cbc2812f7a
+    type: regular
+    task:
+      id: d6f731fe-bb81-4d3f-8334-35cbc2812f7a
+      version: -1
+      name: Link Business Objects - Incident Own Task
+      description: Link related business objects
+      script: '|||cherwell-link-business-objects'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      child_record_id:
+        complex:
+          root: Cherwell
+          accessor: BusinessObjects.RecordId
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "1"
+      child_type:
+        simple: Task
+      parent_record_id:
+        complex:
+          root: Cherwell
+          accessor: BusinessObjects.RecordId
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      parent_type:
+        simple: incident
+      relationship_id:
+        simple: 9369187528b417b4a17aaa4646b7f7a78b3c821be9
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: 06203ce2-b487-42d2-83d4-f3cb1a70967d
+    type: regular
+    task:
+      id: 06203ce2-b487-42d2-83d4-f3cb1a70967d
+      version: -1
+      name: Create Business Object - Task
+      description: Create a business object
+      script: '|||cherwell-create-business-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      json:
+        simple: '{"Title": "Test task", "Description": "Test task generated from test
+          playbook", "OwnedByTeam": "HR",  "Type":"Work Item", "Status":"New"}'
+      type:
+        simple: Task
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3315
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: 36675088-a189-4577-882e-d767a2d4278c
+    type: regular
+    task:
+      id: 36675088-a189-4577-882e-d767a2d4278c
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: f16c4bfc-c2cd-4dd1-8bca-177d5f9bd527
+    type: regular
+    task:
+      id: f16c4bfc-c2cd-4dd1-8bca-177d5f9bd527
+      version: -1
+      name: Unlink Business Objects - Incident Own Task
+      description: Unlink linked, related business objects
+      script: '|||cherwell-unlink-business-objects'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      child_record_id:
+        complex:
+          root: Cherwell
+          accessor: BusinessObjects.RecordId
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "1"
+      child_type:
+        simple: Task
+      parent_record_id:
+        complex:
+          root: Cherwell
+          accessor: BusinessObjects.RecordId
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      parent_type:
+        simple: incident
+      relationship_id:
+        simple: 9369187528b417b4a17aaa4646b7f7a78b3c821be9
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3665
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: a41cd015-5d2b-4dc3-862f-1b6fefb6c55e
+    type: regular
+    task:
+      id: a41cd015-5d2b-4dc3-862f-1b6fefb6c55e
+      version: -1
+      name: 'Query Business Object '
+      description: Run advanced queries to search in a given business object.
+      script: '|||cherwell-query-business-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      max_results: {}
+      query:
+        complex:
+          root: ${Cherwell
+          accessor: BusinessObjects.Description}
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[["Description","eq","'
+              suffix:
+                value:
+                  simple: '"]]'
+      type:
+        simple: incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: c3170507-39ef-4f4e-8eaf-0a1feab5b1b5
+    type: regular
+    task:
+      id: c3170507-39ef-4f4e-8eaf-0a1feab5b1b5
+      version: -1
+      name: Get Field Info
+      description: Get field info by one of its properties (Name, DIsplay Name or
+        ID)
+      script: '|||cherwell-get-field-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      field_property:
+        simple: Customer Display Name
+      type:
+        simple: incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 3665
+        }
+      }
+    note: false
+    timertriggers: []
+  "20":
+    id: "20"
+    taskid: fc4d89a9-1b7f-49e5-81e4-6b07ad87ffdc
+    type: regular
+    task:
+      id: fc4d89a9-1b7f-49e5-81e4-6b07ad87ffdc
+      version: -1
+      name: Fetch Incidents
+      description: Execute FetchIncident for a given instance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      add_to_context:
+        simple: "true"
+      brand_name:
+        simple: Cherwell
+      expect_data: {}
+      instance_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+  "21":
+    id: "21"
+    taskid: ff992638-4bfe-48b3-89cb-8826955ee81e
+    type: title
+    task:
+      id: ff992638-4bfe-48b3-89cb-8826955ee81e
+      version: -1
+      name: Additional Commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 3330
+        }
+      }
+    note: false
+    timertriggers: []
+  "22":
+    id: "22"
+    taskid: 437ef14a-47fd-4734-83fc-72babbcd8ef0
+    type: title
+    task:
+      id: 437ef14a-47fd-4734-83fc-72babbcd8ef0
+      version: -1
+      name: Business Object Flow
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "23":
+    id: "23"
+    taskid: 50ceaab1-378b-4a0f-8c92-0329d2358746
+    type: regular
+    task:
+      id: 50ceaab1-378b-4a0f-8c92-0329d2358746
+      version: -1
+      name: Delete Business Object
+      description: Delete a given business object
+      script: '|||cherwell-delete-business-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      id_type:
+        simple: public_id
+      id_value:
+        complex:
+          root: Cherwell
+          accessor: BusinessObjects.PublicId
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      type:
+        simple: incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+  "24":
+    id: "24"
+    taskid: 1b018a2b-8eff-435e-823f-92cb90b0c45a
+    type: title
+    task:
+      id: 1b018a2b-8eff-435e-823f-92cb90b0c45a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 4190
+        }
+      }
+    note: false
+    timertriggers: []
+  "26":
+    id: "26"
+    taskid: 15a3bfe9-0aea-45a9-8a86-b16bcd97eb7a
+    type: condition
+    task:
+      id: 15a3bfe9-0aea-45a9-8a86-b16bcd97eb7a
+      version: -1
+      name: Validate Query Business Object
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: FetchedIncidents
+                accessor: RecordId
+            iscontext: true
+          right:
+            value:
+              simple: ${Cherwell.BusinessObjects(val.IncidentType).RecordId}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+  "27":
+    id: "27"
+    taskid: c8eb2b50-2d76-456d-8de0-0e5a035c542d
+    type: regular
+    task:
+      id: c8eb2b50-2d76-456d-8de0-0e5a035c542d
+      version: -1
+      name: Get business Object ID
+      script: '|||cherwell-get-business-object-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      business_object_name:
+        simple: incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1452.5,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+  "28":
+    id: "28"
+    taskid: ea365864-273f-4fed-83db-18cc7503f9ea
+    type: condition
+    task:
+      id: ea365864-273f-4fed-83db-18cc7503f9ea
+      version: -1
+      name: Validate Get Business Object ID
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Cherwell.BusinessObjectInfo.BusinessObjectId
+            iscontext: true
+          right:
+            value:
+              simple: 6dd53665c0c24cab86870a21cf6434ae
+    view: |-
+      {
+        "position": {
+          "x": 1452.5,
+          "y": 3665
+        }
+      }
+    note: false
+    timertriggers: []
+  "29":
+    id: "29"
+    taskid: d0cc01cd-3234-4edb-8a0b-13ff16125376
+    type: regular
+    task:
+      id: d0cc01cd-3234-4edb-8a0b-13ff16125376
+      version: -1
+      name: Run saved search
+      description: Returns the results of a saved search
+      script: '|||cherwell-run-saved-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      association_id:
+        simple: 6dd53665c0c24cab86870a21cf6434ae
+      scope:
+        simple: Global
+      scope_owner:
+        simple: (None)
+      search_name:
+        simple: Test playbook search
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+  "30":
+    id: "30"
+    taskid: 2df6ec58-99fd-4b8c-8405-76935aa0913f
+    type: condition
+    task:
+      id: 2df6ec58-99fd-4b8c-8405-76935aa0913f
+      version: -1
+      name: Validate Run Saved Search
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Cherwell
+                accessor: SearchOperation.RecordId
+            iscontext: true
+          right:
+            value:
+              simple: ${Cherwell.BusinessObjects(val.IncidentType).RecordId}
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+  "31":
+    id: "31"
+    taskid: a3e79146-845e-42f1-82b3-c2064a41a028
+    type: regular
+    task:
+      id: a3e79146-845e-42f1-82b3-c2064a41a028
+      version: -1
+      name: Get Business Object - Get the last created incident
+      description: Get a business objects by an ID
+      script: '|||cherwell-get-business-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+      - "21"
+    scriptarguments:
+      id_type:
+        simple: public_id
+      id_value:
+        simple: ${Cherwell.BusinessObjects.PublicId}
+      type:
+        simple: incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "32":
+    id: "32"
+    taskid: f342f9ce-8e0b-479c-89c7-34e70d523c12
+    type: condition
+    task:
+      id: f342f9ce-8e0b-479c-89c7-34e70d523c12
+      version: -1
+      name: Validate Query Business Object
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Cherwell
+                accessor: QueryResults.RecID
+            iscontext: true
+          right:
+            value:
+              simple: ${Cherwell.BusinessObjects(val.IncidentType).RecordId}
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+  "33":
+    id: "33"
+    taskid: 51e34cee-2310-4a28-86d8-ae5682b57ea9
+    type: regular
+    task:
+      id: 51e34cee-2310-4a28-86d8-ae5682b57ea9
+      version: -1
+      name: Delete Business Object
+      description: Delete a given business object
+      script: '|||cherwell-delete-business-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      id_type:
+        simple: public_id
+      id_value:
+        complex:
+          root: Cherwell
+          accessor: BusinessObjects.PublicId
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "1"
+      type:
+        simple: task
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 4015
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4205,
+        "width": 1782.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

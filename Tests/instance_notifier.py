@@ -10,12 +10,14 @@ from test_integration import __create_integration_instance, __delete_integration
 from Tests.test_utils import str2bool, run_command, print_color, print_error, LOG_COLORS
 
 
+SERVER_URL = "https://{}"
+
+
 def options_handler():
     parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
     parser.add_argument('-n', '--nightly', type=str2bool, help='is nightly build?', required=True)
     parser.add_argument('-s', '--slack', help='The token for slack', required=True)
     parser.add_argument('-e', '--secret', help='Path to secret conf file', required=True)
-    parser.add_argument('-c', '--server', help='The server URL to connect to', required=True)
     parser.add_argument('-u', '--user', help='The username for the login', required=True)
     parser.add_argument('-p', '--password', help='The password for the login', required=True)
     parser.add_argument('-b', '--buildUrl', help='The url for the build', required=True)
@@ -52,6 +54,7 @@ def test_instances(secret_conf_path, server, username, password):
     for integration in integrations:
         integrations_counter += 1
         integration_name = integration.get('name', None)
+        integration_instance_name = integration.get('instance_name', '')
         integration_params = integration.get('params', None)
         devops_comments = integration.get('devops_comments', None)
         product_description = integration.get('product_description', None)
@@ -59,7 +62,8 @@ def test_instances(secret_conf_path, server, username, password):
         has_integration = integration.get('has_integration', True)
 
         if has_integration:
-            instance_id = __create_integration_instance(c, integration_name, integration_params, is_byoi)
+            instance_id = __create_integration_instance(c, integration_name, integration_instance_name,
+                                                        integration_params, is_byoi)
             if not instance_id:
                 print_error('Failed to create instance of %s' % (integration_name,))
                 failed_integration.append("{0} {1} - {2}".format(integration_name,
@@ -110,16 +114,7 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
         sc = SlackClient(slack_token)
         sc.api_call(
             "chat.postMessage",
-            channel="devops-events",
-            username="Instances nightly report",
-            as_user="False",
-            attachments=attachments,
-            text="You have {0} instances configurations".format(integrations_counter)
-        )
-
-        sc.api_call(
-            "chat.postMessage",
-            channel="content-lab-tests",
+            channel="dmst-content-lab",
             username="Instances nightly report",
             as_user="False",
             attachments=attachments,
@@ -130,6 +125,14 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
 if __name__ == "__main__":
     options = options_handler()
     if options.nightly:
-        slack_notifier(options.slack, options.secret, options.server, options.user, options.password, options.buildUrl)
+        with open('./Tests/instance_ips.txt', 'r') as instance_file:
+            instance_ips = instance_file.readlines()
+            instance_ips = [line.strip('\n').split(":") for line in instance_ips]
+
+        for ami_instance_name, ami_instance_ip in instance_ips:
+            if ami_instance_name == "Server Master":
+                server = SERVER_URL.format(ami_instance_ip)
+
+        slack_notifier(options.slack, options.secret, server, options.user, options.password, options.buildUrl)
     else:
         print_color("Not nightly build, stopping Slack Notifications about instances", LOG_COLORS.RED)

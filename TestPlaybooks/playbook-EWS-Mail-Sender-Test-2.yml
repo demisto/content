@@ -1,0 +1,161 @@
+id: EWS Mail Sender Test 2
+version: 8
+name: EWS Mail Sender Test 2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 53e3e9b8-f046-4b6e-8bf1-9e314ec8ddd3
+    type: start
+    task:
+      id: 53e3e9b8-f046-4b6e-8bf1-9e314ec8ddd3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 3d824a33-ccf2-4fb8-88d9-1447cef90aa4
+    type: regular
+    task:
+      id: 3d824a33-ccf2-4fb8-88d9-1447cef90aa4
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 510a6b8a-1596-4df8-8313-6d0ad1034731
+    type: regular
+    task:
+      id: 510a6b8a-1596-4df8-8313-6d0ad1034731
+      version: -1
+      name: Rasterize URL
+      script: '|||rasterize'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      height: {}
+      type: {}
+      url:
+        simple: https://www.google.com
+      width: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: dd517ff2-16c6-4fa8-8510-f8d231f4b0ce
+    type: playbook
+    task:
+      id: dd517ff2-16c6-4fa8-8510-f8d231f4b0ce
+      version: -1
+      name: Send Email To Recipients
+      playbookName: Send Email To Recipients
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      attIDs:
+        simple: ${InfoFile.EntryID}
+      cc: {}
+      to:
+        simple: buildtests@demisto.int
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: e97ec6c4-e790-4487-8736-0ddd30c578b8
+    type: title
+    task:
+      id: e97ec6c4-e790-4487-8736-0ddd30c578b8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

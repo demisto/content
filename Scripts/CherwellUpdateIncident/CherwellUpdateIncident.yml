@@ -1,0 +1,77 @@
+args:
+- default: false
+  description: Incident description.
+  isArray: false
+  name: description
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  description: Incident priority.
+  isArray: false
+  name: priority
+  predefined:
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  - '6'
+  required: false
+  secret: false
+- default: false
+  description: Incident owner.
+  isArray: false
+  name: owned_by
+  required: false
+  secret: false
+- default: false
+  description: Service needed.
+  isArray: false
+  name: service
+  required: false
+  secret: false
+- default: false
+  description: Public ID or record ID.
+  isArray: false
+  name: id_value
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: false
+  description: Type of ID.
+  isArray: false
+  name: id_type
+  predefined:
+  - public_id
+  - record_id
+  required: true
+  secret: false
+comment: This script is an example script of how to update an incident in Cherwell.
+  The script wraps the update-business-object command of the cherwell integration.
+  When writing your own script to update a business object, follow the instructions
+  found in the configuration section of the script, but do not change the execution section.
+commonfields:
+  id: CherwellUpdateIncident
+  version: -1
+enabled: false
+name: CherwellUpdateIncident
+tags: [Cherwell]
+dependson:
+  must:
+  - Cherwell|||cherwell-update-business-object
+outputs:
+- contextPath: Cherwell.BusinessObjects.PublicId
+  description: Incident public ID
+  type: String
+- contextPath: Cherwell.BusinessObjects.RecordId
+  description: Incident record ID
+  type: String
+script: '-'
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.7.2.214
+subtype: python3
+tests:
+  - Cherwell Example Scripts - test

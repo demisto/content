@@ -1,15 +1,14 @@
 commonfields:
   id: 7b02fa0f-94ff-48c7-8350-b4e353702e73
-  version: 3
+  version: -1
 name: VMRay
 script: |-
   import json
   import time
   res = []
-  resCmdName = demisto.executeCommand("getFilePath", {"id": demisto.args()['entry_id']})
+  entry_id = demisto.args()['entry_id']
   try:
-    path = resCmdName[0]['Contents']['path']
-    data = json.loads(demisto.executeCommand("upload_sample", {"file_id":path})[0]['Contents'])
+    data = demisto.executeCommand("upload_sample", {"entry_id":entry_id})[0]["Contents"]["data"]
     if data:
         open_jobs = data["jobs"]
         sample_id = data["samples"]
@@ -18,16 +17,16 @@ script: |-
             demisto.executeCommand("scheduleEntry", {"command": "!vmray_getResults sample_id={} ".format(str(sample_id)), "cron": "*/1 * * * *"})
         else:
             res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                            "Contents": "Could not extract result list from response: " + data["errors"][0]["error_msg"]})
+                            "Contents": "Could not extract result list from response: " + str(data["errors"][0]["error_msg"])})
+        demisto.results(res)
 
   except Exception as ex:
     res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
-                "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmdName)})
-  demisto.results(res)
+                "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(entry_id)})
 type: python
 tags:
 - file
-comment: Upload file and get it retults with VMRay
+comment: Deprecated, use "Detonate File - VMRay playbook instead"
 enabled: true
 args:
 - name: entry_id
@@ -37,4 +36,9 @@ scripttarget: 0
 dependson:
   must:
   - VMRay|||upload_sample
+runonce: false
+runas: DBotWeakRole
 timeout: 0s
+deprecated: true
+tests:
+- No tests

@@ -1,0 +1,190 @@
+category: Database
+commonfields:
+  id: Snowflake
+  version: -1
+configuration:
+- display: Account - See Detailed Description section.
+  name: account
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Region (only if you are not US West)
+  name: region
+  required: false
+  type: 0
+- display: Authenticator - See Detailed Description section.
+  name: authenticator
+  required: false
+  type: 0
+- display: Default warehouse to use
+  name: warehouse
+  required: true
+  type: 0
+- display: Default database to use
+  name: database
+  required: true
+  type: 0
+- display: Default schema to use
+  name: schema
+  required: false
+  type: 0
+- display: Default role to use
+  name: role
+  required: false
+  type: 0
+- defaultvalue: 'true'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉‎                                                                                  Fetch
+    query to retrieve new incidents. This field is mandatory when 'Fetches incidents'
+    is set to true.
+  name: fetch_query
+  required: false
+  type: 0
+- defaultvalue: 24 hours
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+- display: The name of the field/column that contains the datetime object or timestamp
+    for the data being fetched (case sensitive). This field is mandatory when 'Fetches
+    incidents' is set to true.
+  name: datetime_column
+  required: false
+  type: 0
+- display: The name of the field/column in the fetched data from which the name for
+    the demisto incident will be assigned (case sensitive)
+  name: incident_name_column
+  required: false
+  type: 0
+- defaultvalue: '10000'
+  display: The maximum number of rows to be returned by a fetch
+  name: limit
+  required: false
+  type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Analytic data warehouse provided as Software-as-a-Service.
+display: Snowflake
+name: Snowflake
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: The query to execute.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: The warehouse to use for the query. If not specified, the default will be used.
+      isArray: false
+      name: warehouse
+      required: false
+      secret: false
+    - default: false
+      description: The database to use for the query. If not specified, the default will be used.
+      isArray: false
+      name: database
+      required: false
+      secret: false
+    - default: false
+      description: The schema to use for the query. If not specified, the default will be used.
+      isArray: false
+      name: schema
+      required: false
+      secret: false
+    - default: false
+      description: The role to use for the query. If not specified, the default will be used.
+      isArray: false
+      name: role
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '100'
+      description: The number of rows to retrieve.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: 'A CSV list of columns to display in the specified order, for example: "Name, ID, Timestamp"'
+      isArray: true
+      name: columns
+      required: false
+      secret: false
+    deprecated: false
+    description: Executes a SELECT query and retrieve the data.
+    execution: true
+    name: snowflake-query
+    outputs:
+    - contextPath: Snowflake.Query
+      description: The query used to fetch results from the database.
+      type: String
+    - contextPath: Snowflake.Result
+      description: Results from querying the database.
+      type: Unknown
+    - contextPath: Snowflake.Database
+      description: The name of the database object.
+      type: String
+    - contextPath: Snowflake.Schema
+      description: The name of the schema object.
+      type: String
+  - arguments:
+    - default: true
+      description: The command to execute.
+      isArray: false
+      name: db_operation
+      required: true
+      secret: false
+    - default: false
+      description: The warehouse to use for the query. If not specified, the default will be used.
+      isArray: false
+      name: warehouse
+      required: false
+      secret: false
+    - default: false
+      description: The database to use for the query. If not specified, the default will be used.
+      isArray: false
+      name: database
+      required: false
+      secret: false
+    - default: false
+      description: The schema to use for the query. If not specified, the default will be used.
+      isArray: false
+      name: schema
+      required: false
+      secret: false
+    - default: false
+      description: The role to use for the query. If not specified, the default will be used.
+      isArray: false
+      name: role
+      required: false
+      secret: false
+    deprecated: false
+    description: Makes a DML change in the database.
+    execution: true
+    name: snowflake-update
+  dockerimage: demisto/snowflake:1.0.0.211
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+- Snowflake-Test

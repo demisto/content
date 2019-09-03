@@ -5,11 +5,14 @@ from CommonServerUserPython import *
 """ IMPORTS """
 from datetime import datetime
 import requests
+import base64
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 """ GLOBALS """
+MAX_UNIQUE = int(demisto.params().get('max_unique', 2000))
+FETCH_CHUNK_SIZE = int(demisto.params().get('fetch_chunk_size', 50))
 BASE_URL = demisto.params().get('server').rstrip('/') + '/'
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
 HEADERS = {
@@ -45,10 +48,33 @@ if not demisto.params().get("proxy", False):
 
 @logger
 def int_to_ip(num):
-    """ IP stored as an int within the ArcSight DB. This function transform it into IPv4 format """
-    if num and isinstance(num, int):
-        return "{}.{}.{}.{}".format((num >> 24) & 255, (num >> 16) & 255, (num >> 8) & 255, num & 255)
-    return num
+    return "{}.{}.{}.{}".format((num >> 24) & 255, (num >> 16) & 255, (num >> 8) & 255, num & 255)
+
+
+@logger
+def decode_ip(address_by_bytes):
+    """ Decodes the enigmatic ways IPs are stored in ArcSight DB into IPv4/6 format """
+    if isinstance(address_by_bytes, int):
+        return int_to_ip(address_by_bytes)
+
+    try:
+        # if it's not an int, it should be Base64 encoded string
+        decoded_string = base64.b64decode(address_by_bytes).encode('hex')
+        if len(address_by_bytes) >= 20:
+            # split the IPv6 address into 8 chunks of 4
+            decoded_string = [decoded_string[i:i + 4] for i in range(0, len(decoded_string), 4)]  # type: ignore
+            return "{}:{}:{}:{}:{}:{}:{}:{}".format(*decoded_string)
+        elif len(address_by_bytes) >= 6:
+            decoded_string = int(decoded_string, 16)  # type: ignore
+            return int_to_ip(decoded_string)
+        else:
+            return address_by_bytes
+
+    except Exception as ex:
+        # sometimes ArcSight would not encode IPs, this will cause the decoder to
+        # throw an exception, and in turn, we will return the input in its original form.
+        demisto.debug(str(ex))
+        return address_by_bytes
 
 
 @logger
@@ -57,7 +83,7 @@ def parse_timestamp_to_datestring(timestamp):
         try:
             return datetime.fromtimestamp(timestamp / 1000.0).strftime("%Y-%m-%dT%H:%M:%S.000Z")
         except (ValueError, TypeError) as e:
-            LOG(e.message)
+            demisto.debug(str(e))
             if timestamp == '31 Dec 1969 19:00:00 EST':
                 # Unix epoch 00:00:00 UTC
                 return 'None'
@@ -65,33 +91,37 @@ def parse_timestamp_to_datestring(timestamp):
 
 
 @logger
-def beautifully_json(d, depth=0):
+def decode_arcsight_output(d, depth=0, remove_nones=True):
     """ Converts some of the values from ArcSight DB into a more useful & readable format """
-    # arcsight stores some None values as follows
-    NONE_VALUES = [-9223372036854776000, -9223372036854775808, -2147483648]
-    # arcsight stores IP addresses as int, in the following keys
-    IP_FIELDS = ['address', 'Destination Address', 'Source Address']
-    # arcsight stores Dates as timeStamps in the following keys, need to format them into Date
+    # ArcSight stores some None values as follows
+    NONE_VALUES = [-9223372036854776000, -9223372036854775808, -2147483648, 5e-324]
+    # ArcSight stores IP addresses as int, in the following keys
+    IP_FIELDS = ['address', 'addressAsBytes', 'Destination Address', 'Source Address']
+    # ArcSight stores Dates as timeStamps in the following keys, -> reformat into Date
     TIMESTAMP_FIELDS = ['createdTimestamp', 'modifiedTimestamp', 'deviceReceiptTime', 'startTime', 'endTime',
                         'stageUpdateTime', 'modificationTime', 'managerReceiptTime', 'createTime', 'agentReceiptTime']
     if depth < 10:
         if isinstance(d, list):
-            return [beautifully_json(d_, depth + 1) for d_ in d]
+            return [decode_arcsight_output(d_, depth + 1) for d_ in d]
         if isinstance(d, dict):
             for key, value in d.items():
                 if isinstance(value, dict):
-                    beautifully_json(value, depth + 1)
+                    decode_arcsight_output(value, depth + 1)
                 elif value in NONE_VALUES:
-                    d.pop(key, None)
-                elif key in IP_FIELDS and isinstance(value, int):
-                    d[key] = int_to_ip(value)
+                    if remove_nones:
+                        d.pop(key, None)
+                    else:
+                        d[key] = 'None'
+
+                elif key in IP_FIELDS:
+                    key = 'decodedAddress' if key == 'addressAsBytes' else key
+                    d[key] = decode_ip(value)
                 elif key in TIMESTAMP_FIELDS:
                     key = key.replace('Time', 'Date').replace('stamp', '')
                     d[key] = parse_timestamp_to_datestring(value)
     return d
 
 
-@logger
 def login():
     query_path = 'www/core-service/rest/LoginService/login'
     headers = {
@@ -113,7 +143,7 @@ def login():
         if 'log.loginResponse' in res_json and 'log.return' in res_json.get('log.loginResponse'):
             auth_token = res_json.get('log.loginResponse').get('log.return')
             if demisto.command() not in ['test-module', 'fetch-incidents']:
-                # this is done to bypass setting integration context with commands outside of the cli
+                # this is done to bypass setting integration context outside of the cli
                 demisto.setIntegrationContext({'auth_token': auth_token})
             return auth_token
 
@@ -122,7 +152,6 @@ def login():
         return_error('Failed to login. Please check integration parameters')
 
 
-@logger
 def send_request(query_path, body=None, params=None, json=None, headers=None, method='post', is_login=False):
     if headers is None:
         headers = HEADERS
@@ -159,7 +188,6 @@ def send_request(query_path, body=None, params=None, json=None, headers=None, me
         return_error('Connection Error. Please check integration parameters')
 
 
-@logger
 def test():
     """
     Login (already done in global).
@@ -213,6 +241,7 @@ def get_query_viewer_results(query_viewer_id):
 
     else:
         return_error('Invalid response structure. Open ticket to Demisto support and attach the logs')
+        return
 
     fields = return_object.get('columnHeaders', [])
     if not isinstance(fields, (list,)):
@@ -315,6 +344,9 @@ def fetch():
     already_fetched = last_run.get('already_fetched', [])
 
     fields, query_results = get_query_viewer_results(events_query_viewer_id or cases_query_viewer_id)
+    # sort query_results by creation time
+    query_results.sort(key=lambda k: int(k.get('Start Time') or k.get('Create Time')))
+
     incidents = []
     for result in query_results:
         # convert case or event to demisto incident
@@ -323,15 +355,20 @@ def fetch():
             create_time_epoch = int(result.get('Start Time') or result.get('Create Time'))
             result['Create Time'] = parse_timestamp_to_datestring(create_time_epoch)
             incident_name = result.get('Name') or 'New {} from arcsight at {}'.format(type_of_incident, datetime.now())
+            labels = [{'type': key.encode('utf-8'), 'value': value.encode('utf-8') if value else value} for key, value
+                      in result.items()]
             incident = {
                 'name': incident_name,
                 'occurred': result['Create Time'],
-                'labels': [{'type': key, 'value': str(value)} for key, value in result.items()],
+                'labels': labels,
                 'rawJSON': json.dumps(result)
             }
 
             incidents.append(incident)
-            if len(already_fetched) > 1000:
+            if len(incidents) >= FETCH_CHUNK_SIZE:
+                break
+
+            if len(already_fetched) > MAX_UNIQUE:
                 already_fetched.pop(0)
             already_fetched.append(r_id)
 
@@ -339,7 +376,7 @@ def fetch():
         'already_fetched': already_fetched,
     }
     demisto.setLastRun({'value': json.dumps(last_run)})
-    beautifully_json(incidents)
+    decode_arcsight_output(incidents)
 
     if demisto.command() == 'as-fetch-incidents':
         contents = {
@@ -377,8 +414,9 @@ def get_case(resource_id, fetch_base_events=False):
             # if eventIDs is single id then convert to list
             case['eventIDs'] = [case['eventIDs']]
 
-            if fetch_base_events:
-                case['events'] = get_security_events(case['eventIDs'])
+        if case.get('eventIDs') and fetch_base_events:
+            case['events'] = decode_arcsight_output(get_security_events(case['eventIDs'], ignore_empty=True),
+                                                    remove_nones=False)
 
         return case
 
@@ -403,7 +441,7 @@ def get_case_command():
     if with_base_events:
         case['events'] = raw_case.get('events')
 
-    contents = beautifully_json(raw_case)
+    contents = decode_arcsight_output(raw_case)
     human_readable = tableToMarkdown(name='Case {}'.format(resource_id), t=case, removeNull=True)
     outputs = {'ArcSightESM.Cases(val.resourceid===obj.resourceid)': contents}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
@@ -436,19 +474,19 @@ def get_security_events_command():
     raw_events = get_security_events(ids, last_date_range)
     if raw_events:
         events = []
-        for raw_event in beautifully_json(raw_events):
+        contents = decode_arcsight_output(raw_events)
+        for raw_event in contents:
             event = {
                 'Event ID': raw_event.get('eventId'),
                 'Time': timestamp_to_datestring(raw_event.get('endTime'), '%Y-%m-%d, %H:%M:%S'),
-                'Source Address': int_to_ip(demisto.get(raw_event, 'source.address')),
-                'Destination Address': int_to_ip(demisto.get(raw_event, 'destination.address')),
+                'Source Address': decode_ip(demisto.get(raw_event, 'source.address')),
+                'Destination Address': decode_ip(demisto.get(raw_event, 'destination.address')),
                 'Name': raw_event.get('name'),
                 'Source Port': demisto.get(raw_event, 'source.port'),
                 'Base Event IDs': raw_event.get('baseEventIds')
             }
             events.append(event)
 
-        contents = beautifully_json(raw_events)
         human_readable = tableToMarkdown('Security Event: {}'.format(','.join(map(str, ids))), events, removeNull=True)
         outputs = {'ArcSightESM.SecurityEvents(val.eventId===obj.eventId)': contents}
         return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
@@ -457,7 +495,7 @@ def get_security_events_command():
 
 
 @logger
-def get_security_events(event_ids, last_date_range=None):
+def get_security_events(event_ids, last_date_range=None, ignore_empty=False):
     start_time, end_time = -1, -1
     if last_date_range:
         # Must of format 'number date_range_unit'
@@ -490,7 +528,9 @@ def get_security_events(event_ids, last_date_range=None):
         events = res_json.get('sev.getSecurityEventsResponse').get('sev.return')
         return events if isinstance(events, list) else [events]
 
-    return_error('Events are empty for some reason. Response Body: {}'.format(res.text))
+    demisto.debug(res.text)
+    if not ignore_empty:
+        demisto.results('No events were found')
 
 
 @logger
@@ -509,7 +549,7 @@ def update_case_command():
         'Severity': raw_updated_case.get('consequenceSeverity'),
         'CreatedTime': epochToTimestamp(raw_updated_case.get('createdTimestamp'))
     }
-    contents = beautifully_json(raw_updated_case)
+    contents = decode_arcsight_output(raw_updated_case)
     human_readable = tableToMarkdown(name='Case {}'.format(case_id), t=updated_case, removeNull=True)
     outputs = {'ArcSightESM.Cases(val.resourceid===obj.resourceid)': contents}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
@@ -537,8 +577,9 @@ def update_case(case_id, stage, severity):
 
     if not res.ok:
         demisto.debug(res.text)
-        return_error('Failed to get security update case {}\nFull URL: {}\nStatus Code: {}\nResponse Body: {}'.format(
-            case_id, BASE_URL + query_path, res.status_code, res.text))
+        return_error('Failed to get security update case {}. \nPlease make sure user have edit permissions,'
+                     ' or case is unlocked. \nStatus Code: {}\nResponse Body: {}'.format(case_id, res.status_code,
+                                                                                         res.text))
 
     res_json = res.json()
     if 'cas.updateResponse' in res_json and 'cas.return' in res_json.get('cas.updateResponse'):
@@ -548,9 +589,26 @@ def update_case(case_id, stage, severity):
 
 
 @logger
+def get_correlated_events_ids(event_ids):
+    related_ids = set(event_ids)
+    correlated_events = decode_arcsight_output(get_security_events(event_ids, ignore_empty=True))
+
+    if correlated_events:
+        for raw_event in correlated_events:
+            base_event_ids = raw_event.get('baseEventIds')
+            if base_event_ids:
+                if isinstance(base_event_ids, list):
+                    related_ids.update(base_event_ids)
+                else:
+                    related_ids.add(base_event_ids)
+
+    return list(related_ids)
+
+
+@logger
 def get_case_event_ids_command():
     case_id = demisto.args().get('caseId')
-
+    with_correlated_events = demisto.args().get('withCorrelatedEvents') == 'true'
     query_path = 'www/manager-service/rest/CaseService/getCaseEventIDs'
     params = {
         'authToken': AUTH_TOKEN,
@@ -568,7 +626,10 @@ def get_case_event_ids_command():
         if not isinstance(event_ids, list):
             event_ids = [event_ids]
 
-        contents = beautifully_json(res_json)
+        if with_correlated_events:
+            event_ids = get_correlated_events_ids(event_ids)
+
+        contents = decode_arcsight_output(res_json)
         human_readable = tableToMarkdown(name='', headers='Case {} Event IDs'.format(case_id), t=event_ids,
                                          removeNull=True)
         outputs = {'ArcSightESM.CaseEvents': event_ids}
@@ -648,8 +709,15 @@ def get_entries_command():
                 k, v = f.split(':')
                 filtered = [entry for entry in filtered if ((entry.get(k) == v) if k else (v in entry.values()))]
 
-        contents = beautifully_json(filtered)
-        outputs = {'ArcSightESM.ActiveList.{id}'.format(id=resource_id): contents}
+        contents = decode_arcsight_output(filtered)
+        ActiveListContext = {
+            'ResourceID': resource_id,
+            'Entries': contents,
+        }
+        outputs = {
+            'ArcSightESM.ActiveList.{id}'.format(id=resource_id): contents,
+            'ArcSightESM.ActiveList(val.ResourceID===obj.ResourceID)': ActiveListContext
+        }
         human_readable = tableToMarkdown(name='Active List entries: {}'.format(resource_id), t=filtered,
                                          removeNull=True)
         return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
@@ -723,7 +791,7 @@ def get_all_query_viewers_command():
     if 'qvs.findAllIdsResponse' in res_json and 'qvs.return' in res_json.get('qvs.findAllIdsResponse'):
         query_viewers = res_json.get('qvs.findAllIdsResponse').get('qvs.return')
 
-        contents = beautifully_json(query_viewers)
+        contents = decode_arcsight_output(query_viewers)
         outputs = {'ArcSightESM.AllQueryViewers': contents}
         human_readable = tableToMarkdown(name='', t=query_viewers, headers='Query Viewers', removeNull=True)
         return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
@@ -775,5 +843,5 @@ try:
         get_all_query_viewers_command()
 
 
-except Exception, e:
+except Exception as e:
     return_error(str(e))

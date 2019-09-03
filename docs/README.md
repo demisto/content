@@ -16,6 +16,8 @@ After you have done the above, we will look at Demisto and get started on your f
 
 [Understanding the YAML file structure](https://github.com/demisto/content/blob/master/docs/yaml-file-integration/README.MD)
 
+[Updating Release Notes](https://github.com/demisto/content/blob/master/docs/release_notes/README.MD)
+
 [Creating playbooks](https://github.com/demisto/content/blob/master/docs/creating_playbooks/README.MD)
 
 ## Code Conventions
@@ -60,3 +62,8 @@ Finally, you have tested your code, it's working the way you'd like, and you mad
 | [Fetching Incidents](https://github.com/demisto/content/blob/master/docs/fetching_incidents/README.md) | How to Fetch Incidents |
 | [Integration Documentation](https://github.com/demisto/content/blob/master/docs/integration_documentation/README.MD) | How to generate documentation for an integration |
 | [YAML File](https://github.com/demisto/content/blob/master/docs/yaml-file-integration/README.MD) | Explanation of the Demisto YAML structure |
+| [Testing](https://github.com/demisto/content/blob/master/docs/tests/README.md) | The Demisto Content Repo Testing Methods |
+| [CircleCI](https://github.com/demisto/content/blob/master/docs/docs/circleci/README.MD) | How we test using CircleCI |
+| [Mocks](https://github.com/demisto/content/blob/master/docs/tests/mocks/README.MD) | Explanation of how to test using mocked data |
+| [Unit Testing](https://github.com/demisto/content/blob/master/docs/tests/unit-testing/README.MD) | Explanation of How to Perform Unit Testing on Integrations/Scripts |
+

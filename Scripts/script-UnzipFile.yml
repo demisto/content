@@ -113,25 +113,24 @@ type: python
 tags:
 - Utility
 - file
-comment: Unzip a file using fileName or entryID to specify a file. Files unzipped
-  will be pushed to the war room and names will be pushed to the context.
+comment: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
 enabled: true
 args:
 - name: fileName
   deprecated: true
   default: true
-  description: output filename
+  description: The file name.
 - name: password
   secret: true
-  description: optional password which zip file protected by
+  description: Password to protect the ZIP file.
 - name: entryID
-  description: entry id of the attached zip file in the warroom
+  description: The entry ID of the attached ZIPp file in the War Room.
 - name: lastZipFileInWarroom
   deprecated: true
-  description: write 'yes' (or any other value) if zip file is last zip file in war-rpom
+  description: Enter 'yes' (or any other value) if the ZIP file is last ZIP file in the War Room.
 outputs:
 - contextPath: ExtractedFiles
-  description: list of file names which extracted from zip
+  description: A list of file names that were extracted from the ZIP file.
 scripttarget: 0
 runonce: false
 dockerimage: demisto/7zip

@@ -116,3 +116,5 @@ dependson:
   - incap-list-sites
   - RemoteExec
 timeout: 0s
+tests:
+  - No test - old script

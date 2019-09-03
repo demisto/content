@@ -1,16 +1,15 @@
 import os
 import re
 import sys
-import json
-import yaml
 
 from Tests.scripts.constants import *
-from Tests.test_utils import print_error, print_warning, run_command, get_json, checked_type
+from Tests.test_utils import print_error, print_warning, run_command, get_yaml, get_json, checked_type, \
+    get_release_notes_file_path, get_latest_release_notes_text
 
 try:
     from pykwalify.core import Core
 except ImportError:
-    print "Please install pykwalify, you can do it by running: `pip install -I pykwalify`"
+    print('Please install pykwalify, you can do it by running: `pip install -I pykwalify`')
     sys.exit(1)
 
 
@@ -22,16 +21,31 @@ class StructureValidator(object):
         file_path (str): the path to the file we are examining at the moment.
         is_added_file (bool): whether the file is modified or added.
     """
+    VERSION_SCHEMAS = [
+        INTEGRATION_REGEX,
+        PLAYBOOK_REGEX,
+        SCRIPT_REGEX,
+        INTEGRATION_YML_REGEX,
+        WIDGETS_REGEX,
+        DASHBOARD_REGEX,
+        CLASSIFIER_REGEX,
+        SCRIPT_YML_REGEX,
+        INCIDENT_FIELD_REGEX,
+        MISC_REGEX,
+        REPUTATION_REGEX
+    ]
     SKIPPED_SCHEMAS = [
         TEST_DATA_REGEX,
         MISC_REGEX,
         IMAGE_REGEX,
+        DESCRIPTION_REGEX,
         PIPFILE_REGEX,
         REPORT_REGEX,
         SCRIPT_PY_REGEX,
         SCRIPT_JS_REGEX,
         INTEGRATION_JS_REGEX,
-        INTEGRATION_PY_REGEX
+        INTEGRATION_PY_REGEX,
+        REPUTATION_REGEX
     ]
     REGEXES_TO_SCHEMA_DICT = {
         INTEGRATION_REGEX: "integration",
@@ -46,7 +60,7 @@ class StructureValidator(object):
         CLASSIFIER_REGEX: "classifier",
         LAYOUT_REGEX: "layout",
         INCIDENT_FIELDS_REGEX: "incidentfields",
-        INCIDENT_FIELD_REGEX: "incidentfield"
+        INCIDENT_FIELD_REGEX: "incidentfield",
     }
 
     SCHEMAS_PATH = "Tests/schemas/"
@@ -106,8 +120,8 @@ class StructureValidator(object):
                     print_error(str(err))
                     self._is_valid = False
             else:
-                print(self.file_path + " doesn't match any of the known supported file prefix/suffix,"
-                                       " please make sure that its naming is correct.")
+                print_error(self.file_path + " doesn't match any of the known supported file prefix/suffix,"
+                            " please make sure that its naming is correct.")
                 self._is_valid = False
 
         return self._is_valid
@@ -126,27 +140,40 @@ class StructureValidator(object):
 
         return is_valid
 
+    @staticmethod
+    def validate_layout_file(json_dict):
+        """Validate that the layout file has version of -1."""
+        is_valid = True
+        layout = json_dict.get('layout')
+        if layout.get('version') != -1:
+            is_valid = False
+
+        return is_valid
+
     def is_valid_version(self):
         """Validate that the version of self.file_path is -1."""
         file_extension = os.path.splitext(self.file_path)[1]
         version_number = -1
         reputations_valid = True
+        layouts_valid = True
         if file_extension == '.yml':
-            yaml_dict = get_json(self.file_path)
+            yaml_dict = get_yaml(self.file_path)
             version_number = yaml_dict.get('commonfields', {}).get('version')
             if not version_number:  # some files like playbooks do not have commonfields key
                 version_number = yaml_dict.get('version')
 
         elif file_extension == '.json':
-            if checked_type(self.file_path):
+            if checked_type(self.file_path, self.VERSION_SCHEMAS):
                 file_name = os.path.basename(self.file_path)
                 json_dict = get_json(self.file_path)
                 if file_name == "reputations.json":
                     reputations_valid = self.validate_reputations_file(json_dict)
+                elif re.match(LAYOUT_REGEX, self.file_path, re.IGNORECASE):
+                    layouts_valid = self.validate_layout_file(json_dict)
                 else:
                     version_number = json_dict.get('version')
 
-        if version_number != -1 or not reputations_valid:
+        if version_number != -1 or not reputations_valid or not layouts_valid:
             print_error("The version for our files should always be -1, "
                         "please update the file {}.".format(self.file_path))
             self._is_valid = False
@@ -197,20 +224,13 @@ class StructureValidator(object):
             print_warning("You might need RN please make sure to check that.")
             return
 
-        data_dictionary = None
         if os.path.isfile(self.file_path):
-            with open(os.path.expanduser(self.file_path), "r") as f:
-                if self.file_path.endswith(".json"):
-                    data_dictionary = json.load(f)
-                elif self.file_path.endswith(".yaml") or self.file_path.endswith('.yml'):
-                    try:
-                        data_dictionary = yaml.safe_load(f)
-                    except Exception as e:
-                        print_error(self.file_path + " has yml structure issue. Error was: " + str(e))
-                        self._is_valid = False
+            rn_path = get_release_notes_file_path(self.file_path)
+            rn = get_latest_release_notes_text(rn_path)
 
-            if data_dictionary and data_dictionary.get('releaseNotes') is None:
-                print_error("File " + self.file_path + " is missing releaseNotes, please add.")
+            # check rn file exists and contain text
+            if rn is None:
+                print_error('File {} is missing releaseNotes, Please add it under {}'.format(self.file_path, rn_path))
                 self._is_valid = False
 
     def is_id_not_modified(self, change_string=None):

@@ -4,6 +4,9 @@ commonfields:
 name: CreateDuplicateIncident
 script: |
   import json
+  from dateutil.parser import parse
+  from datetime import timedelta
+
   incident = demisto.incidents()[0]
 
   def get_labels_map(labels):
@@ -11,13 +14,14 @@ script: |
       for x in labels:
           labels_map.append({x['type']: x['value']})
       return labels_map
-
+  old_time = (parse(incident['occurred']) - timedelta(hours=1)).isoformat()#.strftime("%Y-%m-%dT%H:%M:%S%z")
   duplicate_incident = {
       'name': incident['name'],
       'details': incident['details'],
       'severity': incident['severity'],
       'customFields': incident['CustomFields'],
-      'labels': get_labels_map(incident['labels'])
+      'labels': get_labels_map(incident['labels']),
+      'occurred': old_time
   }
 
   res = demisto.executeCommand("createNewIncident", duplicate_incident)
@@ -27,4 +31,4 @@ tags: []
 comment: Create duplicate incident to the current incident.
 enabled: true
 scripttarget: 0
-runonce: false
+dockerimage: demisto/dateutil

@@ -380,7 +380,7 @@
     },
     "incident.occurred": {
       "type": "date",
-      "value": "02 Jan 2006"
+      "value": "Mon, 02 Jan 2006 15:04:05 MST"
     },
     "incident.openDuration": {
       "type": "duration",
@@ -416,15 +416,15 @@
     },
     "incident.status.0": {
       "type": "string",
-      "value": "Not Assigned"
+      "value": "Pending"
     },
     "incident.status.1": {
       "type": "string",
-      "value": "Assigned"
+      "value": "Active"
     },
     "incident.status.2": {
       "type": "string",
-      "value": "Done"
+      "value": "Closed"
     },
     "incident.status.3": {
       "type": "string",

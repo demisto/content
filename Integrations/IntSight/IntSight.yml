@@ -1,0 +1,793 @@
+commonfields:
+  id: IntSights
+  version: -1
+name: IntSights
+display: IntSights
+category: Data Enrichment & Threat Intelligence
+description: Use IntSights to manage and fetch alerts
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: https://api.intsights.com/
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: 'Alert type to fetch as incidents, allowed: "AttackIndication", "DataLeakage",
+    "Phishing", "BrandSecurity", "ExploitableData", "VIP"'
+  name: type
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: 'Minimum Alert severity level to fetch incidents incidents from, allowed
+    values are: ''All'', ''Low'', ''Medium'',''High''(Setting to All will fetch all incidents)'
+  name: severity_level
+  defaultvalue: All
+  type: 0
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: 'Last date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago"'
+  name: fetch_delta
+  defaultvalue: "1 day"
+  type: 0
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: '(MSSP accounts only) Sub account ID:'
+  name: mssp_sub_account_id
+  defaultvalue: ""
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: intsights-get-alert-image
+    arguments:
+    - name: image-id
+      required: true
+      default: true
+      description: The image ID
+    description: Get's alert's image by ID
+  - name: intsights-get-alert-activities
+    arguments:
+    - name: alert-id
+      required: true
+      default: true
+      description: The alert ID
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Activities.Type
+      description: The activity type
+      type: string
+    - contextPath: IntSights.Alerts.Activities.Initiator
+      description: The initiator of the alert
+      type: string
+    - contextPath: IntSights.Alerts.Activities.CreatedDate
+      description: The alert date of creation
+      type: date
+    - contextPath: IntSights.Alerts.Activities.UpdateDate
+      description: The date the alert was updated
+      type: date
+    - contextPath: IntSights.Alerts.Activities.RemediationBlocklistUpdate
+      description: Remediation blocklist update
+      type: string
+    - contextPath: IntSights.Alerts.Activities.AskTheAnalyst.Replies
+      description: Analyst replies to questions
+      type: string
+    - contextPath: IntSights.Alerts.Activities.Mail.Replies
+      description: Mail replies
+      type: string
+    - contextPath: IntSights.Alerts.Activities.ReadBy
+      description: Alert read by
+      type: string
+    description: Get alert activities
+  - name: intsights-assign-alert
+    arguments:
+    - name: alert-id
+      required: true
+      default: true
+      description: Alert's unique ID
+    - name: assignee-email
+      required: true
+      description: Assigned user email
+    - name: is-mssp-optional
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If the assigned user is MSSP user or not
+      defaultValue: "false"
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Assignees.AssigneeID
+      description: The ID of the assignee
+      type: string
+    description: Assign an alert
+  - name: intsights-unassign-alert
+    arguments:
+    - name: alert-id
+      required: true
+      default: true
+      description: Alert's unique ID
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    description: Unassign an alert
+  - name: intsights-send-mail
+    arguments:
+    - name: alert-id
+      required: true
+      default: true
+      description: Alert's unique ID
+    - name: emails
+      required: true
+      description: Destination email addresses array (comma-separated)
+    - name: content
+      required: true
+      description: Content added to the alert details
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: Alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Mail.EmailID
+      description: The email ID
+      type: string
+    - contextPath: IntSights.Alerts.Question
+      description: The question asked
+      type: string
+    description: Send mail with the alert details and a question
+  - name: intsights-ask-the-analyst
+    arguments:
+    - name: alert-id
+      required: true
+      default: true
+      description: Alert's unique ID
+    - name: question
+      required: true
+      description: Question to ask Intsights analyst about the requested alert
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: Alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Question
+      description: The question asked
+      type: string
+    description: Send a question to IntSights analyst about the requested alert
+  - name: intsights-add-tag-to-alert
+    arguments:
+    - name: alert-id
+      required: true
+      default: true
+      description: Unique alert ID
+    - name: tag-name
+      required: true
+      description: The new tag string
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Tags.TagName
+      description: The name of the tag
+      type: string
+    - contextPath: IntSights.Alerts.Tags.ID
+      description: The Tag ID
+      type: string
+    description: Adds a tag to the alert
+  - name: intsights-remove-tag-from-alert
+    arguments:
+    - name: alert-id
+      required: true
+      default: true
+      description: Alert's unique ID
+    - name: tag-id
+      required: true
+      description: Tags's unique ID to remove
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Tags.ID
+      description: The tag ID
+      type: string
+    description: Removes a tag from the alert
+  - name: intsights-add-comment-to-alert
+    arguments:
+    - name: alert-id
+      required: true
+      default: true
+      description: Alert's unique ID
+    - name: comment
+      required: true
+      description: Desired comment
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Comment
+      description: The comment
+      type: string
+    description: Add comment to alert
+  - name: intsights-update-alert-severity
+    arguments:
+    - name: alert-id
+      required: true
+      default: true
+      description: Alert's unique ID
+    - name: severity
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - High
+      - Medium
+      - Low
+      description: The desired severity
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Severity
+      description: The severity of the alert
+      type: string
+    description: Change the alert's severity
+  - name: intsights-get-alert-by-id
+    arguments:
+    - name: alert-id
+      required: true
+      default: true
+      description: Alert's unique ID
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Severity
+      description: The alert severity
+      type: string
+    - contextPath: IntSights.Alerts.Type
+      description: The alert type
+      type: string
+    - contextPath: IntSights.Alerts.FoundDate
+      description: The date the alert was found
+      type: date
+    - contextPath: IntSights.Alerts.SourceType
+      description: The alert source type
+      type: string
+    - contextPath: IntSights.Alerts.SourceURL
+      description: The alert source URL
+      type: string
+    - contextPath: IntSights.Alerts.SourceEmail
+      description: The alert source email
+      type: string
+    - contextPath: IntSights.Alerts.SourceNetworkType
+      description: The network type of the alert
+      type: string
+    - contextPath: IntSights.Alerts.IsClosed
+      description: Whether or not the alert is closed
+      type: boolean
+    - contextPath: IntSights.Alerts.IsFlagged
+      description: Whether or not the alert is flagged
+      type: boolean
+    - contextPath: IntSights.Alerts.Tags.CreatedBy
+      description: Name of the service the tag was created by
+      type: string
+    - contextPath: IntSights.Alerts.Tag.Name
+      description: Name of the tag
+      type: string
+    - contextPath: IntSights.Alerts.Tag.ID
+      description: The ID of the tag
+      type: string
+    - contextPath: IntSights.Alerts.Images
+      description: The id of each image
+      type: string
+    - contextPath: IntSights.Alerts.Description
+      description: The description of the alert
+      type: string
+    - contextPath: IntSights.Alerts.Title
+      description: The title of the alert
+      type: string
+    - contextPath: IntSights.Alerts.TakedownStatus
+      description: The TakedownStatus of the alert
+      type: string
+    - contextPath: IntSights.Alerts.SubType
+      description: The subType of the alert
+      type: string
+    description: Returns alert object by alert ID
+  - name: intsights-get-ioc-by-value
+    arguments:
+    - name: value
+      required: true
+      default: true
+      description: Desired IOC value
+    outputs:
+    - contextPath: IntSights.Iocs.ID
+      description: The IOC ID
+      type: string
+    - contextPath: IntSights.Iocs.Value
+      description: The IOC value
+      type: string
+    - contextPath: IntSights.Iocs.Type
+      description: The IOC type
+      type: string
+    - contextPath: IntSights.Iocs.FirstSeen
+      description: When the IOC was first seen
+      type: date
+    - contextPath: IntSights.Iocs.LastSeen
+      description: When the IOC was last seen
+      type: date
+    - contextPath: IntSights.Iocs.SourceID
+      description: The IOC source ID
+      type: string
+    - contextPath: IntSights.Iocs.SourceName
+      description: The IOC source name
+      type: string
+    - contextPath: IntSights.Iocs.SourceConfidenceLevel
+      description: The IOC source confidence level
+      type: string
+    - contextPath: IntSights.Iocs.Severity
+      description: The IOC severity
+      type: string
+    - contextPath: IntSights.Iocs.AccountID
+      description: The IOC account ID
+      type: string
+    - contextPath: IntSights.Iocs.Domain
+      description: The IOC domain
+      type: string
+    - contextPath: IntSights.Iocs.Status
+      description: The IOC status
+      type: string
+    - contextPath: IntSights.Iocs.Flags.IsInAlexa
+      description: Whether or not the IOC is in Alexa
+      type: boolean
+    - contextPath: IntSights.Iocs.Enrichment.Status
+      description: IOC enrichment status
+      type: string
+    - contextPath: IntSights.Iocs.Enrichment.Data
+      description: IOC enrichment data
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.Name
+      description: The name of the hash being stored
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.MD5
+      description: Bad hash MD5
+      type: string
+    - contextPath: File.SHA1
+      description: Bad hash SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: Bad hash SHA256
+      type: string
+    - contextPath: URL.Data
+      description: The URL that was searched
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious urls, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious urls, the reason for the vendor to make the decision
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious ips, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious ips, the reason for the vendor to make the decision
+      type: string
+    - contextPath: IP.Address
+      description: The IP address of the IOC
+      type: string
+    - contextPath: Domain.Name
+      description: The name of the Domain for the IOC
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+      type: string
+    description: Search for exact IOC value
+  - name: intsights-get-iocs
+    arguments:
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - Urls
+      - Hashes
+      - IpAddresses
+      - Domains
+      description: IOC's type
+    - name: limit
+      description: '"Desired number of resultsDefault value: 1000 Size range: 1-1000"'
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - High
+      - Medium
+      - Low
+      description: 'Ioc severityAllowed values: "High", "Medium", "Low"'
+    - name: source-ID
+      description: Ioc source
+    - name: first-seen-from
+      description: 'Beginning of the date range when the IOC first seen in the following
+        string format - MM/DD/YYYY Default value: 0'
+    - name: first-seen-to
+      description: 'End of the date range when the IOC first seen in the following
+        string format - MM/DD/YYYY Default value: 0'
+    - name: last-seen-from
+      description: 'Beginning of the date range when the IOC last seen in the following
+        string format - MM/DD/YYYY Default value: 0'
+    - name: last-seen-to
+      description: 'End of the date range when the IOC last seen in the following
+        string format - MM/DD/YYYY Default value: 0'
+    outputs:
+    - contextPath: IntSights.Iocs.ID
+      description: The IOC ID
+      type: string
+    - contextPath: IntSights.Iocs.Value
+      description: The IOC value
+      type: string
+    - contextPath: IntSights.Iocs.Type
+      description: The IOC type
+      type: string
+    - contextPath: IntSights.Iocs.FirstSeen
+      description: IOC first seen
+      type: date
+    - contextPath: IntSights.Iocs.LastSeen
+      description: IOC last seen
+      type: date
+    - contextPath: IntSights.Iocs.SourceID
+      description: The IOC source ID
+      type: string
+    - contextPath: IntSights.Iocs.SourceName
+      description: The IOC source name
+      type: string
+    - contextPath: IntSights.Iocs.SourceConfidenceLevel
+      description: The IOC source confidence level
+      type: string
+    - contextPath: IntSights.Iocs.Severity
+      description: The IOC severity
+      type: string
+    - contextPath: IntSights.Iocs.AccountID
+      description: The IOC account ID
+      type: string
+    - contextPath: IntSights.Iocs.Domain
+      description: The IOC domain
+      type: string
+    - contextPath: IntSights.Iocs.Status
+      description: The IOC status
+      type: string
+    - contextPath: IntSights.Iocs.Flags.IsInAlexa
+      description: Whether or not the IOC is in Alexa
+      type: boolean
+    - contextPath: IntSights.Iocs.Enrichment.Status
+      description: IOC enrichment status
+      type: string
+    - contextPath: IntSights.Iocs.Enrichment.Data
+      description: IOC enrichment data
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.Name
+      description: The name of the hash being stored
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.MD5
+      description: Bad hash MD5
+      type: string
+    - contextPath: File.SHA1
+      description: Bad hash SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: Bad hash SHA256
+      type: string
+    - contextPath: URL.Data
+      description: The URL that was searched
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious urls, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious urls, the reason for the vendor to make the decision
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious ips, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious ips, the reason for the vendor to make the decision
+      type: string
+    - contextPath: IP.Address
+      description: The IP address of the IOC
+      type: string
+    - contextPath: Domain.Name
+      description: The name of the Domain for the IOC
+      type: string
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+      type: string
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+      type: string
+    description: Get count totals of the available IOCs
+  - name: intsights-get-alerts
+    arguments:
+    - name: alert-type
+      auto: PREDEFINED
+      predefined:
+      - AttackIndication
+      - DataLeakage
+      - Phishing
+      - BrandSecurity
+      - ExploitableData
+      - VIP
+      description: Alert's type
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - High
+      - Medium
+      - Low
+      description: Alert's severity
+    - name: source-type
+      auto: PREDEFINED
+      predefined:
+      - ApplicationStores
+      - BlackMarkets
+      - HackingForums
+      - SocialMedia
+      - PasteSites
+      - Others
+      description: Alert's source type
+    - name: network-type
+      auto: PREDEFINED
+      predefined:
+      - ClearWeb
+      - DarkWeb
+      description: Alert's network type
+    - name: source-date-from
+      description: Start date to fetch from in Unix Millisecond Timestamp
+    - name: source-date-to
+      description: End date to fetch to in Unix Millisecond Timestamp
+    - name: found-date-from
+      description: Start date to fetch from in Unix Millisecond Timestamp
+    - name: found-date-to
+      description: End date to fetch to in Unix Millisecond Timestamp
+    - name: assigned
+      description: Show assigned/unAssigned alerts
+    - name: is-flagged
+      description: Show flagged/unflagged alerts
+    - name: is-closed
+      description: Show closed/open alerts
+    - name: time-delta
+      description: Show alerts within specified time delta, given in days
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Severity
+      description: The alert severity
+      type: string
+    - contextPath: IntSights.Alerts.Type
+      description: The alert type
+      type: string
+    - contextPath: IntSights.Alerts.FoundDate
+      description: The date the alert was found
+      type: date
+    - contextPath: IntSights.Alerts.SourceType
+      description: The alert source type
+      type: string
+    - contextPath: IntSights.Alerts.SourceURL
+      description: The alert source URL
+      type: string
+    - contextPath: IntSights.Alerts.SourceEmail
+      description: The alert source email
+      type: string
+    - contextPath: IntSights.Alerts.SourceNetworkType
+      description: The network type of the alert
+      type: string
+    - contextPath: IntSights.Alerts.IsClosed
+      description: Whether or not the alert is closed
+      type: boolean
+    - contextPath: IntSights.Alerts.IsFlagged
+      description: Whether or not the alert is flagged
+      type: boolean
+    - contextPath: IntSights.Alerts.Tags.CreatedBy
+      description: Name of the service the tag was created by
+      type: string
+    - contextPath: IntSights.Alerts.Tag.Name
+      description: Name of the tag
+      type: string
+    - contextPath: IntSights.Alerts.Tag.ID
+      description: The ID of the tag
+      type: string
+    - contextPath: IntSights.Alerts.Images
+      description: The id of each image
+      type: string
+    - contextPath: IntSights.Alerts.Description
+      description: The description of the alert
+      type: string
+    - contextPath: IntSights.Alerts.Title
+      description: The title of the alert
+      type: string
+    - contextPath: IntSights.Alerts.TakedownStatus
+      description: The TakedownStatus of the alert
+      type: string
+    - contextPath: IntSights.Alerts.SubType
+      description: The subType of the alert
+      type: string
+    description: Fetch alerts
+  - name: intsights-alert-takedown-request
+    arguments:
+    - name: alert-id
+      required: true
+      default: true
+      description: The alert ID
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert's ID
+      type: string
+    description: request alert takedown
+  - name: intsights-get-alert-takedown-status
+    arguments:
+    - name: alert-id
+      required: true
+      default: true
+      description: The alert ID
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.TakedownStatus
+      description: The takedown status
+      type: string
+    description: Get alert takedown status
+  - name: intsights-update-ioc-blocklist-status
+    arguments:
+    - name: alert-id
+      required: true
+      default: true
+      description: The alert id
+    - name: type
+      required: true
+      description: 'Comma separated list of each IOC''s type. Options: Domains,IPs,URLs'
+    - name: value
+      required: true
+      description: Comma separated list of each IOC's value
+    - name: blocklist-status
+      required: true
+      description: 'Comma separated list of each IOC''s blocklist status. Options:
+        Sent,NotSent'
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Status
+      description: 'The blocklist status '
+      type: string
+    description: Update IOC blocklist status
+  - name: intsights-get-ioc-blocklist-status
+    arguments:
+    - name: alert-id
+      required: true
+      default: true
+      description: The alert ID
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Status
+      description: The blocklist status
+      type: string
+    description: Get IOC blocklist status
+  - name: intsights-close-alert
+    arguments:
+    - name: alert-id
+      required: true
+      description: The alert ID
+    - name: reason
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ProblemSolved
+      - InformationalOnly
+      - ProblemWeAreAlreadyAwareOf
+      - CompanyOwnedDomain
+      - LegitimateApplication/Profile
+      - NotRelatedToMyCompany
+      - FalsePositive
+      - Other
+      description: The alert's closed reason
+    - name: free-text
+      description: The alert's comments
+    - name: is-hidden
+      description: The alerts' hidden status (Delete alert from the account instance
+        - only when reason is FalsePositive)
+      defaultValue: "False"
+    - name: rate
+      description: The alert's rate
+    outputs:
+    - contextPath: IntSights.Alerts.ID
+      description: The alert ID
+      type: string
+    - contextPath: IntSights.Alerts.Closed.Reason
+      description: The alert's closed reason
+      type: string
+    description: Close an alert
+  - name: intsights-mssp-get-sub-accounts
+    arguments: []
+    outputs:
+    - contextPath: IntSights.MsspAccount.ID
+      description: The IntSight's mssp sub account's ID
+      type: String
+    - contextPath: IntSights.MsspAccount.Status
+      description: The IntSight's mssp sub account's enabled status
+      type: String
+    - contextPath: IntSights.MsspAccount.AssetsCount
+      description: The IntSight's mssp sub account's assets count
+      type: Number
+    - contextPath: IntSights.MsspAccount.AssetLimit
+      description: The IntSight's mssp sub account's asset limit
+      type: Number
+    - contextPath: IntSights.MsspAccount.CompanyName
+      description: The IntSight's mssp sub account's company name
+      type: String
+    description: Get all mssp sub accounts
+  isfetch: true
+  runonce: false
+tests:
+  - IntSights Test

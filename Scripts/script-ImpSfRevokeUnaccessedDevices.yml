@@ -92,3 +92,5 @@ dependson:
   - ImpSfSetEndpointStatus
   - ImpSfListEndpoints
 timeout: 0s
+tests:
+  - No test - old script

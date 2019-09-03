@@ -47,7 +47,16 @@ mapping:
           type:
             type: str
             required: yes
-            enum: ['regular', 'playbook', 'condition', 'start', 'title', 'section', 'standard']
+            enum: ['regular', 'playbook', 'condition', 'start', 'title', 'section', 'standard', 'collection']
+          form:
+            type: map
+            allowempty: True
+          message:
+            type: map
+            allowempty: True
+          defaultassigneecomplex:
+            type: map
+            allowempty: True
           scriptarguments:
             type: map
             allowempty: True
@@ -56,6 +65,8 @@ mapping:
             type: seq
             sequence:
             - include: timertriggers_schema
+          ignoreworker:
+            type: bool
           task:
             type: map
             required: yes
@@ -83,7 +94,7 @@ mapping:
                 - type: str
               type:
                 type: str
-                enum: ['regular', 'playbook', 'condition', 'start', 'title', 'section', 'standard']
+                enum: ['regular', 'playbook', 'condition', 'start', 'title', 'section', 'standard', 'collection']
               iscommand:
                 type: bool
                 required: yes
@@ -145,9 +156,11 @@ mapping:
     required: yes
   toversion:
     type: text
-  releaseNotes:
-    type: str
   tests:
+    type: seq
+    sequence:
+    - type: str
+  rolename:
     type: seq
     sequence:
     - type: str

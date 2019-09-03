@@ -62,8 +62,18 @@ def http_request(method, url, params=None):
     )
 
     if not res.ok:
-        demisto.debug(res.text)
-        return_error('Could not execute the request')
+        try:
+            res_json = res.json()
+            if 'message' in res_json:
+                LOG(str(res.text))
+                LOG(res_json.get('message'))
+                return_error(res_json.get('message'))
+        except ValueError:
+            LOG(str(res.text))
+            return_error(str(res.text))
+        except Exception as ex:
+            LOG(res.text)
+            return_error(str(ex))
 
     try:
         res_json = res.json()
@@ -166,7 +176,7 @@ def list_tokens():
     """
     res = http_request('GET', SERVER + 'canarytokens/fetch')
     new_tokens = []
-    for token in res['tokens'][:-1]:
+    for token in res['tokens']:
         new_tokens.append({new_key: token[old_key] if old_key in token else None for old_key, new_key in
                            RELEVANT_TOKEN_ENTRIES.items()})
     return res, new_tokens
@@ -177,7 +187,7 @@ def list_tokens_command():
     Retrieve all Canary Tokens available in Canary Tools
     """
     res_json, new_tokens = list_tokens()
-    headers = sorted(new_tokens[0].keys())
+    headers = sorted(new_tokens[0].keys()) if new_tokens else None
     context = createContext(new_tokens, removeNull=True)
 
     contents = res_json
@@ -381,5 +391,5 @@ try:
         alert_status_command()
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents_command()
-except Exception, e:
+except Exception as e:
     return_error('Unable to perform command : {}, Reason: {}'.format(demisto.command, e))

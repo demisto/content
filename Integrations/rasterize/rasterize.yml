@@ -1,0 +1,109 @@
+category: Utilities
+commonfields:
+  id: Rasterize
+  version: -1
+configuration:
+- display: 'Return Errors '
+  name: with_error
+  defaultvalue: "false"
+  type: 8
+  required: false
+- defaultvalue: 'true'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Rasterize URLs or emails given to it
+display: Rasterize
+name: Rasterize
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: The URL to rasterize. Must be full URL including http prefix.
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    - default: false
+      description: The page width, e.g. 50px (empty is entire page)
+      isArray: false
+      name: width
+      required: false
+      secret: false
+    - default: false
+      description: The page height, e.g. 50px (empty is entire page)
+      isArray: false
+      name: height
+      required: false
+      secret: false
+    - default: false
+      description: pdf or png. Default is png.
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    deprecated: false
+    description: Rasterize a URL into image or PDF
+    execution: false
+    name: rasterize
+  - arguments:
+    - default: true
+      description: HTML body of the email
+      isArray: false
+      name: htmlBody
+      required: true
+      secret: false
+    - default: false
+      description: The email width, e.g. 50px (empty is entire email)
+      isArray: false
+      name: width
+      required: false
+      secret: false
+    - default: false
+      description: The page height, e.g. 50px (empty is entire email)
+      isArray: false
+      name: height
+      required: false
+      secret: false
+    - default: false
+      description: pdf or png. Default is png.
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    deprecated: false
+    description: Rasterize an email body into an image
+    execution: false
+    name: rasterize-email
+  - arguments:
+    - default: true
+      description: Entry ID of image file
+      isArray: false
+      name: EntryID
+      required: true
+      secret: false
+    - default: false
+      description: The image width, e.g. 50px (empty is entire image)
+      isArray: false
+      name: width
+      required: false
+      secret: false
+    - default: false
+      description: The image height, e.g. 50px (empty is entire image)
+      isArray: false
+      name: height
+      required: false
+      secret: false
+    deprecated: false
+    description: Rasterize an image file
+    execution: false
+    name: rasterize-image
+  dockerimage: demisto/rasterize
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+defaultEnabled: true
+tests:
+  - Rasterize Test

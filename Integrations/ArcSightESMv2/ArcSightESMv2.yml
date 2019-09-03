@@ -28,6 +28,16 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: The maximum number of unique IDs expected to be fetched.
+  name: max_unique
+  defaultvalue: '2000'
+  type: 0
+  required: false
+- display: The maximum number of incidents to fetch each time.
+  name: fetch_chunk_size
+  defaultvalue: '50'
+  type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   defaultvalue: ""
@@ -242,6 +252,13 @@ script:
     - name: caseId
       required: true
       description: 'Case ID, e.g., 7e6LEbF8BABCfA-dlp1rl1A=='
+    - name: withCorrelatedEvents
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If "true", then will return case and correlated events
+      defaultValue: "false"
     outputs:
     - contextPath: ArcSightESM.CaseEvents
       description: Map of caseId => related event ids
@@ -254,7 +271,7 @@ script:
     arguments:
     - name: caseId
       required: true
-      description: Case resource ID to update.
+      description: Case resource ID to update. The case must be unlocked, and the user should have edit permissions.
     - name: stage
       auto: PREDEFINED
       predefined:
@@ -336,4 +353,3 @@ script:
   runonce: false
 tests:
   - ArcSight ESM v2 Test
-releaseNotes: "Rewrote the integration in Python and fixed sever issues."

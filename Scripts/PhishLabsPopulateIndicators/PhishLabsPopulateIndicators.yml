@@ -1,0 +1,81 @@
+args:
+- default: false
+  defaultValue: 1h
+  description: Get indicators updated within this duration (from now).
+  isArray: false
+  name: since
+  required: false
+  secret: false
+- default: false
+  description: Maximum number of results to return.
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: If true, the indicators that were updated to be false positive will
+    be whitelisted in Demisto. No new indicators will be created.
+  isArray: false
+  name: delete_false_positive
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  description: Filter by indicator type.
+  isArray: false
+  name: indicator_type
+  predefined:
+  - Domain
+  - URL
+  - Attachment
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Removes the query string part from indicators, when the rules can be
+    applied.
+  isArray: false
+  name: remove_query
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Removes the protocol part from indicators, when the rule can be applied.
+  isArray: false
+  name: remove_protocol
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+comment: Populate indicators by the PhishLabs IOC global feed.
+commonfields:
+  id: 73f6af4b-6e5b-4aff-88fb-e18c8cfa1154
+  version: -1
+enabled: true
+name: PhishLabsPopulateIndicators
+script: '-'
+system: false
+tags:
+- PhishLabs
+timeout: 3.6µs
+type: python
+runas: DBotWeakRole
+dockerimage: demisto/python3:3.7.3.221
+subtype: python3
+runonce: false
+dependson:
+  must: [
+    ]
+  should:
+  - PhishLabs IOC|||phishlabs-global-feed

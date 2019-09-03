@@ -13,13 +13,12 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: fbc0a5b6-b590-4c67-892d-2647693d2cd6
+    taskid: c65b8bce-0597-4f9b-8bab-cb3367156da6
     type: start
     task:
-      id: fbc0a5b6-b590-4c67-892d-2647693d2cd6
+      id: c65b8bce-0597-4f9b-8bab-cb3367156da6
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -34,12 +33,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 87fc2b38-fc78-4b6b-8029-c4742562790a
+    taskid: c15ba1ed-3cd0-45d7-8a37-5082bbc11fb2
     type: regular
     task:
-      id: 87fc2b38-fc78-4b6b-8029-c4742562790a
+      id: c15ba1ed-3cd0-45d7-8a37-5082bbc11fb2
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -64,12 +65,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 41074bb4-f178-4bc6-8c8c-e94a6a88d287
+    taskid: 78dfffa6-8d71-47e3-864a-ab1553e059b8
     type: regular
     task:
-      id: 41074bb4-f178-4bc6-8c8c-e94a6a88d287
+      id: 78dfffa6-8d71-47e3-864a-ab1553e059b8
       version: -1
       name: ip
       description: Check IP Reputation
@@ -95,16 +98,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: 0d3e173c-6f32-4dc0-82e5-be12b00bf415
-    type: regular
+    taskid: f7c1d374-e4f1-45a0-828d-545756b47823
+    type: condition
     task:
-      id: 0d3e173c-6f32-4dc0-82e5-be12b00bf415
+      id: f7c1d374-e4f1-45a0-828d-545756b47823
       version: -1
       name: VerifyContext
       description: |-
@@ -113,34 +118,48 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      expectedValue:
-        simple: 8.8.8.8
-      fields: {}
-      path:
-        simple: DBotScore.Indicator
+      "yes":
+      - "83"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IP.Geo.Country
+            iscontext: true
+          right:
+            value:
+              simple: US
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2120
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: b93ff6d0-222f-414e-86b7-9e4756ba96f2
+    taskid: cd39c68d-4fb6-4ee2-8342-4618c46b1fbd
     type: regular
     task:
-      id: b93ff6d0-222f-414e-86b7-9e4756ba96f2
+      id: cd39c68d-4fb6-4ee2-8342-4618c46b1fbd
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -161,16 +180,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2120
+          "y": 2645
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: 468189c0-e66d-425b-8503-bb5f3c597b3c
+    taskid: fe05a415-83b7-4597-8dc0-ff1ded48a927
     type: regular
     task:
-      id: 468189c0-e66d-425b-8503-bb5f3c597b3c
+      id: fe05a415-83b7-4597-8dc0-ff1ded48a927
       version: -1
       name: VerifyContext
       description: |-
@@ -196,17 +217,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2645
+          "x": 50,
+          "y": 3170
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: 77693418-e6b8-4c55-885a-1a08eb02cb56
+    taskid: 748a5900-b6d0-4654-8486-ee4327271065
     type: regular
     task:
-      id: 77693418-e6b8-4c55-885a-1a08eb02cb56
+      id: 748a5900-b6d0-4654-8486-ee4327271065
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -227,16 +250,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2820
+          "y": 3345
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: e5df64df-b9ab-465f-85c2-6e28df71ab89
+    taskid: 8c41e884-a585-4c82-8481-6f7c3453eadc
     type: regular
     task:
-      id: e5df64df-b9ab-465f-85c2-6e28df71ab89
+      id: 8c41e884-a585-4c82-8481-6f7c3453eadc
       version: -1
       name: domain
       description: Check domain reputation
@@ -262,16 +287,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2295
+          "y": 2820
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: 8aed972a-b3d7-4d2c-8eaa-65953f817f29
+    taskid: de3b28ab-2c77-432e-8276-6dd0ba2383b2
     type: regular
     task:
-      id: 8aed972a-b3d7-4d2c-8eaa-65953f817f29
+      id: de3b28ab-2c77-432e-8276-6dd0ba2383b2
       version: -1
       name: file
       description: Check file reputation of the given hash
@@ -295,16 +322,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2995
+          "y": 3520
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
-    taskid: fbdad560-db79-4fad-8a89-df9498ba49ee
-    type: regular
+    taskid: 8e55aa8a-4f6f-4d8d-8ab4-e2b2ce474c59
+    type: condition
     task:
-      id: fbdad560-db79-4fad-8a89-df9498ba49ee
+      id: 8e55aa8a-4f6f-4d8d-8ab4-e2b2ce474c59
       version: -1
       name: VerifyContext
       description: |-
@@ -313,34 +342,56 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "10"
-    scriptarguments:
-      expectedValue:
-        simple: 7657fcb7d772448a6d8504e4b20168b8
-      fields: {}
-      path:
-        simple: File.MD5
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+          right:
+            value:
+              simple: 7657fcb7d772448a6d8504e4b20168b8
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: File.DetectionEngines
+            iscontext: true
+          right:
+            value:
+              simple: "71"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.PositiveDetections
+            iscontext: true
+          right:
+            value:
+              simple: "67"
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 3870
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
-    taskid: e353ede6-3b44-41bd-80f4-c761a50018d4
+    taskid: eea9f04b-4255-42a2-8b0e-a4c3379a1f5a
     type: regular
     task:
-      id: e353ede6-3b44-41bd-80f4-c761a50018d4
+      id: eea9f04b-4255-42a2-8b0e-a4c3379a1f5a
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -361,16 +412,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3520
+          "y": 4045
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: 3d11944c-a38e-4303-8574-cbaf0aa04043
+    taskid: 75d2d479-119b-4974-8070-3388c6684333
     type: regular
     task:
-      id: 3d11944c-a38e-4303-8574-cbaf0aa04043
+      id: 75d2d479-119b-4974-8070-3388c6684333
       version: -1
       name: url long demisto.com
       description: Check URL Reputation
@@ -397,16 +450,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7895
+          "y": 8420
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
-    taskid: 9713721c-fd37-4a64-8249-00731a144e23
+    taskid: 67ff006f-81ad-4073-8a37-21d36cf387e5
     type: regular
     task:
-      id: 9713721c-fd37-4a64-8249-00731a144e23
+      id: 67ff006f-81ad-4073-8a37-21d36cf387e5
       version: -1
       name: VerifyContext
       description: |-
@@ -433,16 +488,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8245
+          "y": 8770
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
-    taskid: 288df2d7-3b0f-4138-8098-c35753d3d6ef
+    taskid: 3d239612-5f7c-4e4a-8a3e-b6357717af93
     type: regular
     task:
-      id: 288df2d7-3b0f-4138-8098-c35753d3d6ef
+      id: 3d239612-5f7c-4e4a-8a3e-b6357717af93
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -463,16 +520,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 8420
+          "y": 8945
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "20":
     id: "20"
-    taskid: 2f041110-4a06-4051-890a-9e4eef6719ee
+    taskid: 38e8f811-d513-4812-8d3a-f8ea99896328
     type: regular
     task:
-      id: 2f041110-4a06-4051-890a-9e4eef6719ee
+      id: 38e8f811-d513-4812-8d3a-f8ea99896328
       version: -1
       name: file (second hash)
       description: Check file reputation of the given hash
@@ -496,16 +555,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4395
+          "y": 4920
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "21":
     id: "21"
-    taskid: a0a9d6dc-1775-4632-8444-df6ccfa1a310
-    type: regular
+    taskid: ff78458f-12e1-4a7d-87a2-888d36d8be89
+    type: condition
     task:
-      id: a0a9d6dc-1775-4632-8444-df6ccfa1a310
+      id: ff78458f-12e1-4a7d-87a2-888d36d8be89
       version: -1
       name: VerifyContext
       description: |-
@@ -514,34 +575,44 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "22"
-    scriptarguments:
-      expectedValue:
-        simple: d41d8cd98f00b204e9800998ecf8427e
-      fields: {}
-      path:
-        simple: File.MD5
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: MD5
+            iscontext: true
+          right:
+            value:
+              simple: d41d8cd98f00b204e9800998ecf8427e
+      - - operator: isExists
+          left:
+            value:
+              simple: File.VirusTotal.vtLink
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4745
+          "y": 5270
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "22":
     id: "22"
-    taskid: 3f8d477b-810b-448e-8587-2a33691a6a0e
+    taskid: 1db8cd78-dd97-40b3-892f-7c0f31d7b424
     type: regular
     task:
-      id: 3f8d477b-810b-448e-8587-2a33691a6a0e
+      id: 1db8cd78-dd97-40b3-892f-7c0f31d7b424
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -562,16 +633,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4920
+          "y": 5445
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "23":
     id: "23"
-    taskid: 084ad60a-a06a-4839-8888-5aeddde84e1e
+    taskid: d8a3074b-3f05-404a-8775-f7027da00a0d
     type: regular
     task:
-      id: 084ad60a-a06a-4839-8888-5aeddde84e1e
+      id: d8a3074b-3f05-404a-8775-f7027da00a0d
       version: -1
       name: file long (second hash)
       description: Check file reputation of the given hash
@@ -596,16 +669,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5095
+          "y": 5620
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "24":
     id: "24"
-    taskid: b8ce335f-6600-46b7-8441-51500c04120c
+    taskid: f7fc0d4b-49bf-4ad6-8bb6-570954bf663e
     type: regular
     task:
-      id: b8ce335f-6600-46b7-8441-51500c04120c
+      id: f7fc0d4b-49bf-4ad6-8bb6-570954bf663e
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -626,16 +701,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5620
+          "y": 6145
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "25":
     id: "25"
-    taskid: b0147926-e6e2-4035-8da8-83ec20f6960e
-    type: regular
+    taskid: 79e674f0-3d43-4503-8ab1-f8c4f6b519a2
+    type: condition
     task:
-      id: b0147926-e6e2-4035-8da8-83ec20f6960e
+      id: 79e674f0-3d43-4503-8ab1-f8c4f6b519a2
       version: -1
       name: VerifyContext
       description: |-
@@ -644,34 +721,39 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      expectedValue:
-        simple: d41d8cd98f00b204e9800998ecf8427e
-      fields: {}
-      path:
-        simple: File.MD5
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: MD5
+            iscontext: true
+          right:
+            value:
+              simple: d41d8cd98f00b204e9800998ecf8427e
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5445
+          "y": 5970
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "27":
     id: "27"
-    taskid: c6776e4b-636b-4bd0-8adb-c94678989c62
+    taskid: 8b8eb0d1-056f-464f-82ac-e09873de8fa2
     type: regular
     task:
-      id: c6776e4b-636b-4bd0-8adb-c94678989c62
+      id: 8b8eb0d1-056f-464f-82ac-e09873de8fa2
       version: -1
       name: file long
       description: Check file reputation of the given hash
@@ -696,16 +778,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3695
+          "y": 4220
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "28":
     id: "28"
-    taskid: 23f53974-c027-41ab-8811-95d2eec56780
-    type: regular
+    taskid: e797ad80-312d-4958-8d8b-aa173e052b83
+    type: condition
     task:
-      id: 23f53974-c027-41ab-8811-95d2eec56780
+      id: e797ad80-312d-4958-8d8b-aa173e052b83
       version: -1
       name: VerifyContext
       description: |-
@@ -714,34 +798,39 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "29"
-    scriptarguments:
-      expectedValue:
-        simple: 7657fcb7d772448a6d8504e4b20168b8
-      fields: {}
-      path:
-        simple: File.MD5
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: MD5
+            iscontext: true
+          right:
+            value:
+              simple: 7657fcb7d772448a6d8504e4b20168b8
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4045
+          "y": 4570
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "29":
     id: "29"
-    taskid: 9cc4003e-da6b-435e-8cb9-b53063240c5f
+    taskid: bcd02737-4298-4cab-8066-f0279cfffa26
     type: regular
     task:
-      id: 9cc4003e-da6b-435e-8cb9-b53063240c5f
+      id: bcd02737-4298-4cab-8066-f0279cfffa26
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -762,16 +851,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4220
+          "y": 4745
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "30":
     id: "30"
-    taskid: 35aaac7d-d462-4388-8841-1577865db358
+    taskid: ddb52a6f-02f2-4090-8751-f6bc6449d719
     type: regular
     task:
-      id: 35aaac7d-d462-4388-8841-1577865db358
+      id: ddb52a6f-02f2-4090-8751-f6bc6449d719
       version: -1
       name: url coffedoesgood.com
       description: Check URL Reputation
@@ -798,16 +889,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5795
+          "y": 6320
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "31":
     id: "31"
-    taskid: 6ca95084-d873-445d-8a94-2081c1c12d7a
+    taskid: b5bb25a5-2b77-40e2-8082-05073c800560
     type: regular
     task:
-      id: 6ca95084-d873-445d-8a94-2081c1c12d7a
+      id: b5bb25a5-2b77-40e2-8082-05073c800560
       version: -1
       name: VerifyContext
       description: |-
@@ -834,16 +927,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6145
+          "y": 6670
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "32":
     id: "32"
-    taskid: 963f1e17-84b9-4099-8e96-b8c0ad4bceb1
+    taskid: 394c1ff4-5388-409f-8ef3-eb48da432a34
     type: regular
     task:
-      id: 963f1e17-84b9-4099-8e96-b8c0ad4bceb1
+      id: 394c1ff4-5388-409f-8ef3-eb48da432a34
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -864,16 +959,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6320
+          "y": 6845
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "33":
     id: "33"
-    taskid: 35a1233f-7a25-45a4-8032-4946c7c6f1a2
+    taskid: 1618944a-fceb-4691-894b-5048efb48b81
     type: regular
     task:
-      id: 35a1233f-7a25-45a4-8032-4946c7c6f1a2
+      id: 1618944a-fceb-4691-894b-5048efb48b81
       version: -1
       name: url long coffedoesgood.com
       description: Check URL Reputation
@@ -901,16 +998,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6495
+          "y": 7020
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "34":
     id: "34"
-    taskid: 732f6dde-eba2-403e-8b12-2bcbf1f93391
-    type: regular
+    taskid: 26526cc2-4fcc-461b-80ef-e8f3186df20d
+    type: condition
     task:
-      id: 732f6dde-eba2-403e-8b12-2bcbf1f93391
+      id: 26526cc2-4fcc-461b-80ef-e8f3186df20d
       version: -1
       name: VerifyContext
       description: |-
@@ -919,34 +1018,56 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
-      type: regular
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "35"
-    scriptarguments:
-      expectedValue:
-        simple: http://coffeedoesgood.com
-      fields: {}
-      path:
-        simple: DBotScore.Indicator
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: http://coffeedoesgood.com
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: URL.DetectionEngines
+            iscontext: true
+          right:
+            value:
+              simple: "70"
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: URL.PositiveDetections
+            iscontext: true
+          right:
+            value:
+              simple: "4"
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 6845
+          "y": 7370
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "35":
     id: "35"
-    taskid: 50d59fa1-4084-4e05-8980-7b5b7e3afa59
+    taskid: 7bb2c14b-cbcf-4ed2-8523-f45e19d3e19f
     type: regular
     task:
-      id: 50d59fa1-4084-4e05-8980-7b5b7e3afa59
+      id: 7bb2c14b-cbcf-4ed2-8523-f45e19d3e19f
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -967,16 +1088,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7020
+          "y": 7545
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "36":
     id: "36"
-    taskid: ee29d4f2-1cc0-496e-873c-22354b6531a9
+    taskid: b25514eb-0b56-4843-858a-0cff62435969
     type: regular
     task:
-      id: ee29d4f2-1cc0-496e-873c-22354b6531a9
+      id: b25514eb-0b56-4843-858a-0cff62435969
       version: -1
       name: url demisto.com
       description: Check URL Reputation
@@ -1002,16 +1125,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7195
+          "y": 7720
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "37":
     id: "37"
-    taskid: e48588e0-6576-4c20-8342-b7843db51778
+    taskid: 3796047d-386c-4c87-819b-e3408286a3d1
     type: regular
     task:
-      id: e48588e0-6576-4c20-8342-b7843db51778
+      id: 3796047d-386c-4c87-819b-e3408286a3d1
       version: -1
       name: VerifyContext
       description: |-
@@ -1038,16 +1163,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7545
+          "y": 8070
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "38":
     id: "38"
-    taskid: 627a1c4e-8b3a-4824-8b20-bb133b7fa8a8
+    taskid: 6cdbe3d8-af35-4e34-81f1-7a4b814bc7eb
     type: regular
     task:
-      id: 627a1c4e-8b3a-4824-8b20-bb133b7fa8a8
+      id: 6cdbe3d8-af35-4e34-81f1-7a4b814bc7eb
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1068,16 +1195,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7720
+          "y": 8245
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "42":
     id: "42"
-    taskid: 879a3293-f937-47d8-8cae-c47be21f56fd
+    taskid: 7945ca3e-59a0-4504-8457-dbc44971eea5
     type: regular
     task:
-      id: 879a3293-f937-47d8-8cae-c47be21f56fd
+      id: 7945ca3e-59a0-4504-8457-dbc44971eea5
       version: -1
       name: domain
       description: Check domain reputation
@@ -1104,16 +1233,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 8595
+          "y": 9120
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "43":
     id: "43"
-    taskid: 6af29423-7a41-44a2-8fb6-e40a90580ddc
+    taskid: 8b3af19f-e27c-4387-8109-557ec6e0ad90
     type: regular
     task:
-      id: 6af29423-7a41-44a2-8fb6-e40a90580ddc
+      id: 8b3af19f-e27c-4387-8109-557ec6e0ad90
       version: -1
       name: VerifyContext
       description: |-
@@ -1140,16 +1271,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8945
+          "y": 9470
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "44":
     id: "44"
-    taskid: bd75825e-7875-42bb-861d-e06c9b3366c6
+    taskid: c70f8bee-0464-4e77-8d77-50b83f3ec91b
     type: regular
     task:
-      id: bd75825e-7875-42bb-861d-e06c9b3366c6
+      id: c70f8bee-0464-4e77-8d77-50b83f3ec91b
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1167,16 +1300,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 9120
+          "y": 9645
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "51":
     id: "51"
-    taskid: f2436eb1-9cec-4ff1-8f1b-bd2265562e39
+    taskid: 0f89c642-e886-44d2-8d67-77ca1d9bc3fe
     type: regular
     task:
-      id: f2436eb1-9cec-4ff1-8f1b-bd2265562e39
+      id: 0f89c642-e886-44d2-8d67-77ca1d9bc3fe
       version: -1
       name: Set
       description: Sets a value into the context with the given context key
@@ -1202,12 +1337,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "52":
     id: "52"
-    taskid: 6e7ba29f-377e-4f67-8e1d-1c63ef08ba8e
+    taskid: c7f88219-8a1e-48b2-827d-6175cec07b8f
     type: regular
     task:
-      id: 6e7ba29f-377e-4f67-8e1d-1c63ef08ba8e
+      id: c7f88219-8a1e-48b2-827d-6175cec07b8f
       version: -1
       name: Set2
       description: Sets a value into the context with the given context key
@@ -1234,12 +1371,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "53":
     id: "53"
-    taskid: 24529095-6330-444b-8347-fd45e0c93bc7
+    taskid: 47e7445e-dc48-4220-86e8-3a8e3428fb64
     type: regular
     task:
-      id: 24529095-6330-444b-8347-fd45e0c93bc7
+      id: 47e7445e-dc48-4220-86e8-3a8e3428fb64
       version: -1
       name: File (1 call)
       description: Check file reputation of the given hash
@@ -1270,12 +1409,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "54":
     id: "54"
-    taskid: b3315d00-9fe2-4198-8b1d-29682ff1d063
+    taskid: 7076a609-e91b-4426-874b-b8fc3d5a93fb
     type: regular
     task:
-      id: b3315d00-9fe2-4198-8b1d-29682ff1d063
+      id: 7076a609-e91b-4426-874b-b8fc3d5a93fb
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1285,7 +1426,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "85"
     scriptarguments:
       all:
         simple: "yes"
@@ -1302,12 +1443,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "56":
     id: "56"
-    taskid: 35b51707-78e6-4dae-8396-7868c25875c9
+    taskid: 8fdce6cc-2882-42e7-8f0e-6c88bf9842d5
     type: condition
     task:
-      id: 35b51707-78e6-4dae-8396-7868c25875c9
+      id: 8fdce6cc-2882-42e7-8f0e-6c88bf9842d5
       version: -1
       name: Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -1341,12 +1484,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "57":
     id: "57"
-    taskid: 76204030-571d-4760-8f6b-a0ebae01c368
+    taskid: 2df15cc2-8f7f-4719-8009-9241d729c819
     type: condition
     task:
-      id: 76204030-571d-4760-8f6b-a0ebae01c368
+      id: 2df15cc2-8f7f-4719-8009-9241d729c819
       version: -1
       name: Exists2
       description: Check if a given value exists in the context. Will return 'no'
@@ -1380,12 +1525,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "58":
     id: "58"
-    taskid: 5e940d99-810a-4a07-8a88-b7ce58a09495
+    taskid: f33c7c1d-3c40-4f1f-815a-4b848c6ea936
     type: condition
     task:
-      id: 5e940d99-810a-4a07-8a88-b7ce58a09495
+      id: f33c7c1d-3c40-4f1f-815a-4b848c6ea936
       version: -1
       name: Check for error
       type: condition
@@ -1413,12 +1560,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "59":
     id: "59"
-    taskid: 238b3ed9-c3f1-4eee-8bf6-f88df263eea3
+    taskid: 270f73cc-d543-470f-80bc-fed81e1c86ef
     type: condition
     task:
-      id: 238b3ed9-c3f1-4eee-8bf6-f88df263eea3
+      id: 270f73cc-d543-470f-80bc-fed81e1c86ef
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -1447,12 +1596,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "60":
     id: "60"
-    taskid: 031572ea-8f47-40f3-882b-f3164210119a
+    taskid: 93a78e55-9534-40b9-816d-414ae671254d
     type: condition
     task:
-      id: 031572ea-8f47-40f3-882b-f3164210119a
+      id: 93a78e55-9534-40b9-816d-414ae671254d
       version: -1
       name: Check for error
       type: condition
@@ -1476,16 +1627,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1770
+          "y": 1945
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "61":
     id: "61"
-    taskid: 1dbbfd05-d863-46ff-89f0-da2b6f36e745
+    taskid: 213dac33-edaf-47e3-8b14-446ac36f3877
     type: condition
     task:
-      id: 1dbbfd05-d863-46ff-89f0-da2b6f36e745
+      id: 213dac33-edaf-47e3-8b14-446ac36f3877
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -1493,7 +1646,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "83"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1510,16 +1663,18 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1945
+          "y": 2120
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "62":
     id: "62"
-    taskid: 7d105115-5046-419c-8207-913e19b74c99
+    taskid: 44d1e25a-0e25-4f5c-8945-5eb5898ba467
     type: condition
     task:
-      id: 7d105115-5046-419c-8207-913e19b74c99
+      id: 44d1e25a-0e25-4f5c-8945-5eb5898ba467
       version: -1
       name: Check for error
       type: condition
@@ -1543,16 +1698,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2470
+          "y": 2995
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "63":
     id: "63"
-    taskid: 466cb558-656d-435b-8c27-2d801c57b252
+    taskid: 252522f3-0eea-471e-8c5e-e36c519d6aca
     type: condition
     task:
-      id: 466cb558-656d-435b-8c27-2d801c57b252
+      id: 252522f3-0eea-471e-8c5e-e36c519d6aca
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -1576,17 +1733,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2645
+          "x": 480,
+          "y": 3170
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "64":
     id: "64"
-    taskid: 62efbbe1-5725-42c9-82cb-7aa110235335
+    taskid: 7bff4533-2f64-45db-8ac0-e273e79495d5
     type: condition
     task:
-      id: 62efbbe1-5725-42c9-82cb-7aa110235335
+      id: 7bff4533-2f64-45db-8ac0-e273e79495d5
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -1611,16 +1770,18 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3345
+          "y": 3870
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "65":
     id: "65"
-    taskid: ae0f5526-472c-41c7-896d-09a2a41d60e7
+    taskid: e7607e0d-b909-40ec-84da-c5ddc104fc80
     type: condition
     task:
-      id: ae0f5526-472c-41c7-896d-09a2a41d60e7
+      id: e7607e0d-b909-40ec-84da-c5ddc104fc80
       version: -1
       name: Check for error
       type: condition
@@ -1644,16 +1805,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3170
+          "y": 3695
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "66":
     id: "66"
-    taskid: 1d49447a-e21d-4773-8b20-b4c805ca0745
+    taskid: 673b52b6-75ab-4c14-8681-0925b6db3132
     type: condition
     task:
-      id: 1d49447a-e21d-4773-8b20-b4c805ca0745
+      id: 673b52b6-75ab-4c14-8681-0925b6db3132
       version: -1
       name: Check for error
       type: condition
@@ -1677,16 +1840,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3870
+          "y": 4395
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "67":
     id: "67"
-    taskid: 86254dba-7e94-4060-8e3b-d64acdd3781e
+    taskid: ad8dbe67-7bca-428b-8e87-0fbbeddd955f
     type: condition
     task:
-      id: 86254dba-7e94-4060-8e3b-d64acdd3781e
+      id: ad8dbe67-7bca-428b-8e87-0fbbeddd955f
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -1711,16 +1876,18 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4045
+          "y": 4570
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "68":
     id: "68"
-    taskid: b28c7881-6e12-428b-8e49-2df447177e4e
+    taskid: 0d65378c-266a-452c-84ee-cdcf2c3da66e
     type: condition
     task:
-      id: b28c7881-6e12-428b-8e49-2df447177e4e
+      id: 0d65378c-266a-452c-84ee-cdcf2c3da66e
       version: -1
       name: Check for error
       type: condition
@@ -1744,16 +1911,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4570
+          "y": 5095
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "69":
     id: "69"
-    taskid: 0428f6df-b150-4e67-8b44-ce9eeaaccb5d
+    taskid: ca6f86de-0a4f-4bad-8081-453772290953
     type: condition
     task:
-      id: 0428f6df-b150-4e67-8b44-ce9eeaaccb5d
+      id: ca6f86de-0a4f-4bad-8081-453772290953
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -1778,16 +1947,18 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4745
+          "y": 5270
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "71":
     id: "71"
-    taskid: dcf27ac6-9754-4263-8d92-9a58886406c3
+    taskid: 1e53103d-f1cd-41ee-82c1-65a99e4968f8
     type: condition
     task:
-      id: dcf27ac6-9754-4263-8d92-9a58886406c3
+      id: 1e53103d-f1cd-41ee-82c1-65a99e4968f8
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -1812,16 +1983,18 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 5445
+          "y": 5970
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "72":
     id: "72"
-    taskid: 05237cb4-4007-4787-8694-d576495ade07
+    taskid: 8c0046cb-954a-43d7-85ec-bcc842bf07e5
     type: condition
     task:
-      id: 05237cb4-4007-4787-8694-d576495ade07
+      id: 8c0046cb-954a-43d7-85ec-bcc842bf07e5
       version: -1
       name: Check for error
       type: condition
@@ -1845,16 +2018,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5270
+          "y": 5795
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "73":
     id: "73"
-    taskid: 282380f6-836e-47b4-8f41-8d24fa9a19aa
+    taskid: 464138ad-4d1a-4027-8739-0a9f1a6929a4
     type: condition
     task:
-      id: 282380f6-836e-47b4-8f41-8d24fa9a19aa
+      id: 464138ad-4d1a-4027-8739-0a9f1a6929a4
       version: -1
       name: Check for error
       type: condition
@@ -1878,16 +2053,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5970
+          "y": 6495
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "74":
     id: "74"
-    taskid: db977b08-cb01-4c7f-8ab8-ca6770668d34
+    taskid: 98dfa0b9-3d0e-4f8f-8e20-6770dc0306e8
     type: condition
     task:
-      id: db977b08-cb01-4c7f-8ab8-ca6770668d34
+      id: 98dfa0b9-3d0e-4f8f-8e20-6770dc0306e8
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -1912,16 +2089,18 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6145
+          "y": 6670
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "75":
     id: "75"
-    taskid: a5dd7408-7719-4c0f-8c1a-9befd90ec848
+    taskid: 4bf68b05-214e-4102-8c3f-d0358cfa61ac
     type: condition
     task:
-      id: a5dd7408-7719-4c0f-8c1a-9befd90ec848
+      id: 4bf68b05-214e-4102-8c3f-d0358cfa61ac
       version: -1
       name: Check for error
       type: condition
@@ -1945,16 +2124,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6670
+          "y": 7195
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "76":
     id: "76"
-    taskid: 6dde4487-cabb-49f8-8c92-b480cf9cbde2
+    taskid: 2d53e2f6-228e-437d-8a19-48cc0f8922b4
     type: condition
     task:
-      id: 6dde4487-cabb-49f8-8c92-b480cf9cbde2
+      id: 2d53e2f6-228e-437d-8a19-48cc0f8922b4
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -1979,16 +2160,18 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6845
+          "y": 7370
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "77":
     id: "77"
-    taskid: cafd0bb2-66e9-4d56-8e68-c91510a71f5c
+    taskid: 8a1fd868-a9f9-4061-8111-1906be794693
     type: condition
     task:
-      id: cafd0bb2-66e9-4d56-8e68-c91510a71f5c
+      id: 8a1fd868-a9f9-4061-8111-1906be794693
       version: -1
       name: Check for error
       type: condition
@@ -2012,16 +2195,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7370
+          "y": 7895
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "78":
     id: "78"
-    taskid: dac1048e-0671-4b11-8d07-93ed0b721508
+    taskid: b2300cf7-6428-40ac-839b-a855609f2ce8
     type: condition
     task:
-      id: dac1048e-0671-4b11-8d07-93ed0b721508
+      id: b2300cf7-6428-40ac-839b-a855609f2ce8
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -2046,16 +2231,18 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 7545
+          "y": 8070
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "79":
     id: "79"
-    taskid: d9040dab-afde-403e-84ea-2ce390dac9e3
+    taskid: 328ae0db-cc33-40ae-8555-47282d9b782c
     type: condition
     task:
-      id: d9040dab-afde-403e-84ea-2ce390dac9e3
+      id: 328ae0db-cc33-40ae-8555-47282d9b782c
       version: -1
       name: Check for error
       type: condition
@@ -2079,16 +2266,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 8070
+          "y": 8595
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "80":
     id: "80"
-    taskid: 43259a3e-0c5e-4fca-8a1b-def58f9c08b9
+    taskid: 1fb2e369-2bf5-4943-805e-3c1026a8b22c
     type: condition
     task:
-      id: 43259a3e-0c5e-4fca-8a1b-def58f9c08b9
+      id: 1fb2e369-2bf5-4943-805e-3c1026a8b22c
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -2113,16 +2302,18 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 8245
+          "y": 8770
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "81":
     id: "81"
-    taskid: cf127357-c375-45b0-8b57-f1d1111f92d0
+    taskid: c6b211d6-aed7-4d84-8c33-45e47a2dfbba
     type: condition
     task:
-      id: cf127357-c375-45b0-8b57-f1d1111f92d0
+      id: c6b211d6-aed7-4d84-8c33-45e47a2dfbba
       version: -1
       name: Check for error
       type: condition
@@ -2146,16 +2337,18 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 8770
+          "y": 9295
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "82":
     id: "82"
-    taskid: 72dc1d2e-7f6e-4240-836b-458e142905b5
+    taskid: 4e7db897-573f-4beb-89e2-0d790ae23fcd
     type: condition
     task:
-      id: 72dc1d2e-7f6e-4240-836b-458e142905b5
+      id: 4e7db897-573f-4beb-89e2-0d790ae23fcd
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -2180,16 +2373,128 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 8945
+          "y": 9470
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+  "83":
+    id: "83"
+    taskid: 0229d12e-1f4b-4822-8c0d-e07068727bea
+    type: regular
+    task:
+      id: 0229d12e-1f4b-4822-8c0d-e07068727bea
+      version: -1
+      name: ip
+      description: Check IP Reputation
+      script: VirusTotal|||ip
+      type: regular
+      iscommand: true
+      brand: VirusTotal
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        simple: 8.8.8.8
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "84":
+    id: "84"
+    taskid: 5cb8fd7c-ce9c-4268-8ee3-29bb8f9af216
+    type: condition
+    task:
+      id: 5cb8fd7c-ce9c-4268-8ee3-29bb8f9af216
+      version: -1
+      name: Verify no duplicates
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IP
+                filters:
+                - - operator: hasLength
+                    left:
+                      value:
+                        simple: IP.Address
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "1"
+                accessor: Address
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "85":
+    id: "85"
+    taskid: f52aade2-9bd8-4fe2-8dbd-6dec9ab94837
+    type: regular
+    task:
+      id: f52aade2-9bd8-4fe2-8dbd-6dec9ab94837
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "61"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 9165,
+        "height": 9690,
         "width": 810,
         "x": 50,
         "y": 50

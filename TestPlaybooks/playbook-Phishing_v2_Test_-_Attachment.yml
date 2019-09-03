@@ -1,0 +1,285 @@
+id: Phishing v2 Test - Attachment
+version: -1
+fromversion: 4.1.0
+name: Phishing v2 Test - Attachment
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a156b5b4-d119-495a-8f3d-c82446e2f216
+    type: start
+    task:
+      id: a156b5b4-d119-495a-8f3d-c82446e2f216
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 215b2b58-1bab-4b78-89c3-bced5e33ac6f
+    type: title
+    task:
+      id: 215b2b58-1bab-4b78-89c3-bced5e33ac6f
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 7f99e17d-c691-4157-8647-a24953dcac89
+    type: regular
+    task:
+      id: 7f99e17d-c691-4157-8647-a24953dcac89
+      version: -1
+      name: PhishingIncident - Attachment
+      description: ""
+      scriptName: PhishingIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      malicious_location:
+        simple: attachment
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 86cb09fb-babf-489b-88a3-c751cde6ee27
+    type: regular
+    task:
+      id: 86cb09fb-babf-489b-88a3-c751cde6ee27
+      version: -1
+      name: Close Manual review
+      description: ""
+      scriptName: ScheduleCommand
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      command:
+        simple: '!CompleteManualTask id=${incident.id}'
+      cron:
+        simple: '*/1 * * * *'
+      endDate: {}
+      times:
+        simple: "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 7d7187c8-35e7-4523-804b-e863e1829ec8
+    type: regular
+    task:
+      id: 7d7187c8-35e7-4523-804b-e863e1829ec8
+      version: -1
+      name: Delete Context
+      description: ""
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 6e20f037-4225-41f9-8c0e-1424cde36e38
+    type: regular
+    task:
+      id: 6e20f037-4225-41f9-8c0e-1424cde36e38
+      version: -1
+      name: Download EML file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+      - "22"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: attachment.eml
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/attachment_malicious_url.eml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: e1242d3a-6834-4368-85dd-c51dcc9c29c0
+    type: regular
+    task:
+      id: e1242d3a-6834-4368-85dd-c51dcc9c29c0
+      version: -1
+      name: minemeld-add-to-miner
+      description: Add indicator to a miner.
+      script: Palo Alto Minemeld|||minemeld-add-to-miner
+      type: regular
+      iscommand: true
+      brand: Palo Alto Minemeld
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      comment:
+        simple: Malicious website for test
+      indicator:
+        simple: http://tpb.crushus.com/www.paperstreetcash.com
+      miner:
+        simple: Malicious
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 2a06c74a-6cf6-4054-8365-dbd92724cffa
+    type: playbook
+    task:
+      id: 2a06c74a-6cf6-4054-8365-dbd92724cffa
+      version: -1
+      name: Phishing Investigation - Generic v2
+      description: ""
+      playbookName: Phishing Investigation - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      BlockIndicators:
+        simple: "False"
+      Role:
+        simple: Administrator
+      SearchAndDelete:
+        simple: "False"
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1100,
+        "width": 810,
+        "x": 50,
+        "y": -140
+      }
+    }
+  }
+inputs: []
+outputs: []

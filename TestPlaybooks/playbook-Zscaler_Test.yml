@@ -5,34 +5,33 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0da89571-63bb-4abd-848c-9c3b5b5dae55
+    taskid: 42269acb-4a0b-4241-808d-1a4690873f25
     type: start
     task:
-      id: 0da89571-63bb-4abd-848c-9c3b5b5dae55
+      id: 42269acb-4a0b-4241-808d-1a4690873f25
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
-      - "4"
+      - "23"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 172.5,
-          "y": 50
+          "x": -290,
+          "y": -590
         }
       }
     note: false
     timertriggers: []
   "1":
     id: "1"
-    taskid: ea28ba7e-61a3-4368-8c61-c5ac51fa8010
+    taskid: 040229c6-389d-45a1-8759-1680434a149f
     type: regular
     task:
-      id: ea28ba7e-61a3-4368-8c61-c5ac51fa8010
+      id: 040229c6-389d-45a1-8759-1680434a149f
       version: -1
       name: zscaler-get-categories
       description: Returns a list of all categories
@@ -57,10 +56,10 @@ tasks:
     timertriggers: []
   "2":
     id: "2"
-    taskid: 9cd501ba-b434-49c5-8718-226deeba3a6a
+    taskid: dbdce48b-6baf-40a5-8ad2-1252a233809b
     type: condition
     task:
-      id: 9cd501ba-b434-49c5-8718-226deeba3a6a
+      id: dbdce48b-6baf-40a5-8ad2-1252a233809b
       version: -1
       name: Verify Get Categories output
       type: condition
@@ -99,10 +98,10 @@ tasks:
     timertriggers: []
   "3":
     id: "3"
-    taskid: c16700c7-cadf-48db-824b-bae75c6f56e3
+    taskid: 6aa6488e-7f47-4072-8771-1a677b05f857
     type: regular
     task:
-      id: c16700c7-cadf-48db-824b-bae75c6f56e3
+      id: 6aa6488e-7f47-4072-8771-1a677b05f857
       version: -1
       name: Add URL to URL category
       script: '|||zscaler-category-add-url'
@@ -129,10 +128,10 @@ tasks:
     timertriggers: []
   "4":
     id: "4"
-    taskid: 3cc72806-2c79-4fe3-804c-88468220cb2d
+    taskid: 0cbdc342-ec1e-422f-8aea-bfc0c2fd4c58
     type: regular
     task:
-      id: 3cc72806-2c79-4fe3-804c-88468220cb2d
+      id: 0cbdc342-ec1e-422f-8aea-bfc0c2fd4c58
       version: -1
       name: GenerateUUID
       description: Generates random UUID
@@ -157,10 +156,10 @@ tasks:
     timertriggers: []
   "5":
     id: "5"
-    taskid: bbd515f0-9a45-4aa9-8ff6-39bba3a35daa
+    taskid: e26ac553-7c86-4300-848a-70c9e4faa52b
     type: condition
     task:
-      id: bbd515f0-9a45-4aa9-8ff6-39bba3a35daa
+      id: e26ac553-7c86-4300-848a-70c9e4faa52b
       version: -1
       name: Verify Add URL to URL category output
       type: condition
@@ -201,10 +200,10 @@ tasks:
     timertriggers: []
   "6":
     id: "6"
-    taskid: 90323cbe-a127-4fbc-8b7c-c7248dc097c8
+    taskid: d8dea887-2459-43ec-873e-668ddf074bae
     type: regular
     task:
-      id: 90323cbe-a127-4fbc-8b7c-c7248dc097c8
+      id: d8dea887-2459-43ec-873e-668ddf074bae
       version: -1
       name: Blacklist URL
       script: '|||zscaler-blacklist-url'
@@ -229,10 +228,10 @@ tasks:
     timertriggers: []
   "7":
     id: "7"
-    taskid: f8b4695b-cf3f-49d9-85c4-8e3f8a22df4d
+    taskid: c462a7a7-c197-4867-83bc-89fa247e126e
     type: condition
     task:
-      id: f8b4695b-cf3f-49d9-85c4-8e3f8a22df4d
+      id: c462a7a7-c197-4867-83bc-89fa247e126e
       version: -1
       name: Verify Blacklist URL ouput
       type: condition
@@ -273,10 +272,10 @@ tasks:
     timertriggers: []
   "8":
     id: "8"
-    taskid: 3bd6c91b-7699-4d77-8619-b1e27a641fd7
+    taskid: c500fa4e-88b3-4663-898a-24df3f6a1493
     type: regular
     task:
-      id: 3bd6c91b-7699-4d77-8619-b1e27a641fd7
+      id: c500fa4e-88b3-4663-898a-24df3f6a1493
       version: -1
       name: Get blacklist
       script: '|||zscaler-get-blacklist'
@@ -298,10 +297,10 @@ tasks:
     timertriggers: []
   "9":
     id: "9"
-    taskid: 096936ff-8102-4b4c-8b60-ae16e5b880c1
+    taskid: 94a3cf6e-5b56-4dbb-895a-366409c77022
     type: regular
     task:
-      id: 096936ff-8102-4b4c-8b60-ae16e5b880c1
+      id: 94a3cf6e-5b56-4dbb-895a-366409c77022
       version: -1
       name: Try to blacklist url which starts with https://
       script: '|||zscaler-blacklist-url'
@@ -327,10 +326,10 @@ tasks:
     timertriggers: []
   "10":
     id: "10"
-    taskid: 9e2f856c-1f1c-41be-8241-0015d80711fc
+    taskid: d7d0b668-423f-488d-8321-c004abc3bd6e
     type: regular
     task:
-      id: 9e2f856c-1f1c-41be-8241-0015d80711fc
+      id: d7d0b668-423f-488d-8321-c004abc3bd6e
       version: -1
       name: Ensure error occurred
       scriptName: isError
@@ -355,10 +354,10 @@ tasks:
     timertriggers: []
   "11":
     id: "11"
-    taskid: 0a12bea2-00c5-405f-88de-6324a0f2b995
+    taskid: 705b73ea-67ab-493d-8c00-928cea09e3a6
     type: title
     task:
-      id: 0a12bea2-00c5-405f-88de-6324a0f2b995
+      id: 705b73ea-67ab-493d-8c00-928cea09e3a6
       version: -1
       name: Done
       type: title
@@ -374,15 +373,235 @@ tasks:
       }
     note: false
     timertriggers: []
+  "12":
+    id: "12"
+    taskid: 975d37e2-5ec9-4ae0-8706-458bf03fb6f4
+    type: title
+    task:
+      id: 975d37e2-5ec9-4ae0-8706-458bf03fb6f4
+      version: -1
+      name: Test simultaneous IP requests
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+      - "16"
+      - "15"
+      - "13"
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1570,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: 5d9f899c-ad54-4dcd-89ba-5a5aee8ee7c7
+    type: regular
+    task:
+      id: 5d9f899c-ad54-4dcd-89ba-5a5aee8ee7c7
+      version: -1
+      name: Check IP with Zscaler
+      script: Zscaler|||ip
+      type: regular
+      iscommand: true
+      brand: Zscaler
+    scriptarguments:
+      ip:
+        simple: 1.1.1.2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1140,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+  "14":
+    id: "14"
+    taskid: f46376e9-ea37-45d5-80f2-436e58c677f1
+    type: regular
+    task:
+      id: f46376e9-ea37-45d5-80f2-436e58c677f1
+      version: -1
+      name: Check IP with Zscaler
+      script: Zscaler|||ip
+      type: regular
+      iscommand: true
+      brand: Zscaler
+    scriptarguments:
+      ip:
+        simple: 1.1.1.2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: d27c8712-96fe-453b-801e-2e7c305b2d51
+    type: regular
+    task:
+      id: d27c8712-96fe-453b-801e-2e7c305b2d51
+      version: -1
+      name: Check IP with Zscaler
+      script: Zscaler|||ip
+      type: regular
+      iscommand: true
+      brand: Zscaler
+    scriptarguments:
+      ip:
+        simple: 1.1.1.2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1570,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: 0060808d-6d47-4928-811f-25649d4fda0a
+    type: regular
+    task:
+      id: 0060808d-6d47-4928-811f-25649d4fda0a
+      version: -1
+      name: Check IP with Zscaler
+      script: Zscaler|||ip
+      type: regular
+      iscommand: true
+      brand: Zscaler
+    scriptarguments:
+      ip:
+        simple: 1.1.1.2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1990,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: 785f7a4f-1c69-463a-8359-af8300cfa5b5
+    type: regular
+    task:
+      id: 785f7a4f-1c69-463a-8359-af8300cfa5b5
+      version: -1
+      name: Check IP with Zscaler
+      script: Zscaler|||ip
+      type: regular
+      iscommand: true
+      brand: Zscaler
+    scriptarguments:
+      ip:
+        simple: 1.1.1.2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2430,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+  "23":
+    id: "23"
+    taskid: 166d3876-dc2d-480e-8fcb-ad33d4aa70d9
+    type: regular
+    task:
+      id: 166d3876-dc2d-480e-8fcb-ad33d4aa70d9
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+      - "1"
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": -200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: e26d1c1e-4b20-4561-8778-5ec2adedc24c
+    type: regular
+    task:
+      id: e26d1c1e-4b20-4561-8778-5ec2adedc24c
+      version: -1
+      name: test SandBox Report
+      description: asasd
+      script: '|||zscaler-sandbox-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      details:
+        simple: full
+      md5:
+        simple: 3FD0EA0AE759D58274310C022FB0CBBA
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 285,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1785,
-        "width": 810,
-        "x": 50,
-        "y": 50
+        "height": 2615,
+        "width": 3290,
+        "x": -2430,
+        "y": -590
       }
     }
   }

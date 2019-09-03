@@ -30,6 +30,8 @@ tags:
 - email
 - server
 comment: |-
+  Deprecated - please use the send-mail command instead
+
   Send an email with the specified parameters.
   Attachments are provided as a comma-separated list of entry IDs.
   Example usage: !SendEmail subject="File from war room" body="Please see the attached file. --DBot" to=jane@acme.com cc=john@acme.com attachIDs=89@3,46@3
@@ -63,3 +65,6 @@ dependson:
   must:
   - send-mail
 timeout: 0s
+deprecated: true
+tests:
+  - No test

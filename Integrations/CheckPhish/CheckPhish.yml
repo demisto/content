@@ -1,0 +1,127 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: CheckPhish
+  version: -1
+configuration:
+- defaultvalue: https://developers.redmarlin.ai/api/neo/scan
+  display: CheckPhish API URL
+  name: url
+  required: false
+  type: 0
+- display: API Token
+  name: token
+  required: true
+  type: 4
+- display: 'Good Dispositions (CheckPhish labels for non-phishing URLs. Default is
+    "clean")'
+  name: good_disp
+  options:
+  - adult
+  - cryptojacking
+  - drug_spam
+  - gambling
+  - hacked_website
+  - likely_phish
+  - phish
+  - scam
+  - streaming
+  - suspicious
+  required: false
+  type: 16
+- display: 'Suspicious dispositions (CheckPhish labels for suspicious phishing URLs).
+    Default is "drug_spam", "gambling", "hacked_website", "streaming", "suspicious"'
+  name: susp_disp
+  options:
+  - adult
+  - cryptojacking
+  - drug_spam
+  - gambling
+  - hacked_website
+  - likely_phish
+  - phish
+  - scam
+  - streaming
+  - suspicious
+  required: false
+  type: 16
+- display: 'Bad dispositions (CheckPhish labels for phishing URLs). Defaults are 
+    "cryptojacking", "phish", "likely_phish", "scam".'
+  name: bad_disp
+  options:
+  - adult
+  - cryptojacking
+  - drug_spam
+  - gambling
+  - hacked_website
+  - likely_phish
+  - phish
+  - scam
+  - streaming
+  - suspicious
+  required: false
+  type: 16
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Check any URL to detect supsicious behavior.
+display: CheckPhish
+name: CheckPhish
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: A CSV list of URLs to check.
+      isArray: true
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks URLs against the CheckPhish database and returns the results.
+    execution: false
+    name: CheckPhish-check-urls
+    outputs:
+    - contextPath: CheckPhish.URL.url
+      description: URL that was submitted.
+      type: String
+    - contextPath: CheckPhish.URL.status
+      description: CheckPhish job status of the URL.
+      type: String
+    - contextPath: CheckPhish.URL.jobID
+      description: CheckPhish jobID that was assigned to the URL when it was submitted.
+      type: String
+    - contextPath: CheckPhish.URL.disposition
+      description: The CheckPhish category (disposition) of the URL.
+      type: String
+    - contextPath: CheckPhish.URL.brand
+      description: The brand (attack target) countered by the URL.
+      type: String
+    - contextPath: DBotScore.Score
+      description: DBot score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: Indicator type that was tested.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Vendor that provided the DBot score.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: Indicator that CheckPhish tested.
+      type: String
+    - contextPath: URL.Data
+      description: URL that was submitted.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: CheckPhish.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: The brand (attack target) countered by the URL.
+      type: String
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python

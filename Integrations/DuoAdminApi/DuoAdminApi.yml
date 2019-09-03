@@ -1,0 +1,234 @@
+category: Authentication
+commonfields:
+  id: DUO Admin
+  version: -1
+configuration:
+- display: API Hostname
+  name: hostname
+  required: true
+  type: 0
+- display: Integration Key
+  name: integration_key
+  required: true
+  type: 0
+- display: Secret Key
+  name: secret_key
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: |-
+  DUO for admins.
+  Must have access to the admin api in order to use this
+display: DUO Admin
+name: DUO Admin
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The user associated with the logs
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Fetch logs from this time until now
+      isArray: false
+      name: from
+      predefined:
+      - 10_seconds_ago
+      - 1_minute_ago
+      - 10_minutes_ago
+      - 1_hour_ago
+      - 10_hours_ago
+      - 1_day_ago
+      - 1_week_ago
+      - 1_month_ago
+      - 1_year_ago
+      - 5_years_ago
+      - 10_years_ago
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns authentication logs associated with a user. Limited to 30
+      at a time
+    execution: false
+    name: duoadmin-get-authentication-logs-by-user
+    outputs:
+    - contextPath: DuoAdmin.UserDetails.auth_logs.result
+      description: Result of the authentication attempt
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.event_type
+      description: Type of activity logged
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.reason
+      description: Reason for the authentication attempt result
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.access_device.ip
+      description: The GeoIP location of the access device. IP field
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.access_device.hostname
+      description: The GeoIP location of the access device. Hostname field
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.access_device.location.city
+      description: The GeoIP location of the access device. City field
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.access_device.location.state
+      description: The GeoIP location of the access device. State field
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.access_device.location.country
+      description: The GeoIP location of the access device. Country field
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.auth_device.ip
+      description: The GeoIP location of the authentication device. IP field
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.auth_device.hostname
+      description: The GeoIP location of the authentication device. Hostname field
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.auth_device.location.city
+      description: The GeoIP location of the authentication device. City field
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.auth_device.location.state
+      description: The GeoIP location of the authentication device. State field
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.auth_device.location.country
+      description: The GeoIP location of the authentication device. Country field
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.timestamp
+      description: Timestamp of the event
+      type: date
+    - contextPath: DuoAdmin.UserDetails.auth_logs.application.name
+      description: Name of the application accessed
+      type: string
+    - contextPath: DuoAdmin.UserDetails.auth_logs.factor
+      description: The authentication factor
+      type: string
+  - arguments:
+    - default: false
+      description: user to dissociate a device from
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: the device id to dissociate
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Dissociates a device from a user
+    execution: false
+    name: duoadmin-dissociate-device-from-user
+  - arguments:
+    - default: false
+      description: the id of the token to delete
+      isArray: false
+      name: token_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a u2f token
+    execution: false
+    name: duoadmin-delete-u2f-token
+  - deprecated: false
+    description: Return usernames and their user id
+    execution: false
+    name: duoadmin-get-users
+    outputs:
+    - contextPath: DuoAdmin.UserDetails.username
+      description: Username
+      type: Unknown
+    - contextPath: DuoAdmin.UserDetails.user_id
+      description: 'User Id '
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Username
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Return devices associated with a user
+    execution: false
+    name: duoadmin-get-devices-by-user
+    outputs:
+    - contextPath: DuoAdmin.UserDetails.phones.phone_id
+      description: Device Id
+      type: string
+    - contextPath: DuoAdmin.UserDetails.phones.number
+      description: Device number
+      type: string
+    - contextPath: DuoAdmin.UserDetails.phones.platform
+      description: Device platform
+      type: string
+    - contextPath: DuoAdmin.UserDetails.phones.last_seen
+      description: Last time the device was used
+      type: date
+  - arguments:
+    - default: false
+      description: username
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a list of U2F tokens associated with the given username
+    execution: false
+    name: duoadmin-get-u2f-tokens-by-user
+    outputs:
+    - contextPath: DuoAdmin.UserDetails.u2ftokens
+      description: The list of  tokens
+      type: Unknown
+  - deprecated: false
+    description: Returns all existing devices
+    execution: false
+    name: duoadmin-get-devices
+    outputs:
+    - contextPath: DuoAdmin.Phones.phone_id
+      description: Device Id
+      type: Unknown
+    - contextPath: DuoAdmin.Phones.number
+      description: Device number
+      type: Unknown
+    - contextPath: DuoAdmin.Phones.platform
+      description: Device platform
+      type: Unknown
+    - contextPath: DuoAdmin.Phones.last_seen
+      description: Last time the device was used
+      type: Unknown
+    - contextPath: DuoAdmin.Phones.users
+      description: Users associated with this device
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Username
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: Device Id
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Associates a device to a user
+    execution: false
+    name: duoadmin-associate-device-to-user
+  dockerimage: demisto/duoadmin:1.0.0.147
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+tests:
+- DuoAdmin API test playbook

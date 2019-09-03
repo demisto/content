@@ -64,6 +64,7 @@ script:
     CT_PARAMS = demisto.params()
     CMD_ARGS = demisto.args()
 
+    SCAN_OPTIONS = ['pr', 'nw', 'nc', 'st', 'sc', 'ru', 'co', 'lo', 'ns', 'wb', 'fs']
     CT_SERVER = CT_PARAMS['server']
     REST_PORT = CT_PARAMS['rest_port']
     API_KEY = CT_PARAMS['api_key']
@@ -142,6 +143,7 @@ script:
             elif 'message' in resp_json:
                 ret_msg = resp_json['message']
 
+            demisto.error(resp_json)
             demisto.error(traceback.format_exc())
 
         except requests.exceptions.ConnectionError as e:
@@ -180,24 +182,30 @@ script:
         is_true = lambda x: x == 'yes'
         is_hash_upload_on = is_true(CMD_ARGS['malware_hash_upload']) # arg value = 'yes' or 'no'
         is_file_upload_on = is_true(CMD_ARGS['malware_file_upload']) # arg value = 'yes' or 'no'
-        is_fast_scan_on = not(is_true(CMD_ARGS['full_scan']))        # arg value = 'yes' or 'no'
         endpoint = CMD_ARGS['endpoint']
+        scan_options = CMD_ARGS['scan_options']
+        incident_name = CMD_ARGS['incident_name']
 
-        if is_ip_valid(endpoint):
-            endpoint_context = { 'IPAddress' : endpoint }
-        else:
-            endpoint_context = { 'Hostname' : endpoint }
+        # Validate scan options
+        invalid_options = [opt for opt in scan_options.split(',') if opt not in SCAN_OPTIONS]
+        if invalid_options:
+            return_error('The following are not valid scan options: {0}'.format(','.join(invalid_options)))
 
         # Make data dict for rest call
-        api_data = {'hostName': endpoint}
+        api_data = {'incidentName' : incident_name}
+        api_data.update({'hostName': endpoint})
         api_data.update({'userId': USER})
         api_data.update({'password': PASSWORD})
+        api_data.update({'scanOptions': scan_options})
         api_data.update({'malwareScanRequested': is_hash_upload_on})
         api_data.update({'sendContent': is_file_upload_on})
-        api_data.update({'fastScan': is_fast_scan_on})
         api_data.update({'sendIpAddress': False})
-
         response = make_rest_call(REST_APIS['start_collection'], 'post', api_data)
+
+        if is_ip_valid(endpoint):
+            endpoint_context = {'IPAddress': endpoint}
+        else:
+            endpoint_context = {'Hostname': endpoint}
 
         ec = {
             'CyberTriage' : response['response'],
@@ -231,13 +239,12 @@ script:
       required: true
       default: true
       description: IP or hostname of a windows endpoint
-    - name: full_scan
-      auto: PREDEFINED
-      predefined:
-      - "yes"
-      - "no"
-      description: Scan entire file system for suspicious files
-      defaultValue: "yes"
+    - name: scan_options
+      description: Comma separated list of data types that Cyber Triage will collect.
+        Processes (pr), Network (nw),  Network Caches (nc), Startup Items (st), Scheduled
+        Tasks (sc), Program Run (ru),  System Config (co), User Logins (lo), Network
+        Shares (ns), Web Artifacts (wb), Full File System Scan (fs)
+      defaultValue: pr,nw,nc,st,sc,ru,co,lo,ns,wb,fs
     - name: malware_hash_upload
       auto: PREDEFINED
       predefined:
@@ -253,6 +260,9 @@ script:
       description: Send unknown files to external malware analysis service. Hash upload
         must be enabled for file uploads to occur.
       defaultValue: "no"
+    - name: incident_name
+      description: Cyber Triage incident name that the collection will belong to
+      defaultValue: Default
     outputs:
     - contextPath: CyberTriage.SessionId
       description: The session ID for the newly created session
@@ -265,3 +275,5 @@ script:
       type: string
     description: initiates a cyber triage collection on an endpoint
   runonce: false
+tests:
+  - No test - no instance

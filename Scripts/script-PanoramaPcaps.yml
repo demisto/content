@@ -1,6 +1,6 @@
 commonfields:
   id: PanoramaPcaps
-  version: 1
+  version: -1
 name: PanoramaPcaps
 script: |-
   function AddArgument(arg, argName,req) {
@@ -38,7 +38,7 @@ type: javascript
 tags:
 - panorama
 - firewall
-comment: Get panorama pcaps
+comment: Deprecated. Use the "panorama-get-pcap" command instead.
 system: true
 args:
 - name: pcapType
@@ -66,4 +66,4 @@ dependson:
   - panorama
 timeout: 0s
 tests:
-- palo_alto_firewall_test_pb
+- No tests

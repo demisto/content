@@ -1,0 +1,365 @@
+category: Analytics & SIEM
+commonfields:
+  id: Microsoft Graph User
+  version: -1
+configuration:
+- defaultvalue: https://graph.microsoft.com
+  display: Host URL (e.g., https://graph.microsoft.com)
+  name: host
+  required: true
+  type: 0
+- display: ID (received from the admin consent - see Detailed Instructions (?)
+  name: auth_id
+  required: true
+  type: 4
+- display: Token (received from the admin consent - see Detailed Instructions (?)
+    section)
+  name: tenant_id
+  required: true
+  type: 4
+- display: Key (received from the admin consent - see Detailed Instructions (?)
+  name: enc_key
+  required: true
+  type: 4
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Unified gateway to security insights - all from a unified Microsoft Graph
+  User API.
+display: Microsoft Graph User
+name: Microsoft Graph User
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: User ID or userPrincipalName
+      isArray: false
+      name: user
+      required: true
+      secret: false
+    deprecated: false
+    description: Terminates a user's session from all Office 365 applications, and
+      prevents sign in.
+    execution: false
+    name: msgraph-user-terminate-session
+  - arguments:
+    - default: false
+      description: User ID or userPrincipalName
+      isArray: false
+      name: user
+      required: true
+      secret: false
+    deprecated: false
+    description: Unblock a user.
+    execution: false
+    name: msgraph-user-unblock
+  - arguments:
+    - default: false
+      description: User ID or userPrincipalName to update properties for.
+      isArray: false
+      name: user
+      required: true
+      secret: false
+    - default: false
+      description: User fields to update (in JSON format).
+      isArray: false
+      name: updated_fields
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates the properties of a user object.
+    execution: false
+    name: msgraph-user-update
+    outputs:
+    - contextPath: MSGraphUser.ID
+      description: User's ID.
+      type: Unknown
+    - contextPath: MSGraphUser.DisplayName
+      description: User's display name.
+      type: Unknown
+    - contextPath: MSGraphUser.GivenName
+      description: User's given name.
+      type: Unknown
+    - contextPath: MSGraphUser.BusinessPhones
+      description: User's business phone numbers.
+      type: Unknown
+    - contextPath: MSGraphUser.JobTitle
+      description: User's job title.
+      type: Unknown
+    - contextPath: MSGraphUser.Mail
+      description: User's mail address.
+      type: Unknown
+    - contextPath: MSGraphUser.MobilePhone
+      description: User's mobile phone number.
+      type: Unknown
+    - contextPath: MSGraphUser.OfficeLocation
+      description: User's office location.
+      type: Unknown
+    - contextPath: MSGraphUser.PreferredLanguage
+      description: User's preferred language.
+      type: Unknown
+    - contextPath: MSGraphUser.Surname
+      description: User's surname.
+      type: Unknown
+    - contextPath: MSGraphUser.UserPrincipalName
+      description: User's principal name.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: User ID or userPrincipalName to delete.
+      isArray: false
+      name: user
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes an exsiting user.
+    execution: true
+    name: msgraph-user-delete
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: true if the account is enabled; otherwise, false.
+      isArray: false
+      name: account_enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The name to display in the address book.
+      isArray: false
+      name: display_name
+      required: true
+      secret: false
+    - default: false
+      description: Only needs to be specified when creating a new user account if
+        you are using a federated domain for the user's userPrincipalName (UPN) property.
+      isArray: false
+      name: on_premises_immutable_id
+      required: false
+      secret: false
+    - default: false
+      description: The mail alias for the user.
+      isArray: false
+      name: mail_nickname
+      required: true
+      secret: false
+    - default: false
+      description: The password profile for the user.
+      isArray: false
+      name: password
+      required: true
+      secret: false
+    - default: false
+      description: ' The user principal name, for example: someuser@contoso.com. '
+      isArray: false
+      name: user_principal_name
+      required: true
+      secret: false
+    - default: false
+      description: ' Optional properties for the user, for example: "displayName=name,mobilePhone=phone-num" '
+      isArray: false
+      name: other_properties
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new user.
+    execution: false
+    name: msgraph-user-create
+    outputs:
+    - contextPath: MSGraphUser.ID
+      description: User's ID.
+      type: Unknown
+    - contextPath: MSGraphUser.DisplayName
+      description: User's display name.
+      type: Unknown
+    - contextPath: MSGraphUser.GivenName
+      description: User's given name.
+      type: Unknown
+    - contextPath: MSGraphUser.BusinessPhones
+      description: User's business phone numbers.
+      type: Unknown
+    - contextPath: MSGraphUser.JobTitle
+      description: User's job title.
+      type: Unknown
+    - contextPath: MSGraphUser.Mail
+      description: User's mail address.
+      type: Unknown
+    - contextPath: MSGraphUser.MobilePhone
+      description: User's mobile phone number.
+      type: Unknown
+    - contextPath: MSGraphUser.OfficeLocation
+      description: User's office location.
+      type: Unknown
+    - contextPath: MSGraphUser.PreferredLanguage
+      description: User's preferred language.
+      type: Unknown
+    - contextPath: MSGraphUser.Surname
+      description: User's surname.
+      type: Unknown
+    - contextPath: MSGraphUser.UserPrincipalName
+      description: User's principal name.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: ' A CSV list of properties by which to filter the results, for
+        example: "displayName,jobTitle,mobilePhone" '
+      isArray: false
+      name: properties
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets newly created, updated, or deleted users without performing
+      a full read of the entire user collection.
+    execution: false
+    name: msgraph-user-get-delta
+    outputs:
+    - contextPath: MSGraphUser.ID
+      description: User's ID.
+      type: Unknown
+    - contextPath: MSGraphUser.DisplayName
+      description: User's display name.
+      type: Unknown
+    - contextPath: MSGraphUser.GivenName
+      description: User's given name.
+      type: Unknown
+    - contextPath: MSGraphUser.BusinessPhones
+      description: User's business phone numbers.
+      type: Unknown
+    - contextPath: MSGraphUser.JobTitle
+      description: User's job title.
+      type: Unknown
+    - contextPath: MSGraphUser.Mail
+      description: User's mail address.
+      type: Unknown
+    - contextPath: MSGraphUser.MobilePhone
+      description: User's mobile phone.
+      type: Unknown
+    - contextPath: MSGraphUser.OfficeLocation
+      description: User's office location.
+      type: Unknown
+    - contextPath: MSGraphUser.PreferredLanguage
+      description: User's preferred language.
+      type: Unknown
+    - contextPath: MSGraphUser.Surname
+      description: User's surname.
+      type: Unknown
+    - contextPath: MSGraphUser.UserPrincipalName
+      description: User's principal name.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: User ID or userPrincipalName
+      isArray: false
+      name: user
+      required: true
+      secret: false
+    - default: false
+      description: ' A CSV list of properties by which to filter the results, for
+        example: "displayName,jobTitle,mobilePhone" '
+      isArray: false
+      name: properties
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Retrieves the properties and relationships of user object. for more
+      information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0)'
+    execution: false
+    name: msgraph-user-get
+    outputs:
+    - contextPath: MSGraphUser.ID
+      description: User's ID.
+      type: Unknown
+    - contextPath: MSGraphUser.DisplayName
+      description: User's display name.
+      type: Unknown
+    - contextPath: MSGraphUser.GivenName
+      description: User's given name.
+      type: Unknown
+    - contextPath: MSGraphUser.BusinessPhones
+      description: User's business phone numbers.
+      type: Unknown
+    - contextPath: MSGraphUser.JobTitle
+      description: User's job title.
+      type: Unknown
+    - contextPath: MSGraphUser.Mail
+      description: User's mail address.
+      type: Unknown
+    - contextPath: MSGraphUser.MobilePhone
+      description: User's mobile phone number.
+      type: Unknown
+    - contextPath: MSGraphUser.OfficeLocation
+      description: User's office location.
+      type: Unknown
+    - contextPath: MSGraphUser.PreferredLanguage
+      description: User's preferred language.
+      type: Unknown
+    - contextPath: MSGraphUser.Surname
+      description: User's surname.
+      type: Unknown
+    - contextPath: MSGraphUser.UserPrincipalName
+      description: User's principal name.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: ' A CSV list of properties by which to filter the results, for
+        example: "displayName,jobTitle,mobilePhone" '
+      isArray: false
+      name: properties
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of user objects.
+    execution: false
+    name: msgraph-user-list
+    outputs:
+    - contextPath: MSGraphUser.ID
+      description: User's ID.
+      type: Unknown
+    - contextPath: MSGraphUser.DisplayName
+      description: User's display name.
+      type: Unknown
+    - contextPath: MSGraphUser.GivenName
+      description: User's given name.
+      type: Unknown
+    - contextPath: MSGraphUser.BusinessPhones
+      description: User's business phone numbers.
+      type: Unknown
+    - contextPath: MSGraphUser.JobTitle
+      description: User's job title.
+      type: Unknown
+    - contextPath: MSGraphUser.Mail
+      description: User's mail address.
+      type: Unknown
+    - contextPath: MSGraphUser.MobilePhone
+      description: User's mobile phone number.
+      type: Unknown
+    - contextPath: MSGraphUser.OfficeLocation
+      description: User's office location.
+      type: Unknown
+    - contextPath: MSGraphUser.PreferredLanguage
+      description: User's preferred language.
+      type: Unknown
+    - contextPath: MSGraphUser.Surname
+      description: User's surname.
+      type: Unknown
+    - contextPath: MSGraphUser.UserPrincipalName
+      description: User's principal name.
+      type: Unknown
+  dockerimage: demisto/crypto:1.0.0.303
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+- Microsoft Graph - Test

@@ -1,0 +1,47 @@
+category: Utilities
+commonfields:
+  id: Image OCR
+  version: -1
+configuration:
+- display: A CSV of language codes of the language to use for OCR (leave empty to use defaults).
+  name: langs
+  required: false
+  type: 0
+description: Extracts text from images.
+display: Image OCR
+name: Image OCR
+defaultEnabled: true
+fromversion: 4.0.0
+script:
+  commands:
+  - deprecated: false
+    description: Lists supported languages for which the integration can extract text.
+    execution: false
+    name: image-ocr-list-languages
+  - arguments:
+    - default: false
+      description: Entry ID of the image file to process.
+      isArray: false
+      name: entryid
+      required: true
+      secret: false
+    - default: false
+      description: A CSV of language codes of the language to use for OCR. Overrides the default configured language list.
+      isArray: true
+      name: langs
+      required: false
+      secret: false
+    deprecated: false
+    description: Extracts text from an image.
+    execution: false
+    name: image-ocr-extract-text
+    outputs:
+    - contextPath: File.Text
+      description: Extracted text from the passed image file.
+      type: String
+  dockerimage: demisto/tesseract:1.0.0.274
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3

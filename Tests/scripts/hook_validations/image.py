@@ -1,6 +1,6 @@
 import glob
 
-from Tests.test_utils import *
+from Tests.test_utils import re, print_error, os, get_yaml
 from Tests.scripts.constants import IMAGE_REGEX, INTEGRATION_REGEX, INTEGRATION_YML_REGEX
 
 
@@ -20,10 +20,18 @@ class ImageValidator(object):
             self.file_path = file_path
         else:
             if re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
-                self.file_path = glob.glob(os.path.join(os.path.dirname(file_path), '*.png'))[0]
+                try:
+                    self.file_path = glob.glob(os.path.join(os.path.dirname(file_path), '*.png'))[0]
+                except IndexError:
+                    self._is_valid = False
+                    print_error("You've created/modified a package but failed to provide an image as a .png file, "
+                                "please add an image in order to proceed.")
 
     def is_valid(self):
         """Validate that the image exists and that it is in the permitted size limits."""
+        if self._is_valid is False:  # In case we encountered an IndexError in the init - we don't have an image
+            return self._is_valid
+
         self.oversize_image()
         if '.png' not in self.file_path:
             self.is_existing_image()
@@ -38,7 +46,11 @@ class ImageValidator(object):
                 self._is_valid = False
 
         else:
-            data_dictionary = get_json(self.file_path)
+            data_dictionary = get_yaml(self.file_path)
+
+            if not data_dictionary:
+                return
+
             image = data_dictionary.get('image', '')
 
             if ((len(image) - 22) / 4.0) * 3 > self.IMAGE_MAX_SIZE:  # disable-secrets-detection
@@ -49,21 +61,28 @@ class ImageValidator(object):
         """Check if the integration as an image."""
         is_image_in_yml = False
         is_image_in_package = False
-        if get_json(self.file_path).get('image'):
+
+        data_dictionary = get_yaml(self.file_path)
+
+        if not data_dictionary:
+            return False
+
+        if data_dictionary.get('image'):
             is_image_in_yml = True
 
         if not re.match(INTEGRATION_REGEX, self.file_path, re.IGNORECASE):
             package_path = os.path.dirname(self.file_path)
+            if is_image_in_yml:
+                print_error("You have added an image in the yml "
+                            "file, please update the package {}".format(package_path))
+                return False
             image_path = glob.glob(package_path + '/*.png')
             if image_path:
-                if is_image_in_yml:
-                    print_error("You have added an image both in the package and in the yml "
-                                "file, please update the package {}".format(package_path))
-                    return False
-
                 is_image_in_package = True
 
         if not (is_image_in_package or is_image_in_yml):
             print_error("You have failed to add an image in the yml/package for {}".format(self.file_path))
+            self._is_valid = False
+            return False
 
-        return is_image_in_package or is_image_in_yml
+        return True

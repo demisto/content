@@ -1,0 +1,122 @@
+category: Utilities
+commonfields:
+  id: Server Message Block (SMB)
+  version: -1
+configuration:
+- display: Server IP / Hostname (e.g. 1.2.3.4)
+  name: hostname
+  required: false
+  type: 0
+- defaultvalue: '445'
+  display: Port
+  name: port
+  required: true
+  type: 0
+- display: Server NetBIOS (AD) Name
+  name: nbname
+  required: false
+  type: 0
+- display: Domain
+  name: domain
+  required: false
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: File exchange with an SMB server.
+display: Server Message Block (SMB)
+name: Server Message Block (SMB)
+script:
+  commands:
+  - arguments:
+    - name: hostname
+      default: false
+      description: 'Server IP address / hostname, for example: 1.2.3.4.'
+    - name: nbname
+      default: false
+      description: Server NetBIOS (AD) name.
+    - name: domain
+      default: false
+      description: The host domain
+    - name: file_path
+      required: true
+      default: true
+      description: 'The path to the file, starting from the share, for example: Share/Folder/File.'
+    - name: download_and_attach
+      default: false
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: 'If "yes", the file is downloaded and attached. If "no", only the output is attached. Default is yes".'
+      defaultValue: "yes"
+    outputs:
+    - contextPath: File.Size
+      description: File size.
+      type: number
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: string
+    - contextPath: File.Name
+      description: File name.
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file.
+      type: string
+    - contextPath: File.EntryID
+      description: File entry ID.
+      type: string
+    - contextPath: File.Info
+      description: Information about the file.
+      type: string
+    - contextPath: File.Type
+      description: File type.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: string
+    deprecated: false
+    description: Downloads a file from the SMB server.
+    execution: false
+    name: smb-download
+  - arguments:
+    - name: hostname
+      default: false
+      description: 'Server IP address / hostname, for example: 1.2.3.4.'
+    - name: nbname
+      default: false
+      description: Server NetBIOS (AD) name.
+    - name: domain
+      default: false
+      description: The host domain
+    - name: file_path
+      default: false
+      required: true
+      description: 'The path to the file, starting from the share, for example: Share/Folder/File.'
+    - name: entryID
+      default: false
+      description: EntryID of the file to send to the share.
+    - name: content
+      default: false
+      description: File content to send to the share. Ignored if EntryID argument
+        is specified.
+    deprecated: false
+    description: Uploads a file to the SMB server.
+    execution: false
+    name: smb-upload
+  dockerimage: demisto/pysmb
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+tests:
+- SMB test

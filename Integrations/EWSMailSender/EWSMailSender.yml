@@ -1,0 +1,87 @@
+commonfields:
+  id: EWS Mail Sender
+  version: -1
+name: EWS Mail Sender
+display: EWS Mail Sender
+category: Messaging
+description: Exchange Web Services and Office 365 Email sender
+configuration:
+- display: Exchange URL or Server IP address
+  name: ewsServer
+  defaultvalue: https://outlook.office365.com/EWS/Exchange.asmx/
+  type: 0
+  required: true
+- display: 'Authentication: Email address (for Office 365) or DOMAIN\USERNAME (e.g.
+    DEMISTO.INT\admin)'
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Server Version (2007, 2010, 2010_SP2, 2013, or 2016)
+  name: defaultServerVersion
+  defaultvalue: "2013"
+  type: 0
+  required: true
+- display: Authentication Type (NTLM, Basic, or Digest). For Office 365 use Basic.
+  name: authType
+  defaultvalue: Basic
+  type: 0
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Has impersonation rights
+  name: impersonation
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Sender Mailbox
+  name: mailbox
+  defaultvalue: ""
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: send-mail
+    arguments:
+    - name: to
+      required: true
+      description: A CSV list of email addresses for the 'to' field.
+    - name: cc
+      description: A CSV list of email addresses for the 'cc' field.
+    - name: bcc
+      description: A CSV list of email addresses for the 'bcc' field.
+    - name: subject
+      required: true
+      description: Subject for the email to be sent.
+    - name: replyTo
+      description: The email address specified in the 'reply to' field.
+    - name: body
+      description: The contents (body) of the email to send.
+    - name: htmlBody
+      description: Send an HTML formatted email. This argument overrides the "body" argument.
+    - name: attachIDs
+      description: 'A CSV list of War Room entry IDs that contain
+        files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
+      isArray: true
+    - name: attachNames
+      description: A CSV list of names of attachments to send.
+        Should be the same number of elements as attachIDs.
+      isArray: true
+    - name: attachCIDs
+      description: 'A CSV list of CIDs to embed attachments within the email itself.'
+      isArray: true
+    description: Sends an email using EWS.
+  dockerimage: demisto/py-ews
+tests:
+  - "EWS Mail Sender Test"
+  - "EWS Mail Sender Test 2"

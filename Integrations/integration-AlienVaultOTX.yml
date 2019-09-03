@@ -212,6 +212,12 @@ script:
         return createContextSingle(data);
     }
 
+    function domain_from_url(url) {
+        res = url.replace(/(.*:\/\/.*)[\?\/#].*/, '$1');
+        return res;
+    }
+
+
     baseUrl = params.server.replace(/[\/]+$/, '') + ':' + params.port + '/api/v1/';
     function sendRequest(url) {
         res = http(
@@ -233,14 +239,15 @@ script:
         }
         // If we have a body, it should have application/json content type.
         if (res.Body &&
-            (!res.Headers['Content-Type'] || !res.Headers['Content-Type'][0] || res.Headers['Content-Type'][0].indexOf('application/json') === -1)) {
-            throw 'Check your URL - got invalid content type, expected application/json. Response body: ' + res.Body;
+        (!res.Headers['Content-Type'] || !res.Headers['Content-Type'][0] || res.Headers['Content-Type'][0].indexOf('application/json') === -1) || res.Body.indexOf('Google Tag Manager') != -1) {
+            log('Response body: ' + res.Body);
+            throw 'Check your URL (excepting base URL) - got invalid content type, expected application/json.';
         }
         return res.Body ? JSON.parse(res.Body) : 'empty';
     }
 
     function queryIndicators(type, indicator, section) {
-        return sendRequest('indicators/' + type + '/' + indicator + '/general');
+        return sendRequest('indicators/' + type + '/' + domain_from_url(indicator) + '/general');
     }
 
     if (command === 'test-module') {
@@ -452,3 +459,5 @@ script:
     description: Query url in AlienVault OTX
   runonce: false
 fromversion: 3.0.1
+tests:
+  - AlienVaultOTX Test

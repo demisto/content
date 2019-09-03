@@ -1,0 +1,371 @@
+category: Email Gateway
+commonfields:
+  id: MicrosoftGraphMail
+  version: -1
+configuration:
+- defaultvalue: https://graph.microsoft.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: ID (received from the admin consent - see Detailed Instructions (?)
+  name: auth_id
+  required: true
+  type: 4
+- display: Token (received from the admin consent - see Detailed Instructions (?)
+    section)
+  name: tenant_id
+  required: true
+  type: 4
+- display: Key (received from the admin consent - see Detailed Instructions (?)
+  name: enc_key
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+description: Microsoft Graph lets your app get authorized access to a user's Outlook
+  mail data in a personal or organization account.
+display: Microsoft Graph Mail
+name: MicrosoftGraphMail
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: User ID from which to pull mails (can be principal ID (email address)).
+      isArray: true
+      name: user_id
+      required: true
+      secret: false
+    - default: false
+      description: ' A CSV list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). '
+      isArray: false
+      name: folder_id
+      required: false
+      secret: false
+    - default: false
+      description: Add an OData query.
+      isArray: false
+      name: odata
+      required: false
+      secret: false
+    - default: false
+      description: Search term.
+      isArray: false
+      name: search
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '1'
+      description: The number of pages of emails to pull (maximum is 10 emails per
+        page).
+      isArray: false
+      name: pages_to_pull
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets properties of mails.
+    execution: false
+    name: msgraph-mail-list-emails
+    outputs:
+    - contextPath: MSGraphMail.ID
+      description: ID of email.
+      type: String
+    - contextPath: MSGraphMail.Created
+      description: Time of email creation.
+      type: Date
+    - contextPath: MSGraphMail.LastModifiedTime
+      description: Time of last modified.
+      type: Date
+    - contextPath: MSGraphMail.ReceivedTime
+      description: Time of email receiving.
+      type: Date
+    - contextPath: MSGraphMail.SendTime
+      description: Time of sending email.
+      type: Date
+    - contextPath: MSGraphMail.Categories
+      description: Categories of email.
+      type: String
+    - contextPath: MSGraphMail.HasAttachments
+      description: If there're any attachments in the email
+      type: Boolean
+    - contextPath: MSGraphMail.Subject
+      description: Subject of email.
+      type: String
+    - contextPath: MSGraphMail.IsDraft
+      description: If the email is draft
+      type: Boolean
+    - contextPath: MSGraphMail.Body
+      description: Body of email
+      type: String
+    - contextPath: MSGraphMail.Sender.Name
+      description: Name of sender
+      type: String
+    - contextPath: MSGraphMail.Sender.Address
+      description: Email address of sender
+      type: String
+    - contextPath: MSGraphMail.From.Name
+      description: Name of from
+      type: String
+    - contextPath: MSGraphMail.From.Address
+      description: Email address of from
+      type: String
+    - contextPath: MSGraphMail.CCRecipients.Name
+      description: Name of ccRecipients
+      type: String
+    - contextPath: MSGraphMail.CCRecipients.Address
+      description: Email address of ccRecipients
+      type: String
+    - contextPath: MSGraphMail.BCCRecipients.Name
+      description: Name of bccRecipients
+      type: String
+    - contextPath: MSGraphMail.BCCRecipients.Address
+      description: Email address of bccRecipients
+      type: String
+    - contextPath: MSGraphMail.ReplyTo.Name
+      description: Name of replyTo
+      type: String
+    - contextPath: MSGraphMail.ReplyTo.Address
+      description: Email address of replyTo
+      type: String
+    - contextPath: MSGraphMail.UserID
+      description: ID of user
+      type: String
+  - arguments:
+    - default: false
+      description: User ID or principal ID (mostly email address).
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    - default: false
+      description: Message ID.
+      isArray: false
+      name: message_id
+      required: true
+      secret: false
+    - default: false
+      description: Folder ID.
+      isArray: false
+      name: folder_id
+      required: false
+      secret: false
+    - default: false
+      description: OData.
+      isArray: false
+      name: odata
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether the message body should be returned.
+      isArray: false
+      name: get_body
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the properties of an email.
+    execution: false
+    name: msgraph-mail-get-email
+    outputs:
+    - contextPath: MSGraphMail.ID
+      description: ID of email.
+      type: String
+    - contextPath: MSGraphMail.Created
+      description: Time of email creation.
+      type: Date
+    - contextPath: MSGraphMail.LastModifiedTime
+      description: Time of last modified.
+      type: Date
+    - contextPath: MSGraphMail.ReceivedTime
+      description: Time of email receiving.
+      type: Date
+    - contextPath: MSGraphMail.SendTime
+      description: Time of sending email.
+      type: Date
+    - contextPath: MSGraphMail.Categories
+      description: Categories of email.
+      type: String
+    - contextPath: MSGraphMail.HasAttachments
+      description: If there're any attachments in the email
+      type: Boolean
+    - contextPath: MSGraphMail.Subject
+      description: Subject of email.
+      type: String
+    - contextPath: MSGraphMail.IsDraft
+      description: If the email is draft
+      type: Boolean
+    - contextPath: MSGraphMail.Body
+      description: Body of email
+      type: String
+    - contextPath: MSGraphMail.Sender.Name
+      description: Name of sender
+      type: String
+    - contextPath: MSGraphMail.Sender.Address
+      description: Email address of sender
+      type: String
+    - contextPath: MSGraphMail.From.Name
+      description: Name of from
+      type: String
+    - contextPath: MSGraphMail.From.Address
+      description: Email address of from
+      type: String
+    - contextPath: MSGraphMail.CCRecipients.Name
+      description: Name of ccRecipients
+      type: String
+    - contextPath: MSGraphMail.CCRecipients.Address
+      description: Email address of ccRecipients
+      type: String
+    - contextPath: MSGraphMail.BCCRecipients.Name
+      description: Name of bccRecipients
+      type: String
+    - contextPath: MSGraphMail.BCCRecipients.Address
+      description: Email address of bccRecipients
+      type: String
+    - contextPath: MSGraphMail.ReplyTo.Name
+      description: Name of replyTo
+      type: String
+    - contextPath: MSGraphMail.ReplyTo.Address
+      description: Email address of replyTo
+      type: String
+    - contextPath: MSGraphMail.UserID
+      description: ID of user
+      type: String
+  - arguments:
+    - default: false
+      description: User ID or principal ID (mostly email address).
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    - default: false
+      description: Message ID.
+      isArray: false
+      name: message_id
+      required: true
+      secret: false
+    - default: false
+      description: Folder ID (Comma sepreated, mailFolders,childFolders,childFolders...).
+      isArray: false
+      name: folder_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Deletes an email.
+    execution: false
+    name: msgraph-mail-delete-email
+  - arguments:
+    - default: false
+      description: User ID or principal ID (mostly email address).
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    - default: false
+      description: Message ID.
+      isArray: false
+      name: message_id
+      required: true
+      secret: false
+    - default: false
+      description: Folder ID (Comma sepreated, mailFolders,childFolders,childFolders...).
+      isArray: false
+      name: folder_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Lists all of the attachments of given email
+    execution: false
+    name: msgraph-mail-list-attachments
+    outputs:
+    - contextPath: MSGraphMailAttachment.ID
+      description: Email ID.
+      type: String
+    - contextPath: MSGraphMailAttachment.Attachment.ID
+      description: ID of attachment.
+      type: String
+    - contextPath: MSGraphMailAttachment.Attachment.Name
+      description: Name of attachment.
+      type: String
+    - contextPath: MSGraphMailAttachment.Attachment.Type
+      description: Type of attachment.
+      type: String
+    - contextPath: MSGraphMailAttachment.UserID
+      description: ID of user
+      type: String
+  - arguments:
+    - default: false
+      description: User ID or principal ID (mostly email address).
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    - default: false
+      description: Message ID.
+      isArray: false
+      name: message_id
+      required: true
+      secret: false
+    - default: false
+      description: Folder ID (Comma sepreated, mailFolders,childFolders,childFolders...).
+      isArray: false
+      name: folder_id
+      required: false
+      secret: false
+    - default: false
+      description: ID of the attachment.
+      isArray: false
+      name: attachment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets an attachment from the email.
+    execution: false
+    name: msgraph-mail-get-attachment
+    outputs:
+    - contextPath: File.Size
+      description: Size of file
+      type: Number
+    - contextPath: File.SHA1
+      description: File's SHA1
+      type: String
+    - contextPath: File.SHA256
+      description: File's SHA256
+      type: String
+    - contextPath: File.Name
+      description: File's name
+      type: String
+    - contextPath: File.SSDeep
+      description: File's SSDeep
+      type: String
+    - contextPath: File.EntryID
+      description: File's entry id
+      type: String
+    - contextPath: File.Info
+      description: File's info
+      type: String
+    - contextPath: File.Type
+      description: File's type
+      type: String
+    - contextPath: File.MD5
+      description: File's MD5
+      type: String
+    - contextPath: File.Extension
+      description: File's Extension
+      type: String
+  dockerimage: demisto/crypto:1.0.0.303
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+- MicrosoftGraphMail-Test

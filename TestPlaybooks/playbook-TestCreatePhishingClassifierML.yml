@@ -2,6 +2,7 @@ id: CreatePhishingClassifierMLTest
 version: -1
 name: Create Phishing Classifier ML Test
 description: Test CreatePhishingClassifierML playbook
+fromversion: 4.1.0
 starttaskid: "0"
 tasks:
   "0":

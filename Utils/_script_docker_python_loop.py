@@ -176,6 +176,8 @@ class Demisto:
             for r in results:
                 res.append(self.convert(r))
             return res
+        if sys.version_info.major >= 3 and type(results) is bytes:
+            return {'Type': 1, 'Contents': results.decode('utf-8'), 'ContentsFormat': 'text'}
         return {'Type': 1, 'Contents': str(results), 'ContentsFormat': 'text'}
 
 
@@ -343,6 +345,8 @@ class Demisto:
             for r in results:
                 res.append(self.__convert(r))
             return res
+        if sys.version_info.major >= 3 and type(results) is bytes:
+            return {'Type': 1, 'Contents': results.decode('utf-8'), 'ContentsFormat': 'text'}
         return {'Type': 1, 'Contents': str(results), 'ContentsFormat': 'text'}
 
     def results(self, results):

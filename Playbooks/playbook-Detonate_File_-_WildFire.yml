@@ -6,7 +6,7 @@ description: |-
   Detonate one or more files using the Wildfire integration. This playbook
   returns relevant reports to the War Room and file reputations to the context data.
   The detonation supports the following file types -
-  APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z
+  APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PDF, DMG, PKG, RAR, 7Z
 starttaskid: "0"
 tasks:
   "0":
@@ -33,12 +33,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 15b7c096-8b60-403c-857b-703dc230d659
+    taskid: ea5344ac-b7ac-47ea-8703-30b93a2bba43
     type: playbook
     task:
-      id: 15b7c096-8b60-403c-857b-703dc230d659
+      id: ea5344ac-b7ac-47ea-8703-30b93a2bba43
       version: -1
       name: GenericPolling
       description: |-
@@ -57,6 +58,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
       Ids:
         complex:
           root: WildFire
@@ -87,12 +90,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: f97bc658-fbb7-4793-8ad2-9b9f6244d221
+    taskid: 4d801593-76c0-45bc-880c-46572315ab6d
     type: regular
     task:
-      id: f97bc658-fbb7-4793-8ad2-9b9f6244d221
+      id: 4d801593-76c0-45bc-880c-46572315ab6d
       version: -1
       name: WildFire Get Report
       description: Retrieve results for a file hash using WildFire
@@ -112,6 +116,7 @@ tasks:
           root: WildFire
           accessor: Report.SHA256
       md5: {}
+      sha256: {}
       verbose: {}
     separatecontext: false
     view: |-
@@ -123,6 +128,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: 7cb53d1d-e613-47cd-847e-c1908e384d53
@@ -145,6 +151,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
     taskid: 5944d365-4547-4e91-8f62-fa295fa32b38
@@ -182,12 +189,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: 1cee486c-4dbe-44ec-8b62-195a75ebed2e
+    taskid: f959299e-1445-4a65-85bf-d4f70a0c7ebf
     type: condition
     task:
-      id: 1cee486c-4dbe-44ec-8b62-195a75ebed2e
+      id: f959299e-1445-4a65-85bf-d4f70a0c7ebf
       version: -1
       name: Is WildFire sandbox enabled?
       description: Check if integration instance is enabled
@@ -217,6 +225,14 @@ tasks:
                     right:
                       value:
                         simple: WildFire
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
                 - - operator: isEqualString
                     left:
                       value:
@@ -236,6 +252,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
     taskid: 09aec71d-10ce-419d-836b-88f9d41a52eb
@@ -270,7 +287,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|XML|PE32|PDF|DMG|PKG|RAR|7Z)\b
+                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PDF|DMG|PKG|RAR|7Z)\b
                     ignorecase: true
                   - operator: match
                     left:
@@ -279,7 +296,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|XML|PE32|PDF|DMG|PKG|RAR|7Z)\b
+                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PDF|DMG|PKG|RAR|7Z)\b
                     ignorecase: true
                 accessor: EntryID
             iscontext: true
@@ -293,6 +310,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
     taskid: 16c9088e-43fa-494a-80f2-646461c74a66
@@ -326,19 +344,20 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
-    taskid: 9be683c0-b4f2-4622-8308-c0a2b8ee2539
+    taskid: 10704220-2fa8-487b-8908-003505fad127
     type: regular
     task:
-      id: 9be683c0-b4f2-4622-8308-c0a2b8ee2539
+      id: 10704220-2fa8-487b-8908-003505fad127
       version: -1
       name: WildFire Upload File
-      description: Upload file to WildFire for analysis.
-      script: WildFire|||wildfire-upload
+      description: Uploads a file to WildFire for analysis.
+      script: '|||wildfire-upload'
       type: regular
       iscommand: true
-      brand: WildFire
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
@@ -354,7 +373,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|XML|PE32|PDF|DMG|PKG|RAR|7Z)\b
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PDF|DMG|PKG|RAR|7Z)\b
               ignorecase: true
             - operator: match
               left:
@@ -363,7 +382,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|XML|PE32|PDF|DMG|PKG|RAR|7Z)\b
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PDF|DMG|PKG|RAR|7Z)\b
               ignorecase: true
             - operator: match
               left:
@@ -372,7 +391,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|XML|PE32|PDF|DMG|PKG|RAR|7Z)\b
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PDF|DMG|PKG|RAR|7Z)\b
               ignorecase: true
           accessor: EntryID
     separatecontext: false
@@ -385,6 +404,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},

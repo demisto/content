@@ -1,0 +1,256 @@
+id: Domain Enrichment - Generic v2 - Test
+version: -1
+fromversion: 4.1.0
+name: Domain Enrichment - Generic v2 - Test
+description: A test for the Domain Enrichment - Generic v2 playbook.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 02acc377-4ee9-4f26-88db-5a0a702ebd7a
+    type: start
+    task:
+      id: 02acc377-4ee9-4f26-88db-5a0a702ebd7a
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 2a204919-f35d-4c0f-85a0-83dfccccaa1d
+    type: playbook
+    task:
+      id: 2a204919-f35d-4c0f-85a0-83dfccccaa1d
+      version: -1
+      name: Domain Enrichment - Generic v2
+      playbookName: Domain Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      Domain:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 1119feb2-183c-45b3-87dd-a1dfe7a5b9be
+    type: regular
+    task:
+      id: 1119feb2-183c-45b3-87dd-a1dfe7a5b9be
+      version: -1
+      name: Clear context
+      description: Clear the context for a fresh start of the test.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: af78f53f-2c12-4084-8549-f1bd5eebb3ef
+    type: regular
+    task:
+      id: af78f53f-2c12-4084-8549-f1bd5eebb3ef
+      version: -1
+      name: Set domains in context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Domain.Name
+      value:
+        simple: '["msn.com", "demisto.com"]'
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: a04fa368-1c51-423d-859d-ad2554298dfe
+    type: condition
+    task:
+      id: a04fa368-1c51-423d-859d-ad2554298dfe
+      version: -1
+      name: Has a domain category been found?
+      description: Checks if Cisco Umbrella Investigate fetched a category for the
+        domain specified.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Domain.ContentCategories
+            iscontext: true
+          right:
+            value:
+              simple: News/Media,Portals,Search Engines
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: Domain.ContentCategories
+            iscontext: true
+          right:
+            value:
+              simple: Software/Technology
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: a327a491-40ce-4df3-8954-5397d032f753
+    type: regular
+    task:
+      id: a327a491-40ce-4df3-8954-5397d032f753
+      version: -1
+      name: Make test fail
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      message:
+        simple: Domain category was not found. Maybe quota was reached, or something
+          changed with the domain.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 16b5b5ab-cb4f-4672-832c-0b9e2f93254d
+    type: title
+    task:
+      id: 16b5b5ab-cb4f-4672-832c-0b9e2f93254d
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1065,
+        "width": 730,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
