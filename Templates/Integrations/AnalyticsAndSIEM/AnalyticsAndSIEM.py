@@ -188,7 +188,7 @@ def fetch_incidents(client: Client):
         last_run_string = datetime.strptime(last_run, timestamp_format)
     incidents: List[Dict] = list()
     raw_response = client.list_events_request(since_time=last_run_string)
-    events: List[Dict] = raw_response.get('incidents', [])
+    events: List[Dict] = raw_response.get('event', [])
     if events:
         # Creates incident entry
         incidents = [{
@@ -205,7 +205,7 @@ def fetch_incidents(client: Client):
 def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit: Optional[str] = args.get('limit')
     raw_response = client.list_events_request(limit=limit)
-    events = raw_response.get('incidents', [])
+    events = raw_response.get('event', [])
     if events:
         title: str = f'{client.get_integration_name()} - List events:'
         context_entry = build_context(events)
@@ -328,7 +328,7 @@ def main():
     integration_name_context = 'AnalyticsAndSIEM'
     server: str = demisto.params().get('url', '')
     verify_ssl: bool = not demisto.params().get('insecure', False)
-    proxy: Optional[bool] = demisto.params().get('proxy')
+    proxy = demisto.params().get('proxy')
     base_suffix = '/api/v2/'
     client: Client = Client(server,
                             integration_name=integration_name,

@@ -1800,16 +1800,17 @@ def remove_nulls_from_dictionary(data):
 
 
 class BaseClient:
+    """Base Client for use in new integrations"""
     def __init__(self,
                  server,
                  base_suffix,
                  integration_name,
                  integration_name_command,
                  integration_name_context,
-                 verify,
-                 proxy
+                 verify=True,
+                 proxy=False
                  ):
-        """Base Client for use in new integrations
+        """Base Client for use in new integrations.
 
         Args:
             server (str): Base server address
@@ -1843,8 +1844,7 @@ class BaseClient:
     def _http_request(self, method, url_suffix, full_url=None, headers=None,
                       auth=None, params=None, data=None, files=None,
                       timeout=10, resp_type='json', **kwargs):
-        """A wrapper for requests lib to send our requests and handle requests
-        and responses better
+        """A wrapper for requests lib to send our requests and handle requests and responses better.
 
         Args:
             method: (str) HTTP method, e.g. 'GET', 'POST' ... etc.
