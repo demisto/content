@@ -1,2 +1,2 @@
 ## [Unreleased]
-The category of the email.
+Classification of the email. Can be "Legitimate", "Spam", or "Malicious".
