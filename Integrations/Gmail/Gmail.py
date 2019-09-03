@@ -19,7 +19,8 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.header import Header
 import mimetypes
-
+import random
+import string
 from apiclient import discovery
 from oauth2client import service_account
 
@@ -439,7 +440,7 @@ def autoreply_to_entry(title, response, user_id):
 
         })
     headers = ['Type', 'EnableAutoReply', 'ResponseBody',
-               'ResponseSubject', 'RestrictToContact', 'RestrcitToDomain']
+               'ResponseSubject', 'RestrictToContact', 'RestrictToDomain']
 
     account_context = {
         "Address": user_id,
@@ -456,25 +457,45 @@ def autoreply_to_entry(title, response, user_id):
     }
 
 
-def mail_results_to_entry(title, response):
-    context = []
+def sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, bodyHtml, body, subject):
+    gmail_context = []
+    email_context = []
     for mail_results_data in response:
-        context.append({
-            'Type': 'Google',
-            'MessageId': mail_results_data.get('id'),
-            'Label': mail_results_data.get('labelIds'),
+        gmail_context.append({
+            'Type': "Gmail",
+            'ID': mail_results_data.get('id'),
+            'Labels': mail_results_data.get('labelIds'),
             'ThreadId': mail_results_data.get('threadId'),
+            'To': ','.join(to),
+            'From': emailfrom,
+            'Cc': ','.join(cc) if len(cc) > 0 else None,
+            'Bcc': ','.join(bcc) if len(bcc) > 0 else None,
+            'Subject': subject,
+            'Body': body,
+            'Mailbox': ','.join(to)
         })
-    headers = ['Type', 'MessageId', 'Label',
+        email_context.append({
+            'ID': mail_results_data.get('id'),
+            'To': ','.join(to),
+            'From': emailfrom,
+            'CC': ','.join(cc) if len(cc) > 0 else None,
+            'BCC': ','.join(bcc) if len(bcc) > 0 else None,
+            'Body/HTML': bodyHtml,
+            'Body/Text': body,
+            'Subject': subject,
+        })
+
+    headers = ['Type', 'ID', 'To', 'From', 'Cc', 'Bcc', 'Subject', 'Body', 'Labels',
                'ThreadId']
 
     return {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
-        'Contents': context,
+        'Contents': gmail_context,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, context, headers, removeNull=True),
-        'EntryContext': {'Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': context}
+        'HumanReadable': tableToMarkdown(title, gmail_context, headers, removeNull=True),
+        'EntryContext': {'Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': gmail_context,
+                         'Email(val.ID && val.ID == obj.ID)': email_context}
     }
 
 
@@ -696,7 +717,7 @@ def set_autoreply_command():
 
     autoreply_message = set_autoreply(user_id, enable_autoreply, response_subject, response_body_plain_text)
 
-    return autoreply_to_entry('User {}:'.format(user_id), [autoreply_message])
+    return autoreply_to_entry('User {}:'.format(user_id), [autoreply_message], user_id)
 
 
 def set_autoreply(user_id, enable_autoreply, response_subject, response_body_plain_text):
@@ -729,7 +750,7 @@ def delegate_user_mailbox_command():
 
 def delegate_user_mailbox(user_id, delegate_email, delegate_token):
     service = get_service('gmail', 'v1', additional_scopes=['https://www.googleapis.com/auth/gmail.settings.sharing'])
-    if delegate_token == 'True':  # guardrails-disable-line
+    if delegate_token:  # guardrails-disable-line
         command_args = {
             'userId': user_id if user_id != 'me' else ADMIN_EMAIL,
             'body': {
@@ -747,94 +768,6 @@ def delegate_user_mailbox(user_id, delegate_email, delegate_token):
 
         service.users().settings().delegates().delete(**command_args).execute()
         return 'Email {} has been removed from delegation'.format(delegate_email)
-
-
-def header(s):
-    if not s:
-        return None
-    s_no_newlines = ' '.join(s.splitlines())
-    return Header(s_no_newlines, 'utf-8')
-
-
-def send_mail_command():
-    args = demisto.args()
-    emailto = args.get('to')
-    emailfrom = args.get('from')
-    body = args.get('body')
-    subject = args.get('subject')
-    entry_ids = args.get('attachIDs')
-    cc = args.get('cc')
-    bcc = args.get('bcc')
-    htmlBody = args.get('htmlBody')
-    replyTo = args.get('replyTo')
-    file_names = args.get('attachNames')
-
-    result = send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names)
-    return mail_results_to_entry('User %s:' % (emailfrom,), [result])
-
-
-def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names):
-    message = MIMEMultipart()
-    message['to'] = header(','.join(emailto))
-    message['cc'] = header(','.join(cc))
-    message['bcc'] = header(','.join(bcc))
-    message['from'] = header(emailfrom)
-    message['subject'] = header(subject)
-    message['reply-to'] = header(replyTo)
-    msg = MIMEText(body, 'plain', 'utf-8')
-    message.attach(msg)
-    msg = MIMEText(htmlBody, 'html', 'utf-8')
-    message.attach(msg)
-    entry_number = 0
-    if entry_ids is not None and len(entry_ids) > 0:
-        for entry_id in entry_ids:
-            file = demisto.getFilePath(entry_id)
-            file_path = file['path']
-            if file_names is not None and len(file_names) > entry_number:
-                file_name = file_names[entry_number]
-            else:
-                file_name = file['name']
-            entry_number = entry_number + 1
-            content_type, encoding = mimetypes.guess_type(file_path)
-            if content_type is None or encoding is not None:
-                content_type = 'application/octet-stream'
-            main_type, sub_type = content_type.split('/', 1)
-            if main_type == 'text':
-                fp = open(file_path, 'rb')
-                file_txt = MIMEText(fp.read(), _subtype=sub_type)
-                fp.close()
-                file_txt.add_header('Content-Disposition', 'attachment', filename=file_name)
-                message.attach(file_txt)
-            elif main_type == 'image':
-                fp = open(file_path, 'rb')
-                file_img = MIMEImage(fp.read(), _subtype=sub_type)
-                fp.close()
-                file_img.add_header('Content-Disposition', 'attachment', filename=file_name)
-                message.attach(file_img)
-            elif main_type == 'audio':
-                fp = open(file_path, 'rb')
-                file_aud = MIMEAudio(fp.read(), _subtype=sub_type)
-                fp.close()
-                file_aud.add_header('Content-Disposition', 'attachment', filename=file_name)
-                message.attach(file_aud)
-            else:
-                fp = open(file_path, 'rb')
-                file_msg = MIMEBase(main_type, sub_type)
-                file_msg.set_payload(fp.read())
-                fp.close()
-                file_msg.add_header('Content-Disposition', 'attachment', filename=file_name)
-                message.attach(file_msg)
-    encoded_message = base64.urlsafe_b64encode(message.as_string())
-    command_args = {
-        'userId': emailfrom if emailfrom != 'me' else ADMIN_EMAIL,
-        'body': {
-            'raw': encoded_message,
-        }}
-
-    service = get_service('gmail', 'v1', additional_scopes=['https://www.googleapis.com/auth/gmail.compose',
-                                                            'https://www.googleapis.com/auth/gmail.send'])
-    result = service.users().messages().send(**command_args).execute()
-    return result
 
 
 def create_user_command():
@@ -1397,6 +1330,286 @@ def remove_filter(user_id, _id):
     return result
 
 
+'''MAIL SENDER FUNCTIONS'''
+
+
+def randomword(length):
+    """
+    Generate a random string of given length
+    """
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(length))
+
+
+def header(s):
+    if not s:
+        return None
+    s_no_newlines = ' '.join(s.splitlines())
+    return Header(s_no_newlines, 'utf-8')
+
+
+def template_params(paramsStr):
+    """
+    Translate the template params if they exist from the context
+    """
+    actualParams = {}
+    if paramsStr:
+        try:
+            params = json.loads(paramsStr)
+        except ValueError as e:
+            return_error('Unable to parse templateParams: {}'.format(str(e)))
+        # Build a simple key/value
+        for p in params:
+            if params[p].get('value'):
+                actualParams[p] = params[p]['value']
+            elif params[p].get('key'):
+                actualParams[p] = demisto.dt(demisto.context(), params[p]['key'])
+        return actualParams
+    else:
+        return None
+
+
+def transient_attachments(transientFile, transientFileContent, transientFileCID):
+    if transientFile is None or len(transientFile) == 0:
+        return []
+    attachments = []
+    entry_number = 0
+    for file_name in transientFile:
+        content_type, encoding = mimetypes.guess_type(file_name)
+        if content_type is None or encoding is not None:
+            content_type = 'application/octet-stream'
+
+        main_type, sub_type = content_type.split('/', 1)
+
+        if transientFileContent is not None and len(transientFileContent) > entry_number:
+            file_data = transientFileContent[entry_number]
+
+        else:
+            file_data = ''
+
+        if transientFileCID is not None and len(transientFileCID) > entry_number:
+            file_cid = transientFileCID[entry_number]
+
+        else:
+            file_cid = ''
+
+        attachments.append({
+            'name': file_name,
+            'maintype': main_type,
+            'subtype': sub_type,
+            'data': file_data,
+            'cid': file_cid
+        })
+        entry_number += 1
+
+    return attachments
+
+
+def handle_html(htmlBody):
+    """
+    Extract all data-url content from within the html and return as separate attachments.
+    Due to security implications, we support only images here
+    We might not have Beautiful Soup so just do regex search
+    """
+    attachments = []
+    cleanBody = ''
+    lastIndex = 0
+    for i, m in enumerate(
+            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody, re.I)):
+        maintype, subtype = m.group(2).split('/', 1)
+        att = {
+            'maintype': maintype,
+            'subtype': subtype,
+            'data': base64.b64decode(m.group(3)),
+            'name': 'image%d.%s' % (i, subtype)
+        }
+        att['cid'] = '%s@%s.%s' % (att['name'], randomword(8), randomword(8))
+        attachments.append(att)
+        cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + att['cid']
+        lastIndex = m.end() - 1
+    cleanBody += htmlBody[lastIndex:]
+    return cleanBody, attachments
+
+
+def collect_inline_attachments(attach_cids):
+    """
+    collects all attachments which are inline - only used in html bodied emails
+    """
+    inline_attachment = []
+    if attach_cids is not None and len(attach_cids) > 0:
+        for cid in attach_cids:
+            file = demisto.getFilePath(cid)
+            file_path = file['path']
+
+            content_type, encoding = mimetypes.guess_type(file_path)
+            if content_type is None or encoding is not None:
+                content_type = 'application/octet-stream'
+            main_type, sub_type = content_type.split('/', 1)
+
+            fp = open(file_path, 'rb')
+            data = fp.read()
+            fp.close()
+
+            inline_attachment.append({
+                'ID': cid,
+                'name': file['name'],
+                'maintype': main_type,
+                'subtype': sub_type,
+                'data': data,
+                'cid': cid
+            })
+        return inline_attachment
+
+
+def collect_attachments(entry_ids, file_names):
+    """
+    Creates a dictionary containing all the info about all attachments
+    """
+    attachments = []
+    entry_number = 0
+    if entry_ids is not None and len(entry_ids) > 0:
+        for entry_id in entry_ids:
+            file = demisto.getFilePath(entry_id)
+            file_path = file['path']
+            if file_names is not None and len(file_names) > entry_number and file_names[entry_number] is not None:
+                file_name = file_names[entry_number]
+
+            else:
+                file_name = file['name']
+
+            content_type, encoding = mimetypes.guess_type(file_path)
+            if content_type is None or encoding is not None:
+                content_type = 'application/octet-stream'
+            main_type, sub_type = content_type.split('/', 1)
+
+            fp = open(file_path, 'rb')
+            data = fp.read()
+            fp.close()
+            attachments.append({
+                'ID': entry_id,
+                'name': file_name,
+                'maintype': main_type,
+                'subtype': sub_type,
+                'data': data,
+                'cid': None
+            })
+            entry_number += 1
+    return attachments
+
+
+def attachment_handler(message, attachments):
+    """
+    Adds the attachments to the email message
+    """
+    for att in attachments:
+        if att['maintype'] == 'text':
+            msg = MIMEText(att['data'], att['subtype'], 'utf-8')
+        elif att['maintype'] == 'image':
+            msg = MIMEImage(att['data'], att['subtype'])
+        elif att['maintype'] == 'audio':
+            msg = MIMEAudio(att['data'], att['subtype'])
+        else:
+            msg = MIMEBase(att['maintype'], att['subtype'])
+            msg.set_payload(att['data'])
+
+        if att['cid'] is not None:
+            msg.add_header('Content-Disposition', 'inline', filename=att['name'])
+            msg.add_header('Content-ID', '<' + att['name'] + '>')
+
+        else:
+            msg.add_header('Content-Disposition', 'attachment', filename=att['name'])
+        message.attach(msg)
+
+
+def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names, attach_cid,
+              transientFile, transientFileContent, transientFileCID, additional_headers, templateParams):
+    message = MIMEMultipart()
+    message['to'] = header(','.join(emailto))
+    message['cc'] = header(','.join(cc))
+    message['bcc'] = header(','.join(bcc))
+    message['from'] = header(emailfrom)
+    message['subject'] = header(subject)
+    message['reply-to'] = header(replyTo)
+
+    templateParams = template_params(templateParams)
+    if templateParams is not None:
+        if body is not None:
+            body = body.format(**templateParams)
+        if htmlBody is not None:
+            htmlBody = htmlBody.format(**templateParams)
+
+    if additional_headers is not None and len(additional_headers) > 0:
+        for h in additional_headers:
+            header_name_and_value = h.split('=')
+            message[header_name_and_value[0]] = header(header_name_and_value[1])
+
+    msg = MIMEText(body, 'plain', 'utf-8')
+    message.attach(msg)
+    htmlAttachments = []
+    inlineAttachments = []
+
+    if htmlBody is not None:
+        htmlBody, htmlAttachments = handle_html(htmlBody)
+        msg = MIMEText(htmlBody, 'html', 'utf-8')
+        message.attach(msg)
+        if attach_cid is not None and len(attach_cid) > 0:
+            inlineAttachments = collect_inline_attachments(attach_cid)
+
+    else:
+        # if not html body, cannot attach cids in message
+        transientFileCID = None
+
+    attachments = collect_attachments(entry_ids, file_names)
+
+    transientAttachments = transient_attachments(transientFile, transientFileContent, transientFileCID)
+    attachments = attachments + htmlAttachments + transientAttachments + inlineAttachments
+    attachment_handler(message, attachments)
+
+    encoded_message = base64.urlsafe_b64encode(message.as_string())
+    command_args = {
+        'userId': emailfrom,
+        'body': {
+            'raw': encoded_message,
+        }
+    }
+    service = get_service('gmail', 'v1', additional_scopes=['https://www.googleapis.com/auth/gmail.compose',
+                                                            'https://www.googleapis.com/auth/gmail.send'])
+    result = service.users().messages().send(**command_args).execute()
+    return result
+
+
+def send_mail_command():
+    args = demisto.args()
+    emailto = argToList(args.get('to'))
+    emailfrom = args.get('from')
+    body = args.get('body')
+    subject = args.get('subject')
+    entry_ids = argToList(args.get('attachIDs'))
+    cc = argToList(args.get('cc'))
+    bcc = argToList(args.get('bcc'))
+    htmlBody = args.get('htmlBody')
+    replyTo = args.get('replyTo')
+    file_names = argToList(args.get('attachNames'))
+    attchCID = argToList(args.get('attachCIDs'))
+    transientFile = argToList(args.get('transientFile'))
+    transientFileContent = argToList(args.get('transientFileContent'))
+    transientFileCID = argToList(args.get('transientFileCID'))
+    additional_headers = argToList(args.get('additionalHeader'))
+    template_param = args.get('templateParams')
+
+    if emailfrom is None:
+        emailfrom = ADMIN_EMAIL
+
+    result = send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody,
+                       replyTo, file_names, attchCID, transientFile, transientFileContent,
+                       transientFileCID, additional_headers, template_param)
+    return sent_mail_to_entry('Email sent:', [result],
+                                 emailto, emailfrom, cc, bcc, htmlBody, body, subject)
+
+
+'''FETCH INCIDENTS'''
+
+
 def fetch_incidents():
     params = demisto.params()
     user_key = params.get('queryUserKey')
@@ -1475,7 +1688,6 @@ def main():
         'gmail-set-autoreply': set_autoreply_command,
         'gmail-delegate-user-mailbox': delegate_user_mailbox_command,
         'gmail-remove-delegated-mailbox': remove_delegate_user_mailbox_command,
-        'gmail-send-mail': send_mail_command,
         'send-mail': send_mail_command
     }
     command = demisto.command()

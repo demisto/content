@@ -235,7 +235,7 @@ script:
     outputs:
     - contextPath: Gmail.ID
       description: Inner Id of mail in gmail
-      type: string
+      type: String
     - contextPath: Gmail.ThreadId
       description: The thread ID
       type: string
@@ -247,10 +247,10 @@ script:
       type: string
     - contextPath: Gmail.To
       description: Email Address of receiver
-      type: string
+      type: String
     - contextPath: Gmail.From
       description: Email Address of sender
-      type: string
+      type: String
     - contextPath: Gmail.Cc
       description: Carbon Copying
       type: string
@@ -1506,7 +1506,7 @@ script:
       type: String
     - contextPath: Account.Gmail.AutoReply.EnableAutoReply
       description: Flag that controls whether Gmail automatically replies to messages.
-      type: String
+      type: Boolean
     - contextPath: Account.Gmail.AutoReply.ResponseBody
       description: Response body in plain text format.
       type: String
@@ -1544,7 +1544,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      required: true
+      required: false
       secret: false
     - default: false
       description: Optional text to prepend to the subject line in vacation responses.
@@ -1561,8 +1561,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Set auto-reply for the user. Note: if body is not inserted the current
-      body'
+    description: 'Set auto-reply for the user. Note: if body is not set, the current
+      body will be deleted'
     execution: false
     name: gmail-set-autoreply
     outputs:
@@ -1571,7 +1571,7 @@ script:
       type: String
     - contextPath: Account.Gmail.AutoReply.EnableAutoReply
       description: Flag that controls whether Gmail automatically replies to messages.
-      type: String
+      type: Boolean
     - contextPath: Account.Gmail.AutoReply.ResponseBody
       description: Response body in plain text format.
       type: String
@@ -1615,69 +1615,14 @@ script:
     name: gmail-delegate-user-mailbox
   - arguments:
     - default: false
-      description: The user's email address. The special value me can be used to indicate
-        the authenticated user.
-      isArray: false
-      name: user-id
-      required: true
-      secret: false
-    - default: false
-      description: Recipient email address
-      isArray: false
-      name: emailto
-      required: true
-      secret: false
-    - default: false
-      defaultValue: me
-      description: Email address of the sender. Generally the account setup in the
-        integration. (Default value is me)
-      isArray: false
-      name: emailfrom
-      required: false
-      secret: false
-    - default: false
-      description: Body of the email
-      isArray: false
-      name: body
-      required: false
-      secret: false
-    - default: false
-      description: Subject of the email
-      isArray: false
-      name: subject
-      required: true
-      secret: false
-    - default: false
-      description: Entry ID of the Attachment to be sent in the mail
-      isArray: false
-      name: entryid
-      required: false
-      secret: false
-    deprecated: false
-    description: Send mail using Gmail
-    execution: false
-    name: gmail-send-mail
-    outputs:
-    - contextPath: Gmail.SentMail.MessageId
-      description: The immutable ID of the message.
-      type: String
-    - contextPath: Gmail.SentMail.Labels
-      description: List of IDs of labels applied to this message.
-      type: String
-    - contextPath: Gmail.SentMail.ThreadId
-      description: The ID of the thread the message belongs to
-      type: String
-  - arguments:
-    - default: false
       description: Email addresses for the 'To' field
       isArray: true
       name: to
       required: true
       secret: false
     - default: false
-      defaultValue: me
       description: Email address of the sender. Generally the account setup in the
-        integration. (Default value is me)
+        integration.
       isArray: false
       name: from
       required: false
@@ -1734,12 +1679,64 @@ script:
       name: attachNames
       required: false
       secret: false
+    - default: false
+      description: |-
+        A comma-separated list of CIDs to embed attachments inside the
+                email itself
+      isArray: true
+      name: attachCIDs
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Desired name for attached file. Multiple files are supported as
+                comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
+                2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+      isArray: true
+      name: transientFile
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Content for attached file. Multiple files are supported as comma-separated
+                list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
+                2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+      isArray: true
+      name: transientFileContent
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        CID for attached file if we want it inline. Multiple files are
+                supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"
+                transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+      isArray: true
+      name: transientFileCID
+      required: false
+      secret: false
+    - default: false
+      description: 'A CSV list of additional headers in the format: headerName=headerValue.
+        For example: "headerName1=headerValue1,headerName2=headerValue2".'
+      isArray: true
+      name: additionalHeader
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Replace {varname} variables with values from this argument. Expected
+                values are in the form of a JSON document like {"varname": {"value": "some
+                value", "key": "context key"}}. Each var name can either be provided with
+                the value or a context key to retrieve the value from.
+      isArray: false
+      name: templateParams
+      required: false
+      secret: false
     deprecated: false
     description: Send mail using Gmail
     execution: false
     name: send-mail
     outputs:
-    - contextPath: Gmail.SentMail.MessageId
+    - contextPath: Gmail.SentMail.ID
       description: The immutable ID of the message.
       type: String
     - contextPath: Gmail.SentMail.Labels
@@ -1747,6 +1744,48 @@ script:
       type: String
     - contextPath: Gmail.SentMail.ThreadId
       description: The ID of the thread the message belongs to
+      type: String
+    - contextPath: Gmail.SentMail.To
+      description: The recipient of the email.
+      type: String
+    - contextPath: Gmail.SentMail.From
+      description: The sender of the email.
+      type: Unknown
+    - contextPath: Gmail.SentMail.Cc
+      description: Email addresses CC'ed to the email.
+      type: String
+    - contextPath: Gmail.SentMail.Bcc
+      description: Email addresses BCC'ed to the email.
+      type: String
+    - contextPath: Gmail.SentMail.Subject
+      description: The subject of the email.
+      type: String
+    - contextPath: Gmail.SentMail.Body
+      description: The plain-text version of the email.
+      type: Unknown
+    - contextPath: Gmail.SentMail.MailBox
+      description: The email Mailbox
+      type: String
+    - contextPath: Email.To
+      description: The recipient of the email.
+      type: String
+    - contextPath: Email.From
+      description: The sender of the email.
+      type: String
+    - contextPath: Email.CC
+      description: Email addresses CC'ed to the email.
+      type: String
+    - contextPath: Email.BCC
+      description: Email addresses BCC'ed to the email.
+      type: String
+    - contextPath: Email.Body/HTML
+      description: The HTML version of the email.
+      type: String
+    - contextPath: Email.Body/Text
+      description: The plain-text version of the email.
+      type: String
+    - contextPath: Email.Subject
+      description: The subject of the email.
       type: String
   - arguments:
     - default: false
@@ -1773,7 +1812,8 @@ script:
   isfetch: true
   runonce: false
   script: '-'
-  type: python2
+  type: python
+  subtype: python2
 tests:
 - Gmail Convert Html Test
 - GmailTest
