@@ -123,8 +123,8 @@ def search_command():
         'Type': entryTypes['note'],
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Search Metadata:', search_context, meta_headers) + '\n'
-        + tableToMarkdown('Hits:', hit_tables, hit_headers),
+        'HumanReadable': tableToMarkdown('Search Metadata:', search_context, meta_headers, removeNull=True) + '\n'
+        + tableToMarkdown('Hits:', hit_tables, hit_headers, removeNull=True),
         'EntryContext': {
             'Elasticsearch.Search(val.Query == obj.Query && val.Index == obj.Index'
             '&& val.Server == obj.Server && val.Page == obj.Page'
