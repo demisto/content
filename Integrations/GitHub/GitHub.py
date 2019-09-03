@@ -419,7 +419,7 @@ def list_pr_files(pull_number: int) -> list:
     return response
 
 
-def get_pr_reviews(pull_number: int) -> list:
+def list_pr_reviews(pull_number: int) -> list:
     suffix = PULLS_SUFFIX + f'/{pull_number}/reviews'
     response = http_request('GET', url_suffix=suffix)
     return response
@@ -559,6 +559,36 @@ def get_stale_prs(args={}):
 def test_module():
     http_request(method='GET', url_suffix=ISSUE_SUFFIX, params={'state': 'all'})
     demisto.results("ok")
+
+
+def list_pr_reviews_command():
+    args = demisto.args()
+    pull_number = args.get('pull_number')
+    response = list_pr_reviews(pull_number)
+
+    formatted_pr_reviews = [
+        {
+            'ID': pr_review.get('id'),
+            'NodeID': pr_review.get('node_id'),
+            'Body': pr_review.get('body'),
+            'CommitID': pr_review.get('commit_id'),
+            'State': pr_review.get('state'),
+            'UserLogin': pr_review.get('user', {}).get('login'),
+            'UserID': pr_review.get('user', {}).get('id'),
+            'UserNodeID': pr_review.get('user', {}).get('node_id'),
+            'UserType': pr_review.get('user', {}).get('type')
+        }
+        for pr_review in response
+    ]
+    ec_object = {
+        'Number': pull_number,
+        'Review': formatted_pr_reviews
+    }
+    ec = {
+        'GitHub.PR(val.Number === obj.Number)': ec_object
+    }
+    human_readable = tableToMarkdown('Pull Request Files', ec_object, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
 def list_pr_files_command():
@@ -797,7 +827,7 @@ def fetch_incidents_command():
         demisto.info('SHA: ' + sha)
         commit_data = get_commit(sha)
         # demisto.info('COMMIT: ', json.dumps(commit_data, indent=4))
-        reviews_data = get_pr_reviews(issue_number)
+        reviews_data = list_pr_reviews(issue_number)
         comments_data = list_issue_comments(issue_number)
         alert_appropriate_party(pr, commit_data, reviews_data, comments_data)
 
@@ -852,7 +882,8 @@ COMMANDS = {
     'GitHub-request-review': request_review_command,
     'GitHub-create-comment': create_comment_command,
     'GitHub-list-issue-comments': list_issue_comments_command,
-    'GitHub-list-pr-files': list_pr_files_command
+    'GitHub-list-pr-files': list_pr_files_command,
+    'GitHub-list-pr-reviews': list_pr_reviews_command
 }
 
 

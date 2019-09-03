@@ -600,6 +600,48 @@ script:
     - contextPath: GitHub.PR.File.Changes
       description: The number of changes made in the file
       type: Number
+  - arguments:
+    - default: false
+      description: The number of the pull request
+      isArray: false
+      name: pull_number
+      required: true
+      secret: false
+    deprecated: false
+    description: List reviews on a pull request
+    execution: false
+    name: GitHub-list-pr-reviews
+    outputs:
+    - contextPath: GitHub.PR.Number
+      description: The number of the pull request
+      type: Number
+    - contextPath: GitHub.PR.Review.ID
+      description: The ID of the review
+      type: Number
+    - contextPath: GitHub.PR.Review.NodeID
+      description: The node ID of the review
+      type: String
+    - contextPath: GitHub.PR.Review.Body
+      description: The content of the review
+      type: String
+    - contextPath: GitHub.PR.Review.CommitID
+      description: The ID of the commit for which the review is applicable
+      type: String
+    - contextPath: GitHub.PR.Review.State
+      description: The state of the review
+      type: String
+    - contextPath: GitHub.PR.Review.UserLogin
+      description: The reviewer's user login
+      type: String
+    - contextPath: GitHub.PR.Review.UserID
+      description: The reviewer's user ID
+      type: Number
+    - contextPath: GitHub.PR.Review.UserNodeID
+      description: The reviewer's user node ID
+      type: String
+    - contextPath: GitHub.PR.Review.UserType
+      description: The reviewer user type
+      type: String
   dockerimage: demisto/python3:3.7.3.286
   subtype: python3
   isfetch: true
