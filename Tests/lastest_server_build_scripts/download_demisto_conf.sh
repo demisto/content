@@ -14,10 +14,10 @@ DEMISTO_SEVERCONF_PATH="./demisto.conf"
 echo ${DEMISTO_SEVERCONF_PATH} > demisto_conf_path
 
 # download configuration files from github repo
-wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip "https://github.com/demisto/content-test-conf/archive/$CIRCLE_BRANCH.zip" --no-check-certificate
+wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip "https://github.com/demisto/content-test-conf/archive/$CIRCLE_BRANCH.zip" --no-check-certificate -q
 if [ "$?" != "0" ]; then
     echo "No such branch in content-test-conf: $CIRCLE_BRANCH , falling back to master"
-    wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip "https://github.com/demisto/content-test-conf/archive/master.zip" --no-check-certificate
+    wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip "https://github.com/demisto/content-test-conf/archive/master.zip" --no-check-certificate -q
     unzip ./test_configuration.zip
     cp -r ./content-test-conf-master/awsinstancetool ./Tests/scripts/awsinstancetool
     cp -r ./content-test-conf-master/demisto.lic $DEMISTO_LIC_PATH
