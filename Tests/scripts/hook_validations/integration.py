@@ -4,7 +4,7 @@ import requests
 import yaml
 
 from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare
-from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES
+from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES, BETA_INTEGRATION_REGEX
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -67,6 +67,12 @@ class IntegrationValidator(object):
         self.is_valid_subtype()
         self.is_default_arguments()
 
+        return self._is_valid
+
+    def is_valid_beta_integration(self, is_new=False):
+        """Check whether the beta Integration is valid or not, update the _is_valid field to determine that"""
+        self.is_default_arguments()
+        self.is_valid_beta(is_new)
         return self._is_valid
 
     def is_default_arguments(self):
@@ -180,6 +186,36 @@ class IntegrationValidator(object):
                     self._is_valid = False
 
         return self._is_valid
+
+    def is_valid_beta(self, is_new=False):
+        """If integration is beta, validate that it has correct beta attributes"""
+        beta = self.current_integration.get('beta', False)
+        if not beta:
+            print_error("Beta integration yml file should have the field \"beta: true\", but was not found"
+                        " in the file {}".format(self.file_path))
+            self._is_valid = False
+        display = self.current_integration.get('display', '')
+        if 'beta' not in display.lower():
+            print_error(
+                "Field 'display' in Beta integration yml file should include the string \"beta\", but was not found"
+                " in the file {}".format(self.file_path))
+            self._is_valid = False
+        if is_new:
+            common_fields = self.current_integration.get('commonfields', {})
+            integration_id = common_fields.get('id', '')
+            if 'beta' in integration_id.lower():
+                print_error(
+                    "Field 'id' should NOT contain the substring \"beta\" in a new beta integration. "
+                    "please change the id in the file {}".format(self.file_path))
+                self._is_valid = False
+            name = self.current_integration.get('name', '')
+            if 'beta' in name.lower():
+                "Field 'name' should NOT contain the substring \"beta\" in a new beta integration. "
+                "please change the id in the file {}".format(self.file_path)
+                self._is_valid = False
+
+
+
 
     def is_there_duplicate_args(self):
         """Check if a command has the same arg more than once

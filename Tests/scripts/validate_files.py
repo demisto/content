@@ -217,7 +217,22 @@ class FilesValidator(object):
                     self._is_valid = False
                 if not integration_validator.is_valid_integration():
                     self._is_valid = False
+            elif False and re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(BETA_INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
+                print("validating beta")
+                '''image_validator = ImageValidator(file_path)
+                if not image_validator.is_valid():
+                    self._is_valid = False'''
 
+                description_validator = DescriptionValidator(file_path)
+                if not description_validator.is_valid_beta_description():
+                    self._is_valid = False
+
+                integration_validator = IntegrationValidator(file_path, old_file_path=old_file_path)
+                if is_backward_check and not integration_validator.is_backward_compatible():
+                    self._is_valid = False
+                if not integration_validator.is_valid_beta_integration():
+                    self._is_valid = False
             elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
                 script_validator = ScriptValidator(file_path, old_file_path=old_file_path, old_git_branch=old_branch)
                 if is_backward_check and not script_validator.is_backward_compatible():
@@ -275,7 +290,16 @@ class FilesValidator(object):
                 description_validator = DescriptionValidator(file_path)
                 if not description_validator.is_valid():
                     self._is_valid = False
+            elif False and re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(BETA_INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
 
+                description_validator = DescriptionValidator(file_path)
+                if not description_validator.is_valid_beta_description():
+                    self._is_valid = False
+
+                integration_validator = IntegrationValidator(file_path)
+                if not integration_validator.is_valid_beta_integration(is_new=True):
+                    self._is_valid = False
             elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
                 image_validator = ImageValidator(file_path)
                 if not image_validator.is_valid():

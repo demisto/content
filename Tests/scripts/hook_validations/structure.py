@@ -45,7 +45,8 @@ class StructureValidator(object):
         SCRIPT_JS_REGEX,
         INTEGRATION_JS_REGEX,
         INTEGRATION_PY_REGEX,
-        REPUTATION_REGEX
+        REPUTATION_REGEX,
+        BETA_INTEGRATION_YML_REGEX
     ]
     REGEXES_TO_SCHEMA_DICT = {
         INTEGRATION_REGEX: "integration",
@@ -84,7 +85,7 @@ class StructureValidator(object):
             self.is_id_not_modified()
             self.is_valid_fromversion_on_modified()
 
-            if not self.is_release_branch():  # In case of release branch we allow to remove release notes
+            if not self.is_release_branch() and not self._is_beta_integration():  # In case of release branch we allow to remove release notes
                 self.validate_file_release_notes()
 
         return self._is_valid
@@ -214,6 +215,11 @@ class StructureValidator(object):
             return True
 
         return False
+
+    def _is_beta_integration(self):
+        """Checks if file is under Beta_integration dir"""
+        return re.match(BETA_INTEGRATION_REGEX, self.file_path, re.IGNORECASE) or \
+            re.match(BETA_INTEGRATION_YML_REGEX, self.file_path, re.IGNORECASE)
 
     def validate_file_release_notes(self):
         """Validate that the file has proper release notes when modified.
