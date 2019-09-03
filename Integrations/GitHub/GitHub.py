@@ -361,7 +361,20 @@ def get_team_membership(team_id: int, user_name: str) -> dict:
     return response
 
 
-def assign_reviewer(pull_number: int, reviewers: list) -> dict:
+def request_review(pull_number: int, reviewers: list) -> dict:
+    """Make an API call to GitHub to request reviews from a list of users for a given PR
+
+    Args:
+        pull_number (int): The number of the PR for which the review request(s) is/are being made
+        reviewers (list): The list of GitHub usernames from which you wish to request a review
+
+    Returns:
+        dict: API response
+
+    Raises:
+        Exception: An exception will be raised if one or more of the requested reviewers is not
+            a collaborator of the repo and therefore the API call returns a 'Status: 422 Unprocessable Entity'
+    """
     suffix = PULLS_SUFFIX + f'/{pull_number}/requested_reviewers'
     response = http_request('POST', url_suffix=suffix, data={'reviewers': reviewers})
     return response
@@ -525,6 +538,31 @@ def get_stale_prs(args={}):
 def test_module():
     http_request(method='GET', url_suffix=ISSUE_SUFFIX, params={'state': 'all'})
     demisto.results("ok")
+
+
+def request_review_command():
+    args = demisto.args()
+    pull_number = args.get('pull_number')
+    reviewers = argToList(args.get('reviewers'))
+    response = request_review(pull_number, reviewers)
+
+    requested_reviewers = response.get('requested_reviewers', [])
+    formatted_requested_reviewers = [
+        {
+            'Login': reviewer.get('login'),
+            'Type': reviewer.get('type')
+        }
+        for reviewer in requested_reviewers
+    ]
+    ec_object = {
+        'Number': response.get('number'),
+        'RequestedReviewer': formatted_requested_reviewers
+    }
+    ec = {
+        'GitHub.PR(val.Number === obj.Number)': ec_object
+    }
+    human_readable = tableToMarkdown(f'Requested Reviewers for {response.get("number")}', ec_object, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
 def get_team_membership_command():
@@ -705,7 +743,7 @@ def fetch_incidents_command():
             add_label(issue_number, [CONTRIBUTION_LABEL])
             selected_reviewer = REVIEWERS[issue_number % len(REVIEWERS)]
             create_issue_comment(issue_number, WELCOME_MSG.replace('reviewer', selected_reviewer))
-            assign_reviewer(issue_number, [selected_reviewer])
+            request_review(issue_number, [selected_reviewer])
             check_pr_files(issue_number, pr.get('head', {}).get('user', {}).get('login', ''))
         if updated_at > start_time:
             inc = {
@@ -735,7 +773,8 @@ COMMANDS = {
     'GitHub-get-stale-prs': get_stale_prs_command,
     'GitHub-get-branch': get_branch_command,
     'GitHub-create-branch': create_branch_command,
-    'GitHub-get-team-membership': get_team_membership_command
+    'GitHub-get-team-membership': get_team_membership_command,
+    'GitHub-request-review': request_review_command
 }
 
 

@@ -489,6 +489,30 @@ script:
     - contextPath: GitHub.Team.ID
       description: The ID number of the team
       type: Number
+  - arguments:
+    - default: false
+      description: The number of the Pull Request for which you wish to request review
+      isArray: false
+      name: pull_number
+      required: true
+      secret: false
+    - default: false
+      description: A CSV list of GitHub users to request review from for a Pull Request
+      isArray: true
+      name: reviewers
+      required: true
+      secret: false
+    deprecated: false
+    description: Request reviews from GitHub users for a given Pull Request
+    execution: false
+    name: GitHub-request-review
+    outputs:
+    - contextPath: GitHub.PR.Number
+      description: The number of the Pull Request
+      type: Number
+    - contextPath: GitHub.PR.RequestedReviewer
+      description: List of the requested reviewers details
+      type: Unknown
   dockerimage: demisto/python3:3.7.3.286
   subtype: python3
   isfetch: true
