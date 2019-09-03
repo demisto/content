@@ -1799,46 +1799,78 @@ def remove_nulls_from_dictionary(data):
             del data[key]
 
 
+def assign_params(**kwargs):
+    """Creates a dictionary from given kwargs
+`
+    Args:
+        kwargs: kwargs to filter
+
+    Returns:
+        dict: without empty values
+
+    Examples:
+        >>> assign_params(a='1', b=True, c=None, d='')
+        {'a': '1', 'b': True}
+    """
+    return {key: value for key, value in kwargs.items() if value}
+
+
+def get_demisto_version():
+    """Returns the Demisto version and build number.
+
+    :return: Demisto version object if Demisto class has attribute demistoVersion, else raises AttributeError
+    :rtype: ``dict``
+    """
+    if hasattr(demisto, 'demistoVersion'):
+        return demisto.demistoVersion()
+    else:
+        raise AttributeError('demistoVersion attribute not found.')
+
+
 class BaseClient:
     """Base Client for use in new integrations"""
+
     def __init__(self,
                  server,
                  base_suffix,
                  integration_name,
-                 integration_name_command,
-                 integration_name_context,
+                 integration_command_name,
+                 integration_context_name,
                  verify=True,
                  proxy=False
                  ):
-        """Base Client for use in new integrations.
+        """
 
         Args:
             server (str): Base server address
             base_suffix (str): suffix of API (`/api/v2/`)
             integration_name (str): Name as shown in UI (`Integration Name`)
-            integration_name_command (str): lower case with `-` divider (`integration-name`)
-            integration_name_context (str): camelcase with no dividers (`IntegrationName`)
+            integration_command_name (str): lower case with `-` divider (`integration-name`)
+            integration_context_name (str): camelcase with no dividers (`IntegrationName`)
             verify (bool): Verify SSL
             proxy (bool): Use system proxy
         """
-        self._server = server.rstrip(chars='/')
+        self._server = server.rstrip('/')
         self.verify = verify
         self._integration_name = str(integration_name)
-        self._integration_name_command = str(integration_name_command)
-        self._integration_name_context = str(integration_name_context)
+        self._integration_name_command = str(integration_command_name)
+        self._integration_name_context = str(integration_context_name)
         if proxy:
             self._proxies = handle_proxy()
         else:
             self._proxies = None
         self._base_url = '{}{}'.format(self._server, base_suffix)
 
-    def get_integration_name(self):
+    @property
+    def integration_name(self):
         return self._integration_name
 
-    def get_integration_context(self):
+    @property
+    def integration_context_name(self):
         return self._integration_name_context
 
-    def get_integration_command(self):
+    @property
+    def integration_command_name(self):
         return self._integration_name_command
 
     def _http_request(self, method, url_suffix, full_url=None, headers=None,
@@ -1850,7 +1882,7 @@ class BaseClient:
             method: (str) HTTP method, e.g. 'GET', 'POST' ... etc.
             url_suffix (str): API endpoint.
             full_url (str):
-                Bypasses the use of BASE_URL + url_suffix. Useful if there is a need to
+                Bypasses the use of self._base_url + url_suffix. Useful if there is a need to
                 make a request to an address outside of the scope of the integration
                 API.
             headers (dict): Headers to send in the request.
@@ -1867,7 +1899,7 @@ class BaseClient:
                 would like the full response object returned.
 
         Returns:
-                Response JSON from having made the request.
+                Depends on the resp_type parameter
         """
         try:
             address = full_url if full_url else self._base_url + url_suffix
@@ -1935,16 +1967,3 @@ class BaseClient:
 
 class DemistoException(Exception):
     """ Custom Exception """
-
-
-def get_demisto_version():
-    """
-        Returns the Demisto version and build number.
-
-        :return: Demisto version object if Demisto class has attribute demistoVersion, else raises AttributeError
-        :rtype: ``dict``
-    """
-    if hasattr(demisto, 'demistoVersion'):
-        return demisto.demistoVersion()
-    else:
-        raise AttributeError('demistoVersion attribute not found.')

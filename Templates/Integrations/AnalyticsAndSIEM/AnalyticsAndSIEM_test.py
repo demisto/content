@@ -1,5 +1,6 @@
 """ HELPER FUNCTIONS """
 from pytest import raises
+from AnalyticsAndSIEM import Client
 
 CONTEXT_PREFIX = 'AnalyticsAndSIEM.Event(val.ID && val.ID === obj.ID)'
 
@@ -52,8 +53,7 @@ def event_list_output(*args, **kwargs):
                        'IsActive': True}]}
 
 
-def mock_client():
-    from AnalyticsAndSIEM import Client
+def mock_client() -> Client:
     return Client(
         'http://api.service.com',
         'v1',
@@ -89,7 +89,7 @@ class TestTestModule:
     def test_test_module(self, monkeypatch):
         from AnalyticsAndSIEM import test_module
         client = mock_client()
-        monkeypatch.setattr(client, 'test_module', lambda: True)
+        monkeypatch.setattr(client, 'test_module_request', lambda: True)
         assert test_module(client)
 
     def test_test_module_negative(self, monkeypatch):
@@ -111,3 +111,6 @@ class TestListEvents:
         assert context == event_list_output()['Event']
 
 
+def test_tahat():
+    client: Client = mock_client()
+    print(client.integration_name)
