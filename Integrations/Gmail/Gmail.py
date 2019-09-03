@@ -166,7 +166,7 @@ def parse_mail_parts(parts):
 
 
 def utc_extract(time_from_mail):
-    if time_from_mail is None or len(time_from_mail)<5:
+    if time_from_mail is None or len(time_from_mail) < 5:
         return '-0000', 0
     utc = time_from_mail[-5:]
     if utc[0] != '-' and utc[0] != '+':
@@ -1603,8 +1603,7 @@ def send_mail_command():
     result = send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody,
                        replyTo, file_names, attchCID, transientFile, transientFileContent,
                        transientFileCID, additional_headers, template_param)
-    return sent_mail_to_entry('Email sent:', [result],
-                                 emailto, emailfrom, cc, bcc, htmlBody, body, subject)
+    return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, htmlBody, body, subject)
 
 
 '''FETCH INCIDENTS'''
