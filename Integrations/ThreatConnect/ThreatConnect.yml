@@ -1792,6 +1792,9 @@ script:
     - contextPath: TC.Group.Status
       description: Group status.
       type: String
+    - contextPath: TC.Group.ID
+      description: Group ID.
+      type: Number
   - arguments:
     - default: false
       description: The group ID. To get the ID, run the tc-get-groups command.
@@ -2020,6 +2023,9 @@ script:
     - contextPath: TC.Group.SecurityLabel
       description: Group security label.
       type: String
+    - contextPath: TC.Group.ID
+      description: Group ID.
+      type: Number
   - arguments:
     - auto: PREDEFINED
       default: false
