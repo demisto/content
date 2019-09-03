@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ThreatConnect1
+  id: ThreatConnect
   version: -1
 configuration:
 - display: Access ID
@@ -44,8 +44,8 @@ configuration:
   required: false
   type: 0
 description: Threat Intelligence platform
-display: ThreatConnect1
-name: ThreatConnect1
+display: ThreatConnect
+name: ThreatConnect
 script:
   commands:
   - arguments:
@@ -1728,6 +1728,9 @@ script:
     - contextPath: TC.Group.Value
       description: The attribute value.
       type: String
+    - contextPath: TC.Group.ID
+      description: Group ID to which the attribute was added.
+      type: Number
   - deprecated: false
     description: Returns a list of events.
     execution: false
@@ -2165,7 +2168,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The group type to return. Can be "adversaries", "campaigns", "documents",
+      description: The group type. Can be "adversaries", "campaigns", "documents",
         "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
         or "threats".
       isArray: false
@@ -2239,11 +2242,188 @@ script:
     - contextPath: File.Extension
       description: File extension.
       type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The group type. Can be "adversaries", "campaigns", "documents",
+        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+        or "threats".
+      isArray: false
+      name: group_type
+      predefined:
+      - adversaries
+      - campaigns
+      - documents
+      - emails
+      - events
+      - incidents
+      - intrusionSets
+      - reports
+      - signatures
+      - threats
+      required: true
+      secret: false
+    - default: false
+      description: Group ID. To get the ID, run the tc-get-groups command.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    deprecated: false
+    description: View Indicators associated with a given Group
+    execution: false
+    name: tc-get-group-indicators
+    outputs:
+    - contextPath: TC.Group.Indicator.Summary
+      description: Indicator summary.
+      type: String
+    - contextPath: TC.Group.Indicator.ThreatAssessConfidence
+      description: Threat confidence
+      type: String
+    - contextPath: TC.Group.Indicator.IndicatorID
+      description: Indicator ID.
+      type: Number
+    - contextPath: TC.Group.Indicator.DateAdded
+      description: Indicator added date.
+      type: Date
+    - contextPath: TC.Group.Indicator.Type
+      description: Indicator type.
+      type: String
+    - contextPath: TC.Group.Indicator.Rating
+      description: Indicator rating.
+      type: Number
+    - contextPath: TC.Group.Indicator.ThreatAssertRating
+      description: Threat assert rating.
+      type: Number
+    - contextPath: TC.Group.Indicator.OwnerName
+      description: Indicator owner name.
+      type: String
+    - contextPath: TC.Group.Indicator.LastModified
+      description: Indicator last modified date.
+      type: Date
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The group type to return. Can be "adversaries", "campaigns", "documents",
+        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+        or "threats".
+      isArray: false
+      name: group_type
+      predefined:
+      - adversaries
+      - campaigns
+      - documents
+      - emails
+      - events
+      - incidents
+      - intrusionSets
+      - reports
+      - signatures
+      - threats
+      required: true
+      secret: false
+    - default: false
+      description: Group ID. To get the ID, run the tc-get-groups command.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    deprecated: false
+    description: View Indicators associated with a given Group
+    execution: false
+    name: tc-get-associated-groups
+    outputs:
+    - contextPath: TC.Group.AssociatedGroup.DateAdded
+      description: Associated group date added
+      type: Date
+    - contextPath: TC.Group.AssociatedGroup.GroupID
+      description: Associated group ID.
+      type: Number
+    - contextPath: TC.Group.AssociatedGroup.Name
+      description: Associated group name.
+      type: String
+    - contextPath: TC.Group.AssociatedGroup.OwnerName
+      description: associated group woner name.
+      type: String
+    - contextPath: TC.Group.AssociatedGroup.Type
+      description: Associated group type.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The group type. Can be "adversaries", "campaigns", "documents",
+        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+        or "threats".
+      isArray: false
+      name: group_type
+      predefined:
+      - adversaries
+      - campaigns
+      - documents
+      - emails
+      - events
+      - incidents
+      - intrusionSets
+      - reports
+      - signatures
+      - threats
+      required: true
+      secret: false
+    - default: false
+      description: Group ID. To get the ID, run the tc-get-groups command.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The group type to associate. Can be "adversaries", "campaigns",
+        "documents", "emails", "events", "incidents", "intrusionSets", "reports",
+        "signatures", or "threats".
+      isArray: false
+      name: associated_group_type
+      predefined:
+      - adversaries
+      - campaigns
+      - documents
+      - emails
+      - events
+      - incidents
+      - intrusionSets
+      - reports
+      - signatures
+      - threats
+      required: true
+      secret: false
+    - default: false
+      description: The group ID to associate.
+      isArray: false
+      name: associated_group_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Associate one Group with another.
+    execution: false
+    name: tc-associate-group-to-group
+    outputs:
+    - contextPath: TC.Group.AssociatedGroup.AssociatedGroupID
+      description: The associated group ID.
+      type: Number
+    - contextPath: TC.Group.AssociatedGroup.AssociatedGroupType
+      description: The associated group type.
+      type: String
+    - contextPath: TC.Group.AssociatedGroup.GroupID
+      description: The group ID to associate to.
+      type: Number
+    - contextPath: TC.Group.AssociatedGroup.GroupType
+      description: The group type of the group to associate.
+      type: String
   dockerimage: demisto/threatconnect-sdk
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   type: python
-  subtype: python2
 tests:
 - test-ThreatConnect
