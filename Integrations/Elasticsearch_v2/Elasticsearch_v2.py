@@ -13,8 +13,8 @@ import requests
 
 
 SERVER = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
-USERNAME = demisto.params()['username']
-PASSWORD = demisto.params()['password']
+USERNAME = demisto.params().get('credentials', {}).get('identifier')
+PASSWORD = demisto.params().get('credentials', {}).get('password')
 HTTP_ERRORS = {
     400: '400 Bad Request - Wrong or invalid parameters',
     401: '401 Unauthorized - Wrong or invalid username or password',
