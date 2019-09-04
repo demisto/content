@@ -1254,7 +1254,7 @@ script:
     arguments:
     - name: userId
       description: User ID of the user in which to get enrolled factors.
-    - name: username of the user in which to get enrolled factors.
+    - name: username
       description: The user name
     outputs:
     - contextPath: Account.ID
