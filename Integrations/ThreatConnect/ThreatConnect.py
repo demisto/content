@@ -433,6 +433,8 @@ def tc_tag_indicator(indicator, tag, owners=None):
 def tc_get_indicator_command():
     args = demisto.args()
     owners = args.get('owners')
+    if not owners:
+        return_error('You must specify an owner in the command, or by using the Organization parameter.')
     rating_threshold = int(args.get('ratingThreshold', -1))
     confidence_threshold = int(args.get('confidenceThreshold', -1))
     indicator = args['indicator']
@@ -1484,7 +1486,6 @@ def get_group_tags():
             contents.append({
                 'Name': tags.get('name')
             })
-
     else:
         return_error(response.get('message'))
 
@@ -1616,17 +1617,20 @@ def associate_group_to_group():
     associated_group_type = demisto.args().get('associated_group_type')
     try:
         group_id = int(demisto.args().get('group_id'))
-        associated_group_id = int(demisto.args().get('associated_group_id'))
     except TypeError as t:
         return_error('group_id must be a number', t)
+    try:
+        associated_group_id = int(demisto.args().get('associated_group_id'))
+    except TypeError as t:
+        return_error('associated_group_id must be a number', t)
 
     response = associate_group_to_group_request(group_type, group_id, associated_group_type, associated_group_id)
 
     if response.get('status') == 'Success':
         context_entries = {
-            'GroupID': int(group_id),
+            'GroupID': group_id,
             'GroupType': group_type,
-            'AssociatedGroupID': int(associated_group_id),
+            'AssociatedGroupID': associated_group_id,
             'AssociatedGroupType': associated_group_type
         }
         context = {
@@ -1706,13 +1710,15 @@ def get_document_request(document_id):
         # retrieve the Document
         documents.retrieve()
     except RuntimeError as e:
-        return_error('Error: {0}'.format(e))
+        return_error('Error: {0}'.format(str(e)))
 
     # iterate through the retrieved Documents (in this case there should only be one) and print its properties
     for document in documents:
         document.download()
         if document.contents is not None:
             return document
+        else:
+            return_error('No document was found.')
 
 
 def download_document():
