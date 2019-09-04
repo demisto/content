@@ -1,5 +1,8 @@
 ## [Unreleased]
-  - Added support for a list of arguments of the ***panorama-query-logs*** command, using an operator of logical 'or' in between them.
+  - Added support in the ***panorama-query-logs*** command to supply a list of arguments, which are separated using the "OR" operator.
+  - Improved error messaging when trying to configure a device-group that does not exist.
+  
+## [19.9.0]
   - Added 3 commands.
     - ***panorama-query-logs***
     - ***panorama-check-logs-status***
@@ -8,7 +11,6 @@
   - Added *log-forwarding* as an option for the *element_to_change* argument in the ***panorama-edit-rule*** command.
   - Added support for Shared objects and Rules in Panorama instances.
   - Added the device-group argument to all relevant commands.
-  
 
 ## [19.8.2] - 2019-08-22
   - Improved error handling in cases of trying to refresh an EDL object on a Panorama instance.
