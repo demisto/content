@@ -280,7 +280,7 @@ script:
     - contextPath: Elasticsearch.Search.Size
       description: The maximal amount of scores that can return.
       type: Number
-  dockerimage: demisto/elasticsearch:1.0.0.1778
+  dockerimage: demisto/elasticsearch:1.0.0.1795
   isfetch: true
   runonce: false
   script: '-'
