@@ -1,5 +1,4 @@
-from Integrations.AttackIQFireDrill.AttackIQFireDrill import build_transformed_dict, get_test_results_command
-import requests
+from Integrations.AttackIQFireDrill.AttackIQFireDrill import build_transformed_dict
 
 # Constants
 DICT_1to5 = {'1': 1, '2': 2, '3': 3, '4': 4, '5': 5}

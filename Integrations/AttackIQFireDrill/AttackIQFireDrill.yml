@@ -11,8 +11,7 @@ configuration:
   name: token
   required: true
   type: 4
-- defaultvalue: 'true'
-  display: Trust any certificate (insecure)
+- display: Trust any certificate (insecure)
   name: insecure
   required: false
   type: 8
@@ -161,7 +160,7 @@ script:
     - contextPath: AttackIQ.Test.Detected
       type: Number
     - contextPath: AttackIQ.Test.Failed
-      type: String
+      type: Number
     - contextPath: AttackIQ.Test.Finished
       type: Boolean
     - contextPath: AttackIQ.Test.Passed
@@ -248,6 +247,14 @@ script:
       - 'False'
       required: false
       secret: false
+    - default: false
+      defaultValue: '1'
+      description: Page number of test results (by default there are 10 results per
+        page)
+      isArray: false
+      name: page
+      required: false
+      secret: false
     deprecated: false
     execution: false
     name: attackiq-get-test-results
@@ -320,8 +327,6 @@ script:
       type: String
     - contextPath: AttackIQ.TestResult.Outcome.Name
       type: String
-    - contextPath: AttackIQ.TestResult.Outcome.Deleted
-      type: Boolean
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false
   longRunning: false

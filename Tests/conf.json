@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "AttackIQFireDrill",
+            "playbookID": "AttackIQ - Test"
+        },
+        {
             "integrations": "ZeroFox",
             "playbookID": "ZeroFox-Test",
             "fromversion": "4.1.0"

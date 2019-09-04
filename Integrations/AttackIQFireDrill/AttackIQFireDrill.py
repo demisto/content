@@ -1,8 +1,10 @@
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
+from typing import Dict, Any
 from json.decoder import JSONDecodeError
 
 import json
@@ -91,6 +93,7 @@ TEST_STATUS_TRANS = {
     'detected': 'Detected',
     'failed': 'Failed',
     'finished': 'Finished',
+    'passed': 'Passed',
     'errored': 'Errored',
     'total': 'Total'
 }
@@ -115,20 +118,17 @@ TEST_RESULT_TRANS = {
         'description': 'Description'
     },
     'run_count': 'RunCount',
-    'last_result': 'LastResult',  # Not found
     'scenario.id': 'Scenario.Id',
     'scenario.name': 'Scenario.Name',
     'scenario.description': 'Scenario.Description',
-    'assets': {
-        'id': 'Id',
-        'ipv4_address': 'Ipv4Address',
-        'hostname': 'Hostname',
-        'product_name': 'ProductName',
-        'modified': 'Modified',
-        'status': 'Status'  # Not found
-    },
-    'asset_group': 'AssetGroup',
-    'job_state.name': 'Name'
+    'asset.id': 'Asset.Id',
+    'asset.ipv4_address': 'Asset.Ipv4Address',
+    'asset.hostname': 'Asset.Hostname',
+    'asset.product_name': 'Asset.ProductName',
+    'asset.modified': 'Asset.Modified',
+    'asset_group': 'Asset.AssetGroup',
+    'job_state_name': 'JobState.Name',
+    'outcome_name': 'Outcome.Name'
 }
 
 ''' HELPER FUNCTIONS '''
@@ -186,7 +186,7 @@ def build_transformed_dict(src, trans_dict):
     """
     if isinstance(src, list):
         return [build_transformed_dict(x, trans_dict) for x in src]
-    res = {}
+    res: Dict[str, Any] = {}
     for key, val in trans_dict.items():
         if isinstance(val, dict):
             # handle nested list
@@ -271,6 +271,7 @@ def get_test_results_command(args=demisto.args()):
     """
     test_id = args.get('test_id')
     params = {
+        'page': args.get('page', '1'),
         'test_id': test_id,
         'show_last_result': args.get('show_last_result') == 'True'
     }
