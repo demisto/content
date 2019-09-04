@@ -1,0 +1,1004 @@
+id: Evaluate Severity - Set By Highest Score
+version: -1
+fromversion: 4.5.0
+name: Evaluate Severity - Set By Highest Score
+description: Calculate and assign the incident severity based on the combination of
+  the current incident severity, and the severity returned from the Evaluate Severity
+  - Set By Highest DBotScore playbook.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 39518188-8725-4c70-8f80-3a9a4554deb2
+    type: start
+    task:
+      id: 39518188-8725-4c70-8f80-3a9a4554deb2
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 7d3d0239-be78-4df0-8c4c-20cec3449e89
+    type: regular
+    task:
+      id: 7d3d0239-be78-4df0-8c4c-20cec3449e89
+      version: -1
+      name: Assign incident severity to "Low"
+      description: Assigns the incident severity to "Low".
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedhosts: {}
+      affectedindividualscontactinformation: {}
+      affectedips: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      arcsightcaseid: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      blah: {}
+      booltest: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      detectedusers: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailbodyhtmlraw: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailfromdisplayname: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderdomain: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailsubjectlanguage: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      hostid: {}
+      hostname: {}
+      htmlimage: {}
+      htmlrenderedimage: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      isthedatasubjecttodpia: {}
+      killchain: {}
+      labels: {}
+      likelyimpact: {}
+      lob: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      mdtest: {}
+      measurestomitigate: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      phishingsubtype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      queues: {}
+      relateddomain: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      reportinguser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      sectorofaffectedparty: {}
+      selector: {}
+      severity:
+        simple: low
+      signature: {}
+      single: {}
+      single2: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      team: {}
+      telephoneno: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdr: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 9c7487d4-53f2-4645-8f7b-2653d6c76676
+    type: regular
+    task:
+      id: 9c7487d4-53f2-4645-8f7b-2653d6c76676
+      version: -1
+      name: Assign incident severity  to "Medium"
+      description: Assigns the incident severity to "Medium".
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedhosts: {}
+      affectedindividualscontactinformation: {}
+      affectedips: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      arcsightcaseid: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      blah: {}
+      booltest: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      detectedusers: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailbodyhtmlraw: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailfromdisplayname: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderdomain: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailsubjectlanguage: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      hostid: {}
+      hostname: {}
+      htmlimage: {}
+      htmlrenderedimage: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      isthedatasubjecttodpia: {}
+      killchain: {}
+      labels: {}
+      likelyimpact: {}
+      lob: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      mdtest: {}
+      measurestomitigate: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      phishingsubtype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      queues: {}
+      relateddomain: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      reportinguser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      sectorofaffectedparty: {}
+      selector: {}
+      severity:
+        simple: medium
+      signature: {}
+      single: {}
+      single2: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      team: {}
+      telephoneno: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdr: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 4480ef7a-12c1-45e9-8ee9-e6ca082a0808
+    type: regular
+    task:
+      id: 4480ef7a-12c1-45e9-8ee9-e6ca082a0808
+      version: -1
+      name: Assign incident severity to "High"
+      description: Assigns the incident severity to "High".
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedhosts: {}
+      affectedindividualscontactinformation: {}
+      affectedips: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      arcsightcaseid: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      blah: {}
+      booltest: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      detectedusers: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailbodyhtmlraw: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailfromdisplayname: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderdomain: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailsubjectlanguage: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      hostid: {}
+      hostname: {}
+      htmlimage: {}
+      htmlrenderedimage: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      isthedatasubjecttodpia: {}
+      killchain: {}
+      labels: {}
+      likelyimpact: {}
+      lob: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      mdtest: {}
+      measurestomitigate: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      phishingsubtype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      queues: {}
+      relateddomain: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      reportinguser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      sectorofaffectedparty: {}
+      selector: {}
+      severity:
+        simple: high
+      signature: {}
+      single: {}
+      single2: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      team: {}
+      telephoneno: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdr: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1143,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 84feda52-060b-4e27-89ef-05553ca57636
+    type: title
+    task:
+      id: 84feda52-060b-4e27-89ef-05553ca57636
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 5cd01b34-b8f4-4b3d-872b-68e2b325949b
+    type: regular
+    task:
+      id: 5cd01b34-b8f4-4b3d-872b-68e2b325949b
+      version: -1
+      name: Assign incident severity to "Critical"
+      description: Assigns the incident severity to "Critical".
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedhosts: {}
+      affectedindividualscontactinformation: {}
+      affectedips: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      arcsightcaseid: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      blah: {}
+      booltest: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      detectedusers: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailbodyhtmlraw: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailfromdisplayname: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderdomain: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailsubjectlanguage: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      hostid: {}
+      hostname: {}
+      htmlimage: {}
+      htmlrenderedimage: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      mdtest: {}
+      measurestomitigate: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      phishingsubtype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      relateddomain: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      reportinguser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      sectorofaffectedparty: {}
+      selector: {}
+      severity:
+        simple: critical
+      signature: {}
+      single: {}
+      single2: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      team: {}
+      telephoneno: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdr: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1572,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 91be04b6-fc66-4654-8c71-d3cbc3af44e7
+    type: condition
+    task:
+      id: 91be04b6-fc66-4654-8c71-d3cbc3af44e7
+      version: -1
+      name: Set severity based on the highest returned severity level
+      description: Determines  & sets the incident severity based on the highest result
+        of all severity calculations.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      Critical:
+      - "11"
+      High:
+      - "6"
+      Low:
+      - "4"
+      Medium:
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: Critical
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Severities
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Severities.Incident
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "4"
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: Severities.DBotScore
+                      iscontext: true
+                    right:
+                      value:
+                        simple: critical
+                    ignorecase: true
+            iscontext: true
+    - label: High
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Severities
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Severities.Incident
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: Severities.DBotScore
+                      iscontext: true
+                    right:
+                      value:
+                        simple: high
+                    ignorecase: true
+            iscontext: true
+    - label: Medium
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Severities
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Severities.Incident
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: Severities.DBotScore
+                      iscontext: true
+                    right:
+                      value:
+                        simple: medium
+                    ignorecase: true
+            iscontext: true
+          ignorecase: true
+    - label: Low
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Severities
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Severities.Incident
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "1"
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: Severities.DBotScore
+                      iscontext: true
+                    right:
+                      value:
+                        simple: low
+                    ignorecase: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 35d59701-1511-4e47-87f4-83567e79cf75
+    type: regular
+    task:
+      id: 35d59701-1511-4e47-87f4-83567e79cf75
+      version: -1
+      name: Get incident severity
+      description: Saves the incident severity in context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Severities.Incident
+      value:
+        complex:
+          root: incident
+          accessor: severity
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 741fbf88-8dc9-4c67-8561-4cc73fa6fc36
+    type: playbook
+    task:
+      id: 741fbf88-8dc9-4c67-8561-4cc73fa6fc36
+      version: -1
+      name: PANW - Calculate Severity - Indicators DBotScore
+      description: ""
+      playbookName: Evaluate Severity - Set By Highest DBotScore
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      DBotScore:
+        complex:
+          root: inputs.DBotScore
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_10_#default#": 0.3,
+      "15_11_Critical": 0.84,
+      "15_4_Low": 0.85
+    },
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 1697,
+        "x": 255,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: DBotScore
+  value:
+    complex:
+      root: DBotScore
+  required: false
+  description: A list of DBotScores of indicators.
+outputs: []
+tests:
+  - Evaluate Severity - Set By Highest DBotScore - Test
