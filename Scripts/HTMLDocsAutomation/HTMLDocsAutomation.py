@@ -41,7 +41,22 @@ COMMANDS_HEADER: str = '''<h2>Commands</h2>
 </ol>
 '''
 
+PERMISSIONS_HEADER: str = '''<h2>Permissions</h2>
+<p>The following permissions are required for all commands.</p>
+<ul>
+    <li>permission 1</li>
+    <li>permission 2</li>
+</ul>'''
+
 COMMAND_LIST: str = '  <li>{command_hr}: {command}</li>'
+
+PERMISSIONS_PER_COMMAND: str = '''    
+<h5>Required Permissions</h5>
+<p>The following permissions are required for this command.</p>
+<ul>
+    <li>permission 1</li>
+    <li>permission 2</li>
+</ul>'''
 
 SINGLE_COMMAND: str = '''<h3>{index}. {command_hr}</h3>
 <!-- <hr> -->
@@ -50,12 +65,7 @@ SINGLE_COMMAND: str = '''<h3>{index}. {command_hr}</h3>
 <p>
   <code>{command}</code>
 </p>
-<h5>Required Permissions</h5>
-<p>The following permissions are required for all commands.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
+{permissions}
 <h5>Input</h5>
 {arg_table}
 <p>&nbsp;</p>
@@ -70,6 +80,8 @@ SINGLE_COMMAND: str = '''<h3>{index}. {command_hr}</h3>
 <h5>Human Readable Output</h5>
 <p>
 {hr_example}
+<!-- remove the following comment to manually add an image: -->
+<!--<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image" alt="image" width="749" height="412"></a>-->
 </p>
 '''
 
@@ -370,6 +382,13 @@ def generate_commands_section(yaml_data, example_dict):
     return (COMMANDS_HEADER.format(command_list='\n'.join(command_list)) + '\n'.join(command_sections)), errors
 
 
+def get_permissions_entry():
+    if demisto.args().get('permissions') == 'per-command':
+        return PERMISSIONS_PER_COMMAND
+    else:
+        return ''
+
+
 def generate_single_command_section(index, cmd, example_dict):
     cmd_example: str = example_dict.get(cmd['name'])
     errors: list = []
@@ -378,6 +397,7 @@ def generate_single_command_section(index, cmd, example_dict):
         'command_hr': cmd['name'],
         'command': cmd['name'],
         'command_description': cmd.get('description', ' '),
+        'permissions': get_permissions_entry(),
     }
 
     # Inputs
@@ -409,7 +429,7 @@ def generate_single_command_section(index, cmd, example_dict):
                                                                                            cmd['name']))
             context_table.append(CONTEXT_RECORD.format(path=output['contextPath'],
                                                        type=output.get('type', 'unknown'),
-                                                       description=output.get('description').encode('utf-8')))
+                                                       description=output.get('description')))
         template['context_table'] = CONTEXT_TABLE.format(records='\n'.join(context_table))
 
     # Raw output:
@@ -470,6 +490,10 @@ def generate_html_docs(args, yml_data, example_dict, errors):
     # docs.extend(generate_section('Configure {} on Demisto'.format(yml_data['name']), args.get('setupOnIntegration')))
     # # Setup integration on Demisto
     # docs.extend(generate_setup_section(yml_data))
+
+    #  Permissions
+    if demisto.args().get('permissions') == 'global':
+        docs += PERMISSIONS_HEADER
 
     # Commands
     command_section, command_errors = generate_commands_section(yml_data, example_dict)
