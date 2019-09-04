@@ -317,12 +317,10 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Union[
         # Get originating Exception in Exception chain
         while '__context__' in dir(e) and e.__context__:
             e = cast(Any, e.__context__)
-        err_msg = ''
         if e.strerror:
-            err_msg = f'\nMESSAGE: {e.strerror}\n'
-        err_msg = err_msg + \
-                  f'ADVICE: Check that the Server URL parameter is correct and that you' \
-                  f' have access to the Server from your host.'
+            err_msg = f'\nMESSAGE: {e.strerror}\n' \
+                      f'ADVICE: Check that the Server URL parameter is correct and that you' \
+                      f' have access to the Server from your host.'
         raise Exception(err_msg)
 
 
