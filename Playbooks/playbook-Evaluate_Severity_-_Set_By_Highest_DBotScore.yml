@@ -352,3 +352,5 @@ outputs:
 - contextPath: Severities.DBotScore
   description: The severity level associated with the highest indicator score.
   type: string
+tests:
+  - Evaluate Severity - Set By Highest DBotScore - Test
