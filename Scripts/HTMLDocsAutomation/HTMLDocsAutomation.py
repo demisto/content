@@ -50,7 +50,7 @@ PERMISSIONS_HEADER: str = '''<h2>Permissions</h2>
 
 COMMAND_LIST: str = '  <li>{command_hr}: {command}</li>'
 
-PERMISSIONS_PER_COMMAND: str = '''    
+PERMISSIONS_PER_COMMAND: str = '''
 <h5>Required Permissions</h5>
 <p>The following permissions are required for this command.</p>
 <ul>
@@ -80,8 +80,11 @@ SINGLE_COMMAND: str = '''<h3>{index}. {command_hr}</h3>
 <h5>Human Readable Output</h5>
 <p>
 {hr_example}
-<!-- remove the following comment to manually add an image: -->
-<!--<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image" alt="image" width="749" height="412"></a>-->
+<!-- remove the following comments to manually add an image: -->
+<!--
+<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
+ alt="image" width="749" height="412"></a>
+ -->
 </p>
 '''
 
