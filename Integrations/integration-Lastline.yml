@@ -48,7 +48,7 @@ script:
         pushToPortal:true
     };
 
-    LAST_LINE_DEFAULTS.threshold = params.threshold ? params.threshold : 70; //70 is Lastline default
+    LAST_LINE_DEFAULTS.threshold = params.threshold ? params.threshold : 70; // 70 is Lastline default
 
     var SERVER_URL = params.url;
     if (SERVER_URL[SERVER_URL.length - 1] !== '/') {
