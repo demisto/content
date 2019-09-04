@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ThreatQ_2
+  id: ThreatQ
   version: -1
 configuration:
 - display: TQ SERVER URL E.g. https://192.168.1.136
@@ -30,8 +30,8 @@ configuration:
   required: false
   type: 0
 description: ThreatQ Integration
-display: ThreatQ_2
-name: ThreatQ_2
+display: ThreatQ
+name: ThreatQ
 script:
   commands:
   - arguments:
@@ -768,7 +768,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Date of Occurrence. Valid formats: YYYY-mm-dd HH:MM:SS, YYYY-mm-dd'
+      description: 'Date of Occurrence. Valid format is YYYY-mm-dd HH:MM:SS'
       isArray: false
       name: date
       required: true

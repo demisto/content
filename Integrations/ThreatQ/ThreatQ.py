@@ -442,7 +442,7 @@ def malware_locked_to_demisto_format(state):
 
 
 def parse_date(text):
-    valid_formats = ['%Y-%m-%d %H:%M:%S', '%Y-%m-%d']
+    valid_formats = ['%Y-%m-%d %H:%M:%S']
     for fmt in valid_formats:
         try:
             return str(datetime.strptime(text, fmt))
