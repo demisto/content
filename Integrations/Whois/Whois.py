@@ -8252,7 +8252,7 @@ def whois_command():
 
     md = {'Name': domain}
     ec = {'Name': domain}
-    standard_ec = {}
+    standard_ec = {}  # type:dict
     standard_ec['WHOIS'] = {}
     if 'status' in whois_result:
         ec['DomainStatus'] = whois_result.get('status')
