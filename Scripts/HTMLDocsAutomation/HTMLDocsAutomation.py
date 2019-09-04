@@ -59,7 +59,7 @@ PERMISSIONS_PER_COMMAND: str = '''
 </ul>'''
 
 SINGLE_COMMAND: str = '''<h3>{index}. {command_hr}</h3>
-<!-- <hr> -->
+<hr>
 <p>{command_description}</p>
 <h5>Base Command</h5>
 <p>
