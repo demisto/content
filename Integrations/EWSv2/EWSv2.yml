@@ -720,8 +720,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'no'
-      description: ' If the email item contains another email as attachment - get
-        the internal email attachment'
+      description: 'If the email item contains another email as an attachment (EML or MSG file), whether to retrieve
+        the EML/MSG file attachment. Can be "yes" or "no". Default is "no".'
       isArray: false
       name: get-internal-item
       predefined:
