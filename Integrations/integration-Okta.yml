@@ -1561,7 +1561,7 @@ script:
     - name: profileUrl
       description: Url of user’s online profile (e.g. a web page)
     - name: primaryPhone
-      description: "Primary phone number of user.
+      description: Primary phone number of user.
     - name: mobilePhone
       description: Mobile phone number of user.
     - name: streetAddress
