@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Added support for tags through objects and Rules(Addresses, Address Groups, Services, Service Groups and Rules).
+- Added support for tags through objects and Rules(Addresses, Address Groups, Services, Service Groups and Rules).
     - list commands - ability to filter by a tag
     - create/edit commands - added the tags argument
     - Added the output Tags to all list/create/edit/get commands
@@ -15,6 +15,7 @@
   - Added *log-forwarding* as an option for the *element_to_change* argument in the ***panorama-edit-rule*** command.
   - Added support for Shared objects and Rules in Panorama instances.
   - Added the device-group argument to all relevant commands.
+  
 
 ## [19.8.2] - 2019-08-22
   - Improved error handling in cases of trying to refresh an EDL object on a Panorama instance.
