@@ -217,7 +217,7 @@ def get_email_context(email_data, mailbox):
         # in case no internalDate field exists will revert to extracting the date from the email payload itself
         # Note: this should not happen in any command other than other than gmail-move-mail which doesn't return the
         # email payload nor internalDate
-        demisto.info("No InternalDate timestamp found - getting Date from mail payload - msg ID:" + str(email_data['id']))
+        LOG("No InternalDate timestamp found - getting Date from mail payload - msg ID:" + str(email_data['id']))
         LOG.print_log()
         base_time = str(headers.get('date', ''))
 
@@ -473,7 +473,6 @@ def autoreply_to_entry(title, response, user_id):
 
 def sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, bodyHtml, body, subject):
     gmail_context = []
-    email_context = []
     for mail_results_data in response:
         gmail_context.append({
             'Type': "Gmail",
@@ -488,16 +487,6 @@ def sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, bodyHtml, body, 
             'Body': body,
             'Mailbox': ','.join(to)
         })
-        email_context.append({
-            'ID': mail_results_data.get('id'),
-            'To': ','.join(to),
-            'From': emailfrom,
-            'CC': ','.join(cc) if len(cc) > 0 else None,
-            'BCC': ','.join(bcc) if len(bcc) > 0 else None,
-            'Body/HTML': bodyHtml,
-            'Body/Text': body,
-            'Subject': subject,
-        })
 
     headers = ['Type', 'ID', 'To', 'From', 'Cc', 'Bcc', 'Subject', 'Body', 'Labels',
                'ThreadId']
@@ -508,8 +497,7 @@ def sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, bodyHtml, body, 
         'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(title, gmail_context, headers, removeNull=True),
-        'EntryContext': {'Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': gmail_context,
-                         'Email(val.ID && val.ID == obj.ID)': email_context}
+        'EntryContext': {'Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': gmail_context}
     }
 
 
