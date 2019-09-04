@@ -8,13 +8,9 @@ configuration:
   required: true
   type: 0
 - display: Username for server login
-  name: username
+  name: credentials
   required: true
-  type: 0
-- display: Password for server login
-  name: password
-  required: true
-  type: 4
+  type: 9
 - defaultvalue: 'true'
   display: Trust any certificate (insecure)
   name: insecure
