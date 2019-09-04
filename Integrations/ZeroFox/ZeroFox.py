@@ -321,6 +321,8 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Union[
             err_msg = f'\nMESSAGE: {e.strerror}\n' \
                       f'ADVICE: Check that the Server URL parameter is correct and that you' \
                       f' have access to the Server from your host.'
+        else:
+            err_msg = 'blah blah'
         raise Exception(err_msg)
 
 
