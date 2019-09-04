@@ -432,7 +432,7 @@ def tc_tag_indicator(indicator, tag, owners=None):
 
 def tc_get_indicator_command():
     args = demisto.args()
-    owners = args.get('owners')
+    owners = args.get('owners', demisto.params().get('defaultOrg'))
     if not owners:
         return_error('You must specify an owner in the command, or by using the Organization parameter.')
     rating_threshold = int(args.get('ratingThreshold', -1))
@@ -1393,6 +1393,7 @@ def get_group_attributes():
     if response.get('status') == 'Success':
         for attribute in data:
             contents.append({
+                'GroupID': group_id,
                 'AttributeID': attribute.get('id'),
                 'Type': attribute.get('type'),
                 'Value': attribute.get('value'),
@@ -1405,7 +1406,7 @@ def get_group_attributes():
         return_error(response.get('message'))
 
     context = {
-        'TC.Group.Attribute(val.AttributeID && val.AttributeID === obj.AttributeID)': contents
+        'TC.Group.Attribute(val.GroupID && val.GroupID === obj.GroupID)': contents
     }
 
     return_outputs(
@@ -1441,6 +1442,7 @@ def get_group_security_labels():
     if response.get('status') == 'Success':
         for security_label in data:
             contents.append({
+                'GroupID': group_id,
                 'Name': security_label.get('name'),
                 'Description': security_label.get('description'),
                 'DateAdded': security_label.get('dateAdded')
@@ -1450,7 +1452,7 @@ def get_group_security_labels():
         return_error(response.get('message'))
 
     context = {
-        'TC.Group.SecurityLabel(val.Name && val.Name === obj.Name)': contents
+        'TC.Group.SecurityLabel(val.GroupID && val.GroupID === obj.GroupID)': contents
     }
 
     return_outputs(
@@ -1478,6 +1480,7 @@ def get_group_tags():
     except TypeError as t:
         return_error('group_id must be a number', t)
     contents = []
+    context_entries = []
     response = get_group_tags_request(group_type, group_id)
     data = response.get('data', {}).get('tag', [])
 
@@ -1486,11 +1489,16 @@ def get_group_tags():
             contents.append({
                 'Name': tags.get('name')
             })
+
+            context_entries.append({
+                'GroupID': group_id,
+                'Name': tags.get('name')
+            })
     else:
         return_error(response.get('message'))
 
     context = {
-        'TC.Group.Tag(val.Name && val.Name === obj.Name)': contents
+        'TC.Group.Tag(val.Name && val.GroupID === obj.GroupID)': context_entries
     }
 
     return_outputs(
@@ -1525,6 +1533,7 @@ def get_group_indicator():
     if response.get('status') == 'Success':
         for indicator in data:
             contents.append({
+                'GroupID': group_id,
                 'IndicatorID': indicator.get('id'),
                 'OwnerName': indicator.get('ownerName'),
                 'Type': indicator.get('type'),
@@ -1541,7 +1550,7 @@ def get_group_indicator():
         return_error(response.get('message'))
 
     context = {
-        'TC.Group.Indicator(val.IndicatorID && val.IndicatorID === obj.IndicatorID)': contents
+        'TC.Group.Indicator(val.GroupID && val.GroupID === obj.GroupID)': contents
     }
 
     return_outputs(
