@@ -218,6 +218,50 @@ def create_issue_table(issue_list, response, limit):
     context_create_issue(response, issue_table)
 
 
+def format_commit_outputs(commit: dict) -> dict:
+    """Take GitHub API commit data and format to expected context outputs
+
+    Args:
+        commit (dict): commit data returned from GitHub API
+
+    Returns:
+        (dict): commit object formatted to expected context outputs
+    """
+    author = commit.get('author', {})
+    ec_author = {
+        'Date': author.get('date'),
+        'Name': author.get('name'),
+        'Email': author.get('email')
+    }
+    committer = commit.get('committer', {})
+    ec_committer = {
+        'Date': committer.get('date'),
+        'Name': committer.get('name'),
+        'Email': committer.get('email')
+    }
+    parents = commit.get('parents', [])
+    formatted_parents = [{'SHA': parent.get('sha')} for parent in parents]
+
+    verification = commit.get('verification', {})
+    ec_verification = {
+        'Verified': verification.get('verified'),
+        'Reason': verification.get('reason'),
+        'Signature': verification.get('signature'),
+        'Payload': verification.get('payload')
+    }
+
+    ec_object = {
+        'SHA': commit.get('sha'),
+        'Author': ec_author,
+        'Committer': ec_committer,
+        'Message': commit.get('message'),
+        'Parent': formatted_parents,
+        'TreeSHA': commit.get('tree', {}).get('sha'),
+        'Verification': ec_verification
+    }
+    return ec_object
+
+
 def format_label_outputs(label: dict) -> dict:
     """Take GitHub API label data and format to expected context outputs
 
@@ -791,25 +835,7 @@ def get_commit_command():
     commit_sha = args.get('commit_sha')
     response = get_commit(commit_sha)
 
-    author = response.get('author', {})
-    committer = response.get('committer', {})
-    parents = response.get('parents', [])
-    formatted_parents = [{'SHA': parent.get('sha')} for parent in parents]
-
-    ec_object = {
-        'SHA': response.get('sha'),
-        'AuthorDate': author.get('date'),
-        'AuthorName': author.get('name'),
-        'AuthorEmail': author.get('email'),
-        'CommitterDate': committer.get('date'),
-        'CommitterName': committer.get('name'),
-        'CommitterEmail': committer.get('email'),
-        'Message': response.get('message'),
-        'Parent': formatted_parents,
-        'TreeSHA': response.get('tree', {}).get('sha'),
-        'Verified': response.get('verification', {}).get('verified'),
-        'VerificationReason': response.get('verification', {}).get('reason')
-    }
+    ec_object = format_commit_outputs(response)
     ec = {
         'GitHub.Commit(val.SHA === obj.SHA)': ec_object
     }

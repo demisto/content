@@ -657,22 +657,22 @@ script:
     - contextPath: GitHub.Commit.SHA
       description: The SHA hash of the commit
       type: String
-    - contextPath: GitHub.Commit.AuthorDate
+    - contextPath: GitHub.Commit.Author.Date
       description: Teh commit author date
       type: String
-    - contextPath: GitHub.Commit.AuthorName
+    - contextPath: GitHub.Commit.Author.Name
       description: The name of the author
       type: String
-    - contextPath: GitHub.Commit.AuthorEmail
+    - contextPath: GitHub.Commit.Author.Email
       description: The email of the author
       type: String
-    - contextPath: GitHub.Commit.CommitterDate
+    - contextPath: GitHub.Commit.Committer.Date
       description: The date the commiter committed
       type: String
-    - contextPath: GitHub.Commit.CommitterName
+    - contextPath: GitHub.Commit.Committer.Name
       description: The name of the committer
       type: String
-    - contextPath: GitHub.Commit.CommitterEmail
+    - contextPath: GitHub.Commit.Committer.Email
       description: The email of the committer
       type: String
     - contextPath: GitHub.Commit.Message
@@ -684,12 +684,18 @@ script:
     - contextPath: GitHub.Commit.TreeSHA
       description: The SHA hash of the commit's tree
       type: String
-    - contextPath: GitHub.Commit.Verified
+    - contextPath: GitHub.Commit.Verification.Verified
       description: Whether the commit was verified or not
       type: Boolean
-    - contextPath: GitHub.Commit.VerificationReason
+    - contextPath: GitHub.Commit.Verification.Reason
       description: The reason why the commit was or was not verified
       type: String
+    - contextPath: GitHub.Commit.Verification.Signature
+      description: The commit verification signature
+      type: Unknown
+    - contextPath: GitHub.Commit.Verification.Payload
+      description: The commit verification payload
+      type: Unknown
   - arguments:
     - default: false
       description: The number of the issue to add labels to
@@ -769,7 +775,8 @@ script:
       description: The type of the user who opened the pull request
       type: String
     - contextPath: GitHub.PR.User.SiteAdmin
-      description: Whether the user who opened the pull request is a site admin or not
+      description: Whether the user who opened the pull request is a site admin or
+        not
       type: Boolean
     - contextPath: GitHub.PR.Body
       description: The body content of the pull request
@@ -874,7 +881,8 @@ script:
       description: The type of the user assigned to the pull request
       type: String
     - contextPath: GitHub.PR.Assignee.SiteAdmin
-      description: Whether the user assigned to the pull request is a site admin or not
+      description: Whether the user assigned to the pull request is a site admin or
+        not
       type: Boolean
     - contextPath: GitHub.PR.RequestedReviewer.Login
       description: The login of the user requested for review
@@ -925,19 +933,23 @@ script:
       description: The SHA hash of the commit that HEAD points to
       type: String
     - contextPath: GitHub.PR.Head.User.Login
-      description: The login of the committer of the HEAD commit of the checked out branch
+      description: The login of the committer of the HEAD commit of the checked out
+        branch
       type: String
     - contextPath: GitHub.PR.Head.User.ID
       description: The ID of the committer of the HEAD commit of the checked out branch
       type: Number
     - contextPath: GitHub.PR.Head.User.NodeID
-      description: The node ID of the committer of the HEAD commit of the checked out branch
+      description: The node ID of the committer of the HEAD commit of the checked
+        out branch
       type: String
     - contextPath: GitHub.PR.Head.User.Type
-      description: The type of the committer of the HEAD commit of the checked out branch
+      description: The type of the committer of the HEAD commit of the checked out
+        branch
       type: String
     - contextPath: GitHub.PR.Head.User.SiteAdmin
-      description: Whether the committer of the HEAD commit of the checked out branch is a site admin or not
+      description: Whether the committer of the HEAD commit of the checked out branch
+        is a site admin or not
       type: Boolean
     - contextPath: GitHub.PR.Head.Repo.ID
       description: The ID of the repository of the checked out branch
@@ -952,22 +964,27 @@ script:
       description: The full name of the repository of the checked out branch
       type: String
     - contextPath: GitHub.PR.Head.Repo.Owner.Login
-      description: The user login of the owner of the repository of the checked out branch
+      description: The user login of the owner of the repository of the checked out
+        branch
       type: String
     - contextPath: GitHub.PR.Head.Repo.Owner.ID
       description: The user ID of the owner of the repository of the checked out branch
       type: Number
     - contextPath: GitHub.PR.Head.Repo.Owner.NodeID
-      description: The user node ID of the owner of the repository of the checked out branch
+      description: The user node ID of the owner of the repository of the checked
+        out branch
       type: String
     - contextPath: GitHub.PR.Head.Repo.Owner.Type
-      description: The user type of the owner of the repository of the checked out branch
+      description: The user type of the owner of the repository of the checked out
+        branch
       type: String
     - contextPath: GitHub.PR.Head.Repo.Owner.SiteAdmin
-      description: Whether the owner of the repository of the checked out branch is a site admin or not
+      description: Whether the owner of the repository of the checked out branch is
+        a site admin or not
       type: Boolean
     - contextPath: GitHub.PR.Head.Repo.Private
-      description: Whether the repository of the checked out branch is private or not
+      description: Whether the repository of the checked out branch is private or
+        not
       type: Boolean
     - contextPath: GitHub.PR.Head.Repo.Description
       description: The description of the repository of the checked out branch
@@ -985,7 +1002,8 @@ script:
       description: The number of stars of the repository of the checked out branch
       type: Number
     - contextPath: GitHub.PR.Head.Repo.WatchersCount
-      description: The number of entities watching the repository of the checked out branch
+      description: The number of entities watching the repository of the checked out
+        branch
       type: Number
     - contextPath: GitHub.PR.Head.Repo.Size
       description: The size of the repository of the checked out branch
@@ -1000,28 +1018,35 @@ script:
       description: Topics listed for the repository of the checked out branch
       type: Unknown
     - contextPath: GitHub.PR.Head.Repo.HasIssues
-      description: Whether the repository of the checked out branch has issues or not
+      description: Whether the repository of the checked out branch has issues or
+        not
       type: Boolean
     - contextPath: GitHub.PR.Head.Repo.HasProjects
-      description: Whether the repository of the checked out branch has projects or not
+      description: Whether the repository of the checked out branch has projects or
+        not
       type: Boolean
     - contextPath: GitHub.PR.Head.Repo.HasWiki
-      description: Whether the repository of the checked out branch has a wiki or not
+      description: Whether the repository of the checked out branch has a wiki or
+        not
       type: Boolean
     - contextPath: GitHub.PR.Head.Repo.HasPages
       description: Whether the repository of the checked out branch has pages or not
       type: Boolean
     - contextPath: GitHub.PR.Head.Repo.HasDownloads
-      description: Whether the repository of the checked out branch has downloads or not
+      description: Whether the repository of the checked out branch has downloads
+        or not
       type: Boolean
     - contextPath: GitHub.PR.Head.Repo.Archived
-      description: Whether the repository of the checked out branch has been arvhived or not
+      description: Whether the repository of the checked out branch has been arvhived
+        or not
       type: Boolean
     - contextPath: GitHub.PR.Head.Repo.Disabled
-      description: Whether the repository of the checked out branch has been disabled or not
+      description: Whether the repository of the checked out branch has been disabled
+        or not
       type: Boolean
     - contextPath: GitHub.PR.Head.Repo.PushedAt
-      description: The date of the latest push to the repository of the checked out branch
+      description: The date of the latest push to the repository of the checked out
+        branch
       type: String
     - contextPath: GitHub.PR.Head.Repo.CreatedAt
       description: The date of creation of the repository of the checked out branch
@@ -1030,16 +1055,20 @@ script:
       description: The date the repository of the checked out branch was last updated
       type: String
     - contextPath: GitHub.PR.Head.Repo.AllowRebaseMerge
-      description: Whether the repository of the checked out branch permits rebase-style merges or not
+      description: Whether the repository of the checked out branch permits rebase-style
+        merges or not
       type: Boolean
     - contextPath: GitHub.PR.Head.Repo.AllowSquashMerge
-      description: Whether the repository of the checked out branch permits squash merges or not
+      description: Whether the repository of the checked out branch permits squash
+        merges or not
       type: Boolean
     - contextPath: GitHub.PR.Head.Repo.AllowMergeCommit
-      description: Whether the repository of the checked out branch permits merge commits or not
+      description: Whether the repository of the checked out branch permits merge
+        commits or not
       type: Boolean
     - contextPath: GitHub.PR.Head.Repo.SubscribersCount
-      description: The number of entities subscribing to the repository of the checked out branch
+      description: The number of entities subscribing to the repository of the checked
+        out branch
       type: Number
     - contextPath: GitHub.PR.Base.Label
       description: The label of the base branch
@@ -1051,19 +1080,24 @@ script:
       description: The SHA hash of the base branch
       type: String
     - contextPath: GitHub.PR.Base.User.Login
-      description: The login of the committer of the commit that the base branch points to
+      description: The login of the committer of the commit that the base branch points
+        to
       type: String
     - contextPath: GitHub.PR.Base.User.ID
-      description: The ID of the committer of the commit that the base branch points to
+      description: The ID of the committer of the commit that the base branch points
+        to
       type: Number
     - contextPath: GitHub.PR.Base.User.NodeID
-      description: The node ID of the committer of the commit that the base branch points to
+      description: The node ID of the committer of the commit that the base branch
+        points to
       type: String
     - contextPath: GitHub.PR.Base.User.Type
-      description: The user type of the committer of the commit that the base branch points to
+      description: The user type of the committer of the commit that the base branch
+        points to
       type: String
     - contextPath: GitHub.PR.Base.User.SiteAdmin
-      description: Whether the committer of the commit that the base branch points to is a site admin or not
+      description: Whether the committer of the commit that the base branch points
+        to is a site admin or not
       type: Boolean
     - contextPath: GitHub.PR.Base.Repo.ID
       description: The ID of the repository that the base branch belongs to
@@ -1078,94 +1112,121 @@ script:
       description: The full name of the repository that the base branch belongs to
       type: String
     - contextPath: GitHub.PR.Base.Repo.Owner.Login
-      description: The user login of the owner of the repository that the base branch belongs to
+      description: The user login of the owner of the repository that the base branch
+        belongs to
       type: String
     - contextPath: GitHub.PR.Base.Repo.Owner.ID
-      description: The user ID of the owner of the repository that the base branch belongs to
+      description: The user ID of the owner of the repository that the base branch
+        belongs to
       type: Number
     - contextPath: GitHub.PR.Base.Repo.Owner.NodeID
-      description: The user node ID of the owner of the repository that the base branch belongs to
+      description: The user node ID of the owner of the repository that the base branch
+        belongs to
       type: String
     - contextPath: GitHub.PR.Base.Repo.Owner.Type
-      description: The user type of the owner of the repository that the base branch belongs to
+      description: The user type of the owner of the repository that the base branch
+        belongs to
       type: String
     - contextPath: GitHub.PR.Base.Repo.Owner.SiteAdmin
-      description: Whether the owner of the repository that the base branch belongs to is a site admin or not
+      description: Whether the owner of the repository that the base branch belongs
+        to is a site admin or not
       type: Boolean
     - contextPath: GitHub.PR.Base.Repo.Private
-      description: Whether the repository that the base branch belongs to is private or not
+      description: Whether the repository that the base branch belongs to is private
+        or not
       type: Boolean
     - contextPath: GitHub.PR.Base.Repo.Description
-      description: The description of the repository that the base branch belongs to
+      description: The description of the repository that the base branch belongs
+        to
       type: String
     - contextPath: GitHub.PR.Base.Repo.Fork
-      description: Whether the repository that the base branch belongs to is a fork or not
+      description: Whether the repository that the base branch belongs to is a fork
+        or not
       type: Boolean
     - contextPath: GitHub.PR.Base.Repo.Language
       description: The language of the repository that the base branch belongs to
       type: Unknown
     - contextPath: GitHub.PR.Base.Repo.ForksCount
-      description: The number of times that the repository that the base branch belongs to has been forked
+      description: The number of times that the repository that the base branch belongs
+        to has been forked
       type: Number
     - contextPath: GitHub.PR.Base.Repo.StargazersCount
-      description: The number of times that the repository that the base branch belongs to has been starred
+      description: The number of times that the repository that the base branch belongs
+        to has been starred
       type: Number
     - contextPath: GitHub.PR.Base.Repo.WatchersCount
-      description: The number of entities watching the repository that the base branch belongs to
+      description: The number of entities watching the repository that the base branch
+        belongs to
       type: Number
     - contextPath: GitHub.PR.Base.Repo.Size
       description: The size of the repository that the base branch belongs to
       type: Number
     - contextPath: GitHub.PR.Base.Repo.DefaultBranch
-      description: The default branch of the repository that the base branch belongs to
+      description: The default branch of the repository that the base branch belongs
+        to
       type: String
     - contextPath: GitHub.PR.Base.Repo.OpenIssuesCount
-      description: The number of open issues in the repository that the base branch belongs to
+      description: The number of open issues in the repository that the base branch
+        belongs to
       type: Number
     - contextPath: GitHub.PR.Base.Repo.Topics
       description: Topics listed for the repository that the base branch belongs to
       type: String
     - contextPath: GitHub.PR.Base.Repo.HasIssues
-      description: Whether the repository that the base branch belongs to has issues or not
+      description: Whether the repository that the base branch belongs to has issues
+        or not
       type: Boolean
     - contextPath: GitHub.PR.Base.Repo.HasProjects
-      description: Whether the repository that the base branch belongs to has projects or not
+      description: Whether the repository that the base branch belongs to has projects
+        or not
       type: Boolean
     - contextPath: GitHub.PR.Base.Repo.HasWiki
-      description: Whether the repository that the base branch belongs to has a wiki or not
+      description: Whether the repository that the base branch belongs to has a wiki
+        or not
       type: Boolean
     - contextPath: GitHub.PR.Base.Repo.HasPages
-      description: Whether the repository that the base branch belongs to has pages or not
+      description: Whether the repository that the base branch belongs to has pages
+        or not
       type: Boolean
     - contextPath: GitHub.PR.Base.Repo.HasDownloads
-      description: Whether the repository that the base branch belongs to has downloads or not
+      description: Whether the repository that the base branch belongs to has downloads
+        or not
       type: Boolean
     - contextPath: GitHub.PR.Base.Repo.Archived
-      description: Whether the repository that the base branch belongs to is archived or not
+      description: Whether the repository that the base branch belongs to is archived
+        or not
       type: Boolean
     - contextPath: GitHub.PR.Base.Repo.Disabled
-      description: Whether the repository that the base branch belongs to is disabled or not
+      description: Whether the repository that the base branch belongs to is disabled
+        or not
       type: Boolean
     - contextPath: GitHub.PR.Base.Repo.PushedAt
-      description: The date that the repository that the base branch belongs to was last pushed to
+      description: The date that the repository that the base branch belongs to was
+        last pushed to
       type: String
     - contextPath: GitHub.PR.Base.Repo.CreatedAt
-      description: The date of creation of the repository that the base branch belongs to
+      description: The date of creation of the repository that the base branch belongs
+        to
       type: String
     - contextPath: GitHub.PR.Base.Repo.UpdatedAt
-      description: The date that the repository that the base branch belongs to was last updated
+      description: The date that the repository that the base branch belongs to was
+        last updated
       type: String
     - contextPath: GitHub.PR.Base.Repo.AllowRebaseMerge
-      description: Whether the repository that the base branch belongs to allows rebase-style merges or not
+      description: Whether the repository that the base branch belongs to allows rebase-style
+        merges or not
       type: Boolean
     - contextPath: GitHub.PR.Base.Repo.AllowSquashMerge
-      description: Whether the repository that the base branch belongs to allows squash merges or not
+      description: Whether the repository that the base branch belongs to allows squash
+        merges or not
       type: Boolean
     - contextPath: GitHub.PR.Base.Repo.AllowMergeCommit
-      description: Whether the repository that the base branch belongs to allows merge commits or not
+      description: Whether the repository that the base branch belongs to allows merge
+        commits or not
       type: Boolean
     - contextPath: GitHub.PR.Base.Repo.SubscribersCount
-      description: The number of entities that subscribe to the repository that the base branch belongs to
+      description: The number of entities that subscribe to the repository that the
+        base branch belongs to
       type: Number
     - contextPath: GitHub.PR.AuthorAssociation
       description: The pull request author association
@@ -1198,7 +1259,8 @@ script:
       description: The type of the user who merged the pull request
       type: String
     - contextPath: GitHub.PR.MergedBy.SiteAdmin
-      description: Whether the user who merged the pull request is a site admin or not
+      description: Whether the user who merged the pull request is a site admin or
+        not
       type: Boolean
     - contextPath: GitHub.PR.Comments
       description: The number of comments on the pull request
@@ -1224,6 +1286,8 @@ script:
   dockerimage: demisto/python3:3.7.3.286
   subtype: python3
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   type: python
