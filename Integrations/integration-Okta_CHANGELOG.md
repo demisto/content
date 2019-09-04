@@ -1,2 +1,2 @@
 ## [Unreleased]
-The ***okta-get-user*** command now returns the user status to the context as well
+Added the Account.Status context output to the ***okta-get-user*** command.
