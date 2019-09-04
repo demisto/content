@@ -309,10 +309,10 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Union[
         err_msg = 'Failure verying SSL certificate. Try selecting \'Trust any certificate\' in' \
                   ' the integration configuration.'
         raise Exception(err_msg)
-    except requests.exceptions.ProxyError:
-        err_msg = 'Proxy Error - try clearing \'Use system proxy\' in the integration configuration if it has been' \
-                  ' selected.'
-        raise Exception(err_msg)
+    # except requests.exceptions.ProxyError:
+    #     err_msg = 'Proxy Error - try clearing \'Use system proxy\' in the integration configuration if it has been' \
+    #               ' selected.'
+    #     raise Exception(err_msg)
     except requests.exceptions.ConnectionError as e:
         # Get originating Exception in Exception chain
         while '__context__' in dir(e) and e.__context__:
