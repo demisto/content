@@ -99,7 +99,6 @@ def test_generate_commands_section():
     }
 
     section, errors = generate_commands_section(yml_data, {})
-
     expected_section = '''<h2>Commands</h2>
 <p>
   You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
@@ -110,12 +109,13 @@ def test_generate_commands_section():
   <li>non-deprecated-cmd2: non-deprecated-cmd2</li>
 </ol>
 <h3>1. non-deprecated-cmd</h3>
-<!-- <hr> -->
+<hr>
 <p> </p>
 <h5>Base Command</h5>
 <p>
   <code>non-deprecated-cmd</code>
 </p>
+
 <h5>Required Permissions</h5>
 <p>The following permissions are required for all commands.</p>
 <ul>
@@ -136,15 +136,21 @@ There are no context output for this command.
 <h5>Human Readable Output</h5>
 <p>
 
+<!-- remove the following comments to manually add an image: -->
+<!--
+<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
+ alt="image" width="749" height="412"></a>
+ -->
 </p>
 
 <h3>2. non-deprecated-cmd2</h3>
-<!-- <hr> -->
+<hr>
 <p> </p>
 <h5>Base Command</h5>
 <p>
   <code>non-deprecated-cmd2</code>
 </p>
+
 <h5>Required Permissions</h5>
 <p>The following permissions are required for all commands.</p>
 <ul>
@@ -165,8 +171,16 @@ There are no context output for this command.
 <h5>Human Readable Output</h5>
 <p>
 
+<!-- remove the following comments to manually add an image: -->
+<!--
+<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
+ alt="image" width="749" height="412"></a>
+ -->
 </p>
 '''
+
+  #  print (section,expected_section)
+
 
     assert section == expected_section
     assert len(errors) == 2  # no example for both commands
