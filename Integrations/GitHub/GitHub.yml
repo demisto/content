@@ -564,9 +564,33 @@ script:
     execution: false
     name: GitHub-list-issue-comments
     outputs:
-    - contextPath: GitHub.Comment
-      description: List of comments
-      type: Unknown
+    - contextPath: GitHub.Comment.IssueNumber
+      description: The number of the issue to which the comment belongs
+      type: Number
+    - contextPath: GitHub.Comment.ID
+      description: The ID of the comment
+      type: Number
+    - contextPath: GitHub.Comment.NodeID
+      description: The node ID of the comment
+      type: String
+    - contextPath: GitHub.Comment.Body
+      description: The body content of the comment
+      type: String
+    - contextPath: GitHub.Comment.User.Login
+      description: The login of the user who commented
+      type: String
+    - contextPath: GitHub.Comment.User.ID
+      description: The ID of the user who commented
+      type: Number
+    - contextPath: GitHub.Comment.User.NodeID
+      description: The node ID of the user who commented
+      type: String
+    - contextPath: GitHub.Comment.User.Type
+      description: The type of the user who commented
+      type: String
+    - contextPath: GitHub.Comment.User.SiteAdmin
+      description: Whether the user who commented is a site admin or not
+      type: Boolean
   - arguments:
     - default: false
       description: The number of the pull request

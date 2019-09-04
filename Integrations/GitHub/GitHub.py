@@ -460,23 +460,22 @@ def format_pr_outputs(pull_request: dict) -> dict:
     return ec_object
 
 
-def format_comment_outputs(comment: dict) -> dict:
+def format_comment_outputs(comment: dict, issue_number: Union[int, str]) -> dict:
     """Take GitHub API Comment data and format to expected context outputs
 
     Args:
         comment (dict): Comment data returned from GitHub API
+        issue_number (int): The number of the issue to which the comment belongs
 
     Returns:
         (dict): Comment object formatted to expected context outputs
     """
     ec_object = {
+        'IssueNumber': int(issue_number) if isinstance(issue_number, str) else issue_number,
         'ID': comment.get('id'),
         'NodeID': comment.get('node_id'),
         'Body': comment.get('body'),
-        'CommenterLogin': comment.get('user', {}).get('login'),
-        'CommenterType': comment.get('user', {}).get('type'),
-        'CreatedAt': comment.get('created_at'),
-        'UpdatedAt': comment.get('updated_at')
+        'User': format_user_outputs(comment.get('user', {}))
     }
     return ec_object
 
@@ -902,7 +901,7 @@ def list_issue_comments_command():
     issue_number = args.get('issue_number')
     response = list_issue_comments(issue_number)
 
-    ec_object = [format_comment_outputs(comment) for comment in response]
+    ec_object = [format_comment_outputs(comment, issue_number) for comment in response]
     ec = {
         'GitHub.Comment(val.ID === obj.ID)': ec_object
     }
@@ -916,7 +915,7 @@ def create_comment_command():
     body = args.get('body')
     response = create_comment(issue_number, body)
 
-    ec_object = format_comment_outputs(response)
+    ec_object = format_comment_outputs(response, issue_number)
     ec = {
         'GitHub.Comment(val.ID === obj.ID)': ec_object
     }
