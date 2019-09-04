@@ -1406,7 +1406,8 @@ def get_group_attributes():
         return_error(response.get('message'))
 
     context = {
-        'TC.Group.Attribute(val.GroupID && val.GroupID === obj.GroupID)': contents
+        'TC.Group.Attribute(val.GroupID && val.GroupID === obj.GroupID && val.AttributeID && val.AttributeID ==='
+        ' obj.AttributeID)': contents
     }
 
     return_outputs(
@@ -1452,7 +1453,8 @@ def get_group_security_labels():
         return_error(response.get('message'))
 
     context = {
-        'TC.Group.SecurityLabel(val.GroupID && val.GroupID === obj.GroupID)': contents
+        'TC.Group.SecurityLabel(val.GroupID && val.GroupID === obj.GroupID && val.Name && val.Name === '
+        'obj.Name)': contents
     }
 
     return_outputs(
@@ -1498,7 +1500,7 @@ def get_group_tags():
         return_error(response.get('message'))
 
     context = {
-        'TC.Group.Tag(val.Name && val.GroupID === obj.GroupID)': context_entries
+        'TC.Group.Tag(val.GroupID && val.GroupID === obj.GroupID && val.Name && val.Name === obj.Name)': context_entries
     }
 
     return_outputs(
@@ -1550,7 +1552,8 @@ def get_group_indicator():
         return_error(response.get('message'))
 
     context = {
-        'TC.Group.Indicator(val.GroupID && val.GroupID === obj.GroupID)': contents
+        'TC.Group.Indicator(val.GroupID && val.GroupID === obj.GroupID && val.IndicatorID && val.IndicatorID === '
+        'obj.IndicatorID)': contents
     }
 
     return_outputs(
