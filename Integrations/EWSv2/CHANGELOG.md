@@ -1,9 +1,9 @@
 ## [Unreleased]
 - Improved implementation of the ***ews-get-contacts*** command.
-- More secure exchange 365 compliance search.
-
-- Improved security inside the docker container.
-- ews-get-items-from-folder command - support fetching item attachment
+- Improved security for the  Exchange 365 Compliance search.
+- Added the *get-internal-items* argument to the ***ews-get-items-from-folder*** command, which enables you to retrieve EML and MSF file attachments.
+- Improved security within the Docker container.
+- Added the ***ews-get-items-from-folder*** command, which enables you to fetch item attachments.
 
 ## [19.8.0] - 2019-08-06
   - Improved memory resource usage.
