@@ -1295,6 +1295,49 @@ async def test_translate_create(mocker):
 
 
 @pytest.mark.asyncio
+async def test_translate_create_newline_json(mocker):
+    # Set
+    import Slack
+
+    @asyncio.coroutine
+    def this_doesnt_create_incidents(demisto_user, incidents_json):
+        return {
+            'id': 'new_incident',
+            'name': 'New Incident'
+        }
+
+    mocker.patch.object(Slack, 'create_incidents', side_effect=this_doesnt_create_incidents)
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'https://www.eizelulz.com:8443'})
+
+    demisto_user = {'id': 'demisto_user'}
+
+    json_message =\
+        '''```
+            create incident json={
+            "name":"xyz",
+            "details": "1.1.1.1,8.8.8.8"
+            ```
+        }'''
+
+    success_message = 'Successfully created incident New Incident.\n' \
+                      ' View it on: https://www.eizelulz.com:8443#/WarRoom/new_incident'
+
+    # Arrange
+    json_data = await Slack.translate_create(demisto_user, json_message)
+
+    create_args = Slack.create_incidents.call_args
+    json_args = create_args[0][1]
+
+    # Assert
+
+    assert Slack.create_incidents.call_count == 1
+
+    assert json_args == [{"name": "xyz", "details": "1.1.1.1,8.8.8.8"}]
+
+    assert json_data == success_message
+
+
+@pytest.mark.asyncio
 async def test_get_user_by_id_async_user_exists(mocker):
     from Slack import get_user_by_id_async
 
@@ -1950,7 +1993,7 @@ def test_send_message(mocker):
     mocker.patch.object(Slack, 'invite_users_to_conversation')
 
     # Arrange
-    Slack.send_message(['channel'], None, None, demisto.getIntegrationContext(), 'yo', None)
+    Slack.send_message(['channel'], None, None, demisto.getIntegrationContext(), 'yo', None, '')
 
     args = Slack.send_message_to_destinations.call_args[0]
 
@@ -1977,7 +2020,7 @@ def test_send_message_retry(mocker):
     # Arrange
     mocker.patch.object(Slack, 'send_message_to_destinations',
                         side_effect=[SlackApiError('not_in_channel', None), 'ok'])
-    Slack.send_message(['channel'], None, None, demisto.getIntegrationContext(), 'yo', None)
+    Slack.send_message(['channel'], None, None, demisto.getIntegrationContext(), 'yo', None, '')
 
     args = Slack.send_message_to_destinations.call_args_list[1][0]
 
