@@ -290,9 +290,9 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Union[
         else:
             try:
                 if res.status_code not in {200, 201}:
-                    # case of wrong credentials
                     res_data = json.loads(res.text)
                     if isinstance(res_data, dict) and 'non_field_errors' in res_data:
+                        # case of wrong credentials
                         err_msg_list = res_data.get('non_field_errors')
                         if isinstance(err_msg_list, list) and err_msg_list:
                             raise Exception(err_msg_list[0])
