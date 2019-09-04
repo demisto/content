@@ -2,7 +2,8 @@
   - IntegrationLogger improvements.
   - Added support for IPv6 in the ***is_ip_valid*** command.
   - Added function ***get_demisto_version*** which return the Demisto server version and build number.
-  - Added ***BaseClient*** and ***DemistoException*** objects 
+  - Added ***BaseClient*** and ***DemistoException*** objects.
+  - Added ***assign_params***, ***build_dbot_entry***, ***build_malicious_dbot_entry*** functions.
 
 
 ## [19.8.2] - 2019-08-22
