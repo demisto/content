@@ -570,8 +570,8 @@ def create_contact():
             )
 
     # set common user attributes
-    if args.get('diaply-name'):
-        attributes['displayName'] = args['diaply-name']
+    if args.get('display-name'):
+        attributes['displayName'] = args['display-name']
     if args.get('description'):
         attributes['description'] = args['description']
     if args.get('email'):
