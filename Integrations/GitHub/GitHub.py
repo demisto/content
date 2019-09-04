@@ -855,10 +855,7 @@ def list_pr_reviews_command():
             'Body': pr_review.get('body'),
             'CommitID': pr_review.get('commit_id'),
             'State': pr_review.get('state'),
-            'UserLogin': pr_review.get('user', {}).get('login'),
-            'UserID': pr_review.get('user', {}).get('id'),
-            'UserNodeID': pr_review.get('user', {}).get('node_id'),
-            'UserType': pr_review.get('user', {}).get('type')
+            'User': format_user_outputs(pr_review.get('user', {}))
         }
         for pr_review in response
     ]

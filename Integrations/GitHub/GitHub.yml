@@ -630,18 +630,21 @@ script:
     - contextPath: GitHub.PR.Review.State
       description: The state of the review
       type: String
-    - contextPath: GitHub.PR.Review.UserLogin
+    - contextPath: GitHub.PR.Review.User.Login
       description: The reviewer's user login
       type: String
-    - contextPath: GitHub.PR.Review.UserID
+    - contextPath: GitHub.PR.Review.User.ID
       description: The reviewer's user ID
       type: Number
-    - contextPath: GitHub.PR.Review.UserNodeID
+    - contextPath: GitHub.PR.Review.User.NodeID
       description: The reviewer's user node ID
       type: String
-    - contextPath: GitHub.PR.Review.UserType
+    - contextPath: GitHub.PR.Review.User.Type
       description: The reviewer user type
       type: String
+    - contextPath: GitHub.PR.Review.User.SiteAdmin
+      description: Whether the reviewer is a site admin or not
+      type: Boolean
   - arguments:
     - default: false
       description: The SHA hash of the commit
