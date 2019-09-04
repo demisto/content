@@ -827,3 +827,67 @@ def test_is_outputs_for_reputations_commands_valid():
 
     assert validator_ip.is_outputs_for_reputations_commands_valid() is True, \
         "The integration validator found invalid command outputs while it is valid"
+
+
+def test_proxy_sanity_check():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "proxy",
+                "type": 8,
+                "display": "Use system proxy settings",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_proxy_configured_correctly()
+
+
+def test_proxy_wrong_type():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "proxy",
+                "type": 9,
+                "display": "Use system proxy settings",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_proxy_configured_correctly() is False
+
+
+def test_proxy_wrong_display():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "proxy",
+                "type": 8,
+                "display": "bla",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_proxy_configured_correctly() is False
+
+
+def test_proxy_wrong_required():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "proxy",
+                "type": 8,
+                "display": "Use system proxy settings",
+                "required": True
+            }
+        ]
+    }
+
+    assert validator.is_proxy_configured_correctly() is False
