@@ -95,6 +95,42 @@ TEST_STATUS_TRANS = {
     'total': 'Total'
 }
 
+TEST_RESULT_TRANS = {
+    'id': 'Id',
+    'modified': 'Modified',
+    'project.id': 'Project.Id',
+    'project.name': 'Project.Name',
+    'master_job.id': 'MasterJob.Id',
+    'master_job.assets': {
+        'ipv4_address': 'Ipv4Address',
+        'hostname': 'Hostname',
+        'product_name': 'ProductName',
+        'id': 'Id',
+        'modified': 'Modified',
+        'status': 'Status'
+    },
+    'master_job.scenarios': {
+        'id': 'Id',
+        'name': 'Name',
+        'description': 'Description'
+    },
+    'run_count': 'RunCount',
+    'last_result': 'LastResult',  # Not found
+    'scenario.id': 'Scenario.Id',
+    'scenario.name': 'Scenario.Name',
+    'scenario.description': 'Scenario.Description',
+    'assets': {
+        'id': 'Id',
+        'ipv4_address': 'Ipv4Address',
+        'hostname': 'Hostname',
+        'product_name': 'ProductName',
+        'modified': 'Modified',
+        'status': 'Status'  # Not found
+    },
+    'asset_group': 'AssetGroup',
+    'job_state.name': 'Name'
+}
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -154,24 +190,30 @@ def build_transformed_dict(src, trans_dict):
     for key, val in trans_dict.items():
         if isinstance(val, dict):
             # handle nested list
-            res[key.title()] = [build_transformed_dict(item, val) for item in demisto.get(src, key)]
+            sub_res = res
+            item_val = [build_transformed_dict(item, val) for item in (demisto.get(src, key) or [])]
+            key = underscoreToCamelCase(key)
+            for sub_key in key.split('.')[:-1]:
+                if sub_key not in sub_res:
+                    sub_res[sub_key] = {}
+                sub_res = sub_res[sub_key]
+            sub_res[key.split('.')[-1]] = item_val
         elif '.' in val:
             # handle nested vals
-            res.update(create_nested_value(src, key, val))
+            update_nested_value(res, val, to_val=demisto.get(src, key))
         else:
             res[val] = demisto.get(src, key)
     return res
 
 
-def create_nested_value(src_dict, from_key, to_key):
-    res = {}
-    sub_res = res
+def update_nested_value(src_dict, to_key, to_val):
+    sub_res = src_dict
     to_key_lst = to_key.split('.')
     for sub_to_key in to_key_lst[:-1]:
-        sub_res[sub_to_key] = {}
+        if sub_to_key not in sub_res:
+            sub_res[sub_to_key] = {}
         sub_res = sub_res[sub_to_key]
-    sub_res[to_key_lst[-1]] = demisto.get(src_dict, from_key)
-    return res
+    sub_res[to_key_lst[-1]] = to_val
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -206,7 +248,7 @@ def get_assessment_execution_status_command():
     hr = f'Assessment {ass_id} execution is {"" if ex_status else "not "}finished.'
     ec = {
         'AttackIQ.Assessment(val.Id === obj.Id)': {
-            'Finished': ex_status,
+            'Running': ex_status,
             'Id': ass_id
         }
     }
@@ -224,10 +266,18 @@ def get_test_execution_status_command():
     return_outputs(hr, {'AttackIQ.Test(val.Id === obj.Id)': test_status}, raw_test_status)
 
 
-def get_test_results_command():
+def get_test_results_command(args=demisto.args()):
     """ Implements attackiq-get-test-results command
     """
-    pass
+    test_id = args.get('test_id')
+    params = {
+        'test_id': test_id,
+        'show_last_result': args.get('show_last_result') == 'True'
+    }
+    raw_test_res = http_request('GET', '/v1/results', params=params)
+    test_res = build_transformed_dict(raw_test_res['results'], TEST_RESULT_TRANS)
+    hr = tableToMarkdown(f'Test {test_id} results', test_res)
+    return_outputs(hr, {'AttackIQ.TestResult(val.Id === obj.Id)': test_res}, raw_test_res)
 
 
 def list_assessments(assessment_id, page):

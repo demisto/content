@@ -141,7 +141,7 @@ script:
     execution: false
     name: attackiq-get-assessment-execution-status
     outputs:
-    - contextPath: AttackIQ.Assessment.Finished
+    - contextPath: AttackIQ.Assessment.Running
       type: Boolean
     - contextPath: AttackIQ.Assessment.Id
       description: Assessment Id
@@ -235,12 +235,17 @@ script:
       description: The test to show results for
       isArray: false
       name: test_id
-      required: false
+      required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
       description: Only show the most recent results
       isArray: false
       name: show_last_result
+      predefined:
+      - 'True'
+      - 'False'
       required: false
       secret: false
     deprecated: false
@@ -279,9 +284,9 @@ script:
       type: String
     - contextPath: AttackIQ.TestResult.MasterJob.Scenarios.CategoryName
       type: String
-    - contextPath: AttackIQ.TestResult.Run_count
+    - contextPath: AttackIQ.TestResult.RunCount
       type: String
-    - contextPath: AttackIQ.TestResult.LastLesult
+    - contextPath: AttackIQ.TestResult.LastResult
       type: String
     - contextPath: AttackIQ.TestResult.Scenario.Id
       type: String

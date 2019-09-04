@@ -1,35 +1,53 @@
-from Integrations.AttackIQFireDrill.AttackIQFireDrill import build_transformed_dict
+from Integrations.AttackIQFireDrill.AttackIQFireDrill import build_transformed_dict, get_test_results_command
+import requests
 
 # Constants
 DICT_1to5 = {'1': 1, '2': 2, '3': 3, '4': 4, '5': 5}
 DICT_NESTED_123 = {'nested': {'1': 1, '2': 2, '3': 3}}
-DICT_LST_A2B = {'ab': [{'2': 2}, {'2': 3}], 'b': 4}
+DICT_LST_AAB2B = {'aa_b': [{'2': 2}, {'2': 3}], 'b': 4}
+DICT_LST_NESTED = {
+    'master': {
+        'id': 1,
+        'assets': [
+            {
+                'id': 1,
+                'name': 'a'
+            },
+            {
+                'id': 2,
+                'name': 'b'
+            }
+        ]
+    }
+}
 
 TRANS_DICT_134 = {'1': 'one', '3': 'three', '4': 'four'}
 TRANS_DICT_NESTED_12 = {'nested.1': 'one', 'nested.2': 'two'}
 TRANS_DICT_NESTED_VAL_12 = {'1': 'one.1', '2': 'two'}
-TRANS_DICT_LST_A2B = {'ab': {'2': 'two'}, 'b': 'four'}
+TRANS_DICT_LST_A2B = {'aa_b': {'2': 'two'}, 'b': 'four'}
+TRANS_DICT_LST_NESTED = {
+    'master.id': 'Master.ID',
+    'master.assets': {
+        'id': 'ID',
+        'name': 'Name'
+    }
+}
 
 
 def test_build_transformed_dict_basic():
-    res = build_transformed_dict(DICT_1to5, TRANS_DICT_134)
-    assert len(res) == 3
-    assert 'one' in res and 'three' in res and 'four' in res
+    assert build_transformed_dict(DICT_1to5, TRANS_DICT_134) == {'one': 1, 'three': 3, 'four': 4}
     assert 'one' not in DICT_1to5
-    assert '1' not in res
 
 
 def test_build_transformed_dict_nested_keys():
-    res = build_transformed_dict(DICT_NESTED_123, TRANS_DICT_NESTED_12)
-    assert len(res) == 2
-    assert 'one' in res and 'two' in res
+    assert build_transformed_dict(DICT_NESTED_123, TRANS_DICT_NESTED_12) == {'one': 1, 'two': 2}
 
 
 def test_build_transformed_dict_nested_vals():
-    res = build_transformed_dict(DICT_1to5, TRANS_DICT_NESTED_VAL_12)
-    assert res['one'] == {'1': 1}
-    assert res['two'] == 2
+    assert build_transformed_dict(DICT_1to5, TRANS_DICT_NESTED_VAL_12) == {'one': {'1': 1}, 'two': 2}
 
 
 def test_build_transformed_dict_list():
-    assert {'Ab': [{'two': 2}, {'two': 3}], 'four': 4} == build_transformed_dict(DICT_LST_A2B, TRANS_DICT_LST_A2B)
+    assert build_transformed_dict(DICT_LST_AAB2B, TRANS_DICT_LST_A2B) == {'AaB': [{'two': 2}, {'two': 3}], 'four': 4}
+    assert build_transformed_dict(DICT_LST_NESTED, TRANS_DICT_LST_NESTED) == {
+        'Master': {'ID': 1, 'Assets': [{'ID': 1, 'Name': 'a'}, {'ID': 2, 'Name': 'b'}]}}
