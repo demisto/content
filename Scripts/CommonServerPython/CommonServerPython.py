@@ -1800,7 +1800,7 @@ def remove_nulls_from_dictionary(data):
 
 
 def assign_params(**kwargs):
-    """Creates a dictionary from given kwargs
+    """Creates a dictionary from given kwargs without empty values
 `
     Args:
         kwargs: kwargs to filter
@@ -1811,6 +1811,10 @@ def assign_params(**kwargs):
     Examples:
         >>> assign_params(a='1', b=True, c=None, d='')
         {'a': '1', 'b': True}
+
+        >>> since_time = 'timestamp'
+        >>> assign_params(sinceTime=since_time)
+        {'sinceTime': 'timestamp'}
     """
     return {key: value for key, value in kwargs.items() if value}
 
@@ -1825,6 +1829,97 @@ def get_demisto_version():
         return demisto.demistoVersion()
     else:
         raise AttributeError('demistoVersion attribute not found.')
+
+
+def build_dbot_entry(indicator, indicator_type, score, vendor, description=None, build_malicious=True):
+    """Build a dbot entry. if score is 3 adds malicious
+
+    Args:
+        indicator: indicator field. if using file hashes, can be dict
+        indicator_type:
+            type of indicator ('url, 'domain', 'ip', 'cve', 'email', 'md5', 'sha1', 'sha256', 'crc32', 'sha512', 'ctph')
+        score: score (0, 1, 2 , 3)
+        vendor: Usually integration name
+        description: description (will be added to malicious if dbot_score is 3). can be None
+        build_malicious: if True, will not add malicious entry
+
+    Returns
+        dbot entry
+
+    Examples:
+        >>> build_dbot_entry('user@example.com', 'Email', 1, 'Vendor')
+        {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 1}}
+
+        >>> build_dbot_entry('user@example.com', 'Email', 3, 'Vendor', build_malicious=False)
+        {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 3}}
+
+        >>> build_dbot_entry('user@example.com', 'Email', 3, 'Vendor', 'Malicious email')
+        {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 3},\
+ 'Account.Email(val.Address && val.Address == obj.Address)': {'Account.Email': 'user@example.com', 'Malicious': \
+{'Vendor': 3, 'Description': 'Malicious email'}}}
+
+    """
+    indicator_type_lower = indicator_type.lower()
+    dbot_entry = {
+        outputPaths['dbotscore']: {
+            'Indicator': indicator,
+            'Type': indicator_type_lower,
+            'Vendor': vendor,
+            'Score': score
+        }}
+    if score is 3 and build_malicious:
+        dbot_entry.update(build_malicious_dbot_entry(indicator, indicator_type, score, description))
+    return dbot_entry
+
+
+def build_malicious_dbot_entry(indicator, indicator_type, vendor, description=None):
+    """ Build Malicious dbot entry
+
+    Args:
+        indicator:
+        indicator_type:
+        vendor:
+        description:
+
+    Returns:
+        dict: malicious entry
+
+    Examples:
+        >>> build_malicious_dbot_entry('8.8.8.8', 'ip', 'Vendor', 'Google DNS')
+        {'IP(val.Address && val.Address == obj.Address)': {'Address': '8.8.8.8', 'Malicious': {'Vendor': 'Vendor'\
+, 'Description': 'Google DNS'}}}
+
+        >>> build_malicious_dbot_entry('md5hash', 'MD5', 'Vendor', 'Malicious File')
+        {'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 ||\
+val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 ==\
+obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'MD5': 'md5hash', 'Malicious': {'Vendor': 'Vendor',\
+'Description': 'Malicious File'}}}
+    """
+    file_types = ('md5', 'sha1', 'sha256', 'crc32', 'sha512', 'ctph')
+    indicator_type_lower = indicator_type.lower()
+    if indicator_type_lower == 'ip':
+        key = 'Address'
+    elif indicator_type_lower == 'url':
+        key = 'Data'
+    elif indicator_type_lower == 'domain':
+        key = 'Name'
+    elif indicator_type_lower == 'cve':
+        key = 'ID'
+    elif indicator_type_lower == 'email':
+        key = 'Account.Email'
+    elif indicator_type_lower in file_types:
+        key = indicator_type_lower.upper()
+        indicator_type_lower = 'file'
+    else:
+        raise DemistoException('Wrong indicator type supplied: {}'.format(indicator_type))
+    entry = {
+        key: indicator,
+        'Malicious': {
+            'Vendor': vendor,
+            'Description': description
+        }
+    }
+    return {outputPaths[indicator_type_lower]: entry}
 
 
 class BaseClient:
