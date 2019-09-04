@@ -3,6 +3,7 @@ import time
 from pprint import pformat
 import uuid
 import urllib
+import requests.exceptions
 
 from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS
 from Tests.scripts.constants import PB_Status
@@ -110,7 +111,10 @@ def __create_integration_instance(client, integration_name, integration_instance
             # param is required - take default value
             param_conf['value'] = param_conf['defaultValue']
         module_instance['data'].append(param_conf)
-    res = client.req('PUT', '/settings/integration', module_instance)
+    try:
+        res = client.req('PUT', '/settings/integration', module_instance)
+    except requests.exceptions.RequestException as conn_err:
+        print_error('Error trying to create instance for integration: {0}:\n {1}'.format(integration_name, conn_err))
 
     if res.status_code != 200:
         print_error('create instance failed with status code ' + str(res.status_code))
