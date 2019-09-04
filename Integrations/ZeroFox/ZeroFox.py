@@ -317,7 +317,7 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Union[
         # Get originating Exception in Exception chain
         while '__context__' in dir(e) and e.__context__:
             e = cast(Any, e.__context__)
-        err_msg = "blah blah"
+        err_msg = str(type(e))
         if not isinstance(e, TypeError):
             err_msg = f'\nMESSAGE: {e.strerror}\n' \
                       f'ADVICE: Check that the Server URL parameter is correct and that you' \
