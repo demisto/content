@@ -88,7 +88,7 @@ class IntegrationValidator(object):
                 elif configuration_param.get('required', False):
                     err_msgs.append('The required field of the {} parameter should be False'.format(param_name))
 
-                elif configuration_param.get('type') != 8 :
+                elif configuration_param.get('type') != 8:
                     err_msgs.append('The type field of the {} parameter should be 8'.format(param_name))
 
         if err_msgs:
