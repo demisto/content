@@ -218,6 +218,204 @@ def create_issue_table(issue_list, response, limit):
     context_create_issue(response, issue_table)
 
 
+def format_label_outputs(label: dict) -> dict:
+    """Take GitHub API label data and format to expected context outputs
+
+    Args:
+        label (dict): label data returned from GitHub API
+
+    Returns:
+        (dict): label object formatted to expected context outputs
+    """
+    ec_object = {
+        'ID': label.get('id'),
+        'NodeID': label.get('node_id'),
+        'Name': label.get('name'),
+        'Description': label.get('description'),
+        'Color': label.get('Color'),
+        'Default': label.get('default')
+    }
+    return ec_object
+
+
+def format_user_outputs(user: dict) -> dict:
+    """Take GitHub API user data and format to expected context outputs
+
+    Args:
+        user (dict): user data returned from GitHub API
+
+    Returns:
+        (dict): user object formatted to expected context outputs
+    """
+    ec_user = {
+        'Login': user.get('login'),
+        'ID': user.get('id'),
+        'NodeID': user.get('node_id'),
+        'Type': user.get('type'),
+        'SiteAdmin': user.get('site_admin')
+    }
+    return ec_user
+
+
+def format_head_or_base_outputs(head_or_base: dict) -> dict:
+    """Take GitHub API head or base branch data and format to expected context outputs
+
+    Args:
+        head_or_base (dict): head or base branch data returned from GitHub API
+
+    Returns:
+        (dict): head or base branch object formatted to expected context outputs
+    """
+    head_or_base_user = head_or_base.get('user', {})
+    ec_head_or_base_user = format_user_outputs(head_or_base_user)
+    head_or_base_repo = head_or_base.get('repo', {})
+    head_or_base_repo_owner = head_or_base_repo.get('owner', {})
+    ec_head_or_base_repo_owner = format_user_outputs(head_or_base_repo_owner)
+    ec_head_repo = {
+        'ID': head_or_base_repo.get('id'),
+        'NodeID': head_or_base_repo.get('node_id'),
+        'Name': head_or_base_repo.get('name'),
+        'FullName': head_or_base_repo.get('full_name'),
+        'Owner': ec_head_or_base_repo_owner,
+        'Private': head_or_base_repo.get('private'),
+        'Description': head_or_base_repo.get('description'),
+        'Fork': head_or_base_repo.get('fork'),
+        'Language': head_or_base_repo.get('language'),
+        'ForksCount': head_or_base_repo.get('forks_count'),
+        'StargazersCount': head_or_base_repo.get('stargazers_count'),
+        'WatchersCount': head_or_base_repo.get('watchers_count'),
+        'Size': head_or_base_repo.get('size'),
+        'DefaultBranch': head_or_base_repo.get('default_branch'),
+        'OpenIssuesCount': head_or_base_repo.get('open_issues_count'),
+        'Topics': head_or_base_repo.get('topics'),
+        'HasIssues': head_or_base_repo.get('has_issues'),
+        'HasProjects': head_or_base_repo.get('has_projects'),
+        'HasWiki': head_or_base_repo.get('has_wiki'),
+        'HasPages': head_or_base_repo.get('has_pages'),
+        'HasDownloads': head_or_base_repo.get('has_downloads'),
+        'Archived': head_or_base_repo.get('archived'),
+        'Disabled': head_or_base_repo.get('disabled'),
+        'PushedAt': head_or_base_repo.get('pushed_at'),
+        'CreatedAt': head_or_base_repo.get('created_at'),
+        'UpdatedAt': head_or_base_repo.get('updated_at'),
+        'AllowRebaseMerge': head_or_base_repo.get('allow_rebase_merge'),
+        'AllowSquashMerge': head_or_base_repo.get('allow_squash_merge'),
+        'AllowMergeCommit': head_or_base_repo.get('allow_merge_commit'),
+        'SucscribersCount': head_or_base_repo.get('subscribers_count')
+    }
+    ec_head_or_base = {
+        'Label': head_or_base.get('label'),
+        'Ref': head_or_base.get('ref'),
+        'SHA': head_or_base.get('sha'),
+        'User': ec_head_or_base_user,
+        'Repo': ec_head_repo,
+    }
+    return ec_head_or_base
+
+
+def format_pr_outputs(pull_request: dict) -> dict:
+    """Take GitHub API Pull Request data and format to expected context outputs
+
+    Args:
+        pull_request (dict): Pull Request data returned from GitHub API
+
+    Returns:
+        (dict): Pull Request object formatted to expected context outputs
+    """
+    user_data = pull_request.get('user', {})
+    ec_user = format_user_outputs(user_data)
+
+    labels_data = pull_request.get('labels', [])
+    ec_labels = [format_label_outputs(label) for label in labels_data]
+
+    milestone_data = pull_request.get('milestone', {})
+    creator = milestone_data.get('creator', {})
+    ec_creator = format_user_outputs(creator)
+    ec_milestone = {
+        'ID': milestone_data.get('id'),
+        'NodeID': milestone_data.get('node_id'),
+        'Number': milestone_data.get('number'),
+        'State': milestone_data.get('state'),
+        'Title': milestone_data.get('title'),
+        'Description': milestone_data.get('description'),
+        'Creator': ec_creator,
+        'OpenIssues': milestone_data.get('open_issues'),
+        'ClosedIssues': milestone_data.get('closed_issues'),
+        'CreatedAt': milestone_data.get('created_at'),
+        'UpdatedAt': milestone_data.get('updated_at'),
+        'ClosedAt': milestone_data.get('closed_at'),
+        'DueOn': milestone_data.get('due_on'),
+    }
+
+    assignees_data = pull_request.get('assignees', [])
+    ec_assignee = [format_user_outputs(assignee) for assignee in assignees_data]
+
+    requested_reviewers_data = pull_request.get('requested_reviewers', [])
+    ec_requested_reviewer = [format_user_outputs(requested_reviewer) for requested_reviewer in requested_reviewers_data]
+
+    requested_teams_data = pull_request.get('requested_teams', [])
+    ec_requested_team = [
+        {
+            'ID': requested_team.get('id'),
+            'NodeID': requested_team.get('node_id'),
+            'Name': requested_team.get('name'),
+            'Slug': requested_team.get('slug'),
+            'Description': requested_team.get('description'),
+            'Privacy': requested_team.get('privacy'),
+            'Permission': requested_team.get('permission'),
+            'Parent': requested_team.get('parent')
+        }
+        for requested_team in requested_teams_data
+    ]
+
+    head_data = pull_request.get('head', {})
+    ec_head = format_head_or_base_outputs(head_data)
+
+    base_data = pull_request.get('base', {})
+    ec_base = format_head_or_base_outputs(base_data)
+
+    merged_by_data = pull_request.get('merged_by', {})
+    ec_merged_by = format_user_outputs(merged_by_data)
+
+    ec_object = {
+        'ID': pull_request.get('id'),
+        'NodeID': pull_request.get('node_id'),
+        'Number': pull_request.get('number'),
+        'State': pull_request.get('state'),
+        'Locked': pull_request.get('locked'),
+        'User': ec_user,
+        'Body': pull_request.get('body'),
+        'Label': ec_labels,
+        'Milestone': ec_milestone,
+        'ActiveLockReason': pull_request.get('active_lock_reason'),
+        'CreatedAt': pull_request.get('created_at'),
+        'UpdatedAt': pull_request.get('updated_at'),
+        'ClosedAt': pull_request.get('closed_at'),
+        'MergedAt': pull_request.get('merged_at'),
+        'MergeCommitSHA': pull_request.get('merge_commit_sha'),
+        'Assignee': ec_assignee,
+        'RequestedReviewer': ec_requested_reviewer,
+        'RequestedTeam': ec_requested_team,
+        'Head': ec_head,
+        'Base': ec_base,
+        'AuthorAssociation': pull_request.get('author_association'),
+        'Draft': pull_request.get('draft'),
+        'Merged': pull_request.get('merged'),
+        'Mergeable': pull_request.get('mergeable'),
+        'Rebaseable': pull_request.get('rebaseable'),
+        'MergeableState': pull_request.get('mergeable_state'),
+        'MergedBy': ec_merged_by,
+        'Comments': pull_request.get('comments'),
+        'ReviewComments': pull_request.get('review_comments'),
+        'MaintainerCanModify': pull_request.get('maintainer_can_modify'),
+        'Commits': pull_request.get('commits'),
+        'Additions': pull_request.get('additions'),
+        'Deletions': pull_request.get('deletions'),
+        'ChangedFiles': pull_request.get('changed_files')
+    }
+    return ec_object
+
+
 def format_comment_outputs(comment: dict) -> dict:
     """Take GitHub API Comment data and format to expected context outputs
 
@@ -561,23 +759,26 @@ def test_module():
     demisto.results("ok")
 
 
+def get_pull_request_command():
+    args = demisto.args()
+    pull_number = args.get('pull_number')
+    response = get_pull_request(pull_number)
+
+    ec_object = format_pr_outputs(response)
+    ec = {
+        'GitHub.PR(val.Number === obj.Number)': ec_object
+    }
+    human_readable = tableToMarkdown(f'Pull Request #{pull_number}', ec_object, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
 def add_label_command():
     args = demisto.args()
     issue_number = args.get('issue_number')
     labels = argToList(args.get('labels'))
     response = add_label(issue_number, labels)
 
-    ec_object = [
-        {
-            'ID': label.get('id'),
-            'NodeID': label.get('node_id'),
-            'Name': label.get('name'),
-            'Description': label.get('description'),
-            'Color': label.get('Color'),
-            'Default': label.get('default')
-        }
-        for label in response
-    ]
+    ec_object = [format_label_outputs(label) for label in response]
     ec = {
         'GitHub.Label(val.ID === obj.ID)': ec_object
     }
@@ -940,7 +1141,8 @@ COMMANDS = {
     'GitHub-list-pr-files': list_pr_files_command,
     'GitHub-list-pr-reviews': list_pr_reviews_command,
     'GitHub-get-commit': get_commit_command,
-    'GitHub-add-label': add_label_command
+    'GitHub-add-label': add_label_command,
+    'GitHub-get-pull-request': get_pull_request_command
 }
 
 
