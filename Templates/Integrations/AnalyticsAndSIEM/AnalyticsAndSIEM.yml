@@ -1,4 +1,4 @@
-category: Authentication
+category: Analytics & SIEM
 commonfields:
   id: AnalyticsAndSIEM
   version: -1
@@ -13,11 +13,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Use system proxy
-  name: proxy
-  required: false
-  type: 8
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -182,29 +178,28 @@ script:
     execution: false
     name: analytics-and-siem-query
     outputs:
-      - contextPath: AnalyticsAndSIEM.Event.ID
-        description: ID of Event
-        type: String
-      - contextPath: AnalyticsAndSIEM.Event.Description
-        description: Description of event
-        type: String
-      - contextPath: AnalyticsAndSIEM.Event.Created
-        description: Time of event creation
-        type: Date
-      - contextPath: AnalyticsAndSIEM.Event.IsActive
-        description: Status of event
-        type: Boolean
-      - contextPath: AnalyticsAndSIEM.Event.Assignee.Name
-        description: Name of assigned user
-        type: String
-      - contextPath: AnalyticsAndSIEM.Event.Assignee.ID
-        description: ID of assigned user
-        type: String
+    - contextPath: AnalyticsAndSIEM.Event.ID
+      description: ID of Event
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Description
+      description: Description of event
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Created
+      description: Time of event creation
+      type: Date
+    - contextPath: AnalyticsAndSIEM.Event.IsActive
+      description: Status of event
+      type: Boolean
+    - contextPath: AnalyticsAndSIEM.Event.Assignee.Name
+      description: Name of assigned user
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Assignee.ID
+      description: ID of assigned user
+      type: String
+  dockerimage: demisto/python3:3.7.4.977
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   type: python
-  subtype: python3
-  dockerimage: demisto/python3:3.7.4.977

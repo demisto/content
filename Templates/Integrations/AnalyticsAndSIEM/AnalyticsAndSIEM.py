@@ -20,14 +20,13 @@ class Client(BaseClient):
     Wrapper class for BaseClient with added functionality for the integration.
     """
 
-    def test_module_request(self) -> bool:
+    def test_module_request(self) -> Dict:
         """Performs basic get request to see if the API is reachable and authentication works.
 
         Returns:
-            True if request succeeded
+            Response json
         """
-        self._http_request('GET', 'version')
-        return True
+        return self._http_request('GET', 'version')
 
     def list_events_request(self, limit: Union[int, str] = None, since_time: Optional[str] = None) -> Dict:
         """Gets all credentials from API.
@@ -152,13 +151,13 @@ def build_context(events: Union[Dict, List]) -> Union[Dict, List]:
 ''' COMMANDS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> Tuple[str, Dict, Dict]:
+    """Performs basic get request to see if the API is reachable and authentication works.
     """
-    Performs basic get request to get item samples
-    """
-    if client.test_module_request():
-        return 'ok'
-    raise DemistoException('Test module failed')
+    results = client.test_module_request()
+    if 'version' in results:
+        return 'ok', {}, {}
+    raise DemistoException('Test module failed, {}'.format(results))
 
 
 def fetch_incidents(client: Client):
@@ -313,9 +312,10 @@ def main():
     integration_command_name = 'analytics-and-siem'
     # No dividers
     integration_context_name = 'AnalyticsAndSIEM'
-    server: str = demisto.params().get('url', '')
-    verify_ssl: bool = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy')
+    params = demisto.params()
+    server = params.get('url', '')
+    verify_ssl = not params.get('insecure', False)
+    proxy = params.get('proxy')
     base_suffix = '/api/v2/'
     client: Client = Client(server,
                             integration_name=integration_name,
@@ -344,13 +344,11 @@ def main():
             return_outputs(human_readable, context, raw_response)
     # Log exceptions
     except Exception as e:
-        err_msg = f'Error in AuthenticationExample Integration [{e}]'
+        err_msg = f'Error in {client.integration_name} Integration [{e}]'
         return_error(err_msg, error=e)
 
 
-if __name__ == '__builtin__':
+if __name__ == 'builtins':
     main()
 
 # TODO: add pip file
-# Threahold
-#

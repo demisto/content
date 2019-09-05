@@ -1831,7 +1831,7 @@ def get_demisto_version():
         raise AttributeError('demistoVersion attribute not found.')
 
 
-def build_dbot_entry(indicator, indicator_type, score, vendor, description=None, build_malicious=True):
+def build_dbot_entry(indicator, indicator_type, vendor, score, description=None, build_malicious=True):
     """Build a dbot entry. if score is 3 adds malicious
 
     Args:
@@ -1847,13 +1847,13 @@ def build_dbot_entry(indicator, indicator_type, score, vendor, description=None,
         dbot entry
 
     Examples:
-        >>> build_dbot_entry('user@example.com', 'Email', 1, 'Vendor')
+        >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 1)
         {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 1}}
 
-        >>> build_dbot_entry('user@example.com', 'Email', 3, 'Vendor', build_malicious=False)
+        >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 3,  build_malicious=False)
         {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 3}}
 
-        >>> build_dbot_entry('user@example.com', 'Email', 3, 'Vendor', 'Malicious email')
+        >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 3, 'Malicious email')
         {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 3},\
  'Account.Email(val.Address && val.Address == obj.Address)': {'Account.Email': 'user@example.com', 'Malicious': \
 {'Vendor': 3, 'Description': 'Malicious email'}}}
@@ -1950,11 +1950,11 @@ class BaseClient:
         self._integration_name = str(integration_name)
         self._integration_name_command = str(integration_command_name)
         self._integration_name_context = str(integration_context_name)
+        self._base_url = '{}{}'.format(self._server, base_suffix)
         if proxy:
             self._proxies = handle_proxy()
         else:
             self._proxies = None
-        self._base_url = '{}{}'.format(self._server, base_suffix)
 
     @property
     def integration_name(self):

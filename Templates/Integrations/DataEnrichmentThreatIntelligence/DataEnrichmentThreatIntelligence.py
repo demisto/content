@@ -3,7 +3,7 @@ from CommonServerUserPython import *
 import demistomock as demisto
 
 ''' IMPORTS '''
-from typing import Dict, Tuple, Any, cast, AnyStr, List, Optional
+from typing import Dict, Tuple, AnyStr, List, Optional, Union
 import requests
 import urllib3
 
@@ -12,137 +12,66 @@ urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 # Setting global params, initiation in main() function
-INTEGRATION_NAME: str = 'Data Enrichment Threat Intelligence'
-# lowercase with `-` dividers
-INTEGRATION_NAME_COMMAND: str = 'data-enrichment-threat-intelligence'
-# No dividers
-INTEGRATION_NAME_CONTEXT: str = 'DataEnrichmentThreatIntelligence'
 FILE_HASHES: Tuple = ('md5', 'ssdeep', 'sha1', 'sha256')  # hashes as described in API
 ''' HELPER FUNCTIONS '''
 
 
-class Client:
-    def __init__(self, server: str, verify: bool, proxy: Optional[bool]):
-        self._server: str = server.rstrip(chars='/')
-        self._use_ssl: bool = verify
-        if proxy:
-            self._proxies: Optional[Dict] = handle_proxy()
-        else:
-            self._proxies = None
-        self._base_url: str = self._server + '/api/v2.0/'
+class Client(BaseClient):
+    """
 
-    def _http_request(self, method: str, url_suffix: str, full_url: str = None, headers: Dict = None,
-                      auth: Tuple = None, params: Dict = None, data: Dict = None, files: Dict = None,
-                      timeout: float = 10, resp_type: str = 'json') -> Any:
-        """A wrapper for requests lib to send our requests and handle requests
-        and responses better
+    Examples:
+        >>> client = Client('url', '/v1/', 'Name', 'name', 'Name', 30)
+        >>> client.build_dbot_entry('8.8.8.8', 'ip', 40)
+        {'DBotScore': {'Indicator': '8.8.8.8', 'Type': 'ip', 'Vendor': 'Name', 'Score': 3}, 'IP(val.Address &&\
+ val.Address == obj.Address)': {'Address': '8.8.8.8', 'Malicious': {'Vendor': 3, 'Description': None}}}
+
+    """
+
+    def __init__(self, server, base_suffix, integration_name, integration_command_name, integration_context_name,
+                 threshold: int, **kwargs):
+        # added threshold
+        self._threshold = threshold
+        super().__init__(server, base_suffix, integration_name,
+                         integration_command_name, integration_context_name, **kwargs)
+
+    """ HELPER FUNCTIONS """
+
+    def calculate_dbot_score(self, score: int, threshold: Optional[int] = None) -> int:
+        """Transforms `severity` from API to DBot Score and using threshold.
 
         Args:
-            method:
-                HTTP method, e.g. 'GET', 'POST' ... etc.
-            url_suffix:
-                API endpoint.
-            full_url:
-                Bypasses the use of BASE_URL + url_suffix. Useful if there is a need to
-                make a request to an address outside of the scope of the integration
-                API.
-            headers:
-                Headers to send in the request.
-            auth:
-                Auth tuple to enable Basic/Digest/Custom HTTP Auth.
-            params:
-                URL parameters.
-            data:
-                Data to be sent in a 'POST' request.
-            files:
-                File data to be sent in a 'POST' request.
-            timeout:
-                The amount of time in seconds a Request will wait for a client to
-                establish a connection to a remote machine.
-            resp_type:
-                Determines what to return from having made the HTTP request. The default
-                is 'json'. Other options are 'text', 'content' or 'response' if the user
-                would like the full response object returned.
+            score: Severity from API
+            threshold: Any value above this number is malicious. if None, will use self._threshold
 
         Returns:
-                Response JSON from having made the request.
+            Score representation in DBot
         """
-        try:
-            address = full_url if full_url else self._base_url + url_suffix
-            res = requests.request(
-                method,
-                address,
-                verify=self._use_ssl,
-                params=params,
-                data=data,
-                files=files,
-                headers=headers,
-                auth=auth,
-                timeout=timeout,
-                proxies=self._proxies
-            )
+        high_score = threshold if threshold else self._threshold
+        # Malicious
+        if score > high_score:
+            return 3
+        # Suspicious
+        if score > 30:
+            return 2
+        # Good
+        if score >= 0:
+            return 1
+        # Unknown
+        return 0
 
-            # Handle error responses gracefully
-            if res.status_code not in (200, 201):
-                err_msg = f'Error in {INTEGRATION_NAME} API call [{res.status_code}] - {res.reason}'
-                try:
-                    # Try to parse json error response
-                    res_json = res.json()
-                    message = res_json.get('message')
-                    return_error(message)
-                except json.decoder.JSONDecodeError:
-                    return_error(res.text)
-
-            resp_type = resp_type.casefold()
-            try:
-                if resp_type == 'json':
-                    return res.json()
-                elif resp_type == 'text':
-                    return res.text
-                elif resp_type == 'content':
-                    return res.content
-                else:
-                    return res
-            except json.decoder.JSONDecodeError:
-                return_error(f'Failed to parse json object from response: {res.content}')
-
-        except requests.exceptions.ConnectTimeout:
-            err_msg = 'Connection Timeout Error - potential reasons may be that the Server URL parameter' \
-                      ' is incorrect or that the Server is not accessible from your host.'
-            return_error(err_msg)
-        except requests.exceptions.SSLError as e:
-            err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' in' \
-                      ' the integration configuration.'
-            return_error(err_msg, error=e)
-        except requests.exceptions.ProxyError:
-            err_msg = 'Proxy Error - if \'Use system proxy\' in the integration configuration has been' \
-                      ' selected, try deselecting it.'
-            return_error(err_msg)
-        except requests.exceptions.ConnectionError as e:
-            # Get originating Exception in Exception chain
-            while '__context__' in dir(e) and e.__context__:
-                e = cast(Any, e.__context__)
-
-            error_class = str(e.__class__)
-            err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
-            err_msg = f'\nError Type: {err_type}\nError Number: [{e.errno}]\nMessage: {e.strerror}\n' \
-                f'Verify that the server URL parameter is correct and' \
-                f' that you have access to the server from your host.'
-            return_error(err_msg)
-
-    def test_module(self) -> bool:
-        """Performs basic get request to get item samples
+    def test_module_request(self) -> bool:
+        """Performs basic get request to see if the API is reachable and authentication works.
 
         Returns:
-            True if request succeeded
+            True if request succeeded, else raises exception
         """
         self._http_request('GET', 'version')
         return True
 
     def get_ip_request(self, ip: str) -> Dict:
-        suffix: str = 'ip'
+        suffix = 'ip'
         params = {'ip': ip}
-        return self._http_request('GET', suffix, params=params).get('results')
+        return self._http_request('GET', suffix, params=params)
 
     def get_url_request(self, url: str) -> Dict:
         """Gets an analysis from the API for given url.
@@ -153,9 +82,9 @@ class Client:
         Returns:
             Dict:
         """
-        suffix: str = 'analysis'
+        suffix = 'analysis'
         params = {'url': url}
-        return self._http_request('GET', suffix, params=params).get('results')
+        return self._http_request('GET', suffix, params=params)
 
     def search_file_request(self, file_hash: str) -> Dict:
         """Building request for file command
@@ -168,25 +97,7 @@ class Client:
         """
         suffix = 'analysis'
         params = {'hash': file_hash}
-        return self._http_request('GET', suffix, params=params).get('results')
-
-
-def calculate_dbot_score(score: AnyStr) -> int:
-    """Transforms `severity` from API to DBot Score.
-
-    Args:
-        score: Severity from API
-
-    Returns:
-        Score representation in DBot
-    """
-    if score == 'HIGH':
-        return 3
-    elif score in ('MED', 'LOW'):
-        return 2
-    elif score == 'GOOD':
-        return 1
-    return 0  # Unknown
+        return self._http_request('GET', suffix, params=params)
 
 
 ''' COMMANDS '''
@@ -195,85 +106,56 @@ def calculate_dbot_score(score: AnyStr) -> int:
 def search_ip(client: Client, args: Dict):
     """Gets results for the API.
     """
-    ip: str = demisto.args().get('ip', '')
+    ip = args.get('ip', '')
     raw_response: Dict = client.get_ip_request(ip)
-    if raw_response:
-        title: str = f'{INTEGRATION_NAME} - Analysis results for IP: {ip}'
-        context_entry: Dict = {
-            'ID': raw_response.get('id'),
-            'Severity': raw_response.get('severity'),
+    results = raw_response.get('results')
+    if results:
+        title = f'{client.integration_name} - Analysis results for IP: {ip}'
+        context_entry = {
+            'ID': results.get('id'),
+            'Severity': results.get('severity'),
             'IP': ip,
-            'Description': raw_response.get('description')
+            'Description': results.get('description')
         }
-        # Gets DBot score
-        score: int = calculate_dbot_score(raw_response.get('severity', ''))
         # Building a score for DBot
-        dbot_score: Dict = {
-            'Indicator': ip,
-            'Type': 'ip',
-            'Vendor': f'{INTEGRATION_NAME}',
-            'Score': score
+        dbot_entry = client.build_dbot_entry(ip, 'ip', results.get('severity'))
+        context = {
+            f'{client.integration_context_name}.Analysis(val.ID && val.ID === obj.ID)': context_entry
         }
+        context.update(dbot_entry)
 
-        context: Dict = {
-            outputPaths['dbotscore']: dbot_score,
-            f'{INTEGRATION_NAME_CONTEXT}.Analysis(val.ID && val.ID === obj.ID)': context_entry
-        }
-
-        if score == 3:  # If file is malicious, adds a malicious entry
-            context[outputPaths['ip']] = {
-                'Address': ip,
-                'Malicious': {
-                    'Vendor': f'{INTEGRATION_NAME}',
-                    'Description': raw_response.get('description')
-                }
-            }
         human_readable: str = tableToMarkdown(title, context_entry, removeNull=True)
-        return_outputs(human_readable, context, raw_response)
+        return human_readable, context, raw_response
     else:
-        return_warning(f'{INTEGRATION_NAME} - Found no results for IP: {ip}')
+        return f'{client.integration_name} - Found no results for IP: {ip}', {}, raw_response
 
 
-def search_url(client: Client):
+def search_url(client: Client, args: Dict):
     """Gets a job from the API. Used mostly for polling playbook
     """
-    url: str = demisto.args().get('url', '')
-    raw_response: Dict = client.get_url_request(url)
-    if raw_response:
-        title: str = f'{INTEGRATION_NAME} - Analysis results for URL: {url}'
-        context_entry: Dict = {
-            'ID': raw_response.get('id'),
-            'Severity': raw_response.get('severity'),
-            'IP': url,
-            'Description': raw_response.get('description')
+    url = args.get('url', '')
+    raw_response = client.get_url_request(url)
+    results = raw_response.get('results', {})
+    if results:
+        title: str = f'{client.integration_name} - Analysis results for URL: {url}'
+        context_entry = {
+            'ID': results.get('id'),
+            'Severity': results.get('severity'),
+            'URL': url,
+            'Description': results.get('description')
         }
-        # Gets DBot score
-        score: int = calculate_dbot_score(raw_response.get('severity', ''))
         # Building a score for DBot
-        dbot_score: Dict = {
-            'Indicator': url,
-            'Type': 'url',
-            'Vendor': f'{INTEGRATION_NAME}',
-            'Score': score
+        score = client.calculate_dbot_score(results.get('severity'))
+        dbot_entry = build_dbot_entry(url, 'url', score,
+                                      client.integration_name, results.get('description'))
+        context = {
+            f'{client.integration_context_name}.Analysis(val.ID && val.ID === obj.ID)': context_entry
         }
-
-        context: Dict = {
-            outputPaths['dbotscore']: dbot_score,
-            f'{INTEGRATION_NAME_CONTEXT}.Analysis(val.ID && val.ID === obj.ID)': context_entry
-        }
-
-        if score == 3:  # If file is malicious, adds a malicious entry
-            context[outputPaths['url']] = {
-                'Data': url,
-                'Malicious': {
-                    'Vendor': f'{INTEGRATION_NAME}',
-                    'Description': raw_response.get('description')
-                }
-            }
+        context.update(dbot_entry)
         human_readable: str = tableToMarkdown(title, context_entry, removeNull=True)
-        return_outputs(human_readable, context, raw_response)
+        return_outputs(human_readable, context, results)
     else:
-        return_warning(f'{INTEGRATION_NAME} - Found no results for URL: {url}')
+        return_warning(f'{client.integration_name} - Found no results for URL: {url}')
 
 
 def search_file(client: Client):
@@ -282,7 +164,7 @@ def search_file(client: Client):
     file_hash: str = demisto.args().get('file')
     raw_response: Dict = client.search_file_request(file_hash)
     if raw_response:
-        title: str = f'{INTEGRATION_NAME} - Analysis results for file hash: {file_hash}'
+        title: str = f'{client.integration_name} - Analysis results for file hash: {file_hash}'
         context_entry: Dict = {
             'ID': raw_response.get('id'),
             'Severity': raw_response.get('severity'),
@@ -293,66 +175,82 @@ def search_file(client: Client):
             'Description': raw_response.get('description')
         }
         # Gets DBot score
-        score: int = calculate_dbot_score(raw_response.get('severity', ''))
+        score = client.calculate_dbot_score(raw_response.get('severity', ''))
         # Building a score for DBot
-        dbot_score: List[Dict] = [
+        dbot_score = [
             {
                 'Indicator': raw_response.get(hash_name),
                 'Type': 'hash',
-                'Vendor': f'{INTEGRATION_NAME}',
+                'Vendor': f'{client.integration_name}',
                 'Score': score
             } for hash_name in FILE_HASHES if raw_response.get(hash_name)
         ]
         context: Dict = {
             outputPaths['dbotscore']: dbot_score,
-            f'{INTEGRATION_NAME_CONTEXT}.Analysis(val.ID && val.ID === obj.ID)': context_entry
+            f'{client.integration_context_name}.Analysis(val.ID && val.ID === obj.ID)': context_entry
         }
 
         if score == 3:  # If file is malicious, adds a malicious entry
             context[outputPaths['file']] = [{
                 hash_name.upper(): raw_response.get(hash_name),
                 'Malicious': {
-                    'Vendor': f'{INTEGRATION_NAME}',
+                    'Vendor': f'{client.integration_name}',
                     'Description': raw_response.get('description')
                 }
             } for hash_name in FILE_HASHES if raw_response.get(hash_name)]
         human_readable: str = tableToMarkdown(title, context_entry, removeNull=True)
         return_outputs(human_readable, context, raw_response)
     else:
-        return_warning(f'{INTEGRATION_NAME} - Could not find results for file hash: [{file_hash}')
+        return_warning(f'{client.integration_name} - Could not find results for file hash: [{file_hash}')
 
 
 def test_module(client: Client):
-    if client.test_module():
-        demisto.results('ok')
+    if client.test_module_request():
+        return 'ok'
+    raise DemistoException('Test module failed')
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
 def main():
-    server: str = demisto.getParam('url')
-    use_ssl: bool = not demisto.params().get('insecure', False)
+    integration_name = 'Data Enrichment Threat Intelligence'
+    # lowercase with `-` dividers
+    integration_command_name = 'data-enrichment-threat-intelligence'
+    # No dividers
+    integration_context_name = 'DataEnrichmentThreatIntelligence'
+    suffix = '/api/v2'
+    server = demisto.params().get('url')
+    verify = not demisto.params().get('insecure', False)
     proxy: Optional[bool] = demisto.params().get('proxy')
-    client: Client = Client(server, verify=use_ssl, proxy=proxy)
+    client = Client(
+        server,
+        suffix,
+        integration_name,
+        integration_command_name,
+        integration_context_name,
+        verify=verify,
+        proxy=proxy)
+
     command: str = demisto.command()
     demisto.info(f'Command being called is {command}')
     commands: Dict = {
         'test-module': test_module,
-        f'{INTEGRATION_NAME_COMMAND}-search-ip': search_ip,
+        f'{client.integration_command_name}-search-ip': search_ip,
         'ip': search_ip,
-        f'{INTEGRATION_NAME_COMMAND}-search-url': search_url,
+        f'{client.integration_command_name}-search-url': search_url,
         'url': search_url,
-        f'{INTEGRATION_NAME_COMMAND}-search-file': search_file,
+        f'{client.integration_command_name}-search-file': search_file,
         'file': search_file,
     }
     try:
         if command in commands:
-            output = commands[command](client)
+            human_readable, context, raw_response = commands[command](client, demisto.args())
+            return_outputs(human_readable, context, raw_response)
 
     # Log exceptions
     except Exception as e:
-        err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
+        err_msg = f'Error in {integration_name} Integration [{e}]'
         return_error(err_msg, error=e)
 
 
