@@ -30,17 +30,13 @@ class DescriptionValidator(object):
         if not re.match(BETA_INTEGRATION_REGEX, self.file_path, re.IGNORECASE):
             package_path = os.path.dirname(self.file_path)
             try:
-                md_file_path = glob.glob(os.path.join(os.path.dirname(self.file_path), '*.md'))[0]
+                md_file_path = glob.glob(os.path.join(os.path.dirname(self.file_path), '*_description.md'))[0]
             except IndexError:
                 self._is_valid = False
                 print_error("No detailed description file was found in the package {}. Please add one,"
-                            " and make sure it includes the beta disclaimer note.".format(package_path))
-                return False
-
-            if md_file_path and len(description_in_yml) > 0:
-                self._is_valid = False
-                print_error("A description was found both in the package and in the yml, "
-                            "please update the package {}.".format(package_path))
+                            " and make sure it includes the beta disclaimer note."
+                            "It should contain the string in constant"
+                            "\"BETA_INTEGRATION_DISCLAIMER\"".format(package_path))
                 return False
 
             with open(md_file_path) as description_file:
@@ -54,7 +50,7 @@ class DescriptionValidator(object):
                 return False
             else:
                 return True
-        elif not description_in_yml or BETA_INTEGRATION_DISCLAIMER not in description_in_yml:
+        elif BETA_INTEGRATION_DISCLAIMER not in description_in_yml:
             self._is_valid = False
             print_error("Detailed description field in beta integration {} "
                         "dose not contain the beta disclaimer note."
@@ -73,7 +69,7 @@ class DescriptionValidator(object):
                 and not re.match(BETA_INTEGRATION_REGEX, self.file_path, re.IGNORECASE):
             package_path = os.path.dirname(self.file_path)
             try:
-                md_file_path = glob.glob(os.path.join(os.path.dirname(self.file_path), '*.md'))[0]
+                md_file_path = glob.glob(os.path.join(os.path.dirname(self.file_path), '*_description.md'))[0]
             except IndexError:
                 print_warning("No detailed description file was found in the package {}."
                               " Consider adding one.".format(package_path))
