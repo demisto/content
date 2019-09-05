@@ -271,7 +271,7 @@ def make_create_object_request(obj_type, params):
 
 
 def make_edit_request_for_an_object(obj_id, obj_type, params):
-    # Remove items with empty values:
+    # Remove items with empty values.
     params = {k: v for k, v in params.items() if v is not None}
 
     url_suffix = '/{0}/{1}?with=attributes,sources'.format(OBJ_DIRECTORY[obj_type], obj_id)
