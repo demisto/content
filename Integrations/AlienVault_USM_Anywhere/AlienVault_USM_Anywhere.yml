@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: AlienVault USM Anywhere_copy
+  id: AlienVault USM Anywhere
   version: -1
 configuration:
 - defaultvalue: https://www.example.com
@@ -44,8 +44,8 @@ configuration:
   required: false
   type: 0
 description: Search and monitor alarms and events from AlienVault USM Anywhere.
-display: AlienVault USM Anywhere_copy
-name: AlienVault USM Anywhere_copy
+display: AlienVault USM Anywhere
+name: AlienVault USM Anywhere
 script:
   commands:
   - arguments:
