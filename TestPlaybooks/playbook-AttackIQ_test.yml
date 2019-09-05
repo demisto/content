@@ -338,7 +338,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AttackIQ.TestResult.Project.Id
+              simple: AttackIQ.TestResult.Assessment.Id
             iscontext: true
           right:
             value:
@@ -346,7 +346,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AttackIQ.TestResult.Project.Name
+              simple: AttackIQ.TestResult.Assessment.Name
             iscontext: true
           right:
             value:
@@ -492,7 +492,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AttackIQ.Assessment.ProjectState
+              simple: AttackIQ.Assessment.AssessmentState
             iscontext: true
           right:
             value:
@@ -572,7 +572,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AttackIQ.Assessment.ProjectTemplate.Id
+              simple: AttackIQ.Assessment.AssessmentTemplate.Id
             iscontext: true
           right:
             value:
@@ -580,7 +580,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AttackIQ.Assessment.ProjectTemplate.TemplateName
+              simple: AttackIQ.Assessment.AssessmentTemplate.TemplateName
             iscontext: true
           right:
             value:
@@ -588,7 +588,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AttackIQ.Assessment.ProjectTemplate.TemplateDescription
+              simple: AttackIQ.Assessment.AssessmentTemplate.TemplateDescription
             iscontext: true
           right:
             value:
@@ -596,7 +596,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AttackIQ.Assessment.ProjectTemplate.Company
+              simple: AttackIQ.Assessment.AssessmentTemplate.Company
             iscontext: true
           right:
             value:
@@ -604,7 +604,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AttackIQ.Assessment.ProjectTemplate.Created
+              simple: AttackIQ.Assessment.AssessmentTemplate.Created
             iscontext: true
           right:
             value:
@@ -612,7 +612,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AttackIQ.Assessment.ProjectTemplate.Modified
+              simple: AttackIQ.Assessment.AssessmentTemplate.Modified
             iscontext: true
           right:
             value:
@@ -620,7 +620,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AttackIQ.Assessment.ProjectTemplate.ProjectTemplateType.Id
+              simple: AttackIQ.Assessment.AssessmentTemplate.AssessmentTemplateType.Id
             iscontext: true
           right:
             value:
@@ -628,7 +628,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AttackIQ.Assessment.ProjectTemplate.ProjectTemplateType.Name
+              simple: AttackIQ.Assessment.AssessmentTemplate.AssessmentTemplateType.Name
             iscontext: true
           right:
             value:
@@ -636,7 +636,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AttackIQ.Assessment.ProjectTemplate.ProjectTemplateType.Description
+              simple: AttackIQ.Assessment.AssessmentTemplate.AssessmentTemplateType.Description
             iscontext: true
           right:
             value:
@@ -717,7 +717,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AttackIQ.Test.Project
+              simple: AttackIQ.Test.Assessment
             iscontext: true
           right:
             value:

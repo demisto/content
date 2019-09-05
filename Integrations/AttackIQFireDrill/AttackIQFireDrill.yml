@@ -46,37 +46,45 @@ script:
     outputs:
     - contextPath: AttackIQ.Assessment.Id
       type: String
+      description: Assessment ID.
     - contextPath: AttackIQ.Assessment.Name
       type: String
+      description: Assessment Name.
     - contextPath: AttackIQ.Assessment.Description
       type: String
+      description: Assessment description.
     - contextPath: AttackIQ.Assessment.StartDate
       type: Date
+      description: ''
     - contextPath: AttackIQ.Assessment.EndDate
       type: Date
-    - contextPath: AttackIQ.Assessment.ProjectState
+      description: ''
+    - contextPath: AttackIQ.Assessment.AssessmentState
       type: String
+      description: ''
     - contextPath: AttackIQ.Assessment.DefaultSchedule
       type: String
-    - contextPath: AttackIQ.Assessment.ProjectTemplate.Id
+      description: Assessment's default schedule.
+    - contextPath: AttackIQ.Assessment.AssessmentTemplate.Id
       type: String
-    - contextPath: AttackIQ.Assessment.ProjectTemplate.TemplateName
+      description: Assessment template ID.
+    - contextPath: AttackIQ.Assessment.AssessmentTemplate.TemplateName
       type: String
-    - contextPath: AttackIQ.Assessment.ProjectTemplate.TemplateDescription
+    - contextPath: AttackIQ.Assessment.AssessmentTemplate.TemplateDescription
       type: String
-    - contextPath: AttackIQ.Assessment.ProjectTemplate.ProjectTemplateType.Id
+    - contextPath: AttackIQ.Assessment.AssessmentTemplate.AssessmentTemplateType.Id
       type: String
-    - contextPath: AttackIQ.Assessment.ProjectTemplate.ProjectTemplateType.Name
+    - contextPath: AttackIQ.Assessment.AssessmentTemplate.AssessmentTemplateType.Name
       type: String
-    - contextPath: AttackIQ.Assessment.ProjectTemplate.ProjectTemplateType.Description
+    - contextPath: AttackIQ.Assessment.AssessmentTemplate.AssessmentTemplateType.Description
       type: String
-    - contextPath: AttackIQ.Assessment.ProjectTemplate.DefaultSchedule
+    - contextPath: AttackIQ.Assessment.AssessmentTemplate.DefaultSchedule
       type: Unknown
-    - contextPath: AttackIQ.Assessment.ProjectTemplate.Company
+    - contextPath: AttackIQ.Assessment.AssessmentTemplate.Company
       type: String
-    - contextPath: AttackIQ.Assessment.ProjectTemplate.Created
+    - contextPath: AttackIQ.Assessment.AssessmentTemplate.Created
       type: String
-    - contextPath: AttackIQ.Assessment.ProjectTemplate.Modified
+    - contextPath: AttackIQ.Assessment.AssessmentTemplate.Modified
       type: String
     - contextPath: AttackIQ.Assessment.Creator
       type: String
@@ -117,9 +125,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Run only on-demand tests in the project, or all tests\ntrue - Execute
-        only the on-demand tests in the project\nfalse - Execute all tests in the
-        project (including scheduled tests)
+      description: Run only on-demand tests in the assessment, or all tests\ntrue - Execute
+        only the on-demand tests in the assessment\nfalse - Execute all tests in the
+        assessment (including scheduled tests)
       isArray: false
       name: on_demand_only
       required: false
@@ -189,7 +197,7 @@ script:
       type: String
     - contextPath: AttackIQ.Test.Description
       type: String
-    - contextPath: AttackIQ.Test.Project
+    - contextPath: AttackIQ.Test.Assessment
       type: String
     - contextPath: AttackIQ.Test.Scenarios.Id
       type: String
@@ -263,9 +271,9 @@ script:
       type: String
     - contextPath: AttackIQ.TestResult.Modified
       type: String
-    - contextPath: AttackIQ.TestResult.Project.Id
+    - contextPath: AttackIQ.TestResult.Assessment.Id
       type: String
-    - contextPath: AttackIQ.TestResult.Project.Name
+    - contextPath: AttackIQ.TestResult.Assessment.Name
       type: String
     - contextPath: AttackIQ.TestResult.MasterJob.Id
       type: String
