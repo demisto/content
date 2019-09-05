@@ -24,7 +24,7 @@ configuration:
   name: fetch_index
   required: false
   type: 0
-- display: Query to fetch incidents by (Lucene style)
+- display: 'Query to fetch incidents by (Lucene style, see: https://www.elastic.co/guide/en/elasticsearch/reference/7.3/query-dsl-query-string-query.html#query-string-syntax)'
   name: fetch_query
   required: false
   type: 0
