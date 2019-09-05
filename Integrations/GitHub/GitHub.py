@@ -473,13 +473,13 @@ def create_branch(name: str, sha: str) -> dict:
     return response
 
 
-def get_team_membership(team_id: int, user_name: str) -> dict:
+def get_team_membership(team_id: Union[int, str], user_name: str) -> dict:
     suffix = f'/teams/{team_id}/memberships/{user_name}'
     response = http_request('GET', url_suffix=suffix)
     return response
 
 
-def request_review(pull_number: int, reviewers: list) -> dict:
+def request_review(pull_number: Union[int, str], reviewers: list) -> dict:
     """Make an API call to GitHub to request reviews from a list of users for a given PR
 
     Args:
@@ -498,25 +498,25 @@ def request_review(pull_number: int, reviewers: list) -> dict:
     return response
 
 
-def create_comment(issue_number, msg: str) -> dict:
+def create_comment(issue_number: Union[int, str], msg: str) -> dict:
     suffix = ISSUE_SUFFIX + f'/{issue_number}/comments'
     response = http_request('POST', url_suffix=suffix, data={'body': msg})
     return response
 
 
-def list_issue_comments(issue_number: int) -> list:
+def list_issue_comments(issue_number: Union[int, str]) -> list:
     suffix = ISSUE_SUFFIX + f'/{issue_number}/comments'
     response = http_request('GET', url_suffix=suffix)
     return response
 
 
-def list_pr_files(pull_number: int) -> list:
+def list_pr_files(pull_number: Union[int, str]) -> list:
     suffix = PULLS_SUFFIX + f'/{pull_number}/files'
     response = http_request('GET', url_suffix=suffix)
     return response
 
 
-def list_pr_reviews(pull_number: int) -> list:
+def list_pr_reviews(pull_number: Union[int, str]) -> list:
     suffix = PULLS_SUFFIX + f'/{pull_number}/reviews'
     response = http_request('GET', url_suffix=suffix)
     return response
@@ -528,13 +528,13 @@ def get_commit(commit_sha: str) -> dict:
     return response
 
 
-def add_label(issue_number, labels: list):
+def add_label(issue_number: Union[int, str], labels: list):
     suffix = ISSUE_SUFFIX + f'/{issue_number}'
     response = http_request('POST', url_suffix=suffix, data={'labels': labels})
     return response
 
 
-def get_pull_request(pull_number):
+def get_pull_request(pull_number: Union[int, str]):
     suffix = PULLS_SUFFIX + f'/{pull_number}'
     response = http_request('GET', url_suffix=suffix)
     return response
@@ -615,19 +615,9 @@ def get_download_count():
                    response)
 
 
-def get_relevant_prs(time_or_period: Union[str, datetime], label: str, query: str) -> list:
+def get_relevant_prs(the_time: datetime, label: str, query: str) -> list:
     reg = re.compile("\.\d{6}$")
-    try:
-        now = datetime.now()
-        # try to parse 'time_or_period' into a starting datetime object
-        time_range_start, _ = parse_date_range(time_or_period)
-        start_delta = now - time_range_start
-        start_time = now - start_delta
-        time_or_period = start_time
-    except Exception:
-        # if parse_date_range threw an exception it means that 'time_or_period' was already in the right format
-        pass
-    timestamp, _ = reg.subn('', time_or_period.isoformat())
+    timestamp, _ = reg.subn('', the_time.isoformat())
     query = query.replace('{USER}', USER).replace('{REPOSITORY}', REPOSITORY).replace('{timestamp}', timestamp)
 
     # if label was passed then use it in the query otherwise remove that part of the query
@@ -645,9 +635,10 @@ def get_relevant_prs(time_or_period: Union[str, datetime], label: str, query: st
 
 def get_stale_prs(args={}):
     stale_time = args.get('stale_time')
+    time_range_start, _ = parse_date_range(stale_time)
     label = args.get('label')
     query = 'repo:{USER}/{REPOSITORY} is:open updated:<{timestamp} is:pr label:{label}'
-    return get_relevant_prs(stale_time, label, query)
+    return get_relevant_prs(time_range_start, label, query)
 
 
 ''' COMMANDS '''
