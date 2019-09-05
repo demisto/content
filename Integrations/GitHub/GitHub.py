@@ -457,7 +457,7 @@ def format_pr_outputs(pull_request: dict = {}) -> dict:
     if merged_by_data:
         ec_object['MergedBy'] = ec_merged_by
     if milestone_data:
-        ec_object['Milestone']: ec_milestone
+        ec_object['Milestone'] = ec_milestone
     return ec_object
 
 
