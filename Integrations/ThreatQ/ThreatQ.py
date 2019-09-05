@@ -179,7 +179,7 @@ def get_errors_string_from_bad_request(bad_request_results, status_code):
     if errors_dict:
         for error_num, (key, lst) in enumerate(errors_dict.items(), 1):
             curr_error_string = '\n'.join(lst) + '\n\n'
-            errors_string += '{0}. In \'{1}\':\n{2}'.format(error_num, key, curr_error_string)
+            errors_string += 'Error #{0}. In \'{1}\':\n{2}'.format(error_num, key, curr_error_string)
         return errors_string
 
     # Second form
