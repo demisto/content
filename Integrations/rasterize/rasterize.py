@@ -39,7 +39,7 @@ def rasterize_email_request(html, friendly_name):
 
     except Exception as e:
         RETURN_CODE = -1
-        ERROR_MESSAGE = str(e)
+        ERROR_MESSAGE = str(e) + '\nYou can choose to receive this errors as warnings in the instance settings'
 
 
 def rasterize():
@@ -64,7 +64,8 @@ def rasterize():
         demisto.debug(subprocess.check_output(command, stderr=subprocess.STDOUT))
     except subprocess.CalledProcessError:
         RETURN_CODE = -1
-        ERROR_MESSAGE = "Can't access the URL. It might be malicious, or unreachable for one of several reasons."
+        ERROR_MESSAGE = "Can't access the URL. It might be malicious, or unreachable for one of several reasons." \
+                        "You can choose to receive this errors as warnings in the instance settings"
     if RETURN_CODE == 0:
         file = file_result_existing_file(friendly_name)
         file['Type'] = entryTypes['image']
@@ -98,21 +99,27 @@ def rasterize_image():
         demisto.debug(subprocess.check_output(command, stderr=subprocess.STDOUT))
     except Exception as e:
         RETURN_CODE = -1
-        ERROR_MESSAGE = str(e)
+        ERROR_MESSAGE = str(e) + "\nYou can choose to receive this errors as warnings in the instance settings"
 
     if RETURN_CODE == 0:
-        file = file_result_existing_file(friendly_name)
-        file['Type'] = entryTypes['image']
-        demisto.results(file)
-
-    else:
-        demisto.results(
-            {
+        try:
+            file = file_result_existing_file(friendly_name)
+            file['Type'] = entryTypes['image']
+            demisto.results(file)
+        except Exception as e:
+            demisto.debug(str(e))
+            demisto.results({
                 'ContentsFormat': 'text',
                 'Type': ENTRY_TYPE,
-                'Contents': 'PhantomJS returned - ' + ERROR_MESSAGE
-            }
-        )
+                'Contents': str(e)
+            })
+
+    else:
+        demisto.results({
+            'ContentsFormat': 'text',
+            'Type': ENTRY_TYPE,
+            'Contents': 'PhantomJS returned - ' + ERROR_MESSAGE
+        })
 
 
 def rasterize_email_command():
@@ -124,17 +131,24 @@ def rasterize_email_command():
         friendly_name = 'email.pdf'
     rasterize_email_request(html, friendly_name)
     if RETURN_CODE == 0:
-        file = file_result_existing_file(friendly_name)
-        file['Type'] = entryTypes['image']
-        demisto.results(file)
-    else:
-        demisto.results(
-            {
+        try:
+            file = file_result_existing_file(friendly_name)
+            file['Type'] = entryTypes['image']
+            demisto.results(file)
+        except Exception as e:
+            demisto.debug(str(e))
+            demisto.results({
                 'ContentsFormat': 'text',
                 'Type': ENTRY_TYPE,
-                'Contents': 'PhantomJS returned - ' + ERROR_MESSAGE
-            }
-        )
+                'Contents': str(e)
+            })
+
+    else:
+        demisto.results({
+            'ContentsFormat': 'text',
+            'Type': ENTRY_TYPE,
+            'Contents': 'PhantomJS returned - ' + ERROR_MESSAGE
+        })
 
 
 try:

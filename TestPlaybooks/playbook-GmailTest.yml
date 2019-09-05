@@ -1,5 +1,5 @@
 id: GmailTest
-version: 10
+version: -1
 name: GmailTest
 starttaskid: "0"
 tasks:
@@ -20,12 +20,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
+          "x": 1350,
           "y": 50
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
     taskid: f49d0f56-30a0-41d8-8ab5-3aa4657d3b00
@@ -50,12 +51,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
+          "x": 1350,
           "y": 195
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
     taskid: 4210b914-41bc-4a65-8aa1-d3e70a011daf
@@ -87,12 +89,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1145,
+          "x": 1565,
           "y": 515
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
     taskid: 96333255-7749-416e-80e0-4b2375f7633b
@@ -107,7 +110,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "5"
     scriptarguments:
       custom-field-mask: {}
       projection: {}
@@ -139,50 +142,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1145,
+          "x": 1565,
           "y": 690
         }
       }
     note: false
     timertriggers: []
-  "4":
-    id: "4"
-    taskid: 2aaab965-3fa9-46fe-8805-b575034374d8
-    type: regular
-    task:
-      id: 2aaab965-3fa9-46fe-8805-b575034374d8
-      version: -1
-      name: Create UUID
-      scriptName: GetTime
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      contextKey: {}
-      date: {}
-      dateFormat: {}
-      hoursAgo: {}
-      minutesAgo: {}
-      monthsAgo: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1145,
-          "y": 865
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: 27c6d503-9332-40cf-82e0-c96e1a303424
+    taskid: 83194f90-6e2e-4b12-8375-adddfdfeaa20
     type: regular
     task:
-      id: 27c6d503-9332-40cf-82e0-c96e1a303424
+      id: 83194f90-6e2e-4b12-8375-adddfdfeaa20
       version: -1
       name: Create new user
       script: '|||gmail-create-user'
@@ -194,7 +166,7 @@ tasks:
       - "21"
     scriptarguments:
       email:
-        simple: JohnS${TimeNowUnix}@demistodev.com
+        simple: JohnS@demistodev.com
       family-name:
         simple: Smith
       first-name:
@@ -205,18 +177,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1145,
-          "y": 1040
+          "x": 1565,
+          "y": 865
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: 1205c211-8cd6-40e8-8466-ca54e33c296b
+    taskid: fd09baa6-4c41-49c3-864e-4eba4a7e80a8
     type: regular
     task:
-      id: 1205c211-8cd6-40e8-8466-ca54e33c296b
+      id: fd09baa6-4c41-49c3-864e-4eba4a7e80a8
       version: -1
       name: Delete User
       script: '|||gmail-delete-user'
@@ -226,7 +199,7 @@ tasks:
     nexttasks:
       '#none#':
       - "13"
-      - "25"
+      - "26"
     scriptarguments:
       user-id:
         complex:
@@ -255,12 +228,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1145,
-          "y": 1565
+          "x": 1565,
+          "y": 1390
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
     taskid: 8dd448e8-058c-49ab-83ee-237d71528866
@@ -281,12 +255,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 1915
+          "x": 705,
+          "y": 1755
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
     taskid: 31ccff7a-787c-4023-8d3f-0692b9bc480f
@@ -305,12 +280,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1145,
+          "x": 1565,
           "y": 370
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
     taskid: 3416075e-2ba0-446a-84c1-1995fcf8637e
@@ -351,12 +327,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 172.5,
-          "y": 2060
+          "x": 60,
+          "y": 1915
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
     taskid: 2a8705e7-4cb0-4bd9-8aca-db63df86fe32
@@ -369,6 +346,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
     scriptarguments:
       message-id:
         complex:
@@ -393,11 +373,12 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2235
+          "y": 2090
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
     taskid: 2e1f9ac8-69c4-43d8-86e4-5e311daf6b4f
@@ -420,12 +401,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
-          "y": 1740
+          "x": 1340,
+          "y": 1565
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
     taskid: a5559277-339d-4769-8ce4-1b2e8e366289
@@ -438,6 +420,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
     scriptarguments:
       format: {}
       message-id:
@@ -466,11 +451,12 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2235
+          "y": 2090
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
     taskid: 6618d082-9c1f-4f86-817a-ae3a969ad0cf
@@ -509,24 +495,28 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
-          "y": 2060
+          "x": 920,
+          "y": 1915
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
-    taskid: 3d0ea39d-f646-4f6c-8c06-2bd99baea1d4
+    taskid: a1e919f4-2c4a-4e45-8958-a93d0e0e2385
     type: regular
     task:
-      id: 3d0ea39d-f646-4f6c-8c06-2bd99baea1d4
+      id: a1e919f4-2c4a-4e45-8958-a93d0e0e2385
       version: -1
       name: Get Thread
       script: '|||gmail-get-thread'
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
     scriptarguments:
       format: {}
       thread-id:
@@ -540,7 +530,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: test@demistodev.com
+                  simple: admin@demistodev.com
           transformers:
           - operator: getField
             args:
@@ -549,17 +539,18 @@ tasks:
                   simple: ThreadId
           - operator: uniq
       user-id:
-        simple: test@demistodev.com
+        simple: admin@demistodev.com
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1032.5,
-          "y": 2235
+          "x": 920,
+          "y": 2090
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "18":
     id: "18"
     taskid: 843d13ac-d972-4f3d-8e1a-f97a40b0d69a
@@ -598,12 +589,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1462.5,
-          "y": 2060
+          "x": 1350,
+          "y": 1915
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "19":
     id: "19"
     taskid: 19f2242f-95c8-4641-83aa-66be0df22fa8
@@ -648,12 +640,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1462.5,
-          "y": 2235
+          "x": 1350,
+          "y": 2090
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "20":
     id: "20"
     taskid: d8741f21-e4d6-491e-8c22-f47723c7b4ce
@@ -666,6 +659,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
     scriptarguments:
       add-labels:
         simple: INBOX
@@ -695,12 +691,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1462.5,
-          "y": 2410
+          "x": 1350,
+          "y": 2265
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "21":
     id: "21"
     taskid: a28462e9-7302-4ae6-84ae-617f78026743
@@ -746,12 +743,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1145,
-          "y": 1215
+          "x": 1565,
+          "y": 1040
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "22":
     id: "22"
     taskid: 22d2579e-3aca-40be-8915-a650cb336568
@@ -770,18 +768,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1452.5,
-          "y": 1915
+          "x": 1340,
+          "y": 1755
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "23":
     id: "23"
-    taskid: d5ee587e-21fc-4261-8c8a-2b0aed838709
+    taskid: 99cd51ac-ea64-47b5-81cf-864fcd48e111
     type: regular
     task:
-      id: d5ee587e-21fc-4261-8c8a-2b0aed838709
+      id: 99cd51ac-ea64-47b5-81cf-864fcd48e111
       version: -1
       name: Remove the block
       script: '|||gmail-remove-filter'
@@ -812,33 +811,38 @@ tasks:
                   simple: ID
       mailbox:
         complex:
-          root: GmailFilter
-          accessor: Mailbox
+          root: Gmail
+          accessor: Filter.Mailbox
       user-id:
         simple: me
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1145,
-          "y": 1390
+          "x": 1565,
+          "y": 1215
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "25":
     id: "25"
-    taskid: 11fc0de3-564a-442d-83a2-1c1a9b7acbf4
+    taskid: 4e544806-9378-40c8-8bdf-52f8995383cf
     type: regular
     task:
-      id: 11fc0de3-564a-442d-83a2-1c1a9b7acbf4
+      id: 4e544806-9378-40c8-8bdf-52f8995383cf
       version: -1
       name: List mailbox filters
       script: '|||gmail-list-filters'
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
     scriptarguments:
+      address: {}
       limit:
         simple: "5"
       user-id:
@@ -847,19 +851,138 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1022.5,
+          "x": 1780,
           "y": 1740
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 6cfce99d-4574-4cdc-8ff8-b6923edbe948
+    type: regular
+    task:
+      id: 6cfce99d-4574-4cdc-8ff8-b6923edbe948
+      version: -1
+      name: Delete filters from context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: GmailFilter
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: c916ac39-ef7c-4d0f-897f-8bef1f2fcb25
+    type: condition
+    task:
+      id: c916ac39-ef7c-4d0f-897f-8bef1f2fcb25
+      version: -1
+      name: Verify Filters
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: GmailFilter
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 9903fb59-f78a-4492-8256-230de4c4aabe
+    type: regular
+    task:
+      id: 9903fb59-f78a-4492-8256-230de4c4aabe
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: No filters were found in test@demistodev.com mailbox
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 2b2138fb-509e-4920-8c99-e6527a1bd5be
+    type: title
+    task:
+      id: 2b2138fb-509e-4920-8c99-e6527a1bd5be
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2455,
-        "width": 1792.5,
+        "height": 2485,
+        "width": 2110,
         "x": 50,
         "y": 50
       }

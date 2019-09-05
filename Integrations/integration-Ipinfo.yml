@@ -104,4 +104,4 @@ script:
     description: Retrieve value for a specific field from the IP address information
   runonce: false
 tests:
-  - No test
+  - IPInfoTest

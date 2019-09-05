@@ -168,7 +168,8 @@ A       Integrations/Active_Directory_Query/cert.pem
 M       Integrations/Active_Directory_Query/connection_test.py
 A       Integrations/Active_Directory_Query/key.pem
 """
-        files_list, tests_list, all_tests, is_conf_json, sample_tests = get_modified_files(active_dir_mod_git)
+        files_list, tests_list, all_tests, is_conf_json, sample_tests, is_reputations_json, is_indicator_json = \
+            get_modified_files(active_dir_mod_git)
         self.assertEquals(len(sample_tests), 0)
         self.assertIn('Integrations/Active_Directory_Query/Active_Directory_Query.yml', files_list)
 

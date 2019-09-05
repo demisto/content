@@ -1,0 +1,1 @@
+New integration - SentinelOne V2 - Beta version.

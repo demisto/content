@@ -5,33 +5,35 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ef38f52b-bf71-4b99-80ee-c8dc611ccb46
+    taskid: 3c26694b-ebd9-47c8-835f-d3b59351639a
     type: start
     task:
-      id: ef38f52b-bf71-4b99-80ee-c8dc611ccb46
+      id: 3c26694b-ebd9-47c8-835f-d3b59351639a
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-        - "3"
+      - "3"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: ea094daa-7c49-4ea0-8be0-9650ed8f5997
+    taskid: 8862e8ff-d14a-4516-81f4-b27387553405
     type: regular
     task:
-      id: ea094daa-7c49-4ea0-8be0-9650ed8f5997
+      id: 8862e8ff-d14a-4516-81f4-b27387553405
       version: -1
       name: Get email
       description: Check if an email has been compromised as part of past breaches
@@ -41,7 +43,7 @@ tasks:
       brand: Pwned
     nexttasks:
       '#none#':
-        - "6"
+      - "6"
     scriptarguments:
       email:
         simple: example@demisto.com
@@ -49,18 +51,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 860
+          "x": 50,
+          "y": 720
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: 264619f3-7d93-4bd4-8c4d-ef3b50fdc186
+    taskid: b7f63871-7d7f-4aa4-83f7-9150057c24c1
     type: regular
     task:
-      id: 264619f3-7d93-4bd4-8c4d-ef3b50fdc186
+      id: b7f63871-7d7f-4aa4-83f7-9150057c24c1
       version: -1
       name: Get domain
       script: Pwned|||domain
@@ -69,7 +72,7 @@ tasks:
       brand: Pwned
     nexttasks:
       '#none#':
-        - "4"
+      - "4"
     scriptarguments:
       domain:
         simple: adobe.com
@@ -79,18 +82,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 240
+          "x": 50,
+          "y": 195
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 1c446dee-3206-42ed-85c7-5629049721cb
+    taskid: ac01fff8-78dd-48cd-8bd0-ec53a231feeb
     type: condition
     task:
-      id: 1c446dee-3206-42ed-85c7-5629049721cb
+      id: ac01fff8-78dd-48cd-8bd0-ec53a231feeb
       version: -1
       name: Check domain dBot score
       type: condition
@@ -98,58 +102,59 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "8"
+      - "8"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualNumber
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "2"
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: adobe.com
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: domain
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Vendor
-                iscontext: true
-              right:
-                value:
-                  simple: Pwned
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: adobe.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: domain
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: Pwned
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 470
+          "x": 50,
+          "y": 370
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: 24b728c3-7e77-43b8-8984-c88bd076d58e
+    taskid: d4863a4e-6da1-4616-888b-949111b88e80
     type: condition
     task:
-      id: 24b728c3-7e77-43b8-8984-c88bd076d58e
+      id: d4863a4e-6da1-4616-888b-949111b88e80
       version: -1
       name: Check email dBot score
       type: condition
@@ -157,58 +162,59 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "7"
+      - "10"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualNumber
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "0"
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: example@demisto.com
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: email
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Vendor
-                iscontext: true
-              right:
-                value:
-                  simple: Pwned
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: example@demisto.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: email
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: Pwned
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1070
+          "x": 50,
+          "y": 895
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: bbd47fba-c7d6-44b5-8a4a-17a9be32384a
+    taskid: a07f35d3-99c4-433e-8e5c-0617273ee08e
     type: title
     task:
-      id: bbd47fba-c7d6-44b5-8a4a-17a9be32384a
+      id: a07f35d3-99c4-433e-8e5c-0617273ee08e
       version: -1
       name: Done
       type: title
@@ -218,18 +224,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 1300
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: 0341a64e-4311-4500-8cb3-c88aa74279f2
+    taskid: 81111084-0137-45b7-8e1d-16c1396f7cda
     type: regular
     task:
-      id: 0341a64e-4311-4500-8cb3-c88aa74279f2
+      id: 81111084-0137-45b7-8e1d-16c1396f7cda
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -238,7 +245,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "1"
+      - "1"
     scriptarguments:
       all:
         simple: "yes"
@@ -250,20 +257,226 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 670
+          "x": 50,
+          "y": 545
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: db4a1a1d-092f-411e-81d5-2e10c7d88313
+    type: regular
+    task:
+      id: db4a1a1d-092f-411e-81d5-2e10c7d88313
+      version: -1
+      name: check email indicator regex (auto enrich)
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      value:
+        simple: bt53h6htyj8j57k9k=organization.org@ozzy.qwer.de
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 88d25f00-dcc2-46c2-8d62-cd18f23a4ef9
+    type: regular
+    task:
+      id: 88d25f00-dcc2-46c2-8d62-cd18f23a4ef9
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 0cec8352-5a0b-46c4-8fd4-84112df03115
+    type: condition
+    task:
+      id: 0cec8352-5a0b-46c4-8fd4-84112df03115
+      version: -1
+      name: Check email with `=` in DBotScore
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: bt53h6htyj8j57k9k=organization.org@ozzy.qwer.de
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: bbe2736a-4c5a-4e63-8c6d-0d09c10ce00d
+    type: regular
+    task:
+      id: bbe2736a-4c5a-4e63-8c6d-0d09c10ce00d
+      version: -1
+      name: Get Email2
+      description: Check if an email has been compromised as part of past breaches
+      script: Pwned|||email
+      type: regular
+      iscommand: true
+      brand: Pwned
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      email:
+        simple: joe@gmail.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: e27ac65b-52fc-48ef-8ba6-4d06693b7641
+    type: condition
+    task:
+      id: e27ac65b-52fc-48ef-8ba6-4d06693b7641
+      version: -1
+      name: Check email domains
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: Account
+                accessor: Email.Compromised.Reporters
+            iscontext: true
+          right:
+            value:
+              simple: 000webhost
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 9042df83-f523-47f1-8492-f03c07f16aec
+    type: regular
+    task:
+      id: 9042df83-f523-47f1-8492-f03c07f16aec
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "6_10_yes": 0.89
+    },
     "paper": {
       "dimensions": {
-        "height": 1315,
-        "width": 390,
-        "x": 440,
+        "height": 2135,
+        "width": 380,
+        "x": 50,
         "y": 50
       }
     }
