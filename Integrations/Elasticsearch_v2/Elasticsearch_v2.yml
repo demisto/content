@@ -12,11 +12,11 @@ configuration:
   required: true
   type: 9
 - defaultvalue: 'true'
-  display: Trust any certificate (insecure)
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -33,11 +33,12 @@ configuration:
   required: false
   type: 0
 - display: Time format as kept in ElasticSearch, leave empty to use default
+  defaultvalue: '%Y-%m-%dT%H:%M:%SZ'
   name: fetch_time_format
   required: false
   type: 0
-- defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+- defaultvalue: 3
+  display: First fetch timestamp in days
   name: fetch_time
   required: false
   type: 0
