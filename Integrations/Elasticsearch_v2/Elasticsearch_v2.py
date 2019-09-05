@@ -125,14 +125,16 @@ def search_command():
     total_dict, total_results = get_total_results(response)
     search_context, meta_headers, hit_tables, hit_headers = results_to_context(index, query, base_page,
                                                                                size, total_dict, fields, response)
-    return_outputs(tableToMarkdown('Search Metadata:', search_context, meta_headers, removeNull=True) + '\n'
-                   + tableToMarkdown('Hits:', hit_tables, hit_headers, removeNull=True),
-                   {
-                        'Elasticsearch.Search(val.Query == obj.Query && val.Index == obj.Index'
-                        '&& val.Server == obj.Server && val.Page == obj.Page'
-                        '&& val.Size == obj.Size)': search_context
-                   },
-                   response)
+
+    search_human_readable = tableToMarkdown('Search Metadata:', search_context, meta_headers, removeNull=True)
+    hits_human_readable = tableToMarkdown('Hits:', hit_tables, hit_headers, removeNull=True)
+    total_human_readable = search_human_readable + '\n' + hits_human_readable
+    full_context = {
+        'Elasticsearch.Search(val.Query == obj.Query && val.Index == obj.Index '
+        '&& val.Server == obj.Server && val.Page == obj.Page && val.Size == obj.Size)': search_context
+    }
+
+    return_outputs(total_human_readable, full_context, response)
 
 
 def test_func():
@@ -145,21 +147,21 @@ def test_func():
         return_error("Failed to connect, Check Server URL and Port number")
 
     if demisto.params().get('isFetch'):
-        str_error = ''
+        str_error = []  # type:List
         if TIME_FIELD is None:
-            str_error = str_error + "\nNo time field for fetch"
+            str_error.append("Time field is not configured for fetch in the integration parameters")
 
         if FETCH_INDEX is None:
-            str_error = str_error + "\nNo index for fetch"
+            str_error.append("Index is not configured for fetch in the integration parameters")
 
         if FETCH_QUERY is None:
-            str_error = str_error + "\nNo query for fetch"
+            str_error.append("Query is not configured for fetch in the integration parameters")
 
         if TIME_FORMAT is None:
-            str_error = str_error + "\nNo time format for fetch"
+            str_error.append("Time format is not configured for fetch in the integration parameters")
 
-        if str_error != '':
-            return_error("Got The following errors in test: " + str_error)
+        if len(str_error) > 0:
+            return_error("Got The following errors in test:\n" + '\n'.join(str_error))
 
         try:
             es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
@@ -174,7 +176,7 @@ def test_func():
                 datetime.strptime(hit_date, TIME_FORMAT).isoformat() + 'Z'
 
         except ValueError as e:
-            return_error("Inserted time format does not match. " + str(e))
+            return_error("Inserted time format does not match your index. " + str(e))
 
     demisto.results('ok')
 
@@ -254,4 +256,3 @@ try:
         search_command()
 except Exception as e:
     return_error(str(e))
-    LOG.print_log()
