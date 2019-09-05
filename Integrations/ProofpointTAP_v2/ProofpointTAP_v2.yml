@@ -1,168 +1,2895 @@
-category: Email Gateway
-commonfields:
-  id: Proofpoint TAP v2
-  version: -1
-configuration:
-- defaultvalue: https://tap-api-v2.proofpoint.com
-  display: Server URL (e.g., https://tap-api-v2.proofpoint.com)
-  name: url
-  required: true
-  type: 0
-- display: Service Principal (the Password refers to Secret)
-  name: credentials
-  required: true
-  type: 9
-- defaultvalue: v2
-  display: API Version
-  name: api_version
-  options:
-  - v1
-  - v2
-  required: false
-  type: 15
-- defaultvalue: 'true'
-  display: Trust any certificate (insecure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy
-  name: proxy
-  required: false
-  type: 8
-- display: A string specifying which threat type to return. If empty, all threat types
-    are returned. Can be "url", "attachment", or "messageText".
-  name: threat_type
-  options:
-  - url
-  - attachment
-  - messageText
-  required: false
-  type: 16
-- display: A string specifying which threat statuses to return. If empty, will return
-    "active" and "cleared" threats.
-  name: threat_status
-  options:
-  - active
-  - cleared
-  - falsePositive
-  required: false
-  type: 16
-- defaultvalue: All
-  display: Events to fetch
-  name: events_type
-  options:
-  - All
-  - Issues
-  - Blocked Clicks
-  - Permitted Clicks
-  - Blocked Messages
-  - Delivered Messages
-  required: false
-  type: 15
-- defaultvalue: 1 hour
-  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
-    - Proofpoint supports maximum 1 hour fetch back
-  name: fetch_time
-  required: false
-  type: 0
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
-description: Use the Proofpoint Targeted Attack Protection (TAP) integration to protect
-  against and provide additional visibility into phishing and other malicious email
-  attacks.
-display: Proofpoint TAP v2
-name: Proofpoint TAP v2
-script:
-  commands:
-  - arguments:
-    - default: false
-      description: 'A string containing an ISO8601-formatted interval. If this interval
-        overlaps with previous requests for data, records from the previous request
-        might be duplicated. The minimum interval is thirty seconds. The maximum interval
-        is one hour. Examples:  2016-05-01T12:00:00Z/2016-05-01T13:00:00Z - an hour
-        interval, beginning at noon UTC on 05-01-2016 PT30M/2016-05-01T12:30:00Z -
-        the thirty minutes beginning at noon UTC on 05-01-2016 and ending at 12:30pm
-        UTC 2016-05-01T05:00:00-0700/PT30M - the same interval as above, but using
-        -0700 as the time zone'
-      isArray: false
-      name: interval
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'A string specifying which threat type to return. If empty, all
-        threat types are returned. The following values are accepted: url,attachment,
-        messageText'
-      isArray: false
-      name: threatType
-      predefined:
-      - url
-      - attachment
-      - messageText
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A string specifying which threat statuses to return. If empty,
-        active and cleared threats are returned. Can be "active", "cleared", "falsePositive".
-      isArray: false
-      name: threatStatus
-      predefined:
-      - active
-      - cleared
-      - falsePositive
-      required: false
-      secret: false
-    - default: false
-      description: 'A string containing an ISO8601 date. It represents the start of
-        the data retrieval period. The end of the period is determined by the current
-        API server time rounded to the nearest minute. If JSON output is selected,
-        the end time is included in the returned result. Example: 2016-05-01T12:00:00Z'
-      isArray: false
-      name: sinceTime
-      required: false
-      secret: false
-    - default: false
-      description: An integer representing a time window (in seconds) from the current
-        API server time. The start of the window is the current API server time, rounded
-        to the nearest minute, less the number of seconds provided. The end of the
-        window is the current API server time rounded to the nearest minute. If JSON
-        output is selected, the end time is included in the returned result.
-      isArray: false
-      name: sinceSeconds
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: All
-      description: Event types to return.
-      isArray: false
-      name: eventTypes
-      predefined:
-      - All
-      - Issues
-      - Delivered Messages
-      - Blocked Messages
-      - Permitted Clicks
-      - Blocked Clicks
-      required: false
-      secret: false
-    deprecated: false
-    description: Fetches events for all clicks and messages relating to known threats
-      within the specified time period. Details as per clicks/blocked.
-    execution: false
-    name: proofpoint-get-events
-  dockerimage: demisto/python3:3.7.4.977
-  isfetch: true
-  runonce: false
-  script: '-'
-  type: python
-  subtype: python3
-tests:
-- No test - no instance
+id: 30ab863a-f5bb-4c39-8ec7-1601e21fae51
+version: 155
+name: ProofProint Click Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 61737541-8e6e-4620-8d85-fe523897e8db
+    type: start
+    task:
+      id: 61737541-8e6e-4620-8d85-fe523897e8db
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": -2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 8c9db874-e899-4ae4-81a6-59da3661ee4e
+    type: regular
+    task:
+      id: 8c9db874-e899-4ae4-81a6-59da3661ee4e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": -1920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: db4091bf-2a15-4c54-8923-c30d91b59f34
+    type: regular
+    task:
+      id: db4091bf-2a15-4c54-8923-c30d91b59f34
+      version: -1
+      name: Check URL on VT
+      script: GSOC VirusTotal - Private API|||vt-private-get-url-report
+      type: regular
+      iscommand: true
+      brand: GSOC VirusTotal - Private API
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      allInfo: {}
+      extend-context:
+        simple: VirusTotal=.
+      fullResponse: {}
+      resource:
+        simple: ${incident.threat}
+      retries: {}
+      retry_time: {}
+      shortFormat:
+        simple: "true"
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": -245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: de6e4b5b-22dc-4fd9-8205-dfab5be0f1ef
+    type: regular
+    task:
+      id: de6e4b5b-22dc-4fd9-8205-dfab5be0f1ef
+      version: -1
+      name: Check URL on Phish.AI
+      script: GSOC Phish.AI|||phish-ai-scan-url
+      type: regular
+      iscommand: true
+      brand: GSOC Phish.AI
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      url:
+        simple: ${incident.labels.url}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": -245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: c59e7ee0-adfc-4b32-81d1-cb0989505ddb
+    type: regular
+    task:
+      id: c59e7ee0-adfc-4b32-81d1-cb0989505ddb
+      version: -1
+      name: Get AD user Details
+      script: Active Directory Query v2|||ad-get-user
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      attributes:
+        simple: kPMG-User-GOMemberFirmGroup
+      custom-field-data:
+        complex:
+          root: ${incident
+          accessor: emailto}
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'smtp:'
+              suffix: {}
+      custom-field-type:
+        simple: proxyAddresses
+      dn: {}
+      email: {}
+      limit:
+        simple: "1"
+      name: {}
+      user-account-control-out: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": -1765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 5dd25275-6037-4456-8745-66c613beba4b
+    type: regular
+    task:
+      id: 5dd25275-6037-4456-8745-66c613beba4b
+      version: -1
+      name: Get Member Firm
+      scriptName: ParseMFToSecOps
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      ADMemberFirm:
+        complex:
+          root: ${Account
+          accessor: kPMG-User-GOMemberFirmGroup}
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": -1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 3f2a9511-cbcd-46a5-8b7a-420361317ede
+    type: regular
+    task:
+      id: 3f2a9511-cbcd-46a5-8b7a-420361317ede
+      version: -1
+      name: phish-ai-check-status
+      script: GSOC Phish.AI|||phish-ai-check-status
+      type: regular
+      iscommand: true
+      brand: GSOC Phish.AI
+    scriptarguments:
+      extend-context:
+        simple: PhishAI=.
+      scan_id:
+        simple: ${PhishAI.ScanID}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": -35
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 42ca5b46-00be-4e02-8c4e-a14bd72fc28b
+    type: regular
+    task:
+      id: 42ca5b46-00be-4e02-8c4e-a14bd72fc28b
+      version: -1
+      name: Set Member Firm Field
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      archerincidentid: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destinationuser: {}
+      destntdomain: {}
+      details: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      id: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      measurestomitigate: {}
+      memberfirm:
+        simple: ${MemberFirm}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      priority: {}
+      replacePlaybook: {}
+      roles: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      sourceip: {}
+      sourceuser: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      telephoneno: {}
+      type: {}
+      user: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": -1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 52ccbfdf-c1c5-4731-8e27-0f5620a35727
+    type: regular
+    task:
+      id: 52ccbfdf-c1c5-4731-8e27-0f5620a35727
+      version: -1
+      name: OpenPhish check URL
+      description: Check URL Reputation
+      script: OpenPhish|||url
+      type: regular
+      iscommand: true
+      brand: OpenPhish
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      extend-context:
+        simple: OpenPhish=.
+      limit: {}
+      long: {}
+      public: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      timeout: {}
+      url:
+        simple: ${incident.threat}
+      wait: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: c3d872a4-5bec-4818-868b-9ea776cfb859
+    type: condition
+    task:
+      id: c3d872a4-5bec-4818-868b-9ea776cfb859
+      version: -1
+      name: URL Exists in Virus Total
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "16"
+      "yes":
+      - "12"
+    scriptarguments:
+      value:
+        complex:
+          root: ${VirusTotal
+          accessor: positives}
+          transformers:
+          - operator: toUpperCase
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 0de8dee5-48d1-41b5-8e1f-7d00d48d9d4c
+    type: condition
+    task:
+      id: 0de8dee5-48d1-41b5-8e1f-7d00d48d9d4c
+      version: -1
+      name: Number of Detections > 5 ?
+      description: |-
+        Checks if one number(float) as bigger than the other(float)
+        Returns yes: if first > second
+        Returns no: if first <= second
+        Returns exception if one of the inputs is not a number
+      scriptName: IsGreaterThan
+      type: condition
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      first:
+        complex:
+          root: ${VirusTotal
+          accessor: positives}
+          transformers:
+          - operator: sort
+            args:
+              descending: {}
+      second:
+        simple: "5"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 8b3d2bba-e105-466d-8b87-e2c0a8a70dc2
+    type: regular
+    task:
+      id: 8b3d2bba-e105-466d-8b87-e2c0a8a70dc2
+      version: -1
+      name: Generate Investigation Report for Journal
+      description: |-
+        A script to generate investigation summary report in an automated way
+        Can be used in post-processing flow as well.
+      scriptName: GenerateInvestigationSummaryReport
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name:
+        simple: ProofPoint Click Defense
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: da4271c4-7ef5-4afe-8638-da8feee3427c
+    type: regular
+    task:
+      id: da4271c4-7ef5-4afe-8638-da8feee3427c
+      version: -1
+      name: Create Journal Entry
+      description: Creates a new content record in the given application.
+      script: GSOC SecOps|||archer-create-record
+      type: regular
+      iscommand: true
+      brand: GSOC SecOps
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      applicationId:
+        simple: "435"
+      extend-context:
+        simple: JournalEntry=.
+      fieldsToValues:
+        simple: '{"Analyst Name":"395","Journal Entry":"Automated Detailed Investigation
+          <br/> <b>From:</b> ${incident.emailfrom} <br/> <b>Message ID:</b> ${incident.emailmessageid}
+          <br/> <b>Sender IP:</b> ${incident.emailsenderip} <br/> <b>Subject:</b>
+          ${incident.emailsubject} <br/> <b>Email To:</b> ${incident.emailto} <br/>
+          <b>URL Clicked:</b> ${incident.emailurlclicked} ","Security Incident":"${Archer.Record.Id}","Attachments":"${Report.FileID}"}'
+      using:
+        simple: GSOC SecOps_instance_REST
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 3c541cbd-88d0-4dad-89ae-4e4d2547e45f
+    type: regular
+    task:
+      id: 3c541cbd-88d0-4dad-89ae-4e4d2547e45f
+      version: -1
+      name: Upload Attachment in Journal
+      description: Uploads a file to Archer and adds its id to the context attached
+        files
+      script: GSOC SecOps|||archer-upload-file
+      type: regular
+      iscommand: true
+      brand: GSOC SecOps
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      applicationId:
+        simple: "435"
+      contentId:
+        complex:
+          root: ${JournalEntry
+          accessor: CreateRecordResult}
+      entryId:
+        simple: ${Report.FileID}
+      file_name:
+        simple: ${incident.archerincidentid}
+      incidentId: {}
+      using:
+        simple: GSOC SecOps_instance_REST
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 1a8e483a-0125-4012-80da-721f77871960
+    type: regular
+    task:
+      id: 1a8e483a-0125-4012-80da-721f77871960
+      version: -1
+      name: Mark Incident for Manual Review
+      script: GSOC SecOps|||archer-update-record
+      type: regular
+      iscommand: true
+      brand: GSOC SecOps
+    scriptarguments:
+      applicationId:
+        simple: "433"
+      contentId:
+        simple: ${incident.archerincidentid}
+      fieldsToValues:
+        simple: '{"Incident Status":"New"}'
+      incidentId: {}
+      using:
+        simple: GSOC SecOps_instance_REST
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 47ac904e-69bf-4421-8c15-058ef9668030
+    type: regular
+    task:
+      id: 47ac904e-69bf-4421-8c15-058ef9668030
+      version: -1
+      name: Create URL Incident in SecOps
+      description: Creates a new content record in the given application.
+      script: GSOC SecOps|||archer-create-record
+      type: regular
+      iscommand: true
+      brand: GSOC SecOps
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      applicationId:
+        simple: "433"
+      fieldsToValues:
+        simple: '{"Title":"ProofPoint URL Defense","Source":"Proofpoint TAP","Environment":"Traditional","Priority
+          Override":"P-3","Member Firm":"${incident.memberfirm}","Incident Summary":"An
+          email containing URL was delivered to an end user and it has been clicked.
+          The URL has been categorized as malicious by Proof Point.<br/> <a href=''${incident.labels.threatURL}''
+          target=''_new''>Link to ProofPoint TAP Alert</a>"}'
+      using:
+        simple: GSOC SecOps_instance_REST
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": -610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: fcd4d57d-0471-4446-8b48-19c7db7aef29
+    type: regular
+    task:
+      id: fcd4d57d-0471-4446-8b48-19c7db7aef29
+      version: -1
+      name: Get the Current Cyber Threat Level
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile: {}
+      unsecure: {}
+      url:
+        simple: https://go2azrapp225.go2.kworld.kpmg.com/RSAarcher/company_files/50000/icons/Current.png
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2120,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 24fab921-8282-4795-8dc3-734575b77aa0
+    type: regular
+    task:
+      id: 24fab921-8282-4795-8dc3-734575b77aa0
+      version: -1
+      name: Set the current Cyber level to a Local List
+      description: Set data in list
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      listData:
+        simple: ${HttpRequest.Response.Bytes}
+      listName:
+        simple: Current
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2120,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 28f0ad67-bb8f-4bb2-8073-8018d6a5eecf
+    type: regular
+    task:
+      id: 28f0ad67-bb8f-4bb2-8073-8018d6a5eecf
+      version: -1
+      name: Adding Current Cyber Threat Level image to the email
+      description: Converts Base64 file in a list to a binary file and upload to warroom
+      scriptName: Base64ListToFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      filename:
+        simple: Current.png
+      isZipFile: {}
+      listname:
+        simple: Current
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2120,
+          "y": 2660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: eb683e10-75dd-4dd6-8b31-a726a15cd5ed
+    type: regular
+    task:
+      id: eb683e10-75dd-4dd6-8b31-a726a15cd5ed
+      version: -1
+      name: Adding Logo Image to the Email
+      description: Converts Base64 file in a list to a binary file and upload to warroom
+      scriptName: Base64ListToFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      filename:
+        simple: Logo.jpg
+      isZipFile: {}
+      listname:
+        simple: Logo
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2540,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 04a56af7-166b-4bb8-88d9-98341fdc6198
+    type: condition
+    task:
+      id: 04a56af7-166b-4bb8-88d9-98341fdc6198
+      version: -1
+      name: Is the Member Firm US
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "25"
+      "yes":
+      - "61"
+    scriptarguments:
+      left:
+        simple: ${incident.memberfirm}
+      right:
+        simple: United States
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2340,
+          "y": 2930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 212007df-7c60-4c95-82d5-0bb2ebb0c22f
+    type: regular
+    task:
+      id: 212007df-7c60-4c95-82d5-0bb2ebb0c22f
+      version: -1
+      name: Update US Details for Escalation
+      description: Updates existing content record in the given application.
+      script: GSOC SecOps|||archer-update-record
+      type: regular
+      iscommand: true
+      brand: GSOC SecOps
+    scriptarguments:
+      applicationId:
+        simple: "433"
+      contentId:
+        simple: ${incident.archerincidentid}
+      fieldsToValues:
+        simple: '{"Incident Status":"Member Firm - Escalated","Investigation Attachment":"","Remediation
+          Actions":""}'
+      incidentId: {}
+      using:
+        simple: GSOC SecOps_instance_REST
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2960,
+          "y": 3335
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: edf91cd3-9914-44e0-89e9-1b7a8a793d7a
+    type: regular
+    task:
+      id: edf91cd3-9914-44e0-89e9-1b7a8a793d7a
+      version: -1
+      name: Escalate Incident to the Member Firm
+      description: Send an email
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      iscommand: true
+      brand: Mail Sender (New)
+    scriptarguments:
+      attachCIDs:
+        simple: logo,current
+      attachIDs:
+        complex:
+          root: ${File
+          accessor: EntryID}
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ${Report.FileID}
+      attachNames:
+        complex:
+          root: File
+          accessor: Name
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ${Report.Name}
+      bcc: {}
+      body: {}
+      cc:
+        simple: Judith.Austin@KPMG.co.uk
+      htmlBody:
+        simple: "<html xmlns:v='urn:schemas-microsoft-com:vml' xmlns:o='urn:schemas-microsoft-com:office:office'
+          xmlns:w='urn:schemas-microsoft-com:office:word' xmlns:x='urn:schemas-microsoft-com:office:excel'
+          xmlns:m='http://schemas.microsoft.com/office/2004/12/omml' xmlns='http://www.w3.org/TR/REC-html40'>\n\t<head>\n\t\t<meta
+          http-equiv=Content-Type content='text/html; charset=iso-8859-1'>\n\t\t\t<meta
+          name=Generator content='Microsoft Word 15 (filtered medium)'>\n\t\t\t</head>\n\t\t\t<body
+          lang=EN-GB link='#0563C1' vlink='#954F72'>\n\t\t\t\t<div class=WordSection1>\n\t\t\t\t\t<div
+          align=center>\n\t\t\t\t\t\t<table class=MsoNormalTable border=0 cellspacing=0
+          cellpadding=0 width=0 style='width:452.25pt'>\n\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t<td
+          width=37 valign=top style='width:27.75pt;background:#0091DA;padding:0cm
+          0cm 0cm 0cm'>\n\t\t\t\t\t\t\t\t\t<table class=MsoNormalTable border=0 cellspacing=0
+          cellpadding=0 width=0 style='width:27.75pt'>\n\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t<td
+          style='padding:0cm 0cm 0cm 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t<p class=MsoNormal
+          style='line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<span style='font-family:Arial,sans-serif;color:black'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'/>\n\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t</table>\n\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t<td
+          width=566 style='width:424.5pt;padding:0cm 0cm 0cm 0cm'>\n\t\t\t\t\t\t\t\t\t<table
+          class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width='100%' style='width:100.0%'>\n\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t<td
+          style='padding:0cm 0cm 0cm 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t<table class=MsoNormalTable
+          border=0 cellspacing=0 cellpadding=0 width='100%' style='width:100.0%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          style='padding:18.75pt 18.75pt 18.75pt 18.75pt'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<table
+          class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width='100%' style='width:100.0%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          style='padding:0cm 0cm 0cm 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<table
+          class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width='100%' style='width:100.0%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width='82%' valign=top style='width:82.0%;padding:0cm 0cm 0cm 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<table
+          class=MsoNormalTable border=0 cellspacing=0 cellpadding=0 width='100%' style='width:100.0%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<img
+          width=94 height=38 alt='' src='cid:logo'\t data-mce-selected='1'/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          colspan=9 valign=top >\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='mso-ignore:vglayout;'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='top:auto;width:77px;height:71px'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<img
+          width=140 height=110 alt='' src='cid:current' data-mce-selected='1'/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          colspan=4 valign=top style='padding:0cm 0cm 15.0pt 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h2
+          style='line-height:12.0pt'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-size:12.0pt;font-family:Arial,sans-serif;color:#0091DA;mso-fareast-language:EN-US;font-weight:bold'>Information
+          Protection Group - GSOC</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</h2>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          colspan=4 valign=top style='padding:0cm 0cm 15.0pt 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<h1
+          style='line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-size:26.0pt;line-height:105%;font-family:Arial,sans-serif;color:#002776;mso-fareast-language:EN-US'>Security
+          Incident</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</h1>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr
+          style='height:11.05pt'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width='28%' valign=top style='width:28.96%;padding:0cm 0cm 15.0pt 0cm;height:11.05pt'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          id='inc_ID' style='font-size:12.0pt;font-family:Arial,sans-serif;color:#0091DA;mso-fareast-language:EN-US;font-weight:normal'>${incident.archerincidentid}</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width='34%' valign=top style='width:34.46%;padding:0cm 0cm 15.0pt 0cm;height:11.05pt'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          id='Member_Firm' style='font-size:12.0pt;font-family:Arial,sans-serif;color:#0091DA;mso-fareast-language:EN-US'>${incident.memberfirm}</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width='9%' valign=top style='width:9.46%;padding:0cm 0cm 0cm 0cm;height:11.05pt'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-size:12.0pt;font-family:Arial,sans-serif;color:#0091DA;mso-fareast-language:EN-US;font-weight:normal'>Priority:</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width='5%' valign=top style='width:5.7%;padding:0cm 0cm 0cm 0cm;height:11.05pt'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          id='Inc_Priority' style='display:inline-block;font-size:12.0pt;font-family:Arial,sans-serif;color:#0091DA;mso-fareast-language:EN-US;font-weight:normal'>P-3</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</table>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal style='line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<table
+          class=MsoTableGrid border=0 cellspacing=0 cellpadding=0 style='border-collapse:collapse;border:none'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr
+          style='height:19.4pt'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=149 valign=top style='width:111.4pt;padding:2.85pt 0cm 2.85pt 0cm;height:19.4pt'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;mso-fareast-language:EN-US'>Incident
+          Title:</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=367 valign=top style='width:275.6pt;padding:2.85pt 0cm 2.85pt 0cm;height:19.4pt'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          id='inc_title' style='font-family:Arial,sans-serif;mso-fareast-language:EN-US'>${incident.name}</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=149 valign=top style='width:111.4pt;padding:2.85pt 0cm 2.85pt 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;mso-fareast-language:EN-US'>Incident
+          Description:</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=367 valign=top style='width:275.6pt;padding:2.85pt 0cm 2.85pt 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          id='inc_descr' style='font-family:Arial,sans-serif;mso-fareast-language:EN-US'>An
+          email with a suspicious attachment was clicked by a user.</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=149 valign=top style='width:111.4pt;padding:2.85pt 0cm 2.85pt 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;mso-fareast-language:EN-US'>Event Timestamp:</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=367 valign=top style='width:275.6pt;padding:2.85pt 0cm 2.85pt 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          id='inc_timestamp' style='font-family:Arial,sans-serif;mso-fareast-language:EN-US'>
+          ${incident.timestamp}</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=149 valign=top style='width:111.4pt;padding:2.85pt 0cm 2.85pt 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;mso-fareast-language:EN-US'>Detection
+          Method:</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=367 valign=top style='width:275.6pt;padding:2.85pt 0cm 2.85pt 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-size:12.0pt;font-family:Arial,sans-serif;mso-fareast-language:EN-US'/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          id='inc_source' style='font-family:Arial,sans-serif;mso-fareast-language:EN-US'>ProofPoint
+          TAP</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=149 valign=top style='width:111.4pt;padding:2.85pt 0cm 2.85pt 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;mso-fareast-language:EN-US'>Threat Category:</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='mso-fareast-language:EN-US'/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=367 valign=top style='width:275.6pt;padding:2.85pt 0cm 2.85pt 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          id='inc_threatCategory' style='font-family:Arial,sans-serif;mso-fareast-language:EN-US'>
+          Social - Other</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</table>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal style='line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'>&nbsp;</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<table
+          class=MsoTableGrid border=0 cellspacing=0 cellpadding=0 style='border-collapse:collapse;border:none'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr
+          style='height:22.7pt'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=516 style='width:450.8pt;padding:2.85pt 0cm 2.85pt 0cm;height:22.7pt'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal align=center style='text-align:center'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;mso-fareast-language:EN-US'>Remediation
+          Actions</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='mso-fareast-language:EN-US'/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=516 valign=top style='width:450.8pt;padding:2.85pt 0cm 2.85pt 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;mso-fareast-language:EN-US'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-size:11.0pt;font-family:Arial,sans-serif;color:black'>1. Kindly
+          confirm if the user has deleted the email from the inbox.<br>2. Advice the
+          user to not click or download any suspicious file from unknown user/sources.
+          <br>3. Please scan the machine by SEP for any internal infections. <br>4.
+          Provide guidance to the user about how to spot future spam/suspicious emails
+          from unknown sources.<br>5. Please provide the actual email received by
+          the user after the remedial actions performed for further analysis. </span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</table>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal style='line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'>&nbsp;</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal style='line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'>&nbsp;</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<table
+          class=MsoTableGrid border=0 cellspacing=0 cellpadding=0 width='100%' style='width:100.0%;border-collapse:collapse;border:none'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr
+          style='height:22.7pt'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=516 colspan=4 style='width:386.5pt;padding:2.85pt 0cm 2.85pt 0cm;height:22.7pt'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal align=center style='text-align:center'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;mso-fareast-language:EN-US'>Incident
+          Details</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='mso-fareast-language:EN-US'/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=126 valign=top style='max-width:94.8pt;padding:2.85pt 0cm 2.85pt 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-size:11.0pt;font-family:Arial,sans-serif;mso-fareast-language:EN-US'>Sender:
+          </span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-size:11.0pt;mso-fareast-language:EN-US'/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=143 valign=top style='max-width:107.05pt;padding:2.85pt 0cm 2.85pt
+          0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          id='source_ip' style='font-size:11.0pt;font-family:Arial,sans-serif;mso-fareast-language:EN-US'>${incident.emailfrom}</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=126 valign=top style='max-width:94.8pt;padding:2.85pt 0cm 2.85pt 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-size:11.0pt;font-family:Arial,sans-serif;mso-fareast-language:EN-US'>Recipient:
+          </span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=143 valign=top style='max-width:107.05pt;padding:2.85pt 0cm 2.85pt
+          0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          id='source_port'style='font-size:11.0pt;font-family:Arial,sans-serif;mso-fareast-language:EN-US'>${incident.emailto}</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=164 valign=top style='max-width:164pt;padding:2.85pt 0cm 2.85pt 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-size:11.0pt;font-family:Arial,sans-serif;mso-fareast-language:EN-US'>Subject:
+          </span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=143 valign=top style='max-width:107.05pt;padding:2.85pt 0cm 2.85pt
+          0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          id='src_usernames'style='font-size:11.0pt;font-family:Arial,sans-serif;mso-fareast-language:EN-US'>${incident.emailsubject}</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=126 valign=top style='max-width:93.3pt;padding:2.85pt 0cm 2.85pt 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-size:11.0pt;font-family:Arial,sans-serif;mso-fareast-language:EN-US'>URL
+          Clicked: </span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=143 valign=top style='max-width:107.7pt;padding:2.85pt 0cm 2.85pt
+          0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-size:11.0pt;font-family:Arial,sans-serif;mso-fareast-language:EN-US'>${incident.emailurlclicked}</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=126 valign=top style='max-width:93.3pt;padding:2.85pt 0cm 2.85pt 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-size:11.0pt;font-family:Arial,sans-serif;mso-fareast-language:EN-US'>Message
+          ID: </span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=143 valign=top style='max-width:107.7pt;padding:2.85pt 0cm 2.85pt
+          0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-size:11.0pt;font-family:Arial,sans-serif;mso-fareast-language:EN-US'>${incident.emailmessageid}</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=126 valign=top style='max-width:93.3pt;padding:2.85pt 0cm 2.85pt 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-size:11.0pt;font-family:Arial,sans-serif;mso-fareast-language:EN-US'>Sender
+          IP: </span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=390 colspan=3 valign=top style='max-width:293.15pt;padding:2.85pt
+          0cm 2.85pt 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-size:11.0pt;font-family:Arial,sans-serif;mso-fareast-language:EN-US'>${incident.emailsenderip}</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=126 valign=top style='max-width:93.35pt;padding:2.85pt 0cm 2.85pt
+          0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-size:11.0pt;font-family:Arial,sans-serif;mso-fareast-language:EN-US'>Message
+          Size: </span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=143 valign=top style='max-width:107.8pt;padding:2.85pt 0cm 2.85pt
+          0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-size:11.0pt;font-family:Arial,sans-serif;mso-fareast-language:EN-US'>${incident.labels.messageSize}</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          width=516 colspan=4 valign=top style='width:386.5pt;padding:2.85pt 0cm 2.85pt
+          0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p class=MsoNormal>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;mso-fareast-language:EN-US'>Please find
+          attached supporting raw log data and any associated Open Source Intelligence
+          (OSINT).</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-size:11.0pt;font-family:Arial,sans-serif;mso-fareast-language:EN-US'/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</table>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal style='line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-size:11.0pt;line-height:105%;font-family:'Calibri',sans-serif;mso-fareast-language:EN-US'/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr
+          style='height:37.5pt'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td style='padding:0cm
+          0cm 0cm 0cm;height:37.5pt'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal style='line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'>Please
+          advise the GSOC of your investigation. Please &#8220;reply all&#8221; to
+          this email for reporting the outcome or should you have any questions.</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal style='line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal style='line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'>Regards,</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal style='line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal style='line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          id ='analyst_name' style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'>KPMG
+          GSOC Operations</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal style='text-align:justify;line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</b>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal style='line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'>&nbsp;</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal style='line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'>Global
+          Security Operation Centre (GSOC)</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal style='line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'>Information
+          Protection Group (IPG) </span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal style='line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'>KPMG
+          International</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal style='line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'>&nbsp;</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal style='line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'>Tel:
+          +91 120 3868260</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal style='line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'>Email:
+          </span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span style='mso-fareast-language:EN-US'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a
+          href='mailto:gofmgsoc@kpmg.com'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif'>gofmgsoc@kpmg.com</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal style='line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'>&nbsp;</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</table>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          style='padding:0cm 0cm 0cm 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<table
+          class=MsoNormalTable  cellspacing=0 cellpadding=0 width='100%' style='width:100.0%;border:none;'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr
+          style='height:15.0pt'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td style='border:none;padding:0cm
+          0cm 0cm 0cm;height:15.0pt'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=MsoNormal style='line-height:105%'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;color:black;mso-fareast-language:EN-US'>&nbsp;</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<td
+          style='border:none;padding:0cm 0cm 0cm 0cm'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=privacy>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span style='mso-fareast-language:EN-US'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a
+          href='https://portal.ema.kworld.kpmg.com/itsglobal/departments/InfoRiskSecurity/Pages/Home.aspx'
+          target='_blank'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif'>Information Protection Group</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;mso-fareast-language:EN-US'> | </span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='mso-fareast-language:EN-US'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a
+          href='https://home.kpmg.com/xx/en/home/misc/privacy.html' target='_blank'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif'>Privacy</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;mso-fareast-language:EN-US'> | </span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='mso-fareast-language:EN-US'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<a
+          href='https://home.kpmg.com/xx/en/home/misc/legal.html' target='_blank'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif'>Legal</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;mso-fareast-language:EN-US'/>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=disclaimer>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span style='font-family:Arial,sans-serif;mso-fareast-language:EN-US'>INTERNAL
+          USE ONLY</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=disclaimer>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span style='font-family:Arial,sans-serif;mso-fareast-language:EN-US'>©
+          2019 KPMG International Cooperative (&quot;KPMG International&quot;), a
+          Swiss entity. Member firms of the KPMG network of independent firms are
+          affiliated with KPMG International. KPMG International provides no client
+          services. No member firm has any authority to obligate or bind KPMG International
+          or any other member firm vis-Ã -vis third parties, nor does KPMG International
+          have any such authority to obligate or bind any member firm. All rights
+          reserved.</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p
+          class=disclaimer style='margin-bottom:0cm;margin-bottom:.0001pt'>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<span
+          style='font-family:Arial,sans-serif;mso-fareast-language:EN-US'>The KPMG
+          name and logo are registered trademarks or trademarks of KPMG International.</span>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</table>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</table>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t\t\t\t</table>\n\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t</table>\n\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t</table>\n\t\t\t\t\t</div>\n\t\t\t\t\t<p
+          class=MsoNormal>\n\t\t\t\t\t\t<span style='mso-fareast-language:EN-US'>&nbsp;</span>\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t</body>\n\t\t</html>"
+      replyTo: {}
+      subject:
+        simple: '(Automated) Security Incident: ${incident.archerincidentid} | Priority:
+          P-3 | Threat Category: Social - Other | Member Firm: ${incident.memberfirm}'
+      templateParams: {}
+      to:
+        simple: dimal.zeqiri@kpmg.co.uk,Meena.Rajendran@kpmg.co.uk,Dragan.Damjanovic@KPMG.co.uk
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2190,
+          "y": 3130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 7a14e45d-4805-4bd4-895c-bbf5ceb4ec7a
+    type: regular
+    task:
+      id: 7a14e45d-4805-4bd4-895c-bbf5ceb4ec7a
+      version: -1
+      name: Set Incident Status to Detailed Investigation
+      description: Updates existing content record in the given application.
+      script: GSOC SecOps|||archer-update-record
+      type: regular
+      iscommand: true
+      brand: GSOC SecOps
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      applicationId:
+        simple: "433"
+      contentId:
+        simple: ${incident.archerincidentid}
+      fieldsToValues:
+        simple: '{"Incident Status":"Detailed Investigation"}'
+      incidentId: {}
+      using:
+        simple: GSOC SecOps_instance_REST
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2190,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 74d596d6-4936-4cac-8760-d3ce0d4673c1
+    type: regular
+    task:
+      id: 74d596d6-4936-4cac-8760-d3ce0d4673c1
+      version: -1
+      name: URL Scan by Urlscan.io
+      script: GSOC urlscan.io|||url
+      type: regular
+      iscommand: true
+      brand: GSOC urlscan.io
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      limit: {}
+      long: {}
+      public:
+        simple: private
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      timeout:
+        simple: "120"
+      url:
+        simple: ${incident.threat}
+      using:
+        simple: GSOC urlscan.io_instance_1
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1690,
+          "y": -245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: de1b6f1d-c19a-4890-83c4-55d37fad4993
+    type: condition
+    task:
+      id: de1b6f1d-c19a-4890-83c4-55d37fad4993
+      version: -1
+      name: URL Exists in Phish.AI
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "54"
+      "yes":
+      - "51"
+    scriptarguments:
+      value:
+        complex:
+          root: ${PhishAI
+          accessor: positives}
+          transformers:
+          - operator: toUpperCase
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2230,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: c3c7b94e-d2a6-4f65-81f3-f030dc3ab4de
+    type: regular
+    task:
+      id: c3c7b94e-d2a6-4f65-81f3-f030dc3ab4de
+      version: -1
+      name: Check the URL on the IBM-X Force
+      description: Check the given URL reputation
+      script: XFE|||url
+      type: regular
+      iscommand: true
+      brand: XFE
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      extend-context:
+        simple: X-Force=.
+      limit: {}
+      long: {}
+      public:
+        simple: private
+      retries: {}
+      threshold: {}
+      timeout: {}
+      url:
+        simple: ${incident.threat}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": -250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 6f22a22b-d58a-4ecc-882a-50c7cd357018
+    type: regular
+    task:
+      id: 6f22a22b-d58a-4ecc-882a-50c7cd357018
+      version: -1
+      name: Search For last 10 minutes similar click
+      description: Searches Demisto incidents
+      scriptName: SearchIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      details: {}
+      extend-context:
+        simple: LinksFound=.
+      fromclosedate: {}
+      fromdate:
+        complex:
+          root: ${incident
+          accessor: created=(function(val){var T = val.toString(); T = T.substring(0,T.indexOf("
+            +")).replace(" ","T");dt = new Date(T);dt.setMinutes(dt.getMinutes()-10);return
+            dt;})(val)}
+      fromduedate: {}
+      id: {}
+      level: {}
+      name: {}
+      notstatus: {}
+      owner: {}
+      page: {}
+      query:
+        simple: type:\"ProofPoint Click\" and -status:closed and -incident.id:${incident.id}
+          and (incident.memberfirm:"${incident.memberfirm}" and -status:closed and
+          incident.clickdomain:${incident.clickdomain})
+      reason: {}
+      size: {}
+      sort:
+        simple: id
+      status: {}
+      toclosedate: {}
+      todate:
+        simple: ${incident.created}
+      toduedate: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": -1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: 279e1930-120a-4b7d-81c1-2b2af23b36f4
+    type: condition
+    task:
+      id: 279e1930-120a-4b7d-81c1-2b2af23b36f4
+      version: -1
+      name: Click is similar ?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "43"
+      "yes":
+      - "32"
+    scriptarguments:
+      value:
+        complex:
+          root: ${LinksFound
+          filters:
+          - - operator: lessThan
+              left:
+                value:
+                  simple: ${LinksFound.id}
+                iscontext: true
+              right:
+                value:
+                  simple: ${incident.id}
+          accessor: id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": -970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: 20db9add-982b-495f-85f8-0c1d89557d31
+    type: regular
+    task:
+      id: 20db9add-982b-495f-85f8-0c1d89557d31
+      version: -1
+      name: Link to Oldest Incident
+      description: Use this script to avoid DB version errors when simultaneously
+        running multiple linked incidents.
+      scriptName: LinkIncidentsWithRetry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      linkedIncidentIDs:
+        complex:
+          root: LinksFound
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      retryLimit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": -780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "33":
+    id: "33"
+    taskid: 4cad4a87-8628-4a5b-8660-be211a6ae707
+    type: regular
+    task:
+      id: 4cad4a87-8628-4a5b-8660-be211a6ae707
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      countrycode: {}
+      id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": -580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "34":
+    id: "34"
+    taskid: 001e3264-c0b9-470e-8ed3-2440cae6a62e
+    type: regular
+    task:
+      id: 001e3264-c0b9-470e-8ed3-2440cae6a62e
+      version: -1
+      name: Set Archer Incident ID in Demisto
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "29"
+      - "27"
+      - "2"
+      - "40"
+      - "10"
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      archerincidentid:
+        simple: ${Archer.Record.Id}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      bugtraq: {}
+      city: {}
+      clickdomain: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrycode: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destinationuser: {}
+      destntdomain: {}
+      details: {}
+      downloadurl: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      id: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      measurestomitigate: {}
+      memberfirm: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      priority: {}
+      replacePlaybook: {}
+      roles: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      sourceip: {}
+      sourceuser: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      telephoneno: {}
+      type: {}
+      user: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": -455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "35":
+    id: "35"
+    taskid: a73e006e-ee7a-4b5f-867b-98e2911d22e3
+    type: regular
+    task:
+      id: a73e006e-ee7a-4b5f-867b-98e2911d22e3
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      seconds:
+        simple: "540"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "36":
+    id: "36"
+    taskid: 96355356-07df-4105-8caa-fd89efb52e24
+    type: regular
+    task:
+      id: 96355356-07df-4105-8caa-fd89efb52e24
+      version: -1
+      name: Related Clicks
+      description: Searches Demisto incidents
+      scriptName: GSOC_ProofPointSearchIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      details: {}
+      fromclosedate: {}
+      fromdate: {}
+      fromduedate: {}
+      id:
+        simple: ${incident.linkedIncidents}
+      level: {}
+      name: {}
+      notstatus: {}
+      owner: {}
+      page: {}
+      query: {}
+      reason: {}
+      size: {}
+      sort: {}
+      status: {}
+      toclosedate: {}
+      todate: {}
+      toduedate: {}
+      type: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 370
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+  "37":
+    id: "37"
+    taskid: ad687fbd-020c-4b24-896f-0115e93f5a67
+    type: regular
+    task:
+      id: ad687fbd-020c-4b24-896f-0115e93f5a67
+      version: -1
+      name: X-Force IP Scan Results
+      description: Check IP reputation
+      script: XFE|||ip
+      type: regular
+      iscommand: true
+      brand: XFE
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      extend-context:
+        simple: XForceIP.ip=reputation.ip::XForceIP.reason=reputation.reason::XForceIP.reasonDescription=reputation.reasonDescription::XForceIP.score=reputation.score::XForceIP.country=reputation.geo.country
+      ip:
+        simple: ${incident.emailsenderip}
+      long: {}
+      threshold:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "38":
+    id: "38"
+    taskid: 0d84ff5d-dd12-49c7-86ce-7f1e0a3692fd
+    type: regular
+    task:
+      id: 0d84ff5d-dd12-49c7-86ce-7f1e0a3692fd
+      version: -1
+      name: XForce IP Scan Results
+      scriptName: ParseJsonToMD
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      Depth:
+        simple: "1"
+      JSONBody:
+        simple: ${XForceIP}
+      Title:
+        simple: IBM XForce IP Scan Results
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 140
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+  "39":
+    id: "39"
+    taskid: 9ac57b88-8147-4762-80c3-8201b8c232d2
+    type: regular
+    task:
+      id: 9ac57b88-8147-4762-80c3-8201b8c232d2
+      version: -1
+      name: Investigation Completed - UAT
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: '"Investigation completed for ${incident.id}"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "40":
+    id: "40"
+    taskid: a99fbb3d-e7a4-40e8-8f7d-c928cd561033
+    type: condition
+    task:
+      id: a99fbb3d-e7a4-40e8-8f7d-c928cd561033
+      version: -1
+      name: Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "35"
+      "yes":
+      - "37"
+    scriptarguments:
+      value:
+        simple: ${incident.emailsenderip}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": -245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "41":
+    id: "41"
+    taskid: 3649e3d3-05e7-4c25-8ae3-14e7d3221d94
+    type: regular
+    task:
+      id: 3649e3d3-05e7-4c25-8ae3-14e7d3221d94
+      version: -1
+      name: Wait 10 sec before Search
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": -1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "42":
+    id: "42"
+    taskid: 716e1e44-2a23-4b74-8511-b95e4a3dd4d0
+    type: regular
+    task:
+      id: 716e1e44-2a23-4b74-8511-b95e4a3dd4d0
+      version: -1
+      name: Join linked incident data
+      description: Change the properties of an incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      archerincidentid: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      bugtraq: {}
+      city: {}
+      clickdomain: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrycode: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destinationuser: {}
+      destntdomain: {}
+      details: {}
+      downloadurl: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom:
+        complex:
+          root: incident
+          accessor: emailfrom
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: foundIncidents.CustomFields.emailfrom
+                iscontext: true
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid:
+        complex:
+          root: incident
+          accessor: emailmessageid
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: foundIncidents.CustomFields.emailmessageid
+                iscontext: true
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip:
+        complex:
+          root: incident
+          accessor: emailsenderip
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: foundIncidents.CustomFields.emailsenderip
+                iscontext: true
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto:
+        complex:
+          root: incident
+          accessor: emailto
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: foundIncidents.CustomFields.emailto
+                iscontext: true
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+      emailtocount: {}
+      emailurlclicked: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      id: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      measurestomitigate: {}
+      memberfirm: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      priority: {}
+      replacePlaybook: {}
+      roles: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      sourceip: {}
+      sourcelink: {}
+      sourceuser: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      telephoneno: {}
+      threat: {}
+      threattype: {}
+      timestamp:
+        complex:
+          root: incident
+          accessor: timestamp
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: foundIncidents.CustomFields.timestamp
+                iscontext: true
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+      type: {}
+      user: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": 565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "43":
+    id: "43"
+    taskid: 35a0f781-650a-43ca-8770-b0ab1e5d84e4
+    type: condition
+    task:
+      id: 35a0f781-650a-43ca-8770-b0ab1e5d84e4
+      version: -1
+      name: Is classification Spam ?
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "18"
+      "yes":
+      - "44"
+    scriptarguments:
+      left:
+        simple: ${incident.labels.classification}
+      right:
+        simple: spam
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1270,
+          "y": -795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "44":
+    id: "44"
+    taskid: 3761ef3d-57de-441f-8a8b-1c6d3d12abdf
+    type: regular
+    task:
+      id: 3761ef3d-57de-441f-8a8b-1c6d3d12abdf
+      version: -1
+      name: Create SPAM Incident in SecOps
+      description: Creates a new content record in the given application.
+      script: GSOC SecOps|||archer-create-record
+      type: regular
+      iscommand: true
+      brand: GSOC SecOps
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      applicationId:
+        simple: "433"
+      fieldsToValues:
+        simple: '{"Title":"ProofPoint Spam Defense","Source":"Proofpoint TAP","Environment":"Traditional","Priority
+          Override":"P-3","Member Firm":"${incident.memberfirm}","Incident Summary":"An
+          email containing URL was delivered to an end user and it has been clicked.
+          The URL has been categorized as spam by Proof Point.<br/> <a href=''${incident.labels.threatURL}''
+          target=''_new''>Link to ProofPoint TAP Alert</a>"}'
+      using:
+        simple: GSOC SecOps_instance_REST
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": -610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "45":
+    id: "45"
+    taskid: 7daac8fe-28ac-4eb3-855c-11defddb3d97
+    type: regular
+    task:
+      id: 7daac8fe-28ac-4eb3-855c-11defddb3d97
+      version: -1
+      name: URL Scan Details
+      script: Rasterize|||rasterize
+      type: regular
+      iscommand: true
+      brand: Rasterize
+    nexttasks:
+      '#none#':
+      - "35"
+      - "47"
+    scriptarguments:
+      height:
+        simple: 1080px
+      type: {}
+      url:
+        simple: ${URLScan.ScanURL}
+      width:
+        simple: 1400px
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1690,
+          "y": 20
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+  "46":
+    id: "46"
+    taskid: 2d39b025-c315-4dc8-8b31-06d6b5988ca7
+    type: regular
+    task:
+      id: 2d39b025-c315-4dc8-8b31-06d6b5988ca7
+      version: -1
+      name: URLScan Result link
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      value:
+        simple: ${URLScan.ScanURL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1690,
+          "y": -105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "47":
+    id: "47"
+    taskid: 1d31e113-58c5-4b68-857c-edf4a354114f
+    type: condition
+    task:
+      id: 1d31e113-58c5-4b68-857c-edf4a354114f
+      version: -1
+      name: Download file exists ?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "13"
+      "yes":
+      - "48"
+    scriptarguments:
+      value:
+        simple: ${URLScan.DownloadedFile.sha256}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1810,
+          "y": 275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "48":
+    id: "48"
+    taskid: e89a6375-dc8b-4772-830f-fe75d1ffc5fa
+    type: regular
+    task:
+      id: e89a6375-dc8b-4772-830f-fe75d1ffc5fa
+      version: -1
+      name: URL Downloaded file Hash check VT
+      script: GSOC VirusTotal - Private API|||vt-private-get-file-report
+      type: regular
+      iscommand: true
+      brand: GSOC VirusTotal - Private API
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      allInfo: {}
+      extend-context:
+        simple: VTFile=.
+      resource:
+        simple: ${URLScan.DownloadedFile.sha256}
+      shortFormat:
+        simple: "true"
+      threshold:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1810,
+          "y": 510
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+  "49":
+    id: "49"
+    taskid: a370da6a-17c5-4c0b-8545-6e22620c5a3d
+    type: condition
+    task:
+      id: a370da6a-17c5-4c0b-8545-6e22620c5a3d
+      version: -1
+      name: Does URLScan Verdict Exist ?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "52"
+      "yes":
+      - "50"
+    scriptarguments:
+      value:
+        simple: ${URLScan.Verdicts.malicious}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2650,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "50":
+    id: "50"
+    taskid: 193b724d-2048-4b48-840a-b8100cfb98d5
+    type: condition
+    task:
+      id: 193b724d-2048-4b48-840a-b8100cfb98d5
+      version: -1
+      name: Verdict is malicious ?
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "52"
+      "yes":
+      - "51"
+    scriptarguments:
+      left:
+        simple: ${URLScan.Verdicts.malicious}
+      right:
+        simple: "true"
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2910,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "51":
+    id: "51"
+    taskid: 22ad0156-1080-482c-89c3-e2b2b5dbf2dc
+    type: title
+    task:
+      id: 22ad0156-1080-482c-89c3-e2b2b5dbf2dc
+      version: -1
+      name: Escalation
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+      - "22"
+      - "56"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2510,
+          "y": 1835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "52":
+    id: "52"
+    taskid: 06b84dd9-e0b2-41f9-85e5-e34a8161e51e
+    type: condition
+    task:
+      id: 06b84dd9-e0b2-41f9-85e5-e34a8161e51e
+      version: -1
+      name: Virus Total has positives ?
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "28"
+      "yes":
+      - "53"
+    scriptarguments:
+      value:
+        simple: ${VirusTotal.positives}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2530,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "53":
+    id: "53"
+    taskid: 7704e509-ce31-45e2-8fc9-a9984b92a9e7
+    type: condition
+    task:
+      id: 7704e509-ce31-45e2-8fc9-a9984b92a9e7
+      version: -1
+      name: VT Poisitives > 1
+      description: |-
+        Checks if one number(float) as bigger than the other(float)
+        Returns yes: if first > second
+        Returns no: if first <= second
+        Returns exception if one of the inputs is not a number
+      scriptName: IsGreaterThan
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "28"
+      "yes":
+      - "51"
+    scriptarguments:
+      first:
+        simple: ${VirusTotal.positives}
+      second:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2520,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "54":
+    id: "54"
+    taskid: c9462ed2-7373-4ff6-8a8b-7eb73bfc4337
+    type: regular
+    task:
+      id: c9462ed2-7373-4ff6-8a8b-7eb73bfc4337
+      version: -1
+      name: Mark Incident for Manual Review
+      script: GSOC SecOps|||archer-update-record
+      type: regular
+      iscommand: true
+      brand: GSOC SecOps
+    scriptarguments:
+      applicationId:
+        simple: "433"
+      contentId:
+        simple: ${incident.archerincidentid}
+      fieldsToValues:
+        simple: '{"Incident Status":"New"}'
+      incidentId: {}
+      using:
+        simple: GSOC SecOps_instance_REST
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1990,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "55":
+    id: "55"
+    taskid: 5f69c693-5d8a-401e-8775-e3e874a9a9d4
+    type: regular
+    task:
+      id: 5f69c693-5d8a-401e-8775-e3e874a9a9d4
+      version: -1
+      name: IBM X-Force Scan results
+      scriptName: ParseJsonToMD
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      Depth:
+        simple: "3"
+      JSONBody:
+        simple: ${X-Force.url}
+      Title:
+        simple: IBM X-Force Scan Results
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": -75
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+  "56":
+    id: "56"
+    taskid: f972bed0-5c93-4d0d-813e-47ab2b109877
+    type: regular
+    task:
+      id: f972bed0-5c93-4d0d-813e-47ab2b109877
+      version: -1
+      name: Get Member Firm escalation details
+      description: Search for records inside the given application.
+      script: GSOC SecOps|||archer-search-records
+      type: regular
+      iscommand: true
+      brand: GSOC SecOps
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      applicationId:
+        simple: "192"
+      dateOperator: {}
+      extend-context:
+        simple: SearchMF=Fields.
+      fieldToSearchOn:
+        simple: Member Firm
+      fieldsToDisplay:
+        simple: Member Firm,Escalation Functional MailBox,Escalation ${incident.labels.Priority=val.replace('-','')}
+          Email
+      fullData: {}
+      getInnerRecords: {}
+      isDescending: {}
+      maxResults: {}
+      numericOperator: {}
+      searchValue:
+        simple: ${incident.memberfirm}
+      using:
+        simple: GSOC SecOps_instance_REST
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2960,
+          "y": 2280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "57":
+    id: "57"
+    taskid: c78d435c-b782-496b-8e0a-3c92e29d4c5b
+    type: regular
+    task:
+      id: c78d435c-b782-496b-8e0a-3c92e29d4c5b
+      version: -1
+      name: Set Escalation Emails for Member Firm
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      append: {}
+      key:
+        simple: EscalationToMF
+      value:
+        complex:
+          root: SearchMF
+          accessor: '[0].Escalation Functional MailBox'
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: SearchMF.[0].Escalation P3 Email
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: SearchMF.[0].Escalation P1 Email
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: SearchMF.[0].Escalation P2 Email
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: SearchMF.[0].Escalation P4 Email
+                iscontext: true
+          - operator: join
+            args:
+              separator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2960,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "58":
+    id: "58"
+    taskid: 58fd706a-cd01-4496-828c-682c820f28d7
+    type: regular
+    task:
+      id: 58fd706a-cd01-4496-828c-682c820f28d7
+      version: -1
+      name: getEscalationCountriesList
+      description: Get a list from lists repository
+      script: Builtin|||getList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "59"
+      - "60"
+    scriptarguments:
+      extend-context:
+        simple: EscalationList=.
+      listName:
+        simple: EscalationCountries
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2740,
+          "y": 415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "59":
+    id: "59"
+    taskid: 64c990a6-dd70-4531-8dc8-b0fa09fc4a61
+    type: condition
+    task:
+      id: 64c990a6-dd70-4531-8dc8-b0fa09fc4a61
+      version: -1
+      name: Is Member Firm Selected for Early Adopters ?
+      description: Indicates whether a given value is a member of given array
+      scriptName: IsValueInArray
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "49"
+    scriptarguments:
+      array:
+        simple: ${EscalationList}
+      value:
+        simple: ${incident.memberfirm}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2720,
+          "y": 605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "60":
+    id: "60"
+    taskid: 021ade86-cb55-4cbe-83ed-7c9bccd1185b
+    type: regular
+    task:
+      id: 021ade86-cb55-4cbe-83ed-7c9bccd1185b
+      version: -1
+      name: Temporary
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: '"Member Firm not selected for Automation"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3170,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "61":
+    id: "61"
+    taskid: 7d3716c5-d300-40e4-8308-dd2472aa763a
+    type: regular
+    task:
+      id: 7d3716c5-d300-40e4-8308-dd2472aa763a
+      version: -1
+      name: Print
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      value:
+        simple: '"Temp for US"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2670,
+          "y": 3130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "62":
+    id: "62"
+    taskid: 254d31b9-9eaf-4ccc-896a-cc63c23dc7d7
+    type: regular
+    task:
+      id: 254d31b9-9eaf-4ccc-896a-cc63c23dc7d7
+      version: -1
+      name: Set Incident Status to Member Firm - Escalated
+      description: Updates existing content record in the given application.
+      script: GSOC SecOps|||archer-update-record
+      type: regular
+      iscommand: true
+      brand: GSOC SecOps
+    scriptarguments:
+      applicationId:
+        simple: "433"
+      contentId:
+        simple: ${incident.archerincidentid}
+      fieldsToValues:
+        simple: '{"Incident Status":"Member Firm - Escalated","MF Notified by":"Automation"}'
+      incidentId: {}
+      using:
+        simple: GSOC SecOps_instance_REST
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2190,
+          "y": 3700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "63":
+    id: "63"
+    taskid: 2088d347-47e0-4dcf-86b4-9e9aa923a5f3
+    type: regular
+    task:
+      id: 2088d347-47e0-4dcf-86b4-9e9aa923a5f3
+      version: -1
+      name: Set Incident Status to Triage Investigation
+      description: Updates existing content record in the given application.
+      script: GSOC SecOps|||archer-update-record
+      type: regular
+      iscommand: true
+      brand: GSOC SecOps
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      applicationId:
+        simple: "433"
+      contentId:
+        simple: ${incident.archerincidentid}
+      fieldsToValues:
+        simple: '{"Incident Status":"Triage Investigation","Incident Owner":"413"}'
+      incidentId: {}
+      using:
+        simple: GSOC SecOps_instance_REST
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2190,
+          "y": 3310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5875,
+        "width": 3640,
+        "x": -90,
+        "y": -2080
+      }
+    }
+  }
+inputs: []
+outputs: []
