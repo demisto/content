@@ -356,7 +356,7 @@ def generate_section(title, data):
 # Setup integration on Demisto
 def generate_setup_section(yaml_data):
     params_list = [
-        PARAMS_LIST.format(param=conf['display']) if conf['display'] else PARAMS_LIST.format(param=conf['name']) for
+        PARAMS_LIST.format(param=conf['display'] if conf.get('display') else conf['name']) for
         conf in yaml_data.get('configuration', [])]
     return SETUP_CONFIGURATION.format(params_list='\n'.join(params_list), integration_name=yaml_data['name'])
 
