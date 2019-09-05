@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
+import demistomock as demisto
 import dateparser
+import pytest
 
 
 def approximate_compare(time1, time2):
@@ -11,13 +13,32 @@ def approximate_compare(time1, time2):
     return timedelta(seconds=-30) <= time1 - time2 <= timedelta(seconds=3)
 
 
-def test_fetch_incidents():
+def test_fetch_incidents(mocker, requests_mock):
+    mocker.patch.object(demisto, 'params', return_value={
+        'fetch_limit': '1',
+        'url': 'https://vigilant.alienvault.cloud/'
+    })
+    mocker.patch.object(demisto, 'getLastRun', return_value={'time': '2019-01-15T15:47:29.959Z'})
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'incidents')
     from AlienVault_USM_Anywhere import fetch_incidents
-    try:
-        fetch_incidents()
-        assert True
-    except ValueError:
-        assert False
+    requests_mock.get(
+        'https://vigilant.alienvault.cloud/api/2.0/alarms?page=1&size=1&sort=timestamp_occured%2Casc&timestamp_occured_gte=1547560049000',
+        json={
+            '_embedded': {
+                'alarms': [
+                    {
+                        'uuid': '444444444',
+                        'timestamp_occured_iso8601': '2019-07-12T06:00:38.000Z',
+                    }
+                ]
+            },
+            'page': {
+                'totalElements': 1861
+            }
+        }
+    )
+    fetch_incidents()
 
 
 def test_get_time_range():
