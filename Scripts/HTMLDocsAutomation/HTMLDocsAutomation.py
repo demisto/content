@@ -12,25 +12,6 @@ OVERVIEW: str = '''<p>
 </p>
 '''
 
-SETUP_CONFIGURATION: str = '''<h2>Configure {integration_name} on Demisto</h2>
-<ol>
-  <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
-  &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
-  <li>Search for {integration_name}.</li>
-  <li>
-    Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
-    <ul>
-      <li><strong>Name</strong>: a textual name for the integration instance.</li>
-    </ul>
-  </li>
-</ol>
-<ol start="4">
-  <li>
-    Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
-  </li>
-</ol>
-'''
-
 COMMANDS_HEADER: str = '''<h2>Commands</h2>
 <p>
   You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
@@ -353,24 +334,39 @@ def generate_section(title, data):
 
 # Setup integration on Demisto
 def generate_setup_section(yaml_data):
-    section = [
-        '1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.',
-        '2. Search for {}.'.format(yaml_data['name']),
-        '3. Click __Add instance__ to create and configure a new integration instance.',
-        '    * __Name__: a textual name for the integration instance.',
-    ]
+    section = '''<h2>Configure {integration_name} on Demisto</h2>
+            <ol>
+              <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
+              &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
+              <li>Search for {integration_name}.</li>
+              <li>
+                Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
+                <ul>
+                  <li><strong>Name</strong>: a textual name for the integration instance.</li>
+                </ul>'''.format(integration_name=yaml_data['name'])
     for conf in yaml_data['configuration']:
         if conf['display']:
-            section.append('    * __{}__'.format(conf['display']))
+            section += '''<ul>
+                            <li><strong>{display}</strong></li>
+                          </ul>'''.format(display=conf['display'])
         else:
-            section.append('    * __{}__'.format(conf['name']))
-    section.append('4. Click __Test__ to validate the URLs, token, and connection.')
+            section += '''<ul>
+                            <li><strong>{name}</strong></li>
+                          </ul>'''.format(name=conf['name'])
+    section += '''</li>
+                    </ol>
+                    <ol start="4">
+                      <li>
+                        Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
+                      </li>
+                    </ol>
+                    '''
 
     return section
 
 
 # Commands
-def generate_commands_section(yaml_data, example_dict):
+def generate_commands_section(yaml_data, example_dict, should_include_permissions):
     errors: list = []
     command_sections: list = []
 
@@ -378,21 +374,14 @@ def generate_commands_section(yaml_data, example_dict):
     command_list = [COMMAND_LIST.format(command_hr=cmd['name'], command=cmd['name']) for cmd in commands]
 
     for i, cmd in enumerate(commands):
-        cmd_section, cmd_errors = generate_single_command_section(i + 1, cmd, example_dict)
+        cmd_section, cmd_errors = generate_single_command_section(i + 1, cmd, example_dict, should_include_permissions)
         command_sections.append(cmd_section)
         errors.extend(cmd_errors)
 
     return (COMMANDS_HEADER.format(command_list='\n'.join(command_list)) + '\n'.join(command_sections)), errors
 
 
-def get_permissions_entry():
-    if demisto.args().get('permissions') == 'per-command':
-        return PERMISSIONS_PER_COMMAND
-    else:
-        return ''
-
-
-def generate_single_command_section(index, cmd, example_dict):
+def generate_single_command_section(index, cmd, example_dict, should_include_permissions):
     cmd_example: str = example_dict.get(cmd['name'])
     errors: list = []
     template: dict = {
@@ -400,7 +389,7 @@ def generate_single_command_section(index, cmd, example_dict):
         'command_hr': cmd['name'],
         'command': cmd['name'],
         'command_description': cmd.get('description', ' '),
-        'permissions': get_permissions_entry(),
+        'permissions': PERMISSIONS_PER_COMMAND if should_include_permissions else '',
     }
 
     # Inputs
@@ -486,20 +475,19 @@ def generate_html_docs(args, yml_data, example_dict, errors):
                              args.get('fetchedData',
                                       'Populate this section with Fetch incidents data'))
 
-    # Setup Configuration
-    docs += SETUP_CONFIGURATION.format(integration_name=yml_data['name'])
     # # Setup integration to work with Demisto
     #
     # docs.extend(generate_section('Configure {} on Demisto'.format(yml_data['name']), args.get('setupOnIntegration')))
-    # # Setup integration on Demisto
-    # docs.extend(generate_setup_section(yml_data))
+
+    # Setup integration on Demisto
+    docs += (generate_setup_section(yml_data))
 
     #  Permissions
-    if demisto.args().get('permissions') == 'global':
+    if args.get('permissions') == 'global':
         docs += PERMISSIONS_HEADER
 
     # Commands
-    command_section, command_errors = generate_commands_section(yml_data, example_dict)
+    command_section, command_errors = generate_commands_section(yml_data, example_dict, args.get('permissions') == 'per-command')
     docs += command_section
     errors.extend(command_errors)
 
