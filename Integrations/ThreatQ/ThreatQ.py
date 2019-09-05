@@ -19,7 +19,7 @@ CLIENT_ID = demisto.params()['client_id']
 EMAIL = demisto.getParam('credentials').get('identifier')
 PASSWORD = demisto.getParam('credentials').get('password')
 USE_SSL = not demisto.params().get('insecure', False)
-THRESHOLD = demisto.params().get('threshold')
+THRESHOLD = int(demisto.params().get('threshold', '0'))
 if THRESHOLD:
     THRESHOLD = int(THRESHOLD)
 
