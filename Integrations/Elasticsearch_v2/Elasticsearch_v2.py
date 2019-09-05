@@ -231,7 +231,6 @@ def fetch_incidents():
 
     es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
                        http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE)
-
     query = QueryString(query=FETCH_QUERY)
     search = Search(using=es, index=FETCH_INDEX).query(query)
     response = search.execute().to_dict()
