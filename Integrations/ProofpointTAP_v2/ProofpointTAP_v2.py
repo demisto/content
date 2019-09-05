@@ -250,6 +250,25 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
 
     return next_run, incidents
 
+def get_forensics(client, threat_id,server_url,api_version,verify_certificate,service_principal,secret):
+    forensic_url = "{}/{}/forensics?threatId={}".format(server_url, api_version,threat_id)
+    method = "GET"
+
+    res = requests.request(
+            method,
+            forensic_url,
+            verify=verify_certificate,
+            auth=(service_principal, secret)
+        )
+    if res.status_code not in [200, 204]:
+            raise ValueError('Error in API call to Proofpoint TAP [%d]. Reason: %s %s' % (res.status_code, res.text))
+
+    try:
+        return res.json()
+    except Exception:
+        raise ValueError(
+            "Failed to parse http response to JSON format. Original response body: \n{}".format(res.text))
+
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
@@ -288,6 +307,14 @@ def main():
         if demisto.command() == 'test-module':
             results = test_module(client, fetch_time, event_type_filter)
             return_outputs(results, None)
+
+            
+        elif demisto.command() == 'proofpoint-get-forensics':
+            threat_id=demisto.args().get("threat_id")
+            results = get_forensics(client, threat_id,server_url,api_version,verify_certificate,service_principal,secret)
+            fileres = fileResult('Forensics_Report.txt',json.dumps(results,indent=1))
+            demisto.results(fileres)
+            return_outputs({'Forensics':fileres},{'Forensics':fileres},None)
 
         elif demisto.command() == 'fetch-incidents':
             next_run, incidents = fetch_incidents(
