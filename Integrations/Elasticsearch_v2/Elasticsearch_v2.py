@@ -148,16 +148,16 @@ def test_func():
 
     if demisto.params().get('isFetch'):
         str_error = []  # type:List
-        if TIME_FIELD is None:
+        if TIME_FIELD == '':
             str_error.append("Time field is not configured for fetch in the integration parameters")
 
-        if FETCH_INDEX is None:
+        if FETCH_INDEX == '':
             str_error.append("Index is not configured for fetch in the integration parameters")
 
-        if FETCH_QUERY is None:
+        if FETCH_QUERY == '':
             str_error.append("Query is not configured for fetch in the integration parameters")
 
-        if TIME_FORMAT is None:
+        if TIME_FORMAT == '':
             str_error.append("Time format is not configured for fetch in the integration parameters")
 
         if len(str_error) > 0:
@@ -167,10 +167,14 @@ def test_func():
             es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
                                http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE)
 
-            query = QueryString(query=str(TIME_FIELD) + ":*")
+            query = QueryString(query=str(TIME_FIELD) + ":* AND " + FETCH_QUERY)
             search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
             response = search.execute().to_dict()
             _, total_results = get_total_results(response)
+
+            if total_results == 0:
+                return_error("Fetch incidents test failed - Please check configuration")
+
             if total_results > 0:
                 hit_date = str(response.get('hits', {}).get('hits')[0].get('_source').get(str(TIME_FIELD)))
                 datetime.strptime(hit_date, TIME_FORMAT).isoformat() + 'Z'
