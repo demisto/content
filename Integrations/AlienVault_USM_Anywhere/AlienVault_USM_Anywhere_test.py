@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 import dateparser
-import pytest
 
 
 def approximate_compare(time1, time2):
