@@ -61,37 +61,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
-    taskid: d4315d15-5eac-4619-82a9-b9b3605b5cab
-    type: regular
-    task:
-      id: d4315d15-5eac-4619-82a9-b9b3605b5cab
-      version: -1
-      name: hybrid-analysis-quick-scan-url
-      description: Scan a url for analysis
-      script: '|||hybrid-analysis-quick-scan-url'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      scan_type: {}
-      url:
-        simple: www.google.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "4":
     id: "4"
     taskid: fbe56d92-ec38-4117-84bf-cbcee07f9616
@@ -368,7 +337,7 @@ tasks:
       '#default#':
       - "17"
       "yes":
-      - "3"
+      - "22"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -569,10 +538,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 96802709-c424-4ea7-839c-ce48ca76b19f
+    taskid: eb5cc410-f11a-4ed4-8e11-978178d02daf
     type: condition
     task:
-      id: 96802709-c424-4ea7-839c-ce48ca76b19f
+      id: eb5cc410-f11a-4ed4-8e11-978178d02daf
       version: -1
       name: verify quick-scan results
       type: condition
@@ -587,16 +556,13 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualNumber
+      - - operator: isExists
           left:
             value:
               complex:
                 root: DBotScore
                 accessor: Score
             iscontext: true
-          right:
-            value:
-              simple: "1"
       - - operator: isEqualString
           left:
             value:
@@ -608,8 +574,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1770
+          "x": 270,
+          "y": 1720
         }
       }
     note: false
@@ -642,77 +608,28 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "20":
-    id: "20"
-    taskid: e90dcd61-7d08-47c2-878c-9d283b1064b7
-    type: regular
-    task:
-      id: e90dcd61-7d08-47c2-878c-9d283b1064b7
-      version: -1
-      name: hybrid-analysis-quick-scan-url-results
-      description: Get the scan results of given url ID
-      script: '|||hybrid-analysis-quick-scan-url-results'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      ID:
-        simple: ${HybridAnalysis.URL.ID}
-      min_malicious_scanners: {}
-      scanID:
-        simple: ${HybridAnalysis.URL.ScanID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "21":
-    id: "21"
-    taskid: 288dfce5-2aeb-4256-87a2-83a78bdd971b
+  "22":
+    id: "22"
+    taskid: b7c5c3a7-5097-4317-82a2-632545d0bbc4
     type: playbook
     task:
-      id: 288dfce5-2aeb-4256-87a2-83a78bdd971b
+      id: b7c5c3a7-5097-4317-82a2-632545d0bbc4
       version: -1
-      name: GenericPolling
-      description: |-
-        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
+      name: Hybrid-analysis quick-scan
+      playbookName: Hybrid-analysis quick-scan
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+      - "18"
     scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
-      Ids:
-        simple: ${HybridAnalysis.URL.ScanID}
-      Interval:
-        simple: "1"
-      PollingCommandArgName:
-        simple: scanID
-      PollingCommandName:
-        simple: hybrid-analysis-quick-scan-url-results
-      Timeout:
-        simple: "10"
-      dt:
-        simple: HybridAnalysis.URL(val.Finished != 'true').ScanID
+      min_malicious_scanners:
+        simple: "2"
+      scan_type:
+        simple: all
+      url:
+        simple: www.google.com
     separatecontext: true
     loop:
       iscommand: false
@@ -721,8 +638,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1430
+          "x": 260,
+          "y": 1530
         }
       }
     note: false
@@ -731,7 +648,6 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "12_3_yes": 0.65,
       "6_11_yes": 0.35
     },
     "paper": {
