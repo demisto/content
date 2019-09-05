@@ -1,4 +1,6 @@
 ## [Unreleased]
+Direct message - support multiline JSON in incident creation
+
 
 
 ## [19.9.0] - 2019-09-04
