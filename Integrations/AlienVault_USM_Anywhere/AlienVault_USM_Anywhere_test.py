@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import dateparser
+import pytest
 
 
 def approximate_compare(time1, time2):
@@ -9,6 +10,15 @@ def approximate_compare(time1, time2):
         time2 = datetime.fromtimestamp(time2 / 1000)
 
     return timedelta(seconds=-30) <= time1 - time2 <= timedelta(seconds=3)
+
+
+def test_fetch_incidents():
+    from AlienVault_USM_Anywhere import fetch_incidents
+    try:
+        fetch_incidents()
+        assert True
+    except ValueError:
+        assert False
 
 
 def test_get_time_range():
