@@ -898,7 +898,7 @@ def test_new_beta_integration_with_beta_substring_in_name():
         "the validator should not allow it for new integration"
 
 
-def test_cahnged_beta_integration_with_beta_substrng_in_is_and_name():
+def test_cahnged_beta_integration_with_beta_substring_in_is_and_name():
     validator = IntegrationValidator("temp_file", check_git=False)
     validator.old_integration = {
         "commonfields": {
@@ -922,7 +922,7 @@ def test_cahnged_beta_integration_with_beta_substrng_in_is_and_name():
         "but it should have approved"
 
 
-def test_cahnged_beta_integration_with_without_beta_field():
+def test_changed_beta_integration_without_beta_field():
     validator = IntegrationValidator("temp_file", check_git=False)
     validator.old_integration = {
         "commonfields": {
