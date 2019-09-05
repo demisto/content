@@ -1,5 +1,4 @@
 ## [Unreleased]
-SlackAsk - Support replying in threads
 Direct message - support multiline JSON in incident creation
 
 
