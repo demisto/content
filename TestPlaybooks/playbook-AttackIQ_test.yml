@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e1cbdd48-28a5-4ccf-8d88-169663cf97d4
+    taskid: 50a81096-9dcc-46c7-8fb7-f335bbdb1ec4
     type: start
     task:
-      id: e1cbdd48-28a5-4ccf-8d88-169663cf97d4
+      id: 50a81096-9dcc-46c7-8fb7-f335bbdb1ec4
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: bc8e241a-daea-4777-86ba-ed5a7e4e142d
+    taskid: 11634230-0825-45a8-8a0d-0ff767fce5c9
     type: regular
     task:
-      id: bc8e241a-daea-4777-86ba-ed5a7e4e142d
+      id: 11634230-0825-45a8-8a0d-0ff767fce5c9
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -63,10 +63,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 2e8a4b36-227c-4a3a-8df1-98297eb58eee
+    taskid: d29e67bf-9dca-40f4-860d-df6f46286062
     type: regular
     task:
-      id: 2e8a4b36-227c-4a3a-8df1-98297eb58eee
+      id: d29e67bf-9dca-40f4-860d-df6f46286062
       version: -1
       name: Activate assessment
       description: Activates the assessment. this is required for execution.
@@ -93,10 +93,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 6aa03fd5-f7fe-4667-8a92-2df54b8d64eb
+    taskid: 71fcf902-bf5e-48d0-8efa-162d58d831a1
     type: regular
     task:
-      id: 6aa03fd5-f7fe-4667-8a92-2df54b8d64eb
+      id: 71fcf902-bf5e-48d0-8efa-162d58d831a1
       version: -1
       name: Get assessment execution status
       description: Get assessment execution status - supports only on demand runs.
@@ -123,10 +123,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: c49743e8-781c-42af-8463-be9ca4c0b10f
+    taskid: cceb6b99-3f6f-4b4f-8682-a294f958a1c6
     type: condition
     task:
-      id: c49743e8-781c-42af-8463-be9ca4c0b10f
+      id: cceb6b99-3f6f-4b4f-8682-a294f958a1c6
       version: -1
       name: Assert execution status
       type: condition
@@ -134,7 +134,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "5"
+      - "7"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -154,123 +154,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
-    taskid: b1a1f498-a32f-44c6-8810-3dc7fb51e095
-    type: regular
-    task:
-      id: b1a1f498-a32f-44c6-8810-3dc7fb51e095
-      version: -1
-      name: Get test execution status
-      description: Get test run status.
-      script: '|||attackiq-get-test-execution-status'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      test_id:
-        simple: 1c350a5a-84f2-4938-93d8-cc31f0a99482
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 22691038-0f0f-476c-8bb3-0796810a9175
-    type: condition
-    task:
-      id: 22691038-0f0f-476c-8bb3-0796810a9175
-      version: -1
-      name: Assert test execution status
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
-            value:
-              simple: AttackIQ.Test.Detected
-            iscontext: true
-          right:
-            value:
-              simple: "0"
-      - - operator: isEqualNumber
-          left:
-            value:
-              simple: AttackIQ.Test.Failed
-            iscontext: true
-          right:
-            value:
-              simple: "2"
-      - - operator: isTrue
-          left:
-            value:
-              simple: AttackIQ.Test.Finished
-            iscontext: true
-      - - operator: isEqualNumber
-          left:
-            value:
-              simple: AttackIQ.Test.Passed
-            iscontext: true
-          right:
-            value:
-              simple: "49"
-      - - operator: isEqualNumber
-          left:
-            value:
-              simple: AttackIQ.Test.Errored
-            iscontext: true
-          right:
-            value:
-              simple: "0"
-      - - operator: isEqualNumber
-          left:
-            value:
-              simple: AttackIQ.Test.Total
-            iscontext: true
-          right:
-            value:
-              simple: "51"
-      - - operator: isEqualString
-          left:
-            value:
-              simple: AttackIQ.Test.Id
-            iscontext: true
-          right:
-            value:
-              simple: 1c350a5a-84f2-4938-93d8-cc31f0a99482
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "7":
     id: "7"
-    taskid: 4594945e-2a35-433a-8c6a-8a3b00af57a8
+    taskid: 8f500abf-3355-45a5-8015-77c63a74ce3a
     type: regular
     task:
-      id: 4594945e-2a35-433a-8c6a-8a3b00af57a8
+      id: 8f500abf-3355-45a5-8015-77c63a74ce3a
       version: -1
       name: Get test results
       script: '|||attackiq-get-test-results'
@@ -290,7 +179,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 895
         }
       }
     note: false
@@ -298,10 +187,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 5862747c-718c-4a0b-8bbe-334d97e5c28a
+    taskid: 9233bc83-e99c-4d9f-86d8-30fb867ea9c9
     type: condition
     task:
-      id: 5862747c-718c-4a0b-8bbe-334d97e5c28a
+      id: 9233bc83-e99c-4d9f-86d8-30fb867ea9c9
       version: -1
       name: Assert test results
       type: condition
@@ -411,7 +300,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1070
         }
       }
     note: false
@@ -419,10 +308,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: f89bac25-3e76-44b3-8bae-6545a64e17a7
+    taskid: c3826f73-3d0a-476c-8e59-54534fd440d9
     type: regular
     task:
-      id: f89bac25-3e76-44b3-8bae-6545a64e17a7
+      id: c3826f73-3d0a-476c-8e59-54534fd440d9
       version: -1
       name: Get all assessments
       description: Get all assessments in a page or by assessment id.
@@ -441,7 +330,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1245
         }
       }
     note: false
@@ -449,10 +338,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: a489cbab-2378-4fdc-859f-282cd4d49bc8
+    taskid: eb7a1228-799c-4e13-8f78-e938b0915eb3
     type: condition
     task:
-      id: a489cbab-2378-4fdc-859f-282cd4d49bc8
+      id: eb7a1228-799c-4e13-8f78-e938b0915eb3
       version: -1
       name: Assert assessments
       type: condition
@@ -645,7 +534,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1420
         }
       }
     note: false
@@ -653,10 +542,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 58874ea7-c907-4813-8a16-2810276b8745
+    taskid: 56a8abdd-0047-460f-82a5-fbcd9166d033
     type: regular
     task:
-      id: 58874ea7-c907-4813-8a16-2810276b8745
+      id: 56a8abdd-0047-460f-82a5-fbcd9166d033
       version: -1
       name: Get tests by assessment
       script: '|||attackiq-list-tests-by-assessment'
@@ -674,7 +563,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 1595
         }
       }
     note: false
@@ -682,10 +571,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 754822b1-9285-4ad1-8171-d3116717a486
+    taskid: 11cbdae4-46c2-47ab-8711-46b0ae364362
     type: condition
     task:
-      id: 754822b1-9285-4ad1-8171-d3116717a486
+      id: 11cbdae4-46c2-47ab-8711-46b0ae364362
       version: -1
       name: Assert tests
       type: condition
@@ -693,7 +582,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "13"
+      - "15"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -853,7 +742,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 1770
         }
       }
     note: false
@@ -861,10 +750,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: e2a96731-5c21-4fbe-8c7e-06a01fbe236e
+    taskid: 857e9ecd-9857-474d-8b47-6dfc0d73aea9
     type: title
     task:
-      id: e2a96731-5c21-4fbe-8c7e-06a01fbe236e
+      id: 857e9ecd-9857-474d-8b47-6dfc0d73aea9
       version: -1
       name: Done
       description: runs all of the tests in the assessment.
@@ -872,6 +761,114 @@ tasks:
       iscommand: false
       brand: ""
     separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: e93e25cd-d627-4bf0-8358-c8abad3c8205
+    type: regular
+    task:
+      id: e93e25cd-d627-4bf0-8358-c8abad3c8205
+      version: -1
+      name: Get assessment by id
+      description: Get all assessments in a page or by assessment id.
+      script: '|||attackiq-get-assessment-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      assessment_id:
+        simple: c4e352ae-1506-4c74-bd90-853f02dd765a
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 35b0f33c-2ff6-4be5-8f41-ee8891663899
+    type: regular
+    task:
+      id: 35b0f33c-2ff6-4be5-8f41-ee8891663899
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: a720349e-f86e-4974-812e-06d4ca96aa11
+    type: condition
+    task:
+      id: a720349e-f86e-4974-812e-06d4ca96aa11
+      version: -1
+      name: Assert get assessment results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Assessment.Id
+            iscontext: true
+          right:
+            value:
+              simple: c4e352ae-1506-4c74-bd90-853f02dd765a
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Assessment.DefaultSchedule
+            iscontext: true
+          right:
+            value:
+              simple: 41;8;*;*;1
     view: |-
       {
         "position": {
@@ -887,7 +884,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2310,
+        "height": 2485,
         "width": 380,
         "x": 50,
         "y": 50

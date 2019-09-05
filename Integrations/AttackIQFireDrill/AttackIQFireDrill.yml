@@ -32,6 +32,93 @@ script:
       name: assessment_id
       required: false
       secret: false
+    deprecated: false
+    description: Get all assessments in a page or by assessment id.
+    execution: false
+    name: attackiq-get-assessment-by-id
+    outputs:
+    - contextPath: AttackIQ.Assessment.Id
+      type: String
+      description: Assessment ID.
+    - contextPath: AttackIQ.Assessment.Name
+      type: String
+      description: Assessment Name.
+    - contextPath: AttackIQ.Assessment.Description
+      type: String
+      description: Assessment description.
+    - contextPath: AttackIQ.Assessment.StartDate
+      type: Date
+      description: ''
+    - contextPath: AttackIQ.Assessment.EndDate
+      type: Date
+      description: ''
+    - contextPath: AttackIQ.Assessment.AssessmentState
+      type: String
+      description: Assessment's state. Can be Active or Inactive.
+    - contextPath: AttackIQ.Assessment.DefaultSchedule
+      type: String
+      description: Assessment's default schedule timing (cron).
+    - contextPath: AttackIQ.Assessment.AssessmentTemplate.Id
+      type: String
+      description: Assessment template ID.
+    - contextPath: AttackIQ.Assessment.AssessmentTemplate.TemplateName
+      type: String
+      description: Assessment template Name.
+    - contextPath: AttackIQ.Assessment.AssessmentTemplate.TemplateDescription
+      type: String
+      description: Assessment template description.
+    - contextPath: AttackIQ.Assessment.AssessmentTemplate.AssessmentTemplateType.Id
+      type: String
+      description: Assessment template type ID.
+    - contextPath: AttackIQ.Assessment.AssessmentTemplate.AssessmentTemplateType.Name
+      type: String
+      description: Assessment template type name.
+    - contextPath: AttackIQ.Assessment.AssessmentTemplate.AssessmentTemplateType.Description
+      type: String
+      description: Assessment template type description.
+    - contextPath: AttackIQ.Assessment.AssessmentTemplate.DefaultSchedule
+      type: Unknown
+      description: Assessment's template default schedule timing (cron).
+    - contextPath: AttackIQ.Assessment.AssessmentTemplate.Company
+      type: String
+      description: The owner of the template.
+    - contextPath: AttackIQ.Assessment.AssessmentTemplate.Created
+      type: Date
+      description: The date the template was created at.
+    - contextPath: AttackIQ.Assessment.AssessmentTemplate.Modified
+      type: Date
+      description: The date the template was last modified.
+    - contextPath: AttackIQ.Assessment.Creator
+      type: String
+      description: User who created the assessment.
+    - contextPath: AttackIQ.Assessment.Owner
+      type: String
+      description: User who owns the assessment.
+    - contextPath: AttackIQ.Assessment.User
+      type: String
+      description: ''
+    - contextPath: AttackIQ.Assessment.Created
+      type: String
+      description: The time the assessment was created at.
+    - contextPath: AttackIQ.Assessment.Modified
+      type: String
+      description: The time the assessment was last modified at.
+    - contextPath: AttackIQ.Assessment.Users
+      type: String
+      description: User ids that can access the assessment.
+    - contextPath: AttackIQ.Assessment.Groups
+      type: String
+      description: User groups who can access the assessment.
+    - contextPath: AttackIQ.Assessment.DefaultAssetCount
+      type: Number
+      description: Number of machines (assets) that are connected to the assessment.
+    - contextPath: AttackIQ.Assessment.DefaultAssetGroupCount
+      type: Number
+      description: Number of asset groups that are connected to the assessment.
+    - contextPath: AttackIQ.Assessment.MasterJobCount
+      type: Number
+      description: Number of tests that ran in the assessment.
+  - arguments:
     - default: false
       defaultValue: '1'
       description: Assessment page. Each page contains by default up to 10 assessments.

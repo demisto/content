@@ -281,7 +281,15 @@ def get_test_results_command(args=demisto.args()):
     return_outputs(hr, {'AttackIQ.TestResult(val.Id === obj.Id)': test_res}, raw_test_res)
 
 
-def list_assessments(assessment_id, page):
+def get_assessments(page='1', assessment_id=None):
+    """
+    Fetches assessments from attackIQ
+    Args:
+        page (str or int): Page number to fetch
+        assessment_id (str): (Optional) If provided will fetch only the assessment with matching ID
+
+    Returns: Assessments from attackIQ
+    """
     if assessment_id:
         return http_request('GET', f'/v1/assessments/{assessment_id}')
     return http_request('GET', '/v1/assessments', params={'page': page})
@@ -290,15 +298,20 @@ def list_assessments(assessment_id, page):
 def list_assessments_command():
     """ Implements attackiq-list-assessments command
     """
-    args = demisto.args()
-    assessment_id = args.get('assessment_id')
-    page = args.get('page_number', '1')
-    raw_assessments = list_assessments(assessment_id, page)
-    if assessment_id:
-        assessments_res = build_transformed_dict(raw_assessments, ASSESSMENTS_TRANS)
-    else:
-        assessments_res = build_transformed_dict(raw_assessments.get('results'), ASSESSMENTS_TRANS)
+    page = demisto.getArg('page_number')
+    raw_assessments = get_assessments(page=page)
+    assessments_res = build_transformed_dict(raw_assessments.get('results'), ASSESSMENTS_TRANS)
     hr = tableToMarkdown(f'AttackIQ Assessments Page #{page}', assessments_res)
+    return_outputs(hr, {'AttackIQ.Assessment(val.Id === obj.Id)': assessments_res}, raw_assessments)
+
+
+def get_assessment_by_id_command():
+    """ Implements attackiq-get-assessment-by-id command
+        """
+    assessment_id = demisto.getArg('assessment_id')
+    raw_assessments = get_assessments(assessment_id=assessment_id)
+    assessments_res = build_transformed_dict(raw_assessments, ASSESSMENTS_TRANS)
+    hr = tableToMarkdown(f'AttackIQ Assessment {assessment_id}', assessments_res)
     return_outputs(hr, {'AttackIQ.Assessment(val.Id === obj.Id)': assessments_res}, raw_assessments)
 
 
@@ -342,6 +355,8 @@ def main():
             get_test_results_command()
         elif command == 'attackiq-list-assessments':
             list_assessments_command()
+        elif command == 'attackiq-get-assessment-by-id':
+            get_assessment_by_id_command()
         elif command == 'attackiq-list-tests-by-assessment':
             list_tests_by_assessment_command()
         elif command == 'attackiq-run-all-tests-in-assessment':
