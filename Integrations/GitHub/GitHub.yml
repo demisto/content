@@ -510,9 +510,21 @@ script:
     - contextPath: GitHub.PR.Number
       description: The number of the Pull Request
       type: Number
-    - contextPath: GitHub.PR.RequestedReviewer
-      description: List of the requested reviewers details
-      type: Unknown
+    - contextPath: GitHub.PR.RequestedReviewer.Login
+      description: The login of the user requested for review
+      type: String
+    - contextPath: GitHub.PR.RequestedReviewer.ID
+      description: The ID of the user requested for review
+      type: Number
+    - contextPath: GitHub.PR.RequestedReviewer.NodeID
+      description: The node ID of the user requested for review
+      type: String
+    - contextPath: GitHub.PR.RequestedReviewer.Type
+      description: The type of the user requested for review
+      type: String
+    - contextPath: GitHub.PR.RequestedReviewer.SiteAdmin
+      description: Whether the user requested for review is a site admin or not
+      type: Boolean
   - arguments:
     - default: false
       description: The number of the issue to comment on
@@ -531,6 +543,9 @@ script:
     execution: false
     name: GitHub-create-comment
     outputs:
+    - contextPath: GitHub.Comment.IssueNumber
+      description: The number of the issue to which the comment belongs
+      type: Number
     - contextPath: GitHub.Comment.ID
       description: The ID of the comment
       type: Number
@@ -538,20 +553,23 @@ script:
       description: The node ID of the comment
       type: String
     - contextPath: GitHub.Comment.Body
-      description: The contents of the comment
+      description: The body content of the comment
       type: String
-    - contextPath: GitHub.Comment.CommenterLogin
-      description: The GitHub login of the commenter
+    - contextPath: GitHub.Comment.User.Login
+      description: The login of the user who commented
       type: String
-    - contextPath: GitHub.Comment.CommenterType
-      description: The type of the commenter
+    - contextPath: GitHub.Comment.User.ID
+      description: The ID of the user who commented
+      type: Number
+    - contextPath: GitHub.Comment.User.NodeID
+      description: The node ID of the user who commented
       type: String
-    - contextPath: GitHub.Comment.CreatedAt
-      description: The creation time of the comment
+    - contextPath: GitHub.Comment.User.Type
+      description: The type of the user who commented
       type: String
-    - contextPath: GitHub.Comment.UpdatedAt
-      description: The update time of the comment
-      type: String
+    - contextPath: GitHub.Comment.User.SiteAdmin
+      description: Whether the user who commented is a site admin or not
+      type: Boolean
   - arguments:
     - default: false
       description: The number of the issue to list comments for

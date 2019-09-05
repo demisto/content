@@ -903,7 +903,7 @@ def list_issue_comments_command():
 
     ec_object = [format_comment_outputs(comment, issue_number) for comment in response]
     ec = {
-        'GitHub.Comment(val.ID === obj.ID)': ec_object
+        'GitHub.Comment(val.IssueNumber === obj.IssueNumber && val.ID === obj.ID)': ec_object
     }
     human_readable = tableToMarkdown('Comments', ec_object, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
@@ -917,7 +917,7 @@ def create_comment_command():
 
     ec_object = format_comment_outputs(response, issue_number)
     ec = {
-        'GitHub.Comment(val.ID === obj.ID)': ec_object
+        'GitHub.Comment(val.IssueNumber === obj.IssueNumber && val.ID === obj.ID)': ec_object
     }
     human_readable = tableToMarkdown('Created Comment', ec_object, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
@@ -930,13 +930,7 @@ def request_review_command():
     response = request_review(pull_number, reviewers)
 
     requested_reviewers = response.get('requested_reviewers', [])
-    formatted_requested_reviewers = [
-        {
-            'Login': reviewer.get('login'),
-            'Type': reviewer.get('type')
-        }
-        for reviewer in requested_reviewers
-    ]
+    formatted_requested_reviewers = [format_user_outputs(reviewer) for reviewer in requested_reviewers]
     ec_object = {
         'Number': response.get('number'),
         'RequestedReviewer': formatted_requested_reviewers
@@ -1033,7 +1027,6 @@ def get_stale_prs_command():
         return_outputs(readable_output=human_readable, outputs=ec, raw_response=results)
     else:
         demisto.results('No stale external PRs found')
-
 
 
 def create_command():
@@ -1181,6 +1174,7 @@ def main():
     except Exception as e:
         # raise e
         return_error(str(e))
+
 
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == '__builtin__' or __name__ == 'builtins':
