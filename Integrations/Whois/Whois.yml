@@ -28,6 +28,48 @@ script:
     execution: false
     name: whois
     outputs:
+    - contextPath: Domain.DomainStatus
+      description: The domain status.
+      type: string
+    - contextPath: Domain.WHOIS.DomainStatus
+      description: The domain status.
+      type: string
+    - contextPath: Domain.NameServers
+      description: The name servers.
+      type: string
+    - contextPath: Domain.WHOIS.NameServers
+      description: The name servers.
+      type: string
+    - contextPath: Domain.CreationDate
+      description: The date that the domain was created.
+      type: date
+    - contextPath: Domain.WHOIS.CreationDate
+      description: The date that the domain was created.
+      type: date
+    - contextPath: Domain.UpdatedDate
+      description: The date that the domain was last updated.
+      type: date
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: The date that the domain was last updated.
+      type: date
+    - contextPath: Domain.ExpirationDate
+      description: The date that the domain expires.
+      type: date
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: The date that the domain expires.
+      type: date
+    - contextPath: Domain.WHOIS.Registrar
+      description: The name of the registrar.
+      type: string
+    - contextPath: Domain.Registrant.name
+      description: The name of the registrant.
+      type: string
+    - contextPath: Domain.Admin.name
+      description: The name of domain administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.name
+      description: The name of domain administrator.
+      type: string
     - contextPath: Domain.Whois.Name
       description: The domain name.
       type: string
