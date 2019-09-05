@@ -36,6 +36,7 @@ configuration:
   required: false
   type: 13
 - defaultvalue: '1'
+  display: First fetch timestamp, in days.
   name: fetch_time
   required: false
   type: 0
