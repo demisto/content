@@ -373,7 +373,6 @@ def format_pr_outputs(pull_request: dict = {}) -> dict:
         'State': milestone_data.get('state'),
         'Title': milestone_data.get('title'),
         'Description': milestone_data.get('description'),
-        'Creator': ec_creator,
         'OpenIssues': milestone_data.get('open_issues'),
         'ClosedIssues': milestone_data.get('closed_issues'),
         'CreatedAt': milestone_data.get('created_at'),
@@ -381,6 +380,8 @@ def format_pr_outputs(pull_request: dict = {}) -> dict:
         'ClosedAt': milestone_data.get('closed_at'),
         'DueOn': milestone_data.get('due_on'),
     }
+    if creator:
+        ec_milestone['Creator'] = ec_creator
 
     assignees_data = safe_get(pull_request, 'assignees', [])
     ec_assignee = [format_user_outputs(assignee) for assignee in assignees_data]
@@ -418,28 +419,19 @@ def format_pr_outputs(pull_request: dict = {}) -> dict:
         'Number': pull_request.get('number'),
         'State': pull_request.get('state'),
         'Locked': pull_request.get('locked'),
-        'User': ec_user,
         'Body': pull_request.get('body'),
-        'Label': ec_labels,
-        'Milestone': ec_milestone,
         'ActiveLockReason': pull_request.get('active_lock_reason'),
         'CreatedAt': pull_request.get('created_at'),
         'UpdatedAt': pull_request.get('updated_at'),
         'ClosedAt': pull_request.get('closed_at'),
         'MergedAt': pull_request.get('merged_at'),
         'MergeCommitSHA': pull_request.get('merge_commit_sha'),
-        'Assignee': ec_assignee,
-        'RequestedReviewer': ec_requested_reviewer,
-        'RequestedTeam': ec_requested_team,
-        'Head': ec_head,
-        'Base': ec_base,
         'AuthorAssociation': pull_request.get('author_association'),
         'Draft': pull_request.get('draft'),
         'Merged': pull_request.get('merged'),
         'Mergeable': pull_request.get('mergeable'),
         'Rebaseable': pull_request.get('rebaseable'),
         'MergeableState': pull_request.get('mergeable_state'),
-        'MergedBy': ec_merged_by,
         'Comments': pull_request.get('comments'),
         'ReviewComments': pull_request.get('review_comments'),
         'MaintainerCanModify': pull_request.get('maintainer_can_modify'),
@@ -448,6 +440,24 @@ def format_pr_outputs(pull_request: dict = {}) -> dict:
         'Deletions': pull_request.get('deletions'),
         'ChangedFiles': pull_request.get('changed_files')
     }
+    if user_data:
+        ec_object['User'] = ec_user
+    if labels_data:
+        ec_object['Label'] = ec_labels
+    if assignees_data:
+        ec_object['Assignee'] = ec_assignee
+    if requested_reviewers_data:
+        ec_object['RequestedReviewer'] = ec_requested_reviewer
+    if requested_teams_data:
+        ec_object['RequestedTeam'] = ec_requested_team
+    if head_data:
+        ec_object['Head'] = ec_head
+    if base_data:
+        ec_object['Base'] = ec_base
+    if merged_by_data:
+        ec_object['MergedBy'] = ec_merged_by
+    if milestone_data:
+        ec_object['Milestone']: ec_milestone
     return ec_object
 
 
@@ -1005,8 +1015,8 @@ def main():
         if cmd in COMMANDS.keys():
             COMMANDS[cmd]()
     except Exception as e:
-        # raise e
-        return_error(str(e))
+        raise e
+        # return_error(str(e))
 
 
 # python2 uses __builtin__ python3 uses builtins
