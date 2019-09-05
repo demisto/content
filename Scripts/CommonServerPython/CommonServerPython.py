@@ -1,8 +1,6 @@
-import socket
-
-from typing import cast, Any
-
 import demistomock as demisto
+
+
 # Common functions script
 # =======================
 # This script will be appended to each server script before being executed.
@@ -16,9 +14,9 @@ import re
 import requests
 import base64
 from collections import OrderedDict
-
+import socket
+from typing import cast, Any
 import xml.etree.cElementTree as ET
-
 IS_PY3 = sys.version_info[0] == 3
 # pylint: disable=undefined-variable
 if IS_PY3:
