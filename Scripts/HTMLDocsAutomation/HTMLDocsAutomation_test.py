@@ -98,7 +98,8 @@ def test_generate_commands_section():
         }
     }
 
-    section, errors = generate_commands_section(yml_data, {})
+    section, errors = generate_commands_section(yml_data, {}, True)
+
     expected_section = '''<h2>Commands</h2>
 <p>
   You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
@@ -117,7 +118,7 @@ def test_generate_commands_section():
 </p>
 
 <h5>Required Permissions</h5>
-<p>The following permissions are required for all commands.</p>
+<p>The following permissions are required for this command.</p>
 <ul>
     <li>permission 1</li>
     <li>permission 2</li>
@@ -152,7 +153,7 @@ There are no context output for this command.
 </p>
 
 <h5>Required Permissions</h5>
-<p>The following permissions are required for all commands.</p>
+<p>The following permissions are required for this command.</p>
 <ul>
     <li>permission 1</li>
     <li>permission 2</li>
@@ -178,9 +179,6 @@ There are no context output for this command.
  -->
 </p>
 '''
-
-  #  print (section,expected_section)
-
 
     assert section == expected_section
     assert len(errors) == 2  # no example for both commands
