@@ -187,10 +187,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 9233bc83-e99c-4d9f-86d8-30fb867ea9c9
+    taskid: a946418c-cdd5-4baf-8856-875d134edb40
     type: condition
     task:
-      id: 9233bc83-e99c-4d9f-86d8-30fb867ea9c9
+      id: a946418c-cdd5-4baf-8856-875d134edb40
       version: -1
       name: Assert test results
       type: condition
@@ -210,7 +210,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 9ba7abd8-dd01-4f29-9c0c-c4a035f86870
+              simple: 91143b00-9bd2-4cde-9344-6ce4599562e7
       - - operator: isEqualString
           left:
             value:
@@ -218,12 +218,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 2019-09-03T14:23:49.769485Z
-      - - operator: isEmpty
-          left:
-            value:
-              simple: AttackIQ.TestResult.RunCount
-            iscontext: true
+              simple: 2019-09-05T13:38:05.246301Z
       - - operator: isEqualString
           left:
             value:
@@ -571,10 +566,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 11cbdae4-46c2-47ab-8711-46b0ae364362
+    taskid: 06ac6167-0cbd-4697-846b-848eb6d81fee
     type: condition
     task:
-      id: 11cbdae4-46c2-47ab-8711-46b0ae364362
+      id: 06ac6167-0cbd-4697-846b-848eb6d81fee
       version: -1
       name: Assert tests
       type: condition
@@ -619,11 +614,6 @@ tasks:
           right:
             value:
               simple: "1"
-      - - operator: isTrue
-          left:
-            value:
-              simple: AttackIQ.Test.Runnable
-            iscontext: true
       - - operator: isEqualString
           left:
             value:
@@ -655,7 +645,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 2019-08-27T10:17:09.842767Z
+              simple: 2019-08-27T10:17:09.968467Z
       - - operator: isEqualString
           left:
             value:
@@ -671,7 +661,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 24178034-cb69-442d-afd8-a7d87ae78eda
+              simple: f18fd450-73b7-439e-9d93-afb3602f964c
       - - operator: isTrue
           left:
             value:

@@ -1,4 +1,3 @@
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -266,6 +265,34 @@ def get_test_execution_status_command():
     return_outputs(hr, {'AttackIQ.Test(val.Id === obj.Id)': test_status}, raw_test_status)
 
 
+def build_test_results_hr(test_results, test_id):
+    """
+    Creates test results human readable
+    Args:
+        test_results (list): Results of the test (after being transformed)
+        test_id (str): ID of the test
+
+    Returns: Human readable of test results
+    """
+    keys = ['Assessment Name', 'Scenario Name', 'Hostname', 'Asset IP', 'Job State', 'Modified', 'Outcome']
+    test_results_mod = []
+    for t_res in test_results:
+        assessment = t_res.get('Assessment')
+        asset = t_res.get('Asset')
+        scenario = t_res.get('Scenario')
+        hr_items = {
+            keys[0]: assessment.get('Name'),
+            keys[1]: scenario.get('Name'),
+            keys[2]: asset.get('Hostname'),
+            keys[3]: asset.get('Ipv4Address'),
+            keys[4]: demisto.get(t_res, 'JobState.Name'),
+            keys[5]: t_res.get('Modified'),
+            keys[6]: demisto.get(t_res, 'Outcome.Name')
+        }
+        test_results_mod.append(hr_items)
+    return tableToMarkdown(f'Test Results for {test_id}', test_results_mod, keys)
+
+
 def get_test_results_command(args=demisto.args()):
     """ Implements attackiq-get-test-results command
     """
@@ -277,7 +304,7 @@ def get_test_results_command(args=demisto.args()):
     }
     raw_test_res = http_request('GET', '/v1/results', params=params)
     test_res = build_transformed_dict(raw_test_res['results'], TEST_RESULT_TRANS)
-    hr = tableToMarkdown(f'Test {test_id} results', test_res)
+    hr = build_test_results_hr(test_res, test_id)
     return_outputs(hr, {'AttackIQ.TestResult(val.Id === obj.Id)': test_res}, raw_test_res)
 
 
@@ -301,7 +328,8 @@ def list_assessments_command():
     page = demisto.getArg('page_number')
     raw_assessments = get_assessments(page=page)
     assessments_res = build_transformed_dict(raw_assessments.get('results'), ASSESSMENTS_TRANS)
-    hr = tableToMarkdown(f'AttackIQ Assessments Page #{page}', assessments_res)
+    hr = tableToMarkdown(f'AttackIQ Assessments Page #{page}', assessments_res,
+                         headers=['Id', 'Name', 'Description', 'User', 'Created', 'Modified'])
     return_outputs(hr, {'AttackIQ.Assessment(val.Id === obj.Id)': assessments_res}, raw_assessments)
 
 
@@ -311,8 +339,31 @@ def get_assessment_by_id_command():
     assessment_id = demisto.getArg('assessment_id')
     raw_assessments = get_assessments(assessment_id=assessment_id)
     assessments_res = build_transformed_dict(raw_assessments, ASSESSMENTS_TRANS)
-    hr = tableToMarkdown(f'AttackIQ Assessment {assessment_id}', assessments_res)
+    hr = tableToMarkdown(f'AttackIQ Assessment {assessment_id}', assessments_res,
+                         headers=['Id', 'Name', 'Description', 'User', 'Created', 'Modified'])
     return_outputs(hr, {'AttackIQ.Assessment(val.Id === obj.Id)': assessments_res}, raw_assessments)
+
+
+def build_tests_hr(assessment_res):
+    """
+    Creates tests human readable
+    Args:
+        assessment_res (list): Assignment ID
+
+    Returns: Human readable string (md format) of tests
+    """
+    hr = ''
+    for ass in assessment_res:
+        ass_cpy = dict(ass)
+        assets = ass_cpy.pop('Assets', {})
+        scenarios = ass_cpy.pop('Scenarios', {})
+        test_name = ass_cpy.get('Name')
+        hr = tableToMarkdown(f'Test - {test_name}', ass_cpy,
+                             headers=['Id', 'Name', 'Created', 'Modified', 'Runnable', 'LastResult'],
+                             headerTransform=pascalToSpace)
+        hr += tableToMarkdown(f'Assets ({test_name})', assets)
+        hr += tableToMarkdown(f'Scenarios ({test_name})', scenarios)
+    return hr
 
 
 def list_tests_by_assessment_command():
@@ -322,8 +373,8 @@ def list_tests_by_assessment_command():
     raw_res = http_request('GET', f'/v1/tests', params={'project': ass_id})
     assessment_res = build_transformed_dict(raw_res.get('results'), TESTS_TRANS)
     ec = {'AttackIQ.Test(val.Id === obj.Id)': assessment_res}
-    hr = tableToMarkdown(f'Assessment {ass_id} tests', assessment_res)
-    return_outputs(hr, ec, raw_res)  # TODO: Improve hr
+    hr = build_tests_hr(assessment_res)
+    return_outputs(hr, ec, raw_res)
 
 
 def run_all_tests_in_assessment_command():

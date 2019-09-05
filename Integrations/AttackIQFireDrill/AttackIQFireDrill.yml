@@ -490,9 +490,6 @@ script:
     - contextPath: AttackIQ.TestResult.Asset.Modified
       type: Date
       description: Date the asset was last modified.
-    - contextPath: AttackIQ.TestResult.Asset.Status
-      type: String
-      description: Status of the asset, can be Active or Inactive.
     - contextPath: AttackIQ.TestResult.AssetGroup
       type: String
       description: Asset group of the test.
