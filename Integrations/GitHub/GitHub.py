@@ -35,29 +35,6 @@ HEADERS = {
     'Authorization': "Bearer " + TOKEN
 }
 
-# REVIEWERS = ['Itay4', 'yaakovi', 'yuvalbenshalom', 'ronykoz']
-REVIEWERS = ['avidan-H']
-CONTENT_TEAM_ID = 3043448
-
-WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
-              'wizard @reviewer will very shortly look over your proposed changes.'
-NEEDS_REVIEW_MSG = '@reviewer This PR won\'t review itself and I\'m not going to do it for you (I bet you\'d like ' \
-                   'that wouldn\'t you) - look it over, eh?'
-LOTR_NUDGE_MSG = '"And some things that should not have been forgotten were lost. History became legend. Legend ' \
-                 'became myth. And for two and a half thousand years..." @reviewer had not looked at this ' \
-                 'beautiful PR - as they were meant to do.'
-NUDGE_AUTHOR_MSG = 'A lengthy period of time has transpired since the PR was reviewed. @author Please address the ' \
-                   'reviewer\'s comments and push your committed changes.'
-APPROVED_UNMERGED_MSG = 'The PR was approved but doesn\'t seem to have been merged. @author Please verify that there ' \
-                        'aren\'t any outstanding requested changes.'
-SUGGEST_CLOSE_MSG = 'These reminders don\'t seem to be working and the issue is getting pretty stale - @reviewer - ' \
-                    'consider whether this PR is still relevant or should be closed.'
-STALE_MSG = 'This PR is starting to get a little stale and possibly even a little moldy and smelly.'
-UNIT_TEST_MSG = ' It is very likely that the reviewer will want you to add a unittest for your '\
-        'code changes in the `$unittest$` file - please refer to the documentation '\
-        'https://github.com/demisto/content/tree/master/docs/tests/unit-testing for more details.'
-CHANGELOG_MSG = ' Because of your changes you will also need to update the `$changelog$` file - please refer '\
-        'to the documentation https://github.com/demisto/content/tree/master/docs/release_notes for more details.'
 
 ''' HELPER FUNCTIONS '''
 
