@@ -5,12 +5,33 @@ from CommonServerUserPython import *
 
 CMD_ARGS_REGEX = re.compile(r'([\w_-]+)=((?:\"[^"]+\")|(?:`.+`)|(?:\"\"\".+\"\"\")|(?:[^ ]+)) ?', re.S)
 
-
 """STRING TEMPLATES"""
 OVERVIEW: str = '''<p>
   Overview description in this section without a header.
 </p>
 '''
+
+SETUP_CONFIGURATION: str = '''<h2>Configure {integration_name} on Demisto</h2>
+<ol>
+  <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
+  &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
+  <li>Search for {integration_name}.</li>
+  <li>
+    Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
+    <ul>
+      <li><strong>Name</strong>: a textual name for the integration instance.</li>
+{params_list}
+    </ul>
+  </li>
+</ol>
+<ol start="4">
+  <li>
+    Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
+  </li>
+</ol>
+'''
+
+PARAMS_LIST: str = '   <li><strong>{param}</strong></li>'
 
 COMMANDS_HEADER: str = '''<h2>Commands</h2>
 <p>
@@ -334,35 +355,10 @@ def generate_section(title, data):
 
 # Setup integration on Demisto
 def generate_setup_section(yaml_data):
-    section = '''<h2>Configure {integration_name} on Demisto</h2>
-            <ol>
-              <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
-              &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
-              <li>Search for {integration_name}.</li>
-              <li>
-                Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
-                <ul>
-                  <li><strong>Name</strong>: a textual name for the integration instance.</li>
-                </ul>'''.format(integration_name=yaml_data['name'])
-    for conf in yaml_data['configuration']:
-        if conf['display']:
-            section += '''<ul>
-                            <li><strong>{display}</strong></li>
-                          </ul>'''.format(display=conf['display'])
-        else:
-            section += '''<ul>
-                            <li><strong>{name}</strong></li>
-                          </ul>'''.format(name=conf['name'])
-    section += '''</li>
-                    </ol>
-                    <ol start="4">
-                      <li>
-                        Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
-                      </li>
-                    </ol>
-                    '''
-
-    return section
+    params_list = [
+        PARAMS_LIST.format(param=conf['display']) if conf['display'] else PARAMS_LIST.format(param=conf['name']) for
+        conf in yaml_data.get('configuration', [])]
+    return SETUP_CONFIGURATION.format(params_list='\n'.join(params_list), integration_name=yaml_data['name'])
 
 
 # Commands
@@ -476,7 +472,6 @@ def generate_html_docs(args, yml_data, example_dict, errors):
                                       'Populate this section with Fetch incidents data'))
 
     # # Setup integration to work with Demisto
-    #
     # docs.extend(generate_section('Configure {} on Demisto'.format(yml_data['name']), args.get('setupOnIntegration')))
 
     # Setup integration on Demisto
@@ -487,7 +482,8 @@ def generate_html_docs(args, yml_data, example_dict, errors):
         docs += PERMISSIONS_HEADER
 
     # Commands
-    command_section, command_errors = generate_commands_section(yml_data, example_dict, args.get('permissions') == 'per-command')
+    command_section, command_errors = generate_commands_section(yml_data, example_dict,
+                                                                args.get('permissions') == 'per-command')
     docs += command_section
     errors.extend(command_errors)
 
