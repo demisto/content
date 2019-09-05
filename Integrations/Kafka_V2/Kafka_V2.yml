@@ -1,0 +1,135 @@
+commonfields:
+  id: Kafka V2
+  version: -1
+name: Kafka V2
+display: Kafka V2
+category: Messaging
+description: The Open source distributed streaming platform
+configuration:
+- display: CSV list of Kafka brokers to connect to, e.g. 172.16.20.207:9092,172.16.20.234:9093
+  name: brokers
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: |-
+    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+    ‎                                        Certificate Settings
+    CA certificate of Kafka server (.cer)
+  name: ca_cert
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Client certificate (.cer)
+  name: client_cert
+  defaultvalue: ""
+  type: 12
+  required: false
+- display: Client certificate key (.key)
+  name: client_cert_key
+  defaultvalue: ""
+  type: 12
+  required: false
+- display: Additonal password (if required)
+  name: additional_password
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: |-
+    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+    ‎                                        Fetch Incidents Settings
+    Topic to fetch incidents from
+  name: topic
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Offset to fetch incidents from
+  name: offset
+  defaultvalue: "0"
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Enable debug (will post Kafka connection logs to the War Room)
+  name: enable_debug
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: kafka-print-topics
+    arguments: []
+    outputs:
+    - contextPath: Kafka.Topic.Name
+      description: Kafka topic name
+      type: string
+    description: Prints all partitions of a topic.
+  - name: kafka-publish-msg
+    arguments:
+    - name: topic
+      required: true
+      description: A topic to filter messages by
+    - name: value
+      required: true
+      description: Message value (string)
+    - name: partitioning_key
+      description: Message partition key (number)
+    description: Publishes a message to Kafka.
+  - name: kafka-consume-msg
+    arguments:
+    - name: topic
+      required: true
+      description: A topic to filter by
+    - name: offset
+      description: Message offset to filter by. Acceptable values are 'Earliest',
+        'Latest', or any other offest number.
+      defaultValue: Earliest
+    - name: partition
+      description: Partition (number)
+    outputs:
+    - contextPath: Kafka.Topic.Name
+      description: Name of the topic
+      type: string
+    - contextPath: Kafka.Topic.Message.Value
+      description: Value of the message
+      type: string
+    - contextPath: Kafka.Topic.Message.Offset
+      description: Offset of the value in the topic
+      type: number
+    description: Consumes a single Kafka message.
+  - name: kafka-fetch-partitions
+    arguments:
+    - name: topic
+      description: A topic to filter by
+    outputs:
+    - contextPath: Kafka.Topic.Name
+      description: Name of topic
+      type: string
+    - contextPath: Kafka.Topic.Partition
+      description: Prints all partitions for a topic.
+      type: number
+    description: Print all partitions for a topic
+  isfetch: true
+  dockerimage: demisto/pykafka:1.0.0.128
+  runonce: false
+tests:
+- No Test - Can not connect to instance from remote
