@@ -978,17 +978,17 @@ tasks:
     ignoreworker: false
   "30":
     id: "30"
-    taskid: c9989772-e2a5-4a6d-81c4-8607365b570b
+    taskid: 5c5048ef-dcdc-4cb3-8694-69f5d4fe3e86
     type: regular
     task:
-      id: c9989772-e2a5-4a6d-81c4-8607365b570b
+      id: 5c5048ef-dcdc-4cb3-8694-69f5d4fe3e86
       version: -1
       name: gmail-create-user
       description: Creates a user.
-      script: Gmail|||gmail-create-user
+      script: '|||gmail-create-user'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ""
     nexttasks:
       '#none#':
       - "31"
@@ -1014,17 +1014,17 @@ tasks:
     ignoreworker: false
   "31":
     id: "31"
-    taskid: e82bc05d-fbd7-4e14-8a36-7e1c79cbe96a
+    taskid: 3e91072c-e624-4001-8678-4fb170996c04
     type: regular
     task:
-      id: e82bc05d-fbd7-4e14-8a36-7e1c79cbe96a
+      id: 3e91072c-e624-4001-8678-4fb170996c04
       version: -1
       name: gmail-hide-user-in-directory
       description: Hide a user in the Global Directory
-      script: Gmail|||gmail-hide-user-in-directory
+      script: '|||gmail-hide-user-in-directory'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ""
     nexttasks:
       '#none#':
       - "32"
@@ -1087,17 +1087,17 @@ tasks:
     ignoreworker: false
   "33":
     id: "33"
-    taskid: 4fa1eed1-45ac-43ca-86d2-3e6f9e470910
+    taskid: e0ebdb5b-5300-4b44-8209-139e273363df
     type: regular
     task:
-      id: 4fa1eed1-45ac-43ca-86d2-3e6f9e470910
+      id: e0ebdb5b-5300-4b44-8209-139e273363df
       version: -1
       name: gmail-delete-user
       description: Delete a User
-      script: Gmail|||gmail-delete-user
+      script: '|||gmail-delete-user'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ""
     nexttasks:
       '#none#':
       - "34"
@@ -1117,17 +1117,17 @@ tasks:
     ignoreworker: false
   "34":
     id: "34"
-    taskid: 5bd1a05f-6b50-4df5-87a6-727c3a11bbb2
+    taskid: d171f3da-a581-464b-8d46-755a2f3d8f20
     type: regular
     task:
-      id: 5bd1a05f-6b50-4df5-87a6-727c3a11bbb2
+      id: d171f3da-a581-464b-8d46-755a2f3d8f20
       version: -1
       name: gmail-get-autoreply
       description: Get the auto-reply message set for the user-account
-      script: Gmail|||gmail-get-autoreply
+      script: '|||gmail-get-autoreply'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ""
     nexttasks:
       '#none#':
       - "35"
@@ -1147,33 +1147,28 @@ tasks:
     ignoreworker: false
   "35":
     id: "35"
-    taskid: ed3b5ef4-d0e3-46d5-8a3b-7432480c123c
+    taskid: 055baf30-223e-4e42-8691-fb3d7234a9dc
     type: regular
     task:
-      id: ed3b5ef4-d0e3-46d5-8a3b-7432480c123c
+      id: 055baf30-223e-4e42-8691-fb3d7234a9dc
       version: -1
       name: gmail-set-autoreply
-      description: Set auto-reply for the user
-      script: Gmail|||gmail-set-autoreply
+      description: 'Set auto-reply for the user. Note: if body is not set, the current
+        body will be deleted'
+      script: '|||gmail-set-autoreply'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ""
     nexttasks:
       '#none#':
       - "36"
     scriptarguments:
       enable-autoReply:
         simple: "true"
-      enableAutoReply:
-        simple: "true"
       response-body:
         simple: body_test
       response-subject:
         simple: subject_test
-      responseBodyPlainText:
-        simple: test
-      responseSubject:
-        simple: newMessgae
       user-id:
         simple: admin@demistodev.com
     separatecontext: false
@@ -1189,17 +1184,17 @@ tasks:
     ignoreworker: false
   "36":
     id: "36"
-    taskid: 3c6d9149-c0b4-468e-8e7e-4fee7c7112c8
+    taskid: 8ae887cf-cd18-47a7-82ce-362c0daf63a7
     type: regular
     task:
-      id: 3c6d9149-c0b4-468e-8e7e-4fee7c7112c8
+      id: 8ae887cf-cd18-47a7-82ce-362c0daf63a7
       version: -1
       name: gmail-get-autoreply
       description: Get the auto-reply message set for the user-account
-      script: Gmail|||gmail-get-autoreply
+      script: '|||gmail-get-autoreply'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ""
     nexttasks:
       '#none#':
       - "37"
@@ -1263,33 +1258,28 @@ tasks:
     ignoreworker: false
   "38":
     id: "38"
-    taskid: e31b108a-389c-4d9c-8000-639a3e1e0f2e
+    taskid: 16c350d3-d2d8-41da-825c-9081aa2c1ba4
     type: regular
     task:
-      id: e31b108a-389c-4d9c-8000-639a3e1e0f2e
+      id: 16c350d3-d2d8-41da-825c-9081aa2c1ba4
       version: -1
       name: gmail-set-autoreply - reset to original autoreply
-      description: Set auto-reply for the user
-      script: Gmail|||gmail-set-autoreply
+      description: 'Set auto-reply for the user. Note: if body is not set, the current
+        body will be deleted'
+      script: '|||gmail-set-autoreply'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ""
     nexttasks:
       '#none#':
       - "50"
     scriptarguments:
       enable-autoReply:
         simple: ${Account.Gmail.AutoReply.EnableAutoReply}
-      enableAutoReply:
-        simple: ${Autoreply.EnableAutoReply}
       response-body:
         simple: ${Account.Gmail.AutoReply.ResponseBody}
       response-subject:
         simple: ${Account.Gmail.AutoReply.ResponseSubject}
-      responseBodyPlainText:
-        simple: ${Autoreply.ResponseBody}
-      responseSubject:
-        simple: ${Autoreply.ResponseSubject}
       user-id:
         simple: admin@demistodev.com
     separatecontext: false
@@ -1305,17 +1295,17 @@ tasks:
     ignoreworker: false
   "40":
     id: "40"
-    taskid: 39725070-d8fe-42a5-870a-afeda45d68a2
+    taskid: 0516abdd-79dc-4e23-8626-14f1254f06bb
     type: regular
     task:
-      id: 39725070-d8fe-42a5-870a-afeda45d68a2
+      id: 0516abdd-79dc-4e23-8626-14f1254f06bb
       version: -1
       name: gmail-get-mail
       description: Gets the specified message.
-      script: Gmail|||gmail-get-mail
+      script: '|||gmail-get-mail'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ""
     nexttasks:
       '#none#':
       - "41"
@@ -1398,26 +1388,26 @@ tasks:
     ignoreworker: false
   "43":
     id: "43"
-    taskid: 5eda6e6c-e463-4a92-84b9-1d1e6b65dc81
+    taskid: af658d1d-931c-4684-8075-1c38234ab188
     type: regular
     task:
-      id: 5eda6e6c-e463-4a92-84b9-1d1e6b65dc81
+      id: af658d1d-931c-4684-8075-1c38234ab188
       version: -1
       name: gmail-delegate-user-mailbox
-      script: Gmail|||gmail-delegate-user-mailbox
+      description: Adds a delegate to the mailbox, without sending any verification
+        email. The delegate user must be a member of the same G Suite organization
+        as the delegator user.  Note that a delegate user must be referred to by their
+        primary email address, and not an email alias.
+      script: '|||gmail-delegate-user-mailbox'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ""
     nexttasks:
       '#none#':
       - "49"
     scriptarguments:
       delegate-email:
         simple: shai@demistodev.com
-      delegateEmail:
-        simple: test@demistodev.com
-      delegateToken:
-        simple: "False"
       user-id:
         simple: admin@demistodev.com
     separatecontext: false
@@ -1433,17 +1423,17 @@ tasks:
     ignoreworker: false
   "45":
     id: "45"
-    taskid: 3c2ae508-424f-427e-8336-5e337a863b2f
+    taskid: 76f0a670-7632-4fc8-8984-ad0a239f9cf8
     type: regular
     task:
-      id: 3c2ae508-424f-427e-8336-5e337a863b2f
+      id: 76f0a670-7632-4fc8-8984-ad0a239f9cf8
       version: -1
       name: gmail-delete-mail
       description: Delete a mail in the user's mailbox.
-      script: Gmail|||gmail-delete-mail
+      script: '|||gmail-delete-mail'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ""
     nexttasks:
       '#none#':
       - "43"
@@ -1482,17 +1472,17 @@ tasks:
     ignoreworker: false
   "47":
     id: "47"
-    taskid: 54af3bb4-3ea5-4181-8953-adb976c2ffd0
+    taskid: 3d942ee5-5a5e-4716-8ed5-d46db564f09b
     type: regular
     task:
-      id: 54af3bb4-3ea5-4181-8953-adb976c2ffd0
+      id: 3d942ee5-5a5e-4716-8ed5-d46db564f09b
       version: -1
       name: gmail-set-password
       description: Set password for the user
-      script: Gmail|||gmail-set-password
+      script: '|||gmail-set-password'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ""
     nexttasks:
       '#none#':
       - "33"
@@ -1548,20 +1538,20 @@ tasks:
     ignoreworker: false
   "49":
     id: "49"
-    taskid: c104feaa-f9cb-4e56-841d-294ce8bdd84c
+    taskid: bf9fc7ea-c384-4004-8cdc-3c30972a2d11
     type: regular
     task:
-      id: c104feaa-f9cb-4e56-841d-294ce8bdd84c
+      id: bf9fc7ea-c384-4004-8cdc-3c30972a2d11
       version: -1
       name: gmail-remove-delegated-mailbox
       description: Removes a delegate from the mailbox, without sending any verification
         email. The delegate user must be a member of the same G Suite organization
         as the delegator user.  Note that a delegate user must be referred to by their
         primary email address, and not an email alias.
-      script: Gmail|||gmail-remove-delegated-mailbox
+      script: '|||gmail-remove-delegated-mailbox'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ""
     nexttasks:
       '#none#':
       - "29"
@@ -1583,17 +1573,17 @@ tasks:
     ignoreworker: false
   "50":
     id: "50"
-    taskid: 2ec3fbee-04e3-43d8-8e1c-b3437d9750a3
+    taskid: 8aa048c3-a496-499b-8a6d-7c78e642ff5c
     type: regular
     task:
-      id: 2ec3fbee-04e3-43d8-8e1c-b3437d9750a3
+      id: 8aa048c3-a496-499b-8a6d-7c78e642ff5c
       version: -1
       name: send-mail
-      description: Send mail using Gmail
-      script: Gmail|||send-mail
+      description: Send an email
+      script: '|||send-mail'
       type: regular
       iscommand: true
-      brand: Gmail
+      brand: ""
     nexttasks:
       '#none#':
       - "40"

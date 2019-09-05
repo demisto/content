@@ -1427,13 +1427,13 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'True'
+      defaultValue: 'true'
       description: Set False to hide the user. Set True to show the user in the global
       isArray: false
       name: visible-globally
       predefined:
-      - 'True'
-      - 'False'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
