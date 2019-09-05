@@ -217,7 +217,7 @@ def results_to_incidents(response, current_fetch, last_fetch):
                 }
                 incidents.append(inc)
 
-    return incidents
+    return incidents, last_fetch
 
 
 def fetch_incidents():
@@ -241,7 +241,7 @@ def fetch_incidents():
     _, total_results = get_total_results(response)
 
     if total_results > 0:
-        incidents = results_to_incidents(response, current_fetch, last_fetch)
+        incidents, last_fetch = results_to_incidents(response, current_fetch, last_fetch)
 
         demisto.info('extract {} incidents'.format(len(incidents)))
         demisto.setLastRun({'time': last_fetch.isoformat().split('.')[0] + 'Z'})
