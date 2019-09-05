@@ -12,7 +12,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARIABLES '''
 
-SERVER_URL = demisto.params()['serverUrl']
+SERVER_URL = demisto.params()['serverUrl'].rstrip('/')
 API_URL = SERVER_URL + '/api'
 API_TOKEN_URL = API_URL + '/token'
 CLIENT_ID = demisto.params()['client_id']
