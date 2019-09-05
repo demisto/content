@@ -1,1 +1,1 @@
-New script - Allow sending an entitlement message to either a user or a channel.
+Support replying in threads.
