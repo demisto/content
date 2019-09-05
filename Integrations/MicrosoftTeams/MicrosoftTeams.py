@@ -11,6 +11,7 @@ import time
 from threading import Thread
 from typing import Match, Union, Optional, cast, Dict, Any, List
 import re
+from jwt.algorithms import RSAAlgorithm
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -537,46 +538,67 @@ def validate_auth_header(headers: dict) -> bool:
     scehma: str = parts[0]
     jwt_token: str = parts[1]
     if scehma != 'Bearer' or not jwt_token:
+        demisto.info('Authorization header validation - failed to verify schema')
         return False
+
     decoded_payload: dict = jwt.decode(jwt_token, verify=False)
     issuer: str = decoded_payload.get('iss', '')
     if issuer != 'https://api.botframework.com':
+        demisto.info('Authorization header validation - failed to verify issuer')
         return False
-    # integration_context: dict = demisto.getIntegrationContext()
-    # open_id_metadata: dict = integration_context.get('open_id_metadata', {})
-    # keys: list = open_id_metadata.get('keys', [])
-    # last_updated: int = open_id_metadata.get('last_updated', 0)
-    # if last_updated < datetime.timestamp(datetime.now() + timedelta(days=5)):
-    #     open_id_url: str = 'https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration'
-    #     response: dict = http_request('GET', open_id_url, api='bot')
-    #     jwks_uri: str = response.get('jwks_uri', '')
-    #     keys_response: dict = http_request('GET', jwks_uri, api='bot')
-    #     keys = keys_response.get('keys', [])
-    #     last_updated = datetime.timestamp(datetime.now())
-    #     open_id_metadata['keys'] = keys
-    #     open_id_metadata['last_updated'] = last_updated
-    # if not keys:
-    #     return False
-    # unverified_headers: dict = jwt.get_unverified_header(jwt_token)
-    # key_id: str = unverified_headers.get('kid', '')
-    # key_object: dict = dict()
-    # for key in keys:
-    #     if key.get('kid') == key_id:
-    #         key_object = key
-    #         break
-    # if not key_object:
-    #     return False
-    # public_key: str = RSAAlgorithm.from_jwk(json.dumps(key_object))
-    # options = {
-    #     'verify_aud': False,
-    #     'verify_exp': True
-    # }
-    # decoded_payload = jwt.decode(jwt_token, public_key, options=options)
+
+    integration_context: dict = demisto.getIntegrationContext()
+    open_id_metadata: dict = json.loads(integration_context.get('open_id_metadata', '{}'))
+    keys: list = open_id_metadata.get('keys', [])
+    last_updated: float = open_id_metadata.get('last_updated', 0)
+    if last_updated < datetime.timestamp(datetime.now() + timedelta(days=5)):
+        try:
+            open_id_url: str = 'https://login.botframework.com/v1/.well-known/openidconfiguration'
+            response: dict = requests.get(open_id_url).json()
+            jwks_uri: str = response.get('jwks_uri', '')
+            keys_response: dict = requests.get(jwks_uri).json()
+            keys = keys_response.get('keys', [])
+            last_updated = datetime.timestamp(datetime.now())
+            open_id_metadata['keys'] = keys
+            open_id_metadata['last_updated'] = last_updated
+        except ValueError:
+            demisto.info('Authorization header validation - failed to parse keys response')
+            return False
+    if not keys:
+        demisto.info('Authorization header validation - failed to get keys')
+        return False
+
+    unverified_headers: dict = jwt.get_unverified_header(jwt_token)
+    key_id: str = unverified_headers.get('kid', '')
+    key_object: dict = dict()
+    for key in keys:
+        if key.get('kid') == key_id:
+            key_object = key
+            break
+    if not key_object:
+        demisto.info('Authorization header validation - failed to find relevant key')
+        return False
+    endorsements: list = key_object.get('endorsements', [])
+
+    if not endorsements or 'msteams' not in endorsements:
+        demisto.info('Authorization header validation - failed to verify endorsements')
+        return False
+
+    public_key: str = RSAAlgorithm.from_jwk(json.dumps(key_object))
+    options = {
+        'verify_aud': False,
+        'verify_exp': True
+    }
+    decoded_payload = jwt.decode(jwt_token, public_key, options=options)
+
     audience_claim: str = decoded_payload.get('aud', '')
     if audience_claim != demisto.params().get('bot_id'):
+        demisto.info('Authorization header validation - failed to verify audience_claim')
         return False
-    # integration_context['open_id_metadata'] = json.dumps(open_id_metadata)
-    # demisto.setIntegrationContext(integration_context)
+
+    integration_context['open_id_metadata'] = json.dumps(open_id_metadata)
+    demisto.setIntegrationContext(integration_context)
+
     return True
 
 

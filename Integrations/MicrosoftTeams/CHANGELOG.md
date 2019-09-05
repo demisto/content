@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added authorization header signature verification.
 
 ## [19.9.0] - 2019-09-04
   - Added the *channel_name* argument to the ***mirror-investigation***, which enables mirroring to a channel with a custom channel name.
