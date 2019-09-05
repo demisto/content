@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.9.0] - 2019-09-04
   - Added 6 new commands:
     - ***close-channel*** (now with optional channel argument)
     - ***slack-create-channel***

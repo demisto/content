@@ -397,7 +397,7 @@ class IntegrationValidator(object):
             dict. Field name to its required status.
         """
         field_to_required = {}
-        configuration = integration_json.get('configuration')
+        configuration = integration_json.get('configuration', [])
         for field in configuration:
             field_to_required[field.get('name')] = field.get('required', False)
 
