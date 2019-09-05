@@ -450,7 +450,7 @@ def autoreply_to_entry(title, response, user_id):
             'ResponseBody': autoreply_data.get('responseBodyPlainText'),
             'ResponseSubject': autoreply_data.get('responseSubject'),
             'RestrictToContact': autoreply_data.get('restrictToContacts'),
-            'RestrcitToDomain': autoreply_data.get('restrictToDomain'),
+            'RestrictToDomain': autoreply_data.get('restrictToDomain'),
 
         })
     headers = ['EnableAutoReply', 'ResponseBody',
@@ -1473,6 +1473,34 @@ def collect_inline_attachments(attach_cids):
         return inline_attachment
 
 
+def collect_manual_attachments():
+    attachments = []
+    for attachment in demisto.getArg('manualAttachObj') or []:
+        res = demisto.getFilePath(os.path.basename(attachment['RealFileName']))
+
+        path = res['path']
+        content_type, encoding = mimetypes.guess_type(path)
+        if content_type is None or encoding is not None:
+            content_type = 'application/octet-stream'
+        maintype, subtype = content_type.split('/', 1)
+
+        if maintype == 'text':
+            with open(path) as fp:
+                data = fp.read()
+        else:
+            with open(path, 'rb') as fp:
+                data = fp.read()
+        attachments.append({
+            'name': attachment['FileName'],
+            'maintype': maintype,
+            'subtype': subtype,
+            'data': data,
+            'cid': None
+        })
+
+    return attachments
+
+
 def collect_attachments(entry_ids, file_names):
     """
     Creates a dictionary containing all the info about all attachments
@@ -1597,9 +1625,10 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
         transientFileCID = None
 
     attachments = collect_attachments(entry_ids, file_names)
-
+    manual_attachments = collect_inline_attachments()
     transientAttachments = transient_attachments(transientFile, transientFileContent, transientFileCID)
-    attachments = attachments + htmlAttachments + transientAttachments + inlineAttachments
+
+    attachments = attachments + htmlAttachments + transientAttachments + inlineAttachments + manual_attachments
     attachment_handler(message, attachments)
 
     encoded_message = base64.urlsafe_b64encode(message.as_string())
