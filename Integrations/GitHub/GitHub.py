@@ -712,7 +712,7 @@ def list_pr_reviews_command():
     ec = {
         'GitHub.PR(val.Number === obj.Number)': ec_object
     }
-    human_readable = tableToMarkdown('Pull Request Files', ec_object, removeNull=True)
+    human_readable = tableToMarkdown(f'Pull Request Reviews for #{pull_number}', formatted_pr_reviews, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
@@ -739,7 +739,7 @@ def list_pr_files_command():
     ec = {
         'GitHub.PR(val.Number === obj.Number)': ec_object
     }
-    human_readable = tableToMarkdown('Pull Request Files', ec_object, removeNull=True)
+    human_readable = tableToMarkdown(f'Pull Request Files for #{pull_number}', formatted_pr_files, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
@@ -785,7 +785,8 @@ def request_review_command():
     ec = {
         'GitHub.PR(val.Number === obj.Number)': ec_object
     }
-    human_readable = tableToMarkdown(f'Requested Reviewers for {response.get("number")}', ec_object, removeNull=True)
+    human_readable = tableToMarkdown(f'Requested Reviewers for #{response.get("number")}',
+                                     formatted_requested_reviewers, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
