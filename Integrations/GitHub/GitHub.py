@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 
 import json
 import requests
-from typing import Union
+from typing import Union, Any
 from datetime import datetime
 
 # Disable insecure warnings
@@ -37,6 +37,23 @@ HEADERS = {
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def safe_get(obj_to_fetch_from: dict, what_to_fetch: str, default_val: Union[dict, list, str]) -> Any:
+    """Guarantees the default value in place of a Nonetype object when the value for a given key is explicitly None
+
+    Args:
+        obj_to_fetch_from (dict): The dictionary to fetch from
+        what_to_fetch (str): The key for the desired value
+        default_val: The default value to set instead of None
+
+    Returns:
+        The fetched value unless it is None in which case the default is returned instead
+    """
+    val = obj_to_fetch_from.get(what_to_fetch, default_val)
+    if val is None:
+        val = default_val
+    return val
 
 
 def http_request(method, url_suffix, params=None, data=None):
@@ -192,7 +209,7 @@ def create_issue_table(issue_list, response, limit):
     context_create_issue(response, issue_table)
 
 
-def format_commit_outputs(commit: dict) -> dict:
+def format_commit_outputs(commit: dict = {}) -> dict:
     """Take GitHub API commit data and format to expected context outputs
 
     Args:
@@ -236,7 +253,7 @@ def format_commit_outputs(commit: dict) -> dict:
     return ec_object
 
 
-def format_label_outputs(label: dict) -> dict:
+def format_label_outputs(label: dict = {}) -> dict:
     """Take GitHub API label data and format to expected context outputs
 
     Args:
@@ -256,7 +273,7 @@ def format_label_outputs(label: dict) -> dict:
     return ec_object
 
 
-def format_user_outputs(user: dict) -> dict:
+def format_user_outputs(user: dict = {}) -> dict:
     """Take GitHub API user data and format to expected context outputs
 
     Args:
@@ -275,7 +292,7 @@ def format_user_outputs(user: dict) -> dict:
     return ec_user
 
 
-def format_head_or_base_outputs(head_or_base: dict) -> dict:
+def format_head_or_base_outputs(head_or_base: dict = {}) -> dict:
     """Take GitHub API head or base branch data and format to expected context outputs
 
     Args:
@@ -331,7 +348,7 @@ def format_head_or_base_outputs(head_or_base: dict) -> dict:
     return ec_head_or_base
 
 
-def format_pr_outputs(pull_request: dict) -> dict:
+def format_pr_outputs(pull_request: dict = {}) -> dict:
     """Take GitHub API Pull Request data and format to expected context outputs
 
     Args:
@@ -340,14 +357,18 @@ def format_pr_outputs(pull_request: dict) -> dict:
     Returns:
         (dict): Pull Request object formatted to expected context outputs
     """
-    user_data = pull_request.get('user', {})
+    # user_data = pull_request.get('user', {})
+    user_data = safe_get(pull_request, 'user', {})
     ec_user = format_user_outputs(user_data)
 
-    labels_data = pull_request.get('labels', [])
+    # labels_data = pull_request.get('labels', [])
+    labels_data = safe_get(pull_request, 'labels', [])
     ec_labels = [format_label_outputs(label) for label in labels_data]
 
-    milestone_data = pull_request.get('milestone', {})
-    creator = milestone_data.get('creator', {})
+    # milestone_data = pull_request.get('milestone', {})
+    milestone_data = safe_get(pull_request, 'milestone', {})
+    # creator = milestone_data.get('creator', {})
+    creator = safe_get(milestone_data, 'creator', {})
     ec_creator = format_user_outputs(creator)
     ec_milestone = {
         'ID': milestone_data.get('id'),
@@ -365,13 +386,16 @@ def format_pr_outputs(pull_request: dict) -> dict:
         'DueOn': milestone_data.get('due_on'),
     }
 
-    assignees_data = pull_request.get('assignees', [])
+    # assignees_data = pull_request.get('assignees', [])
+    assignees_data = safe_get(pull_request, 'assignees', [])
     ec_assignee = [format_user_outputs(assignee) for assignee in assignees_data]
 
-    requested_reviewers_data = pull_request.get('requested_reviewers', [])
+    # requested_reviewers_data = pull_request.get('requested_reviewers', [])
+    requested_reviewers_data = safe_get(pull_request, 'requested_reviewers', [])
     ec_requested_reviewer = [format_user_outputs(requested_reviewer) for requested_reviewer in requested_reviewers_data]
 
-    requested_teams_data = pull_request.get('requested_teams', [])
+    # requested_teams_data = pull_request.get('requested_teams', [])
+    requested_teams_data = safe_get(pull_request, 'requested_teams', [])
     ec_requested_team = [
         {
             'ID': requested_team.get('id'),
@@ -386,13 +410,16 @@ def format_pr_outputs(pull_request: dict) -> dict:
         for requested_team in requested_teams_data
     ]
 
-    head_data = pull_request.get('head', {})
+    # head_data = pull_request.get('head', {})
+    head_data = safe_get(pull_request, 'head', {})
     ec_head = format_head_or_base_outputs(head_data)
 
-    base_data = pull_request.get('base', {})
+    # base_data = pull_request.get('base', {})
+    base_data = safe_get(pull_request, 'base', {})
     ec_base = format_head_or_base_outputs(base_data)
 
-    merged_by_data = pull_request.get('merged_by', {})
+    # merged_by_data = pull_request.get('merged_by', {})
+    merged_by_data = safe_get(pull_request, 'merged_by', {})
     ec_merged_by = format_user_outputs(merged_by_data)
 
     ec_object = {
