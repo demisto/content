@@ -357,17 +357,13 @@ def format_pr_outputs(pull_request: dict = {}) -> dict:
     Returns:
         (dict): Pull Request object formatted to expected context outputs
     """
-    # user_data = pull_request.get('user', {})
     user_data = safe_get(pull_request, 'user', {})
     ec_user = format_user_outputs(user_data)
 
-    # labels_data = pull_request.get('labels', [])
     labels_data = safe_get(pull_request, 'labels', [])
     ec_labels = [format_label_outputs(label) for label in labels_data]
 
-    # milestone_data = pull_request.get('milestone', {})
     milestone_data = safe_get(pull_request, 'milestone', {})
-    # creator = milestone_data.get('creator', {})
     creator = safe_get(milestone_data, 'creator', {})
     ec_creator = format_user_outputs(creator)
     ec_milestone = {
@@ -386,15 +382,12 @@ def format_pr_outputs(pull_request: dict = {}) -> dict:
         'DueOn': milestone_data.get('due_on'),
     }
 
-    # assignees_data = pull_request.get('assignees', [])
     assignees_data = safe_get(pull_request, 'assignees', [])
     ec_assignee = [format_user_outputs(assignee) for assignee in assignees_data]
 
-    # requested_reviewers_data = pull_request.get('requested_reviewers', [])
     requested_reviewers_data = safe_get(pull_request, 'requested_reviewers', [])
     ec_requested_reviewer = [format_user_outputs(requested_reviewer) for requested_reviewer in requested_reviewers_data]
 
-    # requested_teams_data = pull_request.get('requested_teams', [])
     requested_teams_data = safe_get(pull_request, 'requested_teams', [])
     ec_requested_team = [
         {
@@ -410,15 +403,12 @@ def format_pr_outputs(pull_request: dict = {}) -> dict:
         for requested_team in requested_teams_data
     ]
 
-    # head_data = pull_request.get('head', {})
     head_data = safe_get(pull_request, 'head', {})
     ec_head = format_head_or_base_outputs(head_data)
 
-    # base_data = pull_request.get('base', {})
     base_data = safe_get(pull_request, 'base', {})
     ec_base = format_head_or_base_outputs(base_data)
 
-    # merged_by_data = pull_request.get('merged_by', {})
     merged_by_data = safe_get(pull_request, 'merged_by', {})
     ec_merged_by = format_user_outputs(merged_by_data)
 
