@@ -568,15 +568,19 @@ script:
     //create table entry from response after 'quick-scan-url-results' command
     function quickScanResultToEntry(response, minMaliciousScanners) {
 
-        var scannersContext = createScannersContext (response)['scannersContext'];
-        var unknownCounter = createScannersContext (response)['unknownCounter'];
-        var maliciousCounter = createScannersContext (response)['maliciousCounter'];
-        var maliciousDescription = createScannersContext (response)['maliciousDescription'];
-
+        var scannersResult = createScannersContext (response);
+        var scannersContext = scannersResult['scannersContext'];
+        var unknownCounter = scannersResult['unknownCounter'];
+        var maliciousCounter = scannersResult['maliciousCounter'];
+        var maliciousDescription = scannersResult['maliciousDescription'];
 
         var whitelist = {
-            'ID': response.whitelist[0].id,
+            'Provider': response.whitelist[0].id,
             'Value' : response.whitelist[0].value
+        }
+
+        if (whitelist.Provider == 'internal'){
+            whitelist.Provider = 'Hybrid Analysis';
         }
 
         var dbotScore = calculateDbotScore(unknownCounter, maliciousCounter, minMaliciousScanners, response.scanners.lenght);
@@ -595,7 +599,7 @@ script:
     }
 
     function createContext (response, hybrid_context) {
-        var url = hybrid_context.Url;
+        var url = hybrid_context.URL;
         if (response.submission_type == 'page_url') {
             var context = {
                 'HybridAnalysis.URL(val.ScanID && val.ScanID == obj.ScanID)': hybrid_context,
@@ -627,7 +631,7 @@ script:
     function quickScanToEntry(response, url) {
         var ScanID = response.id;
         var hybrid_context = {
-            'Url': url,
+            'URL': url,
             'ScanID': response.id,
             'SHA256': response.sha256,
             'Finished': response.finished,
@@ -740,7 +744,8 @@ script:
       required: true
       description: The MD5, SHA1, or SHA256 hash of the file.
     - name: malicious_threat_levels
-      description: Threat level values, which will determine if the file is malicious.
+      description: A CSV list of threat level values. Files that have a threat level
+        specified in the list will be considered malicious.
       isArray: true
       defaultValue: "2"
     outputs:
@@ -1057,15 +1062,13 @@ script:
     - contextPath: HybridAnalysis.URL.Scanner.Status
       description: The status of the file.
       type: string
-    - contextPath: HybridAnalysis.URL.Whitelist.ID
-      description: The type of ID.
-      type: string
-    - contextPath: HybridAnalysis.URL.Whitelist.Value
-      description: Whether the indicator is on the whitelist.
-      type: boolean
     - contextPath: File.SHA256
       description: The SHA256 hash of the file.
       type: string
+    - contextPath: HybridAnalysis.URL.Whitelist.Provider
+      description: The Provider that classified this URL as whitelisted
+    - contextPath: HybridAnalysis.URL.Whitelist.Value
+      description: True if the indicator is in the whitelist
     description: Returns the scan results of the given URL ID.
   runonce: false
 tests:
