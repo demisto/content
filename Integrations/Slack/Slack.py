@@ -956,7 +956,7 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
     return response
 
 
-def send_message_to_destinations(destinations: list, message: str, thread_id: str, blocks: str) -> dict:
+def send_message_to_destinations(destinations: list, message: str, thread_id: str, blocks: str = '') -> dict:
     """
     Sends a message to provided destinations Slack.
     :param destinations: Destinations to send to.
