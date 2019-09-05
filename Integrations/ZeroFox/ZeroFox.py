@@ -322,7 +322,7 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Union[
                       f'ADVICE: Check that the Server URL parameter is correct and that you' \
                       f' have access to the Server from your host.'
         else:
-            err_msg = e.__doc__
+            err_msg = str(e)
         raise Exception(err_msg)
 
 
