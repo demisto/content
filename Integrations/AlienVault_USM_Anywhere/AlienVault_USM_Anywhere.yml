@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: AlienVault USM Anywhere
+  id: AlienVault USM Anywhere_copy
   version: -1
 configuration:
 - defaultvalue: https://www.example.com
@@ -38,9 +38,14 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- defaultvalue: '10'
+  display: Fetch Limit
+  name: fetch_limit
+  required: false
+  type: 0
 description: Search and monitor alarms and events from AlienVault USM Anywhere.
-display: AlienVault USM Anywhere
-name: AlienVault USM Anywhere
+display: AlienVault USM Anywhere_copy
+name: AlienVault USM Anywhere_copy
 script:
   commands:
   - arguments:
@@ -186,7 +191,8 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Alarm ID. Can be obtained by running the `alienvault-search-alarms` command.
+      description: Alarm ID. Can be obtained by running the `alienvault-search-alarms`
+        command.
       isArray: false
       name: alarm_id
       required: true
@@ -352,8 +358,9 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Alarm ID to get events for. Can be obtained by running the `alienvault-search-alarms` command.
-      isArray: false 
+      description: Alarm ID to get events for. Can be obtained by running the `alienvault-search-alarms`
+        command.
+      isArray: false
       name: alarm_id
       required: true
       secret: false
@@ -402,8 +409,10 @@ script:
       description: Event subcategory.
       type: String
   dockerimage: demisto/python3:3.7.3.286
-  subtype: python3
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   type: python
+  subtype: python3

@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 import json
 import requests
 import dateparser
+from typing import Dict
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -29,6 +30,8 @@ HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
 }
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT_FRACTION = '%Y-%m-%dT%H:%M:%S.%fZ'
 AUTH_TOKEN = ''
 
 
@@ -69,7 +72,7 @@ def get_token():
                        headers={'Content-Type': 'application/www-form-urlencoded'},
                        auth=basic_auth_credentials)
 
-    return res['access_token']
+    return res.get('access_token')
 
 
 @logger
@@ -91,7 +94,8 @@ def get_time_range(time_frame=None, start_time=None, end_time=None):
         else:
             end_time = dateparser.parse(end_time)
 
-        return date_to_timestamp(start_time), date_to_timestamp(end_time)
+        return run_function_date_format(date_to_timestamp, start_time), \
+            run_function_date_format(date_to_timestamp, end_time)
 
     end_time = datetime.now()
     if time_frame == 'Today':
@@ -113,7 +117,8 @@ def get_time_range(time_frame=None, start_time=None, end_time=None):
     else:
         raise ValueError('Could not parse time frame: {}'.format(time_frame))
 
-    return date_to_timestamp(start_time), date_to_timestamp(end_time)
+    return run_function_date_format(date_to_timestamp, start_time),\
+        run_function_date_format(date_to_timestamp, end_time)
 
 
 @logger
@@ -197,6 +202,34 @@ def parse_events(events_data):
         })
 
     return events
+
+
+def dict_value_to_int(target_dict: Dict, key: str):
+    """
+    :param target_dict: A dictionary which has the key param
+    :param key: The key that we need to convert it's value to integer
+    :return: The integer representation of the key's value in the dict params
+    """
+    try:
+        if target_dict:
+            value = target_dict.get(key)
+            if value:
+                target_dict[key] = int(value)
+                return target_dict[key]
+    except ValueError:
+        raise Exception(f'This value for {key} must be an integer.')
+
+
+def run_function_date_format(function, arg):
+    """
+    :param function: A function that has the arg date_format
+    :param arg: An argument necessary for the function
+    :return: The result of the application expression
+    """
+    try:
+        return function(arg, date_format=DATE_FORMAT)
+    except ValueError:
+        return function(arg, date_format=DATE_FORMAT_FRACTION)
 
 
 def item_to_incident(item):
@@ -368,17 +401,19 @@ def fetch_incidents():
 
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
-        last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
+        last_fetch, _ = run_function_date_format(parse_date_range, FETCH_TIME)
 
     incidents = []
-    items = search_alarms(start_time=date_to_timestamp(last_fetch, date_format='%Y-%m-%dT%H:%M:%SZ'), direction='asc')
+    limit = dict_value_to_int(demisto.params(), 'fetch_limit')
+    items = search_alarms(start_time=run_function_date_format(date_to_timestamp, last_fetch),
+                          direction='asc', limit=limit)
     for item in items:
         incident = item_to_incident(item)
         incidents.append(incident)
 
     if incidents:
         #  updating according to latest incident
-        last_fetch = incidents[-1]['occurred']
+        last_fetch = str(incidents[-1].get('occurred'))
 
     demisto.setLastRun({'time': last_fetch})
     demisto.incidents(incidents)
