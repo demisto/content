@@ -231,6 +231,12 @@ script:
       name: threadID
       required: false
       secret: false
+    - default: false
+      description: JSON string of Slack blocks to send.
+      isArray: false
+      name: blocks
+      required: false
+      secret: false
     deprecated: false
     description: Sends a message to a user, group, or channel.
     execution: false
