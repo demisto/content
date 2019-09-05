@@ -21,7 +21,7 @@ class Client(BaseClient):
 
     Examples:
         >>> client = Client('url', '/v1/', 'Name', 'name', 'Name', 30)
-        >>> client.build_dbot_entry('8.8.8.8', 'ip', 40)
+        >>> cli
         {'DBotScore': {'Indicator': '8.8.8.8', 'Type': 'ip', 'Vendor': 'Name', 'Score': 3}, 'IP(val.Address &&\
  val.Address == obj.Address)': {'Address': '8.8.8.8', 'Malicious': {'Vendor': 3, 'Description': None}}}
 
@@ -118,7 +118,8 @@ def search_ip(client: Client, args: Dict):
             'Description': results.get('description')
         }
         # Building a score for DBot
-        dbot_entry = client.build_dbot_entry(ip, 'ip', results.get('severity'))
+        score = client.calculate_dbot_score(results.get('severity'))
+        dbot_entry = build_dbot_entry(ip, 'ip', score, client.integration_name, results.get('description'))
         context = {
             f'{client.integration_context_name}.Analysis(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -158,10 +159,10 @@ def search_url(client: Client, args: Dict):
         return_warning(f'{client.integration_name} - Found no results for URL: {url}')
 
 
-def search_file(client: Client):
+def search_file(client: Client, args: Dict):
     """Searching for given file hash
     """
-    file_hash: str = demisto.args().get('file')
+    file_hash: str = args.get('file')
     raw_response: Dict = client.search_file_request(file_hash)
     if raw_response:
         title: str = f'{client.integration_name} - Analysis results for file hash: {file_hash}'
@@ -204,7 +205,7 @@ def search_file(client: Client):
         return_warning(f'{client.integration_name} - Could not find results for file hash: [{file_hash}')
 
 
-def test_module(client: Client):
+def test_module(client: Client, *args):
     if client.test_module_request():
         return 'ok'
     raise DemistoException('Test module failed')
@@ -220,9 +221,11 @@ def main():
     # No dividers
     integration_context_name = 'DataEnrichmentThreatIntelligence'
     suffix = '/api/v2'
-    server = demisto.params().get('url')
-    verify = not demisto.params().get('insecure', False)
-    proxy: Optional[bool] = demisto.params().get('proxy')
+    params = demisto.params()
+    server = params.get('url')
+    verify = not params.get('insecure', False)
+    proxy: Optional[bool] = params.get('proxy')
+    threshold = params.get('threshold')
     client = Client(
         server,
         suffix,
@@ -230,8 +233,9 @@ def main():
         integration_command_name,
         integration_context_name,
         verify=verify,
-        proxy=proxy)
-
+        proxy=proxy,
+        threshold=threshold
+    )
     command: str = demisto.command()
     demisto.info(f'Command being called is {command}')
     commands: Dict = {
@@ -254,5 +258,5 @@ def main():
         return_error(err_msg, error=e)
 
 
-if __name__ in ('__builtin__', 'builtins'):
+if __name__ == 'builtins':
     main()
