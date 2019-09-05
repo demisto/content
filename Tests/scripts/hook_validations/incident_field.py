@@ -9,7 +9,6 @@ class IncidentFieldValidator(object):
     And also try to catch possible Backward compatibility breaks due to the performed changes.
 
     Attributes:
-       _is_valid (bool): the attribute which saves the valid/in-valid status of the current file.
        file_path (str): the path to the file we are examining at the moment.
        current_incident_field (dict): Json representation of the current integration from the branch.
        old_incident_field (dict): Json representation of the current integration from master.
@@ -50,7 +49,7 @@ class IncidentFieldValidator(object):
         return is_incident_field_valid
 
     def is_valid_name(self):
-        """Validate that the name and cliName does not contain: incident, case or alert."""
+        """Validate that the name and cliName does not contain any potential incident synonyms."""
         name = self.current_incident_field.get('name', '')
         cli_name = self.current_incident_field.get('cliName', '')
         bad_words = {'incident', 'case', 'alert', 'event', 'play', 'ticket', 'issue'}
