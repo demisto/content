@@ -1625,7 +1625,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
         transientFileCID = None
 
     attachments = collect_attachments(entry_ids, file_names)
-    manual_attachments = collect_inline_attachments()
+    manual_attachments = collect_manual_attachments()
     transientAttachments = transient_attachments(transientFile, transientFileContent, transientFileCID)
 
     attachments = attachments + htmlAttachments + transientAttachments + inlineAttachments + manual_attachments

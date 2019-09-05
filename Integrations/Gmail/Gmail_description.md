@@ -35,3 +35,21 @@ To get an Immutable Google Apps ID (or customerId):
 You will see there URLs in the format:
 [https://accounts.google.com/o/saml2/idp?idpid=Cxxxxxxxx](https://accounts.google.com/o/saml2/idp?idpid=Cxxxxxxxx)
 Cxxxxxxxx is your Immutable Google Apps ID (customerId).
+
+In order to get auto-replay messages from a user, please authorize this api too: 
+https://mail.google.com,
+https://www.googleapis.com/auth/gmail.modify,
+https://www.googleapis.com/auth/gmail.readonly
+and https://www.googleapis.com/auth/gmail.settings.basic
+
+In order to set auto-replay messages, please authorize this api too: https://www.googleapis.com/auth/gmail.settings.basic
+
+In order to hide users from the global directory, please authorize this api too: https://www.googleapis.com/auth/admin.directory.user
+
+In order to delegate a user to a mailbox or remove a delegated mail from a mailbox, please authorize this api too: https://www.googleapis.com/auth/gmail.settings.sharing
+
+In order to set a user's password, please authorize this api too: https://www.googleapis.com/auth/admin.directory.user
+
+In order to send mails, please authorize this api too:
+https://www.googleapis.com/auth/gmail.compose and https://www.googleapis.com/auth/gmail.send
+ 
