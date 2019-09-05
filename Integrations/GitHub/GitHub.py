@@ -556,7 +556,7 @@ def get_commit(commit_sha: str) -> dict:
 
 
 def add_label(issue_number: Union[int, str], labels: list):
-    suffix = ISSUE_SUFFIX + f'/{issue_number}'
+    suffix = ISSUE_SUFFIX + f'/{issue_number}/labels'
     response = http_request('POST', url_suffix=suffix, data={'labels': labels})
     return response
 
