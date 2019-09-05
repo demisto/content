@@ -47,7 +47,7 @@ ASSESSMENTS_TRANS = {
     'default_schedule': 'DefaultSchedule',
     'default_asset_count': 'DefaultAssetCount',
     'project_template.id': 'ProjectTemplate.Id',
-    'default_asset_group_count': 'DefaultAssetCount',
+    'default_asset_group_count': 'DefaultAssetGroupCount',
     'project_template.company': 'ProjectTemplate.Company',
     'project_template.created': 'ProjectTemplate.Created',
     'project_template.modified': 'ProjectTemplate.Modified',

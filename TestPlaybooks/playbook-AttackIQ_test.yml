@@ -290,7 +290,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1250
+          "y": 1245
         }
       }
     note: false
@@ -411,7 +411,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1440
+          "y": 1420
         }
       }
     note: false
@@ -441,7 +441,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1630
+          "y": 1595
         }
       }
     note: false
@@ -449,12 +449,425 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 175052f1-898c-4ed5-84ba-5a0c43fc24bd
+    taskid: a489cbab-2378-4fdc-859f-282cd4d49bc8
+    type: condition
+    task:
+      id: a489cbab-2378-4fdc-859f-282cd4d49bc8
+      version: -1
+      name: Assert assessments
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Assessment.Id
+            iscontext: true
+          right:
+            value:
+              simple: f98f4499-419e-484d-b799-878265685cec
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Assessment.Name
+            iscontext: true
+          right:
+            value:
+              simple: Arseny's ransomware project
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Assessment.Description
+            iscontext: true
+          right:
+            value:
+              simple: Test of common ransomware variants
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Assessment.ProjectState
+            iscontext: true
+          right:
+            value:
+              simple: Active
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Assessment.Creator
+            iscontext: true
+          right:
+            value:
+              simple: akrupnik@paloaltonetworks.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Assessment.Owner
+            iscontext: true
+          right:
+            value:
+              simple: akrupnik@paloaltonetworks.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Assessment.User
+            iscontext: true
+          right:
+            value:
+              simple: akrupnik@paloaltonetworks.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Assessment.Created
+            iscontext: true
+          right:
+            value:
+              simple: 2019-09-02T11:52:04.945852Z
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Assessment.Modified
+            iscontext: true
+          right:
+            value:
+              simple: 2019-09-02T11:51:59.769959Z
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: AttackIQ.Assessment.Users
+            iscontext: true
+          right:
+            value:
+              simple: 71e92cf9-5159-466c-8050-142d1ba279ea
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: AttackIQ.Assessment.DefaultAssetCount
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: AttackIQ.Assessment.DefaultAssetGroupCount
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: AttackIQ.Assessment.MasterJobCount
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Assessment.ProjectTemplate.Id
+            iscontext: true
+          right:
+            value:
+              simple: 59d35f4a-2da0-4c4a-a08a-c30cb41dae6b
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Assessment.ProjectTemplate.TemplateName
+            iscontext: true
+          right:
+            value:
+              simple: Ransomware Project
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Assessment.ProjectTemplate.TemplateDescription
+            iscontext: true
+          right:
+            value:
+              simple: Variety of common ransomware variants
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Assessment.ProjectTemplate.Company
+            iscontext: true
+          right:
+            value:
+              simple: 906d5ec6-101c-4ae6-8906-b93ce0529060
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Assessment.ProjectTemplate.Created
+            iscontext: true
+          right:
+            value:
+              simple: 2016-07-01T20:26:43.494459Z
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Assessment.ProjectTemplate.Modified
+            iscontext: true
+          right:
+            value:
+              simple: 2019-02-19T03:31:54.393885Z
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Assessment.ProjectTemplate.ProjectTemplateType.Id
+            iscontext: true
+          right:
+            value:
+              simple: b1e7ac80-1417-4f7b-a387-35fb49f218c8
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Assessment.ProjectTemplate.ProjectTemplateType.Name
+            iscontext: true
+          right:
+            value:
+              simple: Use Cases
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Assessment.ProjectTemplate.ProjectTemplateType.Description
+            iscontext: true
+          right:
+            value:
+              simple: Showcase different use cases in which FireDrill can help
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 58874ea7-c907-4813-8a16-2810276b8745
+    type: regular
+    task:
+      id: 58874ea7-c907-4813-8a16-2810276b8745
+      version: -1
+      name: Get tests by assessment
+      script: '|||attackiq-list-tests-by-assessment'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      assessment_id:
+        simple: c4e352ae-1506-4c74-bd90-853f02dd765a
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 754822b1-9285-4ad1-8171-d3116717a486
+    type: condition
+    task:
+      id: 754822b1-9285-4ad1-8171-d3116717a486
+      version: -1
+      name: Assert tests
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Test.Id
+            iscontext: true
+          right:
+            value:
+              simple: 529eebb2-a53c-4f82-9a0e-fc59763cb542
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Test.Name
+            iscontext: true
+          right:
+            value:
+              simple: Cryptolocker
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Test.Project
+            iscontext: true
+          right:
+            value:
+              simple: c4e352ae-1506-4c74-bd90-853f02dd765a
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: AttackIQ.Test.TotalAssetCount
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isTrue
+          left:
+            value:
+              simple: AttackIQ.Test.Runnable
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Test.LastResult
+            iscontext: true
+          right:
+            value:
+              simple: Failed
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: AttackIQ.Test.ScheduledCount
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Test.User
+            iscontext: true
+          right:
+            value:
+              simple: akrupnik@paloaltonetworks.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Test.Created
+            iscontext: true
+          right:
+            value:
+              simple: 2019-08-27T10:17:09.842767Z
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Test.Modified
+            iscontext: true
+          right:
+            value:
+              simple: 2019-09-02T07:08:20.393468Z
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Test.LatestInstanceId
+            iscontext: true
+          right:
+            value:
+              simple: 24178034-cb69-442d-afd8-a7d87ae78eda
+      - - operator: isTrue
+          left:
+            value:
+              simple: AttackIQ.Test.UsingDefaultAssets
+            iscontext: true
+      - - operator: isTrue
+          left:
+            value:
+              simple: AttackIQ.Test.UsingDefaultSchedule
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Test.Scenarios.Id
+            iscontext: true
+          right:
+            value:
+              simple: b7425756-ab9a-4c7e-8fda-d1080c170910
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Test.Scenarios.Name
+            iscontext: true
+          right:
+            value:
+              simple: Download Petya Ransomware
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Test.Assets.Id
+            iscontext: true
+          right:
+            value:
+              simple: 03e17460-849e-4b86-b6c6-ef0db72823ff
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Test.Assets.Ipv4Address
+            iscontext: true
+          right:
+            value:
+              simple: 172.31.39.254
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Test.Assets.Hostname
+            iscontext: true
+          right:
+            value:
+              simple: ec2amaz-g4iu5no
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Test.Assets.ProductName
+            iscontext: true
+          right:
+            value:
+              simple: Windows Server 2016 Datacenter
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AttackIQ.Test.Assets.Status
+            iscontext: true
+          right:
+            value:
+              simple: Active
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: e2a96731-5c21-4fbe-8c7e-06a01fbe236e
     type: title
     task:
-      id: 175052f1-898c-4ed5-84ba-5a0c43fc24bd
+      id: e2a96731-5c21-4fbe-8c7e-06a01fbe236e
       version: -1
-      name: Untitled Task
+      name: Done
+      description: runs all of the tests in the assessment.
       type: title
       iscommand: false
       brand: ""
@@ -463,7 +876,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1820
+          "y": 2295
         }
       }
     note: false
@@ -474,7 +887,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1835,
+        "height": 2310,
         "width": 380,
         "x": 50,
         "y": 50
