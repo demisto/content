@@ -466,7 +466,7 @@ def get_branch(branch: str) -> dict:
 def create_branch(name: str, sha: str) -> dict:
     suffix = USER_SUFFIX + '/git/refs'
     data = {
-        'ref': f'ref/heads/{name}',
+        'ref': f'refs/heads/{name}',
         'sha': sha
     }
     response = http_request('POST', url_suffix=suffix, data=data)
