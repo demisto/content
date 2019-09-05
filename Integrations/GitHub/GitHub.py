@@ -18,9 +18,6 @@ USER = demisto.params().get('user')
 TOKEN = demisto.params().get('token', '')
 BASE_URL = 'https://api.github.com'
 REPOSITORY = demisto.params().get('repository')
-CONTRIBUTION_LABEL = demisto.params().get('contribution_label')
-BOT_NAME = demisto.params().get('bot_name')
-STALE_TIME = demisto.params().get('stale_time', '3 days')
 USE_SSL = not demisto.params().get('insecure', False)
 FETCH_TIME = demisto.params().get('fetch_time', '30 days')
 
@@ -1074,58 +1071,26 @@ def search_command():
 
 def fetch_incidents_command():
     last_run = demisto.getLastRun()
-    now = datetime.now()
     if last_run and 'start_time' in last_run:
         start_time = datetime.strptime(last_run.get('start_time'), '%Y-%m-%dT%H:%M:%SZ')
 
     else:
-        time_range_start, _ = parse_date_range(FETCH_TIME)
-        start_delta = now - time_range_start
-        start_time = now - start_delta
+        start_time = datetime.now() - timedelta(days=int(FETCH_TIME))
 
     last_time = start_time
+    issue_list = http_request(method='GET',
+                              url_suffix=ISSUE_SUFFIX,
+                              params={'state': 'all'})
 
-    opened_query = 'repo:{USER}/{REPOSITORY} is:open updated:>{timestamp} is:pr -label:{label}'
-    opened_prs = get_relevant_prs(start_time, CONTRIBUTION_LABEL, opened_query)
-
-    time_range_start, _ = parse_date_range(STALE_TIME)
-    inactive_query = 'repo:{USER}/{REPOSITORY} is:open updated:<{timestamp} is:pr label:{label}'
-    inactive_prs = get_relevant_prs(time_range_start, CONTRIBUTION_LABEL, inactive_query)
-    for pr in inactive_prs:
-        # demisto.info('PR: ' + json.dumps(pr, indent=4))
-        issue_number = pr.get('number')
-        sha = pr.get('head', {}).get('sha')
-        demisto.info('SHA: ' + sha)
-        commit_data = get_commit(sha)
-        # demisto.info('COMMIT: ', json.dumps(commit_data, indent=4))
-        reviews_data = list_pr_reviews(issue_number)
-        comments_data = list_issue_comments(issue_number)
-        alert_appropriate_party(pr, commit_data, reviews_data, comments_data)
-
-    # label and assign reviewer to new external PRs
     incidents = []
-    for pr in opened_prs:
-        updated_at_str = pr.get('created_at')
+    for issue in issue_list:
+        updated_at_str = issue.get('created_at')
         updated_at = datetime.strptime(updated_at_str, '%Y-%m-%dT%H:%M:%SZ')
-        pr_opener = pr.get('head', {}).get('user', {}).get('login')
-        try:
-            not_content_member = get_team_membership(CONTENT_TEAM_ID, pr_opener).get('state', '') != 'active'
-        except Exception:
-            not_content_member = True
-        demisto.info(f'not_content_member: {not_content_member}')
-        is_fork = pr.get('head', {}).get('repo', {}).get('fork')
-        if is_fork or not_content_member:
-            issue_number = pr.get('number')
-            add_label(issue_number, [CONTRIBUTION_LABEL])
-            selected_reviewer = REVIEWERS[issue_number % len(REVIEWERS)]
-            create_comment(issue_number, WELCOME_MSG.replace('reviewer', selected_reviewer))
-            request_review(issue_number, [selected_reviewer])
-            check_pr_files(issue_number, pr.get('head', {}).get('user', {}).get('login', ''))
         if updated_at > start_time:
             inc = {
-                'name': pr.get('url'),
+                'name': issue.get('url'),
                 'occurred': updated_at_str,
-                'rawJSON': json.dumps(pr)
+                'rawJSON': json.dumps(issue)
             }
             incidents.append(inc)
             if updated_at > last_time:
