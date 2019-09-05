@@ -1,0 +1,2824 @@
+commonfields:
+  id: ARIA
+  version: -1
+name: ARIA
+display: ARIA Packet Intelligence
+category: Network Security
+image: data:image/png;base64,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
+description: ARIA Packet Intelligence Demisto Integration
+configuration:
+- display: SDSo
+  name: sdso
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Token
+  name: api_token
+  defaultvalue: ""
+  type: 0
+  required: true
+script:
+  script: |-
+    ''' IMPORTS '''
+    import sys
+    import time
+    import re
+    import base64
+
+    #ARIA PacketIntelligence SOAR API#
+    import json
+    import requests
+    import random
+    
+    class ARIA(object):
+    
+        def __init__(self):
+            self.sdso_url = ""
+            self.api_key = ""
+    
+        def set_api(self, key: str) -> None:
+            """
+            Set the packet intelligence api key
+            :param key:
+            :return:
+            """
+            self.api_key = key
+        
+        def set_sdso_url(self, url: str) -> None:
+            """
+            :param url:
+            :return:
+            """
+            self.sdso_url = url
+    
+        """HELPER FUNCTION"""
+    
+        def _build_alert_instruction(self, transport_type: str, tti_index: int, aio_index: int,
+                                     trigger_type: str, trigger_value: int) -> str:
+            """
+            :param transport_type:
+            :param tti_index:
+            :param aio_index:
+            :param trigger_type:
+            :param trigger_value:
+            :return:
+            """
+            transport_type_list = ["email", "SMS", "syslog", "webhook"]
+            if transport_type not in transport_type_list:
+                raise Exception("Wrong transport_type {}! transport_type can be choose from 'email', 'SMS', 'syslog', 'webhook'"
+                                .format(transport_type))
+            if tti_index > 7 or tti_index < 0:
+                raise Exception("transport_type_info_index out of range! It must be in range [0, 7]")
+            if aio_index > 15 or aio_index < 0:
+                raise Exception("Alert Info Index out of range! It must be in range [0, 15]")
+    
+            trigger_type_list = ["one-shot", "re-trigger-count", "re-trigger-timed-ms", "re-trigger-timed-sec"]
+            if trigger_type not in trigger_type_list:
+                raise Exception("Wrong trigger_type {}! trigger_type can be choose from 'one-shot', 're-trigger-count', "
+                                "'re-trigger-timed-ms', 're-trigger-timed-sec'".format(trigger_type))
+            if trigger_value < 1 or trigger_value > 8191:
+                raise Exception("Trigger Value out of range! It must be in range [1, 8191]")
+    
+            instruction =  "ALERT {} {} {} {} {}".format(transport_type, tti_index, aio_index, trigger_type, trigger_value)
+            return instruction
+    
+        def _process_port_range(self, port_range: str=None) -> str:
+            """
+            :param port_range: (:string:) - "1, 4-8, 9-10 ..."
+            :return:
+            """
+            if port_range is None or len(port_range) == 0:
+                port_range = "0-65535"
+            arr = port_range.replace(" ", "").split(",")
+            res = ""
+            for i in arr:
+                if len(res) != 0:
+                    res = res + ", "
+                if "-" in i:
+                    beg = i.replace(" ", "").split("-")[0]
+                    end = i.replace(" ", "").split("-")[1]
+                    for j in beg, end:
+                        if int(j) < 0 or int(j) > 65535:
+                            raise Exception("Port must be in 0-65535!")
+                    if int(beg) > int(end):
+                        raise Exception("Wrong port range format!")
+                    res = res + beg + " - " + end
+                else:
+                    if int(i) < 0 or int(i) > 65535:
+                        raise Exception("Port must be in 0-65535!")
+                    res = res + i
+            return res
+    
+    
+        def _process_ip_address(self, ip: str) -> str:
+            """
+            :param ip: (:string:) - "1.2.3.4" "1.2.3.4/32"
+            :return:
+            """
+            netmask = "32"
+            ip_str = ip.replace(" ", "")
+            if "/" in ip_str:
+                netmask = ip_str.split("/")[1]
+                ip_addr = ip_str.split("/")[0]
+            else:
+                ip_addr = ip_str
+            if int(netmask) > 32 or int(netmask) < 1:
+                raise Exception("Subnet mask must be in 1 to 32!")
+            arr = ip_addr.split(".")
+            for i in arr:
+                if int(i) < 0 or int(i) > 255:
+                    raise Exception("Wrong IP format!")
+            if len(arr) != 4:
+                raise Exception("Wrong IP format!")
+            res = ip_addr + "/" + netmask
+            return res
+    
+    
+        def _generate_named_rule_data(self, rule_name: str, logic_block: str, rule: str,
+                                      action: str, instance_id: str=None, label_sia_group: str=None,
+                                      label_sia_name: str=None, label_sia_region: str=None) -> dict:
+            """
+            :param rule_name:
+            :param logic_block:
+            :param rule:
+            :param action:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            selector = {
+                "kind": "string"
+            }
+            count = 0
+            type_dict = ["group", "name", "region"]
+    
+            for index, label in enumerate([label_sia_group, label_sia_name, label_sia_region]):
+                if label is not None:
+                    count += 1
+                    if count == 3:
+                        raise Exception("Command only supports two SIA labels!")
+                    selector["label" + str(count)] = {
+                        "kind": "string",
+                        "SIA_label_type": type_dict[index],
+                        "SIA_label": label
+                    }
+    
+            if count == 0:
+                selector = {
+                    "kind": "string",
+                    "label1": {
+                        "kind": "string",
+                        "SIA_label_type": "region",
+                        "SIA_label": "all"
+                    },
+                    "label2": {
+                        "kind": "string",
+                        "SIA_label_type": "region",
+                        "SIA_label": "all"
+                    }
+                }
+    
+            instance_id_type = "instance-number"
+            if instance_id is None:
+                instance_id_type = "all"
+                instance_id = ""
+    
+            named_rule = "\"name\": \"{}\", \"logic_block\": \"{}\", \"rule\": \"{}\"".format(rule_name, logic_block, rule)
+    
+            data =  {
+                "selector": {
+                    "kind": "string",
+                    "named_rule": named_rule,
+                    "named_rule_action": action,
+                    "label_query": selector,
+                    "instance_ID_type": instance_id_type,
+                    "instance_ID": instance_id
+                }
+            }
+            return data
+    
+        def _remove_rule(self, rule_name: str, logic_block: str, instance_id: str=None, label_sia_group: str=None,
+                               label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            :param rule_name:
+            :param logic_block:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            url = self.sdso_url + '/ruleForward'
+            headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+            data = self._generate_named_rule_data(rule_name, logic_block, "", "remove", instance_id,
+                                                  label_sia_group, label_sia_name, label_sia_region)
+            data["selector"]["instance_ID_type"] = "all"
+            data["selector"]["instance_ID"] = ""
+            res = requests.put(url, data=json.dumps(data), headers=headers)
+            return res
+    
+        def _do_request(self, data: dict) -> requests:
+            """
+            :param data:
+            :return:
+            """
+            url = self.sdso_url + '/ruleForward'
+            headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+            data["selector"]["instance_ID_type"] = "instance-number"
+            instance_list = random.sample(range(3), 3)
+            res = None
+            for i in instance_list:
+                data["selector"]["instance_ID"] = str(i)
+                res = requests.put(url, data=json.dumps(data), headers=headers)
+                if res.status_code == 200 or res.status_code == 201:
+                    break
+            return res
+    
+        """SOAR API"""
+        def block_conversation(self, src_ip: str, target_ip: str, rule_name: str, src_port: str=None,
+                               target_port: str=None, protocol: str=None, instance_id: str=None, label_sia_group: str=None,
+                               label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            Block Conversation
+            :param src_ip: "1.2.3.4/32" or "1.2.3.4"
+            :param target_ip:
+            :param rule_name:
+            :param src_port: "0, 10-100"
+            :param target_port:
+            :param protocol:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            src_ip = self._process_ip_address(src_ip)
+            src_port = self._process_port_range(src_port)
+            target_ip = self._process_ip_address(target_ip)
+            target_port = self._process_port_range(target_port)
+            if protocol is None or len(protocol) == 0:
+                protocol = "HOPOPT-255"
+            rule = "{} @ {} & {} @ {} <> {} : DROP, END".format(target_ip, target_port, src_ip, src_port, protocol)
+            data = self._generate_named_rule_data(rule_name, "5-tuple", rule, "add", instance_id, label_sia_group,
+                                                  label_sia_name, label_sia_region)
+            return self._do_request(data)
+    
+    
+        def unblock_conversation(self, rule_name: str, instance_id: str=None,
+                                 label_sia_group: str=None, label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            Unblock a previously blocked conversation. If the rule name is provided, it will take precedence over
+            the five-tuple information. If the rule name is not provided, this method will iterate over blocked
+            conversations and unblock the conversation pointed that matches the five_tuple (src_ip, src_port, ...) information.
+            If neither are provided this will raise and exception
+            :param rule_name:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            res = self._remove_rule(rule_name, "5-tuple", instance_id, label_sia_group, label_sia_name, label_sia_region)
+            return res
+    
+    
+        def record_conversation(self, src_ip: str, target_ip: str, vlan_id: str, rule_name: str, src_port: str=None,
+                                target_port: str=None, protocol: str=None, sia_interface: str=None, transport_type: str=None, tti_index: str=None,
+                                aio_index: str=None, trigger_type: str=None, trigger_value: str=None, instance_id: str=None,
+                                label_sia_group: str=None, label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            :param src_ip:
+            :param target_ip:
+            :param vlan_id:
+            :param rule_name:
+            :param src_port:
+            :param target_port:
+            :param protocol:
+            :param sia_interface:
+            :param transport_type:
+            :param tti_index:
+            :param aio_index:
+            :param trigger_type:
+            :param trigger_value:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            if sia_interface is None or sia_interface != "B":
+                sia_interface = "A"
+            src_ip = self._process_ip_address(src_ip)
+            src_port = self._process_port_range(src_port)
+            target_ip = self._process_ip_address(target_ip)
+            target_port = self._process_port_range(target_port)
+    
+            if protocol is None or len(protocol) == 0:
+                protocol = "HOPOPT-255"
+            rule = "{} @ {} & {} @ {} <> {} : REDIRECT-VLAN {} {}".format(target_ip, target_port, src_ip, src_port,
+                                                                               protocol, sia_interface, vlan_id)
+            if transport_type is not None:
+                if tti_index is None or aio_index is None or trigger_type is None or trigger_value is None:
+                    raise Exception("Please provide tti_index, aio_index, trigger_type and trigger_value "
+                                    "to use {} to send an alert.".format(transport_type))
+                rule += ", "
+                rule += self._build_alert_instruction(transport_type, int(tti_index), int(aio_index), trigger_type, int(trigger_value))
+            rule += ", END"
+    
+            data = self._generate_named_rule_data(rule_name, "5-tuple", rule, "add", instance_id,
+                                                  label_sia_group, label_sia_name, label_sia_region)
+            return self._do_request(data)
+    
+    
+        def stop_recording_conversation(self, rule_name: str, instance_id: str=None, label_sia_group: str=None,
+                                        label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            Stop recording a previously blocked conversation. If the rule name is provided, it will take precedence over
+            the five-tuple information. If the rule name is not provided, this method will iterate over blocked
+            conversations and unblock the conversation pointed that matches the five_tuple (src_ip, src_port, ...) information.
+            If neither are provided this will raise and exception
+            :param rule_name:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            res = self._remove_rule(rule_name, "5-tuple", instance_id, label_sia_group, label_sia_name, label_sia_region)
+            return res
+        
+        def alert_conversation(self, src_ip: str, target_ip: str, rule_name: str, transport_type: str, tti_index: str, aio_index: str,
+                               trigger_type: str, trigger_value: str, src_port: str=None, target_port: str=None, protocol: str=None, instance_id: str=None,
+                               label_sia_group: str=None, label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            :param src_ip:
+            :param target_ip:
+            :param rule_name:
+            :param transport_type:
+            :param tti_index:
+            :param aio_index:
+            :param trigger_type:
+            :param trigger_value:
+            :param src_port:
+            :param target_port:
+            :param protocol:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            src_ip = self._process_ip_address(src_ip)
+            src_port = self._process_port_range(src_port)
+            target_ip = self._process_ip_address(target_ip)
+            target_port = self._process_port_range(target_port)
+            if protocol is None or len(protocol) == 0:
+                protocol = "HOPOPT-255"
+            rule = "{} @ {} & {} @ {} <> {} : ".format(target_ip, target_port, src_ip, src_port, protocol)
+            rule += self._build_alert_instruction(transport_type, int(tti_index), int(aio_index), trigger_type, int(trigger_value)) + ", END"
+            data = self._generate_named_rule_data(rule_name, "5-tuple", rule, "add", instance_id,
+                                                  label_sia_group, label_sia_name, label_sia_region)
+            return self._do_request(data)
+        
+        def mute_alert_conversation(self, rule_name: str, instance_id: str=None,
+                                    label_sia_group: str=None, label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            :param rule_name:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            res = self._remove_rule(rule_name, "5-tuple", instance_id, label_sia_group, label_sia_name, label_sia_region)
+            return res
+    
+        def block_dest_port(self, port_range: str, rule_name: str, instance_id: str=None,
+                            label_sia_group: str=None, label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            Block destination ports in the port_range
+            :param port_range:
+            :param rule_name:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            rule = "{}: DROP, END".format(self._process_port_range(port_range)) 
+            data = self._generate_named_rule_data(rule_name, "dst-port", rule, "add", instance_id,
+                                                  label_sia_group, label_sia_name, label_sia_region)
+            return self._do_request(data)
+    
+        def unblock_dest_port(self, rule_name: str, instance_id:str=None, label_sia_group: str=None,
+                              label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            Unblock destination ports blocked by the given rule. If the rule is not provided it will unblock
+            all ports
+            :param rule_name:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            res = self._remove_rule(rule_name, "dst-port", instance_id, label_sia_group, label_sia_name, label_sia_region)
+            return res
+    
+        def record_dest_port(self, port_range: str, vlan_id: str, rule_name: str,
+                             sia_interface: str=None, transport_type: str=None, tti_index: str=None, aio_index: str=None,
+                             trigger_type: str=None, trigger_value: str=None, instance_id: str=None, label_sia_group: str=None,
+                             label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            Redirect traffic from ports in port_range
+            :param port_range:
+            :param vlan_id:
+            :param rule_name:
+            :param sia_interface:
+            :param transport_type:
+            :param tti_index:
+            :param aio_index:
+            :param trigger_type:
+            :param trigger_value:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            if sia_interface is None or sia_interface != "B":
+                sia_interface = "A"
+            rule = "{}: REDIRECT-VLAN {} {}".format(self._process_port_range(port_range), sia_interface, vlan_id)
+            if transport_type is not None:
+                if tti_index is None or aio_index is None or trigger_type is None or trigger_value is None:
+                    raise Exception("Please provide tti_index, aio_index, trigger_type and trigger_value "
+                                    "to use {} to send an alert.".format(transport_type))
+                rule += ", "
+                rule += self._build_alert_instruction(transport_type, int(tti_index), int(aio_index), trigger_type, int(trigger_value))
+            rule += ", END"
+            data = self._generate_named_rule_data(rule_name, "dst-port", rule, "add", instance_id,
+                                                  label_sia_group, label_sia_name, label_sia_region)
+            return self._do_request(data)
+    
+        def stop_recording_dest_port(self, rule_name: str, instance_id: str=None, label_sia_group: str=None,
+                                     label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            Stop recording traffic from ports recorded by the given rule. If the rule is
+            not given it will stop recording conversations in port_range
+            :param rule_name:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+    
+            res = self._remove_rule(rule_name, "dst-port", instance_id, label_sia_group, label_sia_name, label_sia_region)
+            return res
+    
+        def alert_dest_port(self, port_range: str, rule_name: str, transport_type: str, tti_index: str, aio_index: str,
+                            trigger_type: str, trigger_value: str, instance_id: str=None, label_sia_group: str=None,
+                            label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            :param port_range:
+            :param rule_name:
+            :param transport_type:
+            :param tti_index:
+            :param aio_index:
+            :param trigger_type:
+            :param trigger_value:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            rule = "{}: ".format(self._process_port_range(port_range))
+            rule += self._build_alert_instruction(transport_type, int(tti_index), int(aio_index), trigger_type,
+                                                  int(trigger_value)) + ", END"
+            data = self._generate_named_rule_data(rule_name, "dst-port", rule, "add", instance_id,
+                                                  label_sia_group, label_sia_name, label_sia_region)
+            return self._do_request(data)
+    
+        def mute_alert_dest_port(self, rule_name: str, instance_id:str=None, label_sia_group: str=None,
+                                 label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            :param rule_name:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            res = self._remove_rule(rule_name, "dst-port", instance_id, label_sia_group, label_sia_name, label_sia_region)
+            return res
+    
+        def block_src_port(self, port_range: str, rule_name: str, instance_id: str=None, label_sia_group: str=None,
+                           label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            Block source ports in the port_range
+            :param port_range:
+            :param rule_name:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            rule = "{}: DROP, END".format(self._process_port_range(port_range)) 
+            data = self._generate_named_rule_data(rule_name, "src-port", rule, "add", instance_id,
+                                                  label_sia_group, label_sia_name, label_sia_region)
+            return self._do_request(data)
+        
+        def unblock_src_port(self, rule_name: str, instance_id: str=None, label_sia_group: str=None,
+                             label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            Unblock source ports blocked by the given rule. If the rule is not provided it will unblock
+            all ports in port_range
+            :param rule_name:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            res = self._remove_rule(rule_name, "src-port", instance_id, label_sia_group, label_sia_name, label_sia_region)
+            return res
+        
+        def record_src_port(self, port_range: str, vlan_id: str, rule_name: str, sia_interface: str=None,
+                            transport_type: str=None, tti_index: str=None, aio_index: str=None, trigger_type: str=None,
+                            trigger_value: str=None, instance_id: str=None, label_sia_group: str=None, label_sia_name: str=None,
+                            label_sia_region: str=None) -> requests:
+            """
+            Redirect traffic from ports in port_range
+            :param port_range:
+            :param vlan_id:
+            :param rule_name:
+            :param sia_interface:
+            :param transport_type:
+            :param tti_index:
+            :param aio_index:
+            :param trigger_type:
+            :param trigger_value:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            if sia_interface is None or sia_interface != "B":
+                sia_interface = "A"
+            rule = "{}: REDIRECT-VLAN {} {}".format(self._process_port_range(port_range), sia_interface, vlan_id)
+            if transport_type is not None:
+                if tti_index is None or aio_index is None or trigger_type is None or trigger_value is None:
+                    raise Exception("Please provide tti_index, aio_index, trigger_type and trigger_value "
+                                    "to use {} to send an alert.".format(transport_type))
+                rule += ", "
+                rule += self._build_alert_instruction(transport_type, int(tti_index), int(aio_index), trigger_type, int(trigger_value))
+            rule += ", END"
+            data = self._generate_named_rule_data(rule_name, "src-port", rule, "add", instance_id,
+                                                  label_sia_group, label_sia_name, label_sia_region)
+            return self._do_request(data)
+    
+        def stop_recording_src_port(self, rule_name: str, instance_id: str=None, label_sia_group: str=None,
+                                    label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            Stop recording traffic from ports recorded by the given rule. If the rule is
+            not given it will stop recording conversations in port_range
+            :param rule_name:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+    
+            res = self._remove_rule(rule_name, "src-port", instance_id, label_sia_group, label_sia_name, label_sia_region)
+            return res
+    
+        def alert_src_port(self, port_range: str, rule_name: str, transport_type: str, tti_index: str, aio_index: str,
+                           trigger_type: str, trigger_value: str, instance_id: str=None, label_sia_group: str=None,
+                           label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            :param port_range:
+            :param rule_name:
+            :param transport_type:
+            :param tti_index:
+            :param aio_index:
+            :param trigger_type:
+            :param trigger_value:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            rule = "{}: ".format(self._process_port_range(port_range))
+            rule += self._build_alert_instruction(transport_type, int(tti_index), int(aio_index),
+                                                  trigger_type, int(trigger_value)) + ", END"
+            data = self._generate_named_rule_data(rule_name, "src-port", rule, "add", instance_id,
+                                                  label_sia_group, label_sia_name, label_sia_region)
+            return self._do_request(data)
+    
+    
+        def mute_alert_src_port(self, rule_name: str, instance_id: str=None, label_sia_group: str=None,
+                                label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            :param rule_name:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            res = self._remove_rule(rule_name, "src-port", instance_id, label_sia_group, label_sia_name, label_sia_region)
+            return res
+    
+    
+        def block_dest_subnet(self, target_ip: str, rule_name: str, instance_id: str=None,
+                              label_sia_group: str=None, label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            :param target_ip:
+            :param rule_name:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            rule = "{}: DROP, END".format(self._process_ip_address(target_ip))
+            data = self._generate_named_rule_data(rule_name, "dst-subnet", rule, "add", instance_id,
+                                                  label_sia_group, label_sia_name, label_sia_region)
+            return self._do_request(data)
+    
+    
+        def unblock_dest_subnet(self, rule_name: str, instance_id:str=None, label_sia_group: str=None,
+                              label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            :param rule_name:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            res = self._remove_rule(rule_name, "dst-subnet", instance_id, label_sia_group, label_sia_name, label_sia_region)
+            return res
+    
+    
+        def record_dest_subnet(self, target_ip: str, vlan_id: str, rule_name: str, sia_interface: str=None,
+                               transport_type: str=None, tti_index: str=None, aio_index: str=None, trigger_type: str=None,
+                               trigger_value: str=None, instance_id: str=None, label_sia_group: str=None,
+                               label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            :param target_ip:
+            :param vlan_id:
+            :param rule_name:
+            :param sia_interface:
+            :param transport_type:
+            :param tti_index:
+            :param aio_index:
+            :param trigger_type:
+            :param trigger_value:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+    
+            if sia_interface is None or sia_interface != "B":
+                sia_interface = "A"
+            rule = "{}: REDIRECT-VLAN {} {}".format(self._process_ip_address(target_ip), sia_interface, vlan_id)
+            if transport_type is not None:
+                if tti_index is None or aio_index is None or trigger_type is None or trigger_value is None:
+                    raise Exception("Please provide tti_index, aio_index, trigger_type and trigger_value "
+                                    "to use {} to send an alert.".format(transport_type))
+                rule += ", "
+                rule += self._build_alert_instruction(transport_type, int(tti_index), int(aio_index), trigger_type, int(trigger_value))
+            rule += ", END"
+            data = self._generate_named_rule_data(rule_name, "dst-subnet", rule, "add", instance_id,
+                                                  label_sia_group, label_sia_name, label_sia_region)
+            return self._do_request(data)
+    
+    
+        def stop_recording_dest_subnet(self, rule_name: str, instance_id: str=None, label_sia_group: str=None,
+                                       label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            :param rule_name:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+    
+            res = self._remove_rule(rule_name, "dst-subnet", instance_id, label_sia_group, label_sia_name, label_sia_region)
+            return res
+    
+    
+        def alert_dest_subnet(self, target_ip: str, rule_name: str, transport_type: str, tti_index: str, aio_index: str,
+                              trigger_type: str, trigger_value: str, instance_id: str=None, label_sia_group: str=None,
+                              label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            :param target_ip:
+            :param rule_name:
+            :param transport_type:
+            :param tti_index:
+            :param aio_index:
+            :param trigger_type:
+            :param trigger_value:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            rule = "{}: ".format(self._process_ip_address(target_ip))
+            rule += self._build_alert_instruction(transport_type, int(tti_index), int(aio_index), trigger_type,
+                                                  int(trigger_value)) + ", END"
+            data = self._generate_named_rule_data(rule_name, "dst-subnet", rule, "add", instance_id,
+                                                  label_sia_group, label_sia_name, label_sia_region)
+            return self._do_request(data)
+    
+    
+        def mute_alert_dest_subnet(self, rule_name: str, instance_id:str=None, label_sia_group: str=None,
+                                 label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            :param rule_name:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            res = self._remove_rule(rule_name, "dst-subnet", instance_id, label_sia_group, label_sia_name, label_sia_region)
+            return res
+    
+    
+        def block_src_subnet(self, src_ip: str, rule_name: str, instance_id: str=None, label_sia_group: str=None,
+                           label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            :param src_ip:
+            :param rule_name:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            rule = "{}: DROP, END".format(self._process_ip_address(src_ip))
+            data = self._generate_named_rule_data(rule_name, "src-subnet", rule, "add", instance_id,
+                                                  label_sia_group, label_sia_name, label_sia_region)
+            return self._do_request(data)
+    
+    
+        def unblock_src_subnet(self, rule_name: str, instance_id: str=None, label_sia_group: str=None,
+                             label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            :param rule_name:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            res = self._remove_rule(rule_name, "src-subnet", instance_id, label_sia_group, label_sia_name, label_sia_region)
+            return res
+    
+    
+        def record_src_subnet(self, src_ip: str, vlan_id: str, rule_name: str, sia_interface: str = None,
+                              transport_type: str=None, tti_index: str=None, aio_index: str=None, trigger_type: str=None,
+                              trigger_value: str=None, instance_id: str=None, label_sia_group: str=None,
+                              label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            :param src_ip:
+            :param vlan_id:
+            :param rule_name:
+            :param sia_interface:
+            :param transport_type:
+            :param tti_index:
+            :param aio_index:
+            :param trigger_type:
+            :param trigger_value:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+    
+            if sia_interface is None or sia_interface != "B":
+                sia_interface = "A"
+            rule = "{}: REDIRECT-VLAN {} {}".format(self._process_ip_address(src_ip), sia_interface, vlan_id)
+            if transport_type is not None:
+                if tti_index is None or aio_index is None or trigger_type is None or trigger_value is None:
+                    raise Exception("Please provide tti_index, aio_index, trigger_type and trigger_value "
+                                    "to use {} to send an alert.".format(transport_type))
+                rule += ", "
+                rule += self._build_alert_instruction(transport_type, int(tti_index), int(aio_index), trigger_type, int(trigger_value))
+            rule += ", END"
+            data = self._generate_named_rule_data(rule_name, "src-subnet", rule, "add", instance_id,
+                                                  label_sia_group, label_sia_name, label_sia_region)
+            return self._do_request(data)
+    
+    
+        def stop_recording_src_subnet(self, rule_name: str, instance_id: str=None, label_sia_group: str=None,
+                                    label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            :param rule_name:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+    
+            res = self._remove_rule(rule_name, "src-subnet", instance_id, label_sia_group, label_sia_name, label_sia_region)
+            return res
+    
+    
+        def alert_src_subnet(self, src_ip: str, rule_name: str, transport_type: str, tti_index: str, aio_index: str,
+                           trigger_type: str, trigger_value: str, instance_id: str=None, label_sia_group: str=None,
+                           label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            :param src_ip:
+            :param rule_name:
+            :param transport_type:
+            :param tti_index:
+            :param aio_index:
+            :param trigger_type:
+            :param trigger_value:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            rule = "{}: ".format(self._process_ip_address(src_ip))
+            rule += self._build_alert_instruction(transport_type, int(tti_index), int(aio_index),
+                                                  trigger_type, int(trigger_value)) + ", END"
+            data = self._generate_named_rule_data(rule_name, "src-subnet", rule, "add", instance_id,
+                                                  label_sia_group, label_sia_name, label_sia_region)
+            return self._do_request(data)
+    
+    
+        def mute_alert_src_subnet(self, rule_name: str, instance_id: str=None, label_sia_group: str=None,
+                                label_sia_name: str=None, label_sia_region: str=None) -> requests:
+            """
+            :param rule_name:
+            :param instance_id:
+            :param label_sia_group:
+            :param label_sia_name:
+            :param label_sia_region:
+            :return:
+            """
+            res = self._remove_rule(rule_name, "src-subnet", instance_id, label_sia_group, label_sia_name, label_sia_region)
+            return res
+    
+    
+        def blacklist_ip(self, ip):
+            """
+            Blacklist the given ip range
+            :param ip:
+            :return:
+            """
+            pass
+    
+        def whitelist_ip(self, ip):
+            """
+            Unblock the given ip range
+            :param ip:
+            :return:
+            """
+            pass
+
+    # The command demisto.command() holds the command sent from the user.
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBAL VARS '''
+    SDSO = demisto.params().get('sdso')
+    API_TOKEN = demisto.params().get('api_token')
+
+    aria = ARIA()
+    aria.set_api(API_TOKEN)
+    sdso_url = "http://{}:7443/Aria/SS/1.0.0/PBaaS/server".format(SDSO)
+    aria.set_sdso_url(sdso_url)
+
+    ''' HELPER FUNCTIONS '''
+
+    def func_call(instance, func_name, command_name, *argv):
+        arguments = []
+        parameter = {}
+
+        for arg in argv:
+            value = demisto.args().get(arg)
+            arguments.append(value)
+            parameter[arg] = value
+
+
+        response = getattr(instance, func_name)(*tuple(arguments))
+
+        cont = []
+
+        import time
+        context_entry = {
+            "name": command_name,
+            "response_code": response.status_code,
+            "response_content": response.text,
+            "arguments": parameter,
+            "time_stamp_unix": str(int(time.time()))
+        }
+        cont.append(context_entry)
+
+        table_header = ["name", "response_code", "response_content", "arguments", "time_stamp_unix"]
+
+        ec = {
+            "PI(val.name && val.name == obj.name)": cont
+        }
+        LOG(response.text)
+
+        output_type = "note"
+        if not response.ok:
+            LOG.print_log()
+            output_type = "error"
+
+        res = {
+            "Type": entryTypes[output_type],
+            "ContentsFormat": formats["json"],
+            "Contents": cont,
+            "EntryContext": ec,
+            "ReadableContentsFormat": formats['markdown'],
+            "HumanReadable": tableToMarkdown(command_name, cont, table_header)
+        }
+        demisto.results(res)
+
+
+    ''' COMMAND FUNCTION '''
+    def block_conversation_command():
+        args = ('src_ip', 'target_ip', 'rule_name', 'src_port', 'target_port', 'protocol', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'block_conversation', 'aria-block-conversation', *args)
+
+    def unblock_conversation_command():
+        args = ('rule_name', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'unblock_conversation', 'aria-unblock-conversation', *args)
+
+    def record_conversation_command():
+        args = ('src_ip', 'target_ip', 'vlan_id', 'rule_name', 'src_port',  'target_port', 'protocol', 'sia_interface', 'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'record_conversation', 'aria-record-conversation', *args)
+
+    def stop_recording_conversation_command():
+        args = ('rule_name', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'stop_recording_conversation', 'aria-stop-recording-conversation', *args)
+
+    def alert_conversation_command():
+        args = ('src_ip', 'target_ip', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value', 'src_port',  'target_port', 'protocol', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'alert_conversation', 'aria-alert-conversation', *args)
+
+    def mute_alert_conversation_command():
+        args = ('rule_name', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'mute_alert_conversation', 'aria-mute-alert-conversation', *args)
+
+    def block_dest_port_command():
+        args = ('port_range', 'rule_name', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'block_dest_port', 'aria-block-dest-port', *args)
+
+    def unblock_dest_port_command():
+        args = ('rule_name', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'unblock_dest_port', 'aria-unblock-dest-port', *args)
+
+    def record_dest_port_command():
+        args = ('port_range', 'vlan_id', 'rule_name', 'sia_interface', 'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'record_dest_port', 'aria-record-dest-port', *args)
+
+    def stop_recording_dest_port_command():
+        args = ('rule_name', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'stop_recording_dest_port', 'aria-stop-recording-dest-port', *args)
+
+    def alert_dest_port_command():
+        args = ('port_range', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'alert_dest_port', 'aria-alert-dest-port', *args)
+
+    def mute_alert_dest_port_command():
+        args = ('rule_name', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'mute_alert_dest_port', 'aria-mute-alert-dest-port', *args)
+
+    def block_src_port_command():
+        args = ('port_range', 'rule_name', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'block_src_port', 'aria-block-src-port', *args)
+
+    def unblock_src_port_command():
+        args = ('rule_name', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'unblock_src_port', 'aria-unblock-src-port', *args)
+
+    def record_src_port_command():
+        args = ('port_range', 'vlan_id', 'rule_name', 'sia_interface', 'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'record_src_port', 'aria-record-src-port', *args)
+
+    def stop_recording_src_port_command():
+        args = ('rule_name', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'stop_recording_src_port', 'aria-stop-recording-src-port', *args)
+
+    def alert_src_port_command():
+        args = ('port_range', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'alert_src_port', 'aria-alert-src-port', *args)
+
+    def mute_alert_src_port_command():
+        args = ('rule_name', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'mute_alert_src_port', 'aria-mute-alert-src-port', *args)
+
+    def block_dest_subnet_command():
+        args = ('target_ip', 'rule_name', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'block_dest_subnet', 'aria-block-dest-subnet', *args)
+
+    def unblock_dest_subnet_command():
+        args = ('rule_name', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'unblock_dest_subnet', 'aria-unblock-dest-subnet', *args)
+
+    def record_dest_subnet_command():
+        args = ('target_ip', 'vlan_id', 'rule_name', 'sia_interface', 'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'record_dest_subnet', 'aria-record-dest-subnet', *args)
+
+    def stop_recording_dest_subnet_command():
+        args = ('rule_name', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'stop_recording_dest_subnet', 'aria-stop-recording-dest-subnet', *args)
+
+    def alert_dest_subnet_command():
+        args = ('target_ip', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'alert_dest_subnet', 'aria-alert-dest-subnet', *args)
+
+    def mute_alert_dest_subnet_command():
+        args = ('rule_name', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'mute_alert_dest_subnet', 'aria-mute-alert-dest-subnet', *args)
+
+    def block_src_subnet_command():
+        args = ('src_ip', 'rule_name', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'block_src_subnet', 'aria-block-src-subnet', *args)
+
+    def unblock_src_subnet_command():
+        args = ('rule_name', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'unblock_src_subnet', 'aria-unblock-src-subnet', *args)
+
+    def record_src_subnet_command():
+        args = ('src_ip', 'vlan_id', 'rule_name', 'sia_interface', 'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'record_src_subnet', 'aria-record-src-subnet', *args)
+
+    def stop_recording_src_subnet_command():
+        args = ('rule_name', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'stop_recording_src_subnet', 'aria-stop-recording-src-subnet', *args)
+
+    def alert_src_subnet_command():
+        args = ('src_ip', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'alert_src_subnet', 'aria-alert-src-subnet', *args)
+
+    def mute_alert_src_subnet_command():
+        args = ('rule_name', 'instance_id', 'label_sia_group', 'label_sia_name', 'label_sia_region')
+        func_call(aria, 'mute_alert_src_subnet', 'aria-mute-alert-src-subnet', *args)
+
+
+    def fetch_incidents_command():
+        ############################################
+        #This part will be removed in v1 release   #
+        #v1 release does not support fetch incident#
+        ############################################
+
+        # You can store the last run time...
+        # demisto.setLastRun({'time': 'now'})
+        # And retrieve it for use later:
+        lastRun = demisto.getLastRun()
+        # lastRun is a dictionary, with value "now" for key "time".
+        # JSON of the incident type created by this integration
+
+        if last_run and last_run.has_key('start_time'):
+            start_time = last_run.get('start_time')
+        else:
+            now = time.time()
+            start_time = now - 86400 # checks the last day
+
+        data = Some_function_return_array_of_incident() # Call our PBaaS API that returns any incident as an array of json obj
+        incidents = []
+        for event in data:
+            incident_time = int(event.get('epoch')) #return the linux time from the alert obj
+            occur_time = shift_time(incident_time) #shift_time can be implemented as a helper function that changes the linux time to a human readable %Y-%m-%d-%H:%M:%S
+
+            if incident_time > start_time:
+                #this incident has a time stamp between the running of last fetch-incident and current fetch-incident, which means it is a new incident that should be send to demisto client
+                inc = {
+                    'name': event.get('alert-info').get('message'), #Give a name of this incident, this is required
+                    'occured': occur_time,
+                    'severity': 4, #Critical:4 High:3 Medium:2 Low:1 informational:0.5 unknown:0
+                    'createInvestigation': True, #This must be true so it will create incidents and trigger playbooks
+                    'rawJSON': json.dumps(event)
+                }
+                last_time = incident_time #set the last incidents run time
+                demisto.info(inc)
+                incidents.append(inc) #append this new created demisto incident to the return result
+            else:
+                last_time = start_time
+            demisto.setLastRun({'start_time': last_time}) #Set the last run
+
+        return incidents
+
+    def main():
+
+        '''EXECUTION CODE'''
+        COMMANDS = {
+            'aria-block-conversation' : block_conversation_command,
+            'aria-unblock-conversation' : unblock_conversation_command,
+            'aria-record-conversation' : record_conversation_command,
+            'aria-stop-recording-conversation' : stop_recording_conversation_command,
+            'aria-alert-conversation' : alert_conversation_command,
+            'aria-mute-alert-conversation' : mute_alert_conversation_command,
+            'aria-block-dest-port' : block_dest_port_command,
+            'aria-unblock-dest-port' : unblock_dest_port_command,
+            'aria-record-dest-port' : record_dest_port_command,
+            'aria-stop-recording-dest-port' : stop_recording_dest_port_command,
+            'aria-alert-dest-port' : alert_dest_port_command,
+            'aria-mute-alert-dest-port' : mute_alert_dest_port_command,
+            'aria-block-src-port' : block_src_port_command,
+            'aria-unblock-src-port' : unblock_src_port_command,
+            'aria-record-src-port' : record_src_port_command,
+            'aria-stop-recording-src-port' : stop_recording_src_port_command,
+            'aria-alert-src-port' : alert_src_port_command,
+            'aria-mute-alert-src-port' : mute_alert_src_port_command,
+            'aria-block-dest-subnet' : block_dest_subnet_command,
+            'aria-unblock-dest-subnet' : unblock_dest_subnet_command,
+            'aria-record-dest-subnet' : record_dest_subnet_command,
+            'aria-stop-recording-dest-subnet' : stop_recording_dest_subnet_command,
+            'aria-alert-dest-subnet' : alert_dest_subnet_command,
+            'aria-mute-alert-dest-subnet' : mute_alert_dest_subnet_command,
+            'aria-block-src-subnet' : block_src_subnet_command,
+            'aria-unblock-src-subnet' : unblock_src_subnet_command,
+            'aria-record-src-subnet' : record_src_subnet_command,
+            'aria-stop-recording-src-subnet' : stop_recording_src_subnet_command,
+            'aria-alert-src-subnet' : alert_src_subnet_command,
+            'aria-mute-alert-src-subnet' : mute_alert_src_subnet_command
+        }
+
+        command = demisto.command()
+        LOG('ARIA: command is %s' %(command,))
+
+        try:
+            if demisto.command() == 'test-module':
+                # This is the call made when pressing the integration test button.
+                url = sdso_url + "/endPoint"
+                res = requests.get(url)
+                size = len(json.loads(res.text))
+                if res.ok and size != 0:
+                    demisto.results('ok')
+                    sys.exit(0)
+                else:
+                    demisto.results("Fail to Connect to SDSo or no PacketIntelligence Service!")
+                    sys.exit(1)
+            if demisto.command() == 'fetch-incidents':
+
+                demisto.incidents(fetch_incidents_command())
+                sys.exit(0)
+
+            cmd_func = COMMANDS.get(command)
+            if cmd_func is None:
+                raise NotImplementedError(
+                    'Command "{}" is not implemented.'.format(command))
+            else:
+                cmd_func()
+        except Exception as e:
+            import traceback
+            if command == 'fetch-incidents':
+                LOG(traceback.format_exc())
+                LOG.print_log()
+                raise
+            else:
+                return_error('ARIA: {}'.format(str(e)), traceback.format_exc())
+
+    # python2 uses __builtin__ python3 uses builtins
+    if __name__ == "__builtin__" or __name__ == "builtins":
+        main()
+  type: python
+  commands:
+  - name: aria-block-conversation
+    arguments:
+    - name: src_ip
+      required: true
+      description: The source IP address.
+    - name: src_port
+      description: The source port(s). This accepts a comma-separated list (e.g.,
+        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+    - name: target_ip
+      required: true
+      description: The destination IP address.
+    - name: target_port
+      description: The destination port(s). This accepts a comma-separated list (e.g.,
+        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+    - name: protocol
+      description: The protocol (e.g., TCP) used for the packets.
+    - name: rule_name
+      required: true
+      description: The name of the rule to create.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is added to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Creates a rule that drops all packets matching the specified 5-tuple
+      values.
+  - name: aria-unblock-conversation
+    arguments:
+    - name: rule_name
+      required: true
+      description: The name of the rule to delete.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Deletes a named rule from the 5-tuple logic block. This allows the
+      previously blocked conversation to resume.
+  - name: aria-record-conversation
+    arguments:
+    - name: src_ip
+      required: true
+      description: The source IP address.
+    - name: src_port
+      description: The source port(s). This accepts a comma-separated list (e.g.,
+        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+    - name: target_ip
+      required: true
+      description: The destination IP address.
+    - name: target_port
+      description: The destination port(s). This accepts a comma-separated list (e.g.,
+        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+    - name: protocol
+      description: The protocol (e.g., TCP) used for the packets.
+    - name: vlan_id
+      required: true
+      description: The VLAN ID your network switch uses to forward packets to the
+        Packet Recorder.
+    - name: rule_name
+      required: true
+      description: The name of the rule to create.
+    - name: sia_interface
+      auto: PREDEFINED
+      predefined:
+      - A
+      - B
+      description: The letter of the interface on the SIA used for forwarding packets.
+        If omitted, interface A is used.
+    - name: transport_type
+      auto: PREDEFINED
+      predefined:
+      - email
+      - syslog
+      description: 'The type of notification to generate. '
+    - name: tti_index
+      description: The index of the entry in the transport type table.
+    - name: aio_index
+      description: The index of the entry in the alert information object table.
+    - name: trigger_type
+      auto: PREDEFINED
+      predefined:
+      - one-shot
+      - re-trigger-count
+      - re-trigger-timed-ms
+      - re-trigger-timed-sec
+      description: 'The frequency of the alert. one-shot: The alert is triggered when
+        the number of packets matching the criteria reaches the threshold specified
+        in the trigger_value field. Once the alert triggers, it is disabled until
+        the flow expires or times out.  re-trigger-count: The alert is triggered when
+        the number of packets matching the criteria reaches the threshold specified
+        in the trigger_value field. The counter then resets to 0, and the alert is
+        triggered again the next time the threshold is met.  re-trigger-timed-ms:
+        The alert is triggered, and then the application waits the number of msecs
+        defined in the trigger_value field. Once this time passes, the alert is triggered
+        again.  re-trigger-timed-sec: The alert is triggered, and then the application
+        waits the number of seconds defined in the trigger_value field. Once this
+        time passes, the alert is triggered again.'
+    - name: trigger_value
+      description: The threshold that must be met before the alert is triggered. The
+        value entered here depends on the trigger_type. If the trigger_type is one-shot
+        or retrigger-count, this is the total number of packets that must be received
+        before the alert is triggered. The valid range is 1-8191, If the trigger_type
+        is re-trigger-ms or re-triggersec, this is the total number of msecs or secs,
+        respectively, that must elapse before the alert is triggered again. The valid
+        range is 1-8191.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is added to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Creates a rule that redirects a conversation matching 5-tuple values
+      to the Packet Recorder. Packets are tagged with the VID specified in the instance.
+  - name: aria-stop-recording-conversation
+    arguments:
+    - name: rule_name
+      required: true
+      description: The name of the rule to delete.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Removes the named rule from the 5-tuple block. This stops redirecting
+      traffic to the Packet Recorder.
+  - name: aria-alert-conversation
+    arguments:
+    - name: src_ip
+      required: true
+      description: The source IP address.
+    - name: src_port
+      description: The source port(s). This accepts a comma-separated list (e.g.,
+        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+    - name: target_ip
+      required: true
+      description: The destination IP address.
+    - name: target_port
+      description: The destination port(s). This accepts a comma-separated list (e.g.,
+        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+    - name: protocol
+      description: The protocol (e.g., TCP) used for the packets.
+    - name: rule_name
+      required: true
+      description: The name of the rule to create.
+    - name: transport_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - email
+      - syslog
+      description: 'The type of notification to generate. '
+    - name: tti_index
+      required: true
+      description: The index of the entry in the transport type table.
+    - name: aio_index
+      required: true
+      description: The index of the entry in the alert information object table.
+    - name: trigger_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - one-shot
+      - re-trigger-count
+      - re-trigger-timed-ms
+      - re-trigger-timed-sec
+      description: 'The frequency of the alert. one-shot: The alert is triggered when
+        the number of packets matching the criteria reaches the threshold specified
+        in the trigger_value field. Once the alert triggers, it is disabled until
+        the flow expires or times out.  re-trigger-count: The alert is triggered when
+        the number of packets matching the criteria reaches the threshold specified
+        in the trigger_value field. The counter then resets to 0, and the alert is
+        triggered again the next time the threshold is met.  re-trigger-timed-ms:
+        The alert is triggered, and then the application waits the number of msecs
+        defined in the trigger_value field. Once this time passes, the alert is triggered
+        again.  re-trigger-timed-sec: The alert is triggered, and then the application
+        waits the number of seconds defined in the trigger_value field. Once this
+        time passes, the alert is triggered again.'
+    - name: trigger_value
+      required: true
+      description: The threshold that must be met before the alert is triggered. The
+        value entered here depends on the trigger_type. If the trigger_type is one-shot
+        or retrigger-count, this is the total number of packets that must be received
+        before the alert is triggered. The valid range is 1-8191, If the trigger_type
+        is re-trigger-ms or re-triggersec, this is the total number of msecs or secs,
+        respectively, that must elapse before the alert is triggered again. The valid
+        range is 1-8191.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is added to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Adds a rule that generates an alert when a conversation matching
+      the specified 5-tuple values is detected.
+  - name: aria-mute-alert-conversation
+    arguments:
+    - name: rule_name
+      required: true
+      description: The name of the rule to delete.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Removes a named rule from the 5-tuple logic block, disabling the
+      alerts.
+  - name: aria-block-dest-port
+    arguments:
+    - name: port_range
+      required: true
+      description: The destination port(s). This accepts a comma-separated list (e.g.,
+        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+    - name: rule_name
+      required: true
+      description: The name of the rule to create.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is added to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Creates a rule that blocks packets destined for one or more specific
+      ports.
+  - name: aria-unblock-dest-port
+    arguments:
+    - name: rule_name
+      required: true
+      description: The name of the rule to delete.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Removes a named rule from the destination port logic block. This
+      allows the previously blocked traffic to resume.
+  - name: aria-record-dest-port
+    arguments:
+    - name: port_range
+      required: true
+      description: The destination port(s). This accepts a comma-separated list (e.g.,
+        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+    - name: vlan_id
+      required: true
+      description: The VLAN ID your network switch uses to forward packets to the
+        Packet Recorder.
+    - name: rule_name
+      required: true
+      description: The name of the rule to create.
+    - name: sia_interface
+      auto: PREDEFINED
+      predefined:
+      - A
+      - B
+      description: The letter of the interface on the SIA used for forwarding packets.
+        If omitted, interface A is used.
+    - name: transport_type
+      auto: PREDEFINED
+      predefined:
+      - email
+      - syslog
+      description: 'The type of notification to generate. '
+    - name: tti_index
+      description: The index of the entry in the transport type table.
+    - name: aio_index
+      description: The index of the entry in the alert information object table.
+    - name: trigger_type
+      auto: PREDEFINED
+      predefined:
+      - one-shot
+      - re-trigger-count
+      - re-trigger-timed-ms
+      - re-trigger-timed-sec
+      description: 'The frequency of the alert. one-shot: The alert is triggered when
+        the number of packets matching the criteria reaches the threshold specified
+        in the trigger_value field. Once the alert triggers, it is disabled until
+        the flow expires or times out.  re-trigger-count: The alert is triggered when
+        the number of packets matching the criteria reaches the threshold specified
+        in the trigger_value field. The counter then resets to 0, and the alert is
+        triggered again the next time the threshold is met.  re-trigger-timed-ms:
+        The alert is triggered, and then the application waits the number of msecs
+        defined in the trigger_value field. Once this time passes, the alert is triggered
+        again.  re-trigger-timed-sec: The alert is triggered, and then the application
+        waits the number of seconds defined in the trigger_value field. Once this
+        time passes, the alert is triggered again.'
+    - name: trigger_value
+      description: The threshold that must be met before the alert is triggered. The
+        value entered here depends on the trigger_type. If the trigger_type is one-shot
+        or retrigger-count, this is the total number of packets that must be received
+        before the alert is triggered. The valid range is 1-8191, If the trigger_type
+        is re-trigger-ms or re-triggersec, this is the total number of msecs or secs,
+        respectively, that must elapse before the alert is triggered again. The valid
+        range is 1-8191.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is added to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Adds a rule that redirects traffic destined for one or more ports
+      to the Packet Recorder. Packets are tagged with the VID specified in the instance.
+  - name: aria-stop-recording-dest-port
+    arguments:
+    - name: rule_name
+      required: true
+      description: The name of the rule to delete.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Removes a named rule from the destination port logic block. This
+      stops redirecting traffic to the Packet Recorder.
+  - name: aria-alert-dest-port
+    arguments:
+    - name: port_range
+      required: true
+      description: The destination port(s). This accepts a comma-separated list (e.g.,
+        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+    - name: rule_name
+      required: true
+      description: The name of the rule to create.
+    - name: transport_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - email
+      - syslog
+      description: 'The type of notification to generate. '
+    - name: tti_index
+      required: true
+      description: The index of the entry in the transport type table.
+    - name: aio_index
+      required: true
+      description: The index of the entry in the alert information object table.
+    - name: trigger_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - one-shot
+      - re-trigger-count
+      - re-trigger-timed-ms
+      - re-trigger-timed-sec
+      description: 'The frequency of the alert. one-shot: The alert is triggered when
+        the number of packets matching the criteria reaches the threshold specified
+        in the trigger_value field. Once the alert triggers, it is disabled until
+        the flow expires or times out.  re-trigger-count: The alert is triggered when
+        the number of packets matching the criteria reaches the threshold specified
+        in the trigger_value field. The counter then resets to 0, and the alert is
+        triggered again the next time the threshold is met.  re-trigger-timed-ms:
+        The alert is triggered, and then the application waits the number of msecs
+        defined in the trigger_value field. Once this time passes, the alert is triggered
+        again.  re-trigger-timed-sec: The alert is triggered, and then the application
+        waits the number of seconds defined in the trigger_value field. Once this
+        time passes, the alert is triggered again.'
+    - name: trigger_value
+      required: true
+      description: The threshold that must be met before the alert is triggered. The
+        value entered here depends on the trigger_type. If the trigger_type is one-shot
+        or retrigger-count, this is the total number of packets that must be received
+        before the alert is triggered. The valid range is 1-8191, If the trigger_type
+        is re-trigger-ms or re-triggersec, this is the total number of msecs or secs,
+        respectively, that must elapse before the alert is triggered again. The valid
+        range is 1-8191.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is added to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Creates a rule that generates an alert when traffic destined for
+      one or more ports is detected.
+  - name: aria-mute-alert-dest-port
+    arguments:
+    - name: rule_name
+      required: true
+      description: The name of the rule to delete.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Removes a named rule from the destination port logic block, disabling
+      the alerts.
+  - name: aria-block-src-port
+    arguments:
+    - name: port_range
+      required: true
+      description: The source port(s). This accepts a comma-separated list (e.g.,
+        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+    - name: rule_name
+      required: true
+      description: The name of the rule to create.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is added to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Adds a rule that blocks packets originating from one or more specific
+      ports.
+  - name: aria-unblock-src-port
+    arguments:
+    - name: rule_name
+      required: true
+      description: The name of the rule to delete.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Removes a named rule from the source port logic block. This allows
+      the previously blocked traffic to resume.
+  - name: aria-record-src-port
+    arguments:
+    - name: port_range
+      required: true
+      description: The source port(s). This accepts a comma-separated list (e.g.,
+        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+    - name: vlan_id
+      required: true
+      description: The VLAN ID your network switch uses to forward packets to the
+        Packet Recorder.
+    - name: rule_name
+      required: true
+      description: The name of the rule to create.
+    - name: sia_interface
+      auto: PREDEFINED
+      predefined:
+      - A
+      - B
+      description: The letter of the interface on the SIA used for forwarding packets.
+        If omitted, interface A is used.
+    - name: transport_type
+      auto: PREDEFINED
+      predefined:
+      - email
+      - syslog
+      description: 'The type of notification to generate. '
+    - name: tti_index
+      description: The index of the entry in the transport type table.
+    - name: aio_index
+      description: The index of the entry in the alert information object table.
+    - name: trigger_type
+      auto: PREDEFINED
+      predefined:
+      - one-shot
+      - re-trigger-count
+      - re-trigger-timed-ms
+      - re-trigger-timed-sec
+      description: 'The frequency of the alert. one-shot: The alert is triggered when
+        the number of packets matching the criteria reaches the threshold specified
+        in the trigger_value field. Once the alert triggers, it is disabled until
+        the flow expires or times out.  re-trigger-count: The alert is triggered when
+        the number of packets matching the criteria reaches the threshold specified
+        in the trigger_value field. The counter then resets to 0, and the alert is
+        triggered again the next time the threshold is met.  re-trigger-timed-ms:
+        The alert is triggered, and then the application waits the number of msecs
+        defined in the trigger_value field. Once this time passes, the alert is triggered
+        again.  re-trigger-timed-sec: The alert is triggered, and then the application
+        waits the number of seconds defined in the trigger_value field. Once this
+        time passes, the alert is triggered again.'
+    - name: trigger_value
+      description: The threshold that must be met before the alert is triggered. The
+        value entered here depends on the trigger_type. If the trigger_type is one-shot
+        or retrigger-count, this is the total number of packets that must be received
+        before the alert is triggered. The valid range is 1-8191, If the trigger_type
+        is re-trigger-ms or re-triggersec, this is the total number of msecs or secs,
+        respectively, that must elapse before the alert is triggered again. The valid
+        range is 1-8191.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is added to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Adds a rule that redirects traffic originating from one or more ports
+      to the Packet Recorder. Packets are tagged with the VID specified in the instance.
+  - name: aria-stop-recording-src-port
+    arguments:
+    - name: rule_name
+      required: true
+      description: The name of the rule to delete.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Removes a named rule from the source port logic block. This stops
+      redirecting traffic to the Packet Recorder.
+  - name: aria-alert-src-port
+    arguments:
+    - name: port_range
+      required: true
+      description: The source port(s). This accepts a comma-separated list (e.g.,
+        “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
+    - name: rule_name
+      required: true
+      description: The name of the rule to create
+    - name: transport_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - email
+      - syslog
+      description: 'The type of notification to generate. '
+    - name: tti_index
+      required: true
+      description: The index of the entry in the transport type table.
+    - name: aio_index
+      required: true
+      description: The index of the entry in the alert information object table.
+    - name: trigger_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - one-shot
+      - re-trigger-count
+      - re-trigger-timed-ms
+      - re-trigger-timed-sec
+      description: 'The frequency of the alert. one-shot: The alert is triggered when
+        the number of packets matching the criteria reaches the threshold specified
+        in the trigger_value field. Once the alert triggers, it is disabled until
+        the flow expires or times out.  re-trigger-count: The alert is triggered when
+        the number of packets matching the criteria reaches the threshold specified
+        in the trigger_value field. The counter then resets to 0, and the alert is
+        triggered again the next time the threshold is met.  re-trigger-timed-ms:
+        The alert is triggered, and then the application waits the number of msecs
+        defined in the trigger_value field. Once this time passes, the alert is triggered
+        again.  re-trigger-timed-sec: The alert is triggered, and then the application
+        waits the number of seconds defined in the trigger_value field. Once this
+        time passes, the alert is triggered again.'
+    - name: trigger_value
+      required: true
+      description: The threshold that must be met before the alert is triggered. The
+        value entered here depends on the trigger_type. If the trigger_type is one-shot
+        or retrigger-count, this is the total number of packets that must be received
+        before the alert is triggered. The valid range is 1-8191, If the trigger_type
+        is re-trigger-ms or re-triggersec, this is the total number of msecs or secs,
+        respectively, that must elapse before the alert is triggered again. The valid
+        range is 1-8191.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is added to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Creates a rule that generates an alert when traffic originating from
+      one or more ports is detected.
+  - name: aria-mute-alert-src-port
+    arguments:
+    - name: rule_name
+      required: true
+      description: The name of the rule to delete.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Removes a named rule from the source port logic block, disabling
+      the alerts.
+  - name: aria-block-dest-subnet
+    arguments:
+    - name: target_ip
+      required: true
+      description: The IP address and mask of the destination IP address(es), in the
+        format <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
+    - name: rule_name
+      required: true
+      description: The name of the rule to create.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is added to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Adds a rule that blocks packets destined for a specific IP address
+      or range of IP addresses.
+  - name: aria-unblock-dest-subnet
+    arguments:
+    - name: rule_name
+      required: true
+      description: The name of the rule to delete.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Removes a named rule from the destination subnet logic block. This
+      allows the previously blocked traffic to resume.
+  - name: aria-record-dest-subnet
+    arguments:
+    - name: target_ip
+      required: true
+      description: The IP address and mask of the destination IP address(es), in the
+        format <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
+    - name: vlan_id
+      required: true
+      description: The VLAN ID your network switch uses to forward packets to the
+        Packet Recorder.
+    - name: rule_name
+      required: true
+      description: The name of the rule to create.
+    - name: sia_interface
+      auto: PREDEFINED
+      predefined:
+      - A
+      - B
+      description: The letter of the interface on the SIA used for forwarding packets.
+        If omitted, interface A is used.
+    - name: transport_type
+      auto: PREDEFINED
+      predefined:
+      - email
+      - syslog
+      description: 'The type of notification to generate. '
+    - name: tti_index
+      description: The index of the entry in the transport type table.
+    - name: aio_index
+      description: The index of the entry in the alert information object table.
+    - name: trigger_type
+      auto: PREDEFINED
+      predefined:
+      - one-shot
+      - re-trigger-count
+      - re-trigger-timed-ms
+      - re-trigger-timed-sec
+      description: 'The frequency of the alert. one-shot: The alert is triggered when
+        the number of packets matching the criteria reaches the threshold specified
+        in the trigger_value field. Once the alert triggers, it is disabled until
+        the flow expires or times out.  re-trigger-count: The alert is triggered when
+        the number of packets matching the criteria reaches the threshold specified
+        in the trigger_value field. The counter then resets to 0, and the alert is
+        triggered again the next time the threshold is met.  re-trigger-timed-ms:
+        The alert is triggered, and then the application waits the number of msecs
+        defined in the trigger_value field. Once this time passes, the alert is triggered
+        again.  re-trigger-timed-sec: The alert is triggered, and then the application
+        waits the number of seconds defined in the trigger_value field. Once this
+        time passes, the alert is triggered again.'
+    - name: trigger_value
+      description: The threshold that must be met before the alert is triggered. The
+        value entered here depends on the trigger_type. If the trigger_type is one-shot
+        or retrigger-count, this is the total number of packets that must be received
+        before the alert is triggered. The valid range is 1-8191, If the trigger_type
+        is re-trigger-ms or re-triggersec, this is the total number of msecs or secs,
+        respectively, that must elapse before the alert is triggered again. The valid
+        range is 1-8191.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is added to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Creates a rule that redirects traffic destined for a specific IP
+      address or range of IP addresses to the Packet Recorder. Packets are tagged
+      with the VID specified in the instance.
+  - name: aria-stop-recording-dest-subnet
+    arguments:
+    - name: rule_name
+      required: true
+      description: The name of the rule to delete.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Removes a named rule from the destination subnet logic block. This
+      stops redirecting traffic to the Packet Recorder.
+  - name: aria-alert-dest-subnet
+    arguments:
+    - name: target_ip
+      required: true
+      description: The IP address and mask of the destination IP address(es), in the
+        format <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
+    - name: rule_name
+      required: true
+      description: The name of the rule to create.
+    - name: transport_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - email
+      - syslog
+      description: 'The type of notification to generate. '
+    - name: tti_index
+      required: true
+      description: The index of the entry in the transport type table.
+    - name: aio_index
+      required: true
+      description: The index of the entry in the alert information object table.
+    - name: trigger_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - one-shot
+      - re-trigger-count
+      - re-trigger-timed-ms
+      - re-trigger-timed-sec
+      description: 'The frequency of the alert. one-shot: The alert is triggered when
+        the number of packets matching the criteria reaches the threshold specified
+        in the trigger_value field. Once the alert triggers, it is disabled until
+        the flow expires or times out.  re-trigger-count: The alert is triggered when
+        the number of packets matching the criteria reaches the threshold specified
+        in the trigger_value field. The counter then resets to 0, and the alert is
+        triggered again the next time the threshold is met.  re-trigger-timed-ms:
+        The alert is triggered, and then the application waits the number of msecs
+        defined in the trigger_value field. Once this time passes, the alert is triggered
+        again.  re-trigger-timed-sec: The alert is triggered, and then the application
+        waits the number of seconds defined in the trigger_value field. Once this
+        time passes, the alert is triggered again.'
+    - name: trigger_value
+      required: true
+      description: The threshold that must be met before the alert is triggered. The
+        value entered here depends on the trigger_type. If the trigger_type is one-shot
+        or retrigger-count, this is the total number of packets that must be received
+        before the alert is triggered. The valid range is 1-8191, If the trigger_type
+        is re-trigger-ms or re-triggersec, this is the total number of msecs or secs,
+        respectively, that must elapse before the alert is triggered again. The valid
+        range is 1-8191.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is added to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Creates a rule that generates an alert when traffic destined for
+      a specific IP address or range of IP addresses is detected.
+  - name: aria-mute-alert-dest-subnet
+    arguments:
+    - name: rule_name
+      required: true
+      description: The name of the rule to delete.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Removes a named rule from the destination subnet logic block, disabling
+      the alerts.
+  - name: aria-block-src-subnet
+    arguments:
+    - name: src_ip
+      required: true
+      description: The IP address and mask of the source IP address(es), in the format
+        <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
+    - name: rule_name
+      required: true
+      description: The name of the rule to create.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is added to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Adds a rule that blocks packets originating from a specific IP address
+      or range of IP addresses.
+  - name: aria-unblock-src-subnet
+    arguments:
+    - name: rule_name
+      required: true
+      description: The name of the rule to delete.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Removes a named rule from the source subnet logic block. This allows
+      the previously blocked traffic to resume.
+  - name: aria-record-src-subnet
+    arguments:
+    - name: src_ip
+      required: true
+      description: The IP address and mask of the source IP address(es), in the format
+        <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
+    - name: vlan_id
+      required: true
+      description: The VLAN ID your network switch uses to forward packets to the
+        Packet Recorder.
+    - name: rule_name
+      required: true
+      description: The name of the rule to create.
+    - name: sia_interface
+      auto: PREDEFINED
+      predefined:
+      - A
+      - B
+      description: The letter of the interface on the SIA used for forwarding packets.
+        If omitted, interface A is used.
+    - name: transport_type
+      auto: PREDEFINED
+      predefined:
+      - email
+      - syslog
+      description: 'The type of notification to generate. '
+    - name: tti_index
+      description: The index of the entry in the transport type table.
+    - name: aio_index
+      description: The index of the entry in the alert information object table.
+    - name: trigger_type
+      auto: PREDEFINED
+      predefined:
+      - one-shot
+      - re-trigger-count
+      - re-trigger-timed-ms
+      - re-trigger-timed-sec
+      description: 'The frequency of the alert. one-shot: The alert is triggered when
+        the number of packets matching the criteria reaches the threshold specified
+        in the trigger_value field. Once the alert triggers, it is disabled until
+        the flow expires or times out.  re-trigger-count: The alert is triggered when
+        the number of packets matching the criteria reaches the threshold specified
+        in the trigger_value field. The counter then resets to 0, and the alert is
+        triggered again the next time the threshold is met.  re-trigger-timed-ms:
+        The alert is triggered, and then the application waits the number of msecs
+        defined in the trigger_value field. Once this time passes, the alert is triggered
+        again.  re-trigger-timed-sec: The alert is triggered, and then the application
+        waits the number of seconds defined in the trigger_value field. Once this
+        time passes, the alert is triggered again.'
+    - name: trigger_value
+      description: The threshold that must be met before the alert is triggered. The
+        value entered here depends on the trigger_type. If the trigger_type is one-shot
+        or retrigger-count, this is the total number of packets that must be received
+        before the alert is triggered. The valid range is 1-8191, If the trigger_type
+        is re-trigger-ms or re-triggersec, this is the total number of msecs or secs,
+        respectively, that must elapse before the alert is triggered again. The valid
+        range is 1-8191.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is added to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Creates a rule that redirects traffic originating from one or more
+      specific IP addresses to the Packet Recorder. Packets are tagged with the VID
+      specified in the instance.
+  - name: aria-stop-recording-src-subnet
+    arguments:
+    - name: rule_name
+      required: true
+      description: The name of the rule to delete.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Removes a named rule from the source subnet logic block. This stops
+      redirecting traffic to the Packet Recorder.
+  - name: aria-alert-src-subnet
+    arguments:
+    - name: src_ip
+      required: true
+      description: The IP address and mask of the source IP address(es), in the format
+        <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
+    - name: rule_name
+      required: true
+      description: The name of the rule to create.
+    - name: transport_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - email
+      - syslog
+      description: 'The type of notification to generate. '
+    - name: tti_index
+      required: true
+      description: The index of the entry in the transport type table.
+    - name: aio_index
+      required: true
+      description: The index of the entry in the alert information object table.
+    - name: trigger_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - one-shot
+      - re-trigger-count
+      - re-trigger-timed-ms
+      - re-trigger-timed-sec
+      description: 'The frequency of the alert. one-shot: The alert is triggered when
+        the number of packets matching the criteria reaches the threshold specified
+        in the trigger_value field. Once the alert triggers, it is disabled until
+        the flow expires or times out.  re-trigger-count: The alert is triggered when
+        the number of packets matching the criteria reaches the threshold specified
+        in the trigger_value field. The counter then resets to 0, and the alert is
+        triggered again the next time the threshold is met.  re-trigger-timed-ms:
+        The alert is triggered, and then the application waits the number of msecs
+        defined in the trigger_value field. Once this time passes, the alert is triggered
+        again.  re-trigger-timed-sec: The alert is triggered, and then the application
+        waits the number of seconds defined in the trigger_value field. Once this
+        time passes, the alert is triggered again.'
+    - name: trigger_value
+      required: true
+      description: The threshold that must be met before the alert is triggered. The
+        value entered here depends on the trigger_type. If the trigger_type is one-shot
+        or retrigger-count, this is the total number of packets that must be received
+        before the alert is triggered. The valid range is 1-8191, If the trigger_type
+        is re-trigger-ms or re-triggersec, this is the total number of msecs or secs,
+        respectively, that must elapse before the alert is triggered again. The valid
+        range is 1-8191.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is added to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is added to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Adds a rule that generates an alert when traffic originating from
+      a specific IP address or range of IP addresses is detected.
+  - name: aria-mute-alert-src-subnet
+    arguments:
+    - name: rule_name
+      required: true
+      description: The name of the rule to delete.
+    - name: instance_id
+      description: The instance number (e.g., 0) of the PI instance. This argument
+        is currently ignored.
+    - name: label_sia_group
+      description: 'The name of the group to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    - name: label_sia_name
+      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
+        enter values for all three labels, the command will fail. Also, if no labels
+        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        to the SDSo.'
+    - name: label_sia_region
+      description: 'The name of the region to which the SIA belongs. NOTE: Only two
+        labels are allowed. If you enter values for all three labels, the command
+        will fail. Also, if no labels are provided (i.e., they are empty), the rule
+        is deleted to every SIA attached to the SDSo.'
+    outputs:
+    - contextPath: PI.name
+      type: string
+    - contextPath: PI.response_code
+      type: string
+    - contextPath: PI.response_content
+      type: string
+    - contextPath: PI.arguments
+      type: string
+    - contextPath: PI.time_stamp_unix
+      type: string
+    description: Removes a named rule from the source subnet logic block, disabling
+      the alerts.
+  dockerimage: demisto/python3
+  runonce: false
