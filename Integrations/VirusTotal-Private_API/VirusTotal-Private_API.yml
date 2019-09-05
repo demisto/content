@@ -68,6 +68,7 @@ configuration:
 script:
   script: ''
   type: python
+  subtype: python2
   commands:
   - name: vt-private-check-file-behaviour
     arguments:
