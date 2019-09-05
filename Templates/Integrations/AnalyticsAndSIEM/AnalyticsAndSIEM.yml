@@ -9,7 +9,7 @@ configuration:
   required: true
   type: 0
 - defaultvalue: 'true'
-  display: Trust any certificate (not secured)
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
