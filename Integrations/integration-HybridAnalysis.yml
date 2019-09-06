@@ -470,14 +470,13 @@ script:
 
 
     // create the context, different between file and url context
-    function createQuickScanContext(response, scanners, dbotScore, whitelist, maliciousDescription){
+    function createQuickScanContext(response, scanners, dbotScore, maliciousDescription){
 
         var baseContext = {
             'ScanID': response.id,
             'SHA256': response.sha256,
             'Scanner' : scanners,
-            'Finished': response.finished,
-            'Whitelist': whitelist
+            'Finished': response.finished
         };
 
         var DbotContext = {
@@ -516,7 +515,7 @@ script:
     }
 
 
-    function createQuickScanHumanReadable (response, scannersContext, whitelist, headers){
+    function createQuickScanHumanReadable (response, scannersContext, headers){
         var mdTable = {
             'ScanID': response.id,
             'SHA256': response.sha256,
@@ -524,9 +523,8 @@ script:
         };
         var md = '### Scan Results:\n' + tableToMarkdown(null, mdTable, ['ScanID', 'SHA256', 'Finished'], undefined, headerTransform=undefined, removeNull=true);
         var scanTable = '##### scanners:\n' + tableToMarkdown(null, scannersContext, headers, undefined, headerTransform=undefined, removeNull=true);
-        var whitelistTable = '##### whitelist:\n' + tableToMarkdown(null, whitelist, headers, undefined, headerTransform=undefined, removeNull=true);
+        var humanReadable = md + scanTable;
 
-        var humanReadable = md + scanTable + '\n' + whitelistTable;
         return humanReadable;
     }
 
@@ -574,19 +572,10 @@ script:
         var maliciousCounter = scannersResult['maliciousCounter'];
         var maliciousDescription = scannersResult['maliciousDescription'];
 
-        var whitelist = {
-            'Provider': response.whitelist[0].id,
-            'Value' : response.whitelist[0].value
-        }
-
-        if (whitelist.Provider == 'internal'){
-            whitelist.Provider = 'Hybrid Analysis';
-        }
-
         var dbotScore = calculateDbotScore(unknownCounter, maliciousCounter, minMaliciousScanners, response.scanners.lenght);
 
-        var context = createQuickScanContext (response, scannersContext, dbotScore, whitelist, maliciousDescription);
-        var humanReadable = createQuickScanHumanReadable (response, scannersContext, whitelist);
+        var context = createQuickScanContext (response, scannersContext, dbotScore, maliciousDescription);
+        var humanReadable = createQuickScanHumanReadable (response, scannersContext);
 
         return {
             Type: entryTypes.note,
@@ -1065,10 +1054,6 @@ script:
     - contextPath: File.SHA256
       description: The SHA256 hash of the file.
       type: string
-    - contextPath: HybridAnalysis.URL.Whitelist.Provider
-      description: The Provider that classified this URL as whitelisted
-    - contextPath: HybridAnalysis.URL.Whitelist.Value
-      description: True if the indicator is in the whitelist
     description: Returns the scan results of the given URL ID.
   runonce: false
 tests:
