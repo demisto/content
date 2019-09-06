@@ -1,4 +1,5 @@
 ## [Unreleased]
+Added function ***parse_date_string*** which parses date string to datetime object.
 
 
 ## [19.9.0] - 2019-09-04

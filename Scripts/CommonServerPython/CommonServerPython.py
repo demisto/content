@@ -1808,3 +1808,70 @@ def get_demisto_version():
         return demisto.demistoVersion()
     else:
         raise AttributeError('demistoVersion attribute not found.')
+
+
+def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
+    """
+        Parses date_string to corresponding datetime according to format.
+
+        Examples:
+        >>> parse_date_string('2019-09-17T06:16:39Z')
+        datetime(2019, 9, 17, 6, 16, 39)
+        >>> parse_date_string('2019-09-17T06:16:39.22Z')
+        datetime(2019, 9, 17, 6, 16, 39, 220000)
+        >>> parse_date_string('2019-09-17T06:16:39.4040+05:00', '%Y-%m-%dT%H:%M:%S+02:00')
+        datetime(2019, 9, 17, 6, 16, 39, 404000)
+
+        :type date_string: ``str``
+        :param date_string: The date string to be parsed. (required)
+
+        :type date_format: ``str``
+        :param date_format: The date format of the date string, should be provided if known. (optional)
+
+        :return: The parsed datetime.
+        :rtype: ``(datetime.datetime, datetime.datetime)``
+    """
+    try:
+        return datetime.strptime(date_string, date_format)
+    except ValueError as e:
+        error_message = str(e)
+
+        date_format = '%Y-%m-%dT%H:%M:%S'
+        time_data_regex = r'time data \'(.*?)\''
+        time_data_match = re.findall(time_data_regex, error_message)
+        sliced_time_data = ''
+
+        if time_data_match:
+            # found time date which does not match date format
+            # example of caught error message:
+            # "time data '2019-09-17T06:16:39Z' does not match format '%Y-%m-%dT%H:%M:%S.%fZ'"
+            time_data = time_data_match[0]
+
+            # removing YYYY-MM-DDThh:mm:ss from the time data to keep only milliseconds and time zone
+            sliced_time_data = time_data[19:]
+        else:
+            unconverted_data_remains_regex = r'unconverted data remains: (.*)'
+            unconverted_data_remains_match = re.findall(unconverted_data_remains_regex, error_message)
+
+            if unconverted_data_remains_match:
+                # found unconverted_data_remains
+                # example of caught error message:
+                # "unconverted data remains: 22Z"
+                sliced_time_data = unconverted_data_remains_match[0]
+
+        if not sliced_time_data:
+            # did not catch expected error
+            raise ValueError(e)
+
+        if '.' in sliced_time_data:
+            # found milliseconds - appending ".%f" to date format
+            date_format += '.%f'
+
+        timezone_regex = r'[Zz+-].*'
+        time_zone = re.findall(timezone_regex, sliced_time_data)
+
+        if time_zone:
+            # found timezone - appending it to the date format
+            date_format += time_zone[0]
+
+        return datetime.strptime(date_string, date_format)
