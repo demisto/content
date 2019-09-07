@@ -1861,7 +1861,7 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
 
         if not sliced_time_data:
             # did not catch expected error
-            raise ValueError(e)
+            raise
 
         if '.' in sliced_time_data:
             # found milliseconds - appending ".%f" to date format
