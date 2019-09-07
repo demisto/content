@@ -574,7 +574,7 @@ script:
             result = get_ip_data("5.79.86.16")
             ip = result["ip"]
         except Exception, e:
-            raise Exception("Test failed: API request did not succeed")
+            raise Exception("Test failed: API request did not succeed, result:{}".format(result))
         demisto.results('ok')
 
     LOG('command is %s' % (demisto.command(), ))
