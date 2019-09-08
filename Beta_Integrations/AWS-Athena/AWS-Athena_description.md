@@ -14,3 +14,5 @@ on your AWS environment.
 For detailed instructions, [see the AWS Integrations Configuration Guide](https://support.demisto.com/hc/en-us/articles/360005686854-AWS-Integrations-Configuration-Guide).
 
 Command descriptions, input descriptions, and output descriptions are taken from the Amazon ACM documentation. For more information, see the [Amazon Athena documention](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/athena.html).
+
+ Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
