@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 from typing import List
 from elasticsearch import Elasticsearch, RequestsHttpConnection
 from elasticsearch_dsl import Search
+from elasticsearch_dsl import Range
 from elasticsearch_dsl.query import QueryString
 from datetime import datetime
 import json
@@ -236,7 +237,7 @@ def fetch_incidents():
     es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
                        http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE)
     query = QueryString(query=FETCH_QUERY)
-    search = Search(using=es, index=FETCH_INDEX).query(query)
+    search = Search(using=es, index=FETCH_INDEX).query(query).filter({'range': {TIME_FIELD: {'gt': last_fetch}}})
     response = search.execute().to_dict()
     _, total_results = get_total_results(response)
 
