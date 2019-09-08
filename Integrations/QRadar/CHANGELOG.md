@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.9.0] - 2019-09-04
   - Fixed an issue in which the ***qradar-get-search-results*** command failed when the root of the result contained a non-ascii character.
   - Fixed an issue in which the ***qradar-offense-by-id*** command failed if an SEC header was missing when trying to get an offense type.
 
