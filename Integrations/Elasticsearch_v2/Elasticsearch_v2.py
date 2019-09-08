@@ -256,12 +256,14 @@ def fetch_incidents():
     response = search.execute().to_dict()
     _, total_results = get_total_results(response)
 
+    incidents = []  # type: List
     if total_results > 0:
         incidents, last_fetch = results_to_incidents(response, current_fetch, last_fetch)
 
         demisto.info('extract {} incidents'.format(len(incidents)))
         demisto.setLastRun({'time': last_fetch.isoformat().split('.')[0] + 'Z'})
-        demisto.incidents(incidents)
+
+    demisto.incidents(incidents)
 
 
 try:
