@@ -78,7 +78,7 @@ def get_pipenv_dir(py_version):
     return "{}{}".format(ENVS_DIRS_BASE, int(py_version))
 
 
-def get_dev_requirements(py_version):
+def get_dev_requirements(py_version, package_dir):
     """
     Get the requirements for the specified py version.
 
@@ -93,14 +93,14 @@ def get_dev_requirements(py_version):
     """
     env_dir = get_pipenv_dir(py_version)
     stderr_out = None if LOG_VERBOSE else subprocess.DEVNULL
-    requirements = subprocess.check_output(['pipenv', 'lock', '-r', '-d'], cwd=env_dir, universal_newlines=True,
+    requirements = subprocess.check_output(['pipenv', 'lock', '-r', '-d'], cwd=package_dir, universal_newlines=True,
                                            stderr=stderr_out)
     print_v("dev requirements:\n{}".format(requirements))
     return requirements
 
 
-def get_lint_files(project_dir):
-    code_file = get_code_file(project_dir, '.py')
+def get_lint_files(package_dir):
+    code_file = get_code_file(package_dir, '.py')
     return os.path.basename(code_file)
 
 
@@ -210,9 +210,9 @@ def docker_image_create(docker_base_image, requirements):
     return target_image
 
 
-def docker_run(project_dir, docker_image, no_test, no_lint, keep_container, use_root=False):
+def docker_run(package_dir, docker_image, no_test, no_lint, keep_container, use_root=False):
     workdir = '/devwork'  # this is setup in CONTAINER_SETUP_SCRIPT
-    pylint_files = get_lint_files(project_dir)
+    pylint_files = get_lint_files(package_dir)
     run_params = ['docker', 'create', '-w', workdir,
                   '-e', 'PYLINT_FILES={}'.format(pylint_files)]
     if not use_root:
@@ -224,7 +224,7 @@ def docker_run(project_dir, docker_image, no_test, no_lint, keep_container, use_
     run_params.extend([docker_image, 'sh', './{}'.format(RUN_SH_FILE_NAME)])
     container_id = subprocess.check_output(run_params, universal_newlines=True).strip()
     try:
-        subprocess.check_call(['docker', 'cp', project_dir + '/.', container_id + ':' + workdir])
+        subprocess.check_call(['docker', 'cp', package_dir + '/.', container_id + ':' + workdir])
         subprocess.check_call(['docker', 'cp', RUN_SH_FILE, container_id + ':' + workdir])
         subprocess.check_call(['docker', 'start', '-a', container_id])
     finally:
@@ -234,31 +234,31 @@ def docker_run(project_dir, docker_image, no_test, no_lint, keep_container, use_
             print("Test container [{}] was left available".format(container_id))
 
 
-def run_flake8(project_dir, py_num):
+def run_flake8(package_dir, py_num):
     print("========= Running flake8 ===============")
     python_exe = 'python2' if py_num < 3 else 'python3'
     print_v('Using: {} to run flake8'.format(python_exe))
     sys.stdout.flush()
-    subprocess.check_call([python_exe, '-m', 'flake8', project_dir], cwd=CONTENT_DIR)
+    subprocess.check_call([python_exe, '-m', 'flake8', package_dir], cwd=CONTENT_DIR)
     print("flake8 completed")
 
 
-def run_mypy(project_dir, py_num):
-    lint_files = get_lint_files(project_dir)
+def run_mypy(package_dir, py_num):
+    lint_files = get_lint_files(package_dir)
     print("========= Running mypy on: {} ===============".format(lint_files))
     sys.stdout.flush()
-    subprocess.check_call(['bash', RUN_MYPY_SCRIPT, str(py_num), lint_files], cwd=project_dir)
+    subprocess.check_call(['bash', RUN_MYPY_SCRIPT, str(py_num), lint_files], cwd=package_dir)
     print("mypy completed")
 
 
-def setup_dev_files(project_dir):
+def setup_dev_files(package_dir):
     # copy demistomock and common server
-    shutil.copy(CONTENT_DIR + '/Tests/demistomock/demistomock.py', project_dir)
-    open(project_dir + '/CommonServerUserPython.py', 'a').close()  # create empty file
-    shutil.rmtree(project_dir + '/__pycache__', ignore_errors=True)
-    shutil.copy(CONTENT_DIR + '/Tests/scripts/dev_envs/pytest/conftest.py', project_dir)
-    if "/Scripts/CommonServerPython" not in project_dir:  # Otherwise we already have the CommonServerPython.py file
-        shutil.copy(CONTENT_DIR + '/Scripts/CommonServerPython/CommonServerPython.py', project_dir)
+    shutil.copy(CONTENT_DIR + '/Tests/demistomock/demistomock.py', package_dir)
+    open(package_dir + '/CommonServerUserPython.py', 'a').close()  # create empty file
+    shutil.rmtree(package_dir + '/__pycache__', ignore_errors=True)
+    shutil.copy(CONTENT_DIR + '/Tests/scripts/dev_envs/pytest/conftest.py', package_dir)
+    if "/Scripts/CommonServerPython" not in package_dir:  # Otherwise we already have the CommonServerPython.py file
+        shutil.copy(CONTENT_DIR + '/Scripts/CommonServerPython/CommonServerPython.py', package_dir)
 
 
 def main():
@@ -284,9 +284,9 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
     global LOG_VERBOSE
     LOG_VERBOSE = args.verbose
 
-    project_dir = os.path.abspath(args.dir)
+    package_dir = os.path.abspath(args.dir)
     # load yaml
-    yml_path = glob.glob(project_dir + '/*.yml')[0]
+    yml_path = glob.glob(package_dir + '/*.yml')[0]
     print_v('Using yaml file: {}'.format(yml_path))
     with open(yml_path, 'r') as yml_file:
         yml_data = yaml.safe_load(yml_file)
@@ -301,18 +301,18 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
     for docker in dockers:
         print_v("Using docker image: {}".format(docker))
         py_num = get_python_version(docker)
-        setup_dev_files(project_dir)
+        setup_dev_files(package_dir)
         try:
             if not args.no_flake8:
-                run_flake8(project_dir, py_num)
+                run_flake8(package_dir, py_num)
             if not args.no_mypy:
-                run_mypy(project_dir, py_num)
+                run_mypy(package_dir, py_num)
             if not args.no_test or not args.no_pylint:
-                requirements = get_dev_requirements(py_num)
+                requirements = get_dev_requirements(py_num, package_dir)
                 docker_image_created = docker_image_create(docker, requirements)
-                docker_run(project_dir, docker_image_created, args.no_test, args.no_pylint, args.keep_container, args.root)
+                docker_run(package_dir, docker_image_created, args.no_test, args.no_pylint, args.keep_container, args.root)
         except subprocess.CalledProcessError as ex:
-            sys.stderr.write("[FAILED {}] Error: {}\n".format(project_dir, str(ex)))
+            sys.stderr.write("[FAILED {}] Error: {}\n".format(package_dir, str(ex)))
             return 2
         finally:
             sys.stdout.flush()
