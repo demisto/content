@@ -32,7 +32,7 @@ GAPPS_ID = None
 SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
 PROXY = demisto.params().get('proxy')
 DISABLE_SSL = demisto.params().get('insecure', False)
-FETCH_TIME = int(demisto.params().get('fetch_time', 1))
+FETCH_TIME = demisto.params().get('fetch_time', '1 days')
 
 ''' HELPER FUNCTIONS '''
 
@@ -165,7 +165,7 @@ def parse_mail_parts(parts):
     return body, html, attachments
 
 
-def utc_extract(time_from_mail):
+def localization_extract(time_from_mail):
     if time_from_mail is None or len(time_from_mail) < 5:
         return '-0000', 0
 
@@ -190,10 +190,13 @@ def create_base_time(internal_date_timestamp, header_date):
     Returns: A date string in the senders local time in the format of "Mon, 26 Aug 2019 14:40:04 +0300"
 
     """
-    if len(str(internal_date_timestamp)) > 10:
-        internal_date_timestamp = int(str(internal_date_timestamp)[:10])
+    # intenalDate timestamp has 13 digits, but epoch-timestamp counts the seconds since Jan 1st 1970
+    # (which is currently less than 13 digits) thus a need to cut the timestamp down to size.
+    timestamp_len = len(str(int(time.time())))
+    if len(str(internal_date_timestamp)) > timestamp_len:
+        internal_date_timestamp = int(str(internal_date_timestamp)[:timestamp_len])
 
-    utc, delta_in_seconds = utc_extract(header_date)
+    utc, delta_in_seconds = localization_extract(header_date)
     base_time = datetime.utcfromtimestamp(internal_date_timestamp) + \
         timedelta(seconds=delta_in_seconds)
     base_time = str(base_time.strftime('%a, %d %b %Y %H:%M:%S')) + " " + utc
@@ -208,8 +211,6 @@ def get_email_context(email_data, mailbox):
     body = demisto.get(email_data, 'payload.body.data')
     body = body.encode('ascii') if body is not None else ''
     parsed_body = base64.urlsafe_b64decode(body)
-    context_email = {}  # type: Dict
-    context_gmail = {}  # type: Dict
     if email_data.get('internalDate') is not None:
         base_time = create_base_time(email_data.get('internalDate'), str(headers.get('date', '')))
 
@@ -323,7 +324,6 @@ def create_incident_labels(parsed_msg, headers):
 def emails_to_entry(title, raw_emails, format_data, mailbox):
     gmail_emails = []
     emails = []
-    context_email = {}  # type: Dict
     for email_data in raw_emails:
         context_gmail, _, context_email = get_email_context(email_data, mailbox)
         gmail_emails.append(context_gmail)
@@ -391,17 +391,10 @@ def mail_to_incident(msg, service, user_key):
 
 
 def organization_format(org_list):
-    if org_list is None or len(org_list) == 0:
+    if org_list:
+        return ','.join(str(org.get('name')) for org in org_list if org.get('name'))
+    else:
         return None
-    org_str = ''
-    for org in org_list:
-        if org.get('name') is None:
-            continue
-
-        else:
-            org_str = org_list + str(org.get('name')) + ','
-
-    return org_str.rstrip(',')
 
 
 def users_to_entry(title, response):
@@ -418,14 +411,14 @@ def users_to_entry(title, response):
             'Type': 'Google',
             'ID': user_data.get('id'),
             'UserName': username,
+            'Username': username,  # adding to fit the new context standard
             'DisplayName': display,
             'Email': {'Address': user_data.get('primaryEmail')},
             'Gmail': {'Address': user_data.get('primaryEmail')},
             'Group': user_data.get('kind'),
+            'Groups': user_data.get('kind'),  # adding to fit the new context standard
             'CustomerId': user_data.get('customerId'),
-            'Groups': user_data.get('kind'),
             'Domain': user_data.get('primaryEmail').split('@')[1],
-            'Username': username,
             'VisibleInDirectory': user_data.get('includeInGlobalAddressList'),
 
         })
@@ -467,7 +460,9 @@ def autoreply_to_entry(title, response, user_id):
         'Contents': autoreply_context,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(title, autoreply_context, headers, removeNull=True),
-        'EntryContext': {'Account.Gmail(val.Address == obj.Address)': account_context}
+        'EntryContext': {
+            'Account.Gmail(val.Address == obj.Address)': account_context
+        }
     }
 
 
@@ -622,7 +617,7 @@ def get_user_command():
     customer_field_mask = args.get('customer-field-mask')
 
     result = get_user(user_key, view_type, projection, customer_field_mask)
-    return users_to_entry('User %s:' % (user_key, ), [result])
+    return users_to_entry('User {}:'.format(user_key), [result])
 
 
 def get_user(user_key, view_type, projection, customer_field_mask=None):
@@ -761,7 +756,7 @@ def delegate_user_mailbox(user_id, delegate_email, delegate_token):
         }
 
         service.users().settings().delegates().create(**command_args).execute()
-        return 'Email %s has been delegated' % delegate_email
+        return 'Email {} has been delegated'.format(delegate_email)
 
     else:
         command_args = {
@@ -825,7 +820,7 @@ def delete_user(user_key):
         ['https://www.googleapis.com/auth/admin.directory.user'])
     service.users().delete(**command_args).execute()
 
-    return 'User %s have been deleted.' % (command_args['userKey'], )
+    return 'User {} have been deleted.'.format(command_args['userKey'])
 
 
 def get_user_role_command():
@@ -952,7 +947,7 @@ def search_command(mailbox=None):
     mails, q = search(user_id, subject, _from, to, before, after, filename, _in, query,
                       fields, label_ids, max_results, page_token, include_spam_trash, has_attachments)
 
-    res = emails_to_entry('Search in %s:\nquery: "%s"' % (mailbox, q, ), mails, 'full', mailbox)
+    res = emails_to_entry('Search in {}:\nquery: "{}"'.format(mailbox, q), mails, 'full', mailbox)
     return res
 
 
@@ -1684,7 +1679,7 @@ def fetch_incidents():
     last_fetch = last_run.get('gmt_time')
     # handle first time fetch - gets current GMT time -1 day
     if last_fetch is None:
-        last_fetch = (datetime.utcfromtimestamp(int(time.time())) - timedelta(days=FETCH_TIME)).isoformat() + 'Z'
+        last_created_time, _ = parse_date_range(date_range=FETCH_TIME, utc=True, to_timestamp=False)
 
     last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
     current_fetch = last_fetch

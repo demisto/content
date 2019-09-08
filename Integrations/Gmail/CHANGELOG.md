@@ -9,4 +9,5 @@
      - send-mail - Send mail using Gmail.
     
     
-  - Fixed bug where mails from different timezones sometimes did not create incidents. 
+  - Fixed bug where mails from different timezones sometimes did not create incidents.
+     - This will temporarily cause duplicated incidents.
