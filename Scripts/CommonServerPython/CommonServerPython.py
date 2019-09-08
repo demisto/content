@@ -2080,9 +2080,6 @@ class BaseClient:
             raise DemistoException(err_msg)
         except requests.exceptions.ConnectionError as e:
             # Get originating Exception in Exception chain
-            while '__context__' in dir(e) and e.__context__:
-                e = cast(Any, e.__context__)
-
             error_class = str(e.__class__)
             err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
             err_msg = '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
