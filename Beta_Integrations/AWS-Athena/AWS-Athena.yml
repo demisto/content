@@ -2,7 +2,7 @@ commonfields:
   id: AWS - Athena - Beta
   version: -1
 name: AWS - Athena - Beta
-display: AWS - Athena
+display: AWS - Athena (Beta)
 category: IT Services
 description: Amazon Web Services Athena
 configuration:
