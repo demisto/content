@@ -7,6 +7,7 @@ description: |-
 
   Supported integrations for this playbook:
   * Palo Alto Networks Minemeld
+  * Palo Alto Networks PAN-OS
   * Zscaler
 starttaskid: "0"
 tasks:
@@ -33,6 +34,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
     taskid: 1808d949-f921-4957-8796-7bbedd822ad9
@@ -49,11 +52,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -80,
-          "y": 900
+          "x": 377.5,
+          "y": 1090
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: f414f4c2-03f8-4219-8428-048557b1758b
@@ -70,15 +75,19 @@ tasks:
       '#none#':
       - "11"
       - "12"
+      - "14"
+      - "15"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 370
+          "x": 1240,
+          "y": 350
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
     taskid: ad6bb4b2-ea87-4c6e-893c-a31e27e82e55
@@ -113,6 +122,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
     taskid: 2d0fc7d4-b827-43c9-8b7a-bf592e7a1c1f
@@ -144,11 +155,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 150,
-          "y": 550
+          "x": 590,
+          "y": 490
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
     taskid: a2108a1a-7365-45e7-8c07-a5a6fcdd8b95
@@ -200,11 +213,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 550
+          "x": 1020,
+          "y": 490
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
     taskid: adb7b441-33c8-4fe9-8883-7af9a776e0d3
@@ -229,19 +244,107 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 720
+          "x": 1020,
+          "y": 770
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 2b812a9e-5f84-40cb-8cb9-67bcc0537ee7
+    type: playbook
+    task:
+      id: 2b812a9e-5f84-40cb-8cb9-67bcc0537ee7
+      version: -1
+      name: PAN-OS - Block URL - Custom URL Category
+      playbookName: PAN-OS - Block URL - Custom URL Category
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomURLCategory: {}
+      LogForwarding: {}
+      URL:
+        complex:
+          root: inputs.URL
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: bc52f173-2761-41cc-8342-6c5b462c3011
+    type: playbook
+    task:
+      id: bc52f173-2761-41cc-8342-6c5b462c3011
+      version: -1
+      name: PAN-OS - Block IP and URL - External Dynamic List
+      playbookName: PAN-OS - Block IP and URL - External Dynamic List
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      EDLServerIP: {}
+      IP: {}
+      IPListName: {}
+      LogForwarding: {}
+      URL:
+        complex:
+          root: inputs.URL
+          transformers:
+          - operator: uniq
+      URLListName: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 1920,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "12_2_#default#": 0.37,
+      "8_2_#default#": 0.43
+    },
     "paper": {
       "dimensions": {
-        "height": 925,
-        "width": 1070,
-        "x": -80,
+        "height": 1115,
+        "width": 1922.5,
+        "x": 377.5,
         "y": 40
       }
     }
