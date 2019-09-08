@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.9.0] - 2019-09-04
 - Improved EML file type detection.
 - Added ***Email.AttachmentNames*** output, which contains a list of all the names of the email attachments.
 
