@@ -74,28 +74,31 @@ script:
         return {Type: entryTypes.error, ContentsFormat: formats.text, Contents: error};
     }
 
-
-    function fixContextOutputs(res) {
-         Object.keys(res).forEach(function(key) {
+    //Originally, there was a mismatch between some context fields and their corresponding YML outputs.
+    //For example: the context field name was 'environment_id' while the corresponding YML output was 'environmentId'.
+    //This function gets a context entry and adds the existing YML outputs into the context, with the values of the original fields from context.
+    //The old context fields are not being deleted in order to prevent braking backwards compatibility.
+    function addYMLOutputsToContext(contextEntry) {
+         Object.keys(contextEntry).forEach(function(key) {
                 switch (key) {
                     case 'environment_id':
-                        res.environmentId = res['environment_id'];
+                        contextEntry.environmentId = contextEntry['environment_id'];
                         break;
                     case 'submit_name':
-                        res.submitname = res['submit_name'];
+                        contextEntry.submitname = contextEntry['submit_name'];
                         break;
                     case 'vx_family':
-                        res.vxfamily = res['vx_family'];
+                        contextEntry.vxfamily = contextEntry['vx_family'];
                         break;
                     case 'interesting':
-                        res.isinteresting = res['interesting'];
+                        contextEntry.isinteresting = contextEntry['interesting'];
                         break;
                     case 'url_analysis':
-                        res.isurlanalysis = res['url_analysis'];
+                        contextEntry.isurlanalysis = contextEntry['url_analysis'];
                         break;
                 }
             });
-        return res;
+        return contextEntry;
     }
 
      //  get threat level and calculate Dbot score by the following rule: 0=No Threat, 1=Suspicious, 2=Malicious, 3=Unknown
@@ -126,22 +129,22 @@ script:
 
 
     // return a function that maps object keys by mapper (or capitlize keys if key is not exists in mapper)
-    function mapObject(mapper, shouldAddMalicious, maliciousThreatLevels) {
+    function mapObject(mapper, isContextMapper, maliciousThreatLevels) {
         return function(obj) {
             var res = {};
             Object.keys(obj).forEach(function(key) {
                 // map key or capitalize if not exists
                 var newKey = mapper[key] || key;
                 res[newKey] = obj[key];
-                if (maliciousThreatLevels && obj.threat_level && maliciousThreatLevels.indexOf(obj.threat_level) !== -1 && shouldAddMalicious) {
+                if (maliciousThreatLevels && obj.threat_level && maliciousThreatLevels.indexOf(obj.threat_level) !== -1 && isContextMapper) {
                     res.Malicious = {
                         Vendor: 'Hybrid Analysis',
                         Description: 'Score above ' + obj.threat_score
                     };
                 }
             });
-
-            res = fixContextOutputs(res);
+            if (isContextMapper)
+                res = addYMLOutputsToContext(res);
             return res;
         };
     }
