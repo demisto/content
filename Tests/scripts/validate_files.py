@@ -9,6 +9,7 @@ It can be run to check only committed changes (if the first argument is 'true') 
 Note - if it is run for all the files in the repo it won't check releaseNotes, use `release_notes.py`
 for that task.
 """
+from __future__ import print_function
 import os
 import re
 import sys
@@ -22,12 +23,13 @@ from Tests.scripts.constants import *
 from Tests.scripts.hook_validations.id import IDSetValidator
 from Tests.scripts.hook_validations.secrets import get_secrets
 from Tests.scripts.hook_validations.image import ImageValidator
-from Tests.scripts.hook_validations.description import DescriptionValidator
 from Tests.scripts.update_id_set import get_script_package_data
 from Tests.scripts.hook_validations.script import ScriptValidator
 from Tests.scripts.hook_validations.conf_json import ConfJsonValidator
 from Tests.scripts.hook_validations.structure import StructureValidator
 from Tests.scripts.hook_validations.integration import IntegrationValidator
+from Tests.scripts.hook_validations.description import DescriptionValidator
+from Tests.scripts.hook_validations.incident_field import IncidentFieldValidator
 from Tests.test_utils import checked_type, run_command, print_error, collect_ids, print_color, str2bool, LOG_COLORS, \
     get_yaml, filter_packagify_changes
 
@@ -60,7 +62,7 @@ class FilesValidator(object):
 
             return True
 
-        elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
+        if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
             if file_yml.get('type', 'javascript') != 'python':
                 return False
 
@@ -151,18 +153,17 @@ class FilesValidator(object):
             files_string = run_command("git diff --name-status --no-merges HEAD")
             non_committed_modified_files, non_committed_added_files, non_committed_deleted_files, \
                 non_committed_old_format_files = self.get_modified_files(files_string)
+
             all_changed_files_string = run_command("git diff --name-status {}".format(tag))
             modified_files_from_tag, added_files_from_tag, _, _ = \
                 self.get_modified_files(all_changed_files_string)
 
             old_format_files = old_format_files.union(non_committed_old_format_files)
-            for mod_file in modified_files_from_tag:
-                if mod_file in non_committed_modified_files:
-                    modified_files.add(mod_file)
+            modified_files = modified_files.union(
+                modified_files_from_tag.intersection(non_committed_modified_files))
 
-            for add_file in added_files_from_tag:
-                if add_file in non_committed_added_files:
-                    added_files.add(add_file)
+            added_files = added_files.union(
+                added_files_from_tag.intersection(non_committed_added_files))
 
             modified_files = modified_files - set(non_committed_deleted_files)
             added_files = added_files - set(non_committed_modified_files) - set(non_committed_deleted_files)
@@ -193,7 +194,7 @@ class FilesValidator(object):
 
             print("Validating {}".format(file_path))
             structure_validator = StructureValidator(file_path, is_added_file=not (False or is_backward_check),
-                                                     is_renamed=True if old_file_path else False)
+                                                     is_renamed=old_file_path is not None)
             if not structure_validator.is_file_valid():
                 self._is_valid = False
 
@@ -248,6 +249,15 @@ class FilesValidator(object):
                 if not image_validator.is_valid():
                     self._is_valid = False
 
+            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(INCIDENT_FIELDS_REGEX, file_path, re.IGNORECASE):
+                incident_field_validator = IncidentFieldValidator(file_path, old_file_path=old_file_path,
+                                                                  old_git_branch=old_branch)
+                if not incident_field_validator.is_valid():
+                    self._is_valid = False
+                if is_backward_check and not incident_field_validator.is_backward_compatible():
+                    self._is_valid = False
+
     def validate_added_files(self, added_files):
         """Validate the added files from your branch.
 
@@ -297,6 +307,12 @@ class FilesValidator(object):
             elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
                 image_validator = ImageValidator(file_path)
                 if not image_validator.is_valid():
+                    self._is_valid = False
+
+            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(INCIDENT_FIELDS_REGEX, file_path, re.IGNORECASE):
+                incident_field_validator = IncidentFieldValidator(file_path)
+                if not incident_field_validator.is_valid():
                     self._is_valid = False
 
     def validate_no_secrets_found(self, branch_name):
@@ -432,7 +448,7 @@ def main():
     so the user won't be disturbed by non critical loggings
     """
     branches = run_command("git branch")
-    branch_name_reg = re.search("\* (.*)", branches)
+    branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
 
     parser = argparse.ArgumentParser(description='Utility CircleCI usage')
