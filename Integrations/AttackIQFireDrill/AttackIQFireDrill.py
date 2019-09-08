@@ -132,7 +132,7 @@ TEST_RESULT_TRANS = {
 
 
 def http_request(method, url_suffix, params=None, data=None):
-    url = SERVER + url_suffix
+    url = f'{SERVER}/{url_suffix}'
     LOG(f'attackiq is attempting {method} request sent to {url} with params:\n{json.dumps(params, indent=4)}')
     try:
         res = requests.request(
