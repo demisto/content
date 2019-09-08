@@ -1679,7 +1679,8 @@ def fetch_incidents():
     last_fetch = last_run.get('gmt_time')
     # handle first time fetch - gets current GMT time -1 day
     if last_fetch is None:
-        last_created_time, _ = parse_date_range(date_range=FETCH_TIME, utc=True, to_timestamp=False)
+        last_fetch, _ = parse_date_range(date_range=FETCH_TIME, utc=True, to_timestamp=False)
+        last_fetch = str(last_fetch.isoformat()).split('.')[0] + 'Z'
 
     last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
     current_fetch = last_fetch
