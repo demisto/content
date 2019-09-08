@@ -43,10 +43,10 @@ tasks:
       name: PAN OS - Update IP EDL
       description: Updates the instance context with the specified list name and list
         items, and then overrides the path of the remote file with the internal list.
-      script: palo_alto_networks_pan_os_edl_management|||pan-os-edl-update
+      script: '|||pan-os-edl-update'
       type: regular
       iscommand: true
-      brand: palo_alto_networks_pan_os_edl_management
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
@@ -180,10 +180,10 @@ tasks:
       name: PAN OS - Update URL EDL
       description: Updates the instance context with the specified list name and list
         items, and then overrides the path of the remote file with the internal list.
-      script: palo_alto_networks_pan_os_edl_management|||pan-os-edl-update
+      script: '|||pan-os-edl-update'
       type: regular
       iscommand: true
-      brand: palo_alto_networks_pan_os_edl_management
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
