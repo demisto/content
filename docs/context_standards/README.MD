@@ -149,10 +149,10 @@ The following is the format for a Domain. Please note that for WHOIS, the entity
     "Subdomains": "STRING, Subdomains of the domain.",
     "UpdatedDate": "DATE, The date that the domain was last updated.",
     "Admin": {
-        "Country": "STRING, The domain admininistrator's country.",
-        "Email": "STRING, The domain admininistrator's email address.",
-        "Name": "STRING, The domain admininistrator's name.",
-        "Phone": "STRING, The domain admininistrator's phone number."
+        "Country": "STRING, The domain administrator's country.",
+        "Email": "STRING, The domain administrator's email address.",
+        "Name": "STRING, The domain administrator's name.",
+        "Phone": "STRING, The domain administrator's phone number."
     },
     "Registrant": {
         "Country": "STRING, The registrant's country.",
@@ -178,9 +178,9 @@ The following is the format for a Domain. Please note that for WHOIS, the entity
             "AbusePhone": "STRING, The phone number of contact for reporting abuse."
         },
         "Admin": {
-            "Name": "STRING, The name of the domain admininistrator.",
-            "Email": "STRING, The email address of the domain admininistrator.",
-            "Phone": "STRING, The phone number of the domain admininistrator."
+            "Name": "STRING, The name of the domain administrator.",
+            "Email": "STRING, The email address of the domain administrator.",
+            "Phone": "STRING, The phone number of the domain administrator."
         }
     },
     "WHOIS/History": "List of Whois objects",
