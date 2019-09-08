@@ -262,6 +262,21 @@ def group_dn(group_name, search_base):
     return entry['dn']
 
 
+def convert_special_chars_to_unicode(search_filter):
+    # We allow users to use special chars without explicitly typing their unicode values
+    chars_to_replace = {
+        '\\(': '\\28',
+        '\\)': '\\29',
+        '\\*': '\\2a',
+        '\\/': '\\2f',
+        '\\\\': '\\5c'
+    }
+    for i, j in chars_to_replace.items():
+        search_filter = search_filter.replace(i, j)
+
+    return search_filter
+
+
 def free_search(default_base_dn, page_size):
 
     args = demisto.args()
@@ -272,6 +287,8 @@ def free_search(default_base_dn, page_size):
     search_base = args.get('base-dn') or default_base_dn
     attributes = args.get('attributes')
     context_output = args.get('context-output')
+
+    search_filter = convert_special_chars_to_unicode(search_filter)
 
     # if ALL was specified - get all the object's attributes, else expect a string of comma separated values
     if attributes:
