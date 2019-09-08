@@ -50,15 +50,6 @@ SEVERITY_LEVEL = {
 }
 
 
-def is_json(myjson):
-    demisto.info('walla')
-    try:
-        json.loads(myjson)
-    except ValueError:
-        return False
-    return True
-
-
 def req(method, path, json_data=None, params=None, json_response=False):
     """
     Send the request to IntSights and return the JSON response
@@ -68,8 +59,17 @@ def req(method, path, json_data=None, params=None, json_response=False):
     if r.status_code < 200 or r.status_code > 299:
         if not (r.text == 'SeverityNotChanged' or r.text == 'TagExist' or r.text == 'IocBlocklistStatusNotChanged'):
             return_error('Error in API call to IntSights service %s - [%d] %s' % (path, r.status_code, r.text))
-    if json_response and not is_json(r.text):
-        return_error('Error in API call to IntSights service - please check you URL address')
+
+    if r.status_code == 204:
+        return []  # type: ignore
+
+    if json_response:
+        try:
+            r = r.json()
+        except ValueError as e:
+            return_error('Error in API call to IntSights service - please check you URL address')
+        return r
+
     return r
 
 
@@ -169,14 +169,10 @@ def get_alerts_helper(params):
     demisto.info("Executing get_alerts with params: {}".format(params))
 
     resp = req('GET', 'public/v1/data/alerts/alerts-list', params=params)
-    if resp.status_code == 204:
-        r = []  # type: ignore
-    else:
-        r = resp.json()
 
     alerts_HR = []
     alerts_ctx = []
-    for alert_id in r:
+    for alert_id in resp:
         alert_informationHR, alert_informationCtx = get_alert_by_id_helper(alert_id)
         alerts_HR.append(alert_informationHR)
         alerts_ctx.append(alert_informationCtx)
@@ -275,7 +271,7 @@ def get_alert_by_id_helper(alert_id):
     """
     Helper for getting details by ID
     """
-    r = req('GET', 'public/v1/data/alerts/get-complete-alert/' + alert_id, json_response=True).json()
+    r = req('GET', 'public/v1/data/alerts/get-complete-alert/' + alert_id, json_response=True)
     return alert_to_readable(r, True), alert_to_readable(r, False)
 
 
@@ -332,7 +328,7 @@ def get_alert_activity():
     Retrieves the alert activity by alert-id
     """
     alert_id = demisto.getArg('alert-id')
-    r = req('GET', 'public/v1/data/alerts/activity-log/' + alert_id, json_response=True).json()
+    r = req('GET', 'public/v1/data/alerts/activity-log/' + alert_id, json_response=True)
 
     human_readables = []
     alert = {'ID': alert_id, 'Activities': []}
@@ -392,7 +388,6 @@ def change_severity():
 
 def get_assignee_id(assignee_email):
     r = req('GET', 'public/v1/account/users-details', json_response=True)
-    r = r.json()
     for user in r:
         if assignee_email == user.get('Email', ''):
             return user.get('_id')
@@ -499,7 +494,6 @@ def send_mail():
 
 def get_tag_id(alert_id, tag_name):
     res = req('GET', 'public/v1/data/alerts/get-complete-alert/' + alert_id, json_response=True)
-    res = res.json()
 
     details = res.get('Details', {})
     tags = details.get('Tags', [])
@@ -657,10 +651,9 @@ def search_for_IOC():
     """
     Search for IOC by value
     """
-    r = req('GET', 'public/v1/iocs/ioc-by-value', params=handle_filters())
+    r = req('GET', 'public/v1/iocs/ioc-by-value', params=handle_filters(), json_response=True)
 
-    if r.status_code != 204:
-        r = r.json()
+    if r:
         ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = IOC_to_readable(r)
 
         demisto.results(
@@ -746,7 +739,7 @@ def get_iocs():
     """
     Gets all IOCs with the given filters
     """
-    r = req('GET', 'public/v1/iocs/complete-iocs-list', params=handle_filters(), json_response=True).json()
+    r = req('GET', 'public/v1/iocs/complete-iocs-list', params=handle_filters(), json_response=True)
     domains = []
     ip_infos = []
     url_infos = []
@@ -849,7 +842,7 @@ def update_ioc_blocklist_status():
 
 def get_ioc_blocklist_status():
     alert_id = demisto.getArg('alert-id')
-    r = req('GET', 'public/v1/data/alerts/blocklist-status/' + alert_id, json_response=True).json()
+    r = req('GET', 'public/v1/data/alerts/blocklist-status/' + alert_id, json_response=True)
     demisto.results({
         'Type': entryTypes['note'],
         'EntryContext': {
@@ -862,7 +855,7 @@ def get_ioc_blocklist_status():
 
 def get_mssp_sub_accounts():
     account_id = demisto.getParam('credentials')['identifier']
-    accounts = req('GET', 'public/v1/mssp/customers', json_response=True).json()
+    accounts = req('GET', 'public/v1/mssp/customers', json_response=True)
     if not accounts:
         return_error("intsights-mssp-get-sub-accounts failed to return data.")
 
@@ -882,7 +875,7 @@ def get_mssp_sub_accounts():
     for i, account in enumerate(account_ids):
         # Call account
         HEADERS['Account-Id'] = account
-        account_ua = req('GET', 'public/v1/account/used-assets', json_response=True).json()
+        account_ua = req('GET', 'public/v1/account/used-assets', json_response=True)
 
         if not account_ua:
             continue
