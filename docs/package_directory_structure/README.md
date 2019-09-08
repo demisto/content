@@ -1,5 +1,5 @@
 # Package directory structure
-Content entities in Demisto are presented by YAML files.
+Content code entities in Demisto are presented by YAML files.
 
 Automation scripts and integrations [YAML files](https://github.com/demisto/content/blob/master/docs/yaml-file-integration/README.MD) include Javascript/Python code.
 
@@ -13,13 +13,15 @@ The package is converted into a YAML file, which include all the package compone
 
 A package should be a sub-directory of either Integrations or Scripts directory, and contain the following files:
 
- - 2 Python files - the code and the unit test code.
- - YAML file - configuration file.
- - PNG file - integration logo (for integrations only).
- - MD file - detailed instructions (for integrations only).
- - CHANGELOG - a markdown file which include the script/integration release notes.
- - Pipfile (can be copied from Tests/scripts/dev_envs/default_python3)
- - Pipfile.lock (can be copied from Tests/scripts/dev_envs/default_python3)
+ - `<INTEGRATION-NAME>.py` - Integration / automation script Python code.
+ - `<INTEGRATION-NAME>_test.py` - Python unit test code.
+ - `<INTEGRATION-NAME>.yml` - Configuration YAML file.
+ - `<INTEGRATION-NAME>_image.png ` - Integration PNG logo (for integrations only).
+ - `<INTEGRATION-NAME>_description.md` - Detailed instructions markdown file (for integrations only).
+ - [CHANGELOG.md](https://github.com/demisto/content/blob/master/docs/release_notes/README.MD) - a markdown file which include the script/integration release notes.
+ - `Pipfile` (can be copied from Tests/scripts/dev_envs/default_python3)
+ - `Pipfile.lock` (can be copied from Tests/scripts/dev_envs/default_python3)
+    - Note: Since Python 2.7 will not be maintained past 2020, we refer only to Python 3.
  
 For example, a package of the integration [Palo Alto Networks Cortex](https://github.com/demisto/content/tree/master/Integrations/PaloAltoNetworksCortex) is stored under Integrations directory in a sub-directory names PaloAltoNetworksCortex and contain the following files:
 
@@ -35,6 +37,7 @@ For example, a package of the integration [Palo Alto Networks Cortex](https://gi
 
 You can extract a package from a YAML file by using the following:
  - [Demisto IntelliJ Plugin](https://plugins.jetbrains.com/plugin/12093-demisto-add-on-for-pycharm)
- - `package_extractor` script
+ -  `package_extractor.py` script from the Content repository.
+
 
 
