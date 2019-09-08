@@ -263,7 +263,7 @@ tasks:
       id: 6a88f674-9d86-478a-8b8c-2e95b4bdaf6f
       version: -1
       name: Get file
-      description: getting file using get
+      description: getting file using get.
       scriptName: http
       type: regular
       iscommand: false
