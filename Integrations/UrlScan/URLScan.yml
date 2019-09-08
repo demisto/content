@@ -1,27 +1,33 @@
-category: Data Enrichment & Threat Intelligence
 commonfields:
   id: urlscan.io
   version: -1
+name: urlscan.io
+display: urlscan.io
+category: Data Enrichment & Threat Intelligence
+description: Urlscan.io reputation
+defaultEnabled: false
 configuration:
 - display: API Key (needed only for submitting URLs for scanning)
   name: apikey
-  required: false
+  defaultvalue: ""
   type: 4
+  required: false
 - display: Trust any certificate (unsecure)
   name: insecure
-  required: false
+  defaultvalue: ""
   type: 8
-- defaultvalue: 'true'
-  display: Use system proxy settings
+  required: false
+- display: Use system proxy settings
   name: proxy
-  required: false
+  defaultvalue: "true"
   type: 8
-- defaultvalue: '1'
-  display: URL Threshold. Minimum number of positive results from urlscan.io to consider
+  required: false
+- display: URL Threshold. Minimum number of positive results from urlscan.io to consider
     the URL malicious.
   name: url_threshold
-  required: false
+  defaultvalue: "1"
   type: 0
+  required: false
 - display: Submission Privacy Default
   name: privacy
   defaultvalue: public
@@ -30,30 +36,21 @@ configuration:
   options:
   - public
   - private
-description: Urlscan.io reputation
-display: urlscan.io
-name: urlscan.io
 script:
+  script: ''
+  type: python
+  subtype: python2
   commands:
-  - arguments:
-    - default: true
+  - name: urlscan-search
+    arguments:
+    - name: searchParameter
+      required: true
+      default: true
       description: Enter a parameter to search as a string (IP, File name, sha256,
         url, domain)
-      isArray: false
-      name: searchParameter
-      required: true
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - name: limit
       description: Limits the returned results
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    deprecated: false
-    description: Search for an indicator that is related to former urlscan.io scans.
-    execution: false
-    name: urlscan-search
+      defaultValue: "20"
     outputs:
     - contextPath: URLScan.URL
       description: URL found
@@ -85,42 +82,27 @@ script:
     - contextPath: URLScan.FileType
       description: File type of the file scanned
       type: string
-  - arguments:
-    - default: true
-      description: Url to scan
-      isArray: false
-      name: url
+    description: Search for an indicator that is related to former urlscan.io scans.
+  - name: urlscan-submit
+    deprecated: true
+    arguments:
+    - name: url
       required: true
-      secret: false
-    - default: false
-      defaultValue: '60'
+      default: true
+      description: Url to scan
+    - name: timeout
       description: How many seconds to wait for the scan id result
-      isArray: false
-      name: timeout
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: public
-      description: Will the submission be public or private
-      isArray: false
-      name: public
+      defaultValue: "60"
+    - name: public
+      auto: PREDEFINED
       predefined:
       - public
       - private
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+      description: Will the submission be public or private
+      defaultValue: public
+    - name: limit
       description: Limits the returned list of Certificates, IP's and ASN's
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    deprecated: true
-    description: 'Deprecated: replaced with url command'
-    execution: false
-    name: urlscan-submit
+      defaultValue: "20"
     outputs:
     - contextPath: URL.Data
       description: URL submitted
@@ -191,56 +173,31 @@ script:
     - contextPath: URLScan.EffectiveURL
       description: Effective URL of the original URL
       type: string
-  - arguments:
-    - default: false
-      description: Url to scan
-      isArray: false
-      name: url
+    description: 'Deprecated: replaced with url command'
+  - name: url
+    arguments:
+    - name: url
       required: true
-      secret: false
-    - default: false
-      defaultValue: '60'
+      description: Url to scan
+    - name: timeout
       description: How many seconds to wait for the scan id result
-      isArray: false
-      name: timeout
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: public
-      description: Will the submission be public or private
-      isArray: false
-      name: public
+      defaultValue: "60"
+    - name: public
+      auto: PREDEFINED
       predefined:
       - public
       - private
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+      description: Will the submission be public or private
+      defaultValue: public
+    - name: limit
       description: Limits the results in the war room
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '5'
+      defaultValue: "20"
+    - name: wait
       description: Wait time between tries if we reach the API rate limit in seconds
-      isArray: false
-      name: wait
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+      defaultValue: "5"
+    - name: retries
       description: Number of retries for API rate limit
-      isArray: false
-      name: retries
-      required: false
-      secret: false
-    deprecated: false
-    description: Submit a url to scan
-    execution: false
-    name: url
+      defaultValue: "0"
     outputs:
     - contextPath: URL.Data
       description: URL submitted
@@ -311,31 +268,19 @@ script:
     - contextPath: URLScan.EffectiveURL
       description: Effective URL of the original URL
       type: string
-  - arguments:
-    - default: false
-      description: The uuid of the URL to search the transaction list for.
-      isArray: false
-      name: uuid
-      required: true
-      secret: false
-    - default: false
-      defaultValue: '20'
-      description: Limits the results in the war room(Maximum limit allowed is 100)
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The URL to search the transaction list for.
-      isArray: false
-      name: url
-      required: true
-      secret: false
+    description: Submit a url to scan
+  - name: urlscan-get-http-transaction-list
     deprecated: true
-    description: Get http transaction list for a given url. (This command should be
-      used only apart from urlscan-get-http-transactions script)
-    execution: false
-    name: urlscan-get-http-transaction-list
+    arguments:
+    - name: uuid
+      required: true
+      description: The uuid of the URL to search the transaction list for.
+    - name: limit
+      description: Limits the results in the war room(Maximum limit allowed is 100)
+      defaultValue: "20"
+    - name: url
+      required: true
+      description: The URL to search the transaction list for.
     outputs:
     - contextPath: URLScan.URL
       description: The URL address that was examined.
@@ -344,42 +289,27 @@ script:
       description: A link to the http transaction made during the search on the given
         URL.
       type: string
-  - arguments:
-    - default: false
+    description: Get http transaction list for a given url. (This command should be used only apart from
+      urlscan-get-http-transactions script)
+  - name: urlscan-submit-url-command
+    deprecated: true
+    arguments:
+    - name: url
+      required: true
       description: The URL sought after.
-      isArray: false
-      name: url
-      required: true
-      secret: false
-    deprecated: true
     description: Submit a URL to get its uuid.
-    execution: false
-    name: urlscan-submit-url-command
-  - arguments:
-    - default: false
+  - name: urlscan-poll-uri
+    deprecated: true
+    arguments:
+    - name: uri
+      required: true
       description: The uri of the sought after result.
-      isArray: false
-      name: uri
-      required: true
-      secret: false
-    deprecated: true
     description: Poll the UrlScan service regarding the results for a given uri.
-    execution: false
-    name: urlscan-poll-uri
-  - arguments:
-    - default: false
-      description: The uuid of the URL you want to search
-      isArray: false
-      name: uuid
-      required: true
-      secret: false
+  - name: urlscan-get-result-page
     deprecated: true
+    arguments:
+    - name: uuid
+      required: true
+      description: The uuid of the URL you want to search
     description: Get the results page for the given UUID
-    execution: false
-    name: urlscan-get-result-page
-  isfetch: false
   runonce: false
-  script: ''
-  type: python
-  subtype: python2
-defaultEnabled: false
