@@ -15,6 +15,7 @@ import requests
 SERVER = demisto.params()['url'].rstrip('/')
 USERNAME = demisto.params().get('credentials', {}).get('identifier')
 PASSWORD = demisto.params().get('credentials', {}).get('password')
+PROXY = demisto.params().get('proxy')
 HTTP_ERRORS = {
     400: '400 Bad Request - Wrong or invalid parameters',
     401: '401 Unauthorized - Wrong or invalid username or password',
@@ -104,9 +105,13 @@ def search_command():
     size = int(demisto.args().get('size'))
     sort_field = demisto.args().get('sort-field')
     sort_order = demisto.args().get('sort-order')
+    if PROXY:
+        es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
+                           http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE, proxies=handle_proxy())
 
-    es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                       http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE)
+    else:
+        es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
+                           http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE)
 
     que = QueryString(query=query)
     search = Search(using=es, index=index).query(que)[base_page:base_page + size]
@@ -164,8 +169,13 @@ def test_func():
             return_error("Got The following errors in test:\n" + '\n'.join(str_error))
 
         try:
-            es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                               http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE)
+            if PROXY:
+                es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
+                                   http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE, proxies=handle_proxy())
+
+            else:
+                es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
+                                   http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE)
 
             query = QueryString(query=str(TIME_FIELD) + ":* AND " + FETCH_QUERY)
             search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
@@ -233,8 +243,14 @@ def fetch_incidents():
 
     current_fetch = last_fetch
 
-    es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                       http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE)
+    if PROXY:
+        es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
+                           http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE, proxies=handle_proxy())
+
+    else:
+        es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
+                           http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE)
+
     query = QueryString(query=FETCH_QUERY)
     search = Search(using=es, index=FETCH_INDEX).query(query).filter({'range': {TIME_FIELD: {'gt': last_fetch}}})
     response = search.execute().to_dict()
