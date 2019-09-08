@@ -82,8 +82,8 @@ class IntegrationValidator(object):
         err_msgs = []
         configuration = self.current_integration.get('configuration', [])
         for configuration_param in configuration:
-            param_name = configuration_param['name']
-            if param_name == param_name:
+            configuration_param_name = configuration_param['name']
+            if configuration_param_name == param_name:
                 if configuration_param['display'] != param_display:
                     err_msgs.append('The display name of the {} parameter should be \'{}\''.format(param_name,
                                                                                                    param_display))
@@ -110,7 +110,14 @@ class IntegrationValidator(object):
 
     def is_insecure_configured_correctly(self):
         """Check that if an integration has a insecure parameter that it is configured properly."""
-        return self.is_valid_param('insecure', 'Trust any certificate (unsecure)')
+        insecure_field_name = ''
+        configuration = self.current_integration.get('configuration', [])
+        for configuration_param in configuration:
+            if configuration_param['name'] == 'insecure' or configuration_param['name'] == 'unsecure':
+                insecure_field_name = configuration_param['name']
+
+        if insecure_field_name:
+            return self.is_valid_param(insecure_field_name, 'Trust any certificate (not secure)')
 
     def is_default_arguments(self):
         """Check if a reputation command (domain/email/file/ip/url)
