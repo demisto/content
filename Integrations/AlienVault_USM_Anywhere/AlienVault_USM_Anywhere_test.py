@@ -1,9 +1,13 @@
-from datetime import datetime, timedelta
 import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+
+''' IMPORTS '''
 import dateparser
+from datetime import datetime, timedelta
 
 server_url = 'https://vigilant.alienvault.cloud/api/2.0/alarms?page=1&size=1' \
-             '&sort=timestamp_occured%2Casc&timestamp_occured_gte=1547560049000'
+             '&sort=timestamp_occured%2Casc&timestamp_occured_gte=1547567249000'
 
 
 def approximate_compare(time1, time2):
