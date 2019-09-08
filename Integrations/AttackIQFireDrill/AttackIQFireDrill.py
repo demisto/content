@@ -134,24 +134,27 @@ TEST_RESULT_TRANS = {
 def http_request(method, url_suffix, params=None, data=None):
     url = SERVER + url_suffix
     LOG(f'attackiq is attempting {method} request sent to {url} with params:\n{json.dumps(params, indent=4)}')
-    res = requests.request(
-        method,
-        url,
-        verify=USE_SSL,
-        params=params,
-        data=data,
-        headers=HEADERS
-    )
-    # Handle error responses gracefully
-    if res.status_code not in {200, 201}:
-        error_reason = get_http_error_reason(res)
-        return_error(f'Error in API call to AttackIQ [{res.status_code}] - {error_reason}')
-    # TODO: Add graceful handling of various expected issues (Such as wrong URL and wrong creds)
     try:
-        return res.json()
-    except JSONDecodeError:
-        return_error('Response contained no valid body. See logs for more information.',
-                     error=f'attackiq response body:\n{res.content}')
+        res = requests.request(
+            method,
+            url,
+            verify=USE_SSL,
+            params=params,
+            data=data,
+            headers=HEADERS
+        )
+        # Handle error responses gracefully
+        if res.status_code not in {200, 201}:
+            error_reason = get_http_error_reason(res)
+            return_error(f'Error in API call to AttackIQ [{res.status_code}] - {error_reason}')
+        try:
+            return res.json()
+        except JSONDecodeError:
+            return_error('Response contained no valid body. See logs for more information.',
+                         error=f'attackiq response body:\n{res.content}')
+    except requests.exceptions.ConnectionError as e:
+        LOG(str(e))
+        return_error('Encountered issue reaching the endpoint, please check that you entered the URL correctly.')
 
 
 def get_http_error_reason(res):

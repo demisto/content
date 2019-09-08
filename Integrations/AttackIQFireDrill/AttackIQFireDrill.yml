@@ -1,4 +1,4 @@
-category: Authentication
+category: Vulnerability Management
 commonfields:
   id: AttackIQFireDrill
   version: -1
@@ -47,8 +47,10 @@ script:
       description: Assessment description.
       type: String
     - contextPath: AttackIQ.Assessment.StartDate
+      description: When the assessment started.
       type: Date
     - contextPath: AttackIQ.Assessment.EndDate
+      description: When the assessment ended
       type: Date
     - contextPath: AttackIQ.Assessment.AssessmentState
       description: Assessment's state. Can be Active or Inactive.
@@ -93,6 +95,7 @@ script:
       description: User who owns the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.User
+      description: The user that ran the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.Created
       description: The time the assessment was created at.
@@ -393,7 +396,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get assessment's test result by page (by default, a page consists of 10 tests).
+    description: Get assessment's test result by page (by default, a page consists
+      of 10 tests).
     execution: false
     name: attackiq-get-test-results
     outputs:
@@ -416,6 +420,7 @@ script:
       description: IP address of the master jobs' asset.
       type: String
     - contextPath: AttackIQ.TestResult.MasterJob.Assets.Hostname
+      description: Hostname of the asset.
       type: String
     - contextPath: AttackIQ.TestResult.MasterJob.Assets.Id
       description: ID of the master jobs' asset.
