@@ -281,6 +281,18 @@
             "playbookID": "ParseEmailFiles-test"
         },
         {
+            "playbookID": "PAN-OS - Block IP and URL - External Dynamic List Test"
+        },
+        {
+            "playbookID": "PAN-OS - Block IP - Custom Block Rule Test"
+        },
+        {
+            "playbookID": "PAN-OS - Block IP - Static Address Group Test"
+        },
+        {
+            "playbookID": "PAN-OS - Block URL - Custom URL Category Test"
+        },
+        {
             "playbookID": "ParseExcel-test"
         },
         {
