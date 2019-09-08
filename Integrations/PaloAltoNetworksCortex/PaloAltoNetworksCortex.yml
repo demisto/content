@@ -39,6 +39,7 @@ configuration:
   options:
   - Traps Threats
   - Firewall Threats
+  - Cortex XDR Analytics
   required: false
   type: 15
 - defaultvalue: 24 hours
@@ -89,6 +90,57 @@ configuration:
   - wildfire-virus
   required: false
   type: 16
+- display: Severity of alerts to fetch (XDR Analytics)
+  name: xdr_severity
+  defaultvalue: ""
+  type: 16
+  required: false
+  options:
+  - all
+  - High
+  - Medium
+  - Low
+  - Info
+- display: Category of alerts to fetch (XDR Analytics)
+  name: xdr_category
+  defaultvalue: ""
+  type: 16
+  required: false
+  options:
+  - all
+  - Consecutive Connections
+  - DNS Tunneling
+  - Failed Connections
+  - Failed DNS
+  - Grayware
+  - High Connection Rate
+  - Large Upload (FTP)
+  - Large Upload (Generic)
+  - Large Upload (HTTPS)
+  - Large Upload (SMTP)
+  - Malware
+  - New Administrative Behavior
+  - Port Scan
+  - Random Looking DNS
+  - Recurring Rare Domain Access
+  - Recurring Rare IP Access
+  - Remote Command Execution
+  - Reverse Connection
+  - SMB/KRB Traffic from Non-Standard Process
+  - Script Connecting to Rare External Host
+  - SpamBot Traffic
+  - Tunneling Process
+  - Uncommon ARP Cache Listing via arp.exe
+  - Uncommon IP Configuration Listing via ipconfig.exe
+  - Uncommon Local Scheduled Task Creation via schtasks.exe
+  - Uncommon Net Group Execution
+  - Uncommon Net User
+  - Uncommon Remote Scheduled Task Creation via schtasks.exe
+  - Uncommon Routing Table Listing via route.exe
+  - Uncommon net localgroup Execution
+  - scrons.exe Rare Child Process
+  - wmiprsve.exe Rare Child Process
+  - wsmprovhost.exe Rare Child Process
 description: This framework manages all PA's cloud managed products
 display: Palo Alto Networks Cortex
 name: Palo Alto Networks Cortex
@@ -580,6 +632,7 @@ script:
   runonce: false
   script: ''
   type: python
+  subtype: python3
 tests:
 - Palo Alto Networks Cortex Test
 fromversion: 4.1.0

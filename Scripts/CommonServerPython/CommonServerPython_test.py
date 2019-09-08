@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
+import demistomock as demisto
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
-    remove_nulls_from_dictionary, is_error, get_error, hash_djb2
+    remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
+    IntegrationLogger
 
 import copy
+import os
+import sys
 import pytest
 
 INFO = {'b': 1,
@@ -24,8 +28,8 @@ INFO = {'b': 1,
 def test_xml():
     import json
 
-    xml = "<work><employee><id>100</id><name>foo</name></employee><employee><id>200</id><name>goo</name>" \
-          "</employee></work>"
+    xml = b"<work><employee><id>100</id><name>foo</name></employee><employee><id>200</id><name>goo</name>" \
+          b"</employee></work>"
     jsonExpected = '{"work": {"employee": [{"id": "100", "name": "foo"}, {"id": "200", "name": "goo"}]}}'
 
     jsonActual = xml2json(xml)
@@ -36,7 +40,7 @@ def test_xml():
     assert jsonDict['work']['employee'][1]['name'] == "goo", 'name of second employee must be goo'
 
     xmlActual = json2xml(jsonActual)
-    assert xmlActual == xml, "expected\n" + xml + "\n to equal \n" + xmlActual
+    assert xmlActual == xml, "expected:\n{}\nto equal:\n{}".format(xml, xmlActual)
 
 
 def toEntry(table):
@@ -73,11 +77,11 @@ def test_tbl_to_md_only_data():
     # sanity
     table = tableToMarkdown('tableToMarkdown test', DATA)
     expected_table = '''### tableToMarkdown test
-|header_2|header_3|header_1|
+|header_1|header_2|header_3|
 |---|---|---|
-|b1|c1|a1|
-|b2|c2|a2|
-|b3|c3|a3|
+|a1|b1|c1|
+|a2|b2|c2|
+|a3|b3|c3|
 '''
     assert table == expected_table
 
@@ -87,11 +91,11 @@ def test_tbl_to_md_header_transform_underscoreToCamelCase():
     table = tableToMarkdown('tableToMarkdown test with headerTransform', DATA,
                             headerTransform=underscoreToCamelCase)
     expected_table = '''### tableToMarkdown test with headerTransform
-|Header2|Header3|Header1|
+|Header1|Header2|Header3|
 |---|---|---|
-|b1|c1|a1|
-|b2|c2|a2|
-|b3|c3|a3|
+|a1|b1|c1|
+|a2|b2|c2|
+|a3|b3|c3|
 '''
     assert table == expected_table
 
@@ -100,16 +104,16 @@ def test_tbl_to_md_multiline():
     # escaping characters: multiline + md-chars
     data = copy.deepcopy(DATA)
     for i, d in enumerate(data):
-        d['header_2'] = 'b%d.1\nb%d.2' % (i + 1, i + 1, )
-        d['header_3'] = 'c%d|1' % (i + 1, )
+        d['header_2'] = 'b%d.1\nb%d.2' % (i + 1, i + 1,)
+        d['header_3'] = 'c%d|1' % (i + 1,)
 
     table = tableToMarkdown('tableToMarkdown test with multiline', data)
     expected_table = '''### tableToMarkdown test with multiline
-|header_2|header_3|header_1|
+|header_1|header_2|header_3|
 |---|---|---|
-|b1.1<br>b1.2|c1\|1|a1|
-|b2.1<br>b2.2|c2\|1|a2|
-|b3.1<br>b3.2|c3\|1|a3|
+|a1|b1.1<br>b1.2|c1\|1|
+|a2|b2.1<br>b2.2|c2\|1|
+|a3|b3.1<br>b3.2|c3\|1|
 '''
     assert table == expected_table
 
@@ -122,11 +126,11 @@ def test_tbl_to_md_url():
         d['header_2'] = None
     table_url_missing_info = tableToMarkdown('tableToMarkdown test with url and missing info', data)
     expected_table_url_missing_info = '''### tableToMarkdown test with url and missing info
-|header_2|header_3|header_1|
+|header_1|header_2|header_3|
 |---|---|---|
-||[url](https:\\demisto.com)|a1|
-||[url](https:\\demisto.com)|a2|
-||[url](https:\\demisto.com)|a3|
+|a1||[url](https:\\demisto.com)|
+|a2||[url](https:\\demisto.com)|
+|a3||[url](https:\\demisto.com)|
 '''
     assert table_url_missing_info == expected_table_url_missing_info
 
@@ -144,6 +148,24 @@ def test_tbl_to_md_single_column():
     assert table_single_column == expected_table_single_column
 
 
+def test_is_ip_valid():
+    valid_ip_v6 = "FE80:0000:0000:0000:0202:B3FF:FE1E:8329"
+    valid_ip_v6_b = "FE80::0202:B3FF:FE1E:8329"
+    invalid_ip_v6 = "KKKK:0000:0000:0000:0202:B3FF:FE1E:8329"
+    valid_ip_v4 = "10.10.10.10"
+    invalid_ip_v4 = "10.10.10.9999"
+    invalid_not_ip_with_ip_structure = "1.1.1.1.1.1.1.1.1.1.1.1.1.1.1"
+    not_ip = "Demisto"
+    assert not is_ip_valid(valid_ip_v6)
+    assert is_ip_valid(valid_ip_v6, True)
+    assert is_ip_valid(valid_ip_v6_b, True)
+    assert not is_ip_valid(invalid_ip_v6, True)
+    assert not is_ip_valid(not_ip, True)
+    assert is_ip_valid(valid_ip_v4)
+    assert not is_ip_valid(invalid_ip_v4)
+    assert not is_ip_valid(invalid_not_ip_with_ip_structure)
+
+
 def test_tbl_to_md_list_values():
     # list values
     data = copy.deepcopy(DATA)
@@ -153,11 +175,11 @@ def test_tbl_to_md_list_values():
 
     table_list_field = tableToMarkdown('tableToMarkdown test with list field', data)
     expected_table_list_field = '''### tableToMarkdown test with list field
-|header_2|header_3|header_1|
+|header_1|header_2|header_3|
 |---|---|---|
-|hi|1,<br>second item|a1|
-|hi|2,<br>second item|a2|
-|hi|3,<br>second item|a3|
+|a1|hi|1,<br>second item|
+|a2|hi|2,<br>second item|
+|a3|hi|3,<br>second item|
 '''
     assert table_list_field == expected_table_list_field
 
@@ -173,7 +195,7 @@ def test_tbl_to_md_empty_fields():
     ]
     table_all_none = tableToMarkdown('tableToMarkdown test with all none fields', data)
     expected_table_all_none = '''### tableToMarkdown test with all none fields
-|a|c|b|
+|a|b|c|
 |---|---|---|
 ||||
 ||||
@@ -271,16 +293,43 @@ def test_tbl_to_md_list_of_strings_instead_of_dict_and_string_header():
     assert table_string_array_string_header == expected_string_array_string_header_tbl
 
 
+def test_tbl_to_md_dict_with_special_character():
+    data = {
+        'header_1': u'foo',
+        'header_2': [u'\xe2.rtf']
+    }
+    table_with_character = tableToMarkdown('tableToMarkdown test with special character', data)
+    expected_string_with_special_character = '''### tableToMarkdown test with special character
+|header_1|header_2|
+|---|---|
+|foo|â.rtf|
+'''
+    assert table_with_character == expected_string_with_special_character
+
+
+def test_tbl_to_md_header_with_special_character():
+    data = {
+        'header_1': u'foo'
+    }
+    table_with_character = tableToMarkdown('tableToMarkdown test with special character Ù', data)
+    expected_string_with_special_character = '''### tableToMarkdown test with special character Ù
+|header_1|
+|---|
+|foo|
+'''
+    assert table_with_character == expected_string_with_special_character
+
+
 def test_flatten_cell():
     # sanity
-    utf8_to_flatten = 'abcdefghijklmnopqrstuvwxyz1234567890!'.decode('utf8')
+    utf8_to_flatten = b'abcdefghijklmnopqrstuvwxyz1234567890!'.decode('utf8')
     flatten_text = flattenCell(utf8_to_flatten)
     expected_string = 'abcdefghijklmnopqrstuvwxyz1234567890!'
 
     assert flatten_text == expected_string
 
     # list of uft8 and string to flatten
-    str_a = 'abcdefghijklmnopqrstuvwxyz1234567890!'
+    str_a = b'abcdefghijklmnopqrstuvwxyz1234567890!'
     utf8_b = str_a.decode('utf8')
     list_to_flatten = [str_a, utf8_b]
     flatten_text2 = flattenCell(list_to_flatten)
@@ -307,14 +356,15 @@ def test_hash_djb2():
 
 def test_camelize():
     non_camalized = [{'chookity_bop': 'asdasd'}, {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}]
-    expected_output = "[{u'ChookityBop': 'asdasd'}, {u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}]"
-    assert str(camelize(non_camalized, '_')) == expected_output
+    expected_output = [{'ChookityBop': 'asdasd'}, {'AbC': 'd e', 'Nop': 'qr_st', 'FghIjk': 'lm'}]
+    assert camelize(non_camalized, '_') == expected_output
 
     non_camalized2 = {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}
-    expected_output2 = "{u'AbC': 'd e', u'Nop': 'qr_st', u'FghIjk': 'lm'}"
-    assert str(camelize(non_camalized2, '_')) == expected_output2
+    expected_output2 = {'AbC': 'd e', 'Nop': 'qr_st', 'FghIjk': 'lm'}
+    assert camelize(non_camalized2, '_') == expected_output2
 
 
+# Note this test will fail when run locally (in pycharm/vscode) as it assumes the machine (docker image) has UTC timezone set
 def test_date_to_timestamp():
     assert date_to_timestamp('2018-11-06T08:56:41') == 1541494601000
     assert date_to_timestamp(datetime.strptime('2018-11-06T08:56:41', "%Y-%m-%dT%H:%M:%S")) == 1541494601000
@@ -426,7 +476,171 @@ def test_get_error_need_raise_error_on_non_error_input():
             "Contents": "this is not an error"
         }
     ]
-    with pytest.raises(ValueError) as exception:
+    try:
         get_error(execute_command_results)
+    except ValueError as exception:
+        assert "execute_command_result has no error entry. before using get_error use is_error" in str(exception)
+        return
 
-    assert "execute_command_result has no error entry. before using get_error use is_error" in str(exception)
+    assert False
+
+
+@pytest.mark.parametrize('data,data_expected', [
+    ("this is a test", b"this is a test"),
+    (u"עברית", u"עברית".encode('utf-8')),
+    (b"binary data\x15\x00", b"binary data\x15\x00"),
+])  # noqa: E124
+def test_fileResult(mocker, request, data, data_expected):
+    mocker.patch.object(demisto, 'uniqueFile', return_value="test_file_result")
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '1'})
+    file_name = "1_test_file_result"
+
+    def cleanup():
+        try:
+            os.remove(file_name)
+        except OSError:
+            pass
+
+    request.addfinalizer(cleanup)
+    res = fileResult("test.txt", data)
+    assert res['File'] == "test.txt"
+    with open(file_name, 'rb') as f:
+        assert f.read() == data_expected
+
+
+# Error that always returns a unicode string to it's str representation
+class SpecialErr(Exception):
+    def __str__(self):
+        return u"מיוחד"
+
+
+def test_logger():
+    from CommonServerPython import LOG
+    LOG(u'€')
+    LOG(Exception(u'€'))
+    LOG(SpecialErr(12))
+
+
+def test_logger_write(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'credentials': {'password': 'my_password'},
+    })
+    mocker.patch.object(demisto, 'info')
+    ilog = IntegrationLogger()
+    ilog.write("This is a test with my_password")
+    ilog.print_log()
+    # assert that the print doesn't contain my_password
+    # call_args is tuple (args list, kwargs). we only need the args
+    args = demisto.info.call_args[0]
+    assert 'This is a test' in args[0]
+    assert 'my_password' not in args[0]
+    assert '<XX_REPLACED>' in args[0]
+
+
+def test_is_mac_address():
+    from CommonServerPython import is_mac_address
+
+    mac_address_false = 'AA:BB:CC:00:11'
+    mac_address_true = 'AA:BB:CC:00:11:22'
+
+    assert (is_mac_address(mac_address_false) is False)
+    assert (is_mac_address(mac_address_true))
+
+
+def test_return_error_command(mocker):
+    from CommonServerPython import return_error
+    err_msg = "Testing unicode Ё"
+    outputs = {'output': 'error'}
+    expected_error = {
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'Contents': err_msg,
+        "EntryContext": outputs
+    }
+
+    # Test command that is not fetch-incidents
+    mocker.patch.object(demisto, 'command', return_value="test-command")
+    mocker.patch.object(sys, 'exit')
+    mocker.spy(demisto, 'results')
+    return_error(err_msg, '', outputs)
+    assert str(demisto.results.call_args) == "call({})".format(expected_error)
+
+
+def test_return_error_fetch_incidents(mocker):
+    from CommonServerPython import return_error
+    err_msg = "Testing unicode Ё"
+
+    # Test fetch-incidents
+    mocker.patch.object(demisto, 'command', return_value="fetch-incidents")
+    returned_error = False
+    try:
+        return_error(err_msg)
+    except Exception as e:
+        returned_error = True
+        assert str(e) == err_msg
+    assert returned_error
+
+
+def test_return_error_long_running_execution(mocker):
+    from CommonServerPython import return_error
+    err_msg = "Testing unicode Ё"
+
+    # Test fetch-incidents
+    mocker.patch.object(demisto, 'command', return_value="long-running-execution")
+    returned_error = False
+    try:
+        return_error(err_msg)
+    except Exception as e:
+        returned_error = True
+        assert str(e) == err_msg
+    assert returned_error
+
+
+def test_return_error_script(mocker, monkeypatch):
+    from CommonServerPython import return_error
+    mocker.patch.object(sys, 'exit')
+    mocker.spy(demisto, 'results')
+    monkeypatch.delattr(demisto, 'command')
+    err_msg = "Testing unicode Ё"
+    outputs = {'output': 'error'}
+    expected_error = {
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'Contents': err_msg,
+        "EntryContext": outputs
+    }
+
+    assert not hasattr(demisto, 'command')
+    return_error(err_msg, '', outputs)
+    assert str(demisto.results.call_args) == "call({})".format(expected_error)
+
+
+def test_exception_in_return_error(mocker):
+    from CommonServerPython import return_error, IntegrationLogger
+
+    expected = {'EntryContext': None, 'Type': 4, 'ContentsFormat': 'text', 'Contents': 'Message'}
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(IntegrationLogger, '__call__')
+    with pytest.raises(SystemExit, match='0'):
+        return_error("Message", error=ValueError("Error!"))
+    results = demisto.results.call_args[0][0]
+    assert expected == results
+    # IntegrationLogger = LOG (2 times if exception supplied)
+    assert IntegrationLogger.__call__.call_count == 2
+
+
+def test_get_demisto_version(mocker):
+
+    # verify expected server version and build returned in case Demisto class has attribute demistoVersion
+    mocker.patch.object(
+        demisto,
+        'demistoVersion',
+        return_value={
+            'version': '5.0.0',
+            'buildNumber': '50000'
+        }
+    )
+    assert get_demisto_version() == {
+        'version': '5.0.0',
+        'buildNumber': '50000'
+    }

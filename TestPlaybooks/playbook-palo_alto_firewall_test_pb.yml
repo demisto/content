@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: fbd76339-f7bf-4d1f-868b-7348b206f766
+    taskid: f00eb296-f99d-4a0b-8e99-6969ff5e22d2
     type: start
     task:
-      id: fbd76339-f7bf-4d1f-868b-7348b206f766
+      id: f00eb296-f99d-4a0b-8e99-6969ff5e22d2
       version: -1
       name: ""
       iscommand: false
@@ -21,18 +21,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 50
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 0ce7b3fb-a62b-44a5-83de-aca841eee41f
+    taskid: 7f1a8bbe-74d7-4561-842c-5fed3c0a7c0a
     type: regular
     task:
-      id: 0ce7b3fb-a62b-44a5-83de-aca841eee41f
+      id: 7f1a8bbe-74d7-4561-842c-5fed3c0a7c0a
       version: -1
       name: panorama
       description: Run any panorama command supported in api.
@@ -42,7 +43,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "88"
+      - "14"
     scriptarguments:
       action: {}
       category: {}
@@ -70,18 +71,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 695,
           "y": 370
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
-    taskid: 216f54e8-2693-45eb-898d-8de70a00a587
+    taskid: 0c6d621a-8d95-461f-8e30-763a6580030c
     type: regular
     task:
-      id: 216f54e8-2693-45eb-898d-8de70a00a587
+      id: 0c6d621a-8d95-461f-8e30-763a6580030c
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -92,6 +94,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+      - "88"
     scriptarguments:
       all:
         simple: "yes"
@@ -103,18 +106,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 195
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
-    taskid: b56382ef-28e9-4096-8513-5790943f194c
+    taskid: f5810a7f-1042-4082-83da-d3ec17b3e8d1
     type: title
     task:
-      id: b56382ef-28e9-4096-8513-5790943f194c
+      id: f5810a7f-1042-4082-83da-d3ec17b3e8d1
       version: -1
       name: Addresses
       type: title
@@ -127,42 +131,45 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 910,
+          "y": 690
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: e8ca256c-2b57-4067-88e3-9cd01f1a6c57
+    taskid: 0dd28e0e-7fc0-4a88-81b2-dd9520740250
     type: title
     task:
-      id: e8ca256c-2b57-4067-88e3-9cd01f1a6c57
+      id: 0dd28e0e-7fc0-4a88-81b2-dd9520740250
       version: -1
-      name: Address Groups
+      name: Addresses and Address Groups
       type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "21"
+      - "13"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1740
+          "x": 480,
+          "y": 545
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
-    taskid: b807efa6-fa7e-44d9-8c8c-25c9ea88c579
+    taskid: 1501a54f-b18e-4c0b-8f92-6038e13971c0
     type: title
     task:
-      id: b807efa6-fa7e-44d9-8c8c-25c9ea88c579
+      id: 1501a54f-b18e-4c0b-8f92-6038e13971c0
       version: -1
       name: Custom URL Category
       type: title
@@ -176,17 +183,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4450
+          "y": 3065
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
-    taskid: 704f0996-d72f-474f-8d9a-79e5a1f1c224
+    taskid: 7b04b0bc-aa07-4f10-897b-4e15e02eff35
     type: regular
     task:
-      id: 704f0996-d72f-474f-8d9a-79e5a1f1c224
+      id: 7b04b0bc-aa07-4f10-897b-4e15e02eff35
       version: -1
       name: panorama-address-add
       script: '|||panorama-create-address'
@@ -209,18 +217,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1040
+          "x": 910,
+          "y": 1010
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
-    taskid: acdcc74b-00f6-4669-8e35-34c0455ac007
+    taskid: 5b24e488-c314-48f0-8dad-5a4362a18bf8
     type: condition
     task:
-      id: acdcc74b-00f6-4669-8e35-34c0455ac007
+      id: 5b24e488-c314-48f0-8dad-5a4362a18bf8
       version: -1
       name: Test panorama-create-address
       type: condition
@@ -228,7 +237,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "77"
+      - "92"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -246,18 +255,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1215
+          "x": 910,
+          "y": 1185
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "18":
     id: "18"
-    taskid: 29d8c6cf-6fe0-4b63-84c6-b6a53a46f8e0
+    taskid: 1dc5029d-887c-4722-8e4d-141fc48335ad
     type: regular
     task:
-      id: 29d8c6cf-6fe0-4b63-84c6-b6a53a46f8e0
+      id: 1dc5029d-887c-4722-8e4d-141fc48335ad
       version: -1
       name: Panorama Addresses get
       script: '|||panorama-list-addresses'
@@ -271,18 +281,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 865
+          "x": 910,
+          "y": 835
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "20":
     id: "20"
-    taskid: 49bd8072-068f-4828-8e09-d016d34a6037
+    taskid: 2510b05d-1141-4d3f-8dfb-15fa0b9e7f1e
     type: regular
     task:
-      id: 49bd8072-068f-4828-8e09-d016d34a6037
+      id: 2510b05d-1141-4d3f-8dfb-15fa0b9e7f1e
       version: -1
       name: panorama-delete-address
       script: '|||panorama-delete-address'
@@ -291,7 +302,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "93"
     scriptarguments:
       name:
         simple: address_test_pb
@@ -299,18 +310,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1565
+          "x": 910,
+          "y": 2235
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "21":
     id: "21"
-    taskid: fee9079b-efd2-4f61-8ac7-6e3f81a3815f
+    taskid: 6b95cdd8-2967-4312-8926-b8f26ba10546
     type: regular
     task:
-      id: fee9079b-efd2-4f61-8ac7-6e3f81a3815f
+      id: 6b95cdd8-2967-4312-8926-b8f26ba10546
       version: -1
       name: panorama-list-address-groups
       script: '|||panorama-list-address-groups'
@@ -319,23 +331,25 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
+      - "62"
       - "61"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1885
+          "x": 265,
+          "y": 835
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "22":
     id: "22"
-    taskid: 5bdd8a62-3156-490f-8224-81dc86dec199
+    taskid: 008892de-757e-4c38-8e9e-4b5e59b7b996
     type: regular
     task:
-      id: 5bdd8a62-3156-490f-8224-81dc86dec199
+      id: 008892de-757e-4c38-8e9e-4b5e59b7b996
       version: -1
       name: panorama-create-address-group(dynamic)
       script: '|||panorama-create-address-group'
@@ -344,7 +358,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "23"
+      - "92"
     scriptarguments:
       addresses: {}
       description:
@@ -360,54 +374,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2205
+          "y": 1185
         }
       }
     note: false
     timertriggers: []
-  "23":
-    id: "23"
-    taskid: fc872ae3-6495-48c9-8dbb-cdcb7db7673a
-    type: condition
-    task:
-      id: fc872ae3-6495-48c9-8dbb-cdcb7db7673a
-      version: -1
-      name: Test panorama-create-address-group(dynamic)
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "76"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: startWith
-          left:
-            value:
-              complex:
-                root: Panorama
-                accessor: AddressGroups.Match
-            iscontext: true
-          right:
-            value:
-              simple: 3.4.5.6
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2380
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
   "24":
     id: "24"
-    taskid: daf47a09-3a78-4eb3-889d-d472b8f36a85
+    taskid: e796820b-42e7-438c-80c5-2455880931af
     type: regular
     task:
-      id: daf47a09-3a78-4eb3-889d-d472b8f36a85
+      id: e796820b-42e7-438c-80c5-2455880931af
       version: -1
       name: panorama-create-address-group(static)
       script: '|||panorama-create-address-group'
@@ -416,7 +394,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "75"
+      - "92"
     scriptarguments:
       addresses:
         simple: Test_playbook_address2_DO_NOT_DELETE
@@ -431,18 +409,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3225
+          "x": 480,
+          "y": 1185
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "25":
     id: "25"
-    taskid: 54142051-5806-4194-80c1-445456757d8f
+    taskid: 3d497303-b7ee-4f82-8193-3af675c7178c
     type: regular
     task:
-      id: 54142051-5806-4194-80c1-445456757d8f
+      id: 3d497303-b7ee-4f82-8193-3af675c7178c
       version: -1
       name: panorama-get-address-group
       script: '|||panorama-get-address-group'
@@ -460,17 +439,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2730
+          "y": 2060
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "26":
     id: "26"
-    taskid: c6e55bfa-40c4-40a7-8ed9-5bf7150a99dc
+    taskid: f86b5b3d-85be-4cc8-8722-dc201b8144ba
     type: regular
     task:
-      id: c6e55bfa-40c4-40a7-8ed9-5bf7150a99dc
+      id: f86b5b3d-85be-4cc8-8722-dc201b8144ba
       version: -1
       name: panorama-address-group-delete
       script: '|||panorama-delete-address-group'
@@ -479,7 +459,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "62"
+      - "93"
     scriptarguments:
       name:
         simple: dynamic_address_group_test_pb3
@@ -488,17 +468,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2905
+          "y": 2235
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "27":
     id: "27"
-    taskid: d62a6f35-5a0b-45cf-8787-dd5a334c528a
+    taskid: d4728151-2493-4cf3-89e6-146ad21c515d
     type: condition
     task:
-      id: d62a6f35-5a0b-45cf-8787-dd5a334c528a
+      id: d4728151-2493-4cf3-89e6-146ad21c515d
       version: -1
       name: Test panorama-address-group-create(static)
       type: condition
@@ -524,18 +505,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3575
+          "x": 480,
+          "y": 1535
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "28":
     id: "28"
-    taskid: 67b17725-d9be-447e-8429-458399865e30
+    taskid: f84bfc44-1f82-490d-848c-52a6b386600b
     type: regular
     task:
-      id: 67b17725-d9be-447e-8429-458399865e30
+      id: f84bfc44-1f82-490d-848c-52a6b386600b
       version: -1
       name: panorama-edit-address-group
       script: '|||panorama-edit-address-group'
@@ -560,18 +542,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3750
+          "x": 480,
+          "y": 1710
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "29":
     id: "29"
-    taskid: 054d922a-16c2-43ae-89b1-23b70e237c00
+    taskid: cac3fbe3-79e0-42e5-8e48-d4bf034a5668
     type: condition
     task:
-      id: 054d922a-16c2-43ae-89b1-23b70e237c00
+      id: cac3fbe3-79e0-42e5-8e48-d4bf034a5668
       version: -1
       name: Test panorama-address-group-edit
       type: condition
@@ -597,18 +580,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4100
+          "x": 480,
+          "y": 2060
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "30":
     id: "30"
-    taskid: f04404bc-c9e4-47ef-8278-a4b8c253fb9f
+    taskid: eb992377-80be-4f1c-8bb9-1f3565015aff
     type: regular
     task:
-      id: f04404bc-c9e4-47ef-8278-a4b8c253fb9f
+      id: eb992377-80be-4f1c-8bb9-1f3565015aff
       version: -1
       name: panorama-delete-address-group
       script: '|||panorama-delete-address-group'
@@ -617,7 +601,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "93"
     scriptarguments:
       name:
         simple: static_address_group_test_pb3
@@ -625,18 +609,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4275
+          "x": 480,
+          "y": 2235
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "36":
     id: "36"
-    taskid: b6a1afa0-3428-41f6-8e58-803c3d540aaf
+    taskid: 9ac86690-c800-48ee-8bb6-02a186996326
     type: regular
     task:
-      id: b6a1afa0-3428-41f6-8e58-803c3d540aaf
+      id: 9ac86690-c800-48ee-8bb6-02a186996326
       version: -1
       name: panorama-get-custom-url-category
       script: '|||panorama-get-custom-url-category'
@@ -654,17 +639,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4595
+          "y": 3225
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "38":
     id: "38"
-    taskid: fc85516a-7cc5-4fdd-8079-5b9a0224f83f
+    taskid: 8b14fa05-769f-45f4-8f41-8a1e1e2695ef
     type: regular
     task:
-      id: fc85516a-7cc5-4fdd-8079-5b9a0224f83f
+      id: 8b14fa05-769f-45f4-8f41-8a1e1e2695ef
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -673,7 +659,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "52"
+      - "94"
     scriptarguments:
       all:
         simple: "yes"
@@ -685,18 +671,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4770
+          "x": 480,
+          "y": 3400
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "46":
     id: "46"
-    taskid: 679445c5-7c53-4eb4-8c4f-47e42d908797
+    taskid: fdc930b6-e494-44e4-899b-ffd88253da76
     type: regular
     task:
-      id: 679445c5-7c53-4eb4-8c4f-47e42d908797
+      id: fdc930b6-e494-44e4-899b-ffd88253da76
       version: -1
       name: Sleep 14 seconds
       description: Sleep for X seconds
@@ -714,18 +701,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3925
+          "x": 480,
+          "y": 1885
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "48":
     id: "48"
-    taskid: df542110-7ab1-4602-8be8-9c8e1c783073
+    taskid: 8de5c4fb-f5ce-4b39-8fba-6e32ccaa42a1
     type: regular
     task:
-      id: df542110-7ab1-4602-8be8-9c8e1c783073
+      id: 8de5c4fb-f5ce-4b39-8fba-6e32ccaa42a1
       version: -1
       name: panorama-get-url-category
       script: '|||panorama-get-url-category'
@@ -737,23 +725,24 @@ tasks:
       - "49"
     scriptarguments:
       url:
-        simple: poker.com
+        simple: poker.com,888.com,abortion.com,777.com
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5090
+          "x": 480,
+          "y": 2875
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "49":
     id: "49"
-    taskid: 1c02dcac-2282-4ce1-8282-1875536eed34
+    taskid: 4c07a234-42ec-48b8-8c2f-561946a90504
     type: condition
     task:
-      id: 1c02dcac-2282-4ce1-8282-1875536eed34
+      id: 4c07a234-42ec-48b8-8c2f-561946a90504
       version: -1
       name: Test panorama-url-category-get
       type: condition
@@ -776,21 +765,32 @@ tasks:
           right:
             value:
               simple: gambling
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Panorama
+                accessor: URLFilter.Category
+            iscontext: true
+          right:
+            value:
+              simple: cloud-unavailable
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5265
+          "x": 480,
+          "y": 3050
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "50":
     id: "50"
-    taskid: 994a585c-8a22-49a2-870c-f09d83dab97e
+    taskid: da2982a4-d815-4d4c-8fd4-77ba781c7335
     type: title
     task:
-      id: 994a585c-8a22-49a2-870c-f09d83dab97e
+      id: da2982a4-d815-4d4c-8fd4-77ba781c7335
       version: -1
       name: Done
       type: title
@@ -800,18 +800,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 7975
+          "x": 480,
+          "y": 4915
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "52":
     id: "52"
-    taskid: 987dc55b-8774-4cef-88fc-492432060b3c
+    taskid: b3cace46-1a33-4489-8bb8-f03147a9703f
     type: title
     task:
-      id: 987dc55b-8774-4cef-88fc-492432060b3c
+      id: b3cace46-1a33-4489-8bb8-f03147a9703f
       version: -1
       name: URL Filtering
       type: title
@@ -824,18 +825,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4945
+          "x": 480,
+          "y": 2715
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "60":
     id: "60"
-    taskid: 60f38fa4-07f2-4145-829d-cc98a3160818
+    taskid: 9b868745-5daf-4262-86ad-690b48d3d489
     type: title
     task:
-      id: 60f38fa4-07f2-4145-829d-cc98a3160818
+      id: 9b868745-5daf-4262-86ad-690b48d3d489
       version: -1
       name: Security Rules Creation
       type: title
@@ -848,18 +850,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 6460
+          "x": 265,
+          "y": 3720
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "61":
     id: "61"
-    taskid: 406dfc6b-7f3b-4066-88e3-d06647150d00
+    taskid: 03b14942-cac8-4382-8b22-933a4b0c8b5a
     type: title
     task:
-      id: 406dfc6b-7f3b-4066-88e3-d06647150d00
+      id: 03b14942-cac8-4382-8b22-933a4b0c8b5a
       version: -1
       name: Dynamic Address Groups
       type: title
@@ -873,17 +876,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2060
+          "y": 1025
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "62":
     id: "62"
-    taskid: 8deaf641-2747-4110-82c4-bf4f9a43bc7d
+    taskid: 0e06b1f3-be37-4767-881f-7e19687fd798
     type: title
     task:
-      id: 8deaf641-2747-4110-82c4-bf4f9a43bc7d
+      id: 0e06b1f3-be37-4767-881f-7e19687fd798
       version: -1
       name: Static Address Groups
       type: title
@@ -896,18 +900,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3080
+          "x": 480,
+          "y": 1025
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "67":
     id: "67"
-    taskid: f3c4055d-8257-4a5e-83f7-b52ca8627155
+    taskid: eab88241-e630-40ac-89f3-48c98e61fa33
     type: regular
     task:
-      id: f3c4055d-8257-4a5e-83f7-b52ca8627155
+      id: eab88241-e630-40ac-89f3-48c98e61fa33
       version: -1
       name: panorama-create-rule
       description: Create policy rule in Palo Alto Firewall or Panorama
@@ -917,7 +922,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "78"
+      - "95"
     scriptarguments:
       action:
         simple: deny
@@ -939,18 +944,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 6605
+          "x": 265,
+          "y": 3865
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "68":
     id: "68"
-    taskid: 49ed9839-45fc-4fa8-871f-6c533323eca0
+    taskid: 459cdeb5-4910-4911-8f65-b97541f27e60
     type: regular
     task:
-      id: 49ed9839-45fc-4fa8-871f-6c533323eca0
+      id: 459cdeb5-4910-4911-8f65-b97541f27e60
       version: -1
       name: panorama-edit-rule
       description: Edit a policy rule in Palo Alto Firewall or Panorama
@@ -975,18 +981,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 6955
+          "x": 265,
+          "y": 4390
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "70":
     id: "70"
-    taskid: 7b1c0667-5477-4173-832a-445a9f245608
+    taskid: 5649c231-628c-4c67-8fa3-14beb6404df6
     type: regular
     task:
-      id: 7b1c0667-5477-4173-832a-445a9f245608
+      id: 5649c231-628c-4c67-8fa3-14beb6404df6
       version: -1
       name: panorama-rule-delete
       description: Delete a policy rule in Palo Alto Firewall or Panorama
@@ -996,7 +1003,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "80"
+      - "89"
     scriptarguments:
       pre_post: {}
       rulename:
@@ -1007,18 +1014,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 7130
+          "x": 265,
+          "y": 4565
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "74":
     id: "74"
-    taskid: 134e1d5c-e356-4866-8704-1d8c82cc534e
+    taskid: 1fcb5736-b7cf-48fb-8d79-421e42d9c50c
     type: regular
     task:
-      id: 134e1d5c-e356-4866-8704-1d8c82cc534e
+      id: 1fcb5736-b7cf-48fb-8d79-421e42d9c50c
       version: -1
       name: panorama-get-url-filter
       description: Get a URL Filtering rule  from Palo Alto Firewall or Panorama
@@ -1028,7 +1036,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "83"
+      - "38"
     scriptarguments:
       name:
         simple: fw_test_pb_dont_delete
@@ -1036,128 +1044,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5440
+          "x": 480,
+          "y": 3225
         }
       }
     note: false
     timertriggers: []
-  "75":
-    id: "75"
-    taskid: 322caba0-9905-41da-8b7a-f194f0acda9e
-    type: playbook
-    task:
-      id: 322caba0-9905-41da-8b7a-f194f0acda9e
-      version: -1
-      name: PanoramaCommitConfiguration
-      description: "Commit Palo Alto Firewall and Panorama Configuration.\nIf specified
-        as Panorama, will also push the Policies to the specified Device Group in
-        the instance "
-      playbookName: PanoramaCommitConfiguration
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "27"
-    scriptarguments:
-      FIrewall_OR_Panorama:
-        simple: Firewall
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3400
-        }
-      }
-    note: false
-    timertriggers: []
-  "76":
-    id: "76"
-    taskid: 87ae8de1-cad2-4fd4-8468-e3bbd59b6cf9
-    type: playbook
-    task:
-      id: 87ae8de1-cad2-4fd4-8468-e3bbd59b6cf9
-      version: -1
-      name: PanoramaCommitConfiguration
-      playbookName: PanoramaCommitConfiguration
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "25"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2555
-        }
-      }
-    note: false
-    timertriggers: []
-  "77":
-    id: "77"
-    taskid: dee5cdbc-0499-4329-8612-d7a8403b90ed
-    type: playbook
-    task:
-      id: dee5cdbc-0499-4329-8612-d7a8403b90ed
-      version: -1
-      name: PanoramaCommitConfiguration
-      playbookName: PanoramaCommitConfiguration
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1390
-        }
-      }
-    note: false
-    timertriggers: []
-  "78":
-    id: "78"
-    taskid: 35ba4a39-029e-497e-87bb-196baf6451cc
-    type: playbook
-    task:
-      id: 35ba4a39-029e-497e-87bb-196baf6451cc
-      version: -1
-      name: PanoramaCommitConfiguration
-      playbookName: PanoramaCommitConfiguration
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "68"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 6780
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
   "80":
     id: "80"
-    taskid: 6414f856-a6b1-40a9-8f76-4a0d0055ebf5
+    taskid: a9723051-6d1c-49ba-8363-37646ac63300
     type: title
     task:
-      id: 6414f856-a6b1-40a9-8f76-4a0d0055ebf5
+      id: a9723051-6d1c-49ba-8363-37646ac63300
       version: -1
       name: PCAPS
       type: title
@@ -1170,18 +1069,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 7305
+          "x": 695,
+          "y": 4230
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "81":
     id: "81"
-    taskid: dc000c98-6cc8-4d2e-8c5c-cb29ed634059
+    taskid: 9535c6b0-74cb-4769-830c-92bd84aeab67
     type: regular
     task:
-      id: dc000c98-6cc8-4d2e-8c5c-cb29ed634059
+      id: 9535c6b0-74cb-4769-830c-92bd84aeab67
       version: -1
       name: panorama-get-pcap
       description: Get panorama pcaps
@@ -1202,22 +1102,24 @@ tasks:
         simple: filter-pcap
       searchTime: {}
       serialNo: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 7625
+          "x": 695,
+          "y": 4565
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "82":
     id: "82"
-    taskid: de9ae6a3-59e5-42dd-816b-08f3226147ce
+    taskid: a725b72f-6c85-4d62-861c-92a032d19b48
     type: regular
     task:
-      id: de9ae6a3-59e5-42dd-816b-08f3226147ce
+      id: a725b72f-6c85-4d62-861c-92a032d19b48
       version: -1
       name: panorama-list-pcaps
       description: Returns a list of pcap names
@@ -1232,22 +1134,24 @@ tasks:
       password: {}
       pcapType:
         simple: filter-pcap
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 7450
+          "x": 695,
+          "y": 4390
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "83":
     id: "83"
-    taskid: 0c9a4b25-a6e3-4c3d-89d8-2ae32fc2c89c
+    taskid: 6365ab9f-ceea-4b11-8130-493a75fd7a16
     type: title
     task:
-      id: 0c9a4b25-a6e3-4c3d-89d8-2ae32fc2c89c
+      id: 6365ab9f-ceea-4b11-8130-493a75fd7a16
       version: -1
       name: EDL
       type: title
@@ -1260,18 +1164,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5615
+          "x": 910,
+          "y": 2555
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "84":
     id: "84"
-    taskid: 67a0824d-3b2b-4f05-8bc0-535b01a615ad
+    taskid: 706787f4-9684-46f0-8b3f-1ad45a00e7ac
     type: regular
     task:
-      id: 67a0824d-3b2b-4f05-8bc0-535b01a615ad
+      id: 706787f4-9684-46f0-8b3f-1ad45a00e7ac
       version: -1
       name: panorama-list-edls
       description: Returns a list of external dynamic lists
@@ -1286,18 +1191,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5760
+          "x": 910,
+          "y": 2700
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "85":
     id: "85"
-    taskid: 459ae6db-7842-4a42-8fe2-09aca3cdd909
+    taskid: 6e3e42f0-2700-491c-873f-f23b55fc8c05
     type: regular
     task:
-      id: 459ae6db-7842-4a42-8fe2-09aca3cdd909
+      id: 6e3e42f0-2700-491c-873f-f23b55fc8c05
       version: -1
       name: panorama-get-edl
       description: Get information for an external dynamic list
@@ -1315,18 +1221,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5935
+          "x": 910,
+          "y": 2875
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "86":
     id: "86"
-    taskid: ee55f9d5-8a61-4bd7-8be2-68501cbfa9cd
+    taskid: 61ddaed6-7d05-4eca-8f68-7f9b393ed13f
     type: condition
     task:
-      id: ee55f9d5-8a61-4bd7-8be2-68501cbfa9cd
+      id: 61ddaed6-7d05-4eca-8f68-7f9b393ed13f
       version: -1
       name: Test panorama edl commands
       type: condition
@@ -1352,18 +1259,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 6110
+          "x": 910,
+          "y": 3050
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "87":
     id: "87"
-    taskid: 65242911-a557-4ec6-806b-1d49d067be1c
+    taskid: 4c71818a-9fe2-4943-8e14-6d48c9b66d4a
     type: regular
     task:
-      id: 65242911-a557-4ec6-806b-1d49d067be1c
+      id: 4c71818a-9fe2-4943-8e14-6d48c9b66d4a
       version: -1
       name: panorama-refresh-edl
       description: Refresh a given external dynamic list
@@ -1373,7 +1281,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "60"
+      - "38"
     scriptarguments:
       name:
         simple: test_pb_domain_edl_DONT_DEL
@@ -1381,18 +1289,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 6285
+          "x": 910,
+          "y": 3225
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "88":
     id: "88"
-    taskid: 5d3b6683-713c-4eac-81a1-0803cd40ffe8
+    taskid: 922d8e85-dac5-4ba1-86ef-4860ef377c0d
     type: regular
     task:
-      id: 5d3b6683-713c-4eac-81a1-0803cd40ffe8
+      id: 922d8e85-dac5-4ba1-86ef-4860ef377c0d
       version: -1
       name: panorama-register-ip-tag
       description: Register IPs to a tag
@@ -1402,7 +1311,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "14"
     scriptarguments:
       IPs:
         simple: 10.10.10.10
@@ -1414,18 +1323,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 265,
+          "y": 370
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "89":
     id: "89"
-    taskid: a1cfc008-1202-445e-8dd3-171318ee2459
+    taskid: e481bd18-ef36-4c3a-894f-e7fdad61fe32
     type: regular
     task:
-      id: a1cfc008-1202-445e-8dd3-171318ee2459
+      id: e481bd18-ef36-4c3a-894f-e7fdad61fe32
       version: -1
       name: panorama-unregister-ip-tag
       description: Unregister IPs to a tag
@@ -1445,12 +1355,153 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 7800
+          "x": 480,
+          "y": 4740
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "90":
+    id: "90"
+    taskid: edffa8f2-5ec4-4536-8994-40d830927bca
+    type: regular
+    task:
+      id: edffa8f2-5ec4-4536-8994-40d830927bca
+      version: -1
+      name: panorama-list-rules
+      description: Returns a list of predefined Security Rules
+      script: '|||panorama-list-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      pre_post: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "92":
+    id: "92"
+    taskid: d09c52dd-282d-4115-8b1a-fa3bf841b8f5
+    type: playbook
+    task:
+      id: d09c52dd-282d-4115-8b1a-fa3bf841b8f5
+      version: -1
+      name: PAN-OS Commit Configuration
+      playbookName: PAN-OS Commit Configuration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+      - "27"
+      - "20"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "93":
+    id: "93"
+    taskid: 4a71d58c-1d1a-4848-845b-bee0203f8f6a
+    type: title
+    task:
+      id: 4a71d58c-1d1a-4848-845b-bee0203f8f6a
+      version: -1
+      name: Finished Addresses UC
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+      - "15"
+      - "83"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "94":
+    id: "94"
+    taskid: 88efc69d-e9d7-4ef4-81f2-2abb88dcb3f6
+    type: title
+    task:
+      id: 88efc69d-e9d7-4ef4-81f2-2abb88dcb3f6
+      version: -1
+      name: FInished Objects UC
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+      - "80"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "95":
+    id: "95"
+    taskid: f2eafd80-36b9-4713-891b-63525fe62201
+    type: playbook
+    task:
+      id: f2eafd80-36b9-4713-891b-63525fe62201
+      version: -1
+      name: PAN-OS Commit Configuration
+      playbookName: PAN-OS Commit Configuration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1459,8 +1510,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 7990,
-        "width": 380,
+        "height": 4930,
+        "width": 1240,
         "x": 50,
         "y": 50
       }

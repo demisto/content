@@ -13,7 +13,7 @@ fi
 
 INVALID=""
 for yml_file in `git diff --diff-filter=d --name-only origin/master...$CIRCLE_BRANCH | grep -E '.yml$'`; do
-    docker=`grep dockerimage "$yml_file" | awk '{print $2}'`
+    docker=`grep "dockerimage:" "$yml_file" | awk '{print $2}'`
     if [[ -n "$docker" ]] && [[ "$docker" != "''" ]] && [[ "$docker" != demisto/* ]]; then
         INVALID=`printf "${INVALID} \nInvalid docker image in $yml_file: \x1B[31m$docker\x1B[0m"`
     fi

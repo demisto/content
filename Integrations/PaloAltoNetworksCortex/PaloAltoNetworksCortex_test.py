@@ -98,6 +98,25 @@ def test_prepare_fetch_query(mocker):
                                                        "AND (subtype='url' OR subtype='antivirus') " \
                                                        "AND (severity='medium')"
 
+    xdr_params = {
+        'fetch_query': 'Cortex XDR Analytics',
+    }
+    mocker.patch.object(demisto, 'params',
+                        return_value=xdr_params)
+    main()
+    xdr_fetch_timestamp = '2018-04-22T10:34:07.371267Z'
+
+    xdr_query = prepare_fetch_query(xdr_fetch_timestamp)
+    assert xdr_query == "SELECT * FROM magnifier.alert WHERE time_generated>2018-04-22T10:34:07.371267Z " \
+                        "AND sub_type.keyword = 'New'"
+
+    xdr_params['xdr_severity'] = ['High', 'Medium']
+    xdr_query_with_severity = prepare_fetch_query(xdr_fetch_timestamp)
+    assert xdr_query_with_severity == "SELECT * FROM magnifier.alert WHERE " \
+                                      "time_generated>2018-04-22T10:34:07.371267Z AND " \
+                                      "(alert.severity.keyword='High' OR alert.severity.keyword='Medium') AND " \
+                                      "sub_type.keyword = 'New'"
+
 
 def test_get_encrypted():
     from PaloAltoNetworksCortex import get_encrypted

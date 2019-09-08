@@ -13,8 +13,8 @@ configuration:
   type: 4
   required: false
 - display: Trust any certificate (unsecure)
-  name: insecure_new
-  defaultvalue: "false"
+  name: insecure
+  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings

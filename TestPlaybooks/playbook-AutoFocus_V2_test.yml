@@ -1,0 +1,1068 @@
+id: AutoFocus V2 test
+version: 3
+name: AutoFocus V2 test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 886cb64b-d1ff-417b-8daf-8c5ff71cfd18
+    type: start
+    task:
+      id: 886cb64b-d1ff-417b-8daf-8c5ff71cfd18
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: eaf48c16-443d-432b-8fb6-811b3b2a26b0
+    type: regular
+    task:
+      id: eaf48c16-443d-432b-8fb6-811b3b2a26b0
+      version: -1
+      name: autofocus-search-samples
+      description: 'Search for samples. To view results run autofocus-samples-search-results
+        with the returned Af Cookie. Note: The AF Cookie expires 120 seconds after
+        the search completes.'
+      script: AutoFocus V2|||autofocus-search-samples
+      type: regular
+      iscommand: true
+      brand: AutoFocus V2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      advanced_query:
+        simple: '`{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1}]}`'
+      max_results: {}
+      order: {}
+      query:
+        simple: '{"operator": "all","children": [{"field": "sample.malware","operator":
+          "is","value": "1"}]}'
+      scope:
+        simple: Global
+      sort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: a51bf59b-5f54-4d7b-8946-7008d2d10dd1
+    type: regular
+    task:
+      id: a51bf59b-5f54-4d7b-8946-7008d2d10dd1
+      version: -1
+      name: autofocus-search-sessions
+      description: 'Search for sessions. To view results run autofocus-sessions-search-results
+        with the returned Af Cookie. Note: The AF Cookie expires 120 seconds after
+        the search completes.'
+      script: AutoFocus V2|||autofocus-search-sessions
+      type: regular
+      iscommand: true
+      brand: AutoFocus V2
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      advanced_query:
+        simple: '{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1}]},"scope":"public","size":50,"from":0,"sort":{"create_date":{"order":"desc"}}'
+      max_results: {}
+      order: {}
+      query:
+        simple: '{"operator": "all","children": [{"field": "sample.malware","operator":
+          "is","value": "1"}]}'
+      sort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 52156ec1-e4a9-41e8-8030-0d3520407495
+    type: condition
+    task:
+      id: 52156ec1-e4a9-41e8-8030-0d3520407495
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SamplesSearch.AFCookie
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SamplesSearch.Status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 1b5a7307-da56-4af6-8648-b6f1a25b185b
+    type: condition
+    task:
+      id: 1b5a7307-da56-4af6-8648-b6f1a25b185b
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SessionsSearch.AFCookie
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SessionsSearch.Status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: cb45299a-b28a-4304-8235-124645286b76
+    type: regular
+    task:
+      id: cb45299a-b28a-4304-8235-124645286b76
+      version: -1
+      name: autofocus-samples-search-results
+      description: Get results of a previous samples search
+      script: AutoFocus V2|||autofocus-samples-search-results
+      type: regular
+      iscommand: true
+      brand: AutoFocus V2
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      af_cookie:
+        simple: ${AutoFocus.SamplesSearch.AFCookie}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: b862ecd8-4de8-4016-852e-94280da764d3
+    type: regular
+    task:
+      id: b862ecd8-4de8-4016-852e-94280da764d3
+      version: -1
+      name: autofocus-sessions-search-results
+      description: Get results of a previous sessions search
+      script: AutoFocus V2|||autofocus-sessions-search-results
+      type: regular
+      iscommand: true
+      brand: AutoFocus V2
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      af_cookie:
+        simple: ${AutoFocus.SessionsSearch.AFCookie}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: ee5f5263-aa7f-4b00-8fd2-017726a03397
+    type: condition
+    task:
+      id: ee5f5263-aa7f-4b00-8fd2-017726a03397
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SamplesResults.Size
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SamplesResults.SHA1
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SamplesResults.SHA256
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SamplesResults.Created
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SamplesResults.Finished
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SamplesResults.Region
+            iscontext: true
+      - - operator: inList
+          left:
+            value:
+              simple: AutoFocus.SamplesSearch.Status
+            iscontext: true
+          right:
+            value:
+              simple: in progress,complete
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Size
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA1
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA256
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Tags
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 91149c6a-3238-4464-89d5-ee3546e8b8b8
+    type: condition
+    task:
+      id: 91149c6a-3238-4464-89d5-ee3546e8b8b8
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SessionsResults.FileName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SessionsResults.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SessionsResults.Industry
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SessionsResults.Region
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SessionsResults.SHA256
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SessionsResults.Seen
+            iscontext: true
+      - - operator: inList
+          left:
+            value:
+              simple: AutoFocus.SessionsSearch.Status
+            iscontext: true
+          right:
+            value:
+              simple: in progress,complete
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA256
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Tags
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 833bc1c7-ce76-49b3-8c2b-fd8331e04653
+    type: regular
+    task:
+      id: 833bc1c7-ce76-49b3-8c2b-fd8331e04653
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: dc56ebd7-b777-4946-869f-510a5066d453
+    type: regular
+    task:
+      id: dc56ebd7-b777-4946-869f-510a5066d453
+      version: -1
+      name: autofocus-sample-analysis
+      description: |-
+        Get properties, behaviors, and activities observed for a sample.
+        Run the command once to get the fields and os's under HTTP,Coverage,Behavior,Registry,Files,Processes,Connections,DNS.
+      script: AutoFocus V2|||autofocus-sample-analysis
+      type: regular
+      iscommand: true
+      brand: AutoFocus V2
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      coverage: {}
+      filter_data: {}
+      id: {}
+      os: {}
+      platforms: {}
+      sample_id:
+        simple: dd0d26ceea034b3ae32a4f6a477466ac598ee17f811f88cf14b2c708240fb993
+      sections: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: fbbfabb7-0afe-4340-8b0c-6628fbe7c3ff
+    type: regular
+    task:
+      id: fbbfabb7-0afe-4340-8b0c-6628fbe7c3ff
+      version: -1
+      name: autofocus-get-session-details
+      description: Get session details by session ID
+      script: AutoFocus V2|||autofocus-get-session-details
+      type: regular
+      iscommand: true
+      brand: AutoFocus V2
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      session_id:
+        complex:
+          root: AutoFocus
+          accessor: SessionsResults.ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 60033ff3-276c-41c0-8c15-28220f162383
+    type: condition
+    task:
+      id: 60033ff3-276c-41c0-8c15-28220f162383
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SampleAnalysis.Analysis.Coverage
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SampleAnalysis.Analysis.Behavior
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SampleAnalysis.Analysis.Registry
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SampleAnalysis.Analysis.Files
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SampleAnalysis.Analysis.Processes
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.SampleAnalysis.Analysis.Mutex
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 848c4c05-5ca8-4a29-83c8-e76b5fb4561f
+    type: condition
+    task:
+      id: 848c4c05-5ca8-4a29-83c8-e76b5fb4561f
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.Sessions.FileName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.Sessions.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.Sessions.Industry
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.Sessions.Region
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.Sessions.SHA256
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.Sessions.Seen
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.Sessions.UploadSource
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 437e01a2-1ee3-42ee-8200-de785ebbf38c
+    type: regular
+    task:
+      id: 437e01a2-1ee3-42ee-8200-de785ebbf38c
+      version: -1
+      name: autofocus-top-tags-search
+      description: Perform a search to Identify the most popular tags
+      script: AutoFocus V2|||autofocus-top-tags-search
+      type: regular
+      iscommand: true
+      brand: AutoFocus V2
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      class:
+        simple: Malicious Behavior
+      commodity: {}
+      private:
+        simple: "True"
+      public:
+        simple: "True"
+      scope:
+        simple: all
+      unit42: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 2dd10e45-2b26-4879-8ae8-d7ff3500152a
+    type: regular
+    task:
+      id: 2dd10e45-2b26-4879-8ae8-d7ff3500152a
+      version: -1
+      name: autofocus-top-tags-results
+      description: Get the results of a previous top tags search
+      script: AutoFocus V2|||autofocus-top-tags-results
+      type: regular
+      iscommand: true
+      brand: AutoFocus V2
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      af_cookie:
+        simple: ${AutoFocus.TopTagsSearch.AFCookie}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: f720675d-b725-43bf-8d42-93605118c5a5
+    type: regular
+    task:
+      id: f720675d-b725-43bf-8d42-93605118c5a5
+      version: -1
+      name: autofocus-tag-details
+      description: Get details on a given tag
+      script: AutoFocus V2|||autofocus-tag-details
+      type: regular
+      iscommand: true
+      brand: AutoFocus V2
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      tag_name:
+        complex:
+          root: AutoFocus
+          accessor: TopTagsResults.PublicTagName
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 9fa5f749-4919-4200-82ef-0814074219cf
+    type: condition
+    task:
+      id: 9fa5f749-4919-4200-82ef-0814074219cf
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.TopTagsSearch.AFCookie
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.TopTagsSearch.Status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 412f126c-a1c6-48c2-8684-2f5ed34a4a3b
+    type: condition
+    task:
+      id: 412f126c-a1c6-48c2-8684-2f5ed34a4a3b
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.TopTagsResults.Count
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.TopTagsResults.PublicTagName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.TopTagsResults.TagName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.TopTagsResults.Lasthit
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 362587b3-66ce-401c-88d6-ec68eeefd631
+    type: condition
+    task:
+      id: 362587b3-66ce-401c-88d6-ec68eeefd631
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.Tag.TagName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.Tag.PublicTagName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.Tag.Count
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.Tag.Lasthit
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.Tag.TagDefinitionScope
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.Tag.CustomerName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.Tag.Source
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.Tag.TagClass
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.Tag.TagDefinitionStatus
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 8ef0008a-1714-46f4-8c71-2ea2169f73ec
+    type: title
+    task:
+      id: 8ef0008a-1714-46f4-8c71-2ea2169f73ec
+      version: -1
+      name: DONE
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 380d10e3-9070-41e6-86ec-2c1cd4eee6b0
+    type: regular
+    task:
+      id: 380d10e3-9070-41e6-86ec-2c1cd4eee6b0
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: b22fd857-a674-4638-8a4e-ed30a6ea3ca9
+    type: regular
+    task:
+      id: b22fd857-a674-4638-8a4e-ed30a6ea3ca9
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: c2e02f5c-f308-4c2d-8259-ba70dd20735d
+    type: regular
+    task:
+      id: c2e02f5c-f308-4c2d-8259-ba70dd20735d
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2835,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
