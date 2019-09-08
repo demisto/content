@@ -1782,14 +1782,13 @@ def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
 
 
 def remove_nulls_from_dictionary(data):
-    """
-        Remove Null values from a dictionary. (updating the given dictionary)
+    """Remove Null values from a dictionary. (updating the given dictionary)
 
-        :type data: ``dict``
-        :param data: The data to be added to the context (required)
+    :type data: ``dict``
+    :param data: The data to be added to the context (required)
 
-        :return: No data returned
-        :rtype: ``None``
+    :return: No data returned
+    :rtype: ``None``
     """
     list_of_keys = list(data.keys())[:]
     for key in list_of_keys:
@@ -1799,20 +1798,18 @@ def remove_nulls_from_dictionary(data):
 
 def assign_params(**kwargs):
     """Creates a dictionary from given kwargs without empty values
-`
-    :type kwargs: ``**any``
-    :param kwargs: kwargs to filter
-
-    :return: dict without empty values
-    :rtype: ``dict``
-
-    Examples:
+`    Examples:
         >>> assign_params(a='1', b=True, c=None, d='')
         {'a': '1', 'b': True}
 
         >>> since_time = 'timestamp'
         >>> assign_params(sinceTime=since_time)
         {'sinceTime': 'timestamp'}
+
+    :param kwargs: kwargs to filter
+
+    :return: dict without empty values
+    :rtype: ``dict``
     """
     return {key: value for key, value in kwargs.items() if value}
 
@@ -1831,6 +1828,17 @@ def get_demisto_version():
 
 def build_dbot_entry(indicator, indicator_type, vendor, score, description=None, build_malicious=True):
     """Build a dbot entry. if score is 3 adds malicious
+        Examples:
+        >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 1)
+        {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 1}}
+
+        >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 3,  build_malicious=False)
+        {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 3}}
+
+        >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 3, 'Malicious email')
+        {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 3},\
+ 'Account.Email(val.Address && val.Address == obj.Address)': {'Address': 'user@example.com', 'Malicious': \
+{'Vendor': 3, 'Description': 'Malicious email'}}}
 
     :type indicator: ``str``
     :param indicator: indicator field. if using file hashes, can be dict
@@ -1853,19 +1861,6 @@ def build_dbot_entry(indicator, indicator_type, vendor, score, description=None,
 
     :return: dbot entry
     :rtype: ``dict``
-
-    Examples:
-        >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 1)
-        {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 1}}
-
-        >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 3,  build_malicious=False)
-        {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 3}}
-
-        >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 3, 'Malicious email')
-        {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 3},\
- 'Account.Email(val.Address && val.Address == obj.Address)': {'Address': 'user@example.com', 'Malicious': \
-{'Vendor': 3, 'Description': 'Malicious email'}}}
-
     """
     indicator_type_lower = indicator_type.lower()
     dbot_entry = {
@@ -1882,7 +1877,16 @@ def build_dbot_entry(indicator, indicator_type, vendor, score, description=None,
 
 def build_malicious_dbot_entry(indicator, indicator_type, vendor, description=None):
     """ Build Malicious dbot entry
+    Examples:
+        >>> build_malicious_dbot_entry('8.8.8.8', 'ip', 'Vendor', 'Google DNS')
+        {'IP(val.Address && val.Address == obj.Address)': {'Address': '8.8.8.8', 'Malicious': {'Vendor': 'Vendor'\
+, 'Description': 'Google DNS'}}}
 
+        >>> build_malicious_dbot_entry('md5hash', 'MD5', 'Vendor', 'Malicious File')
+        {'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 ||\
+val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 ==\
+obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'MD5': 'md5hash', 'Malicious': {'Vendor': 'Vendor',\
+'Description': 'Malicious File'}}}
     :type indicator: ``str``
     :param indicator: Value (e.g. 8.8.8.8)
 
@@ -1897,17 +1901,6 @@ def build_malicious_dbot_entry(indicator, indicator_type, vendor, description=No
 
     :return: A malicious DBot entry
     :rtype: ``dict``
-
-    Examples:
-        >>> build_malicious_dbot_entry('8.8.8.8', 'ip', 'Vendor', 'Google DNS')
-        {'IP(val.Address && val.Address == obj.Address)': {'Address': '8.8.8.8', 'Malicious': {'Vendor': 'Vendor'\
-, 'Description': 'Google DNS'}}}
-
-        >>> build_malicious_dbot_entry('md5hash', 'MD5', 'Vendor', 'Malicious File')
-        {'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 ||\
-val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 ==\
-obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'MD5': 'md5hash', 'Malicious': {'Vendor': 'Vendor',\
-'Description': 'Malicious File'}}}
     """
     file_types = ('md5', 'sha1', 'sha256', 'crc32', 'sha512', 'ctph')
     indicator_type_lower = indicator_type.lower()
@@ -1947,27 +1940,26 @@ class BaseClient:
                  proxy=False
                  ):
         """
-
         :type server: ``str``
         :param server: Base server address
 
         :type base_suffix: ``str``
-        :param base_suffix: suffix of API (`/api/v2/`)
+        :param base_suffix: suffix of API (e.g`/api/v2/`)
 
         :type integration_name: ``str``
-        :param integration_name (str): Name as shown in UI (`Integration Name`)
+        :param integration_name: Name as shown in UI (`Integration Name`)
 
         :type integration_command_name: ``str``
-        :param integration_command_name (str): lower case with `-` divider (`integration-name`)
+        :param integration_command_name: lower case with `-` divider (`integration-name`)
 
         :type integration_context_name: ``str``
-        :param integration_context_name (str): camelcase with no dividers (`IntegrationName`)
+        :param integration_context_name: camelcase with no dividers (`IntegrationName`)
 
         :type verify: ``bool``
-        verify (bool): Verify SSL
+        verify: Verify SSL
 
         :type proxy: ``bool``
-        proxy (bool): Use system proxy
+        proxy: Use system proxy
         """
         self._server = server.rstrip('/')
         self.verify = verify
