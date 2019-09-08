@@ -1814,7 +1814,7 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
     """
         Parses date_string to corresponding datetime according to format.
         Note: If possible (e.g. running Python 3), it is suggested to use
-              dateutil.parser.parse or dateparser.parse function instead
+              dateutil.parser.parse or dateparser.parse functions instead.
 
         Examples:
         >>> parse_date_string('2019-09-17T06:16:39Z')
