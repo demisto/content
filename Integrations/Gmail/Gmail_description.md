@@ -25,17 +25,6 @@ In order to preform actions on chorme devices, please authorize this api too:[ht
 In order to block email addresses, please authorize this api too:
 [https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic)
 
-For the email user param, please choose a user with admin permissions and make sure that you follow the steps to perform Google Apps Domain-Wide Delegation of Authority.
-
-In order to revoke/fetch user role, you will need the Immutable Google Apps ID param.
-To get an Immutable Google Apps ID (or customerId):
-1. Go to [https://admin.google.com](https://admin.google.com)
-2. Security -> Set up single sign-on (SSO)
-
-You will see there URLs in the format:
-[https://accounts.google.com/o/saml2/idp?idpid=Cxxxxxxxx](https://accounts.google.com/o/saml2/idp?idpid=Cxxxxxxxx)
-Cxxxxxxxx is your Immutable Google Apps ID (customerId).
-
 In order to get auto-replay messages from a user, please authorize this api too: 
 https://mail.google.com,
 https://www.googleapis.com/auth/gmail.modify,
@@ -52,4 +41,15 @@ In order to set a user's password, please authorize this api too: https://www.go
 
 In order to send mails, please authorize this api too:
 https://www.googleapis.com/auth/gmail.compose and https://www.googleapis.com/auth/gmail.send
+
+For the email user param, please choose a user with admin permissions and make sure that you follow the steps to perform Google Apps Domain-Wide Delegation of Authority.
+
+In order to revoke/fetch user role, you will need the Immutable Google Apps ID param.
+To get an Immutable Google Apps ID (or customerId):
+1. Go to [https://admin.google.com](https://admin.google.com)
+2. Security -> Set up single sign-on (SSO)
+
+You will see there URLs in the format:
+[https://accounts.google.com/o/saml2/idp?idpid=Cxxxxxxxx](https://accounts.google.com/o/saml2/idp?idpid=Cxxxxxxxx)
+Cxxxxxxxx is your Immutable Google Apps ID (customerId).
  
