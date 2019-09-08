@@ -1812,7 +1812,7 @@ def get_demisto_version():
 
 def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
     """
-        Parses date_string to corresponding datetime according to format.
+        Parses the date_string function to the corresponding datetime object.
         Note: If possible (e.g. running Python 3), it is suggested to use
               dateutil.parser.parse or dateparser.parse functions instead.
 
