@@ -69,6 +69,12 @@ class IntegrationValidator(object):
 
         return self._is_valid
 
+    def is_valid_beta_integration(self, is_new=False):
+        """Check whether the beta Integration is valid or not, update the _is_valid field to determine that"""
+        self.is_default_arguments()
+        self.is_valid_beta(is_new)
+        return self._is_valid
+
     def is_default_arguments(self):
         """Check if a reputation command (domain/email/file/ip/url)
             has a default non required argument with the same name
@@ -180,6 +186,53 @@ class IntegrationValidator(object):
                     self._is_valid = False
 
         return self._is_valid
+
+    def is_valid_beta(self, is_new=False):
+        """Validate that that beta integration has correct beta attributes"""
+
+        if not all([self._is_display_contains_beta(), self._has_beta_param()]):
+            self._is_valid = False
+        if is_new:
+            if not all([self._id_has_no_beta_substring(), self._name_has_no_beta_substring()]):
+                self._is_valid = False
+
+    def _id_has_no_beta_substring(self):
+        """Checks that 'id' field dose not include the substring 'beta'"""
+        common_fields = self.current_integration.get('commonfields', {})
+        integration_id = common_fields.get('id', '')
+        if 'beta' in integration_id.lower():
+            print_error(
+                "Field 'id' should NOT contain the substring \"beta\" in a new beta integration. "
+                "please change the id in the file {}".format(self.file_path))
+            return False
+        return True
+
+    def _name_has_no_beta_substring(self):
+        """Checks that 'name' field dose not include the substring 'beta'"""
+        name = self.current_integration.get('name', '')
+        if 'beta' in name.lower():
+            "Field 'name' should NOT contain the substring \"beta\" in a new beta integration. "
+            "please change the id in the file {}".format(self.file_path)
+            return False
+        return True
+
+    def _has_beta_param(self):
+        """Checks that integration has 'beta' field with value set to true"""
+        beta = self.current_integration.get('beta', False)
+        if not beta:
+            print_error("Beta integration yml file should have the field \"beta: true\", but was not found"
+                        " in the file {}".format(self.file_path))
+        return beta
+
+    def _is_display_contains_beta(self):
+        """Checks that 'display' field includes the substring 'beta'"""
+        display = self.current_integration.get('display', '')
+        if 'beta' not in display.lower():
+            print_error(
+                "Field 'display' in Beta integration yml file should include the string \"beta\", but was not found"
+                " in the file {}".format(self.file_path))
+            return False
+        return True
 
     def is_there_duplicate_args(self):
         """Check if a command has the same arg more than once
