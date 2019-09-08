@@ -3,8 +3,7 @@ from CommonServerUserPython import *
 import demistomock as demisto
 
 ''' IMPORTS '''
-from typing import Dict, Tuple, AnyStr, List, Optional, Union
-import requests
+from typing import Dict, Tuple, Optional
 import urllib3
 
 # Disable insecure warnings

@@ -9,7 +9,7 @@ import urllib3
 """Example for Analytics and SIEM integration
 
 Todo:
-    * pass on it with alex 
+    * pass on it with alex
 """
 # Disable insecure warnings
 urllib3.disable_warnings()
