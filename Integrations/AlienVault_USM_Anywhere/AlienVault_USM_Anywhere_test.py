@@ -1,8 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
-
-''' IMPORTS '''
 import dateparser
 from datetime import datetime, timedelta
 
