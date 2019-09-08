@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 from typing import List
 from elasticsearch import Elasticsearch, RequestsHttpConnection
 from elasticsearch_dsl import Search
-from elasticsearch_dsl import Range
 from elasticsearch_dsl.query import QueryString
 from datetime import datetime
 import json
