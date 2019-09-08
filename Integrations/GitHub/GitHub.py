@@ -516,6 +516,11 @@ def create_branch(name: str, sha: str) -> dict:
     return response
 
 
+def delete_branch(name: str):
+    suffix = USER_SUFFIX + f'/git/refs/heads/{name}'
+    http_request('DELETE', url_suffix=suffix)
+
+
 def get_team_membership(team_id: Union[int, str], user_name: str) -> dict:
     suffix = f'/teams/{team_id}/memberships/{user_name}'
     response = http_request('GET', url_suffix=suffix)
@@ -885,6 +890,14 @@ def create_branch_command():
     demisto.results(msg)
 
 
+def delete_branch_command():
+    args = demisto.args()
+    branch_name = args.get('branch_name')
+    delete_branch(branch_name)
+    msg = f'Branch "{branch_name}" Deleted Successfully'
+    demisto.results(msg)
+
+
 def get_stale_prs_command():
     args = demisto.args()
     stale_time = args.get('stale_time', '3 days')
@@ -1008,7 +1021,8 @@ COMMANDS = {
     'GitHub-get-commit': get_commit_command,
     'GitHub-add-label': add_label_command,
     'GitHub-get-pull-request': get_pull_request_command,
-    'GitHub-list-teams': list_teams_command
+    'GitHub-list-teams': list_teams_command,
+    'GitHub-delete-branch': delete_branch_command
 }
 
 

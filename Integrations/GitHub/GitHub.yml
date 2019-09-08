@@ -1326,6 +1326,17 @@ script:
     - contextPath: GitHub.Team.Parent
       description: The parent of the team
       type: Unknown
+  - arguments:
+    - default: false
+      description: The name of the branch to delete
+      isArray: false
+      name: branch_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a branch
+    execution: false
+    name: GitHub-delete-branch
   dockerimage: demisto/python3:3.7.3.286
   subtype: python3
   isfetch: true
