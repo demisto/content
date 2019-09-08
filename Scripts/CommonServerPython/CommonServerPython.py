@@ -1825,10 +1825,10 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
         datetime(2019, 9, 17, 6, 16, 39, 404000)
 
         :type date_string: ``str``
-        :param date_string: The date string to be parsed. (required)
+        :param date_string: The date string to parse. (required)
 
         :type date_format: ``str``
-        :param date_format: The date format of the date string, should be provided if known. (optional)
+        :param date_format: The date format of the date string. If the date format is known, it should be provided. (optional)
 
         :return: The parsed datetime.
         :rtype: ``(datetime.datetime, datetime.datetime)``
