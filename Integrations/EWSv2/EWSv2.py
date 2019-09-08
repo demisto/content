@@ -24,7 +24,7 @@ from exchangelib.services import EWSService, EWSAccountService
 from exchangelib.util import create_element, add_xml_child
 from exchangelib import IMPERSONATION, DELEGATE, Account, Credentials, \
     EWSDateTime, EWSTimeZone, Configuration, NTLM, DIGEST, BASIC, FileAttachment, \
-    Version, Folder, HTMLBody, Body, Build
+    Version, Folder, HTMLBody, Body, Build, ItemAttachment
 from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
 
@@ -310,7 +310,6 @@ Remove-ComplianceSearch $searchName -Confirm:$false
 Remove-PSSession $session
 """
 
-
 # initialized in main()
 EWS_SERVER = ''
 USERNAME = ''
@@ -385,6 +384,8 @@ def prepare_context(credentials):
             demisto.setIntegrationContext(create_context_dict(account))
         except AutoDiscoverFailed:
             return_error("Auto discovery failed. Check credentials or configure manually")
+        except Exception as e:
+            return_error(e.message)
     else:
         SERVER_BUILD = get_build_autodiscover(context_dict)
         EWS_SERVER = get_endpoint_autodiscover(context_dict)
@@ -1580,16 +1581,26 @@ def find_folders(target_mailbox=None, is_public=None):
     }
 
 
-def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public=None):
+def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public=None, get_internal_item='no'):
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     limit = int(limit)
+    get_internal_item = (get_internal_item == 'yes')
     is_public = is_default_folder(folder_path, is_public)
     folder = get_folder_by_path(account, folder_path, is_public)
     qs = folder.filter().order_by('-datetime_created')[:limit]
     items = get_limited_number_of_messages_from_qs(qs, limit)
-    items_result = map(
-        lambda item: parse_item_as_dict(item, account.primary_smtp_address, camel_case=True, compact_fields=True),
-        items)
+    items_result = []
+
+    for item in items:
+        item_attachment = parse_item_as_dict(item, account.primary_smtp_address, camel_case=True, compact_fields=True)
+        for attachment in item.attachments:
+            if get_internal_item and isinstance(attachment, ItemAttachment) and isinstance(attachment.item, Message):
+                # if found item attachment - switch item to the attchment
+                item_attachment = parse_item_as_dict(attachment.item, account.primary_smtp_address, camel_case=True,
+                                                     compact_fields=True)
+                break
+        items_result.append(item_attachment)
+
     hm_headers = ['sender', 'subject', 'hasAttachments', 'datetimeReceived',
                   'receivedBy', 'author', 'toRecipients', ]
     if exchangelib.__version__ == "1.12.0":  # Docker BC

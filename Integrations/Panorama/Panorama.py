@@ -180,7 +180,14 @@ def http_request(uri: str, method: str, headers: Dict = {},
     # handle @code
     if 'response' in json_result and '@code' in json_result['response']:
         if json_result['response']['@code'] in PAN_OS_ERROR_DICT:
-            return_error('Request Failed.\n' + PAN_OS_ERROR_DICT[json_result['response']['@code']])
+            error_message = 'Request Failed.\n' + PAN_OS_ERROR_DICT[json_result['response']['@code']]
+            if json_result['response']['@code'] == '7' and DEVICE_GROUP:
+                device_group_names = get_device_groups_names()
+                if DEVICE_GROUP not in device_group_names:
+                    error_message += (f'\nDevice Group: {DEVICE_GROUP} does not exist.'
+                                      f' The available Device Groups for this instance:'
+                                      f' {", ".join(device_group_names)}.')
+            return_error(error_message)
         if json_result['response']['@code'] not in ['19', '20']:
             # error code non exist in dict and not of success
             if 'msg' in json_result['response']:
@@ -315,9 +322,9 @@ def panorama_test():
     demisto.results('ok')
 
 
-def device_group_test():
+def get_device_groups_names():
     """
-    Test module for the Device group specified
+    Get device group names in the Panorama
     """
     params = {
         'action': 'get',
@@ -333,20 +340,25 @@ def device_group_test():
     )
 
     device_groups = result['response']['result']['entry']
+    device_group_names = []
     if isinstance(device_groups, dict):
         # only one device group in the panorama
-        device_group_name = device_groups.get('@name')
-        if device_group_name != DEVICE_GROUP:
-            return_error(f'Device Group: {DEVICE_GROUP} does not exist.'
-                         f'These is the available Device Group for this instance: {device_group_name}')
+        device_group_names.append(device_groups.get('@name'))
     else:
-        # panorama has more than one device group configured
-        device_groups_arr = []
         for device_group in device_groups:
-            device_groups_arr.append(device_group.get('@name'))
-        if DEVICE_GROUP not in device_groups_arr:
-            return_error(f'Device Group: {DEVICE_GROUP} does not exist.'
-                         f'These are the available Device Groups for this instance: {str(device_groups_arr)}')
+            device_group_names.append(device_group.get('@name'))
+
+    return device_group_names
+
+
+def device_group_test():
+    """
+    Test module for the Device group specified
+    """
+    device_group_names = get_device_groups_names()
+    if DEVICE_GROUP not in device_group_names:
+        return_error(f'Device Group: {DEVICE_GROUP} does not exist.'
+                     f' The available Device Groups for this instance: {", ".join(device_group_names)}.')
 
 
 @logger
@@ -3410,28 +3422,46 @@ def panorama_get_traffic_logs_command():
 ''' Logs '''
 
 
+def build_array_query(query, arg_string, string, operator):
+    list_string = argToList(arg_string)
+    list_string_length = len(list_string)
+
+    if list_string_length > 1:
+        query += '('
+
+    for i, item in enumerate(list_string):
+        query += f'({string} {operator} \'{item}\')'
+        if i < list_string_length - 1:
+            query += ' or '
+
+    if list_string_length > 1:
+        query += ')'
+
+    return query
+
+
 def build_logs_query(address_src=None, address_dst=None,
                      zone_src=None, zone_dst=None, time_generated=None, action=None,
                      port_dst=None, rule=None, url=None, filedigest=None):
     query = ''
     if address_src and len(address_src) > 0:
-        query += '(addr.src in ' + address_src + ')'
+        query += build_array_query(query, address_src, 'addr.src', 'in')
     if address_dst and len(address_dst) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(addr.dst in ' + address_dst + ')'
+        query += build_array_query(query, address_dst, 'addr.dst', 'in')
     if zone_src and len(zone_src) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(zone.src eq ' + zone_src + ')'
+        query += build_array_query(query, zone_src, 'zone.src', 'eq')
     if zone_dst and len(zone_dst) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(zone.dst eq ' + zone_dst + ')'
+        query += build_array_query(query, zone_dst, 'zone.dst', 'eq')
     if port_dst and len(port_dst) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(port.dst eq ' + port_dst + ')'
+        query += build_array_query(query, port_dst, 'port.dst', 'eq')
     if time_generated and len(time_generated) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
@@ -3439,19 +3469,20 @@ def build_logs_query(address_src=None, address_dst=None,
     if action and len(action) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(action eq ' + action + ')'
+        query += build_array_query(query, action, 'action', 'eq')
     if rule and len(rule) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(rule eq ' + rule + ')'
+        query += build_array_query(query, rule, 'rule', 'eq')
     if url and len(url) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(url eq ' + url + ')'
+        query += build_array_query(query, url, 'url', 'eq')
     if filedigest and len(filedigest) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(filedigest eq ' + filedigest + ')'
+        query += build_array_query(query, filedigest, 'filedigest', 'eq')
+
     return query
 
 
