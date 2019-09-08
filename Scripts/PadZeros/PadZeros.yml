@@ -11,7 +11,7 @@ args:
   name: length
   required: true
   secret: false
-  defaultValue: 0
+  defaultValue: "0"
 comment: Adds zeros (0) at the beginning of the string, until it reaches the specified length.
 commonfields:
   id: PadZeros
@@ -30,3 +30,5 @@ subtype: python3
 runas: DBotWeakRole
 runonce: false
 dockerimage: demisto/python3:3.7.4.1502
+tests:
+  - No test
