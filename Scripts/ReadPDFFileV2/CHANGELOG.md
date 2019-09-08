@@ -1,2 +1,2 @@
 ## [Unreleased]
-Support processing pdf files that generate warnings.
+Added support for processing PDF files that generate a warning.
