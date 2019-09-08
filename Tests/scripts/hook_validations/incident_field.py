@@ -10,8 +10,8 @@ class IncidentFieldValidator(object):
 
     Attributes:
        file_path (str): the path to the file we are examining at the moment.
-       current_incident_field (dict): Json representation of the current integration from the branch.
-       old_incident_field (dict): Json representation of the current integration from master.
+       current_incident_field (dict): Json representation of the current incident field from the branch.
+       old_incident_field (dict): Json representation of the current incident field from master.
     """
 
     def __init__(self, file_path, check_git=True, old_file_path=None, old_git_branch='master'):
@@ -39,7 +39,7 @@ class IncidentFieldValidator(object):
         return not is_bc_broke
 
     def is_valid(self):
-        """Check whether the IncidentField is valid or not"""
+        """Check whether the Incident Field is valid or not"""
         is_incident_field_valid = all([
             self.is_valid_name(),
             self.is_valid_content_flag(),
