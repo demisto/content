@@ -15,7 +15,6 @@ import requests
 import base64
 from collections import OrderedDict
 import socket
-from typing import cast, Any
 import xml.etree.cElementTree as ET
 IS_PY3 = sys.version_info[0] == 3
 # pylint: disable=undefined-variable
