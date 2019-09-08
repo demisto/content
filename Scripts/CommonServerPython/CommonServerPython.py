@@ -1800,11 +1800,11 @@ def remove_nulls_from_dictionary(data):
 def assign_params(**kwargs):
     """Creates a dictionary from given kwargs without empty values
 `
-    Args:
-        kwargs: kwargs to filter
+    :type kwargs: ``**any``
+    :param kwargs: kwargs to filter
 
-    Returns:
-        dict: without empty values
+    :return: dict without empty values
+    :rtype: ``dict``
 
     Examples:
         >>> assign_params(a='1', b=True, c=None, d='')
@@ -1832,17 +1832,27 @@ def get_demisto_version():
 def build_dbot_entry(indicator, indicator_type, vendor, score, description=None, build_malicious=True):
     """Build a dbot entry. if score is 3 adds malicious
 
-    Args:
-        indicator: indicator field. if using file hashes, can be dict
-        indicator_type:
-            type of indicator ('url, 'domain', 'ip', 'cve', 'email', 'md5', 'sha1', 'sha256', 'crc32', 'sha512', 'ctph')
-        score: score (0, 1, 2 , 3)
-        vendor: Usually integration name
-        description: description (will be added to malicious if dbot_score is 3). can be None
-        build_malicious: if True, will not add malicious entry
+    :type indicator: ``str``
+    :param indicator: indicator field. if using file hashes, can be dict
 
-    Returns
-        dbot entry
+    :type indicator_type: ``str``
+    :param indicator_type:
+        type of indicator ('url, 'domain', 'ip', 'cve', 'email', 'md5', 'sha1', 'sha256', 'crc32', 'sha512', 'ctph')
+
+    :type indicator: ``int``
+    :param score: score (0, 1, 2 , 3)
+
+    :type vendor: ``str``
+    :param vendor: Integration ID
+
+    :type description: ``str`` or ``None``
+    :param description: description (will be added to malicious if dbot_score is 3). can be None
+
+    :type build_malicious: ``bool``
+    :param build_malicious: if True, will add a malicious entry
+
+    :return: dbot entry
+    :rtype: ``dict``
 
     Examples:
         >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 1)
@@ -1853,7 +1863,7 @@ def build_dbot_entry(indicator, indicator_type, vendor, score, description=None,
 
         >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 3, 'Malicious email')
         {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 3},\
- 'Account.Email(val.Address && val.Address == obj.Address)': {'Account.Email': 'user@example.com', 'Malicious': \
+ 'Account.Email(val.Address && val.Address == obj.Address)': {'Address': 'user@example.com', 'Malicious': \
 {'Vendor': 3, 'Description': 'Malicious email'}}}
 
     """
@@ -1873,14 +1883,20 @@ def build_dbot_entry(indicator, indicator_type, vendor, score, description=None,
 def build_malicious_dbot_entry(indicator, indicator_type, vendor, description=None):
     """ Build Malicious dbot entry
 
-    Args:
-        indicator:
-        indicator_type:
-        vendor:
-        description:
+    :type indicator: ``str``
+    :param indicator: Value (e.g. 8.8.8.8)
 
-    Returns:
-        dict: malicious entry
+    :type indicator_type: ``str``
+    :param indicator_type: e.g. 'IP'
+
+    :type vendor: ``str``
+    :param vendor: Integration ID
+
+    :type description: ``str``
+    :param description: Why it's mxalicious
+
+    :return: A malicious DBot entry
+    :rtype: ``dict``
 
     Examples:
         >>> build_malicious_dbot_entry('8.8.8.8', 'ip', 'Vendor', 'Google DNS')
@@ -1895,7 +1911,7 @@ obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'MD5': 'md5hash', 'Malicious':
     """
     file_types = ('md5', 'sha1', 'sha256', 'crc32', 'sha512', 'ctph')
     indicator_type_lower = indicator_type.lower()
-    if indicator_type_lower == 'ip':
+    if indicator_type_lower in ('ip', 'email'):
         key = 'Address'
     elif indicator_type_lower == 'url':
         key = 'Data'
@@ -1903,8 +1919,6 @@ obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'MD5': 'md5hash', 'Malicious':
         key = 'Name'
     elif indicator_type_lower == 'cve':
         key = 'ID'
-    elif indicator_type_lower == 'email':
-        key = 'Account.Email'
     elif indicator_type_lower in file_types:
         key = indicator_type_lower.upper()
         indicator_type_lower = 'file'
@@ -1934,14 +1948,26 @@ class BaseClient:
                  ):
         """
 
-        Args:
-            server (str): Base server address
-            base_suffix (str): suffix of API (`/api/v2/`)
-            integration_name (str): Name as shown in UI (`Integration Name`)
-            integration_command_name (str): lower case with `-` divider (`integration-name`)
-            integration_context_name (str): camelcase with no dividers (`IntegrationName`)
-            verify (bool): Verify SSL
-            proxy (bool): Use system proxy
+        :type server: ``str``
+        :param server: Base server address
+
+        :type base_suffix: ``str``
+        :param base_suffix: suffix of API (`/api/v2/`)
+
+        :type integration_name: ``str``
+        :param integration_name (str): Name as shown in UI (`Integration Name`)
+
+        :type integration_command_name: ``str``
+        :param integration_command_name (str): lower case with `-` divider (`integration-name`)
+
+        :type integration_context_name: ``str``
+        :param integration_context_name (str): camelcase with no dividers (`IntegrationName`)
+
+        :type verify: ``bool``
+        verify (bool): Verify SSL
+
+        :type proxy: ``bool``
+        proxy (bool): Use system proxy
         """
         self._server = server.rstrip('/')
         self.verify = verify
@@ -1971,28 +1997,45 @@ class BaseClient:
                       timeout=10, resp_type='json', **kwargs):
         """A wrapper for requests lib to send our requests and handle requests and responses better.
 
-        Args:
-            method: (str) HTTP method, e.g. 'GET', 'POST' ... etc.
-            url_suffix (str): API endpoint.
-            full_url (str):
-                Bypasses the use of self._base_url + url_suffix. Useful if there is a need to
-                make a request to an address outside of the scope of the integration
-                API.
-            headers (dict): Headers to send in the request.
-            auth: (tuple) Auth tuple to enable Basic/Digest/Custom HTTP Auth.
-            params (dict): URL parameters.
-            data (dict): Data to be sent in a 'POST' request.
-            files (dict): File data to be sent in a 'POST' request.
-            timeout (float):
-                The amount of time in seconds a Request will wait for a client to
-                establish a connection to a remote machine.
-            resp_type (str):
-                Determines what to return from having made the HTTP request. The default
-                is 'json'. Other options are 'text', 'content' or 'response' if the user
-                would like the full response object returned.
+        :type method: ``str``
+        method: (str) HTTP method, e.g. 'GET', 'POST' ... etc.
 
-        Returns:
-                Depends on the resp_type parameter
+        :type url_suffix: ``str``
+        :param url_suffix (str): API endpoint.
+
+        :type full_url: ``str``
+        :param full_url (str):
+            Bypasses the use of self._base_url + url_suffix. Useful if there is a need to
+            make a request to an address outside of the scope of the integration
+            API.
+
+        :type headers: ``dict``
+        :param headers: Headers to send in the request.
+
+        :type auth: ``tuple``
+        :param auth: (tuple) Auth tuple to enable Basic/Digest/Custom HTTP Auth.
+
+        :type params: ``dict``
+        :param params: URL parameters.
+
+        :type data: ``dict``
+        :param data (dict): Data to be sent in a 'POST' request.
+
+        :type files: ``dict``
+        :param files: File data to be sent in a 'POST' request.
+
+        :type method: ``float``
+        :param timeout:
+            The amount of time in seconds a Request will wait for a client to
+            establish a connection to a remote machine.
+
+        :type resp_type: ``str``
+        :param resp_type:
+            Determines what to return from having made the HTTP request. The default
+            is 'json'. Other options are 'text', 'content' or 'response' if the user
+            would like the full response object returned.
+
+        :return: Depends on the resp_type parameter
         """
         try:
             address = full_url if full_url else self._base_url + url_suffix

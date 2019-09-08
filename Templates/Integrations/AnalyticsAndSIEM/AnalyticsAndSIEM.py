@@ -29,7 +29,7 @@ class Client(BaseClient):
         return self._http_request('GET', 'version')
 
     def list_events_request(self, limit: Union[int, str] = None, since_time: Optional[str] = None) -> Dict:
-        """Gets all credentials from API.
+        """Gets all events from API.
 
         Args:
             limit: limit results
@@ -151,7 +151,7 @@ def build_context(events: Union[Dict, List]) -> Union[Dict, List]:
 ''' COMMANDS '''
 
 
-def test_module(client: Client) -> Tuple[str, Dict, Dict]:
+def test_module(client: Client, *args) -> Tuple[str, Dict, Dict]:
     """Performs basic get request to see if the API is reachable and authentication works.
     """
     results = client.test_module_request()
@@ -280,14 +280,12 @@ def create_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def query(client: Client, args: Dict):
-    query_dict = {
-        'eventId': args.get('event_id'),
-        'sinceTime': args.get('since_time'),
-        'assignee': argToList(args.get('assignee')),
-        'isActive': args.get('is_active') == 'true'
-    }
-    # Remove None/empty object
-    query_dict = {key: value for key, value in query_dict.items() if vault is not None}
+    query_dict = assign_params(
+        eventId=args.get('event_id'),
+        sinceTime=args.get('since_time'),
+        assignee=argToList(args.get('assignee')),
+        isActive=args.get('is_active') == 'true'
+    )
     if not query_dict.get('assignee'):
         del query_dict['assignee']
     raw_response: Dict = client.query_request(**query_dict)

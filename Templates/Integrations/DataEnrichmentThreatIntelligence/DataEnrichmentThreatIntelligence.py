@@ -17,13 +17,6 @@ FILE_HASHES: Tuple = ('md5', 'ssdeep', 'sha1', 'sha256')  # hashes as described 
 
 class Client(BaseClient):
     """
-
-    Examples:
-        >>> client = Client('url', '/v1/', 'Name', 'name', 'Name', 30)
-        >>> cli
-        {'DBotScore': {'Indicator': '8.8.8.8', 'Type': 'ip', 'Vendor': 'Name', 'Score': 3}, 'IP(val.Address &&\
- val.Address == obj.Address)': {'Address': '8.8.8.8', 'Malicious': {'Vendor': 3, 'Description': None}}}
-
     """
 
     def __init__(self, server, base_suffix, integration_name, integration_command_name, integration_context_name,
