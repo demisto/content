@@ -120,7 +120,7 @@ def check_latest_offset(topic, partition_number=None):
     partitions = topic.latest_available_offsets()
     latest_offset = 0
     if partition_number is not None:
-        partition = partitions.get(str(PARTITION))
+        partition = partitions.get(str(partition_number))
         if partitions.get(str(partition)):
             latest_offset = partition[0][0]
         else:
@@ -330,7 +330,7 @@ def fetch_incidents():
         last_fetch = last_offset if last_offset > offset else offset
 
         # If need to fetch
-        latest_offset = check_latest_offset(kafka_topic)
+        latest_offset = check_latest_offset(kafka_topic, partition)
         if latest_offset > last_fetch:
             consumer = kafka_topic.get_simple_consumer(
                 auto_offset_reset=last_fetch,
