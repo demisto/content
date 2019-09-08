@@ -100,7 +100,10 @@ def http_request(method, url_suffix, params=None, data=None):
             return_error('Error in API call to GitHub Integration [%d] - %s' % (res.status_code, res.reason))
 
     try:
-        return res.json()
+        if res.status_code == 204:
+            return res
+        else:
+            return res.json()
 
     except Exception as excep:
         return_error('Error in HTTP request - {}'.format(str(excep)))
