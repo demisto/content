@@ -829,6 +829,121 @@ def test_is_outputs_for_reputations_commands_valid():
         "The integration validator found invalid command outputs while it is valid"
 
 
+def test_valid_new_beta_integration():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.old_integration = {}
+    validator.current_integration = {
+        "commonfields": {
+            "id": "newIntegration"
+        },
+        "name": "newIntegration",
+        "display": "newIntegration (Beta)",
+        "beta": True,
+    }
+
+    assert validator.is_valid_beta_integration(is_new=True) is True, \
+        "The Beta validator did not validate a new valid integration"
+
+
+def test_new_beta_integration_missing_beta_in_display():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.old_integration = {}
+    validator.current_integration = {
+        "commonfields": {
+            "id": "newIntegration"
+        },
+        "name": "newIntegration",
+        "display": "newIntegration",
+        "beta": True,
+    }
+
+    assert validator.is_valid_beta_integration(is_new=True) is False, \
+        "The Beta validator approved the integration" \
+        "but it should have fail it for missing beta substring in 'display' field"
+
+
+def test_new_beta_integration_with_beta_substring_in_id():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.old_integration = {}
+    validator.current_integration = {
+        "commonfields": {
+            "id": "newIntegration beta"
+        },
+        "name": "newIntegration",
+        "display": "newIntegration (Beta)",
+        "beta": True,
+    }
+
+    assert validator.is_valid_beta_integration(is_new=True) is False, \
+        "The beta validator approved the new beta integration," \
+        " but it should fail it because the 'id' field has a 'beta' substring in it. " \
+        "the validator should not allow it for new integration"
+
+
+def test_new_beta_integration_with_beta_substring_in_name():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.old_integration = {}
+    validator.current_integration = {
+        "commonfields": {
+            "id": "newIntegration"
+        },
+        "name": "newIntegration beta",
+        "display": "newIntegration (Beta)",
+        "beta": True,
+    }
+
+    assert validator.is_valid_beta_integration(is_new=True) is False, \
+        "The beta validator approved the new beta integration," \
+        " but it should fail it because the 'name' field has a 'beta' substring in it. " \
+        "the validator should not allow it for new integration"
+
+
+def test_cahnged_beta_integration_with_beta_substring_in_is_and_name():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.old_integration = {
+        "commonfields": {
+            "id": "newIntegration beta"
+        },
+        "name": "newIntegration beta",
+        "display": "newIntegration (Beta)",
+        "beta": True,
+    }
+    validator.current_integration = {
+        "commonfields": {
+            "id": "newIntegration beta"
+        },
+        "name": "newIntegration beta",
+        "display": "newIntegration changed (Beta)",
+        "beta": True,
+    }
+
+    assert validator.is_valid_beta_integration() is True, \
+        "The Beta validator failed the integration" \
+        "but it should have approved"
+
+
+def test_changed_beta_integration_without_beta_field():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.old_integration = {
+        "commonfields": {
+            "id": "newIntegration beta"
+        },
+        "name": "newIntegration beta",
+        "display": "newIntegration (Beta)",
+    }
+    validator.current_integration = {
+        "commonfields": {
+            "id": "newIntegration beta"
+        },
+        "name": "newIntegration beta",
+        "display": "newIntegration changed (Beta)",
+    }
+
+    assert validator.is_valid_beta_integration() is False, \
+        "The Beta validator approved the integration" \
+        "but it should have fail it because it is missing 'beta' field with the value true"
+
+
 def test_proxy_sanity_check():
     validator = IntegrationValidator("temp_file", check_git=False)
     validator.current_integration = {
