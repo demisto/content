@@ -498,6 +498,7 @@ script:
       description: Test outcome result.
       type: String
   dockerimage: demisto/python3:3.7.4.977
+  subtype: python3
   isfetch: false
   longRunning: false
   longRunningPort: false
