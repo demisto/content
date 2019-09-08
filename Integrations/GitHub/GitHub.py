@@ -292,6 +292,28 @@ def format_user_outputs(user: dict = {}) -> dict:
     return ec_user
 
 
+def format_team_outputs(team: dict = {}) -> dict:
+    """Take GitHub API team data and format to expected context outputs
+
+    Args:
+        team (dict): team data returned from GitHub API
+
+    Returns:
+        (dict): team object formatted to expected context outputs
+    """
+    ec_team = {
+        'ID': team.get('id'),
+        'NodeID': team.get('node_id'),
+        'Name': team.get('name'),
+        'Slug': team.get('slug'),
+        'Description': team.get('description'),
+        'Privacy': team.get('privacy'),
+        'Permission': team.get('permission'),
+        'Parent': team.get('parent')
+    }
+    return ec_team
+
+
 def format_head_or_base_outputs(head_or_base: dict = {}) -> dict:
     """Take GitHub API head or base branch data and format to expected context outputs
 
@@ -390,19 +412,7 @@ def format_pr_outputs(pull_request: dict = {}) -> dict:
     ec_requested_reviewer = [format_user_outputs(requested_reviewer) for requested_reviewer in requested_reviewers_data]
 
     requested_teams_data = safe_get(pull_request, 'requested_teams', [])
-    ec_requested_team = [
-        {
-            'ID': requested_team.get('id'),
-            'NodeID': requested_team.get('node_id'),
-            'Name': requested_team.get('name'),
-            'Slug': requested_team.get('slug'),
-            'Description': requested_team.get('description'),
-            'Privacy': requested_team.get('privacy'),
-            'Permission': requested_team.get('permission'),
-            'Parent': requested_team.get('parent')
-        }
-        for requested_team in requested_teams_data
-    ]
+    ec_requested_team = [format_team_outputs(requested_team) for requested_team in requested_teams_data]
 
     head_data = safe_get(pull_request, 'head', {})
     ec_head = format_head_or_base_outputs(head_data)
@@ -482,6 +492,12 @@ def format_comment_outputs(comment: dict, issue_number: Union[int, str]) -> dict
 
 
 ''' REQUESTS FUNCTIONS '''
+
+
+def list_teams(organization: str) -> list:
+    suffix = f'/orgs/{organization}/teams'
+    response = http_request('GET', url_suffix=suffix)
+    return response
 
 
 def get_branch(branch: str) -> dict:
@@ -642,30 +658,17 @@ def get_download_count():
                    response)
 
 
-def get_relevant_prs(the_time: datetime, label: str, query: str) -> list:
-    reg = re.compile("\.\d{6}$")
-    timestamp, _ = reg.subn('', the_time.isoformat())
-    query = query.replace('{USER}', USER).replace('{REPOSITORY}', REPOSITORY).replace('{timestamp}', timestamp)
-
-    # if label was passed then use it in the query otherwise remove that part of the query
+def get_stale_prs(stale_time: str, label: str) -> list:
+    time_range_start, _ = parse_date_range(stale_time)
+    # regex for removing the digits from the end of the isoformat timestamp that don't conform to API expectations
+    timestamp_regex = re.compile('\.\d{6}$')
+    timestamp, _ = timestamp_regex.subn('', time_range_start.isoformat())
+    query = f'repo:{USER}/{REPOSITORY} is:open updated:<{timestamp} is:pr'
     if label:
-        query = query.replace('{label}', label)
-    elif ' label:{label}' in query:
-        query = query.replace(' label:{label}', '')
-    elif ' -label:{label}' in query:
-        query = query.replace(' -label:{label}', '')
-
+        query += f' label:{label}'
     matching_issues = search_issue(query).get('items', [])
     relevant_prs = [get_pull_request(issue.get('number')) for issue in matching_issues]
     return relevant_prs
-
-
-def get_stale_prs(args={}):
-    stale_time = args.get('stale_time')
-    time_range_start, _ = parse_date_range(stale_time)
-    label = args.get('label')
-    query = 'repo:{USER}/{REPOSITORY} is:open updated:<{timestamp} is:pr label:{label}'
-    return get_relevant_prs(time_range_start, label, query)
 
 
 ''' COMMANDS '''
@@ -674,6 +677,19 @@ def get_stale_prs(args={}):
 def test_module():
     http_request(method='GET', url_suffix=ISSUE_SUFFIX, params={'state': 'all'})
     demisto.results("ok")
+
+
+def list_teams_command():
+    args = demisto.args()
+    organization = args.get('organization')
+    response = list_teams(organization)
+
+    ec_object = [format_team_outputs(team) for team in response]
+    ec = {
+        'GitHub.Team(val.ID === obj.ID)': ec_object
+    }
+    human_readable = tableToMarkdown(f'Teams for Organization "{organization}"', ec_object, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
 def get_pull_request_command():
@@ -693,14 +709,11 @@ def add_label_command():
     args = demisto.args()
     issue_number = args.get('issue_number')
     labels = argToList(args.get('labels'))
-    response = add_label(issue_number, labels)
-
-    ec_object = [format_label_outputs(label) for label in response]
-    ec = {
-        'GitHub.Label(val.ID === obj.ID)': ec_object
-    }
-    human_readable = tableToMarkdown('Added Labels', ec_object, removeNull=True)
-    return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+    add_label(issue_number, labels)
+    labels_for_msg = [f'"{label}"' for label in labels]
+    msg = f'{" and ".join(labels_for_msg)} Successfully Added to Issue #{issue_number}'
+    msg = 'Labels ' + msg if 'and' in msg else 'Label ' + msg
+    demisto.results(msg)
 
 
 def get_commit_command():
@@ -712,7 +725,7 @@ def get_commit_command():
     ec = {
         'GitHub.Commit(val.SHA === obj.SHA)': ec_object
     }
-    human_readable = tableToMarkdown('Commit', ec_object, removeNull=True)
+    human_readable = tableToMarkdown(f'Commit *{commit_sha[:10]}*', ec_object, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
@@ -779,7 +792,7 @@ def list_issue_comments_command():
     ec = {
         'GitHub.Comment(val.IssueNumber === obj.IssueNumber && val.ID === obj.ID)': ec_object
     }
-    human_readable = tableToMarkdown('Comments', ec_object, removeNull=True)
+    human_readable = tableToMarkdown(f'Comments for Issue #{issue_number}', ec_object, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
@@ -857,32 +870,26 @@ def get_branch_command():
         'Protected': response.get('protected')
     }
     ec = {
-        'GitHub.Branch(val.Name === obj.name && val.CommitSHA === obj.CommitSHA)': ec_object
+        'GitHub.Branch(val.Name === obj.Name && val.CommitSHA === obj.CommitSHA)': ec_object
     }
-    human_readable = tableToMarkdown('Branch', ec_object, removeNull=True)
+    human_readable = tableToMarkdown(f'Branch "{branch_name}"', ec_object, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
 def create_branch_command():
     args = demisto.args()
     branch_name = args.get('branch_name')
-    sha = args.get('sha')
-    response = create_branch(branch_name, sha)
-
-    ec_object = {
-        'Ref': response.get('ref'),
-        'NodeID': response.get('node_id')
-    }
-    ec = {
-        'GitHub.Branch(val.Ref === obj.Ref && val.NodeID === obj.NodeID)': ec_object
-    }
-    human_readable = tableToMarkdown('Created Branch Details', ec_object, removeNull=True)
-    return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+    commit_sha = args.get('commit_sha')
+    create_branch(branch_name, commit_sha)
+    msg = f'Branch "{branch_name}" Created Successfully'
+    demisto.results(msg)
 
 
 def get_stale_prs_command():
     args = demisto.args()
-    results = get_stale_prs(args)
+    stale_time = args.get('stale_time', '3 days')
+    label = args.get('label')
+    results = get_stale_prs(stale_time, label)
     if results:
         formatted_results = []
         for pr in results:
@@ -890,7 +897,7 @@ def get_stale_prs_command():
                 requested_reviewer.get('login') for requested_reviewer in pr.get('requested_reviewers', [])
             ]
             formatted_pr = {
-                'URL': pr.get('html_url'),
+                'URL': f'<{pr.get("html_url")}>',
                 'Number': pr.get('number'),
                 'RequestedReviewer': requested_reviewers
             }
@@ -1000,7 +1007,8 @@ COMMANDS = {
     'GitHub-list-pr-reviews': list_pr_reviews_command,
     'GitHub-get-commit': get_commit_command,
     'GitHub-add-label': add_label_command,
-    'GitHub-get-pull-request': get_pull_request_command
+    'GitHub-get-pull-request': get_pull_request_command,
+    'GitHub-list-teams': list_teams_command
 }
 
 
