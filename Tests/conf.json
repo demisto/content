@@ -286,15 +286,18 @@
         },
         {
             "playbookID": "PAN-OS - Block IP - Custom Block Rule Test",
-            "integrations": "Panorama"
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama"
         },
         {
             "playbookID": "PAN-OS - Block IP - Static Address Group Test",
-            "integrations": "Panorama"
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama"
         },
         {
             "playbookID": "PAN-OS - Block URL - Custom URL Category Test",
-            "integrations": "Panorama"
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama"
         },
         {
             "playbookID": "ParseExcel-test"
