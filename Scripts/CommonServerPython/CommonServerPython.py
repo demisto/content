@@ -1567,11 +1567,11 @@ regexFlags = re.M  # Multi line matching
 ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b'
 emailRegex = r'\b[^@]+@[^@]+\.[^@]+\b'
 hashRegex = r'\b[0-9a-fA-F]+\b'
-urlRegex = r'\b(?i)(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
-           r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?\b'
-domainRegex = r'\b(?i)(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-A-Z0-9\\p{L}]+\[?\.\]?)' \
-              r'+[-A-Z0-9\\p{L}]+(?::[0-9]+)?(?:(?:\/|\?)[-A-Z0-9+\\p{L}&@#\/%=~_$?!\-:,.\(\);\*---|]' \
-              r'*[A-Z0-9+&\\p{L}@#\/%=~_$\(\);\*---|])?'
+urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
+           r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
+domainRegex = r'(?i)(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-A-Z0-9]+\[?\.\]?)+[-A-Z0-9]+' \
+              r'(?::[0-9]+)?(?:(?:\/|\?)[-A-Z0-9+&@#\/%=~_$?!:,.\(\);\*|]*[-A-Z0-9+&@#\/%=~_$\(\);\*|])?|' \
+              r'\b[-A-Za-z0-9._%+\*|]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'
 
 md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
 sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
@@ -1650,10 +1650,9 @@ def pascalToSpace(s):
     s = ' '.join(s.split())
 
     # fix special cases:
-    rep = {'D Bot': 'DBot'}
-    rep = dict((re.escape(k), v) for k, v in rep.items())
-    pattern = re.compile('|'.join(rep.keys()))
-    s = pattern.sub(lambda m: rep[re.escape(m.group(0))], s)
+    special_cases_dict = {'D Bot': 'DBot'}
+    for i, j in special_cases_dict.items():
+        s = s.replace(i, j)
 
     return s
 

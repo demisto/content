@@ -14,7 +14,6 @@ requests.packages.urllib3.disable_warnings()
 
 SERVER_URL = demisto.params()['serverUrl'].rstrip('/')
 API_URL = SERVER_URL + '/api'
-API_TOKEN_URL = API_URL + '/token'
 CLIENT_ID = demisto.params()['client_id']
 EMAIL = demisto.getParam('credentials').get('identifier')
 PASSWORD = demisto.getParam('credentials').get('password')
@@ -129,7 +128,7 @@ TYPE_ID_TO_FILE_TYPE = {
     24: 'Whitepaper'
 }
 
-HEADERS = {
+TABLE_HEADERS = {
     'indicator': ['ID', 'Type', 'Value', 'Description', 'Status',
                   'TQScore', 'CreatedAt', 'UpdatedAt', 'DBotScore', 'URL'],
     'adversary': ['ID', 'Name', 'CreatedAt', 'UpdatedAt', 'URL'],
@@ -196,23 +195,42 @@ def get_errors_string_from_bad_request(bad_request_results, status_code):
     return str()  # Service did not provide any errors.
 
 
-def request_new_access_token():
-    data = {'grant_type': 'password', 'email': EMAIL, 'password': PASSWORD, 'client_id': CLIENT_ID}
-    access_token_response = requests.post(API_TOKEN_URL, data=data, verify=USE_SSL, allow_redirects=False)
+def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_response=False, allow_redirects=True):
+    if url_suffix != '/token':
+        access_token = get_access_token()
+        api_call_headers = {'Authorization': 'Bearer ' + access_token}
 
-    res = json.loads(access_token_response.text)
-    if int(access_token_response.status_code) >= 400:
-        errors_string = get_errors_string_from_bad_request(access_token_response, access_token_response.status_code)
-        error_message = 'Authentication failed, unable to retrieve an access token.\n{}'.format(errors_string)
+        if not files:
+            params = json.dumps(params)
+    else:
+        api_call_headers = None
+
+    response = requests.request(method, API_URL + url_suffix, data=params, headers=api_call_headers,
+                                verify=USE_SSL, files=files, allow_redirects=allow_redirects)
+
+    if response.status_code >= 400:
+        errors_string = get_errors_string_from_bad_request(response, response.status_code)
+        error_message = 'Received and error - status code [{0}].\n{1}'.format(response.status_code, errors_string)
         return_error(error_message)
 
+    if retrieve_entire_response:
+        return response
+    elif method != 'DELETE':  # the DELETE request returns nothing in response
+        return response.json()
+    return None
+
+
+def request_new_access_token():
+    params = {'grant_type': 'password', 'email': EMAIL, 'password': PASSWORD, 'client_id': CLIENT_ID}
+    access_token_response = tq_request('POST', '/token', params, allow_redirects=False)
+
     updated_integration_context = {
-        'access_token': res['access_token'],
+        'access_token': access_token_response['access_token'],
         'access_token_creation_time': int(time.time()) - 1,  # decrementing one second to be on the safe side
-        'access_token_expires_in': res['expires_in']
+        'access_token_expires_in': access_token_response['expires_in']
     }
     demisto.setIntegrationContext(updated_integration_context)
-    threatq_access_token = res['access_token']
+    threatq_access_token = access_token_response['access_token']
     return threatq_access_token
 
 
@@ -230,27 +248,6 @@ def get_access_token():
     else:
         new_access_token = request_new_access_token()
         return new_access_token
-
-
-def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_response=False):
-    access_token = get_access_token()
-    api_call_headers = {'Authorization': 'Bearer ' + access_token}
-
-    if not files:
-        params = json.dumps(params)
-
-    response = requests.request(method, API_URL + url_suffix, data=params,
-                                headers=api_call_headers, verify=USE_SSL, files=files)
-
-    if response.status_code >= 400:
-        errors_string = get_errors_string_from_bad_request(response, response.status_code)
-        error_message = 'Received and error - status code [{0}].\n{1}'.format(response.status_code, errors_string)
-        return_error(error_message)
-
-    if retrieve_entire_response:
-        return response
-    elif method != 'DELETE':  # the DELETE request returns nothing in response
-        return json.loads(response.text)
 
 
 def make_create_object_request(obj_type, params):
@@ -277,6 +274,7 @@ def make_edit_request_for_an_object(obj_id, obj_type, params):
     url_suffix = '/{0}/{1}?with=attributes,sources'.format(OBJ_DIRECTORY[obj_type], obj_id)
     if obj_type == 'indicator':
         url_suffix += ',score'
+
     res = tq_request('PUT', url_suffix, params)
 
     raw = data_to_demisto_format(res['data'], obj_type)
@@ -294,7 +292,7 @@ def make_ioc_reputation_request(ioc_type, value, generic_context):
     res = tq_request('GET', url_suffix)
 
     raw_context = {}  # type: Dict[str, Any]
-    if res['data']:
+    if res['data'] and res['data'][0].get('value') == value:  # ThreatQ returns results whose prefixes match the query
         # Search for detailed information about the IOC
         url_suffix = '/indicators/{0}?with=attributes,sources,score,type'.format(res['data'][0].get('id'))
         res = tq_request('GET', url_suffix)
@@ -311,10 +309,10 @@ def make_ioc_reputation_request(ioc_type, value, generic_context):
 
 def create_dbot_context(indicator, ind_type, ind_score):
     """ This function converts a TQ scoring value of an indicator into a DBot score.
-    Default score mapping function: -1 -> 0, [0,3] -> 1, [4,7] -> 2, [8,10] -> 3.
+    The default score mapping function is: -1 -> 0, [0,3] -> 1, [4,7] -> 2, [8,10] -> 3.
 
-    If threshold parameter is set, it overrides the default function definition for a
-    malicious indicator, so only when TQ score >= threshold the DBot score will be 3.
+    If threshold parameter is set manually, it overrides the default function definition for a
+    malicious indicator, such that TQ score >= threshold iff the DBot score == 3.
 
     Args:
         indicator (str): The indicator name
@@ -335,9 +333,9 @@ def create_dbot_context(indicator, ind_type, ind_score):
         5: 2,
         6: 2,
         7: 2,
-        8: 2 if THRESHOLD else 3,
-        9: 2 if THRESHOLD else 3,
-        10: 2 if THRESHOLD else 3
+        8: 2,
+        9: 2,
+        10: 2
     }
 
     ret = {
@@ -346,7 +344,7 @@ def create_dbot_context(indicator, ind_type, ind_score):
         'Type': ind_type
     }
 
-    if THRESHOLD and ind_score >= THRESHOLD:
+    if ind_score >= THRESHOLD:
         ret['Score'] = 3
     else:
         ret['Score'] = dbot_score_map[ind_score]
@@ -442,7 +440,7 @@ def malware_locked_to_demisto_format(state):
 
 
 def parse_date(text):
-    valid_formats = ['%Y-%m-%d %H:%M:%S']
+    valid_formats = ['%Y-%m-%d %H:%M:%S', '%Y-%m-%d']
     for fmt in valid_formats:
         try:
             return str(datetime.strptime(text, fmt))
@@ -537,6 +535,8 @@ def get_pivot_id(obj1_type, obj1_id, obj2_type, obj2_id):
     for related_object in res['data']:  # res['data'] contains all the related objects of obj_id1
         if int(related_object.get('id')) == int(obj2_id):
             return int(related_object['pivot']['id'])
+    else:
+        return_error('Command failed - objects are not related.')
 
 
 def add_malicious_data(generic_context, tq_score):
@@ -549,6 +549,7 @@ def add_malicious_data(generic_context, tq_score):
 def set_ioc_entry_context(ioc_type, raw, dbot, generic):
     if dbot.get('Score') == 3:
         add_malicious_data(generic, raw.get('TQScore', -1))
+
     ec = {
         outputPaths[ioc_type]: generic,
         'DBotScore': dbot
@@ -578,22 +579,22 @@ def build_readable_for_search_by_name(ioc_context, event_context, adversary_cont
 def build_readable(readable_title, obj_type, data, dbot_score=None, metadata=None):
     if isinstance(data, dict):  # One object data
         data['DBotScore'] = dbot_score  # We add DBot Score data only for the readable output - then we pop it back
-        readable = tableToMarkdown(readable_title, data, headers=HEADERS[obj_type],
+        readable = tableToMarkdown(readable_title, data, headers=TABLE_HEADERS[obj_type],
                                    headerTransform=pascalToSpace, removeNull=True, metadata=metadata)
         data.pop('DBotScore')
 
         if 'Attribute' in data:
-            readable += tableToMarkdown('Attributes', data['Attribute'], headers=HEADERS['attrs'],
+            readable += tableToMarkdown('Attributes', data['Attribute'], headers=TABLE_HEADERS['attrs'],
                                         removeNull=True, headerTransform=pascalToSpace, metadata=metadata)
         if 'Source' in data:
-            readable += tableToMarkdown('Sources', data['Source'], headers=HEADERS['sources'],
+            readable += tableToMarkdown('Sources', data['Source'], headers=TABLE_HEADERS['sources'],
                                         removeNull=True, headerTransform=pascalToSpace, metadata=metadata)
         if 'URL' in data:
             url_in_markdown_format = '[{0}]({1})'.format(data['URL'], data['URL'])
             readable = readable.replace(data['URL'], url_in_markdown_format)
 
     else:  # 'data' is a list of objects
-        readable = tableToMarkdown(readable_title, data, headers=HEADERS[obj_type],
+        readable = tableToMarkdown(readable_title, data, headers=TABLE_HEADERS[obj_type],
                                    headerTransform=pascalToSpace, removeNull=True, metadata=metadata)
         for elem in data:
             url_in_markdown_format = '[{0}]({1})'.format(elem['URL'], elem['URL'])
@@ -609,11 +610,8 @@ def test_module():
     token = request_new_access_token()
     threshold = demisto.params().get('threshold')
     threshold_is_integer = isinstance(threshold, int) or (isinstance(threshold, str) and threshold.isdigit())
-    threshold_is_valid_int = threshold_is_integer and 0 <= int(threshold) <= 10
-    if token and (threshold is None or threshold_is_valid_int):
+    if token and threshold_is_integer and 0 <= int(threshold) <= 10:
         demisto.results('ok')
-    else:
-        demisto.results('test failed')
 
 
 def search_by_name_command():
@@ -865,13 +863,10 @@ def unlink_objects_command():
         return_error('An object cannot be linked to itself.')
 
     p_id = get_pivot_id(obj1_type, obj1_id, obj2_type, obj2_id)
-    if p_id is None:
-        demisto.results('Command failed - objects are not related.')
-    else:
-        url_suffix = '/{0}/{1}/{2}'.format(OBJ_DIRECTORY[obj1_type], obj1_id, OBJ_DIRECTORY[obj2_type])
-        tq_request('DELETE', url_suffix, params=[p_id])
-        demisto.results(
-            'Successfully unlinked {0} with ID {1} and {2} with ID {3}.'.format(obj1_type, obj1_id, obj2_type, obj2_id))
+    url_suffix = '/{0}/{1}/{2}'.format(OBJ_DIRECTORY[obj1_type], obj1_id, OBJ_DIRECTORY[obj2_type])
+    tq_request('DELETE', url_suffix, params=[p_id])
+    demisto.results(
+        'Successfully unlinked {0} with ID {1} and {2} with ID {3}.'.format(obj1_type, obj1_id, obj2_type, obj2_id))
 
 
 def update_score_command():
@@ -1159,8 +1154,8 @@ def get_file_reputation():
     for fmt in ['md5', 'sha1', 'sha256']:
         if REGEX_MAP[fmt].match(file):
             break
-        elif fmt == 'sha256':
-            return_error('Argument {0} is not a valid file format.'.format(file))
+    else:
+        return_error('Argument {0} is not a valid file format.'.format(file))
 
     generic_context = createContext({
         'MD5': file if fmt == 'md5' else None,
