@@ -7,6 +7,7 @@ import requests
 from distutils.util import strtobool
 from pykafka import KafkaClient, SslConfig, exceptions
 from pykafka.common import OffsetType
+from pykafka.exceptions import KafkaException
 import logging as log
 
 # Enable debug
@@ -42,6 +43,7 @@ if not demisto.params().get('proxy'):
     del os.environ['https_proxy']
 
 ''' HELPER FUNCTIONS '''
+
 
 def check_params(topic, old_offset=None, old_partition=None):
     """
@@ -375,11 +377,11 @@ try:
         fetch_partitions()
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents()
-# Log exceptions
-except Exception, e:
-    return_error(e.message)
 # pykafka exception
-except exceptions, e:
+except KafkaException as e:
+    return_error(e.message)
+# Log exceptions
+except Exception as e:
     return_error(e.message)
 finally:
     if os.path.isfile('ca.cert'):
