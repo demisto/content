@@ -1,2 +1,2 @@
 ## [Unreleased]
-Changed `cuckoo-view-task` to support arrays as id input.
+You can now enter an array of IDs for the ***cuckoo-view-task*** command.

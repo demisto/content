@@ -206,7 +206,7 @@ class Content:
                 section_body += "\n##### Removed {}\n".format(self.get_header())
                 for name in self.deleted_store:
                     print(' - adding release notes (Removed) for - [{}]'.format(name), end='')
-                    section_body += "- __" + name + "__\n"
+                    section_body += "- __" + os.path.splitext(os.path.basename(name))[0] + "__\n"
                     print("Success")
 
             if section_body:
