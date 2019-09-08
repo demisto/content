@@ -1,11 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
 ''' IMPORTS '''
-import math
-from itertools import islice
 import requests
-from distutils.util import strtobool
-from pykafka import KafkaClient, SslConfig, exceptions
+from pykafka import KafkaClient, SslConfig
 from pykafka.common import OffsetType
 from pykafka.exceptions import KafkaException
 import logging as log
@@ -73,11 +70,11 @@ def check_params(topic, old_offset=None, old_partition=None):
         if isinstance(old_offset, (unicode, str)):
             if old_offset.isdigit():
                 offset = int(old_offset)
-                offset = OffsetType.EARLIEST if offset == 0 else offset-1
+                offset = OffsetType.EARLIEST if offset == 0 else offset - 1
             elif old_offset.lower() == 'earliest':
                 offset = OffsetType.EARLIEST
             elif old_offset.lower() == 'latest':
-                offset = check_latest_offset(topic, partition_number=partition)-1
+                offset = check_latest_offset(topic, partition_number=partition) - 1
             else:
                 return_error('Supplied offset is not a number')
             if check_latest_offset(topic, partition_number=partition) <= offset:
@@ -97,11 +94,11 @@ def create_incident(message, topic):
     :return incident:
     """
     raw = {
-            'Topic': topic,
-            'Partition': message.partition_id,
-            'Offset': message.offset,
-            'Message': message.value
-        }
+        'Topic': topic,
+        'Partition': message.partition_id,
+        'Offset': message.offset,
+        'Message': message.value
+    }
     return {
         'name': 'Kafka {} partition:{} offset:{}'.format(topic, message.partition_id, message.offset),
         'occurred': timestamp_to_datestring(int(time.time())),
@@ -131,7 +128,7 @@ def check_latest_offset(topic, partition_number=None):
         for partition in partitions.values():
             if latest_offset < partition[0][0]:
                 latest_offset = partition[0][0]
-    return latest_offset-1
+    return latest_offset - 1
 
 
 def create_certificate():
@@ -308,7 +305,7 @@ def fetch_partitions():
         }
         demisto.results({
             'Type': entryTypes['note'],
-            'Contents': partitions,
+            'Contents': contents,
             'ContentsFormat': formats['json'],
             'HumanReadable': md,
             'ReadableContentsFormat': formats['markdown'],
