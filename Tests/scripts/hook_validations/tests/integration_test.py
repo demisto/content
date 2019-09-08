@@ -1006,3 +1006,51 @@ def test_proxy_wrong_required():
     }
 
     assert validator.is_proxy_configured_correctly() is False
+
+
+def test_insecure_wrong_display():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "insecure",
+                "type": 8,
+                "display": "Use system proxy settings",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_insecure_configured_correctly() is False
+
+
+def test_unsecure_wrong_display():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "unsecure",
+                "type": 8,
+                "display": "Use system proxy settings",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_insecure_configured_correctly() is False
+
+
+def test_unsecure_wrong_display():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "unsecure",
+                "type": 8,
+                "display": "Trust any certificate (not secure)",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_insecure_configured_correctly()
