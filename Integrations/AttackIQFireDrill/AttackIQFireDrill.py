@@ -67,7 +67,6 @@ TESTS_TRANS = {
     'cron_expression': 'CronExpression',
     'runnable': 'Runnable',
     'last_result': 'LastResult',
-    'scheduled_count': 'ScheduledCount',
     'user': 'User',
     'created': 'Created',
     'modified': 'Modified',
@@ -116,7 +115,6 @@ TEST_RESULT_TRANS = {
         'name': 'Name',
         'description': 'Description'
     },
-    'run_count': 'RunCount',
     'scenario.id': 'Scenario.Id',
     'scenario.name': 'Scenario.Name',
     'scenario.description': 'Scenario.Description',

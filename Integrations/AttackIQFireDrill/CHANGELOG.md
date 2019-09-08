@@ -1,5 +1,10 @@
 ## [Unreleased]
   - New Integration AttackIQ - FireDrill:
-    - Retrieve list of testing scenarios
-    - Execute penetration testing assessments
-    - Retrieve detailed results of assessments and tests
+    - Command ***attackiq-get-assessment-by-id***: Get all assessments in a page or by assessment id.
+    - Command ***attackiq-list-assessments***: Get all assessments in a page (up to 10 assessments per page).
+    - Command ***attackiq-activate-assessment***: Activates the assessment. This is required for execution.
+    - Command ***attackiq-run-all-tests-in-assessment***: Runs all of the tests in the assessment.
+    - Command ***attackiq-get-assessment-execution-status***: Get assessment execution status - supports only on demand runs.
+    - Command ***attackiq-get-test-execution-status***: Get test run status.
+    - Command ***attackiq-list-tests-by-assessment***: Get assessment's test. Will get by default up to 10 test per call.
+    - Command ***attackiq-get-test-results***: Get assessment's test result by page (by default, a page consists of 10 tests).

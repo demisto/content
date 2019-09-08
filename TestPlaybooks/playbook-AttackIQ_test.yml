@@ -622,14 +622,6 @@ tasks:
           right:
             value:
               simple: Failed
-      - - operator: isEqualNumber
-          left:
-            value:
-              simple: AttackIQ.Test.ScheduledCount
-            iscontext: true
-          right:
-            value:
-              simple: "0"
       - - operator: isEqualString
           left:
             value:
