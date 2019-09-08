@@ -98,7 +98,7 @@ script:
       description: 'Query Active Directory in Active Directory syntax, e.g., this query will find all user objects,
        except Andy: "(&(objectCategory=person)(objectClass=user)(!(cn=andy)))". Notice that if some special characters
        such as *,(,\ must appear in the search filter as literals (i.e as a part of an attribute value),
-       they must be replaced by their escapes - \2a, \28, \5c, etc. For further details about search filter
+       they must be escaped - \\*, \\(, \\), \\\\, etc. For further details about search filter
        syntax: https://docs.microsoft.com/en-us/windows/win32/adsi/search-filter-syntax'
     - name: base-dn
       description: Root (e.g. DC=domain,DC=com). By default, the Base DN configured for the instance
