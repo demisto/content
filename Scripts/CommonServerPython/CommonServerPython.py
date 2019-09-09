@@ -1,10 +1,11 @@
-import socket
 
 import demistomock as demisto
 # Common functions script
 # =======================
 # This script will be appended to each server script before being executed.
 # Please notice that to add custom common code, add it to the CommonServerUserPython script
+import socket
+import requests
 from datetime import datetime, timedelta
 import time
 import json
@@ -1798,14 +1799,305 @@ def remove_nulls_from_dictionary(dict):
             del dict[key]
 
 
-def get_demisto_version():
-    """
-        Returns the Demisto version and build number.
+def assign_params(**kwargs):
+    """Creates a dictionary from given kwargs without empty values
+`    Examples:
+        >>> assign_params(a='1', b=True, c=None, d='')
+        {'a': '1', 'b': True}
 
-        :return: Demisto version object if Demisto class has attribute demistoVersion, else raises AttributeError
-        :rtype: ``dict``
+        >>> since_time = 'timestamp'
+        >>> assign_params(sinceTime=since_time)
+        {'sinceTime': 'timestamp'}
+
+    :type kwargs: ``kwargs``
+    :param kwargs: kwargs to filter
+
+    :return: dict without empty values
+    :rtype: ``dict``
+    """
+    return {key: value for key, value in kwargs.items() if value}
+
+
+def get_demisto_version():
+    """Returns the Demisto version and build number.
+
+    :return: Demisto version object if Demisto class has attribute demistoVersion, else raises AttributeError
+    :rtype: ``dict``
     """
     if hasattr(demisto, 'demistoVersion'):
         return demisto.demistoVersion()
     else:
         raise AttributeError('demistoVersion attribute not found.')
+
+
+def build_dbot_entry(indicator, indicator_type, vendor, score, description=None, build_malicious=True):
+    """Build a dbot entry. if score is 3 adds malicious
+    Examples:
+        >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 1)
+        {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 1}}
+
+        >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 3,  build_malicious=False)
+        {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 3}}
+
+        >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 3, 'Malicious email')
+        {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 3},\
+ 'Account.Email(val.Address && val.Address == obj.Address)': {'Address': 'user@example.com', 'Malicious': \
+{'Vendor': 3, 'Description': 'Malicious email'}}}
+
+    :type indicator: ``str``
+    :param indicator: indicator field. if using file hashes, can be dict
+
+    :type indicator_type: ``str``
+    :param indicator_type:
+        type of indicator ('url, 'domain', 'ip', 'cve', 'email', 'md5', 'sha1', 'sha256', 'crc32', 'sha512', 'ctph')
+
+    :type indicator: ``int``
+    :param score: score (0, 1, 2 , 3)
+
+    :type vendor: ``str``
+    :param vendor: Integration ID
+
+    :type description: ``str`` or ``None``
+    :param description: description (will be added to malicious if dbot_score is 3). can be None
+
+    :type build_malicious: ``bool``
+    :param build_malicious: if True, will add a malicious entry
+
+    :return: dbot entry
+    :rtype: ``dict``
+    """
+    indicator_type_lower = indicator_type.lower()
+    dbot_entry = {
+        outputPaths['dbotscore']: {
+            'Indicator': indicator,
+            'Type': indicator_type_lower,
+            'Vendor': vendor,
+            'Score': score
+        }}
+    if score is 3 and build_malicious:
+        dbot_entry.update(build_malicious_dbot_entry(indicator, indicator_type, score, description))
+    return dbot_entry
+
+
+def build_malicious_dbot_entry(indicator, indicator_type, vendor, description=None):
+    """ Build Malicious dbot entry
+    Examples:
+        >>> build_malicious_dbot_entry('8.8.8.8', 'ip', 'Vendor', 'Google DNS')
+        {'IP(val.Address && val.Address == obj.Address)': {'Address': '8.8.8.8', 'Malicious': {'Vendor': 'Vendor'\
+, 'Description': 'Google DNS'}}}
+
+        >>> build_malicious_dbot_entry('md5hash', 'MD5', 'Vendor', 'Malicious File')
+        {'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 ||\
+val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 ==\
+obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'MD5': 'md5hash', 'Malicious': {'Vendor': 'Vendor',\
+'Description': 'Malicious File'}}}
+
+    :type indicator: ``str``
+    :param indicator: Value (e.g. 8.8.8.8)
+
+    :type indicator_type: ``str``
+    :param indicator_type: e.g. 'IP'
+
+    :type vendor: ``str``
+    :param vendor: Integration ID
+
+    :type description: ``str``
+    :param description: Why it's malicious
+
+    :return: A malicious DBot entry
+    :rtype: ``dict``
+    """
+    file_types = ('md5', 'sha1', 'sha256', 'crc32', 'sha512', 'ctph')
+    indicator_type_lower = indicator_type.lower()
+    if indicator_type_lower in ('ip', 'email'):
+        key = 'Address'
+    elif indicator_type_lower == 'url':
+        key = 'Data'
+    elif indicator_type_lower == 'domain':
+        key = 'Name'
+    elif indicator_type_lower == 'cve':
+        key = 'ID'
+    elif indicator_type_lower in file_types:
+        key = indicator_type_lower.upper()
+        indicator_type_lower = 'file'
+    else:
+        raise DemistoException('Wrong indicator type supplied: {}'.format(indicator_type))
+    entry = {
+        key: indicator,
+        'Malicious': {
+            'Vendor': vendor,
+            'Description': description
+        }
+    }
+    return {outputPaths[indicator_type_lower]: entry}
+
+
+class BaseClient:
+    """Base Client for use in new integrations
+
+    :type server: ``str``
+    :param server: Base server address
+
+    :type base_suffix: ``str``
+    :param base_suffix: suffix of API (e.g`/api/v2/`)
+
+    :type integration_name: ``str``
+    :param integration_name: Name as shown in UI (`Integration Name`)
+
+    :type integration_command_name: ``str``
+    :param integration_command_name: lower case with `-` divider (`integration-name`)
+
+    :type integration_context_name: ``str``
+    :param integration_context_name: camelcase with no dividers (`IntegrationName`)
+
+    :type verify: ``bool``
+    :param verify: Verify SSL
+
+    :type proxy: ``bool``
+    :param proxy: Use system proxy
+
+    return: No data returned
+    :rtype: ``None``
+    """
+
+    def __init__(self,
+                 server,
+                 base_suffix,
+                 integration_name,
+                 integration_command_name,
+                 integration_context_name,
+                 verify=True,
+                 proxy=False
+                 ):
+        self._server = server.rstrip('/')
+        self.verify = verify
+        self._integration_name = str(integration_name)
+        self._integration_name_command = str(integration_command_name)
+        self._integration_name_context = str(integration_context_name)
+        self._base_url = '{}{}'.format(self._server, base_suffix)
+        if proxy:
+            self._proxies = handle_proxy()
+        else:
+            self._proxies = None
+
+    @property
+    def integration_name(self):
+        return self._integration_name
+
+    @property
+    def integration_context_name(self):
+        return self._integration_name_context
+
+    @property
+    def integration_command_name(self):
+        return self._integration_name_command
+
+    def _http_request(self, method, url_suffix, full_url=None, headers=None,
+                      auth=None, params=None, data=None, files=None,
+                      timeout=10, resp_type='json', **kwargs):
+        """A wrapper for requests lib to send our requests and handle requests and responses better.
+
+        :type method: ``str``
+        method: (str) HTTP method, e.g. 'GET', 'POST' ... etc.
+
+        :type url_suffix: ``str``
+        :param url_suffix (str): API endpoint.
+
+        :type full_url: ``str``
+        :param full_url:
+            Bypasses the use of self._base_url + url_suffix. Useful if there is a need to
+            make a request to an address outside of the scope of the integration
+            API.
+
+        :type headers: ``dict``
+        :param headers: Headers to send in the request.
+
+        :type auth: ``tuple``
+        :param auth: Auth tuple to enable Basic/Digest/Custom HTTP Auth.
+
+        :type params: ``dict``
+        :param params: URL parameters.
+
+        :type data: ``dict``
+        :param data: Data to be sent in a 'POST' request.
+
+        :type files: ``dict``
+        :param files: File data to be sent in a 'POST' request.
+
+        :type method: ``float``
+        :param timeout:
+            The amount of time in seconds a Request will wait for a client to
+            establish a connection to a remote machine.
+
+        :type resp_type: ``str``
+        :param resp_type:
+            Determines what to return from having made the HTTP request. The default
+            is 'json'. Other options are 'text', 'content' or 'response' if the user
+            would like the full response object returned.
+
+        :return: Depends on the resp_type parameter
+        :rtype: ``dict`` or ``str`` or ``requests.Response``
+        """
+        try:
+            address = full_url if full_url else self._base_url + url_suffix
+            res = requests.request(
+                method,
+                address,
+                verify=self.verify,
+                params=params,
+                data=data,
+                files=files,
+                headers=headers,
+                auth=auth,
+                timeout=timeout,
+                proxies=self._proxies,
+                **kwargs
+            )
+            # Handle error responses gracefully
+            if res.ok:
+                try:
+                    # Try to parse json error response
+                    return DemistoException(res.json())
+                except ValueError:
+                    err_msg = 'Error in {} API call [{}] - {}' \
+                        .format(self._integration_name, res.status_code, res.reason)
+                    raise DemistoException(err_msg)
+
+            resp_type = resp_type.lower()
+            try:
+                if resp_type == 'json':
+                    return res.json()
+                elif resp_type == 'text':
+                    return res.text
+                elif resp_type == 'content':
+                    return res.content
+                else:
+                    return res
+            except ValueError:
+                raise DemistoException('Failed to parse json object from response: {}'.format(res.content))
+
+        except requests.exceptions.ConnectTimeout:
+            err_msg = 'Connection Timeout Error - potential reasons may be that the Server URL parameter' \
+                      ' is incorrect or that the Server is not accessible from your host.'
+            raise DemistoException(err_msg)
+        except requests.exceptions.SSLError:
+            err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' in' \
+                      ' the integration configuration.'
+            raise DemistoException(err_msg)
+        except requests.exceptions.ProxyError:
+            err_msg = 'Proxy Error - if \'Use system proxy\' in the integration configuration has been' \
+                      ' selected, try deselecting it.'
+            raise DemistoException(err_msg)
+        except requests.exceptions.ConnectionError as e:
+            # Get originating Exception in Exception chain
+            error_class = str(e.__class__)
+            err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+            err_msg = '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
+                      'Verify that the server URL parameter' \
+                      ' is correct and that you have access to the server from your host.' \
+                .format(err_type, e.errno, e.strerror)
+            raise DemistoException(err_msg)
+
+
+class DemistoException(Exception):
+    """ Custom Exception """
