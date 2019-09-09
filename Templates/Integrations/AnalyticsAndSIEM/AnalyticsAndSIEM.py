@@ -7,7 +7,7 @@ from typing import Dict, Tuple, List, Optional, Union, AnyStr
 import urllib3
 
 """Example for Analytics and SIEM integration
-
+    
 Todo:
     * pass on it with alex
 """
@@ -53,6 +53,7 @@ class Client(BaseClient):
         suffix = 'event'
         # Dictionary of params for the request
         params = assign_params(sinceTime=since_time, limit=limit)
+        # Send a request using our http_request wrapper
         return self._http_request('GET', suffix, params=params)
 
     def event_request(self, event_id: AnyStr) -> Dict:
