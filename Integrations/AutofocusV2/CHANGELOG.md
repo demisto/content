@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.9.0] - 2019-09-04
   - Updated Palo Alto Networks AutoFocus V2 Indicators context outputs to support version 5.0.
 
 ## [19.8.2] - 2019-08-22
