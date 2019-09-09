@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+  - Enhanced `autofocus-samples-search`, `autofocus-sessions-search` with default arguments for queering
 
 ## [19.9.0] - 2019-09-04
   - Updated Palo Alto Networks AutoFocus V2 Indicators context outputs to support version 5.0.
