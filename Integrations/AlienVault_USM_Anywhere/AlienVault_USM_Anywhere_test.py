@@ -20,7 +20,7 @@ def test_fetch_incidents(mocker, requests_mock):
         'fetch_limit': '1',
         'url': 'https://vigilant.alienvault.cloud/'
     })
-    mocker.patch.object(demisto, 'getLastRun', return_value={'time': '2019-01-15T15:47:29.959Z'})
+    mocker.patch.object(demisto, 'getLastRun', return_value={'timestamp': '1547567249000'})
     mocker.patch.object(demisto, 'setLastRun')
     mocker.patch.object(demisto, 'incidents')
     from AlienVault_USM_Anywhere import fetch_incidents
