@@ -1,6 +1,7 @@
 id: Block IP - Generic v2
 version: -1
 name: Block IP - Generic v2
+fromversion: 4.5.0
 description: |-
   This playbook blocks malicious IPs using all integrations that you have enabled.
 
