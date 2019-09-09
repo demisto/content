@@ -1,6 +1,6 @@
 id: HybridAnalysis-Test
 version: -1
-fromversion: 5.0.0
+fromversion: 4.5.0
 name: HybridAnalysis-Test
 starttaskid: "0"
 tasks:
