@@ -21,7 +21,7 @@ tasks:
     nexttasks:
       '#none#':
       - "16"
-      - "17"
+      - "18"
     separatecontext: false
     view: |-
       {
@@ -35,10 +35,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 7d3d0239-be78-4df0-8c4c-20cec3449e89
+    taskid: d750bb71-4ef5-4de1-88ec-02d5035a0177
     type: regular
     task:
-      id: 7d3d0239-be78-4df0-8c4c-20cec3449e89
+      id: d750bb71-4ef5-4de1-88ec-02d5035a0177
       version: -1
       name: Assign incident severity to "Low"
       description: Assigns the incident severity to "Low".
@@ -72,6 +72,8 @@ tasks:
       blah: {}
       booltest: {}
       bugtraq: {}
+      campaigntargetcount: {}
+      campaigntargets: {}
       city: {}
       closeNotes: {}
       closeReason: {}
@@ -86,6 +88,7 @@ tasks:
       country: {}
       countrywherebusinesshasitsmainestablishment: {}
       countrywherethebreachtookplace: {}
+      criticalassets: {}
       customFields: {}
       cve: {}
       cvss: {}
@@ -101,6 +104,7 @@ tasks:
       dpoemailaddress: {}
       duration: {}
       emailaddress: {}
+      emailauthenticitycheck: {}
       emailbcc: {}
       emailbody: {}
       emailbodyformat: {}
@@ -111,6 +115,7 @@ tasks:
       emailclientname: {}
       emailfrom: {}
       emailfromdisplayname: {}
+      emailhtml: {}
       emailinreplyto: {}
       emailkeywords: {}
       emailmessageid: {}
@@ -202,8 +207,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 255,
-          "y": 545
+          "x": 175,
+          "y": 570
         }
       }
     note: false
@@ -378,8 +383,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 670,
-          "y": 545
+          "x": 580,
+          "y": 570
         }
       }
     note: false
@@ -387,10 +392,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 4480ef7a-12c1-45e9-8ee9-e6ca082a0808
+    taskid: 77f20a17-499a-4ed3-85ad-a24e697b4792
     type: regular
     task:
-      id: 4480ef7a-12c1-45e9-8ee9-e6ca082a0808
+      id: 77f20a17-499a-4ed3-85ad-a24e697b4792
       version: -1
       name: Assign incident severity to "High"
       description: Assigns the incident severity to "High".
@@ -424,6 +429,8 @@ tasks:
       blah: {}
       booltest: {}
       bugtraq: {}
+      campaigntargetcount: {}
+      campaigntargets: {}
       city: {}
       closeNotes: {}
       closeReason: {}
@@ -438,6 +445,7 @@ tasks:
       country: {}
       countrywherebusinesshasitsmainestablishment: {}
       countrywherethebreachtookplace: {}
+      criticalassets: {}
       customFields: {}
       cve: {}
       cvss: {}
@@ -453,6 +461,7 @@ tasks:
       dpoemailaddress: {}
       duration: {}
       emailaddress: {}
+      emailauthenticitycheck: {}
       emailbcc: {}
       emailbody: {}
       emailbodyformat: {}
@@ -463,6 +472,7 @@ tasks:
       emailclientname: {}
       emailfrom: {}
       emailfromdisplayname: {}
+      emailhtml: {}
       emailinreplyto: {}
       emailkeywords: {}
       emailmessageid: {}
@@ -554,8 +564,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1143,
-          "y": 545
+          "x": 1243,
+          "y": 570
         }
       }
     note: false
@@ -569,7 +579,6 @@ tasks:
       id: 84feda52-060b-4e27-89ef-05553ca57636
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -578,7 +587,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 720
+          "y": 900
         }
       }
     note: false
@@ -586,10 +595,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 5cd01b34-b8f4-4b3d-872b-68e2b325949b
+    taskid: ffcb1963-a04f-4f3b-8ff8-37e6829ac96c
     type: regular
     task:
-      id: 5cd01b34-b8f4-4b3d-872b-68e2b325949b
+      id: ffcb1963-a04f-4f3b-8ff8-37e6829ac96c
       version: -1
       name: Assign incident severity to "Critical"
       description: Assigns the incident severity to "Critical".
@@ -623,6 +632,8 @@ tasks:
       blah: {}
       booltest: {}
       bugtraq: {}
+      campaigntargetcount: {}
+      campaigntargets: {}
       city: {}
       closeNotes: {}
       closeReason: {}
@@ -637,6 +648,7 @@ tasks:
       country: {}
       countrywherebusinesshasitsmainestablishment: {}
       countrywherethebreachtookplace: {}
+      criticalassets: {}
       customFields: {}
       cve: {}
       cvss: {}
@@ -652,6 +664,7 @@ tasks:
       dpoemailaddress: {}
       duration: {}
       emailaddress: {}
+      emailauthenticitycheck: {}
       emailbcc: {}
       emailbody: {}
       emailbodyformat: {}
@@ -662,6 +675,7 @@ tasks:
       emailclientname: {}
       emailfrom: {}
       emailfromdisplayname: {}
+      emailhtml: {}
       emailinreplyto: {}
       emailkeywords: {}
       emailmessageid: {}
@@ -750,8 +764,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1572,
-          "y": 545
+          "x": 1650,
+          "y": 570
         }
       }
     note: false
@@ -759,12 +773,12 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 91be04b6-fc66-4654-8c71-d3cbc3af44e7
+    taskid: 14b9554d-23ca-4e85-86f8-51f290b2a18d
     type: condition
     task:
-      id: 91be04b6-fc66-4654-8c71-d3cbc3af44e7
+      id: 14b9554d-23ca-4e85-86f8-51f290b2a18d
       version: -1
-      name: Set severity based on the highest returned severity level
+      name: Set severity based on the highest severity
       description: Determines  & sets the incident severity based on the highest result
         of all severity calculations.
       type: condition
@@ -772,7 +786,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "10"
+      - "19"
       Critical:
       - "11"
       High:
@@ -791,10 +805,10 @@ tasks:
               complex:
                 root: Severities
                 filters:
-                - - operator: isEqualString
+                - - operator: isEqualNumber
                     left:
                       value:
-                        simple: Severities.Incident
+                        simple: Severities.IncidentSeverity
                       iscontext: true
                     right:
                       value:
@@ -803,7 +817,7 @@ tasks:
                   - operator: isEqualString
                     left:
                       value:
-                        simple: Severities.DBotScore
+                        simple: Severities.DBotScoreSeverity
                       iscontext: true
                     right:
                       value:
@@ -818,10 +832,10 @@ tasks:
               complex:
                 root: Severities
                 filters:
-                - - operator: isEqualString
+                - - operator: isEqualNumber
                     left:
                       value:
-                        simple: Severities.Incident
+                        simple: Severities.IncidentSeverity
                       iscontext: true
                     right:
                       value:
@@ -830,7 +844,7 @@ tasks:
                   - operator: isEqualString
                     left:
                       value:
-                        simple: Severities.DBotScore
+                        simple: Severities.DBotScoreSeverity
                       iscontext: true
                     right:
                       value:
@@ -845,19 +859,19 @@ tasks:
               complex:
                 root: Severities
                 filters:
-                - - operator: isEqualString
+                - - operator: isEqualNumber
                     left:
                       value:
-                        simple: Severities.Incident
+                        simple: Severities.IncidentSeverity
                       iscontext: true
                     right:
                       value:
-                        simple: "3"
+                        simple: "2"
                     ignorecase: true
                   - operator: isEqualString
                     left:
                       value:
-                        simple: Severities.DBotScore
+                        simple: Severities.DBotScoreSeverity
                       iscontext: true
                     right:
                       value:
@@ -873,10 +887,10 @@ tasks:
               complex:
                 root: Severities
                 filters:
-                - - operator: isEqualString
+                - - operator: isEqualNumber
                     left:
                       value:
-                        simple: Severities.Incident
+                        simple: Severities.IncidentSeverity
                       iscontext: true
                     right:
                       value:
@@ -885,7 +899,7 @@ tasks:
                   - operator: isEqualString
                     left:
                       value:
-                        simple: Severities.DBotScore
+                        simple: Severities.DBotScoreSeverity
                       iscontext: true
                     right:
                       value:
@@ -904,10 +918,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 35d59701-1511-4e47-87f4-83567e79cf75
+    taskid: dd9d54b5-409c-4bd2-82d3-62785b06c406
     type: regular
     task:
-      id: 35d59701-1511-4e47-87f4-83567e79cf75
+      id: dd9d54b5-409c-4bd2-82d3-62785b06c406
       version: -1
       name: Get incident severity
       description: Saves the incident severity in context.
@@ -922,7 +936,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: Severities.Incident
+        simple: Severities.IncidentSeverity
       value:
         complex:
           root: incident
@@ -939,15 +953,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "17":
-    id: "17"
-    taskid: 741fbf88-8dc9-4c67-8561-4cc73fa6fc36
+  "18":
+    id: "18"
+    taskid: 64da7797-a618-454e-8243-37cfde94d1c5
     type: playbook
     task:
-      id: 741fbf88-8dc9-4c67-8561-4cc73fa6fc36
+      id: 64da7797-a618-454e-8243-37cfde94d1c5
       version: -1
-      name: PANW - Calculate Severity - Indicators DBotScore
-      description: ""
+      name: Evaluate Severity - Set By Highest DBotScore
+      description: Calculates the incident severity level according to the highest
+        indicator DBotScore.
       playbookName: Evaluate Severity - Set By Highest DBotScore
       type: playbook
       iscommand: false
@@ -969,8 +984,189 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
+          "x": 620,
           "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: c78dbddd-05c3-4810-8b62-9a0f5958dc73
+    type: regular
+    task:
+      id: c78dbddd-05c3-4810-8b62-9a0f5958dc73
+      version: -1
+      name: Assign incident severity to "Unknown"
+      description: Assigns the incident severity to "Unknown".
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedhosts: {}
+      affectedindividualscontactinformation: {}
+      affectedips: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      arcsightcaseid: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      blah: {}
+      booltest: {}
+      bugtraq: {}
+      campaigntargetcount: {}
+      campaigntargets: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      detectedusers: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailbodyhtmlraw: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailfromdisplayname: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderdomain: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailsubjectlanguage: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      hostid: {}
+      hostname: {}
+      htmlimage: {}
+      htmlrenderedimage: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      isthedatasubjecttodpia: {}
+      killchain: {}
+      labels: {}
+      likelyimpact: {}
+      lob: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      mdtest: {}
+      measurestomitigate: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      phishingsubtype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      queues: {}
+      relateddomain: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      reportinguser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      sectorofaffectedparty: {}
+      selector: {}
+      severity:
+        simple: unknown
+      signature: {}
+      single: {}
+      single2: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      team: {}
+      telephoneno: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdr: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 690
         }
       }
     note: false
@@ -979,15 +1175,15 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "15_10_#default#": 0.3,
       "15_11_Critical": 0.84,
+      "15_19_#default#": 0.5,
       "15_4_Low": 0.85
     },
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 1697,
-        "x": 255,
+        "height": 915,
+        "width": 1855,
+        "x": 175,
         "y": 50
       }
     }
@@ -1001,4 +1197,4 @@ inputs:
   description: A list of DBotScores of indicators.
 outputs: []
 tests:
-  - Evaluate Severity - Set By Highest DBotScore - Test
+  - Evaluate Severity - Set By Highest Score - Test

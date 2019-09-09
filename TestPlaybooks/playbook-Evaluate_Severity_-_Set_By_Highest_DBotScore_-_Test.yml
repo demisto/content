@@ -1,7 +1,7 @@
-id: Evaluate Severity - Set By Highest DBotScore - Test
+id: Evaluate Severity - Set By Highest Score - Test
 version: -1
 fromversion: 4.5.0
-name: Evaluate Severity - Set By Highest DBotScore - Test
+name: Evaluate Severity - Set By Highest Score - Test
 description: A test playbook for the Evaluate Severity - Set By Highest DBotScore
   playbook.
 starttaskid: "0"
@@ -108,10 +108,10 @@ tasks:
       id: 04197795-431b-4d8b-8b82-b4bcfbdb9b15
       version: -1
       name: Get malicious URL reputation using Minemeld
-      script: Palo Alto Minemeld |||url
+      script: Palo Alto Minemeld New|||url
       type: regular
       iscommand: true
-      brand: Palo Alto Minemeld
+      brand: Palo Alto Minemeld New
     nexttasks:
       '#none#':
       - "5"
@@ -317,6 +317,7 @@ tasks:
       id: f0f9b58d-fdc8-48f8-89c4-879674a8913d
       version: -1
       name: Calculate Severity - Core
+      description: ""
       playbookName: Evaluate Severity - Set By Highest Score
       type: playbook
       iscommand: false
@@ -383,6 +384,7 @@ tasks:
       id: 3c289d2e-afed-4b06-8643-bd1f17420932
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
