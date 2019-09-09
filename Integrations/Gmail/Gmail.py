@@ -23,6 +23,7 @@ import random
 import string
 from apiclient import discovery
 from oauth2client import service_account
+import itertools as it
 
 
 ''' GLOBAL VARS '''
@@ -157,10 +158,11 @@ def parse_mail_parts(parts):
                 body += text
 
         else:
-            attachments.append({
-                'ID': part['body']['attachmentId'],
-                'Name': part['filename']
-            })
+            if part['body'].get('attachmentId') is not None:
+                attachments.append({
+                    'ID': part['body']['attachmentId'],
+                    'Name': part['filename']
+                })
 
     return body, html, attachments
 
@@ -1376,26 +1378,23 @@ def transient_attachments(transientFile, transientFileContent, transientFileCID)
     if transientFile is None or len(transientFile) == 0:
         return []
 
+    if transientFileContent is None:
+        transientFileContent = []
+
+    if transientFileCID is None:
+        transientFileCID = []
+
     attachments = []
-    entry_number = 0
-    for file_name in transientFile:
+    for triplet in it.izip_longest(transientFile, transientFileContent, transientFileCID):
+        file_name, file_data, file_cid = triplet
+        if file_name is None:
+            break
+
         content_type, encoding = mimetypes.guess_type(file_name)
         if content_type is None or encoding is not None:
             content_type = 'application/octet-stream'
 
         main_type, sub_type = content_type.split('/', 1)
-
-        if transientFileContent is not None and len(transientFileContent) > entry_number:
-            file_data = transientFileContent[entry_number]
-
-        else:
-            file_data = ''
-
-        if transientFileCID is not None and len(transientFileCID) > entry_number:
-            file_cid = transientFileCID[entry_number]
-
-        else:
-            file_cid = ''
 
         attachments.append({
             'name': file_name,
@@ -1404,7 +1403,6 @@ def transient_attachments(transientFile, transientFileContent, transientFileCID)
             'data': file_data,
             'cid': file_cid
         })
-        entry_number += 1
 
     return attachments
 
