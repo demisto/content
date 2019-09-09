@@ -51,18 +51,24 @@ def epoch_seconds(d: datetime = None) -> int:
     return int((d - datetime.utcfromtimestamp(0)).total_seconds())
 
 
-def error_parser(resp_err: requests.Response) -> str:
+def error_parser(resp_err: requests.Response, api: str = 'graph') -> str:
     """
-    Parses error message from Requests response
+    Parses Microsoft API error message from Requests response
     :param resp_err: response with error
+    :param api: API to query (graph/bot)
     :return: string of error
     """
     try:
-        response = resp_err.json()
-        error = response.get('error', {})
-        err_str = f"{error.get('code')}: {error.get('message')}"
-        if err_str:
-            return err_str
+        response: dict = resp_err.json()
+        if api == 'graph':
+            error: dict = response.get('error', {})
+            err_str: str = f"{error.get('code', '')}: {error.get('message', '')}"
+            if err_str:
+                return err_str
+        elif api == 'bot':
+            error_description: str = response.get('error_description', '')
+            if error_description:
+                return error_description
         # If no error message
         raise ValueError()
     except ValueError:
@@ -393,7 +399,7 @@ def get_bot_access_token() -> str:
         verify=USE_SSL
     )
     if not response.ok:
-        error = error_parser(response)
+        error = error_parser(response, 'bot')
         raise ValueError(f'Failed to get bot access token [{response.status_code}] - {error}')
     try:
         response_json: dict = response.json()
@@ -490,7 +496,7 @@ def http_request(
         )
 
         if not response.ok:
-            error = error_parser(response)
+            error: str = error_parser(response, api)
             raise ValueError(f'Error in API call to Microsoft Teams: [{response.status_code}] - {error}')
 
         if response.status_code in {202, 204}:
@@ -1001,8 +1007,19 @@ def mirror_investigation():
         demisto.results('Investigation mirror was updated successfully.')
     else:
         channel_name: str = demisto.args().get('channel_name', '') or f'incident-{investigation_id}'
-        channel_description = f'Channel to mirror incident {investigation_id}'
-        channel_id = create_channel(team_aad_id, channel_name, channel_description)
+        channel_description: str = f'Channel to mirror incident {investigation_id}'
+        channel_id: str = create_channel(team_aad_id, channel_name, channel_description)
+        service_url: str = integration_context.get('service_url', '')
+        server_links: dict = demisto.demistoUrls()
+        server_link: str = server_links.get('server', '')
+        warroom_link: str = f'{server_link}#/WarRoom/{investigation_id}'
+        conversation: dict = {
+            'type': 'message',
+            'text': f'This channel was created to mirror [incident {investigation_id}]({warroom_link}) '
+                    f'between Teams and Demisto. In order for your Teams messages to be mirrored in Demisto, '
+                    f'you need to mention the Demisto Bot in the message.'
+        }
+        send_message_request(service_url, channel_id, conversation)
         mirrored_channels.append({
             'channel_id': channel_id,
             'investigation_id': investigation_id,
@@ -1159,8 +1176,8 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
             formatted_message = urlify_hyperlinks(data)
     else:
         try:
-            return_card = True
             data = demisto.directMessage(message, username, user_email, allow_external_incidents_creation)
+            return_card = True
             if data.startswith('`'):  # We got a list of incidents/tasks:
                 data_by_line: list = data.replace('```', '').strip().split('\n')
                 return_card = True
