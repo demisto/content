@@ -1538,10 +1538,10 @@ tasks:
     ignoreworker: false
   "49":
     id: "49"
-    taskid: bf9fc7ea-c384-4004-8cdc-3c30972a2d11
+    taskid: 6d89901a-bfd7-45a8-8363-40c629e78167
     type: regular
     task:
-      id: bf9fc7ea-c384-4004-8cdc-3c30972a2d11
+      id: 6d89901a-bfd7-45a8-8363-40c629e78167
       version: -1
       name: gmail-remove-delegated-mailbox
       description: Removes a delegate from the mailbox, without sending any verification
@@ -1556,7 +1556,7 @@ tasks:
       '#none#':
       - "29"
     scriptarguments:
-      remove-mail:
+      removed-mail:
         simple: shai@demistodev.com
       user-id:
         simple: admin@demistodev.com
