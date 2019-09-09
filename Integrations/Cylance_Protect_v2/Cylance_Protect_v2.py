@@ -162,7 +162,7 @@ def test():
         raise Exception('Unable to get access token')
     try:
         int(BATCH_SIZE)
-    except ValueError as e:
+    except ValueError:
         return_error("Batch Size specified must represent an int.")
     demisto.results('ok')
 
@@ -1162,7 +1162,7 @@ def delete_devices():
         })
 
     for i in range(0, len(device_ids_list), BATCH_SIZE):
-        current_deleted_devices_batch = device_ids_list[i:i+BATCH_SIZE]
+        current_deleted_devices_batch = device_ids_list[i:i + BATCH_SIZE]
         delete_devices_request(current_deleted_devices_batch)
 
     context = {
