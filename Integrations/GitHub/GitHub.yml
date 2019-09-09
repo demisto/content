@@ -401,25 +401,25 @@ script:
     execution: false
     name: GitHub-get-branch
     outputs:
-    - contextPath: Github.Branch.Name
+    - contextPath: GitHub.Branch.Name
       description: The name of the branch
       type: String
-    - contextPath: Github.Branch.CommitSHA
+    - contextPath: GitHub.Branch.CommitSHA
       description: The SHA of the commit the branch references
       type: String
-    - contextPath: Github.Branch.CommitNodeID
+    - contextPath: GitHub.Branch.CommitNodeID
       description: The Node ID of the commit the branch references
       type: String
-    - contextPath: Github.Branch.CommitAuthorID
+    - contextPath: GitHub.Branch.CommitAuthorID
       description: The GitHub ID number of the author of the commit the branch references
       type: Number
-    - contextPath: Github.Branch.CommitAuthorLogin
+    - contextPath: GitHub.Branch.CommitAuthorLogin
       description: The GitHub login of the author of the commit the branch references
       type: String
-    - contextPath: Github.Branch.CommitParentSHA
+    - contextPath: GitHub.Branch.CommitParentSHA
       description: The SHAs of parent commits
       type: String
-    - contextPath: Github.Branch.Protected
+    - contextPath: GitHub.Branch.Protected
       description: Whether the branch is a protected one or not
       type: Boolean
   - arguments:
