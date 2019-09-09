@@ -701,6 +701,6 @@ class TestBaseClient:
     def test_http_request(self, monkeypatch):
         from CommonServerPython import BaseClient
         client = self.get_client()
-        res = client._http_request('get', '')
+        res = client._http_request('get', 'event')
 
 

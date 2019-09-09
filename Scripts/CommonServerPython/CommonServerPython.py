@@ -2020,7 +2020,7 @@ if 'requests' in sys.modules:
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
-            method: HTTP method, e.g. 'GET', 'POST' ... etc.
+            :param method: HTTP method, e.g. 'GET', 'POST' ... etc.
 
             :type url_suffix: ``str``
             :param url_suffix: API endpoint.
@@ -2046,7 +2046,7 @@ if 'requests' in sys.modules:
             :type files: ``dict``
             :param files: File data to be sent in a 'POST' request.
 
-            :type method: ``float``
+            :type timeout: ``float``
             :param timeout:
                 The amount of time in seconds a Request will wait for a client to
                 establish a connection to a remote machine.
