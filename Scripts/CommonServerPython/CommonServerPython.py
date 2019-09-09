@@ -1805,6 +1805,7 @@ def assign_params(**kwargs):
         >>> assign_params(sinceTime=since_time)
         {'sinceTime': 'timestamp'}
 
+    :type kwargs: ``kwargs``
     :param kwargs: kwargs to filter
 
     :return: dict without empty values
@@ -1827,7 +1828,7 @@ def get_demisto_version():
 
 def build_dbot_entry(indicator, indicator_type, vendor, score, description=None, build_malicious=True):
     """Build a dbot entry. if score is 3 adds malicious
-        Examples:
+    Examples:
         >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 1)
         {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 1}}
 
@@ -1886,6 +1887,7 @@ def build_malicious_dbot_entry(indicator, indicator_type, vendor, description=No
 val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 ==\
 obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'MD5': 'md5hash', 'Malicious': {'Vendor': 'Vendor',\
 'Description': 'Malicious File'}}}
+
     :type indicator: ``str``
     :param indicator: Value (e.g. 8.8.8.8)
 
@@ -1896,7 +1898,7 @@ obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'MD5': 'md5hash', 'Malicious':
     :param vendor: Integration ID
 
     :type description: ``str``
-    :param description: Why it's mxalicious
+    :param description: Why it's malicious
 
     :return: A malicious DBot entry
     :rtype: ``dict``
@@ -1927,7 +1929,32 @@ obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'MD5': 'md5hash', 'Malicious':
 
 
 class BaseClient:
-    """Base Client for use in new integrations"""
+    """Base Client for use in new integrations
+
+    :type server: ``str``
+    :param server: Base server address
+
+    :type base_suffix: ``str``
+    :param base_suffix: suffix of API (e.g`/api/v2/`)
+
+    :type integration_name: ``str``
+    :param integration_name: Name as shown in UI (`Integration Name`)
+
+    :type integration_command_name: ``str``
+    :param integration_command_name: lower case with `-` divider (`integration-name`)
+
+    :type integration_context_name: ``str``
+    :param integration_context_name: camelcase with no dividers (`IntegrationName`)
+
+    :type verify: ``bool``
+    :param verify: Verify SSL
+
+    :type proxy: ``bool``
+    :param proxy: Use system proxy
+
+    return: No data returned
+    :rtype: ``None``
+    """
 
     def __init__(self,
                  server,
@@ -1938,28 +1965,6 @@ class BaseClient:
                  verify=True,
                  proxy=False
                  ):
-        """
-        :type server: ``str``
-        :param server: Base server address
-
-        :type base_suffix: ``str``
-        :param base_suffix: suffix of API (e.g`/api/v2/`)
-
-        :type integration_name: ``str``
-        :param integration_name: Name as shown in UI (`Integration Name`)
-
-        :type integration_command_name: ``str``
-        :param integration_command_name: lower case with `-` divider (`integration-name`)
-
-        :type integration_context_name: ``str``
-        :param integration_context_name: camelcase with no dividers (`IntegrationName`)
-
-        :type verify: ``bool``
-        verify: Verify SSL
-
-        :type proxy: ``bool``
-        proxy: Use system proxy
-        """
         self._server = server.rstrip('/')
         self.verify = verify
         self._integration_name = str(integration_name)
@@ -2027,6 +2032,7 @@ class BaseClient:
             would like the full response object returned.
 
         :return: Depends on the resp_type parameter
+        :rtype: ``dict`` or ``str`` or ``requests.Response``
         """
         try:
             address = full_url if full_url else self._base_url + url_suffix

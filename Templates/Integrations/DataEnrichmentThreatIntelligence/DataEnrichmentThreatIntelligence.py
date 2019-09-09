@@ -230,7 +230,7 @@ def main():
     )
     command: str = demisto.command()
     demisto.info(f'Command being called is {command}')
-    commands: Dict = {
+    commands = {
         'test-module': test_module,
         f'{client.integration_command_name}-search-ip': search_ip,
         'ip': search_ip,

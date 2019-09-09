@@ -20,6 +20,17 @@ class Client(BaseClient):
     Wrapper class for BaseClient with additional functionality for the integration.
     """
 
+    def __init__(self, *args, **kwargs):
+        # Adds a fetch limit to client
+        self._fetch_limit = kwargs.get('limit')
+        # remove `limit`
+        kwargs.pop('limit', None)
+        super().__init__(*args, **kwargs)
+
+    @property
+    def fetch_limit(self):
+        return self._fetch_limit
+
     def test_module_request(self) -> Dict:
         """Performs basic get request to see if the API is reachable and authentication works.
 
@@ -146,6 +157,7 @@ def build_context(events: Union[Dict, List]) -> Union[Dict, List]:
         {'ID': '1', 'Description': 'event description', 'Created': '2019-09-09T08:30:07.959533', 'IsActive': True,\
  'Assignee': [{'Name': 'user1', 'ID': '142'}]}
     """
+
     def build_dict(event: Dict) -> Dict:
         """Builds Dict formatted for Demisto
 
@@ -167,6 +179,7 @@ def build_context(events: Union[Dict, List]) -> Union[Dict, List]:
                 } for user in event.get('assignee', [])
             ]
         }
+
     if isinstance(events, list):
         return [build_dict(event) for event in events]
     return build_dict(events)
@@ -184,7 +197,7 @@ def test_module(client: Client, *args) -> Tuple[str, Dict, Dict]:
     raise DemistoException('Test module failed, {}'.format(results))
 
 
-def fetch_incidents(client: Client):
+def fetch_incidents(client: Client, *args):
     """Uses to fetch credentials into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_credentials
     """
@@ -197,7 +210,7 @@ def fetch_incidents(client: Client):
     else:
         last_run_string = datetime.strptime(last_run, timestamp_format)
     incidents: List[Dict] = list()
-    raw_response = client.list_events_request(since_time=last_run_string)
+    raw_response = client.list_events_request(since_time=last_run_string, limit=client.fetch_limit)
     events: List[Dict] = raw_response.get('event', [])
     if events:
         # Creates incident entry
@@ -210,6 +223,8 @@ def fetch_incidents(client: Client):
         last_incident_timestamp = incidents[-1].get('occurred')
         demisto.setLastRun(last_incident_timestamp)
     demisto.incidents(incidents)
+    # Return empty results
+    return '', {}, {}
 
 
 def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -368,7 +383,9 @@ def main():
         f'{client.integration_command_name}-query': query
     }
     try:
-        if command in commands:
+        if command == 'fetch-incidents':
+            commands[command](client)
+        elif command in commands:
             human_readable, context, raw_response = commands[command](client, demisto.args())
             return_outputs(human_readable, context, raw_response)
     # Log exceptions
