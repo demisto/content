@@ -1945,7 +1945,8 @@ if 'requests' in sys.modules:
                      integration_command_name,
                      integration_context_name,
                      verify=True,
-                     proxy=False
+                     proxy=False,
+                     ok_codes=None
                      ):
             """Base Client for use in integrations.
 
@@ -1970,15 +1971,19 @@ if 'requests' in sys.modules:
              :type proxy: ``bool``
              :param proxy: Use system proxy
 
+             :type ok_codes: ``tuple``
+             :param ok_codes: acceptable OK codes. in None will use response.ok
+
              :return: No data returned
              :rtype: ``None``
              """
             self._server = server.rstrip('/')
-            self.verify = verify
+            self._verify = verify
             self._integration_name = str(integration_name)
             self._integration_name_command = str(integration_command_name)
             self._integration_name_context = str(integration_context_name)
             self._base_url = '{}{}'.format(self._server, base_suffix)
+            self._ok_codes = ok_codes
             if proxy:
                 self._proxies = handle_proxy()
             else:
@@ -2010,7 +2015,7 @@ if 'requests' in sys.modules:
 
         def _http_request(self, method, url_suffix, full_url=None, headers=None,
                           auth=None, params=None, data=None, files=None,
-                          timeout=10, resp_type='json', **kwargs):
+                          timeout=10, resp_type='json', ok_codes=None,  **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -2051,15 +2056,35 @@ if 'requests' in sys.modules:
                 is 'json'. Other options are 'text', 'content' or 'response' if the user
                 would like the full response object returned.
 
+            :type ok_codes: ``tuple``
+            :param ok_codes: acceptable OK codes. in None will use response.ok
+
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``requests.Response``
             """
+            def is_status_valid(response, status_codes=None):
+                """If status code is OK return True
+
+                :type response: ``requests.Response``
+                :param response: Response from API to check status in
+
+                :type status_codes: ``tuple``
+                :param status_codes: OK status codes
+
+                :return: If status of response is valid
+                :rtype: ``bool``
+                """
+                if status_codes and response.status_code in status_codes:
+                    return True
+                if res.ok:
+                    return True
+                return False
             try:
                 address = full_url if full_url else self._base_url + url_suffix
                 res = requests.request(
                     method,
                     address,
-                    verify=self.verify,
+                    verify=self._verify,
                     params=params,
                     data=data,
                     files=files,
@@ -2070,14 +2095,18 @@ if 'requests' in sys.modules:
                     **kwargs
                 )
                 # Handle error responses gracefully
-                if res.ok:
+                # Get wanted ok codes
+                ok_status = ok_codes if ok_codes else self._ok_codes
+                if not is_status_valid(res, ok_status):
+                    err_msg = 'Error in {} API call [{}] - {}' \
+                        .format(self._integration_name, res.status_code, res.reason)
                     try:
                         # Try to parse json error response
-                        return DemistoException(res.json())
-                    except ValueError:
-                        err_msg = 'Error in {} API call [{}] - {}' \
-                            .format(self._integration_name, res.status_code, res.reason)
+                        error_entry = res.json()
+                        err_msg += '\n{}'.format(error_entry)
                         raise DemistoException(err_msg)
+                    except ValueError as e:
+                        raise DemistoException(err_msg, e)
 
                 resp_type = resp_type.lower()
                 try:
@@ -2089,21 +2118,21 @@ if 'requests' in sys.modules:
                         return res.content
                     else:
                         return res
-                except ValueError:
-                    raise DemistoException('Failed to parse json object from response: {}'.format(res.content))
+                except ValueError as e:
+                    raise DemistoException('Failed to parse json object from response: {}'.format(res.content), e)
 
-            except requests.exceptions.ConnectTimeout:
+            except requests.exceptions.ConnectTimeout as e:
                 err_msg = 'Connection Timeout Error - potential reasons may be that the Server URL parameter' \
                           ' is incorrect or that the Server is not accessible from your host.'
-                raise DemistoException(err_msg)
-            except requests.exceptions.SSLError:
+                raise DemistoException(err_msg, e)
+            except requests.exceptions.SSLError as e:
                 err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' in' \
                           ' the integration configuration.'
-                raise DemistoException(err_msg)
+                raise DemistoException(err_msg, e)
             except requests.exceptions.ProxyError:
                 err_msg = 'Proxy Error - if \'Use system proxy\' in the integration configuration has been' \
                           ' selected, try deselecting it.'
-                raise DemistoException(err_msg)
+                raise DemistoException(err_msg, e)
             except requests.exceptions.ConnectionError as e:
                 # Get originating Exception in Exception chain
                 error_class = str(e.__class__)
@@ -2112,7 +2141,7 @@ if 'requests' in sys.modules:
                           'Verify that the server URL parameter' \
                           ' is correct and that you have access to the server from your host.' \
                     .format(err_type, e.errno, e.strerror)
-                raise DemistoException(err_msg)
+                raise DemistoException(err_msg, e)
 
 
 class DemistoException(Exception):
