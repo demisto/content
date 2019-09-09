@@ -4,7 +4,6 @@ import demistomock as demisto
 # This script will be appended to each server script before being executed.
 # Please notice that to add custom common code, add it to the CommonServerUserPython script
 import socket
-import requests
 from datetime import datetime, timedelta
 import time
 import json
@@ -1932,182 +1931,187 @@ obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'MD5': 'md5hash', 'Malicious':
     return {outputPaths[indicator_type_lower]: entry}
 
 
-class BaseClient(object):
-    def __init__(self,
-                 server,
-                 base_suffix,
-                 integration_name,
-                 integration_command_name,
-                 integration_context_name,
-                 verify=True,
-                 proxy=False
-                 ):
-        """Base Client for use in integrations.
+try:
+    import requests
 
-         :type server: ``str``
-         :param server: Base server address
+    class BaseClient(object):
+        def __init__(self,
+                     server,
+                     base_suffix,
+                     integration_name,
+                     integration_command_name,
+                     integration_context_name,
+                     verify=True,
+                     proxy=False
+                     ):
+            """Base Client for use in integrations.
 
-         :type base_suffix: ``str``
-         :param base_suffix: suffix of API (e.g`/api/v2/`)
+             :type server: ``str``
+             :param server: Base server address
 
-         :type integration_name: ``str``
-         :param integration_name: Name as shown in UI (`Integration Name`)
+             :type base_suffix: ``str``
+             :param base_suffix: suffix of API (e.g`/api/v2/`)
 
-         :type integration_command_name: ``str``
-         :param integration_command_name: lower case with `-` divider (`integration-name`)
+             :type integration_name: ``str``
+             :param integration_name: Name as shown in UI (`Integration Name`)
 
-         :type integration_context_name: ``str``
-         :param integration_context_name: camelcase with no dividers (`IntegrationName`)
+             :type integration_command_name: ``str``
+             :param integration_command_name: lower case with `-` divider (`integration-name`)
 
-         :type verify: ``bool``
-         :param verify: Verify SSL
+             :type integration_context_name: ``str``
+             :param integration_context_name: camelcase with no dividers (`IntegrationName`)
 
-         :type proxy: ``bool``
-         :param proxy: Use system proxy
+             :type verify: ``bool``
+             :param verify: Verify SSL
 
-         :return: No data returned
-         :rtype: ``None``
-         """
-        self._server = server.rstrip('/')
-        self.verify = verify
-        self._integration_name = str(integration_name)
-        self._integration_name_command = str(integration_command_name)
-        self._integration_name_context = str(integration_context_name)
-        self._base_url = '{}{}'.format(self._server, base_suffix)
-        if proxy:
-            self._proxies = handle_proxy()
-        else:
-            self._proxies = None
+             :type proxy: ``bool``
+             :param proxy: Use system proxy
 
-    @property
-    def integration_name(self):
-        """Property of integration name
-        return: Integration command name
-        :rtype: ``str``
-        """
-        return self._integration_name
+             :return: No data returned
+             :rtype: ``None``
+             """
+            self._server = server.rstrip('/')
+            self.verify = verify
+            self._integration_name = str(integration_name)
+            self._integration_name_command = str(integration_command_name)
+            self._integration_name_context = str(integration_context_name)
+            self._base_url = '{}{}'.format(self._server, base_suffix)
+            if proxy:
+                self._proxies = handle_proxy()
+            else:
+                self._proxies = None
 
-    @property
-    def integration_context_name(self):
-        """Property of integration name context
-        return: Integration command name
-        :rtype: ``str``
-        """
-        return self._integration_name_context
+        @property
+        def integration_name(self):
+            """Property of integration name
+            return: Integration command name
+            :rtype: ``str``
+            """
+            return self._integration_name
 
-    @property
-    def integration_command_name(self):
-        """Property of integration name command
-        return: Integration command name
-        :rtype: ``str``
-        """
-        return self._integration_name_command
+        @property
+        def integration_context_name(self):
+            """Property of integration name context
+            return: Integration command name
+            :rtype: ``str``
+            """
+            return self._integration_name_context
 
-    def _http_request(self, method, url_suffix, full_url=None, headers=None,
-                      auth=None, params=None, data=None, files=None,
-                      timeout=10, resp_type='json', **kwargs):
-        """A wrapper for requests lib to send our requests and handle requests and responses better.
+        @property
+        def integration_command_name(self):
+            """Property of integration name command
+            return: Integration command name
+            :rtype: ``str``
+            """
+            return self._integration_name_command
 
-        :type method: ``str``
-        method: (str) HTTP method, e.g. 'GET', 'POST' ... etc.
+        def _http_request(self, method, url_suffix, full_url=None, headers=None,
+                          auth=None, params=None, data=None, files=None,
+                          timeout=10, resp_type='json', **kwargs):
+            """A wrapper for requests lib to send our requests and handle requests and responses better.
 
-        :type url_suffix: ``str``
-        :param url_suffix (str): API endpoint.
+            :type method: ``str``
+            method: (str) HTTP method, e.g. 'GET', 'POST' ... etc.
 
-        :type full_url: ``str``
-        :param full_url:
-            Bypasses the use of self._base_url + url_suffix. Useful if there is a need to
-            make a request to an address outside of the scope of the integration
-            API.
+            :type url_suffix: ``str``
+            :param url_suffix (str): API endpoint.
 
-        :type headers: ``dict``
-        :param headers: Headers to send in the request.
+            :type full_url: ``str``
+            :param full_url:
+                Bypasses the use of self._base_url + url_suffix. Useful if there is a need to
+                make a request to an address outside of the scope of the integration
+                API.
 
-        :type auth: ``tuple``
-        :param auth: Auth tuple to enable Basic/Digest/Custom HTTP Auth.
+            :type headers: ``dict``
+            :param headers: Headers to send in the request.
 
-        :type params: ``dict``
-        :param params: URL parameters.
+            :type auth: ``tuple``
+            :param auth: Auth tuple to enable Basic/Digest/Custom HTTP Auth.
 
-        :type data: ``dict``
-        :param data: Data to be sent in a 'POST' request.
+            :type params: ``dict``
+            :param params: URL parameters.
 
-        :type files: ``dict``
-        :param files: File data to be sent in a 'POST' request.
+            :type data: ``dict``
+            :param data: Data to be sent in a 'POST' request.
 
-        :type method: ``float``
-        :param timeout:
-            The amount of time in seconds a Request will wait for a client to
-            establish a connection to a remote machine.
+            :type files: ``dict``
+            :param files: File data to be sent in a 'POST' request.
 
-        :type resp_type: ``str``
-        :param resp_type:
-            Determines what to return from having made the HTTP request. The default
-            is 'json'. Other options are 'text', 'content' or 'response' if the user
-            would like the full response object returned.
+            :type method: ``float``
+            :param timeout:
+                The amount of time in seconds a Request will wait for a client to
+                establish a connection to a remote machine.
 
-        :return: Depends on the resp_type parameter
-        :rtype: ``dict`` or ``str`` or ``requests.Response``
-        """
-        try:
-            address = full_url if full_url else self._base_url + url_suffix
-            res = requests.request(
-                method,
-                address,
-                verify=self.verify,
-                params=params,
-                data=data,
-                files=files,
-                headers=headers,
-                auth=auth,
-                timeout=timeout,
-                proxies=self._proxies,
-                **kwargs
-            )
-            # Handle error responses gracefully
-            if res.ok:
-                try:
-                    # Try to parse json error response
-                    return DemistoException(res.json())
-                except ValueError:
-                    err_msg = 'Error in {} API call [{}] - {}' \
-                        .format(self._integration_name, res.status_code, res.reason)
-                    raise DemistoException(err_msg)
+            :type resp_type: ``str``
+            :param resp_type:
+                Determines what to return from having made the HTTP request. The default
+                is 'json'. Other options are 'text', 'content' or 'response' if the user
+                would like the full response object returned.
 
-            resp_type = resp_type.lower()
+            :return: Depends on the resp_type parameter
+            :rtype: ``dict`` or ``str`` or ``requests.Response``
+            """
             try:
-                if resp_type == 'json':
-                    return res.json()
-                elif resp_type == 'text':
-                    return res.text
-                elif resp_type == 'content':
-                    return res.content
-                else:
-                    return res
-            except ValueError:
-                raise DemistoException('Failed to parse json object from response: {}'.format(res.content))
+                address = full_url if full_url else self._base_url + url_suffix
+                res = requests.request(
+                    method,
+                    address,
+                    verify=self.verify,
+                    params=params,
+                    data=data,
+                    files=files,
+                    headers=headers,
+                    auth=auth,
+                    timeout=timeout,
+                    proxies=self._proxies,
+                    **kwargs
+                )
+                # Handle error responses gracefully
+                if res.ok:
+                    try:
+                        # Try to parse json error response
+                        return DemistoException(res.json())
+                    except ValueError:
+                        err_msg = 'Error in {} API call [{}] - {}' \
+                            .format(self._integration_name, res.status_code, res.reason)
+                        raise DemistoException(err_msg)
 
-        except requests.exceptions.ConnectTimeout:
-            err_msg = 'Connection Timeout Error - potential reasons may be that the Server URL parameter' \
-                      ' is incorrect or that the Server is not accessible from your host.'
-            raise DemistoException(err_msg)
-        except requests.exceptions.SSLError:
-            err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' in' \
-                      ' the integration configuration.'
-            raise DemistoException(err_msg)
-        except requests.exceptions.ProxyError:
-            err_msg = 'Proxy Error - if \'Use system proxy\' in the integration configuration has been' \
-                      ' selected, try deselecting it.'
-            raise DemistoException(err_msg)
-        except requests.exceptions.ConnectionError as e:
-            # Get originating Exception in Exception chain
-            error_class = str(e.__class__)
-            err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
-            err_msg = '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
-                      'Verify that the server URL parameter' \
-                      ' is correct and that you have access to the server from your host.' \
-                .format(err_type, e.errno, e.strerror)
-            raise DemistoException(err_msg)
+                resp_type = resp_type.lower()
+                try:
+                    if resp_type == 'json':
+                        return res.json()
+                    elif resp_type == 'text':
+                        return res.text
+                    elif resp_type == 'content':
+                        return res.content
+                    else:
+                        return res
+                except ValueError:
+                    raise DemistoException('Failed to parse json object from response: {}'.format(res.content))
+
+            except requests.exceptions.ConnectTimeout:
+                err_msg = 'Connection Timeout Error - potential reasons may be that the Server URL parameter' \
+                          ' is incorrect or that the Server is not accessible from your host.'
+                raise DemistoException(err_msg)
+            except requests.exceptions.SSLError:
+                err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' in' \
+                          ' the integration configuration.'
+                raise DemistoException(err_msg)
+            except requests.exceptions.ProxyError:
+                err_msg = 'Proxy Error - if \'Use system proxy\' in the integration configuration has been' \
+                          ' selected, try deselecting it.'
+                raise DemistoException(err_msg)
+            except requests.exceptions.ConnectionError as e:
+                # Get originating Exception in Exception chain
+                error_class = str(e.__class__)
+                err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+                err_msg = '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
+                          'Verify that the server URL parameter' \
+                          ' is correct and that you have access to the server from your host.' \
+                    .format(err_type, e.errno, e.strerror)
+                raise DemistoException(err_msg)
+except ModuleNotFoundError:
+    pass
 
 
 class DemistoException(Exception):
