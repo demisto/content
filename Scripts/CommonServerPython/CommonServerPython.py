@@ -1995,7 +1995,7 @@ class BaseClient:
         :param url_suffix (str): API endpoint.
 
         :type full_url: ``str``
-        :param full_url (str):
+        :param full_url:
             Bypasses the use of self._base_url + url_suffix. Useful if there is a need to
             make a request to an address outside of the scope of the integration
             API.
@@ -2004,13 +2004,13 @@ class BaseClient:
         :param headers: Headers to send in the request.
 
         :type auth: ``tuple``
-        :param auth: (tuple) Auth tuple to enable Basic/Digest/Custom HTTP Auth.
+        :param auth: Auth tuple to enable Basic/Digest/Custom HTTP Auth.
 
         :type params: ``dict``
         :param params: URL parameters.
 
         :type data: ``dict``
-        :param data (dict): Data to be sent in a 'POST' request.
+        :param data: Data to be sent in a 'POST' request.
 
         :type files: ``dict``
         :param files: File data to be sent in a 'POST' request.
