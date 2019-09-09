@@ -630,7 +630,6 @@ def test_exception_in_return_error(mocker):
 
 
 def test_get_demisto_version(mocker):
-
     # verify expected server version and build returned in case Demisto class has attribute demistoVersion
     mocker.patch.object(
         demisto,
@@ -644,3 +643,64 @@ def test_get_demisto_version(mocker):
         'version': '5.0.0',
         'buildNumber': '50000'
     }
+
+
+def test_assign_params():
+    from CommonServerPython import assign_params
+    res = assign_params(a='1', b=True, c=None, d='')
+    assert res == {'a': '1', 'b': True}
+
+
+class TestBuildDBotEntry:
+    @staticmethod
+    def test_build_dbot_entry():
+        from CommonServerPython import build_dbot_entry
+        res = build_dbot_entry('user@example.com', 'Email', 'Vendor', 1)
+        assert res == {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 1}}
+
+    @staticmethod
+    def test_build_dbot_entry_no_malicious():
+        from CommonServerPython import build_dbot_entry
+        res = build_dbot_entry('user@example.com', 'Email', 'Vendor', 3, build_malicious=False)
+        assert res == {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 3}}
+
+    @staticmethod
+    def test_build_dbot_entry_malicious():
+        from CommonServerPython import build_dbot_entry
+        res = build_dbot_entry('user@example.com', 'Email', 'Vendor', 3, 'Malicious email')
+        assert res == {
+            'DBotScore': {
+                'Indicator': 'user@example.com',
+                'Type': 'email',
+                'Vendor': 'Vendor',
+                'Score': 3
+            },
+            'Account.Email(val.Address && val.Address == obj.Address)': {
+                'Address': 'user@example.com',
+                'Malicious':
+                    {
+                        'Vendor': 3,
+                        'Description': 'Malicious email'}
+            }
+        }
+
+
+def test_build_malicious_dbot_entry():
+    from CommonServerPython import build_malicious_dbot_entry
+    res = build_malicious_dbot_entry('8.8.8.8', 'ip', 'Vendor', 'Google DNS')
+    assert res == {'IP(val.Address && val.Address == obj.Address)': {
+        'Address': '8.8.8.8', 'Malicious': {'Vendor': 'Vendor', 'Description': 'Google DNS'}}}
+
+
+class TestBaseClient:
+    @staticmethod
+    def get_client():
+        from CommonServerPython import BaseClient
+        return BaseClient('example.com', '/api/v2/', 'Name', 'name', 'name')
+
+    def test_http_request(self, monkeypatch):
+        from CommonServerPython import BaseClient
+        client = self.get_client()
+        res = client._http_request('get', '')
+
+
