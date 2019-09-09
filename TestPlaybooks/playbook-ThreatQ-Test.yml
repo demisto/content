@@ -37,10 +37,10 @@ tasks:
       version: -1
       name: Create adversary with sources
       description: Create a new adversary in ThreatQ
-      script: ThreatQ|||threatq-create-adversary
+      script: ThreatQ v2|||threatq-create-adversary
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "77"
@@ -73,10 +73,10 @@ tasks:
       version: -1
       name: Create an event
       description: Create a new event in ThreatQ
-      script: ThreatQ|||threatq-create-event
+      script: ThreatQ v2|||threatq-create-event
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "78"
@@ -110,10 +110,10 @@ tasks:
       version: -1
       name: Add an attribute to the event
       description: Add an attribute to an object in ThreatQ
-      script: ThreatQ|||threatq-add-attribute
+      script: ThreatQ v2|||threatq-add-attribute
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "49"
@@ -146,10 +146,10 @@ tasks:
       version: -1
       name: Delete the event's attribute
       description: Delete an attribute from an object in ThreatQ
-      script: ThreatQ|||threatq-delete-attribute
+      script: ThreatQ v2|||threatq-delete-attribute
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "50"
@@ -180,10 +180,10 @@ tasks:
       version: -1
       name: Add a source to the adversary
       description: Add a source to an object in ThreatQ
-      script: ThreatQ|||threatq-add-source
+      script: ThreatQ v2|||threatq-add-source
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "53"
@@ -214,10 +214,10 @@ tasks:
       version: -1
       name: Delete a source of the adversary
       description: Delete a source from an object in ThreatQ
-      script: ThreatQ|||threatq-delete-source
+      script: ThreatQ v2|||threatq-delete-source
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "55"
@@ -265,10 +265,10 @@ tasks:
       name: Search the event by name
       description: Search ThreatQ repository by keywords. Search result default limit
         is 10 records.
-      script: ThreatQ|||threatq-search-by-name
+      script: ThreatQ v2|||threatq-search-by-name
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "9"
@@ -298,10 +298,10 @@ tasks:
       name: Search the event by ID
       description: Search for an object by it's type and ID. When possible, generic
         and DBotScore contexts will be generated as well.
-      script: ThreatQ|||threatq-search-by-id
+      script: ThreatQ v2|||threatq-search-by-id
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "79"
@@ -330,10 +330,10 @@ tasks:
       version: -1
       name: Update IOC status
       description: Update an Indicator status in ThreatQ
-      script: ThreatQ|||threatq-update-status
+      script: ThreatQ v2|||threatq-update-status
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "68"
@@ -364,10 +364,10 @@ tasks:
       version: -1
       name: Link event + IOC
       description: Link between two objects in ThreatQ
-      script: ThreatQ|||threatq-link-objects
+      script: ThreatQ v2|||threatq-link-objects
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "42"
@@ -408,10 +408,10 @@ tasks:
         Run domain check against ThreatQ
 
         The domain should be marked as malicious since its TQ score is greater than 7.
-      script: ThreatQ|||domain
+      script: ThreatQ v2|||domain
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "25"
@@ -444,10 +444,10 @@ tasks:
       version: -1
       name: Run generic command - ip
       description: Run ip check against ThreatQ
-      script: ThreatQ|||ip
+      script: ThreatQ v2|||ip
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "28"
@@ -514,10 +514,10 @@ tasks:
       version: -1
       name: Run generic command - email
       description: Run email check against ThreatQ
-      script: ThreatQ|||email
+      script: ThreatQ v2|||email
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "27"
@@ -544,10 +544,10 @@ tasks:
       version: -1
       name: Run generic command - file
       description: Run file check against ThreatQ
-      script: ThreatQ|||file
+      script: ThreatQ v2|||file
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "29"
@@ -578,10 +578,10 @@ tasks:
       version: -1
       name: Run generic command - url
       description: Run url check against ThreatQ
-      script: ThreatQ|||url
+      script: ThreatQ v2|||url
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "30"
@@ -920,10 +920,10 @@ tasks:
       version: -1
       name: Create IOC with attributes
       description: Create a new indicator in ThreatQ
-      script: ThreatQ|||threatq-create-ioc
+      script: ThreatQ v2|||threatq-create-ioc
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "83"
@@ -997,10 +997,10 @@ tasks:
       version: -1
       name: Get IOC related events
       description: Get related Events in ThreatQ
-      script: ThreatQ|||threatq-get-related-events
+      script: ThreatQ v2|||threatq-get-related-events
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "43"
@@ -1110,10 +1110,10 @@ tasks:
       version: -1
       name: Modify the event's attribute
       description: Modify an attribute on an object in ThreatQ
-      script: ThreatQ|||threatq-modify-attribute
+      script: ThreatQ v2|||threatq-modify-attribute
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "51"
@@ -1197,10 +1197,10 @@ tasks:
       name: Update context (search by ID)
       description: Search for an object by it's type and ID. When possible, generic
         and DBotScore contexts will be generated as well.
-      script: ThreatQ|||threatq-search-by-id
+      script: ThreatQ v2|||threatq-search-by-id
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "48"
@@ -1230,10 +1230,10 @@ tasks:
       name: Update context (search by ID)
       description: Search for an object by it's type and ID. When possible, generic
         and DBotScore contexts will be generated as well.
-      script: ThreatQ|||threatq-search-by-id
+      script: ThreatQ v2|||threatq-search-by-id
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "37"
@@ -1311,10 +1311,10 @@ tasks:
       name: Update context (search by ID)
       description: Search for an object by it's type and ID. When possible, generic
         and DBotScore contexts will be generated as well.
-      script: ThreatQ|||threatq-search-by-id
+      script: ThreatQ v2|||threatq-search-by-id
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "46"
@@ -1344,10 +1344,10 @@ tasks:
       name: Update context (search by ID)
       description: Search for an object by it's type and ID. When possible, generic
         and DBotScore contexts will be generated as well.
-      script: ThreatQ|||threatq-search-by-id
+      script: ThreatQ v2|||threatq-search-by-id
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "54"
@@ -1425,10 +1425,10 @@ tasks:
       name: Update context (search by ID)
       description: Search for an object by it's type and ID. When possible, generic
         and DBotScore contexts will be generated as well.
-      script: ThreatQ|||threatq-search-by-id
+      script: ThreatQ v2|||threatq-search-by-id
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "56"
@@ -1505,10 +1505,10 @@ tasks:
       version: -1
       name: Delete event
       description: Delete an object in ThreatQ
-      script: ThreatQ|||threatq-delete-object
+      script: ThreatQ v2|||threatq-delete-object
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "70"
@@ -1538,10 +1538,10 @@ tasks:
       name: Update context  - event (Search by name)
       description: Search ThreatQ repository by keywords. Search result default limit
         is 10 records.
-      script: ThreatQ|||threatq-search-by-name
+      script: ThreatQ v2|||threatq-search-by-name
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "71"
@@ -1637,10 +1637,10 @@ tasks:
       version: -1
       name: Get event related indicators
       description: Get related Indicators in ThreatQ
-      script: ThreatQ|||threatq-get-related-ioc
+      script: ThreatQ v2|||threatq-get-related-ioc
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "63"
@@ -1714,10 +1714,10 @@ tasks:
       version: -1
       name: Unlink event + IOC
       description: Unlink two objects in ThreatQ
-      script: ThreatQ|||threatq-unlink-objects
+      script: ThreatQ v2|||threatq-unlink-objects
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "72"
@@ -1779,10 +1779,10 @@ tasks:
       version: -1
       name: Get IOC related events
       description: Get related Events in ThreatQ
-      script: ThreatQ|||threatq-get-related-events
+      script: ThreatQ v2|||threatq-get-related-events
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "67"
@@ -1859,10 +1859,10 @@ tasks:
       name: Update context - IOC (search by ID)
       description: Search for an object by it's type and ID. When possible, generic
         and DBotScore contexts will be generated as well.
-      script: ThreatQ|||threatq-search-by-id
+      script: ThreatQ v2|||threatq-search-by-id
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "44"
@@ -1892,10 +1892,10 @@ tasks:
       version: -1
       name: Delete the adversary
       description: Delete an object in ThreatQ
-      script: ThreatQ|||threatq-delete-object
+      script: ThreatQ v2|||threatq-delete-object
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "85"
@@ -1924,10 +1924,10 @@ tasks:
       version: -1
       name: Delete IOC
       description: Delete an object in ThreatQ
-      script: ThreatQ|||threatq-delete-object
+      script: ThreatQ v2|||threatq-delete-object
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "60"
@@ -1957,10 +1957,10 @@ tasks:
       name: Update context  - IOC (Search by name)
       description: Search ThreatQ repository by keywords. Search result default limit
         is 10 records.
-      script: ThreatQ|||threatq-search-by-name
+      script: ThreatQ v2|||threatq-search-by-name
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "61"
@@ -2023,10 +2023,10 @@ tasks:
       version: -1
       name: Get event related indicators
       description: Get related Indicators in ThreatQ
-      script: ThreatQ|||threatq-get-related-ioc
+      script: ThreatQ v2|||threatq-get-related-ioc
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "67"
@@ -2080,10 +2080,10 @@ tasks:
       name: Update context  - event (Search by name)
       description: Search ThreatQ repository by keywords. Search result default limit
         is 10 records.
-      script: ThreatQ|||threatq-search-by-name
+      script: ThreatQ v2|||threatq-search-by-name
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "73"
@@ -2113,10 +2113,10 @@ tasks:
       name: Update context  - IOC (Search by name)
       description: Search ThreatQ repository by keywords. Search result default limit
         is 10 records.
-      script: ThreatQ|||threatq-search-by-name
+      script: ThreatQ v2|||threatq-search-by-name
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "66"
@@ -2145,10 +2145,10 @@ tasks:
       version: -1
       name: Edit adversary
       description: Update an adversary name in ThreatQ
-      script: ThreatQ|||threatq-edit-adversary
+      script: ThreatQ v2|||threatq-edit-adversary
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "6"
@@ -2177,10 +2177,10 @@ tasks:
       version: -1
       name: Edit event
       description: Update an event in ThreatQ
-      script: ThreatQ|||threatq-edit-event
+      script: ThreatQ v2|||threatq-edit-event
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "40"
@@ -2253,10 +2253,10 @@ tasks:
       name: Update IOC score
       description: Modify an indicator's score in ThreatQ. Notice that final TQ Score
         would be the maximum between manual and generated scores.
-      script: ThreatQ|||threatq-update-score
+      script: ThreatQ v2|||threatq-update-score
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "68"
@@ -2321,10 +2321,10 @@ tasks:
       version: -1
       name: Edit IOC
       description: Update an indicator in ThreatQ.
-      script: ThreatQ|||threatq-edit-ioc
+      script: ThreatQ v2|||threatq-edit-ioc
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "84"
@@ -2470,10 +2470,10 @@ tasks:
       version: -1
       name: Upload file to ThreatQ
       description: Upload a file in ThreatQ
-      script: ThreatQ|||threatq-upload-file
+      script: ThreatQ v2|||threatq-upload-file
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "89"
@@ -2507,10 +2507,10 @@ tasks:
       version: -1
       name: Delete the file
       description: Delete an object in ThreatQ
-      script: ThreatQ|||threatq-delete-object
+      script: ThreatQ v2|||threatq-delete-object
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "92"
@@ -2539,10 +2539,10 @@ tasks:
       version: -1
       name: Download file
       description: Download a file from ThreatQ to Demisto
-      script: ThreatQ|||threatq-download-file
+      script: ThreatQ v2|||threatq-download-file
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "88"
@@ -2569,10 +2569,10 @@ tasks:
       version: -1
       name: Get all indicators
       description: Get all indicators in ThreatQ
-      script: ThreatQ|||threatq-get-all-iocs
+      script: ThreatQ v2|||threatq-get-all-iocs
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "93"
@@ -2599,10 +2599,10 @@ tasks:
       version: -1
       name: Get all adveraries
       description: Get all adversaries in ThreatQ
-      script: ThreatQ|||threatq-get-all-adversaries
+      script: ThreatQ v2|||threatq-get-all-adversaries
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "90"
@@ -2629,10 +2629,10 @@ tasks:
       version: -1
       name: Get all events
       description: Get all events in ThreatQ
-      script: ThreatQ|||threatq-get-all-events
+      script: ThreatQ v2|||threatq-get-all-events
       type: regular
       iscommand: true
-      brand: ThreatQ
+      brand: ThreatQ v2
     nexttasks:
       '#none#':
       - "91"
