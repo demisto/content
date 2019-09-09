@@ -293,6 +293,33 @@ def test_tbl_to_md_list_of_strings_instead_of_dict_and_string_header():
     assert table_string_array_string_header == expected_string_array_string_header_tbl
 
 
+def test_tbl_to_md_dict_with_special_character():
+    data = {
+        'header_1': u'foo',
+        'header_2': [u'\xe2.rtf']
+    }
+    table_with_character = tableToMarkdown('tableToMarkdown test with special character', data)
+    expected_string_with_special_character = '''### tableToMarkdown test with special character
+|header_1|header_2|
+|---|---|
+|foo|â.rtf|
+'''
+    assert table_with_character == expected_string_with_special_character
+
+
+def test_tbl_to_md_header_with_special_character():
+    data = {
+        'header_1': u'foo'
+    }
+    table_with_character = tableToMarkdown('tableToMarkdown test with special character Ù', data)
+    expected_string_with_special_character = '''### tableToMarkdown test with special character Ù
+|header_1|
+|---|
+|foo|
+'''
+    assert table_with_character == expected_string_with_special_character
+
+
 def test_flatten_cell():
     # sanity
     utf8_to_flatten = b'abcdefghijklmnopqrstuvwxyz1234567890!'.decode('utf8')
