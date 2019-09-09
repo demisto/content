@@ -33,8 +33,28 @@ TIME_FIELD = demisto.params().get('fetch_time_field', '')
 TIME_FORMAT = demisto.params().get('fetch_time_format', '')
 FETCH_INDEX = demisto.params().get('fetch_index', '')
 FETCH_QUERY = demisto.params().get('fetch_query', '')
-FETCH_DAYS = int(demisto.params().get('fetch_time', 3))
+FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+FETCH_SIZE = int(demisto.params().get('fetch_zise', 50))
 INSECURE = not demisto.params().get('insecure', False)
+
+
+def elasticsearch_builder():
+    if USERNAME:
+        if PROXY:
+            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
+                                 http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE, proxies=handle_proxy())
+
+        else:
+            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
+                                 http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE)
+
+    else:
+        if PROXY:
+            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
+                                 verify_certs=INSECURE, proxies=handle_proxy())
+
+        else:
+            return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection, verify_certs=INSECURE)
 
 
 def get_hit_table(hit, fields):
@@ -105,16 +125,11 @@ def search_command():
     size = int(demisto.args().get('size'))
     sort_field = demisto.args().get('sort-field')
     sort_order = demisto.args().get('sort-order')
-    if PROXY:
-        es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                           http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE, proxies=handle_proxy())
 
-    else:
-        es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                           http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE)
+    es = elasticsearch_builder()
 
     que = QueryString(query=query)
-    search = Search(using=es, index=index).query(que)[base_page:base_page + size]
+    search = Search(using=es, index=index)[base_page:base_page + size].query(que)
     if explain:
         # if 'explain parameter is set to 'true' - adds explanation section to search results
         search = search.extra(explain=True)
@@ -142,6 +157,59 @@ def search_command():
     return_outputs(total_human_readable, full_context, response)
 
 
+def fetch_params_check():
+    str_error = []  # type:List
+    if TIME_FIELD == '':
+        str_error.append("Time field is not configured for fetch in the integration parameters")
+
+    if FETCH_INDEX == '':
+        str_error.append("Index is not configured for fetch in the integration parameters")
+
+    if FETCH_QUERY == '':
+        str_error.append("Query is not configured for fetch in the integration parameters")
+
+    if TIME_FORMAT == '':
+        str_error.append("Time format is not configured for fetch in the integration parameters")
+
+    if len(str_error) > 0:
+        return_error("Got The following errors in test:\n" + '\n'.join(str_error))
+
+
+def test_general_query(es):
+    query = QueryString(query='*')
+    search = Search(using=es, index=FETCH_INDEX)[0:1].query(query)
+    response = search.execute().to_dict()
+    _, total_results = get_total_results(response)
+
+    if total_results == 0:
+        return_error("Fetch incidents test failed - Please check Index given")
+
+
+def test_date_field(es):
+    query = QueryString(query=TIME_FIELD+':*')
+    search = Search(using=es, index=FETCH_INDEX)[0:1].query(query)
+    response = search.execute().to_dict()
+    _, total_results = get_total_results(response)
+
+    if total_results == 0:
+        return_error("Fetch incidents test failed - Please check Date field given")
+
+    else:
+        return response
+
+
+def test_fetch_query(es):
+    query = QueryString(query=str(TIME_FIELD) + ":* AND " + FETCH_QUERY)
+    search = Search(using=es, index=FETCH_INDEX)[0:1].query(query)
+    response = search.execute().to_dict()
+    _, total_results = get_total_results(response)
+
+    if total_results == 0:
+        return None
+    else:
+        return response
+
+
 def test_func():
     try:
         res = requests.get(SERVER, auth=(USERNAME, PASSWORD), verify=INSECURE)
@@ -152,45 +220,29 @@ def test_func():
         return_error("Failed to connect, Check Server URL and Port number")
 
     if demisto.params().get('isFetch'):
-        str_error = []  # type:List
-        if TIME_FIELD == '':
-            str_error.append("Time field is not configured for fetch in the integration parameters")
-
-        if FETCH_INDEX == '':
-            str_error.append("Index is not configured for fetch in the integration parameters")
-
-        if FETCH_QUERY == '':
-            str_error.append("Query is not configured for fetch in the integration parameters")
-
-        if TIME_FORMAT == '':
-            str_error.append("Time format is not configured for fetch in the integration parameters")
-
-        if len(str_error) > 0:
-            return_error("Got The following errors in test:\n" + '\n'.join(str_error))
+        # check the existence of all necessary fields for fetch
+        fetch_params_check()
 
         try:
-            if PROXY:
-                es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                                   http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE, proxies=handle_proxy())
+            # build general Elasticsearch class
+            es = elasticsearch_builder()
 
-            else:
-                es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                                   http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE)
+            # test if FETCH_INDEX exists
+            test_general_query(es)
 
-            query = QueryString(query=str(TIME_FIELD) + ":* AND " + FETCH_QUERY)
-            search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
-            response = search.execute().to_dict()
-            _, total_results = get_total_results(response)
+            # test if TIME_FIELD in index exists
+            response = test_date_field(es)
 
-            if total_results == 0:
-                return_error("Fetch incidents test failed - Please check configuration")
+            # try to get response from FETCH_QUERY - if exists check the time field from that query
+            temp = test_fetch_query(es)
+            if temp:
+                response = temp
 
-            if total_results > 0:
-                hit_date = str(response.get('hits', {}).get('hits')[0].get('_source').get(str(TIME_FIELD)))
-                datetime.strptime(hit_date, TIME_FORMAT).isoformat() + 'Z'
+            hit_date = str(response.get('hits', {}).get('hits')[0].get('_source').get(str(TIME_FIELD)))
+            datetime.strptime(hit_date, TIME_FORMAT).isoformat() + 'Z'
 
         except ValueError as e:
-            return_error("Inserted time format does not match your index. " + str(e))
+            return_error("Inserted time format does not match your index. " + str(e) + '\nDate fetched: ' + hit_date)
 
     demisto.results('ok')
 
@@ -217,10 +269,7 @@ def results_to_incidents(response, current_fetch, last_fetch):
             # avoid duplication due to weak time query
             if hit_date > current_fetch:
                 inc = {
-                    'type': 'Elasticsearch',
-                    'sourceBrand': 'Elasticsearch',
                     'name': 'Elasticsearch: Index: ' + str(FETCH_INDEX) + ", ID: " + str(hit.get('_id')),
-                    'details': json.dumps(hit.get('_source')),
                     'rawJSON': json.dumps(hit),
                     'labels': incident_label_maker(hit.get('_source')),
                     'occurred': hit_date.isoformat() + 'Z'
@@ -236,23 +285,20 @@ def fetch_incidents():
 
     # handle first time fetch
     if last_fetch is None:
-        last_fetch = datetime.now() - timedelta(days=FETCH_DAYS)
+        last_fetch, _ = parse_date_range(date_range=FETCH_TIME, utc=False, to_timestamp=False)
+        last_fetch = datetime.strptime(str(last_fetch.isoformat()).split('.')[0] + 'Z', '%Y-%m-%dT%H:%M:%SZ')
 
     else:
         last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
 
     current_fetch = last_fetch
 
-    if PROXY:
-        es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                           http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE, proxies=handle_proxy())
+    es = elasticsearch_builder()
 
-    else:
-        es = Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
-                           http_auth=(USERNAME, PASSWORD), verify_certs=INSECURE)
+    query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
+    search = Search(using=es, index=FETCH_INDEX).filter({'range': {TIME_FIELD: {'gt': last_fetch}}})
+    search = search.sort({TIME_FIELD: {'order': 'asc'}})[0:FETCH_SIZE].query(query)
 
-    query = QueryString(query=FETCH_QUERY)
-    search = Search(using=es, index=FETCH_INDEX).query(query).filter({'range': {TIME_FIELD: {'gt': last_fetch}}})
     response = search.execute().to_dict()
     _, total_results = get_total_results(response)
 
