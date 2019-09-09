@@ -1453,7 +1453,7 @@
             "playbookID": "TestShowScheduledEntries"
         },
         {
-            "playbookID": "Evaluate Severity - Set By Highest DBotScore - Test",
+            "playbookID": "Evaluate Severity - Set By Highest Score - Test",
             "integrations": "Palo Alto Minemeld",
             "fromversion": "4.5.0"
         },
