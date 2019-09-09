@@ -590,11 +590,11 @@ script:
         };
     }
 
-    function createContext (response, hybrid_context) {
-        var url = hybrid_context.URL;
+    function createContext (response, hybridContext) {
+        var url = hybridContext.URL;
         if (response.submission_type == 'page_url') {
             var context = {
-                'HybridAnalysis.URL(val.ScanID && val.ScanID == obj.ScanID)': hybrid_context,
+                'HybridAnalysis.URL(val.ScanID && val.ScanID == obj.ScanID)': hybridContext,
                 'URL(val.Data && val.Data == obj.Data)':{
                     'Data': url
                 }
@@ -604,7 +604,7 @@ script:
         else {
             var filename = url.replace(/^.*[\\\/]/, '');
             var context = {
-                'HybridAnalysis.URL(val.ScanID && val.ScanID == obj.ScanID)': hybrid_context,
+                'HybridAnalysis.URL(val.ScanID && val.ScanID == obj.ScanID)': hybridContext,
                 'URL(val.Data && val.Data == obj.Data)':{
                     'Data': url
                 },
@@ -622,7 +622,7 @@ script:
     //create table entry from response after 'quick-scan-url/file' command
     function quickScanToEntry(response, url) {
         var ScanID = response.id;
-        var hybrid_context = {
+        var hybridContext = {
             'URL': url,
             'ScanID': response.id,
             'SHA256': response.sha256,
@@ -630,7 +630,7 @@ script:
             'SubmissionType' : response.submission_type
         };
 
-        var context = createContext(response, hybrid_context)
+        var context = createContext(response, hybridContext)
 
         // adding { ScanID : url } to the integration context for future use
         var addToContext = {};
@@ -638,13 +638,8 @@ script:
         addToContext[url] = response.submission_type;
         setIntegrationContext(addToContext);
 
-        return createTableEntry('Scan information:', response,
-        {
-            'ScanID':  response.id,
-            'Finished': response.finished,
-            'SHA256': response.sha256,
-            'SubmissionType' : response.submission_type
-        }, context, ['ScanID', 'Finished', 'SHA256', 'SubmissionType']);
+        var headers = ['ScanID', 'URL', 'Finished', 'SHA256', 'SubmissionType']
+        return createTableEntry('Scan information:', response, hybridContext, context, headers);
     }
 
 
