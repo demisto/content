@@ -43,6 +43,12 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
+- defaultvalue: auto-discovery
+  display: Time Format e.g. %Y-%m-%dT%H:%M:%SZ. Select "auto-discovery" to attemp
+    to detertmine the format automatically.
+  name: time_format
+  required: false
+  type: 0
 description: Search and monitor alarms and events from AlienVault USM Anywhere.
 display: AlienVault USM Anywhere
 name: AlienVault USM Anywhere

@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 
-import re
 import json
 import requests
 import dateparser
@@ -31,7 +30,7 @@ HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
 }
-DATE_FORMAT = demisto.params().get['date_format']
+TIME_FORMAT = demisto.params().get('time_format', 'auto-discovery')
 AUTH_TOKEN = ''
 
 
@@ -39,8 +38,8 @@ AUTH_TOKEN = ''
 
 
 def parse_time(time_str):
-    if DATE_FORMAT != 'auto-discovery':
-        return DATE_FORMAT
+    if TIME_FORMAT != 'auto-discovery':
+        return TIME_FORMAT
 
     regex_to_format = {
         r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z': '%Y-%m-%dT%H:%M:%SZ',
@@ -112,7 +111,8 @@ def get_time_range(time_frame=None, start_time=None, end_time=None):
         else:
             end_time = dateparser.parse(end_time)
 
-        return date_to_timestamp(start_time, parse_time(start_time)), date_to_timestamp(end_time, parse_time(end_time))
+        return date_to_timestamp(start_time, date_format=parse_time(start_time)), \
+            date_to_timestamp(end_time, date_format=parse_time(end_time))
 
     end_time = datetime.now()
     if time_frame == 'Today':
@@ -134,7 +134,8 @@ def get_time_range(time_frame=None, start_time=None, end_time=None):
     else:
         raise ValueError('Could not parse time frame: {}'.format(time_frame))
 
-    return date_to_timestamp(start_time, parse_time(start_time)), date_to_timestamp(end_time, parse_time(end_time))
+    return date_to_timestamp(start_time, date_format=parse_time(start_time)), \
+        date_to_timestamp(end_time, date_format=parse_time(end_time))
 
 
 @logger
@@ -405,19 +406,19 @@ def fetch_incidents():
 
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
-        last_fetch, = parse_date_range(FETCH_TIME, parse_time(FETCH_TIME))
+        last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
     incidents = []
     limit = dict_value_to_int(demisto.params(), 'fetch_limit')
-    items = search_alarms(start_time=date_to_timestamp(last_fetch, parse_time(last_fetch)),
-                          direction='asc', limit=limit)
+    items = search_alarms(start_time=last_fetch, direction='asc', limit=limit)
     for item in items:
         incident = item_to_incident(item)
         incidents.append(incident)
 
     if incidents:
         #  updating according to latest incident
-        last_fetch = str(incidents[-1].get('occurred'))
+        time_str = str(incidents[-1].get('occurred'))
+        last_fetch = str(date_to_timestamp(time_str, date_format=parse_time(time_str)))
 
     demisto.setLastRun({'time': last_fetch})
     demisto.incidents(incidents)
