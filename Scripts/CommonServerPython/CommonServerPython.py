@@ -2063,7 +2063,7 @@ if 'requests' in sys.modules:
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``requests.Response``
             """
-            def is_status_valid(response, status_codes=None):
+            def is_status_code_valid(response, status_codes=None):
                 """If status code is OK return True
 
                 :type response: ``requests.Response``
@@ -2075,11 +2075,8 @@ if 'requests' in sys.modules:
                 :return: If status of response is valid
                 :rtype: ``bool``
                 """
-                if status_codes and response.status_code in status_codes:
-                    return True
-                if res.ok:
-                    return True
-                return False
+                return status_codes and response.status_code in status_codes or res.ok
+
             try:
                 address = full_url if full_url else self._base_url + url_suffix
                 res = requests.request(
@@ -2098,7 +2095,7 @@ if 'requests' in sys.modules:
                 # Handle error responses gracefully
                 # Get wanted ok codes
                 ok_status = ok_codes if ok_codes else self._ok_codes
-                if not is_status_valid(res, ok_status):
+                if not is_status_code_valid(res, ok_status):
                     err_msg = 'Error in {} API call [{}] - {}' \
                         .format(self._integration_name, res.status_code, res.reason)
                     try:
