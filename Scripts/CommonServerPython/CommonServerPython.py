@@ -562,11 +562,11 @@ class IntegrationLogger(object):
       :rtype: ``None``
     """
 
-    def __init__(self, ):
+    def __init__(self):
         self.messages = []  # type: list
         self.write_buf = []  # type: list
         self.replace_strs = []  # type: list
-        # if for some reason you don't want to auto add credentails.password to replace strings
+        # if for some reason you don't want to auto add credentials.password to replace strings
         # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
         if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')
                 and isinstance(demisto.getParam('credentials'), dict)

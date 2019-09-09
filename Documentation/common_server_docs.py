@@ -153,13 +153,12 @@ def createPyDocumentation(path, origin, language):
                 else:
                     print("docstring for function {} is empty but it's in ignore_names".format(a))
             else:
-                if "tzinfo" not in docstring:
-                    y = parser.parse_docstring(docstring)
-                    y["name"] = a
-                    y["argList"] = list(inspect.getargspec(ns.get(a)))[0] if pyIrregularFuncs.get(a, None) is None \
-                        else pyIrregularFuncs[a]["argList"]
+                y = parser.parse_docstring(docstring)
+                y["name"] = a
+                y["argList"] = list(inspect.getargspec(ns.get(a)))[0] if pyIrregularFuncs.get(a, None) is None \
+                    else pyIrregularFuncs[a]["argList"]
 
-                    x.append(y)
+                x.append(y)
 
     if isErrorPy:
         return None, isErrorPy
