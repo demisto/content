@@ -260,6 +260,7 @@ tasks:
       version: -1
       name: PAN-OS - Block URL - Custom URL Category
       playbookName: PAN-OS - Block URL - Custom URL Category
+      description: ""
       type: playbook
       iscommand: false
       brand: ""
@@ -300,6 +301,7 @@ tasks:
       version: -1
       name: PAN-OS - Block IP and URL - External Dynamic List
       playbookName: PAN-OS - Block IP and URL - External Dynamic List
+      description: ""
       type: playbook
       iscommand: false
       brand: ""

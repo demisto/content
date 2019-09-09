@@ -19,6 +19,7 @@ tasks:
       id: b95110b7-ba18-42a5-87ad-c5d37915401c
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -43,6 +44,7 @@ tasks:
       id: 1808d949-f921-4957-8796-7bbedd822ad9
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -65,6 +67,7 @@ tasks:
       id: cea4b9a9-d2a5-42c6-84e7-7eab6d6ab7a8
       version: -1
       name: Block IPs
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -227,6 +230,7 @@ tasks:
       version: -1
       name: Add Indicator to Miner - Minemeld
       playbookName: Add Indicator to Miner - Palo Alto MineMeld
+      description: ""
       type: playbook
       iscommand: false
       brand: ""
@@ -351,6 +355,7 @@ tasks:
       version: -1
       name: PAN-OS - Block IP - Custom Block Rule
       playbookName: PAN-OS - Block IP - Custom Block Rule
+      description: ""
       type: playbook
       iscommand: false
       brand: ""
@@ -390,6 +395,7 @@ tasks:
       version: -1
       name: PAN-OS - Block IP - Static Address Group
       playbookName: PAN-OS - Block IP - Static Address Group
+      description: ""
       type: playbook
       iscommand: false
       brand: ""
@@ -430,6 +436,7 @@ tasks:
       version: -1
       name: PAN-OS - Block IP and URL - External Dynamic List
       playbookName: PAN-OS - Block IP and URL - External Dynamic List
+      description: ""
       type: playbook
       iscommand: false
       brand: ""
