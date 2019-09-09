@@ -146,8 +146,12 @@ def poll(target, step, args=(), kwargs=None, timeout=None, max_tries=None, check
 
 def urlscan_submit_url():
     submission_dict = {}
-    if demisto.args().get('public') == 'public' and demisto.params().get('override') is not True:
-        submission_dict['public'] = 'on'
+    if demisto.args().get('public'):
+        if demisto.args().get('public') == 'public':
+            submission_dict['public'] = 'on'
+    else:
+        if demisto.params().get('is_public') is True:
+            submission_dict['public'] = 'on'
 
     submission_dict['url'] = demisto.args().get('url')
     sub_json = json.dumps(submission_dict)
