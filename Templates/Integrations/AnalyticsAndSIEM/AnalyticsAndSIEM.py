@@ -17,7 +17,7 @@ urllib3.disable_warnings()
 
 class Client(BaseClient):
     """
-    Wrapper class for BaseClient with added functionality for the integration.
+    Wrapper class for BaseClient with additional functionality for the integration.
     """
 
     def test_module_request(self) -> Dict:
@@ -38,7 +38,9 @@ class Client(BaseClient):
         Returns:
             Response from API. from since_time if supplied else returns all events in given limit.
         """
+        # The service endpoint to request from
         suffix = 'event'
+        # Dictionary of params for the request
         params = assign_params(sinceTime=since_time, limit=limit)
         return self._http_request('GET', suffix, params=params)
 
@@ -55,6 +57,7 @@ class Client(BaseClient):
         suffix = 'event'
         # Dictionary of params for the request
         params = assign_params(eventId=event_id)
+        # Send a request using our http_request wrapper
         return self._http_request('GET', suffix, params=params)
 
     def close_event_request(self, event_id: AnyStr) -> Dict:
@@ -78,15 +81,19 @@ class Client(BaseClient):
         """Update given event
 
         Args:
-            description: change description of event
-            assignee: User to assign event to
             event_id: event ID
+            assignee: User to assign event to
+            description: change description of event
+
 
         Returns:
             Response from API
         """
+        # The service endpoint to request from
         suffix = 'event'
+        # Dictionary of params for the request
         params = assign_params(eventId=event_id, description=description, assignee=assignee)
+        # Send a request using our http_request wrapper
         return self._http_request('POST', suffix, params=params)
 
     def create_event_request(self, description: str, assignee: List[str] = None) -> Dict:
@@ -99,39 +106,29 @@ class Client(BaseClient):
         Returns:
             Response from API
         """
+        # The service endpoint to request from
         suffix = 'event'
+        # Dictionary of params for the request
         params = assign_params(description=description, assignee=assignee)
+        # Send a request using our http_request wrapper
         return self._http_request('POST', suffix, params=params)
 
-    def query_request(self, **kwargs):
+    def query_request(self, **kwargs) -> Dict:
+        """Query given kwargs
+
+        Args:
+            **kwargs:
+
+        Returns:
+            Response from API
+        """
+        # The service endpoint to request from
         suffix = 'query'
+        # Send a request using our http_request wrapper
         return self._http_request('GET', suffix, params=kwargs)
 
 
 ''' HELPER FUNCTIONS '''
-
-
-def build_dict(event: Dict) -> Dict:
-    """Builds Dict formatted for Demisto
-
-    Args:
-        event: One event from API
-
-    Returns:
-        Dict formatted for Demisto
-    """
-    return {
-        'ID': event.get('eventId'),
-        'Description': event.get('description'),
-        'Created': event.get('createdAt'),
-        'IsActive': event.get('isActive'),
-        'Assignee': [
-            {
-                'Name': user.get('name'),
-                'ID': user.get('id')
-            } for user in event.get('assignee', [])
-        ]
-    }
 
 
 def build_context(events: Union[Dict, List]) -> Union[Dict, List]:
@@ -142,7 +139,34 @@ def build_context(events: Union[Dict, List]) -> Union[Dict, List]:
 
     Returns:
         formatted Dict/List (according to the input type)
+
+    Examples:
+        >>> build_context({'eventId': '1', 'description': 'event description', 'createdAt':\
+        '2019-09-09T08:30:07.959533', 'isActive': True, 'assignee': [{'name': 'user1', 'id': '142'}]})
+        {'ID': '1', 'Description': 'event description', 'Created': '2019-09-09T08:30:07.959533', 'IsActive': True,\
+ 'Assignee': [{'Name': 'user1', 'ID': '142'}]}
     """
+    def build_dict(event: Dict) -> Dict:
+        """Builds Dict formatted for Demisto
+
+        Args:
+            event: One event from API
+
+        Returns:
+            Dict formatted for Demisto
+        """
+        return {
+            'ID': event.get('eventId'),
+            'Description': event.get('description'),
+            'Created': event.get('createdAt'),
+            'IsActive': event.get('isActive'),
+            'Assignee': [
+                {
+                    'Name': user.get('name'),
+                    'ID': user.get('id')
+                } for user in event.get('assignee', [])
+            ]
+        }
     if isinstance(events, list):
         return [build_dict(event) for event in events]
     return build_dict(events)
@@ -165,7 +189,7 @@ def fetch_incidents(client: Client):
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_credentials
     """
     timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ"'
-    # Get credentials from api
+    # Get incidents from API
     last_run = demisto.getLastRun()
     if not last_run:  # if first time running
         last_run, _ = parse_date_range(demisto.params().get('fetch_time'))
@@ -248,11 +272,14 @@ def close_event(client: Client, args: Dict) -> Tuple[str, Dict, None]:
 
 
 def update_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    # Get arguments from user
     event_id: str = args.get('event_id', '')
     description: str = args.get('description', '')
     assignee: List[str] = argToList(args.get('assignee', ''))
+    # Make request and get raw response
     raw_response = client.update_event_request(event_id, description=description, assignee=assignee)
     event = raw_response.get('event')
+    # Parse response into context & content entries
     if event:
         title: str = f'{client.integration_name} - Event `{event_id}` has been updated.'
         context_entry = build_context(event)
@@ -264,10 +291,13 @@ def update_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def create_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    # Get arguments from user
     description: str = args.get('description', '')
     assignee: List[str] = argToList(demisto.args().get('assignee', ''))
+    # Make request and get raw response
     raw_response: Dict = client.create_event_request(description, assignee)
     event: Dict = raw_response.get('event', {})
+    # Parse response into context & content entries
     if event:
         event_id: str = event.get('eventId', '')
         title = f'{client.integration_name} - Event `{event_id}` has been created.'
@@ -280,6 +310,7 @@ def create_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def query(client: Client, args: Dict):
+    # Get arguments from user
     query_dict = assign_params(
         eventId=args.get('event_id'),
         sinceTime=args.get('since_time'),

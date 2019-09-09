@@ -89,7 +89,7 @@ class TestTestModule:
     def test_test_module(self, monkeypatch):
         from AnalyticsAndSIEM import test_module
         client = mock_client()
-        monkeypatch.setattr(client, 'test_module_request', lambda: True)
+        monkeypatch.setattr(client, 'test_module_request', lambda: {'version': '1.0.0'})
         assert test_module(client)
 
     def test_test_module_negative(self, monkeypatch):
@@ -109,8 +109,3 @@ class TestListEvents:
         _, context, _ = list_events(client, dict())
         context = context['AnalyticsAndSIEM.Event(val.ID && val.ID === obj.ID)']
         assert context == event_list_output()['Event']
-
-
-def test_tahat():
-    client: Client = mock_client()
-    print(client.integration_name)
