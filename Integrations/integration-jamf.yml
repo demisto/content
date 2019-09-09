@@ -276,3 +276,5 @@ script:
     - contextPath: Jamf.Computers.Room
       description: Computer room
 hidden: false
+tests:
+  - No test
