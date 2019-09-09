@@ -12,19 +12,22 @@ import os
 import re
 import base64
 from collections import OrderedDict
-
 import xml.etree.cElementTree as ET
+# imports something that can be missed from docker image
+try:
+    import requests
+except:
+    pass
+
 
 IS_PY3 = sys.version_info[0] == 3
 # pylint: disable=undefined-variable
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
-    STRING_OBJ_TYPES = (str, )
-    IMPORT_ERROR = ModuleNotFoundError
+    STRING_OBJ_TYPES = (str,)
 else:
     STRING_TYPES = (str, unicode)  # type: ignore
     STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
-    IMPORT_ERROR = ImportError
 # pylint: enable=undefined-variable
 
 entryTypes = {
@@ -1933,9 +1936,7 @@ obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'MD5': 'md5hash', 'Malicious':
     return {outputPaths[indicator_type_lower]: entry}
 
 
-try:
-    import requests
-
+if 'requests' in sys.modules:
     class BaseClient(object):
         def __init__(self,
                      server,
@@ -2112,8 +2113,6 @@ try:
                           ' is correct and that you have access to the server from your host.' \
                     .format(err_type, e.errno, e.strerror)
                 raise DemistoException(err_msg)
-except IMPORT_ERROR:
-    pass
 
 
 class DemistoException(Exception):
