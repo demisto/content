@@ -1597,14 +1597,13 @@ def underscoreToCamelCase(s):
 
 
 def camel_case_to_underscore(s):
-    """
-       Converts a camelCase string to snake_case
+    """Converts a camelCase string to snake_case
 
-       :type s: ``str``
-       :param s: The string to convert (e.g. helloWorld) (required)
+   :type s: ``str``
+   :param s: The string to convert (e.g. helloWorld) (required)
 
-       :return: The converted string (e.g. hello_world)
-       :rtype: ``str``
+   :return: The converted string (e.g. hello_world)
+   :rtype: ``str``
     """
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', s)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
@@ -1931,7 +1930,7 @@ obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'MD5': 'md5hash', 'Malicious':
 
 
 class BaseClient:
-    """Base Client for use in new integrations
+    """Base Client for use in integrations.
 
     :type server: ``str``
     :param server: Base server address
@@ -1957,7 +1956,6 @@ class BaseClient:
     return: No data returned
     :rtype: ``None``
     """
-
     def __init__(self,
                  server,
                  base_suffix,
@@ -2110,4 +2108,4 @@ class BaseClient:
 
 
 class DemistoException(Exception):
-    """Custom Exception"""
+    pass
