@@ -1385,8 +1385,7 @@ def transient_attachments(transientFile, transientFileContent, transientFileCID)
         transientFileCID = []
 
     attachments = []
-    for triplet in it.izip_longest(transientFile, transientFileContent, transientFileCID):
-        file_name, file_data, file_cid = triplet
+    for file_name, file_data, file_cid in it.izip_longest(transientFile, transientFileContent, transientFileCID):
         if file_name is None:
             break
 
