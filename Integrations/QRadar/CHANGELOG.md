@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+  - Added new functionality to ***qradar-get-note*** command. note_id argument is no longer required, so when executed without it, the command will get all the offense's notes. 
 
 ## [19.9.0] - 2019-09-04
   - Fixed an issue in which the ***qradar-get-search-results*** command failed when the root of the result contained a non-ascii character.
