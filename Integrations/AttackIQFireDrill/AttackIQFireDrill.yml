@@ -30,7 +30,7 @@ script:
       description: ID of the assessment to get.
       isArray: false
       name: assessment_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Get all assessments in a page or by assessment id.
@@ -498,7 +498,6 @@ script:
       description: Test outcome result.
       type: String
   dockerimage: demisto/python3:3.7.4.977
-  subtype: python3
   isfetch: false
   longRunning: false
   longRunningPort: false
