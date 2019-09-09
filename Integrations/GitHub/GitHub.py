@@ -1043,8 +1043,7 @@ def main():
         if cmd in COMMANDS.keys():
             COMMANDS[cmd]()
     except Exception as e:
-        raise e
-        # return_error(str(e))
+        return_error(str(e))
 
 
 # python2 uses __builtin__ python3 uses builtins
