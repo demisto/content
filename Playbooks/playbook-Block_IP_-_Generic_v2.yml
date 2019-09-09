@@ -1,5 +1,5 @@
-id: c7ad7180-3197-4cd5-8740-6d7a3223deca
-version: 9
+id: Block IP - Generic v2
+version: -1
 name: Block IP - Generic v2
 description: |-
   This playbook blocks malicious IPs using all integrations that you have enabled.
