@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 50a81096-9dcc-46c7-8fb7-f335bbdb1ec4
+    taskid: 4c4cfd24-d02b-4820-8125-3c15e76ccb9b
     type: start
     task:
-      id: 50a81096-9dcc-46c7-8fb7-f335bbdb1ec4
+      id: 4c4cfd24-d02b-4820-8125-3c15e76ccb9b
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 11634230-0825-45a8-8a0d-0ff767fce5c9
+    taskid: 8ca19166-3dd5-490c-8493-a93e89fa0d0d
     type: regular
     task:
-      id: 11634230-0825-45a8-8a0d-0ff767fce5c9
+      id: 8ca19166-3dd5-490c-8493-a93e89fa0d0d
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -63,10 +63,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: d29e67bf-9dca-40f4-860d-df6f46286062
+    taskid: dfbe1bf4-0309-4296-8ce3-b7eb553665a4
     type: regular
     task:
-      id: d29e67bf-9dca-40f4-860d-df6f46286062
+      id: dfbe1bf4-0309-4296-8ce3-b7eb553665a4
       version: -1
       name: Activate assessment
       description: Activates the assessment. this is required for execution.
@@ -93,10 +93,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 71fcf902-bf5e-48d0-8efa-162d58d831a1
+    taskid: 826ae74e-d834-4227-82db-b6933ce0300b
     type: regular
     task:
-      id: 71fcf902-bf5e-48d0-8efa-162d58d831a1
+      id: 826ae74e-d834-4227-82db-b6933ce0300b
       version: -1
       name: Get assessment execution status
       description: Get assessment execution status - supports only on demand runs.
@@ -123,10 +123,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: cceb6b99-3f6f-4b4f-8682-a294f958a1c6
+    taskid: b7fdbdb7-383e-4a2d-88dd-2d4de6e60326
     type: condition
     task:
-      id: cceb6b99-3f6f-4b4f-8682-a294f958a1c6
+      id: b7fdbdb7-383e-4a2d-88dd-2d4de6e60326
       version: -1
       name: Assert execution status
       type: condition
@@ -156,10 +156,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 8f500abf-3355-45a5-8015-77c63a74ce3a
+    taskid: 25702b3e-6033-48cc-81d8-4e8b24e6d009
     type: regular
     task:
-      id: 8f500abf-3355-45a5-8015-77c63a74ce3a
+      id: 25702b3e-6033-48cc-81d8-4e8b24e6d009
       version: -1
       name: Get test results
       script: '|||attackiq-get-test-results'
@@ -187,10 +187,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: a946418c-cdd5-4baf-8856-875d134edb40
+    taskid: 3abff49e-5011-4e50-8224-5f850be57365
     type: condition
     task:
-      id: a946418c-cdd5-4baf-8856-875d134edb40
+      id: 3abff49e-5011-4e50-8224-5f850be57365
       version: -1
       name: Assert test results
       type: condition
@@ -203,22 +203,6 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: AttackIQ.TestResult.Id
-            iscontext: true
-          right:
-            value:
-              simple: 91143b00-9bd2-4cde-9344-6ce4599562e7
-      - - operator: isEqualString
-          left:
-            value:
-              simple: AttackIQ.TestResult.Modified
-            iscontext: true
-          right:
-            value:
-              simple: 2019-09-05T13:38:05.246301Z
       - - operator: isEqualString
           left:
             value:
@@ -303,10 +287,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: c3826f73-3d0a-476c-8e59-54534fd440d9
+    taskid: e10146be-40bc-4ff3-8a9e-c1ab9b56c494
     type: regular
     task:
-      id: c3826f73-3d0a-476c-8e59-54534fd440d9
+      id: e10146be-40bc-4ff3-8a9e-c1ab9b56c494
       version: -1
       name: Get all assessments
       description: Get all assessments in a page or by assessment id.
@@ -333,10 +317,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: eb7a1228-799c-4e13-8f78-e938b0915eb3
+    taskid: 62a005f8-b9ad-4d67-8239-f12b4310f682
     type: condition
     task:
-      id: eb7a1228-799c-4e13-8f78-e938b0915eb3
+      id: 62a005f8-b9ad-4d67-8239-f12b4310f682
       version: -1
       name: Assert assessments
       type: condition
@@ -537,10 +521,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 56a8abdd-0047-460f-82a5-fbcd9166d033
+    taskid: 3aaa8966-abdc-4fb2-8b4d-83be42b8e547
     type: regular
     task:
-      id: 56a8abdd-0047-460f-82a5-fbcd9166d033
+      id: 3aaa8966-abdc-4fb2-8b4d-83be42b8e547
       version: -1
       name: Get tests by assessment
       script: '|||attackiq-list-tests-by-assessment'
@@ -566,10 +550,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 06ac6167-0cbd-4697-846b-848eb6d81fee
+    taskid: 656aacb0-d0ac-479a-8d8b-a434449673e3
     type: condition
     task:
-      id: 06ac6167-0cbd-4697-846b-848eb6d81fee
+      id: 656aacb0-d0ac-479a-8d8b-a434449673e3
       version: -1
       name: Assert tests
       type: condition
@@ -582,31 +566,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: AttackIQ.Test.Id
-            iscontext: true
-          right:
-            value:
-              simple: 529eebb2-a53c-4f82-9a0e-fc59763cb542
-      - - operator: isEqualString
-          left:
-            value:
-              simple: AttackIQ.Test.Name
-            iscontext: true
-          right:
-            value:
-              simple: Cryptolocker
-      - - operator: isEqualString
-          left:
-            value:
-              simple: AttackIQ.Test.Assessment
-            iscontext: true
-          right:
-            value:
-              simple: c4e352ae-1506-4c74-bd90-853f02dd765a
-      - - operator: isEqualNumber
+      - - operator: greaterThanOrEqual
           left:
             value:
               simple: AttackIQ.Test.TotalAssetCount
@@ -638,22 +598,6 @@ tasks:
           right:
             value:
               simple: 2019-08-27T10:17:09.968467Z
-      - - operator: isEqualString
-          left:
-            value:
-              simple: AttackIQ.Test.Modified
-            iscontext: true
-          right:
-            value:
-              simple: 2019-09-02T07:08:20.393468Z
-      - - operator: isEqualString
-          left:
-            value:
-              simple: AttackIQ.Test.LatestInstanceId
-            iscontext: true
-          right:
-            value:
-              simple: f18fd450-73b7-439e-9d93-afb3602f964c
       - - operator: isTrue
           left:
             value:
@@ -732,10 +676,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 857e9ecd-9857-474d-8b47-6dfc0d73aea9
+    taskid: d632ec8c-ed32-4725-844e-baebba5ff10e
     type: title
     task:
-      id: 857e9ecd-9857-474d-8b47-6dfc0d73aea9
+      id: d632ec8c-ed32-4725-844e-baebba5ff10e
       version: -1
       name: Done
       description: runs all of the tests in the assessment.
@@ -755,10 +699,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: e93e25cd-d627-4bf0-8358-c8abad3c8205
+    taskid: ca880e71-061c-4d77-8697-21697f3da532
     type: regular
     task:
-      id: e93e25cd-d627-4bf0-8358-c8abad3c8205
+      id: ca880e71-061c-4d77-8697-21697f3da532
       version: -1
       name: Get assessment by id
       description: Get all assessments in a page or by assessment id.
@@ -785,10 +729,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 35b0f33c-2ff6-4be5-8f41-ee8891663899
+    taskid: 6d363e76-31d4-41ce-8fb2-943f1b75ecae
     type: regular
     task:
-      id: 35b0f33c-2ff6-4be5-8f41-ee8891663899
+      id: 6d363e76-31d4-41ce-8fb2-943f1b75ecae
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -819,10 +763,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: a720349e-f86e-4974-812e-06d4ca96aa11
+    taskid: a1ed9043-fefd-4c17-8cf5-c836f3621045
     type: condition
     task:
-      id: a720349e-f86e-4974-812e-06d4ca96aa11
+      id: a1ed9043-fefd-4c17-8cf5-c836f3621045
       version: -1
       name: Assert get assessment results
       type: condition
