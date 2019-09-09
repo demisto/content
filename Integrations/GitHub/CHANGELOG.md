@@ -3,6 +3,8 @@
     - GitHub-get-stale-prs
     - GitHub-get-branch
     - GitHub-create-branch
+    - GitHub-delete-branch
+    - GitHub-list-teams
     - GitHub-get-team-membership
     - GitHub-request-review
     - GitHub-create-comment
