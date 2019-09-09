@@ -218,8 +218,8 @@ def get_email_context(email_data, mailbox):
         # in case no internalDate field exists will revert to extracting the date from the email payload itself
         # Note: this should not happen in any command other than other than gmail-move-mail which doesn't return the
         # email payload nor internalDate
-        LOG("No InternalDate timestamp found - getting Date from mail payload - msg ID:" + str(email_data['id']))
-        LOG.print_log()
+        demisto.info("No InternalDate timestamp found - getting Date from mail payload - msg ID:" +
+                     str(email_data['id']))
         base_time = str(headers.get('date', ''))
 
     context_gmail = {
@@ -734,7 +734,7 @@ def set_autoreply(user_id, enable_autoreply, response_subject, response_body_pla
 def remove_delegate_user_mailbox_command():
     args = demisto.args()
     user_id = args.get('user-id')
-    delegate_email = args.get('remove-mail')
+    delegate_email = args.get('removed-mail')
     return delegate_user_mailbox(user_id, delegate_email, False)
 
 
