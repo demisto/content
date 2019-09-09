@@ -31,6 +31,7 @@ IP_THRESHOLD = int(demisto.params()['ip_threshold'])
 DOMAIN_THRESHOLD = int(demisto.params()['domain_threshold'])
 URL_THRESHOLD = int(demisto.params()['url_threshold'])
 CVE_THRESHOLD = int(demisto.params()['cve_threshold'])
+SUSPICIOUS_THRESHOLD = int(demisto.params()['suspicious_threshold'])
 
 FETCH_TIME = demisto.params().get('triggered').strip()
 RULE_NAMES = demisto.params().get('rule_names').strip()
@@ -68,7 +69,7 @@ def translate_score(score, threshold):
     '''
     if score >= threshold: # Bad
         return 3
-    elif score >= 5: # Suspicious
+    elif score >= SUSPICIOUS_THRESHOLD: # Suspicious
         return 2
     else: return 0 # Unknown
 
