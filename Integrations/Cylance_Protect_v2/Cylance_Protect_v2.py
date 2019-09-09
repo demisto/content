@@ -54,6 +54,7 @@ APP_SECRET = demisto.params()['app_secret']
 TID = demisto.params()['tid']
 SERVER_URL = load_server_url()
 FILE_THRESHOLD = demisto.params()['file_threshold']
+BATCH_SIZE = int(demisto.params()['batch_size'])
 USE_SSL = not demisto.params().get('unsecure', False)
 
 
@@ -159,6 +160,10 @@ def test():
     access_token = get_authentication_token()
     if not access_token:
         raise Exception('Unable to get access token')
+    try:
+        int(BATCH_SIZE)
+    except ValueError as e:
+        return_error("Batch Size specified must represent an int.")
     demisto.results('ok')
 
 
@@ -1156,7 +1161,10 @@ def delete_devices():
             'Deletion status': True
         })
 
-    delete_devices_request(device_ids_list)
+    for i in range(0, len(device_ids_list), BATCH_SIZE):
+        current_deleted_devices_batch = device_ids_list[i:i+BATCH_SIZE]
+        delete_devices_request(current_deleted_devices_batch)
+
     context = {
         'Cylance.Device(val.Id && val.Id == obj.Id)': context_list
     }
