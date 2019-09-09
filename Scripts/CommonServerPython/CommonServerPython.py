@@ -19,10 +19,12 @@ IS_PY3 = sys.version_info[0] == 3
 # pylint: disable=undefined-variable
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
-    STRING_OBJ_TYPES = (str,)
+    STRING_OBJ_TYPES = (str, )
+    IMPORT_ERROR = ModuleNotFoundError
 else:
     STRING_TYPES = (str, unicode)  # type: ignore
     STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
+    IMPORT_ERROR = ImportError
 # pylint: enable=undefined-variable
 
 entryTypes = {
@@ -2110,7 +2112,7 @@ try:
                           ' is correct and that you have access to the server from your host.' \
                     .format(err_type, e.errno, e.strerror)
                 raise DemistoException(err_msg)
-except ModuleNotFoundError:
+except IMPORT_ERROR:
     pass
 
 
