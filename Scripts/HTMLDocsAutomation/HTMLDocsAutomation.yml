@@ -60,6 +60,18 @@ args:
   name: commands
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: per-command
+  description: Permissions diaplay options in the documantation
+  isArray: false
+  name: permissions
+  predefined:
+  - global
+  - per-command
+  - none
+  required: false
+  secret: false
 comment: |-
   Automates integration documentation.
   See (https://github.com/demisto/content/tree/master/docs/integration_documentation)[https://github.com/demisto/content/tree/master/docs/integration_documentation]
