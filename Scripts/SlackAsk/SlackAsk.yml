@@ -1,0 +1,78 @@
+args:
+- default: false
+  description: The Slack user to which to send the message. Can be either an email
+    address or a Slack user name.
+  isArray: false
+  name: user
+  required: false
+  secret: false
+- default: false
+  description: The Slack channel to which to send the message.
+  isArray: false
+  name: channel
+  required: false
+  secret: false
+- default: false
+  description: The message to send to the user or channel.
+  isArray: false
+  name: message
+  required: true
+  secret: false
+- default: false
+  description: First reply option. Default is "yes".
+  isArray: false
+  name: option1
+  required: false
+  secret: false
+- default: false
+  description: Second reply option. Default is "no".
+  isArray: false
+  name: option2
+  required: false
+  secret: false
+- default: false
+  description: The task to close with the reply. If empty, then no playbook tasks
+    will be closed.
+  isArray: false
+  name: task
+  required: false
+  secret: false
+- default: false
+  description: Tag to add to email reply entries.
+  isArray: false
+  name: replyEntriesTag
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Indicates whether to use one-time entitlement or persistent entitlement.
+  isArray: false
+  name: persistent
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+comment: Sends a message (question) to either user (in a direct message) or to a channel.
+  The message includes predefined reply options. The response can also close a task
+  (might be conditional) in a playbook.
+commonfields:
+  id: SlackAsk
+  version: -1
+enabled: true
+name: SlackAsk
+script: '-'
+system: false
+tags:
+- slack
+timeout: '0'
+type: python
+runonce: false
+tests:
+- no test - Untestable
+dependson:
+  must:
+  - send-notification
+subtype: python3
+fromversion: 5.0.0
