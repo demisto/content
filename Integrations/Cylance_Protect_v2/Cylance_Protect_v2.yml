@@ -40,7 +40,11 @@ configuration:
 - defaultvalue: '-59'
   display: File Threshold
   name: file_threshold
+  type: 0
   required: false
+- display: Deletion Batch Size
+  name: batch_size
+  defaultvalue: "20"
   type: 0
 description: Manage Endpoints using Cylance protect
 display: Cylance Protect v2
@@ -967,5 +971,6 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python2
 tests:
 - Cylance Protect v2 Test
