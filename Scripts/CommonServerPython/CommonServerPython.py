@@ -1936,6 +1936,7 @@ obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'MD5': 'md5hash', 'Malicious':
     return {outputPaths[indicator_type_lower]: entry}
 
 
+# Will add only if 'requests' module imported
 if 'requests' in sys.modules:
     class BaseClient(object):
         def __init__(self,
