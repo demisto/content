@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ThreatQ
+  id: ThreatQ v2
   version: -1
 configuration:
 - display: TQ SERVER URL E.g. https://192.168.1.136
@@ -30,8 +30,8 @@ configuration:
   required: false
   type: 0
 description: ThreatQ Integration
-display: ThreatQ
-name: ThreatQ
+display: ThreatQ v2
+name: ThreatQ v2
 script:
   commands:
   - arguments:

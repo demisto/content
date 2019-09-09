@@ -1089,10 +1089,13 @@ def get_all_objs_command(obj_type):
         url_suffix += ',score'
     res = tq_request('GET', url_suffix)
 
-    raw = [data_to_demisto_format(obj, obj_type) for obj in res['data'][page:page + limit]]
+    from_index = page
+    to_index = min(page + limit, len(res['data']))
+
+    raw = [data_to_demisto_format(obj, obj_type) for obj in res['data'][from_index:to_index]]
     ec = {CONTEXT_PATH[obj_type]: createContext(raw, removeNull=True)} if raw else {}
 
-    readable_title = 'List of all objects of type {0} - {1}-{2}'.format(obj_type, page, page + limit - 1)
+    readable_title = 'List of all objects of type {0} - {1}-{2}'.format(obj_type, from_index, to_index - 1)
     metadata = 'Total number of objects is {0}'.format(len(res['data']))
     readable = build_readable(readable_title, obj_type, raw, metadata=metadata)
 
