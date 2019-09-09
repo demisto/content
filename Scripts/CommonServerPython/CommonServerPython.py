@@ -2020,10 +2020,10 @@ if 'requests' in sys.modules:
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
-            method: (str) HTTP method, e.g. 'GET', 'POST' ... etc.
+            method: HTTP method, e.g. 'GET', 'POST' ... etc.
 
             :type url_suffix: ``str``
-            :param url_suffix (str): API endpoint.
+            :param url_suffix: API endpoint.
 
             :type full_url: ``str``
             :param full_url:
