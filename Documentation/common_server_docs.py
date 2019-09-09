@@ -151,7 +151,7 @@ def createPyDocumentation(path, origin, language):
                     print("docstring for function " + a + " is empty")
                     isErrorPy = True
                 else:
-                    print("not docstring for function {} but it's in ignore_name".format(a))
+                    print("docstring for function {} is empty but it's in ignore_names".format(a))
             else:
                 if "tzinfo" not in docstring:
                     y = parser.parse_docstring(docstring)
