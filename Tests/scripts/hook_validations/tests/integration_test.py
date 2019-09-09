@@ -1040,7 +1040,7 @@ def test_unsecure_wrong_display():
     assert validator.is_insecure_configured_correctly() is False
 
 
-def test_unsecure_wrong_display():
+def test_unsecure_correct_display():
     validator = IntegrationValidator("temp_file", check_git=False)
     validator.current_integration = {
         "configuration": [
