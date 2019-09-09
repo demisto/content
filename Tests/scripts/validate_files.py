@@ -295,6 +295,10 @@ class FilesValidator(object):
                 if not description_validator.is_valid():
                     self._is_valid = False
 
+                integration_validator = IntegrationValidator(file_path)
+                if not integration_validator.is_valid_integration():
+                    self._is_valid = False
+
             elif re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                     re.match(BETA_INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
                 description_validator = DescriptionValidator(file_path)
