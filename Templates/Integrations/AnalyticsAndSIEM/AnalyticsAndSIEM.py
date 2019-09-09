@@ -332,10 +332,10 @@ def query(client: Client, args: Dict):
         assignee=argToList(args.get('assignee')),
         isActive=args.get('is_active') == 'true'
     )
-    if not query_dict.get('assignee'):
-        del query_dict['assignee']
+    # Make request and get raw response
     raw_response: Dict = client.query_request(**query_dict)
     events: List = raw_response.get('event', [])
+    # Parse response into context & content entries
     if events:
         title = f'{client.integration_name} - Results for given query'
         context_entry = build_context(events)
