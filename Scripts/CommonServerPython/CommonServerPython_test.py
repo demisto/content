@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+import json
+
+import requests
+from pytest import raises
+
 import demistomock as demisto
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
@@ -693,14 +698,74 @@ def test_build_malicious_dbot_entry():
 
 
 class TestBaseClient:
-    @staticmethod
-    def get_client():
-        from CommonServerPython import BaseClient
-        return BaseClient('example.com', '/api/v2/', 'Name', 'name', 'name')
+    from CommonServerPython import BaseClient
+    text = {"status": "ok"}
+    client = BaseClient('http://example.com', '/api/v2/', 'Name', 'name', 'name')
 
-    def test_http_request(self, monkeypatch):
-        from CommonServerPython import BaseClient
-        client = self.get_client()
-        res = client._http_request('get', 'event')
+    def test_http_request_json(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        res = self.client._http_request('get', 'event')
+        assert res == self.text
 
+    def test_http_request_json_negative(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', text='notjson')
+        with raises(DemistoException, match="Failed to parse json object from response: b'notjson'"):
+            self.client._http_request('get', 'event')
 
+    def test_http_request_text(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        res = self.client._http_request('get', 'event', resp_type='text')
+        assert res == json.dumps(self.text)
+
+    def test_http_request_content(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', content=bytes(json.dumps(self.text), 'utf-8'))
+        res = self.client._http_request('get', 'event', resp_type='text')
+        assert res == json.dumps(self.text)
+
+    def test_http_request_response(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event')
+        res = self.client._http_request('get', 'event', resp_type='response')
+        assert isinstance(res, requests.Response)
+
+    def test_http_request_not_ok(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=500)
+        with raises(DemistoException, match="[500]"):
+            self.client._http_request('get', 'event')
+
+    def test_http_request_not_ok_but_ok(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', status_code=500)
+        res = self.client._http_request('get', 'event', resp_type='response', ok_codes=(500,))
+        assert res.status_code == 500
+
+    def test_http_request_not_ok_with_json(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=500, content=bytes(json.dumps(self.text),
+                                                                                            'utf-8'))
+        with raises(DemistoException, match="None\n{'status': 'ok'}"):
+            self.client._http_request('get', 'event')
+
+    def test_http_request_timeout(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectTimeout)
+        with raises(DemistoException, match="Connection Timeout Error"):
+            self.client._http_request('get', 'event')
+
+    def test_http_request_ssl_error(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.SSLError)
+        with raises(DemistoException, match="SSL Certificate Verification Failed"):
+            self.client._http_request('get', 'event', resp_type='response')
+
+    def test_http_request_proxy_error(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ProxyError)
+        with raises(DemistoException, match="Proxy Error"):
+            self.client._http_request('get', 'event', resp_type='response')
+
+    def test_http_request_connection_error(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectionError)
+        with raises(DemistoException, match="Verify that the server URL parameter"):
+            self.client._http_request('get', 'event', resp_type='response')

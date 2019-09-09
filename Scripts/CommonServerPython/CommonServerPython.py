@@ -1852,7 +1852,7 @@ def build_dbot_entry(indicator, indicator_type, vendor, score, description=None,
     :param indicator_type:
         type of indicator ('url, 'domain', 'ip', 'cve', 'email', 'md5', 'sha1', 'sha256', 'crc32', 'sha512', 'ctph')
 
-    :type indicator: ``int``
+    :type score: ``int``
     :param score: score (0, 1, 2 , 3)
 
     :type vendor: ``str``
