@@ -764,5 +764,6 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python2
 tests:
   - Tanium Test Playbook
