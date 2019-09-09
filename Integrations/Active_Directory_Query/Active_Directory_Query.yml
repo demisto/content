@@ -87,7 +87,7 @@ script:
       description: The user's job title
     - name: custom-attributes
       description: Sets basic or custom attributes of the user object. For example,
-      custom-attributes="{\"notes\":\"a note about the contact\",\"company\":\"company
+        custom-attributes="{\"notes\":\"a note about the contact\",\"company\":\"company
         name\"}"
     description: Creates an Active Directory user. This command requires a secure connection (SSL,TLS).
       in order to use this command.
