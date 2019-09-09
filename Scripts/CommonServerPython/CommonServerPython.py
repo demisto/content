@@ -1929,9 +1929,8 @@ obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'MD5': 'md5hash', 'Malicious':
     return {outputPaths[indicator_type_lower]: entry}
 
 
-class BaseClient:
-    """
-    Base Client for use in integrations.
+class BaseClient(object):
+    """Base Client for use in integrations.
 
     :type server: ``str``
     :param server: Base server address
