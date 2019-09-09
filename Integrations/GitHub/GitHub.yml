@@ -686,7 +686,7 @@ script:
       description: The SHA hash of the commit
       type: String
     - contextPath: GitHub.Commit.Author.Date
-      description: Teh commit author date
+      description: The commit author date
       type: String
     - contextPath: GitHub.Commit.Author.Name
       description: The name of the author
