@@ -1,4 +1,3 @@
-import demistomock as demisto
 # Common functions script
 # =======================
 # This script will be appended to each server script before being executed.
@@ -13,12 +12,13 @@ import re
 import base64
 from collections import OrderedDict
 import xml.etree.cElementTree as ET
+import demistomock as demisto
+
 # imports something that can be missed from docker image
 try:
     import requests
 except:
     pass
-
 
 IS_PY3 = sys.version_info[0] == 3
 # pylint: disable=undefined-variable
@@ -1784,7 +1784,7 @@ def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
     return int(time.mktime(date_str_or_dt.timetuple()) * 1000)
 
 
-def remove_nulls_from_dictionary(dict):
+def remove_nulls_from_dictionary(data):
     """
         Remove Null values from a dictionary. (updating the given dictionary)
 
@@ -1794,10 +1794,10 @@ def remove_nulls_from_dictionary(dict):
         :return: No data returned
         :rtype: ``None``
     """
-    list_of_keys = list(dict.keys())[:]
+    list_of_keys = list(data.keys())[:]
     for key in list_of_keys:
-        if dict[key] in ('', None, [], {}, ()):
-            del dict[key]
+        if data[key] in ('', None, [], {}, ()):
+            del data[key]
 
 
 def assign_params(**kwargs):
@@ -2016,7 +2016,7 @@ if 'requests' in sys.modules:
 
         def _http_request(self, method, url_suffix, full_url=None, headers=None,
                           auth=None, params=None, data=None, files=None,
-                          timeout=10, resp_type='json', ok_codes=None,  **kwargs):
+                          timeout=10, resp_type='json', ok_codes=None, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -2063,6 +2063,7 @@ if 'requests' in sys.modules:
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``requests.Response``
             """
+
             def is_status_code_valid(response, status_codes=None):
                 """If status code is OK return True
 
@@ -2075,7 +2076,9 @@ if 'requests' in sys.modules:
                 :return: If status of response is valid
                 :rtype: ``bool``
                 """
-                return status_codes and response.status_code in status_codes or res.ok
+                if status_codes:
+                    return response.status_code in status_codes
+                return res.ok
 
             try:
                 address = full_url if full_url else self._base_url + url_suffix
