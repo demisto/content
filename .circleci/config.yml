@@ -2,12 +2,12 @@ version: 2
 jobs:
   build:
     docker:
-      - image: devdemisto/content-build-2and3:2.0.0.877  # disable-secrets-detection
+      - image: devdemisto/content-build-2and3:2.0.0.1785  # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.8.2"
-      SERVER_VERSION: "4.5.0"
-      GIT_SHA1: "177b7e574fc936df19170c13650ea2581e4920f6" # guardrails-disable-line disable-secrets-detection
+      CONTENT_VERSION: "19.9.0"
+      SERVER_VERSION: "5.0.0"
+      GIT_SHA1: "bc047ac819b733774d73b8041a60d2a11981cdb0" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
@@ -92,6 +92,7 @@ jobs:
 
               else
                 ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+                cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
             fi
       - run:
           name: Download Configuration
@@ -108,9 +109,6 @@ jobs:
           name: Create Instance
           when: always
           command: |
-            pip install --upgrade awscli
-            pip install ansible ansible-runner rsa paramiko boto3 requests
-
             if ./Tests/scripts/is_ami.sh ;
               then
                 if [ -n "${NIGHTLY}" ] ;
@@ -120,10 +118,10 @@ jobs:
                   else
                     export IFRA_ENV_TYPE=Content-Env
                 fi
-                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType $IFRA_ENV_TYPE
+                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType $IFRA_ENV_TYPE -outfile ./env_results.json
 
               else
-                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild
+                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -outfile ./env_results.json
             fi
       - run:
           name: Setup Instance
@@ -202,13 +200,13 @@ jobs:
           when: always
       - run:
           name: Destroy Instances
-          command: python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS
+          command: |
+            python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json
           when: always
       - store_artifacts:
           path: artifacts
           destination: artifacts
           when: always
-
 
 workflows:
   version: 2

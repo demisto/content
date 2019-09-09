@@ -349,19 +349,19 @@ def test_get_user_by_name(mocker):
 
     # User name exists in integration context
     username = 'spengler'
-    user = get_user_by_name(username, demisto.getIntegrationContext())
+    user = get_user_by_name(username)
     assert user['id'] == 'U012A3CDE'
     assert slack.WebClient.users_list.call_count == 0
 
     # User email exists in integration context
     email = 'spengler@ghostbusters.example.com'
-    user = get_user_by_name(email, demisto.getIntegrationContext())
+    user = get_user_by_name(email)
     assert user['id'] == 'U012A3CDE'
     assert slack.WebClient.users_list.call_count == 0
 
     # User name doesn't exist in integration context
     username = 'perikles'
-    user = get_user_by_name(username, demisto.getIntegrationContext())
+    user = get_user_by_name(username)
     assert user['id'] == 'U012B3CUI'
     assert slack.WebClient.users_list.call_count == 1
 
@@ -374,13 +374,13 @@ def test_get_user_by_name(mocker):
 
     # User email doesn't exist in integration context
     email = 'perikles@acropoli.com'
-    user = get_user_by_name(email, demisto.getIntegrationContext())
+    user = get_user_by_name(email)
     assert user['id'] == 'U012B3CUI'
     assert slack.WebClient.users_list.call_count == 2
 
     # User doesn't exist
     username = 'alexios'
-    user = get_user_by_name(username, demisto.getIntegrationContext())
+    user = get_user_by_name(username)
     assert user == {}
     assert slack.WebClient.users_list.call_count == 3
 
@@ -407,7 +407,7 @@ def test_get_user_by_name_paging(mocker):
     mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
 
     # Arrange
-    user = get_user_by_name('alexios', demisto.getIntegrationContext())
+    user = get_user_by_name('alexios')
     args = slack.WebClient.users_list.call_args_list
     first_args = args[0][1]
     second_args = args[1][1]
@@ -443,6 +443,7 @@ def test_mirror_investigation_new_mirror(mocker):
     }})
     mocker.patch.object(slack.WebClient, 'conversations_invite')
     mocker.patch.object(slack.WebClient, 'conversations_setTopic')
+    mocker.patch.object(slack.WebClient, 'chat_postMessage')
 
     new_mirror = {
         'channel_id': 'new_group',
@@ -458,18 +459,9 @@ def test_mirror_investigation_new_mirror(mocker):
     # Arrange
 
     mirror_investigation()
-
-    # Assert
-
-    assert slack.WebClient.groups_create.call_count == 1
-    assert slack.WebClient.users_list.call_count == 1
-    assert slack.WebClient.conversations_invite.call_count == 2
-    assert slack.WebClient.conversations_setTopic.call_count == 1
-
     error_results = demisto.results.call_args_list[0][0]
-    assert error_results[0]['Contents'] == 'User alexios not found in Slack'
     success_results = demisto.results.call_args_list[1][0]
-    assert success_results[0] == 'Investigation mirrored successfully, channel: incident-999'
+    message_args = slack.WebClient.chat_postMessage.call_args[1]
 
     new_context = demisto.setIntegrationContext.call_args[0][0]
     new_mirrors = json.loads(new_context['mirrors'])
@@ -478,6 +470,19 @@ def test_mirror_investigation_new_mirror(mocker):
     our_conversation = our_conversation_filter[0]
     our_mirror_filter = list(filter(lambda m: '999' == m['investigation_id'], new_mirrors))
     our_mirror = our_mirror_filter[0]
+
+    # Assert
+
+    assert slack.WebClient.groups_create.call_count == 1
+    assert slack.WebClient.users_list.call_count == 1
+    assert slack.WebClient.conversations_invite.call_count == 2
+    assert slack.WebClient.conversations_setTopic.call_count == 1
+    assert slack.WebClient.chat_postMessage.call_count == 1
+
+    assert error_results[0]['Contents'] == 'User alexios not found in Slack'
+    assert success_results[0] == 'Investigation mirrored successfully, channel: incident-999'
+    assert message_args['channel'] == 'new_group'
+    assert message_args['text'] == 'This is the mirrored channel for incident 999.'
 
     assert len(our_conversation_filter) == 1
     assert len(our_mirror_filter) == 1
@@ -507,6 +512,7 @@ def test_mirror_investigation_new_mirror_with_name(mocker):
     }})
     mocker.patch.object(slack.WebClient, 'conversations_invite')
     mocker.patch.object(slack.WebClient, 'conversations_setTopic')
+    mocker.patch.object(slack.WebClient, 'chat_postMessage')
 
     new_mirror = {
         'channel_id': 'new_group',
@@ -522,18 +528,9 @@ def test_mirror_investigation_new_mirror_with_name(mocker):
     # Arrange
 
     mirror_investigation()
-
-    # Assert
-
-    assert slack.WebClient.groups_create.call_count == 1
-    assert slack.WebClient.users_list.call_count == 1
-    assert slack.WebClient.conversations_invite.call_count == 2
-    assert slack.WebClient.conversations_setTopic.call_count == 1
-
     error_results = demisto.results.call_args_list[0][0]
-    assert error_results[0]['Contents'] == 'User alexios not found in Slack'
     success_results = demisto.results.call_args_list[1][0]
-    assert success_results[0] == 'Investigation mirrored successfully, channel: coolname'
+    message_args = slack.WebClient.chat_postMessage.call_args[1]
 
     new_context = demisto.setIntegrationContext.call_args[0][0]
     new_mirrors = json.loads(new_context['mirrors'])
@@ -542,6 +539,19 @@ def test_mirror_investigation_new_mirror_with_name(mocker):
     our_conversation = our_conversation_filter[0]
     our_mirror_filter = list(filter(lambda m: '999' == m['investigation_id'], new_mirrors))
     our_mirror = our_mirror_filter[0]
+
+    # Assert
+
+    assert slack.WebClient.groups_create.call_count == 1
+    assert slack.WebClient.users_list.call_count == 1
+    assert slack.WebClient.conversations_invite.call_count == 2
+    assert slack.WebClient.conversations_setTopic.call_count == 1
+    assert slack.WebClient.chat_postMessage.call_count == 1
+
+    assert error_results[0]['Contents'] == 'User alexios not found in Slack'
+    assert success_results[0] == 'Investigation mirrored successfully, channel: coolname'
+    assert message_args['channel'] == 'new_group'
+    assert message_args['text'] == 'This is the mirrored channel for incident 999.'
 
     assert len(our_conversation_filter) == 1
     assert len(our_mirror_filter) == 1
@@ -571,6 +581,7 @@ def test_mirror_investigation_new_mirror_with_topic(mocker):
     }})
     mocker.patch.object(slack.WebClient, 'conversations_invite')
     mocker.patch.object(slack.WebClient, 'conversations_setTopic')
+    mocker.patch.object(slack.WebClient, 'chat_postMessage')
 
     new_mirror = {
         'channel_id': 'new_group',
@@ -587,19 +598,8 @@ def test_mirror_investigation_new_mirror_with_topic(mocker):
 
     mirror_investigation()
     topic_args = slack.WebClient.conversations_setTopic.call_args[1]
-
-    # Assert
-
-    assert slack.WebClient.groups_create.call_count == 1
-    assert slack.WebClient.users_list.call_count == 1
-    assert slack.WebClient.conversations_invite.call_count == 2
-    assert slack.WebClient.conversations_setTopic.call_count == 1
-
-    error_results = demisto.results.call_args_list[0][0]
-    assert error_results[0]['Contents'] == 'User alexios not found in Slack'
     success_results = demisto.results.call_args_list[1][0]
-    assert success_results[0] == 'Investigation mirrored successfully, channel: coolname'
-
+    error_results = demisto.results.call_args_list[0][0]
     new_context = demisto.setIntegrationContext.call_args[0][0]
     new_mirrors = json.loads(new_context['mirrors'])
     new_conversations = json.loads(new_context['conversations'])
@@ -607,6 +607,20 @@ def test_mirror_investigation_new_mirror_with_topic(mocker):
     our_conversation = our_conversation_filter[0]
     our_mirror_filter = list(filter(lambda m: '999' == m['investigation_id'], new_mirrors))
     our_mirror = our_mirror_filter[0]
+    message_args = slack.WebClient.chat_postMessage.call_args[1]
+
+    # Assert
+
+    assert slack.WebClient.groups_create.call_count == 1
+    assert slack.WebClient.users_list.call_count == 1
+    assert slack.WebClient.conversations_invite.call_count == 2
+    assert slack.WebClient.conversations_setTopic.call_count == 1
+    assert slack.WebClient.chat_postMessage.call_count == 1
+
+    assert error_results[0]['Contents'] == 'User alexios not found in Slack'
+    assert success_results[0] == 'Investigation mirrored successfully, channel: coolname'
+    assert message_args['channel'] == 'new_group'
+    assert message_args['text'] == 'This is the mirrored channel for incident 999.'
 
     assert topic_args['channel'] == 'new_group'
     assert topic_args['topic'] == 'cooltopic'
@@ -686,7 +700,7 @@ def test_mirror_investigation_existing_mirror_error_name(mocker):
     assert slack.WebClient.users_list.call_count == 0
 
     assert return_error_mock.call_count == 1
-    assert err_msg == 'Cannot change the Slack channel name from Demisto.'
+    assert err_msg == 'Cannot change the Slack channel name.'
 
 
 def test_mirror_investigation_existing_investigation(mocker):
@@ -1281,6 +1295,49 @@ async def test_translate_create(mocker):
 
 
 @pytest.mark.asyncio
+async def test_translate_create_newline_json(mocker):
+    # Set
+    import Slack
+
+    @asyncio.coroutine
+    def this_doesnt_create_incidents(demisto_user, incidents_json):
+        return {
+            'id': 'new_incident',
+            'name': 'New Incident'
+        }
+
+    mocker.patch.object(Slack, 'create_incidents', side_effect=this_doesnt_create_incidents)
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'https://www.eizelulz.com:8443'})
+
+    demisto_user = {'id': 'demisto_user'}
+
+    json_message =\
+        '''```
+            create incident json={
+            "name":"xyz",
+            "details": "1.1.1.1,8.8.8.8"
+            ```
+        }'''
+
+    success_message = 'Successfully created incident New Incident.\n' \
+                      ' View it on: https://www.eizelulz.com:8443#/WarRoom/new_incident'
+
+    # Arrange
+    json_data = await Slack.translate_create(demisto_user, json_message)
+
+    create_args = Slack.create_incidents.call_args
+    json_args = create_args[0][1]
+
+    # Assert
+
+    assert Slack.create_incidents.call_count == 1
+
+    assert json_args == [{"name": "xyz", "details": "1.1.1.1,8.8.8.8"}]
+
+    assert json_data == success_message
+
+
+@pytest.mark.asyncio
 async def test_get_user_by_id_async_user_exists(mocker):
     from Slack import get_user_by_id_async
 
@@ -1385,12 +1442,12 @@ async def test_check_entitlement(mocker):
     message6 = 'hi test@demisto.com name-of-someone@mail-of-someone goodbye'
 
     # Arrange
-    result1 = await check_and_handle_entitlement(message1, user)
-    result2 = await check_and_handle_entitlement(message2, user)
-    result3 = await check_and_handle_entitlement(message3, user)
-    result4 = await check_and_handle_entitlement(message4, user)
-    result5 = await check_and_handle_entitlement(message5, user)
-    result6 = await check_and_handle_entitlement(message6, user)
+    result1 = await check_and_handle_entitlement(message1, user, '')
+    result2 = await check_and_handle_entitlement(message2, user, '')
+    result3 = await check_and_handle_entitlement(message3, user, '')
+    result4 = await check_and_handle_entitlement(message4, user, '')
+    result5 = await check_and_handle_entitlement(message5, user, '')
+    result6 = await check_and_handle_entitlement(message6, user, '')
 
     result1_args = demisto.handleEntitlementForUser.call_args_list[0][0]
     result2_args = demisto.handleEntitlementForUser.call_args_list[1][0]
@@ -1429,6 +1486,55 @@ async def test_check_entitlement(mocker):
     assert result4_args[2] == 'test@demisto.com'
     assert result4_args[3] == 'hi test@demisto.com  goodbye'
     assert result4_args[4] == '43'
+
+
+@pytest.mark.asyncio
+async def test_check_entitlement_with_context(mocker):
+    from Slack import check_and_handle_entitlement
+
+    # Set
+    mocker.patch.object(demisto, 'handleEntitlementForUser')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+
+    user = {
+        'id': 'U123456',
+        'name': 'test',
+        'profile': {
+            'email': 'test@demisto.com'
+        }
+    }
+
+    integration_context = get_integration_context()
+    integration_context['questions'] = json.dumps([{
+        'thread': 'cool',
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22|43'
+    }, {
+        'thread': 'notcool',
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+    }])
+
+    set_integration_context(integration_context)
+
+    # Arrange
+    await check_and_handle_entitlement('hola', user, 'cool')
+
+    result_args = demisto.handleEntitlementForUser.call_args_list[0][0]
+
+    # Assert
+    assert demisto.handleEntitlementForUser.call_count == 1
+
+    assert result_args[0] == '22'
+    assert result_args[1] == '4404dae8-2d45-46bd-85fa-64779c12abe8'
+    assert result_args[2] == 'test@demisto.com'
+    assert result_args[3] == 'hola'
+    assert result_args[4] == '43'
+
+    # Should delete the question
+    assert demisto.getIntegrationContext()['questions'] == json.dumps([{
+        'thread': 'notcool',
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+    }])
 
 
 def test_send_request(mocker):
@@ -1607,6 +1713,102 @@ def test_send_request_with_notification_channel(mocker):
     assert send_args[1] is None
     assert send_args[2] is False
     assert send_args[4] == '!!!'
+    assert send_args[5] == ''
+
+    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+
+
+def test_send_request_with_entitlement(mocker):
+    import Slack
+
+    # Set
+
+    def users_list(**kwargs):
+        return {'members': json.loads(USERS)}
+
+    def conversations_list(**kwargs):
+        return {'channels': json.loads(CONVERSATIONS)}
+
+    mocker.patch.object(demisto, 'args', return_value={
+        'message': json.dumps({
+            'message': 'hi test@demisto.com',
+            'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22|43'}),
+        'to': 'spengler'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
+    mocker.patch.object(slack.WebClient, 'conversations_list', side_effect=conversations_list)
+    mocker.patch.object(slack.WebClient, 'im_open', return_value={'channel': {'id': 'im_channel'}})
+    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+
+    questions = [{
+        'thread': 'cool',
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22|43'
+    }]
+
+    # Arrange
+    Slack.slack_send()
+
+    send_args = Slack.send_message.call_args[0]
+
+    results = demisto.results.call_args_list[0][0]
+    # Assert
+
+    assert slack.WebClient.users_list.call_count == 0
+    assert slack.WebClient.conversations_list.call_count == 0
+    assert Slack.send_message.call_count == 1
+
+    assert send_args[0] == ['im_channel']
+    assert send_args[1] is None
+    assert send_args[2] is False
+    assert send_args[4] == 'hi test@demisto.com'
+    assert send_args[5] == ''
+
+    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+
+    assert demisto.getIntegrationContext()['questions'] == json.dumps(questions)
+
+
+def test_send_to_user_lowercase(mocker):
+    import Slack
+
+    # Set
+
+    def users_list(**kwargs):
+        return {'members': json.loads(USERS)}
+
+    def conversations_list(**kwargs):
+        return {'channels': json.loads(CONVERSATIONS)}
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(demisto, 'args', return_value={'to': 'glenda@south.oz.coven', 'message': 'hi'})
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
+    mocker.patch.object(slack.WebClient, 'conversations_list', side_effect=conversations_list)
+    mocker.patch.object(slack.WebClient, 'im_open', return_value={'channel': {'id': 'im_channel'}})
+    mocker.patch.object(Slack, 'send_file', return_value='neat')
+    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+
+    # Arrange
+
+    Slack.slack_send()
+
+    send_args = Slack.send_message.call_args[0]
+
+    results = demisto.results.call_args_list[0][0]
+
+    # Assert
+
+    assert slack.WebClient.users_list.call_count == 0
+    assert slack.WebClient.conversations_list.call_count == 0
+    assert Slack.send_message.call_count == 1
+
+    assert send_args[0] == ['im_channel']
+    assert send_args[1] is None
+    assert send_args[2] is False
+    assert send_args[4] == 'hi'
     assert send_args[5] == ''
 
     assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
@@ -1791,7 +1993,7 @@ def test_send_message(mocker):
     mocker.patch.object(Slack, 'invite_users_to_conversation')
 
     # Arrange
-    Slack.send_message(['channel'], None, None, demisto.getIntegrationContext(), 'yo', None)
+    Slack.send_message(['channel'], None, None, demisto.getIntegrationContext(), 'yo', None, '')
 
     args = Slack.send_message_to_destinations.call_args[0]
 
@@ -1818,7 +2020,7 @@ def test_send_message_retry(mocker):
     # Arrange
     mocker.patch.object(Slack, 'send_message_to_destinations',
                         side_effect=[SlackApiError('not_in_channel', None), 'ok'])
-    Slack.send_message(['channel'], None, None, demisto.getIntegrationContext(), 'yo', None)
+    Slack.send_message(['channel'], None, None, demisto.getIntegrationContext(), 'yo', None, '')
 
     args = Slack.send_message_to_destinations.call_args_list[1][0]
 
@@ -1851,6 +2053,32 @@ def test_send_file_retry(mocker):
     assert args[0] == ['channel']
     assert args[1] == 'file'
     assert args[2] is None
+
+
+def test_close_channel_with_name(mocker):
+    import Slack
+
+    # Set
+
+    mocker.patch.object(demisto, 'args', return_value={'channel': 'general'})
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '681'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(Slack, 'get_conversation_by_name', return_value={'id': 'C012AB3CD'})
+    mocker.patch.object(slack.WebClient, 'conversations_archive')
+    mocker.patch.object(demisto, 'results')
+
+    # Arrange
+    Slack.close_channel()
+
+    close_args = slack.WebClient.conversations_archive.call_args
+    success_results = demisto.results.call_args[0]
+
+    # Assert
+    assert Slack.get_conversation_by_name.call_count == 1
+    assert slack.WebClient.conversations_archive.call_count == 1
+    assert success_results[0] == 'Channel successfully archived.'
+    assert close_args[1]['channel'] == 'C012AB3CD'
 
 
 def test_close_channel_should_delete_mirror(mocker):
@@ -2005,7 +2233,7 @@ def test_set_topic(mocker):
     mocker.patch.object(demisto, 'results')
 
     # Arrange
-    Slack.slack_set_channel_topic()
+    Slack.set_channel_topic()
 
     send_args = slack.WebClient.conversations_setTopic.call_args
     success_results = demisto.results.call_args[0]
@@ -2044,7 +2272,7 @@ def test_set_topic_no_args_investigation(mocker):
     mocker.patch.object(demisto, 'results')
 
     # Arrange
-    Slack.slack_set_channel_topic()
+    Slack.set_channel_topic()
 
     send_args = slack.WebClient.conversations_setTopic.call_args
     success_results = demisto.results.call_args[0]
@@ -2063,7 +2291,7 @@ def test_set_topic_no_args_investigation(mocker):
     assert new_mirror == our_mirror
 
 
-def test_send_topic_no_args_no_investigation(mocker):
+def test_set_topic_no_args_no_investigation(mocker):
     import Slack
 
     # Set
@@ -2079,54 +2307,293 @@ def test_send_topic_no_args_no_investigation(mocker):
 
     # Arrange
     with pytest.raises(InterruptedError):
-        Slack.slack_set_channel_topic()
+        Slack.set_channel_topic()
 
     err_msg = return_error_mock.call_args[0][0]
 
     # Assert
     assert Slack.get_conversation_by_name.call_count == 0
-    assert err_msg == 'No channel was provided.'
+    assert err_msg == 'Channel not found - the Demisto app needs to be a member of the channel in order to look it up.'
 
 
-def test_send_to_user_lowercase(mocker):
+def test_invite_users(mocker):
     import Slack
 
     # Set
 
-    def users_list(**kwargs):
-        return {'members': json.loads(USERS)}
-
-    def conversations_list(**kwargs):
-        return {'channels': json.loads(CONVERSATIONS)}
-
+    mocker.patch.object(demisto, 'args', return_value={'channel': 'general', 'users': 'spengler, glinda'})
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '681'})
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-    mocker.patch.object(demisto, 'args', return_value={'to': 'glenda@south.oz.coven', 'message': 'hi'})
+    mocker.patch.object(Slack, 'get_conversation_by_name', return_value={'id': 'C012AB3CD'})
+    mocker.patch.object(Slack, 'invite_users_to_conversation')
     mocker.patch.object(demisto, 'results')
-    mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
-    mocker.patch.object(slack.WebClient, 'conversations_list', side_effect=conversations_list)
-    mocker.patch.object(slack.WebClient, 'im_open', return_value={'channel': {'id': 'im_channel'}})
-    mocker.patch.object(Slack, 'send_file', return_value='neat')
-    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+
+    # Arrange
+    Slack.invite_to_channel()
+
+    send_args = Slack.invite_users_to_conversation.call_args[0]
+    success_results = demisto.results.call_args[0]
+
+    # Assert
+    assert Slack.get_conversation_by_name.call_count == 1
+    assert Slack.invite_users_to_conversation.call_count == 1
+    assert success_results[0] == 'Successfully invited users to the channel.'
+    assert send_args[0] == 'C012AB3CD'
+    assert send_args[1] == ['U012A3CDE', 'U07QCRPA4']
+
+
+def test_invite_users_no_channel(mocker):
+    import Slack
+
+    # Set
+
+    mocker.patch.object(demisto, 'args', return_value={'users': 'spengler, glinda'})
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '681'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(Slack, 'get_conversation_by_name', return_value={'id': 'GKQ86DVPH'})
+    mocker.patch.object(Slack, 'invite_users_to_conversation')
+    mocker.patch.object(demisto, 'results')
+
+    # Arrange
+    Slack.invite_to_channel()
+
+    send_args = Slack.invite_users_to_conversation.call_args[0]
+    success_results = demisto.results.call_args[0]
+
+    # Assert
+    assert Slack.get_conversation_by_name.call_count == 0
+    assert Slack.invite_users_to_conversation.call_count == 1
+    assert success_results[0] == 'Successfully invited users to the channel.'
+    assert send_args[0] == 'GKQ86DVPH'
+    assert send_args[1] == ['U012A3CDE', 'U07QCRPA4']
+
+
+def test_invite_users_no_channel_doesnt_exist(mocker):
+    import Slack
+
+    # Set
+
+    mocker.patch.object(demisto, 'args', return_value={'users': 'spengler, glinda'})
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '777'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(Slack, 'get_conversation_by_name', return_value={'id': 'GKQ86DVPH'})
+    mocker.patch.object(Slack, 'invite_users_to_conversation')
+    mocker.patch.object(demisto, 'results')
+
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
+
+    # Arrange
+    with pytest.raises(InterruptedError):
+        Slack.invite_to_channel()
+
+    err_msg = return_error_mock.call_args[0][0]
+
+    # Assert
+    assert Slack.get_conversation_by_name.call_count == 0
+    assert Slack.invite_users_to_conversation.call_count == 0
+    assert err_msg == 'Channel not found - the Demisto app needs to be a member of the channel in order to look it up.'
+
+
+def test_kick_users(mocker):
+    import Slack
+
+    # Set
+
+    mocker.patch.object(demisto, 'args', return_value={'channel': 'general', 'users': 'spengler, glinda'})
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '681'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(Slack, 'get_conversation_by_name', return_value={'id': 'C012AB3CD'})
+    mocker.patch.object(Slack, 'kick_users_from_conversation')
+    mocker.patch.object(demisto, 'results')
+
+    # Arrange
+    Slack.kick_from_channel()
+
+    send_args = Slack.kick_users_from_conversation.call_args[0]
+    success_results = demisto.results.call_args[0]
+
+    # Assert
+    assert Slack.get_conversation_by_name.call_count == 1
+    assert Slack.kick_users_from_conversation.call_count == 1
+    assert success_results[0] == 'Successfully kicked users from the channel.'
+    assert send_args[0] == 'C012AB3CD'
+    assert send_args[1] == ['U012A3CDE', 'U07QCRPA4']
+
+
+def test_kick_users_no_channel(mocker):
+    import Slack
+
+    # Set
+
+    mocker.patch.object(demisto, 'args', return_value={'users': 'spengler, glinda'})
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '681'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(Slack, 'get_conversation_by_name', return_value={'id': 'GKQ86DVPH'})
+    mocker.patch.object(Slack, 'kick_users_from_conversation')
+    mocker.patch.object(demisto, 'results')
+
+    # Arrange
+    Slack.kick_from_channel()
+
+    send_args = Slack.kick_users_from_conversation.call_args[0]
+    success_results = demisto.results.call_args[0]
+
+    # Assert
+    assert Slack.get_conversation_by_name.call_count == 0
+    assert Slack.kick_users_from_conversation.call_count == 1
+    assert success_results[0] == 'Successfully kicked users from the channel.'
+    assert send_args[0] == 'GKQ86DVPH'
+    assert send_args[1] == ['U012A3CDE', 'U07QCRPA4']
+
+
+def test_kick_users_no_channel_doesnt_exist(mocker):
+    import Slack
+
+    # Set
+
+    mocker.patch.object(demisto, 'args', return_value={'users': 'spengler, glinda'})
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '777'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(Slack, 'get_conversation_by_name', return_value={'id': 'GKQ86DVPH'})
+    mocker.patch.object(Slack, 'invite_users_to_conversation')
+    mocker.patch.object(demisto, 'results')
+
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
+
+    # Arrange
+    with pytest.raises(InterruptedError):
+        Slack.kick_from_channel()
+
+    err_msg = return_error_mock.call_args[0][0]
+
+    # Assert
+    assert Slack.get_conversation_by_name.call_count == 0
+    assert Slack.invite_users_to_conversation.call_count == 0
+    assert err_msg == 'Channel not found - the Demisto app needs to be a member of the channel in order to look it up.'
+
+
+def test_rename_channel(mocker):
+    import Slack
+
+    # Set
+
+    mocker.patch.object(demisto, 'args', return_value={'channel': 'general', 'name': 'ey'})
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '681'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(Slack, 'get_conversation_by_name', return_value={'id': 'C012AB3CD'})
+    mocker.patch.object(slack.WebClient, 'conversations_rename')
+    mocker.patch.object(demisto, 'results')
+
+    # Arrange
+    Slack.rename_channel()
+
+    send_args = slack.WebClient.conversations_rename.call_args
+    success_results = demisto.results.call_args[0]
+
+    # Assert
+    assert Slack.get_conversation_by_name.call_count == 1
+    assert slack.WebClient.conversations_rename.call_count == 1
+    assert success_results[0] == 'Channel renamed successfully.'
+    assert send_args[1]['channel'] == 'C012AB3CD'
+    assert send_args[1]['name'] == 'ey'
+
+
+def test_rename_no_args_investigation(mocker):
+    import Slack
+
+    # Set
+
+    new_mirror = {
+        'channel_id': 'GKQ86DVPH',
+        'channel_name': 'ey',
+        'channel_topic': 'incident-681',
+        'investigation_id': '681',
+        'mirror_type': 'all',
+        'mirror_direction': 'both',
+        'mirror_to': 'group',
+        'auto_close': True,
+        'mirrored': True
+    }
+
+    mocker.patch.object(demisto, 'args', return_value={'name': 'ey'})
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '681'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(Slack, 'get_conversation_by_name', return_value={'id': 'C012AB3CD'})
+    mocker.patch.object(slack.WebClient, 'conversations_rename')
+    mocker.patch.object(demisto, 'results')
+
+    # Arrange
+    Slack.rename_channel()
+
+    send_args = slack.WebClient.conversations_rename.call_args
+    success_results = demisto.results.call_args[0]
+
+    new_context = demisto.setIntegrationContext.call_args[0][0]
+    new_mirrors = json.loads(new_context['mirrors'])
+    our_mirror_filter = list(filter(lambda m: '681' == m['investigation_id'], new_mirrors))
+    our_mirror = our_mirror_filter[0]
+
+    # Assert
+    assert Slack.get_conversation_by_name.call_count == 0
+    assert slack.WebClient.conversations_rename.call_count == 1
+    assert success_results[0] == 'Channel renamed successfully.'
+    assert send_args[1]['channel'] == 'GKQ86DVPH'
+    assert send_args[1]['name'] == 'ey'
+    assert new_mirror == our_mirror
+
+
+def test_rename_no_args_no_investigation(mocker):
+    import Slack
+
+    # Set
+
+    mocker.patch.object(demisto, 'args', return_value={'name': 'ey'})
+    mocker.patch.object(demisto, 'investigation', return_value={'id': '9999'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(Slack, 'get_conversation_by_name', return_value={'id': 'C012AB3CD'})
+    mocker.patch.object(slack.WebClient, 'conversations_rename')
+    mocker.patch.object(demisto, 'results')
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
+
+    # Arrange
+    with pytest.raises(InterruptedError):
+        Slack.rename_channel()
+
+    err_msg = return_error_mock.call_args[0][0]
+
+    # Assert
+    assert Slack.get_conversation_by_name.call_count == 0
+    assert err_msg == 'Channel not found - the Demisto app needs to be a member of the channel in order to look it up.'
+
+
+def test_get_user(mocker):
+    from Slack import get_user
+
+    # Set
+
+    mocker.patch.object(demisto, 'args', return_value={'user': 'spengler'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(demisto, 'results')
 
     # Arrange
 
-    Slack.slack_send()
+    get_user()
+    user_results = demisto.results.call_args[0]
 
-    send_args = Slack.send_message.call_args[0]
-
-    results = demisto.results.call_args_list[0][0]
-
-    # Assert
-
-    assert slack.WebClient.users_list.call_count == 0
-    assert slack.WebClient.conversations_list.call_count == 0
-    assert Slack.send_message.call_count == 1
-
-    assert send_args[0] == ['im_channel']
-    assert send_args[1] is None
-    assert send_args[2] is False
-    assert send_args[4] == 'hi'
-    assert send_args[5] == ''
-
-    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+    assert user_results[0]['EntryContext'] == {'Slack.User(val.ID === obj.ID)': {
+        'ID': 'U012A3CDE',
+        'Username': 'spengler',
+        'Name': 'Egon Spengler',
+        'DisplayName': 'spengler',
+        'Email': 'spengler@ghostbusters.example.com',
+    }}

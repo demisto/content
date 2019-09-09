@@ -1,20 +1,21 @@
-import re
-import abc
-import datetime
-import json
-import sys
-import yaml
+from __future__ import print_function
 import os
-import requests
+import re
+import sys
+import abc
+import json
+import datetime
 import argparse
+import requests
+import yaml
 
+from Tests.scripts.constants import INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR, DASHBOARDS_DIR, \
+    WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR
 from Tests.test_utils import print_error, print_warning, get_last_release_version, filter_packagify_changes, \
-    run_command, server_version_compare, get_release_notes_file_path, get_latest_release_notes_text
+    run_command, server_version_compare, get_release_notes_file_path, get_latest_release_notes_text, get_remote_file
 from Tests.scripts.validate_files import FilesValidator
 
-contentLibPath = "./"
-limitedVersion = False
-
+CONTENT_LIB_PATH = "./"
 
 NEW_RN = "New"
 MODIFIED_RN = "Improved"
@@ -34,34 +35,41 @@ LAYOUT_TYPE_TO_NAME = {
     "indicatorsDetails": "Indicator Details",
 }
 
-INTEGRATIONS_DIR = "Integrations"
-SCRIPTS_DIR = "Scripts"
-PLAYBOOKS_DIR = "Playbooks"
-REPORTS_DIR = "Reports"
-DASHBOARDS_DIR = "Dashboards"
-WIDGETS_DIR = "Widgets"
-INCIDENT_FIELDS_DIR = "IncidentFields"
-LAYOUTS_DIR = "Layouts"
-CLASSIFIERS_DIR = "Classifiers"
-REPUTATIONS_DIR = "Misc"
-
 RELEASE_NOTES_ORDER = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR,
                        DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR,
-                       CLASSIFIERS_DIR, REPUTATIONS_DIR]
+                       CLASSIFIERS_DIR, MISC_DIR]
 
 
 def add_dot(text):
-    text = text.rstrip()
-    if text.endswith('.'):
-        return text
-    return text + '.'
+    text = text.rstrip().replace('```', '***').replace('`', '*')
+
+    if '\n' in text:
+        # multi-record release notes
+        record_regex = re.compile(r'^((?: {2})- .*\.)|( {4}- \*{3}[\w-]*\*{3})$')
+        formatted_text = []
+        for line in text.split('\n'):
+            if not line.strip():
+                continue
+            if record_regex.match(line):
+                formatted_text.append(line)
+            else:
+                line = line.strip(' -.')
+                if line.startswith('***') and line.endswith('***'):
+                    formatted_text.append('    - {}'.format(line))
+                else:
+                    formatted_text.append('  - {}.'.format(line))
+
+        return '\n'.join(formatted_text)
+
+    # single record release notes
+    return text[0].upper() + text[1:].rstrip('.') + '.'
 
 
 def release_notes_item(header, body):
     return '- __{}__\n{}\n'.format(header, add_dot(body))
 
 
-class Content(object):
+class Content:
     __metaclass__ = abc.ABCMeta
 
     def __init__(self):
@@ -85,7 +93,8 @@ class Content(object):
     def get_header(self):
         return
 
-    def get_release_notes(self, file_path, data):
+    @classmethod
+    def get_release_notes(cls, file_path, data):  # pylint: disable=unused-argument
         """
         Return the release notes relevant to the added yml file.
 
@@ -93,9 +102,9 @@ class Content(object):
         :param data: object data
         :return: raw release notes or None in case of an error.
         """
-        rn_path = get_release_notes_file_path(file_path)
+        release_note_path = get_release_notes_file_path(file_path)
 
-        return get_latest_release_notes_text(rn_path)
+        return get_latest_release_notes_text(release_note_path)
 
     @abc.abstractmethod
     def added_release_notes(self, file_path, data):
@@ -116,12 +125,12 @@ class Content(object):
         :param data: yml data
         :return: raw release notes or None in case of an error.
         """
-        rn = self.get_release_notes(file_path, data)
+        release_note = self.get_release_notes(file_path, data)
 
-        if rn and rn.strip() == IGNORE_RN:
-            rn = ''
+        if release_note and release_note.strip() == IGNORE_RN:
+            release_note = ''
 
-        return rn
+        return release_note
 
     @abc.abstractmethod
     def load_data(self, data):
@@ -130,13 +139,13 @@ class Content(object):
     # create a release notes section for store (add or modified) - return None if found missing release notes
     def release_notes_section(self, store, title_prefix, current_server_version):
         res = ""
-        if len(store) > 0:
+        if store:
             new_str = ""
             new_count = 0
             for path in store:
-                with open(path, 'r') as f:
-                    print ' - adding release notes ({}) for file - [{}]... '.format(path, title_prefix),
-                    raw_content = f.read()
+                with open(path, 'r') as file_obj:
+                    print(' - adding release notes ({}) for file - [{}]... '.format(path, title_prefix), end='')
+                    raw_content = file_obj.read()
                     cnt = self.load_data(raw_content)
 
                     from_version = cnt.get("fromversion")
@@ -164,7 +173,7 @@ class Content(object):
                     else:
                         print("Skipped")
 
-            if len(new_str) > 0:
+            if new_str:
                 if self.show_secondary_header:
                     count_str = ""
                     if new_count > 1:
@@ -193,14 +202,14 @@ class Content(object):
             section_body = add_rn + modified_rn
 
             # Deleted files
-            if len(self.deleted_store) > 0:
+            if self.deleted_store:
                 section_body += "\n##### Removed {}\n".format(self.get_header())
                 for name in self.deleted_store:
-                    print(' - adding release notes (Removed) for - [{}]'.format(name)),
-                    section_body += "- __" + name + "__\n"
+                    print(' - adding release notes (Removed) for - [{}]'.format(name), end='')
+                    section_body += "- __" + os.path.splitext(os.path.basename(name))[0] + "__\n"
                     print("Success")
 
-            if len(section_body) > 0:
+            if section_body:
                 res = "### {}\n".format(self.get_header())
                 res += section_body
 
@@ -214,17 +223,17 @@ class ScriptContent(Content):
     def get_header(self):
         return "Scripts"
 
-    def added_release_notes(self, file_path, cnt):
-        return release_notes_item(cnt["name"], cnt["comment"])
+    def added_release_notes(self, file_path, data):
+        return release_notes_item(data["name"], data["comment"])
 
-    def modified_release_notes(self, file_path, cnt):
-        rn = super(ScriptContent, self).modified_release_notes(file_path, cnt)
+    def modified_release_notes(self, file_path, data):
+        release_note = super(ScriptContent, self).modified_release_notes(file_path, data)
 
-        if rn:
-            return release_notes_item(cnt["name"], rn)
-        else:
-            # error or ignored rn
-            return rn
+        if release_note:
+            return release_notes_item(data["name"], release_note)
+
+        # error or ignored release_note
+        return release_note
 
 
 class PlaybookContent(Content):
@@ -234,17 +243,17 @@ class PlaybookContent(Content):
     def get_header(self):
         return "Playbooks"
 
-    def added_release_notes(self, file_path, cnt):
-        return release_notes_item(cnt["name"], cnt['description'])
+    def added_release_notes(self, file_path, data):
+        return release_notes_item(data["name"], data['description'])
 
-    def modified_release_notes(self, file_path, cnt):
-        rn = super(PlaybookContent, self).modified_release_notes(file_path, cnt)
+    def modified_release_notes(self, file_path, data):
+        release_note = super(PlaybookContent, self).modified_release_notes(file_path, data)
 
-        if rn:
-            return release_notes_item(cnt["name"], rn)
-        else:
-            # error or ignored rn
-            return rn
+        if release_note:
+            return release_notes_item(data["name"], release_note)
+
+        # error or ignored release_note
+        return release_note
 
 
 class ReportContent(Content):
@@ -254,17 +263,17 @@ class ReportContent(Content):
     def get_header(self):
         return "Reports"
 
-    def added_release_notes(self, file_path, cnt):
-        return release_notes_item(cnt["name"], cnt["description"])
+    def added_release_notes(self, file_path, data):
+        return release_notes_item(data["name"], data["description"])
 
-    def modified_release_notes(self, file_path, cnt):
-        rn = super(ReportContent, self).modified_release_notes(file_path, cnt)
+    def modified_release_notes(self, file_path, data):
+        release_note = super(ReportContent, self).modified_release_notes(file_path, data)
 
-        if rn:
-            return release_notes_item(cnt["name"], rn)
-        else:
-            # error or ignored rn
-            return rn
+        if release_note:
+            return release_notes_item(data["name"], release_note)
+
+        # error or ignored release_note
+        return release_note
 
 
 class DashboardContent(Content):
@@ -274,17 +283,17 @@ class DashboardContent(Content):
     def get_header(self):
         return "Dashboards"
 
-    def added_release_notes(self, file_path, cnt):
-        return release_notes_item(cnt["name"], cnt["description"])
+    def added_release_notes(self, file_path, data):
+        return release_notes_item(data["name"], data["description"])
 
-    def modified_release_notes(self, file_path, cnt):
-        rn = super(DashboardContent, self).modified_release_notes(file_path, cnt)
+    def modified_release_notes(self, file_path, data):
+        release_note = super(DashboardContent, self).modified_release_notes(file_path, data)
 
-        if rn:
-            return release_notes_item(cnt["name"], rn)
-        else:
-            # error or ignored rn
-            return rn
+        if release_note:
+            return release_notes_item(data["name"], release_note)
+
+        # error or ignored release_note
+        return release_note
 
 
 class WidgetContent(Content):
@@ -294,17 +303,17 @@ class WidgetContent(Content):
     def get_header(self):
         return "Widgets"
 
-    def added_release_notes(self, file_path, cnt):
-        return release_notes_item(cnt["name"], cnt["description"])
+    def added_release_notes(self, file_path, data):
+        return release_notes_item(data["name"], data["description"])
 
-    def modified_release_notes(self, file_path, cnt):
-        rn = super(WidgetContent, self).modified_release_notes(file_path, cnt)
+    def modified_release_notes(self, file_path, data):
+        release_note = super(WidgetContent, self).modified_release_notes(file_path, data)
 
-        if rn:
-            return release_notes_item(cnt["name"], rn)
-        else:
-            # error or ignored rn
-            return rn
+        if release_note:
+            return release_notes_item(data["name"], release_note)
+
+        # error or ignored release_note
+        return release_note
 
 
 class IncidentFieldContent(Content):
@@ -319,23 +328,23 @@ class IncidentFieldContent(Content):
     def get_header(self):
         return "Incident Fields"
 
-    def added_release_notes(self, file_path, cnt):
-        rn = super(IncidentFieldContent, self).added_release_notes(file_path, cnt)
+    def added_release_notes(self, file_path, data):
+        release_note = super(IncidentFieldContent, self).added_release_notes(file_path, data)
 
-        if rn:
-            return add_dot(rn) + "\n"
-        else:
-            # error
-            return rn
+        if release_note:
+            return add_dot(release_note) + "\n"
 
-    def modified_release_notes(self, file_path, cnt):
-        rn = super(IncidentFieldContent, self).modified_release_notes(file_path, cnt)
+        # error
+        return release_note
 
-        if rn:
-            return add_dot(rn) + "\n"
-        else:
-            # error or ignored rn
-            return rn
+    def modified_release_notes(self, file_path, data):
+        release_note = super(IncidentFieldContent, self).modified_release_notes(file_path, data)
+
+        if release_note:
+            return add_dot(release_note) + "\n"
+
+        # error or ignored release_note
+        return release_note
 
 
 class LayoutContent(Content):
@@ -345,34 +354,34 @@ class LayoutContent(Content):
     def get_header(self):
         return "Incident Layouts"
 
-    def get_release_notes(self, file_path, cnt):
-        rn = super(LayoutContent, self).get_release_notes(file_path, cnt)
-        if not rn:
-            return rn
+    def get_release_notes(self, file_path, data):
+        release_note = super(LayoutContent, self).get_release_notes(file_path, data)
+        if not release_note:
+            return release_note
 
-        layout_kind = LAYOUT_TYPE_TO_NAME.get(cnt.get("kind", ""))
+        layout_kind = LAYOUT_TYPE_TO_NAME.get(data.get("kind", ""))
         if not layout_kind:
-            print_error('Invalid layout kind {}'.format(cnt.get("kind", "")))
+            print_error('Invalid layout kind {}'.format(data.get("kind", "")))
             return None
 
-        layout_type = cnt.get("typeId")
+        layout_type = data.get("typeId")
         if not layout_type:
             print_error("Invalid layout kind {}".format(layout_type))
             return None
 
-        return release_notes_item('{} - {}'.format(layout_type, layout_kind), rn)
+        return release_notes_item('{} - {}'.format(layout_type, layout_kind), release_note)
 
-    def added_release_notes(self, file_path, cnt):
-        return self.get_release_notes(file_path, cnt)
+    def added_release_notes(self, file_path, data):
+        return self.get_release_notes(file_path, data)
 
-    def modified_release_notes(self, file_path, cnt):
-        rn = super(LayoutContent, self).modified_release_notes(file_path, cnt)
+    def modified_release_notes(self, file_path, data):
+        release_note = super(LayoutContent, self).modified_release_notes(file_path, data)
 
-        if rn:
-            return self.get_release_notes(file_path, cnt)
-        else:
-            # error or ignored rn
-            return rn
+        if release_note:
+            return self.get_release_notes(file_path, data)
+
+        # error or ignored release_note
+        return release_note
 
 
 class ClassifierContent(Content):
@@ -382,35 +391,35 @@ class ClassifierContent(Content):
     def get_header(self):
         return "Classification & Mapping"
 
-    def get_release_notes(self, file_path, cnt):
-        rn = super(ClassifierContent, self).get_release_notes(file_path, cnt)
-        brand_name = cnt.get("brandName")
+    def get_release_notes(self, file_path, data):
+        release_note = super(ClassifierContent, self).get_release_notes(file_path, data)
+        brand_name = data.get("brandName")
         if not brand_name:
             print_error('Invalid classifier brand name {}'.format(brand_name))
             return None
 
-        if rn:
-            return release_notes_item(brand_name, rn)
-        else:
-            return rn
+        if release_note:
+            return release_notes_item(brand_name, release_note)
 
-    def added_release_notes(self, file_path, cnt):
-        rn = super(ClassifierContent, self).added_release_notes(file_path, cnt)
+        return release_note
 
-        if rn:
-            return self.get_release_notes(file_path, cnt)
-        else:
-            # error
-            return rn
+    def added_release_notes(self, file_path, data):
+        release_note = super(ClassifierContent, self).added_release_notes(file_path, data)
 
-    def modified_release_notes(self, file_path, cnt):
-        rn = super(ClassifierContent, self).modified_release_notes(file_path, cnt)
+        if release_note:
+            return self.get_release_notes(file_path, data)
 
-        if rn:
-            return self.get_release_notes(file_path, cnt)
-        else:
-            # error or ignored rn
-            return rn
+        # error
+        return release_note
+
+    def modified_release_notes(self, file_path, data):
+        release_note = super(ClassifierContent, self).modified_release_notes(file_path, data)
+
+        if release_note:
+            return self.get_release_notes(file_path, data)
+
+        # error or ignored release_note
+        return release_note
 
 
 class ReputationContent(Content):
@@ -424,17 +433,17 @@ class ReputationContent(Content):
     def get_header(self):
         return "Reputations"
 
-    def added_release_notes(self, file_path, cnt):
+    def added_release_notes(self, file_path, data):
         # This should never happen
         return ""
 
-    def modified_release_notes(self, file_path, cnt):
-        rn = super(ReputationContent, self).modified_release_notes(file_path, cnt)
+    def modified_release_notes(self, file_path, data):
+        release_note = super(ReputationContent, self).modified_release_notes(file_path, data)
 
-        if rn:
-            return add_dot(rn) + "\n"
-        else:
-            return rn
+        if release_note:
+            return add_dot(release_note) + "\n"
+
+        return release_note
 
 
 class IntegrationContent(Content):
@@ -444,19 +453,19 @@ class IntegrationContent(Content):
     def get_header(self):
         return "Integrations"
 
-    def added_release_notes(self, file_path, cnt):
-        return release_notes_item(cnt["display"], cnt["description"])
+    def added_release_notes(self, file_path, data):
+        return release_notes_item(data["display"], data["description"])
 
-    def modified_release_notes(self, file_path, cnt):
-        rn = super(IntegrationContent, self).modified_release_notes(file_path, cnt)
+    def modified_release_notes(self, file_path, data):
+        release_note = super(IntegrationContent, self).modified_release_notes(file_path, data)
 
-        if rn:
-            return release_notes_item(cnt["display"], rn)
-        else:
-            return rn
+        if release_note:
+            return release_notes_item(data["display"], release_note)
+
+        return release_note
 
 
-release_note_generator = {
+RELEASE_NOTE_GENERATOR = {
     INTEGRATIONS_DIR: IntegrationContent(),
     SCRIPTS_DIR: ScriptContent(),
     PLAYBOOKS_DIR: PlaybookContent(),
@@ -466,63 +475,52 @@ release_note_generator = {
     INCIDENT_FIELDS_DIR: IncidentFieldContent(),
     LAYOUTS_DIR: LayoutContent(),
     CLASSIFIERS_DIR: ClassifierContent(),
-    REPUTATIONS_DIR: ReputationContent()
+    MISC_DIR: ReputationContent()
 }
 
 
-def parse_change_list(file_path):
-    with open(file_path, 'r') as f:
-        data = f.read()
-        return data.split("\n")
+def handle_deleted_file(full_file_name, git_sha1):
+    """
+    Create release note for deleted file.
+
+    :param full_file_name: path to file in repository
+    :param git_sha1: git_sha1 to compare to
+    :return: None
+    """
+    data = get_remote_file(full_file_name, git_sha1)
+    name = data.get('name') or data.get('name') or full_file_name
+    file_type = full_file_name.split("/")[0]
+    file_type_mapping = RELEASE_NOTE_GENERATOR.get(file_type)
+    if file_type_mapping is not None:
+        file_type_mapping.add('D', name)
 
 
-def get_deleted_content(full_file_name, data):
-    start_index = data.find(full_file_name)
-    if start_index > 0:
-        name_index = data.find("-name:", start_index)
-        if name_index > 0:
-            return data[name_index:].split("\n")[0][len("-name:"):].strip()
-    return full_file_name
-
-
-def handle_deleted_file(deleted_data, full_file_name):
-    if "/" in full_file_name:
-        file_type = full_file_name.split("/")[0]
-        file_type_mapping = release_note_generator.get(file_type)
-        deleted_content = get_deleted_content(full_file_name, deleted_data)
-        if file_type_mapping is not None:
-            file_type_mapping.add("D", deleted_content)
-
-
-def create_file_release_notes(change_type, full_file_name, deleted_data):
+def create_file_release_notes(change_type, full_file_name):
     """
     Create release note for changed file.
 
-    :param change_type: git change status (A, M, D, R*)
+    :param change_type: git change status (A, M, R*)
     :param full_file_name: path to file in repository
-    :param deleted_data: all removed files content
     :return: None
     """
     if isinstance(full_file_name, tuple):
-        old_file_path, full_file_name = full_file_name
+        _, full_file_name = full_file_name
 
     file_type = full_file_name.split("/")[0]
     base_name = os.path.basename(full_file_name)
     file_suffix = os.path.splitext(base_name)[-1]
-    file_type_mapping = release_note_generator.get(file_type)
+    file_type_mapping = RELEASE_NOTE_GENERATOR.get(file_type)
 
     if file_type_mapping is None or file_suffix not in CONTENT_FILE_SUFFIXES:
         print_warning("Unsupported file type: {}".format(full_file_name))
         return
 
-    if change_type == "D":
-        handle_deleted_file(deleted_data, full_file_name)
-    elif change_type != "R100":  # only file name has changed (no actual data was modified
+    if change_type != "R100":  # only file name has changed (no actual data was modified
         if 'R' in change_type:
             # handle the same as modified
             change_type = 'M'
 
-        file_type_mapping.add(change_type, contentLibPath + full_file_name)
+        file_type_mapping.add(change_type, CONTENT_LIB_PATH + full_file_name)
 
 
 def get_release_notes_draft(github_token, asset_id):
@@ -534,13 +532,14 @@ def get_release_notes_draft(github_token, asset_id):
     :return: draft text (or empty string on error).
     """
     # Disable insecure warnings
-    requests.packages.urllib3.disable_warnings()
+    requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
     try:
-        res = requests.get('https://api.github.com/repos/demisto/content/releases', verify=False,
+        res = requests.get('https://api.github.com/repos/demisto/content/releases',
+                           verify=False,  # guardrails-disable-line
                            headers={'Authorization': 'token {}'.format(github_token)})
-    except requests.exceptions.ConnectionError as e:
-        print_warning('unable to get release draft, reason:\n{}'.format(str(e)))
+    except requests.exceptions.ConnectionError as exc:
+        print_warning('unable to get release draft, reason:\n{}'.format(str(exc)))
         return ''
 
     if res.status_code != 200:
@@ -550,9 +549,9 @@ def get_release_notes_draft(github_token, asset_id):
     drafts = [release for release in res.json() if release.get('draft', False)]
     if drafts:
         if len(drafts) == 1:
-            return re.sub('Release Notes for version .* \((\d{5,})\)', asset_id, drafts[0]['body'])
-        else:
-            print_warning('Too many drafts to choose from ({}), skipping update.'.format(len(drafts)))
+            return re.sub(r'Release Notes for version .* \((\d{5,})\)', asset_id, drafts[0]['body'])
+
+        print_warning('Too many drafts to choose from ({}), skipping update.'.format(len(drafts)))
 
     return ''
 
@@ -598,27 +597,26 @@ def main():
     print('Last release version: {}'.format(tag))
 
     # get changed yaml/json files (filter only relevant changed files)
-    fv = FilesValidator()
+    file_validator = FilesValidator()
     change_log = run_command('git diff --name-status {}'.format(args.git_sha1))
-    modified_files, added_files, removed_files, _ = fv.get_modified_files(change_log)
+    modified_files, added_files, removed_files, _ = file_validator.get_modified_files(change_log)
     modified_files, added_files, removed_files = filter_packagify_changes(modified_files, added_files,
                                                                           removed_files, tag=tag)
-    deleted_data = run_command('git diff --diff-filter=D {}'.format(args.git_sha1))
 
     for file_path in added_files:
-        create_file_release_notes('A', file_path, deleted_data)
+        create_file_release_notes('A', file_path)
 
     for file_path in modified_files:
-        create_file_release_notes('M', file_path, deleted_data)
+        create_file_release_notes('M', file_path)
 
     for file_path in removed_files:
-        create_file_release_notes('D', file_path, deleted_data)
+        handle_deleted_file(file_path, tag)
 
     # join all release notes
     res = []
     missing_release_notes = False
     for key in RELEASE_NOTES_ORDER:
-        value = release_note_generator[key]
+        value = RELEASE_NOTE_GENERATOR[key]
         ans = value.generate_release_notes(args.server_version)
         if ans is None or value.is_missing_release_notes:
             missing_release_notes = True

@@ -1,0 +1,148 @@
+commonfields:
+  id: AWS - Athena - Beta
+  version: -1
+name: AWS - Athena - Beta
+display: AWS - Athena (Beta)
+category: IT Services
+description: Amazon Web Services Athena
+configuration:
+- display: Role Arn
+  name: roleArn
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Role Session Name
+  name: roleSessionName
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: AWS Default Region
+  name: defaultRegion
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Role Session Duration
+  name: sessionDuration
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Access Key
+  name: access_key
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Secret Key
+  name: secret_key
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Trust any cert (Not Secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: aws-athena-start-query
+    arguments:
+    - name: QueryString
+      required: true
+      description: The SQL query statements to be executed.
+    - name: ClientRequestToken
+      auto: PREDEFINED
+      predefined:
+      - private
+      - public-read
+      - public-read-write
+      - authenticated-read
+      description: A unique case-sensitive string used to ensure the request to create
+        the query is idempotent (executes only once).
+    - name: Database
+      description: The name of the database.
+    - name: OutputLocation
+      description: he location in Amazon S3 where your query results are stored, such
+        as s3://path/to/query/bucket/.
+    - name: EncryptionOption
+      description: Indicates whether Amazon S3 server-side encryption with Amazon
+        S3-managed keys (SSE-S3 ), server-side encryption with KMS-managed keys (SSE-KMS
+        ), or client-side encryption with KMS-managed keys (CSE-KMS) is used.
+    - name: KmsKey
+      description: For SSE-KMS and CSE-KMS , this is the KMS key ARN or ID.
+    - name: WorkGroup
+      description: The name of the workgroup in which the query is being started.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    description: Start Athena Query.
+  - name: aws-athena-stop-query
+    arguments:
+    - name: QueryExecutionId
+      required: true
+      description: The unique ID of the query execution to stop.  This field is auto-populated
+        if not provided.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Stops a query execution. Requires you to have access to the workgroup
+      in which the query ran.
+  - name: aws-athena-get-query-execution
+    arguments:
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    - name: QueryExecutionId
+      required: true
+      description: The unique ID of the query execution.
+    description: Returns information about a single execution of a query if you have
+      access to the workgroup in which the query ran.
+  - name: aws-athena-get-query-results
+    arguments:
+    - name: QueryExecutionId
+      required: true
+      description: The unique ID of the query execution.
+    - name: region
+      description: The AWS Region, if not specified the default region will be used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: An identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+    description: Returns the results of a single query execution specified by QueryExecutionId
+      if you have access to the workgroup in which the query ran.
+  dockerimage: demisto/boto3py3:1.0.0.1030
+  runonce: false
+  subtype: python3
+beta: true
+tests:
+- Beta-Athena-Test

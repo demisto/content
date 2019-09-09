@@ -94,6 +94,47 @@ def create_addr_string(list_of_addr_data_dicts):
     return addr_string
 
 
+def convert_arg_to_int(arg_str, arg_name_str):
+    try:
+        arg_int = int(arg_str)
+    except ValueError:
+        return_error("Error: {0} must have an integer value.".format(arg_name_str))
+    return arg_int
+
+
+def prettify_date(date_string):
+    """
+    This function receives a string representing a date, for example 2018-07-28T10:47:55.000Z.
+    It returns the same date in a readable format - for example, 2018-07-28 10:47:55.
+    """
+    date_string = date_string[:-5]  # remove the .000z at the end
+    date_prettified = date_string.replace("T", " ")
+    return date_prettified
+
+
+def create_banned_ips_entry_context(ips_data_array):
+    ips_contexts_array = []
+    for ip_data in ips_data_array:
+        current_ip_context = {
+            "IP": ip_data.get("ip_address"),
+            "Source": ip_data.get("source")
+        }
+        if ip_data.get("expires"):
+            expiration_in_ms = 1000 * int(ip_data.get("expires", 0))
+            current_ip_context["Expires"] = prettify_date(timestamp_to_datestring(expiration_in_ms))
+        if ip_data.get("created"):
+            creation_in_ms = 1000 * int(ip_data.get("created", 0))
+            current_ip_context["Created"] = prettify_date(timestamp_to_datestring(creation_in_ms))
+        ips_contexts_array.append(current_ip_context)
+    return ips_contexts_array
+
+
+def create_banned_ips_human_readable(entry_context):
+    banned_ip_headers = ["IP", "Created", "Expires", "Source"]
+    human_readable = tableToMarkdown("Banned IP Addresses", entry_context, banned_ip_headers)
+    return human_readable
+
+
 def str_to_bool(str_representing_bool):
     return str_representing_bool and str_representing_bool.lower() == 'true'
 
@@ -429,6 +470,89 @@ def create_firewall_service_request(service_name, tcp_range, udp_range):
     return response
 
 
+def ban_ip(ip_addresses_array, time_to_expire=0):
+    uri_suffix = 'monitor/user/banned/add_users/'
+
+    payload = {
+        'ip_addresses': ip_addresses_array,
+        'expiry': time_to_expire
+    }
+
+    response = http_request('POST', uri_suffix, data=json.dumps(payload))
+    return response
+
+
+def ban_ip_command():
+    ip_addresses_string = demisto.args()['ip_address']
+    ip_addresses_array = argToList(ip_addresses_string)
+    for ip_address in ip_addresses_array:
+        if not is_ip_valid(ip_address, accept_v6_ips=True):
+            return_error('Error: invalid IP address sent as argument.')
+
+    time_to_expire = demisto.args().get('expiry')
+    if time_to_expire:
+        time_to_expire = convert_arg_to_int(time_to_expire, 'expiry')
+    else:
+        # The default time to expiration is 0, which means infinite time (It will remain banned).
+        time_to_expire = 0
+
+    response = ban_ip(ip_addresses_array, time_to_expire)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': 'IPs {0} banned successfully'.format(ip_addresses_string)
+    })
+
+
+def unban_ip(ip_addresses_array):
+    uri_suffix = 'monitor/user/banned/clear_users/'
+
+    payload = {
+        'ip_addresses': ip_addresses_array
+    }
+    response = http_request('POST', uri_suffix, data=json.dumps(payload))
+    return response
+
+
+def unban_ip_command():
+    ip_addresses_string = demisto.args()['ip_address']
+    ip_addresses_array = argToList(ip_addresses_string)
+    for ip_address in ip_addresses_array:
+        if not is_ip_valid(ip_address, accept_v6_ips=True):
+            return_error('Error: invalid IP address sent as argument.')
+
+    response = unban_ip(ip_addresses_array)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': 'IPs {0} un-banned successfully'.format(ip_addresses_string)
+    })
+
+
+def get_banned_ips():
+    uri_suffix = 'monitor/user/banned/select/'
+    response = http_request('GET', uri_suffix)
+    return response
+
+
+def get_banned_ips_command():
+    response = get_banned_ips()
+    ips_data_array = response.get('results')
+    entry_context = create_banned_ips_entry_context(ips_data_array)
+    human_readable = create_banned_ips_human_readable(entry_context)
+    return_outputs(
+        raw_response=response,
+        readable_output=human_readable,
+        outputs={
+            'Fortigate.BannedIP(val.IP===obj.IP)': entry_context
+        }
+    )
+
+
 def get_policy_command():
     contents = []
     context = {}
@@ -528,7 +652,7 @@ def update_policy_command():
     add_or_remove = demisto.args().get('add_or_remove')
 
     if keep_original_data and keep_original_data.lower() == 'true' and not add_or_remove:
-        return_error("Error: add_or_remove must be specified if keep_original_data is true.")
+        return_error('Error: add_or_remove must be specified if keep_original_data is true.')
 
     update_policy_request(policy_id, policy_field, policy_field_value, keep_original_data, add_or_remove)
     policy = get_policy_request(policy_id)[0]
@@ -1014,6 +1138,12 @@ try:
         create_address_group_command()
     elif demisto.command() == 'fortigate-delete-address-group':
         delete_address_group_command()
+    elif demisto.command() == 'fortigate-ban-ip':
+        ban_ip_command()
+    elif demisto.command() == 'fortigate-unban-ip':
+        unban_ip_command()
+    elif demisto.command() == 'fortigate-get-banned-ips':
+        get_banned_ips_command()
 
 except Exception, e:
     LOG(e.message)
