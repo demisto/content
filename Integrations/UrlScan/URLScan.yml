@@ -28,8 +28,8 @@ configuration:
   defaultvalue: "1"
   type: 0
   required: false
-- display: Override to private submissions.
-  name: override
+- display: Enable public submissions by default.
+  name: is_public
   defaultvalue: false
   type: 8
   required: false
@@ -91,12 +91,7 @@ script:
       description: How many seconds to wait for the scan id result
       defaultValue: "60"
     - name: public
-      auto: PREDEFINED
-      predefined:
-      - public
-      - private
       description: Will the submission be public or private
-      defaultValue: public
     - name: limit
       description: Limits the returned list of Certificates, IP's and ASN's
       defaultValue: "20"
@@ -180,12 +175,7 @@ script:
       description: How many seconds to wait for the scan id result
       defaultValue: "60"
     - name: public
-      auto: PREDEFINED
-      predefined:
-      - public
-      - private
       description: Will the submission be public or private
-      defaultValue: public
     - name: limit
       description: Limits the results in the war room
       defaultValue: "20"
