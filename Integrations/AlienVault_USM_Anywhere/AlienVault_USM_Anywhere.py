@@ -402,11 +402,17 @@ def get_events_by_alarm_command():
 def fetch_incidents():
     last_run = demisto.getLastRun()
     # Get the last fetch time, if exists
-    last_fetch = last_run.get('time')
+    last_fetch = last_run.get('timestamp')
 
     # Handle first time fetch, fetch incidents retroactively
+    # OR
+    # Handle first time after release
     if last_fetch is None:
-        last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
+        time_field = last_run.get('time')
+        if time_field:
+            last_fetch = date_to_timestamp(time_field, parse_time(time_field))
+        else:
+            last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
     incidents = []
     limit = dict_value_to_int(demisto.params(), 'fetch_limit')
@@ -420,7 +426,7 @@ def fetch_incidents():
         time_str = str(incidents[-1].get('occurred'))
         last_fetch = str(date_to_timestamp(time_str, date_format=parse_time(time_str)))
 
-    demisto.setLastRun({'time': last_fetch})
+    demisto.setLastRun({'timestamp': last_fetch})
     demisto.incidents(incidents)
 
 
