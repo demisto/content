@@ -2110,4 +2110,8 @@ class BaseClient:
 
 
 class DemistoException(Exception):
-    """ Custom Exception """
+    """Custom Exception
+
+    :return: Exception
+    :rtype: ``Exception``
+    """
