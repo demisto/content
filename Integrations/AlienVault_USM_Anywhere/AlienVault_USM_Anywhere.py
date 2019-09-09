@@ -111,8 +111,7 @@ def get_time_range(time_frame=None, start_time=None, end_time=None):
         else:
             end_time = dateparser.parse(end_time)
 
-        return date_to_timestamp(start_time, date_format=parse_time(start_time)), \
-            date_to_timestamp(end_time, date_format=parse_time(end_time))
+        return date_to_timestamp(start_time), date_to_timestamp(end_time)
 
     end_time = datetime.now()
     if time_frame == 'Today':
@@ -134,8 +133,7 @@ def get_time_range(time_frame=None, start_time=None, end_time=None):
     else:
         raise ValueError('Could not parse time frame: {}'.format(time_frame))
 
-    return date_to_timestamp(start_time, date_format=parse_time(start_time)), \
-        date_to_timestamp(end_time, date_format=parse_time(end_time))
+    return date_to_timestamp(start_time), date_to_timestamp(end_time)
 
 
 @logger
