@@ -2129,7 +2129,7 @@ if 'requests' in sys.modules:
                 err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' in' \
                           ' the integration configuration.'
                 raise DemistoException(err_msg, e)
-            except requests.exceptions.ProxyError:
+            except requests.exceptions.ProxyError as e:
                 err_msg = 'Proxy Error - if \'Use system proxy\' in the integration configuration has been' \
                           ' selected, try deselecting it.'
                 raise DemistoException(err_msg, e)
