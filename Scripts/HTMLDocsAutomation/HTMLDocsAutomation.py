@@ -26,7 +26,7 @@ SETUP_CONFIGURATION: str = '''<h2>Configure {integration_name} on Demisto</h2>
   <li>
     Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
   </li>
-</ol> 
+</ol>
 '''
 
 PARAMS_LIST: str = '   <li><strong>{param}</strong></li>'
