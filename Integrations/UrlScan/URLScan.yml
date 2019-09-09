@@ -28,14 +28,11 @@ configuration:
   defaultvalue: "1"
   type: 0
   required: false
-- display: Submission Privacy Default
-  name: privacy
-  defaultvalue: public
-  type: 15
+- display: Override to private submissions.
+  name: override
+  defaultvalue: false
+  type: 8
   required: false
-  options:
-  - public
-  - private
 script:
   script: ''
   type: python
