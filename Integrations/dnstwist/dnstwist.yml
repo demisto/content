@@ -2,8 +2,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: dnstwist
   version: -1
-description: Domain name permutation engine for detecting typo squatting, phishing
-  and corporate espionage
+description: Use the DNSTwist integration to detect typosquatting, phishing, and corporate espionage.
 configuration: []
 display: dnstwist
 name: dnstwist
@@ -11,15 +10,14 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Domain name to check variations
+      description: The domain name for which to check for variations.
       isArray: false
       name: domain
       required: true
       secret: false
     - default: true
       defaultValue: '30'
-      description: Limits the results in the context. High value of context outputs
-        might slow your browser. Markdown entry will contain all results.
+      description: Maximum number results to return in the context. This helps manage browser performance. The Markdown entry will display all results.
       isArray: false
       name: limit
       required: false
@@ -27,7 +25,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'no'
-      description: Perform lookup for WHOIS creation/update time (slow)
+      description: Whether to perform a query for the Whois creation or last updated time (slow).
       isArray: false
       name: whois
       predefined:
@@ -36,16 +34,30 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Check domain variations
+    description: Checks for variations of a phishing domain name.
     execution: false
     name: dnstwist-domain-variations
     outputs:
     - contextPath: dnstwist.Domain.Domains.Name
-      description: Domain variations
+      description: Domain name variations.
       type: Unknown
+      type: unknown
     - contextPath: dnstwist.Domain.Domains.IP
-      description: IPs resolved to domain variations
+      description: IP addresses that resolved to domain name variations.
       type: Unknown
+      type: string
+    - contextPath: dnstwist.Domain.Domains.DNS-MX
+      description: Mail exchange records that resolved to domain name variations.
+      type: string
+    - contextPath: dnstwist.Domain.Domains.DNS-NS
+      description: Server names that resolved to domain name variations.
+      type: string
+    - contextPath: dnstwist.Domain.Domains.WhoisUpdated
+      description: Whois updated for domain name variations.
+      type: string
+    - contextPath: dnstwist.Domain.Domains.WhoisCreated
+      description: Whois created for domain name variations.
+      type: string
   dockerimage: demisto/dnstwist:1.0
   isfetch: false
   runonce: false
