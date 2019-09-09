@@ -1933,8 +1933,6 @@ obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'MD5': 'md5hash', 'Malicious':
 
 
 class BaseClient(object):
-    """BaseClient object
-    """
     def __init__(self,
                  server,
                  base_suffix,
@@ -2113,6 +2111,4 @@ class BaseClient(object):
 
 
 class DemistoException(Exception):
-    """Exception
-    """
     pass

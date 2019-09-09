@@ -131,6 +131,7 @@ def createJsDocumentation(path, origin, language):
 
 
 def createPyDocumentation(path, origin, language):
+    ignore_names = ('DemistoException', 'BaseClient')
     isErrorPy = False
 
     with open(path, 'r') as file:
@@ -146,8 +147,11 @@ def createPyDocumentation(path, origin, language):
         if a != 'demisto' and callable(ns.get(a)) and a not in pyPrivateFuncs:
             docstring = inspect.getdoc(ns.get(a))
             if not docstring:
-                print("docstring for function " + a + " is empty")
-                isErrorPy = True
+                if a not in ignore_names:
+                    print("docstring for function " + a + " is empty")
+                    isErrorPy = True
+                else:
+                    print("not docstring for function {} but it's in ignore_name".format(a))
             else:
                 if "tzinfo" not in docstring:
                     y = parser.parse_docstring(docstring)
