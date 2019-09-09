@@ -1,4 +1,3 @@
-
 import demistomock as demisto
 # Common functions script
 # =======================
@@ -21,7 +20,7 @@ IS_PY3 = sys.version_info[0] == 3
 # pylint: disable=undefined-variable
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
-    STRING_OBJ_TYPES = (str, )
+    STRING_OBJ_TYPES = (str,)
 else:
     STRING_TYPES = (str, unicode)  # type: ignore
     STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
@@ -78,7 +77,6 @@ dbotscores = {
     'Informational': 0.5
 }
 
-
 # ===== Fix fetching credentials from vault instances =====
 # ====================================================================================
 try:
@@ -92,6 +90,7 @@ try:
 
 except Exception:
     pass
+
 
 # ====================================================================================
 
@@ -281,7 +280,7 @@ def shortCrowdStrike(entry):
                 csRes += '\nName|Created|Last Valid'
                 csRes += '\n----|-------|----------'
                 for label in labels:
-                    csRes += '\n' + demisto.gets(label, 'name') + '|' +\
+                    csRes += '\n' + demisto.gets(label, 'name') + '|' + \
                              formatEpochDate(demisto.get(label, 'created_on')) + '|' + \
                              formatEpochDate(demisto.get(label, 'last_valid_on'))
 
@@ -483,7 +482,7 @@ def FormatADTimestamp(ts):
        :return: A string represeting the time
        :rtype: ``str``
     """
-    return (datetime(year=1601, month=1, day=1) + timedelta(seconds=int(ts) / 10**7)).ctime()
+    return (datetime(year=1601, month=1, day=1) + timedelta(seconds=int(ts) / 10 ** 7)).ctime()
 
 
 def PrettifyCompactedTimestamp(x):
@@ -662,6 +661,7 @@ def logger(func):
     :return: returns the func return value.
     :rtype: ``any``
     """
+
     def func_wrapper(*args, **kwargs):
         LOG('calling {}({})'.format(func.__name__, formatAllArgs(args, kwargs)))
         return func(*args, **kwargs)
@@ -1214,7 +1214,6 @@ def elem_to_internal(elem, strip_ns=1, strip=1):
 
 
 def internal_to_elem(pfsh, factory=ET.Element):
-
     """Convert an internal dictionary (not JSON!) into an Element.
     Whatever Element implementation we could import will be
     used by default; if you want to use something else, pass the
@@ -1254,7 +1253,6 @@ def internal_to_elem(pfsh, factory=ET.Element):
 
 
 def elem2json(elem, options, strip_ns=1, strip=1):
-
     """Convert an ElementTree or Element into a JSON string."""
 
     if hasattr(elem, 'getroot'):
@@ -1267,7 +1265,6 @@ def elem2json(elem, options, strip_ns=1, strip=1):
 
 
 def json2elem(json_data, factory=ET.Element):
-
     """Convert a JSON string into an Element.
     Whatever Element implementation we could import will be used by
     default; if you want to use something else, pass the Element class
@@ -1292,7 +1289,6 @@ def xml2json(xmlstring, options={}, strip_ns=1, strip=1):
 
 
 def json2xml(json_data, factory=ET.Element):
-
     """Convert a JSON string into an XML string.
     Whatever Element implementation we could import will be used by
     default; if you want to use something else, pass the Element class
@@ -1551,6 +1547,7 @@ def replace_in_keys(src, existing='.', new='_'):
         :return: The dictionary (or list of dictionaries) with keys after substring replacement.
         :rtype: ``dict`` or ``list``
     """
+
     def replace_str(src_str):
         if callable(getattr(src_str, "decode", None)):
             src_str = src_str.decode('utf-8')
@@ -1577,6 +1574,7 @@ sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
 sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
 
 pascalRegex = re.compile('([A-Z]?[a-z]+)')
+
 
 # ############################## REGEX FORMATTING end ###############################
 
@@ -1982,14 +1980,26 @@ class BaseClient:
 
     @property
     def integration_name(self):
+        """Property of integration name
+        return: Integration command name
+        :rtype: ``str``
+        """
         return self._integration_name
 
     @property
     def integration_context_name(self):
+        """Property of integration name context
+        return: Integration command name
+        :rtype: ``str``
+        """
         return self._integration_name_context
 
     @property
     def integration_command_name(self):
+        """Property of integration name command
+        return: Integration command name
+        :rtype: ``str``
+        """
         return self._integration_name_command
 
     def _http_request(self, method, url_suffix, full_url=None, headers=None,
