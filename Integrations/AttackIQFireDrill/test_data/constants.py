@@ -247,7 +247,7 @@ GET_TESTS_RESP = {
                             {
                                 "data": "%APPDATA%/attackiq_data.dll",
                                 "value": "attackiq_value",
-                                "key": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Browser Helper Objects"
+                                "key": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Browser Helper Objects"  # noqa: E501
                             },
                             {
                                 "data": "%PROGRAMFILES%/attackiq_texteditor.exe",
@@ -320,7 +320,7 @@ GET_TEST_RESULT_RESP = {
                     {
                         "id": "ef72cfc8-796c-4a35-abea-547f0d898713",
                         "name": "Download Coverton Ransomware",
-                        "description": "The Coverton ransomware has no known infection vector. After encryption, the ransomware deletes shadow volume copies and system restore points. A ransom note will then be created, explaining the the victim how to use the tor network and how to buy bitcoin. The authors demand a price of 1 bitcoin to decrypt and will threaten to double the price every week you do not pay. Unfortunately, the cryptography is solid so there is no decrypter available. This led some victims to pay the ransom. However, the decrypter they receive did not properly decrypt the files."
+                        "description": "The Coverton ransomware has no known infection vector. After encryption, the ransomware deletes shadow volume copies and system restore points. A ransom note will then be created, explaining the the victim how to use the tor network and how to buy bitcoin. The authors demand a price of 1 bitcoin to decrypt and will threaten to double the price every week you do not pay. Unfortunately, the cryptography is solid so there is no decrypter available. This led some victims to pay the ransom. However, the decrypter they receive did not properly decrypt the files."  # noqa: E501
                     }
                 ]
             },
@@ -334,12 +334,12 @@ GET_TEST_RESULT_RESP = {
             "scenario": {
                 "id": "fc057ae4-c56d-4e9a-8c0f-9f22ec1e5576",
                 "name": "Download SNSLock Ransomware",
-                "description": "The SNSLock ransomware is spread through email spam campaigns. Upon infection, the ransomware will connect to it's C2 server and send user information such as system date and time, IP address, and MAC address. During infection, the ransomware will add a .RSNSlocked extension. After infection, it will drop an html file that contains all the information to pay $300 dollars using bitcoin."
+                "description": "The SNSLock ransomware is spread through email spam campaigns. Upon infection, the ransomware will connect to it's C2 server and send user information such as system date and time, IP address, and MAC address. During infection, the ransomware will add a .RSNSlocked extension. After infection, it will drop an html file that contains all the information to pay $300 dollars using bitcoin."  # noqa: E501
             },
             "scenario_args": {
                 "check_if_executable": True,
                 "sha256_hash": "597a14a76fc4d6315afa877ef87b68401de45d852e38f98c2f43986b4dca1c3a",
-                "download_url": "https://malware.scenarios.aiqscenarioinfra.com/597a14a76fc4d6315afa877ef87b68401de45d852e38f98c2f43986b4dca1c3a/SNSLock"
+                "download_url": "https://malware.scenarios.aiqscenarioinfra.com/597a14a76fc4d6315afa877ef87b68401de45d852e38f98c2f43986b4dca1c3a/SNSLock"  # noqa: E501
             },
             "scenario_exe": "ai_python",
             "scenario_name": "Download SNSLock Ransomware",
@@ -391,11 +391,11 @@ GET_TEST_RESULT_RESP = {
                     "scenario": {
                         "id": "fc057ae4-c56d-4e9a-8c0f-9f22ec1e5576",
                         "name": "Download SNSLock Ransomware",
-                        "description": "The SNSLock ransomware is spread through email spam campaigns. Upon infection, the ransomware will connect to it's C2 server and send user information such as system date and time, IP address, and MAC address. During infection, the ransomware will add a .RSNSlocked extension. After infection, it will drop an html file that contains all the information to pay $300 dollars using bitcoin.",
+                        "description": "The SNSLock ransomware is spread through email spam campaigns. Upon infection, the ransomware will connect to it's C2 server and send user information such as system date and time, IP address, and MAC address. During infection, the ransomware will add a .RSNSlocked extension. After infection, it will drop an html file that contains all the information to pay $300 dollars using bitcoin.",  # noqa: E501
                         "scenario_type": "Attack",
                         "scenario_template": {
                             "id": "4f89d738-d253-452d-b944-99b41f8b2e07",
-                            "zip_file": "https://static.attackiq.com/scenarios/4f89d738-d253-452d-b944-99b41f8b2e07/download_and_save_file-1.0.120.dev0.zip?v=1.0.8&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9zdGF0aWMuYXR0YWNraXEuY29tL3NjZW5hcmlvcy80Zjg5ZDczOC1kMjUzLTQ1MmQtYjk0NC05OWI0MWY4YjJlMDcvZG93bmxvYWRfYW5kX3NhdmVfZmlsZS0xLjAuMTIwLmRldjAuemlwP3Y9MS4wLjgiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE1Njc2OTA5OTN9fX1dfQ__&Signature=H3KgpyE69Ysg3NzfkJIO-vYP1zpbqakKJZhnToPZ2PnzKw~x9~ihmQz1AKU6AGowwBN2l9fFHdigCZQ0wBdwt346MxUXVJpcjb6Wz4AVBieN9qmkfARA3SB7WCBF48HiOSLRqWJtpzBc~jqLrcGS4T-UPM5S~TEXX79~dTXg2ZJoor7FbqL-kaLX09N08r4o6XsKzB0HoVmleZ8x9b8AotgLYjbExYdLctgPnOcxWgGuJKRUtdYgW-loPf9V56yg1ngl59aA1Emgo74-BfUXGl5tgK4LPbvGQw7kg5rjM310vh3oze~h0oiE3IHHVNSW2pcsl4U7ELofUpFwE~-sUg__&Key-Pair-Id=APKAJY2DPWILXHPNCJTA"
+                            "zip_file": "https://static.attackiq.com/scenarios/4f89d738-d253-452d-b944-99b41f8b2e07/download_and_save_file-1.0.120.dev0.zip?v=1.0.8&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9zdGF0aWMuYXR0YWNraXEuY29tL3NjZW5hcmlvcy80Zjg5ZDczOC1kMjUzLTQ1MmQtYjk0NC05OWI0MWY4YjJlMDcvZG93bmxvYWRfYW5kX3NhdmVfZmlsZS0xLjAuMTIwLmRldjAuemlwP3Y9MS4wLjgiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE1Njc2OTA5OTN9fX1dfQ__&Signature=H3KgpyE69Ysg3NzfkJIO-vYP1zpbqakKJZhnToPZ2PnzKw~x9~ihmQz1AKU6AGowwBN2l9fFHdigCZQ0wBdwt346MxUXVJpcjb6Wz4AVBieN9qmkfARA3SB7WCBF48HiOSLRqWJtpzBc~jqLrcGS4T-UPM5S~TEXX79~dTXg2ZJoor7FbqL-kaLX09N08r4o6XsKzB0HoVmleZ8x9b8AotgLYjbExYdLctgPnOcxWgGuJKRUtdYgW-loPf9V56yg1ngl59aA1Emgo74-BfUXGl5tgK4LPbvGQw7kg5rjM310vh3oze~h0oiE3IHHVNSW2pcsl4U7ELofUpFwE~-sUg__&Key-Pair-Id=APKAJY2DPWILXHPNCJTA"  # noqa: E501
                         },
                         "supported_platforms": {
                             "osx": ">=0.0",
@@ -434,7 +434,7 @@ RUN_ALL_TESTS_RESP = {
 ACTIVATE_ASS_RES = ACTIVATE_ASS_RESP['message']
 GET_ASS_RESULT = {
     "Type": 1,
-    "HumanReadable": "### AttackIQ Assessments Page #1\n|Id|Name|Description|User|Created|Modified|\n|---|---|---|---|---|---|\n|2e53e597-0388-48bb-8eb8-00bb28874434|Arseny's ransomware project|Test of common ransomware variants|akrupnik@paloaltonetworks.com|2019-09-02T11:51:57.507486Z|2019-09-02T11:51:59.769959Z|\n",
+    "HumanReadable": "### AttackIQ Assessments Page #1\n|Id|Name|Description|User|Created|Modified|\n|---|---|---|---|---|---|\n|2e53e597-0388-48bb-8eb8-00bb28874434|Arseny's ransomware project|Test of common ransomware variants|akrupnik@paloaltonetworks.com|2019-09-02T11:51:57.507486Z|2019-09-02T11:51:59.769959Z|\n",  # noqa: E501
     "ContentsFormat": "json",
     "Contents": {"count": 1, "next": None, "previous": None, "results": [
         {"id": "2e53e597-0388-48bb-8eb8-00bb28874434", "name": "Arseny's ransomware project",
@@ -447,7 +447,7 @@ GET_ASS_RESULT = {
                               "icon": "ransomware_template_icon.svg",
                               "project_template_type": {"id": "b1e7ac80-1417-4f7b-a387-35fb49f218c8",
                                                         "name": "Use Cases",
-                                                        "description": "Showcase different use cases in which FireDrill can help"},
+                                                        "description": "Showcase different use cases in which FireDrill can help"},  # noqa: E501
                               "default_schedule": None, "report_types": [
                  {"id": "38f24061-a70f-415a-b378-bc9575b7ac6a", "name": "Security Assessment Differential Report"},
                  {"id": "986fce3c-89a5-47f0-843d-99ba269b576b", "name": "Security Assessment Detailed Report"},
@@ -475,14 +475,14 @@ GET_ASS_RESULT = {
                                 "TemplateDescription": "Variety of common ransomware variants",
                                 "AssessmentTemplateType": {"Id": "b1e7ac80-1417-4f7b-a387-35fb49f218c8",
                                                            "Name": "Use Cases",
-                                                           "Description": "Showcase different use cases in which FireDrill can help"}},
+                                                           "Description": "Showcase different use cases in which FireDrill can help"}},  # noqa: E501
          "DefaultAssetGroupCount": 0}]}
 }
 GET_ASS_EXECUTION_RESULT = {'Type': 1, 'HumanReadable': 'Assessment 1 execution is not finished.',
                             'ContentsFormat': 'json', 'Contents': {'message': False},
                             'EntryContext': {'AttackIQ.Assessment(val.Id === obj.Id)': {'Running': False, 'Id': 1}}}
 GET_TEST_RESULT = {'Type': 1,
-                   'HumanReadable': '### Test - Most Used Threat Actor Techniques\n|Id|Name|Created|Modified|Runnable|Last Result|\n|---|---|---|---|---|---|\n|9aed2cef-8c64-4e29-83b4-709de5963b66|Most Used Threat Actor Techniques|2019-09-05T08:47:38.273306Z|2019-09-05T08:56:42.496002Z|true|Failed|\n### Assets (Most Used Threat Actor Techniques)\n|Hostname|Id|Ipv4Address|Modified|ProductName|Status|\n|---|---|---|---|---|---|\n|ec2amaz-g4iu5no|03e17460-849e-4b86-b6c6-ef0db72823ff|172.31.39.254|2019-09-05T13:33:34.062040Z|Windows Server 2016 Datacenter|Active|\n### Scenarios (Most Used Threat Actor Techniques)\n|Id|Name|\n|---|---|\n|fdef9f60-d933-4158-bfde-81c2d791b2a2|Persistence Through Startup Folder|\n|04ed47b9-145c-46f6-9434-f9f5af27a2d2|Execute Encoded Powershell Command|\n|a3098773-f2c1-4b32-8cba-2ed6d7ec0ba1|Standard Application Layer Protocol|\n|59699d35-b268-41b5-bc00-ed8acc222b64|Scheduled Task Execution|\n|cfbbd145-28a2-4ac3-a1e0-79abddfc9881|Dump Windows Passwords with Original Mimikatz|\n|f73dd965-dc8c-4230-9745-a530b21c5333|Remote File Copy Script|\n|8ca3ca07-b52b-4ede-af05-ce1eb8834454|Command-Line Interface Script|\n|8e39c23c-aca4-4940-96bf-247723026e46|File Deletion Script|\n|5fbb5e71-6e35-4e2c-8dc6-7ee55be563dd|System Information Discovery Script|\n|1e46e621-2453-4aaa-85b7-ab67d0b37b8c|Persistence Through Windows Registry|\n',
+                   'HumanReadable': '### Test - Most Used Threat Actor Techniques\n|Id|Name|Created|Modified|Runnable|Last Result|\n|---|---|---|---|---|---|\n|9aed2cef-8c64-4e29-83b4-709de5963b66|Most Used Threat Actor Techniques|2019-09-05T08:47:38.273306Z|2019-09-05T08:56:42.496002Z|true|Failed|\n### Assets (Most Used Threat Actor Techniques)\n|Hostname|Id|Ipv4Address|Modified|ProductName|Status|\n|---|---|---|---|---|---|\n|ec2amaz-g4iu5no|03e17460-849e-4b86-b6c6-ef0db72823ff|172.31.39.254|2019-09-05T13:33:34.062040Z|Windows Server 2016 Datacenter|Active|\n### Scenarios (Most Used Threat Actor Techniques)\n|Id|Name|\n|---|---|\n|fdef9f60-d933-4158-bfde-81c2d791b2a2|Persistence Through Startup Folder|\n|04ed47b9-145c-46f6-9434-f9f5af27a2d2|Execute Encoded Powershell Command|\n|a3098773-f2c1-4b32-8cba-2ed6d7ec0ba1|Standard Application Layer Protocol|\n|59699d35-b268-41b5-bc00-ed8acc222b64|Scheduled Task Execution|\n|cfbbd145-28a2-4ac3-a1e0-79abddfc9881|Dump Windows Passwords with Original Mimikatz|\n|f73dd965-dc8c-4230-9745-a530b21c5333|Remote File Copy Script|\n|8ca3ca07-b52b-4ede-af05-ce1eb8834454|Command-Line Interface Script|\n|8e39c23c-aca4-4940-96bf-247723026e46|File Deletion Script|\n|5fbb5e71-6e35-4e2c-8dc6-7ee55be563dd|System Information Discovery Script|\n|1e46e621-2453-4aaa-85b7-ab67d0b37b8c|Persistence Through Windows Registry|\n',  # noqa: E501
                    'ContentsFormat': 'json', 'Contents': {'count': 1, 'next': None, 'previous': None, 'results': [
         {'id': '9aed2cef-8c64-4e29-83b4-709de5963b66', 'name': 'Most Used Threat Actor Techniques', 'description': None,
          'project': '8978fe24-607a-4815-a36a-89fb6191b318', 'scenarios': [
@@ -529,7 +529,7 @@ GET_TEST_RESULT = {'Type': 1,
                                          {'data': '%SystemRoot%/attackiq_data.exe', 'value': 'attackiq_value',
                                           'key': 'HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'},
                                          {'data': '%APPDATA%/attackiq_data.dll', 'value': 'attackiq_value',
-                                          'key': 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Browser Helper Objects'},
+                                          'key': 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Browser Helper Objects'},  # noqa: E501
                                          {'data': '%PROGRAMFILES%/attackiq_texteditor.exe',
                                           'value': 'attackiq_texteditor',
                                           'key': 'HKEY_CLASSES_ROOT\\txtfile\\Shell\\Open\\command'}]}}], 'assets': [
@@ -566,7 +566,7 @@ GET_TEST_RESULT = {'Type': 1,
                  'Modified': '2019-09-05T13:33:34.062040Z', 'Status': 'Active'}]}]}}
 GET_TEST_STATUS_RESULT = {
     'Type': 1,
-    'HumanReadable': '### Test 1 status\n|Detected|Errored|Failed|Finished|Id|Passed|Total|\n|---|---|---|---|---|---|---|\n|0|0|9|true|1|1|10|\n',
+    'HumanReadable': '### Test 1 status\n|Detected|Errored|Failed|Finished|Id|Passed|Total|\n|---|---|---|---|---|---|---|\n|0|0|9|true|1|1|10|\n',  # noqa: E501
     'ContentsFormat': 'json',
     'Contents': {'detected': 0, 'failed': 9, 'finished': True, 'passed': 1, 'errored': 0, 'total': 10},
     'EntryContext': {
@@ -578,7 +578,7 @@ GET_TEST_STATUS_RESULT = {
 }
 GET_TEST_RESULT_RESULT = {
     "Type": 1,
-    "HumanReadable": "### Test Results for None\n|Assessment Name|Scenario Name|Hostname|Asset IP|Job State|Modified|Outcome|\n|---|---|---|---|---|---|---|\n|Arseny's ransomware project|Download SNSLock Ransomware|ec2amaz-g4iu5no|172.31.39.254|Finished|2019-09-03T14:22:46.747664Z|Passed|\n",
+    "HumanReadable": "### Test Results for None\n|Assessment Name|Scenario Name|Hostname|Asset IP|Job State|Modified|Outcome|\n|---|---|---|---|---|---|---|\n|Arseny's ransomware project|Download SNSLock Ransomware|ec2amaz-g4iu5no|172.31.39.254|Finished|2019-09-03T14:22:46.747664Z|Passed|\n",  # noqa: E501
     "ContentsFormat": "json",
     "Contents": {
         "count": 1, "next": None, "previous": None, "results": [
@@ -593,7 +593,7 @@ GET_TEST_RESULT_RESULT = {
                         "modified": "2019-09-05T12:10:01.590138Z"}], "scenarios": [
                     {
                         "id": "ef72cfc8-796c-4a35-abea-547f0d898713", "name": "Download Coverton Ransomware",
-                        "description": "The Coverton ransomware has no known infection vector. After encryption, the ransomware deletes shadow volume copies and system restore points. A ransom note will then be created, explaining the the victim how to use the tor network and how to buy bitcoin. The authors demand a price of 1 bitcoin to decrypt and will threaten to double the price every week you do not pay. Unfortunately, the cryptography is solid so there is no decrypter available. This led some victims to pay the ransom. However, the decrypter they receive did not properly decrypt the files."
+                        "description": "The Coverton ransomware has no known infection vector. After encryption, the ransomware deletes shadow volume copies and system restore points. A ransom note will then be created, explaining the the victim how to use the tor network and how to buy bitcoin. The authors demand a price of 1 bitcoin to decrypt and will threaten to double the price every week you do not pay. Unfortunately, the cryptography is solid so there is no decrypter available. This led some victims to pay the ransom. However, the decrypter they receive did not properly decrypt the files."  # noqa: E501
                     }
                 ]},
                 "master_job_name": "Ransomware Download", "master_job_metadata": None,
@@ -602,11 +602,11 @@ GET_TEST_RESULT_RESULT = {
                 "scenario_scheduled_job_uuid": "6c757c3d-6e80-426e-94cb-625113845d8e",
                 "scenario": {
                     "id": "fc057ae4-c56d-4e9a-8c0f-9f22ec1e5576", "name": "Download SNSLock Ransomware",
-                    "description": "The SNSLock ransomware is spread through email spam campaigns. Upon infection, the ransomware will connect to it's C2 server and send user information such as system date and time, IP address, and MAC address. During infection, the ransomware will add a .RSNSlocked extension. After infection, it will drop an html file that contains all the information to pay $300 dollars using bitcoin."
+                    "description": "The SNSLock ransomware is spread through email spam campaigns. Upon infection, the ransomware will connect to it's C2 server and send user information such as system date and time, IP address, and MAC address. During infection, the ransomware will add a .RSNSlocked extension. After infection, it will drop an html file that contains all the information to pay $300 dollars using bitcoin."  # noqa: E501
                 },
                 "scenario_args": {"check_if_executable": True,
                                   "sha256_hash": "597a14a76fc4d6315afa877ef87b68401de45d852e38f98c2f43986b4dca1c3a",
-                                  "download_url": "https://malware.scenarios.aiqscenarioinfra.com/597a14a76fc4d6315afa877ef87b68401de45d852e38f98c2f43986b4dca1c3a/SNSLock"},
+                                  "download_url": "https://malware.scenarios.aiqscenarioinfra.com/597a14a76fc4d6315afa877ef87b68401de45d852e38f98c2f43986b4dca1c3a/SNSLock"},  # noqa: E501
                 "scenario_exe": "ai_python", "scenario_name": "Download SNSLock Ransomware", "scenario_type": 1,
                 "asset": {"id": "03e17460-849e-4b86-b6c6-ef0db72823ff", "ipv4_address": "172.31.39.254",
                           "hostname": "ec2amaz-g4iu5no", "product_name": "Windows Server 2016 Datacenter",
@@ -630,11 +630,11 @@ GET_TEST_RESULT_RESULT = {
                                                                         "name": "Arseny's ransomware project"},
                                                             "scenario": {"id": "fc057ae4-c56d-4e9a-8c0f-9f22ec1e5576",
                                                                          "name": "Download SNSLock Ransomware",
-                                                                         "description": "The SNSLock ransomware is spread through email spam campaigns. Upon infection, the ransomware will connect to it's C2 server and send user information such as system date and time, IP address, and MAC address. During infection, the ransomware will add a .RSNSlocked extension. After infection, it will drop an html file that contains all the information to pay $300 dollars using bitcoin.",
+                                                                         "description": "The SNSLock ransomware is spread through email spam campaigns. Upon infection, the ransomware will connect to it's C2 server and send user information such as system date and time, IP address, and MAC address. During infection, the ransomware will add a .RSNSlocked extension. After infection, it will drop an html file that contains all the information to pay $300 dollars using bitcoin.",  # noqa: E501
                                                                          "scenario_type": "Attack",
                                                                          "scenario_template": {
                                                                              "id": "4f89d738-d253-452d-b944-99b41f8b2e07",
-                                                                             "zip_file": "https://static.attackiq.com/scenarios/4f89d738-d253-452d-b944-99b41f8b2e07/download_and_save_file-1.0.120.dev0.zip?v=1.0.8&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9zdGF0aWMuYXR0YWNraXEuY29tL3NjZW5hcmlvcy80Zjg5ZDczOC1kMjUzLTQ1MmQtYjk0NC05OWI0MWY4YjJlMDcvZG93bmxvYWRfYW5kX3NhdmVfZmlsZS0xLjAuMTIwLmRldjAuemlwP3Y9MS4wLjgiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE1Njc2OTA5OTN9fX1dfQ__&Signature=H3KgpyE69Ysg3NzfkJIO-vYP1zpbqakKJZhnToPZ2PnzKw~x9~ihmQz1AKU6AGowwBN2l9fFHdigCZQ0wBdwt346MxUXVJpcjb6Wz4AVBieN9qmkfARA3SB7WCBF48HiOSLRqWJtpzBc~jqLrcGS4T-UPM5S~TEXX79~dTXg2ZJoor7FbqL-kaLX09N08r4o6XsKzB0HoVmleZ8x9b8AotgLYjbExYdLctgPnOcxWgGuJKRUtdYgW-loPf9V56yg1ngl59aA1Emgo74-BfUXGl5tgK4LPbvGQw7kg5rjM310vh3oze~h0oiE3IHHVNSW2pcsl4U7ELofUpFwE~-sUg__&Key-Pair-Id=APKAJY2DPWILXHPNCJTA"},
+                                                                             "zip_file": "https://static.attackiq.com/scenarios/4f89d738-d253-452d-b944-99b41f8b2e07/download_and_save_file-1.0.120.dev0.zip?v=1.0.8&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9zdGF0aWMuYXR0YWNraXEuY29tL3NjZW5hcmlvcy80Zjg5ZDczOC1kMjUzLTQ1MmQtYjk0NC05OWI0MWY4YjJlMDcvZG93bmxvYWRfYW5kX3NhdmVfZmlsZS0xLjAuMTIwLmRldjAuemlwP3Y9MS4wLjgiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkFXUzpFcG9jaFRpbWUiOjE1Njc2OTA5OTN9fX1dfQ__&Signature=H3KgpyE69Ysg3NzfkJIO-vYP1zpbqakKJZhnToPZ2PnzKw~x9~ihmQz1AKU6AGowwBN2l9fFHdigCZQ0wBdwt346MxUXVJpcjb6Wz4AVBieN9qmkfARA3SB7WCBF48HiOSLRqWJtpzBc~jqLrcGS4T-UPM5S~TEXX79~dTXg2ZJoor7FbqL-kaLX09N08r4o6XsKzB0HoVmleZ8x9b8AotgLYjbExYdLctgPnOcxWgGuJKRUtdYgW-loPf9V56yg1ngl59aA1Emgo74-BfUXGl5tgK4LPbvGQw7kg5rjM310vh3oze~h0oiE3IHHVNSW2pcsl4U7ELofUpFwE~-sUg__&Key-Pair-Id=APKAJY2DPWILXHPNCJTA"},  # noqa: E501
                                                                          "supported_platforms": {"osx": ">=0.0",
                                                                                                  "centos": ">=0.0",
                                                                                                  "redhat": ">=0.0",
@@ -659,9 +659,9 @@ GET_TEST_RESULT_RESULT = {
               "ProductName": "Windows Server 2016 Datacenter", "Id": "03e17460-849e-4b86-b6c6-ef0db72823ff",
               "Modified": "2019-09-05T12:10:01.590138Z", "Status": None}], "Scenarios": [
              {"Id": "ef72cfc8-796c-4a35-abea-547f0d898713", "Name": "Download Coverton Ransomware",
-              "Description": "The Coverton ransomware has no known infection vector. After encryption, the ransomware deletes shadow volume copies and system restore points. A ransom note will then be created, explaining the the victim how to use the tor network and how to buy bitcoin. The authors demand a price of 1 bitcoin to decrypt and will threaten to double the price every week you do not pay. Unfortunately, the cryptography is solid so there is no decrypter available. This led some victims to pay the ransom. However, the decrypter they receive did not properly decrypt the files."}]},
+              "Description": "The Coverton ransomware has no known infection vector. After encryption, the ransomware deletes shadow volume copies and system restore points. A ransom note will then be created, explaining the the victim how to use the tor network and how to buy bitcoin. The authors demand a price of 1 bitcoin to decrypt and will threaten to double the price every week you do not pay. Unfortunately, the cryptography is solid so there is no decrypter available. This led some victims to pay the ransom. However, the decrypter they receive did not properly decrypt the files."}]},  # noqa: E501
          "Scenario": {"Id": "fc057ae4-c56d-4e9a-8c0f-9f22ec1e5576", "Name": "Download SNSLock Ransomware",
-                      "Description": "The SNSLock ransomware is spread through email spam campaigns. Upon infection, the ransomware will connect to it's C2 server and send user information such as system date and time, IP address, and MAC address. During infection, the ransomware will add a .RSNSlocked extension. After infection, it will drop an html file that contains all the information to pay $300 dollars using bitcoin."},
+                      "Description": "The SNSLock ransomware is spread through email spam campaigns. Upon infection, the ransomware will connect to it's C2 server and send user information such as system date and time, IP address, and MAC address. During infection, the ransomware will add a .RSNSlocked extension. After infection, it will drop an html file that contains all the information to pay $300 dollars using bitcoin."},  # noqa: E501
          "Asset": {"Id": "03e17460-849e-4b86-b6c6-ef0db72823ff", "Ipv4Address": "172.31.39.254",
                    "Hostname": "ec2amaz-g4iu5no", "ProductName": "Windows Server 2016 Datacenter",
                    "Modified": "2019-09-05T12:10:01.590138Z", "AssetGroup": None}, "JobState": {"Name": "Finished"},
@@ -669,7 +669,7 @@ GET_TEST_RESULT_RESULT = {
 }
 GET_ASS_BY_ID_RESULT = {
     'Type': 1,
-    'HumanReadable': '### AttackIQ Assessment 1\n|Id|Name|Description|User|Created|Modified|\n|---|---|---|---|---|---|\n|||||||\n',
+    'HumanReadable': '### AttackIQ Assessment 1\n|Id|Name|Description|User|Created|Modified|\n|---|---|---|---|---|---|\n|||||||\n',  # noqa: E501
     'ContentsFormat': 'json',
     'Contents': {
         'count': 1, 'next': None, 'previous': None, 'results': [

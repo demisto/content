@@ -3,7 +3,7 @@ import pytest
 from AttackIQFireDrill import build_transformed_dict, activate_assessment_command, \
     get_assessment_execution_status_command, get_test_execution_status_command, get_test_results_command, \
     list_assessments_command, get_assessment_by_id_command, list_tests_by_assessment_command, \
-    list_tests_by_assessment_command, run_all_tests_in_assessment_command
+    run_all_tests_in_assessment_command
 from test_data.constants import DICT_1to5, TRANS_DICT_134, DICT_NESTED_123, TRANS_DICT_NESTED_12, \
     TRANS_DICT_NESTED_VAL_12, DICT_LST_AAB2B, TRANS_DICT_LST_A2B, DICT_LST_NESTED, TRANS_DICT_LST_NESTED, \
     ACTIVATE_ASS_RESP, ACTIVATE_ASS_RES, GET_ASS_EXECUTION_STATUS_RESP, GET_ASS_EXECUTION_RESULT, \
