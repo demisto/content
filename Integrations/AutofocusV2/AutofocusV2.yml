@@ -49,7 +49,7 @@ script:
       - Size
       - Finish Date
       - First Seen (Create Date)
-      - Last Updated (Update Date)
+      - Last Updated (Update Date)AutoFocus V2
       - MD5
       - SHA1
       - SHA256
@@ -76,6 +76,60 @@ script:
       - Public
       - Global
       required: true
+      secret: false
+    - default: false
+      description: The sample's MD5, SHA1 or SHA256 hash.
+      isArray: false
+      name: file_hash
+      required: false
+      secret: false
+    - default: false
+      description: Domain to search.
+      isArray: false
+      name: domain
+      required: false
+      secret: false
+    - default: false
+      description: IP address to search.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: URL to search.
+      isArray: false
+      name: url
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Malwar, Grayware, Benign or Phishing
+      isArray: false
+      name: wildfire_verdict
+      predefined:
+      - Malwar
+      - Grayware
+      - Benign
+      - Phishing
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Creation date in range structure.
+        Format: ["YYY Y-MM-DDTHH:MM:SS","YYYY-MM-DDTHH:MM:SS"] where the first date is the beginning and the second is the end.
+        Example: ["2019-09-09T00:00:00","2019-09-09T23:01:59"]
+      isArray: false
+      name: first_seen
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Date of update in range structure.
+        Format: ["YYY Y-MM-DDTHH:MM:SS","YYYY-MM-DDTHH:MM:SS"] where the first date is the beginning and the second is the end.
+        Example: ["2019-09-09T00:00:00","2019-09-09T23:01:59"]
+      isArray: false
+      name: last_updated
+      required: false
       secret: false
     deprecated: false
     description: Search for samples. To view results run the autofocus-samples-search-results
@@ -141,6 +195,58 @@ script:
       predefined:
       - Ascending
       - Descending
+      required: false
+      secret: false
+    - default: false
+      description: The sample's MD5, SHA1 or SHA256 hash.
+      isArray: false
+      name: file_hash
+      required: false
+      secret: false
+    - default: false
+      description: Domain to search.
+      isArray: false
+      name: domain
+      required: false
+      secret: false
+    - default: false
+      description: IP address to search.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: URL to search.
+      isArray: false
+      name: url
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Format: ["YYY Y-MM-DDTHH:MM:SS","YYYY-MM-DDTHH:MM:SS"] where the first date is the beginning and the second is the end.
+        Example: ["2019-09-09T00:00:00","2019-09-09T23:01:59"]
+      isArray: false
+      name: time_range
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All sessions after the given time.
+        Format: ["YYYY-MM-DDTHH:MM:SS"]
+        Example: ["2019-09-09T23:01:59"]
+      isArray: false
+      name: time_after
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All sessions before the given time.
+        Format: ["YYYY-MM-DDTHH:MM:SS"]
+        Example: ["2019-09-09T23:01:59"]
+      isArray: false
+      name: time_before
       required: false
       secret: false
     deprecated: false
@@ -544,12 +650,10 @@ script:
       description: Search status ("in progress" or "complete").
       type: String
   dockerimage: demisto/python3:3.7.2.214
+  subtype: python3
   isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   type: python
-  subtype: python3
 tests:
 - AutoFocus V2 test
