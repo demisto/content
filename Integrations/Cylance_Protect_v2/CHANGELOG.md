@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+  - Added a batching logic to the delete-devices command.
 
 ## [19.8.0] - 2019-08-06
   - Improved handling of error messages.
