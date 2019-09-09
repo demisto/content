@@ -459,15 +459,18 @@ script:
     execution: false
     name: GitHub-get-team-membership
     outputs:
-    - contextPath: GitHub.Team.Role
+    - contextPath: GitHub.Team.Member.Role
       description: The user's role on a team
       type: String
-    - contextPath: GitHub.Team.State
+    - contextPath: GitHub.Team.Member.State
       description: The user's state for a team
       type: String
     - contextPath: GitHub.Team.ID
       description: The ID number of the team
       type: Number
+    - contextPath: GitHub.Team.Member.Login
+      description: The login of the team member
+      type: String
   - arguments:
     - default: false
       description: The number of the Pull Request for which you wish to request review

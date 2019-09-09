@@ -840,18 +840,21 @@ def request_review_command():
 
 def get_team_membership_command():
     args = demisto.args()
-    team_id = 0
+    team_id = args.get('team_id')
     try:
-        team_id = int(args.get('team_id'))
+        team_id = int(team_id)
     except ValueError as e:
         return_error('"team_id" command argument must be an integer value.', e)
     user_name = args.get('user_name')
     response = get_team_membership(team_id, user_name)
 
     ec_object = {
-        'Role': response.get('role'),
-        'State': response.get('state'),
-        'ID': team_id
+        'ID': team_id,
+        'Member': {
+            'Login': user_name,
+            'Role': response.get('role'),
+            'State': response.get('state')
+        }
     }
     ec = {
         'GitHub.Team': ec_object
