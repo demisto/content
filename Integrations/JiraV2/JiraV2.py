@@ -305,7 +305,7 @@ def get_issue_fields(issue_creating=False, **issue_args):
     if issue_args.get('summary'):
         issue['fields']['summary'] = issue_args['summary']
 
-    if not issue['fields'].get('project'):
+    if not issue['fields'].get('project') and (issue_args.get('projectKey') or issue_args.get('projectName')):
         issue['fields']['project'] = {}
 
     if issue_args.get('projectKey'):
