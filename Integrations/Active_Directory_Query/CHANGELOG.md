@@ -1,8 +1,8 @@
 ## [Unreleased]
-  - Fix for query using custom-field-data.
-  - In ad-create-contact command, display-name argument now works as expected.
-  - Added detailed description for filter argument in ad-search command.
-  - Fixed the example value for custom-attribute argument description in ad-create-user and ad-create-contact commands.
+  - Fix an issue in the ***custom-field-data*** argument.
+  - Fixed an issue in the ***ad-create-contact*** command.
+  - Improved description of the ***filter*** argument in the ***ad-search*** command.
+  - Fixed the example value description for the ***custom-attribute*** argument in the ***ad-create-user*** and ***ad-create-contact*** commands.
 
 
 ## [19.8.0] - 2019-08-06
