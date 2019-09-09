@@ -1854,6 +1854,9 @@ def build_dbot_entry(indicator, indicator_type, vendor, score, description=None,
     :type vendor: ``str``
     :param vendor: Integration ID
 
+    :type score: ``int``
+    :param score: DBot score (0-3)
+
     :type description: ``str`` or ``None``
     :param description: description (will be added to malicious if dbot_score is 3). can be None
 
@@ -1930,32 +1933,6 @@ obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'MD5': 'md5hash', 'Malicious':
 
 
 class BaseClient(object):
-    """Base Client for use in integrations.
-
-        :type server: ``str``
-        :param server: Base server address
-
-        :type base_suffix: ``str``
-        :param base_suffix: suffix of API (e.g`/api/v2/`)
-
-        :type integration_name: ``str``
-        :param integration_name: Name as shown in UI (`Integration Name`)
-
-        :type integration_command_name: ``str``
-        :param integration_command_name: lower case with `-` divider (`integration-name`)
-
-        :type integration_context_name: ``str``
-        :param integration_context_name: camelcase with no dividers (`IntegrationName`)
-
-        :type verify: ``bool``
-        :param verify: Verify SSL
-
-        :type proxy: ``bool``
-        :param proxy: Use system proxy
-
-        return: No data returned
-        :rtype: ``None``
-    """
     def __init__(self,
                  server,
                  base_suffix,
@@ -1965,6 +1942,32 @@ class BaseClient(object):
                  verify=True,
                  proxy=False
                  ):
+        """Base Client for use in integrations.
+
+         :type server: ``str``
+         :param server: Base server address
+
+         :type base_suffix: ``str``
+         :param base_suffix: suffix of API (e.g`/api/v2/`)
+
+         :type integration_name: ``str``
+         :param integration_name: Name as shown in UI (`Integration Name`)
+
+         :type integration_command_name: ``str``
+         :param integration_command_name: lower case with `-` divider (`integration-name`)
+
+         :type integration_context_name: ``str``
+         :param integration_context_name: camelcase with no dividers (`IntegrationName`)
+
+         :type verify: ``bool``
+         :param verify: Verify SSL
+
+         :type proxy: ``bool``
+         :param proxy: Use system proxy
+
+         :return: No data returned
+         :rtype: ``None``
+         """
         self._server = server.rstrip('/')
         self.verify = verify
         self._integration_name = str(integration_name)
