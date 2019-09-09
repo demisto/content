@@ -141,8 +141,8 @@ script:
     - contextPath: Elasticsearch.Search.total.value
       description: The number of results from the search
       type: Number
-    - contextPath: Elasticseearch.Search.Results._score
-      description: A number indicating the relevence of the result according to Elasticsearch
+    - contextPath: Elasticsearch.Search.Results._score
+      description: A number indicating the relevance of the result according to Elasticsearch
       type: Number
     - contextPath: Elasticsearch.Search.Index
       description: The index in which the search was conducted.
