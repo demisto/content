@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7a055a05-b452-4b73-8094-1d09c17d8a8e
+    taskid: e4786a57-0d35-4365-8cd5-9a77f2f0d767
     type: start
     task:
-      id: 7a055a05-b452-4b73-8094-1d09c17d8a8e
+      id: e4786a57-0d35-4365-8cd5-9a77f2f0d767
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +31,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 5a73e9ec-40a8-495a-83dc-bbf05125bda7
+    taskid: dc12a283-5c6c-4991-8f03-5cd89c5c0199
     type: regular
     task:
-      id: 5a73e9ec-40a8-495a-83dc-bbf05125bda7
+      id: dc12a283-5c6c-4991-8f03-5cd89c5c0199
       version: -1
       name: 'Get corrupted file '
       scriptName: http
@@ -72,10 +72,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 0a04e2fe-c953-4416-8ad2-e0a205bdf2db
+    taskid: 6b96aa22-6804-4f06-8ff6-82c57ecdf813
     type: regular
     task:
-      id: 0a04e2fe-c953-4416-8ad2-e0a205bdf2db
+      id: 6b96aa22-6804-4f06-8ff6-82c57ecdf813
       version: -1
       name: Read PDF
       description: Load the contents and metadata of a PDF file into context.
@@ -106,10 +106,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 78a82c9f-9a7a-4bbe-831c-ca2f58376cb8
+    taskid: fce75447-309a-475c-89f9-3ca41fbc74a0
     type: regular
     task:
-      id: 78a82c9f-9a7a-4bbe-831c-ca2f58376cb8
+      id: fce75447-309a-475c-89f9-3ca41fbc74a0
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -139,10 +139,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 33f430ad-d865-44a9-8c57-1d11a23287be
+    taskid: 5bfbc330-c8d6-4f9b-864f-15826fb5cb37
     type: condition
     task:
-      id: 33f430ad-d865-44a9-8c57-1d11a23287be
+      id: 5bfbc330-c8d6-4f9b-864f-15826fb5cb37
       version: -1
       name: 'Check if file failed to open '
       type: condition
@@ -177,10 +177,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: e3f61b79-65c7-45cd-8529-be30acb8985e
+    taskid: 5740d5fe-40b2-400e-8947-de0a63b5245b
     type: regular
     task:
-      id: e3f61b79-65c7-45cd-8529-be30acb8985e
+      id: 5740d5fe-40b2-400e-8947-de0a63b5245b
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -210,10 +210,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 22ddf040-1705-47ab-8d92-26b2c31f79be
+    taskid: d45eda34-7a51-4eb6-81eb-834426877481
     type: regular
     task:
-      id: 22ddf040-1705-47ab-8d92-26b2c31f79be
+      id: d45eda34-7a51-4eb6-81eb-834426877481
       version: -1
       name: Get working PDF
       scriptName: http
@@ -251,10 +251,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: e4c2f5db-90d7-4593-8ce5-8981ba93f0f4
+    taskid: 943fb131-1823-484b-8e6a-be6bedfdb1f0
     type: regular
     task:
-      id: e4c2f5db-90d7-4593-8ce5-8981ba93f0f4
+      id: 943fb131-1823-484b-8e6a-be6bedfdb1f0
       version: -1
       name: Read PDF
       description: Load the contents and metadata of a PDF file into context.
@@ -284,10 +284,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 20396137-4bd0-4aff-8658-3ddff8d622a2
+    taskid: 85460f93-6524-4fdd-893e-3cc7ce2452e6
     type: title
     task:
-      id: 20396137-4bd0-4aff-8658-3ddff8d622a2
+      id: 85460f93-6524-4fdd-893e-3cc7ce2452e6
       version: -1
       name: End of test
       type: title
@@ -297,8 +297,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2135
+          "x": 830,
+          "y": 2870
         }
       }
     note: false
@@ -306,10 +306,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 07efa878-4cec-424b-809f-66ca106bea1f
+    taskid: 2cceb665-33b7-491b-8ea1-bce128238bcf
     type: regular
     task:
-      id: 07efa878-4cec-424b-809f-66ca106bea1f
+      id: 2cceb665-33b7-491b-8ea1-bce128238bcf
       version: -1
       name: 'Get encrypted file '
       scriptName: http
@@ -347,10 +347,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 0d8f3185-5dd2-4b90-8a3b-5ee55ae19685
+    taskid: 6fbf9e3c-4abc-4b2a-8820-14fe6553d563
     type: condition
     task:
-      id: 0d8f3185-5dd2-4b90-8a3b-5ee55ae19685
+      id: 6fbf9e3c-4abc-4b2a-8820-14fe6553d563
       version: -1
       name: Check if encrypted
       type: condition
@@ -360,7 +360,7 @@ tasks:
       '#default#':
       - "13"
       "yes":
-      - "9"
+      - "18"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -385,10 +385,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: dbcda801-8bf5-42f2-8497-7c333a27ae33
+    taskid: 731d1c9f-8146-4c91-8dde-5091b571adee
     type: regular
     task:
-      id: dbcda801-8bf5-42f2-8497-7c333a27ae33
+      id: 731d1c9f-8146-4c91-8dde-5091b571adee
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -418,10 +418,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 7aa516fa-2880-4ec1-85d7-ab4825065661
+    taskid: 260b4acf-d0fd-429c-8713-67dd87fb2977
     type: regular
     task:
-      id: 7aa516fa-2880-4ec1-85d7-ab4825065661
+      id: 260b4acf-d0fd-429c-8713-67dd87fb2977
       version: -1
       name: Print Error
       description: Prints an error entry with a given message
@@ -445,10 +445,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 60f49649-5934-435e-8200-91b2fc93acc9
+    taskid: a870f423-ca32-45b1-873d-6dc758cce4d1
     type: regular
     task:
-      id: 60f49649-5934-435e-8200-91b2fc93acc9
+      id: a870f423-ca32-45b1-873d-6dc758cce4d1
       version: -1
       name: Print Error
       description: Prints an error entry with a given message
@@ -472,10 +472,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 50aaee83-2196-45fc-82ee-087f56db7f7e
+    taskid: 2a46513a-de5f-4619-828f-1f2caecbb19b
     type: regular
     task:
-      id: 50aaee83-2196-45fc-82ee-087f56db7f7e
+      id: 2a46513a-de5f-4619-828f-1f2caecbb19b
       version: -1
       name: Read PDF
       description: Load the contents and metadata of a PDF file into context.
@@ -504,13 +504,185 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "16":
+    id: "16"
+    taskid: d3ff1e47-1a52-40a0-8b1e-7dc0a5eb5546
+    type: regular
+    task:
+      id: d3ff1e47-1a52-40a0-8b1e-7dc0a5eb5546
+      version: -1
+      name: Get large complex pdf
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/raw/b65ded3ca7213c08e44f548288f58147ee89025b/Scripts/ReadPDFFileV2/test_data/Docker-Cookbook.pdf
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: d9356a9b-e78d-42b5-8fe8-150b5157e07b
+    type: regular
+    task:
+      id: d9356a9b-e78d-42b5-8fe8-150b5157e07b
+      version: -1
+      name: Read PDF
+      description: Load the contents and metadata of a PDF file into context.
+      scriptName: ReadPDFFileV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+      maxFileSize: {}
+      maxImages: {}
+      userPassword: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 95e09b11-320a-4a36-8f67-dbb07e3d5d31
+    type: regular
+    task:
+      id: 95e09b11-320a-4a36-8f67-dbb07e3d5d31
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 0e5d1293-4f0d-4053-8c71-dd20ac57c764
+    type: condition
+    task:
+      id: 0e5d1293-4f0d-4053-8c71-dd20ac57c764
+      version: -1
+      name: Verify PDF Context Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.PDFVersion
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 8d06f256-0733-47e7-82df-722c14746467
+    type: regular
+    task:
+      id: 8d06f256-0733-47e7-82df-722c14746467
+      version: -1
+      name: Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Failed verifying PDF
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 2850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "19_9_yes": 0.87
+    },
     "paper": {
       "dimensions": {
-        "height": 2165,
-        "width": 1025,
+        "height": 2895,
+        "width": 1160,
         "x": 50,
         "y": 50
       }
