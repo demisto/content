@@ -1932,29 +1932,29 @@ obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'MD5': 'md5hash', 'Malicious':
 class BaseClient(object):
     """Base Client for use in integrations.
 
-    :type server: ``str``
-    :param server: Base server address
+        :type server: ``str``
+        :param server: Base server address
 
-    :type base_suffix: ``str``
-    :param base_suffix: suffix of API (e.g`/api/v2/`)
+        :type base_suffix: ``str``
+        :param base_suffix: suffix of API (e.g`/api/v2/`)
 
-    :type integration_name: ``str``
-    :param integration_name: Name as shown in UI (`Integration Name`)
+        :type integration_name: ``str``
+        :param integration_name: Name as shown in UI (`Integration Name`)
 
-    :type integration_command_name: ``str``
-    :param integration_command_name: lower case with `-` divider (`integration-name`)
+        :type integration_command_name: ``str``
+        :param integration_command_name: lower case with `-` divider (`integration-name`)
 
-    :type integration_context_name: ``str``
-    :param integration_context_name: camelcase with no dividers (`IntegrationName`)
+        :type integration_context_name: ``str``
+        :param integration_context_name: camelcase with no dividers (`IntegrationName`)
 
-    :type verify: ``bool``
-    :param verify: Verify SSL
+        :type verify: ``bool``
+        :param verify: Verify SSL
 
-    :type proxy: ``bool``
-    :param proxy: Use system proxy
+        :type proxy: ``bool``
+        :param proxy: Use system proxy
 
-    return: No data returned
-    :rtype: ``None``
+        return: No data returned
+        :rtype: ``None``
     """
     def __init__(self,
                  server,
