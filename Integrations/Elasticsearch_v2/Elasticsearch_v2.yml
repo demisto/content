@@ -9,7 +9,7 @@ configuration:
   type: 0
 - display: Username for server login
   name: credentials
-  required: true
+  required: false
   type: 9
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
@@ -37,7 +37,7 @@ configuration:
   name: fetch_time_format
   required: false
   type: 0
-- defaultvalue: '3'
+- defaultvalue: '3 days'
   display: First fetch timestamp
   name: fetch_time
   required: false

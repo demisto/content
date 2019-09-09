@@ -34,7 +34,7 @@ TIME_FORMAT = demisto.params().get('fetch_time_format', '')
 FETCH_INDEX = demisto.params().get('fetch_index', '')
 FETCH_QUERY = demisto.params().get('fetch_query', '')
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
-FETCH_SIZE = int(demisto.params().get('fetch_zise', 50))
+FETCH_SIZE = int(demisto.params().get('fetch_size', 50))
 INSECURE = not demisto.params().get('insecure', False)
 
 
@@ -212,12 +212,15 @@ def test_fetch_query(es):
 
 def test_func():
     try:
-        res = requests.get(SERVER, auth=(USERNAME, PASSWORD), verify=INSECURE)
+        if USERNAME:
+            res = requests.get(SERVER, auth=(USERNAME, PASSWORD), verify=INSECURE)
+        else:
+            res = requests.get(SERVER, verify=INSECURE)
         if res.status_code >= 400:
             return_error("Failed to connect, Got the following error: " + HTTP_ERRORS[int(res.status_code)])
 
-    except requests.exceptions.RequestException:
-        return_error("Failed to connect, Check Server URL and Port number")
+    except requests.exceptions.RequestException as e:
+        return_error("Failed to connect, Check Server URL and Port number. Error message: "+str(e))
 
     if demisto.params().get('isFetch'):
         # check the existence of all necessary fields for fetch
@@ -298,7 +301,6 @@ def fetch_incidents():
     query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
     search = Search(using=es, index=FETCH_INDEX).filter({'range': {TIME_FIELD: {'gt': last_fetch}}})
     search = search.sort({TIME_FIELD: {'order': 'asc'}})[0:FETCH_SIZE].query(query)
-
     response = search.execute().to_dict()
     _, total_results = get_total_results(response)
 
