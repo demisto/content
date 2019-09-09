@@ -109,7 +109,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3520
+          "y": 3345
         }
       }
     note: false
@@ -171,7 +171,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "7"
     scriptarguments:
       end-date: {}
       keyword:
@@ -188,47 +188,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: b03311b2-807b-4999-84a8-c12f34a2ebcb
-    type: condition
-    task:
-      id: b03311b2-807b-4999-84a8-c12f34a2ebcb
-      version: -1
-      name: Verify output
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Logrhythm.Log
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Logrhythm.Log.Computer
-            iscontext: true
-          right:
-            value:
-              simple: WIN-JSBOL5ERCQA.demisto.lab
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
         }
       }
     note: false
@@ -260,7 +219,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 895
         }
       }
     note: false
@@ -307,7 +266,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1070
         }
       }
     note: false
@@ -339,7 +298,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1245
         }
       }
     note: false
@@ -386,7 +345,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1420
         }
       }
     note: false
@@ -417,7 +376,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1595
         }
       }
     note: false
@@ -469,7 +428,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 1770
         }
       }
     note: false
@@ -499,7 +458,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 1945
         }
       }
     note: false
@@ -551,7 +510,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2120
         }
       }
     note: false
@@ -582,7 +541,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2295
         }
       }
     note: false
@@ -634,7 +593,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2470
         }
       }
     note: false
@@ -664,7 +623,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 2645
         }
       }
     note: false
@@ -716,7 +675,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 2820
         }
       }
     note: false
@@ -749,7 +708,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 2995
         }
       }
     note: false
@@ -790,7 +749,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 3170
         }
       }
     note: false
@@ -801,7 +760,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3535,
+        "height": 3360,
         "width": 380,
         "x": 50,
         "y": 50

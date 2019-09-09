@@ -6,10 +6,10 @@ fromversion: 4.1.0
 tasks:
   "0":
     id: "0"
-    taskid: b474b2ee-adbb-4604-8296-927ce3b8d0d1
+    taskid: 33db173a-2d40-4383-8036-36f132e1b7d0
     type: start
     task:
-      id: b474b2ee-adbb-4604-8296-927ce3b8d0d1
+      id: 33db173a-2d40-4383-8036-36f132e1b7d0
       version: -1
       name: ""
       iscommand: false
@@ -30,10 +30,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 7b3a6180-10d7-48eb-8de7-6d3c0d396f34
+    taskid: 2f1cbbde-bbeb-4082-8098-6ea9844a225d
     type: regular
     task:
-      id: 7b3a6180-10d7-48eb-8de7-6d3c0d396f34
+      id: 2f1cbbde-bbeb-4082-8098-6ea9844a225d
       version: -1
       name: xdr-get-incidents
       description: |-
@@ -74,10 +74,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 1c62d283-6e2a-4d9d-8fb6-b56845df9763
+    taskid: 0c04872d-0791-4d53-81bb-36e6cac9a4da
     type: regular
     task:
-      id: 1c62d283-6e2a-4d9d-8fb6-b56845df9763
+      id: 0c04872d-0791-4d53-81bb-36e6cac9a4da
       version: -1
       name: xdr-get-incident-extra-data
       description: Returns extra data for incident. Like alerts related to incident,
@@ -107,10 +107,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 06495865-4b6b-4954-8a94-cb26edb2646c
+    taskid: 2032acf0-b95f-487d-8d25-c541294d97d6
     type: regular
     task:
-      id: 06495865-4b6b-4954-8a94-cb26edb2646c
+      id: 2032acf0-b95f-487d-8d25-c541294d97d6
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -141,10 +141,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 1c7ae63f-19c3-4fb5-847b-a4d8e5a51bb6
+    taskid: 63a6c592-5e1d-4816-800b-73ccd20a713f
     type: condition
     task:
-      id: 1c7ae63f-19c3-4fb5-847b-a4d8e5a51bb6
+      id: 63a6c592-5e1d-4816-800b-73ccd20a713f
       version: -1
       name: Validate outputs
       type: condition
@@ -194,10 +194,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: ee08f547-5b24-4c48-888e-10dd98adff8a
+    taskid: 8bb68314-293a-4eed-89d4-7daf1d2c3832
     type: regular
     task:
-      id: ee08f547-5b24-4c48-888e-10dd98adff8a
+      id: 8bb68314-293a-4eed-89d4-7daf1d2c3832
       version: -1
       name: update-incident
       description: |-
@@ -243,10 +243,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 1e76bc6e-42c7-4de8-85e8-c9a8d1a8aa2f
+    taskid: 3456d8f1-c15e-4d83-89d9-03b535bfe85b
     type: regular
     task:
-      id: 1e76bc6e-42c7-4de8-85e8-c9a8d1a8aa2f
+      id: 3456d8f1-c15e-4d83-89d9-03b535bfe85b
       version: -1
       name: get the updated incident from xdr
       description: Returns extra data for incident. Like alerts related to incident,
@@ -283,10 +283,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: f4f56f28-5dbd-4e1c-891c-7ebe6f17486f
+    taskid: f88c172b-a906-49ed-8e4f-ac8b140f3963
     type: condition
     task:
-      id: f4f56f28-5dbd-4e1c-891c-7ebe6f17486f
+      id: f88c172b-a906-49ed-8e4f-ac8b140f3963
       version: -1
       name: validate severity
       type: condition
@@ -321,10 +321,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 882be221-5fd3-466b-875f-c0c4581348bd
+    taskid: 93aa7685-6938-4419-82a8-6294c3565862
     type: title
     task:
-      id: 882be221-5fd3-466b-875f-c0c4581348bd
+      id: 93aa7685-6938-4419-82a8-6294c3565862
       version: -1
       name: Success - Test Done
       type: title
@@ -335,7 +335,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1460
+          "y": 1420
         }
       }
     note: false
@@ -346,7 +346,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1475,
+        "height": 1435,
         "width": 380,
         "x": 50,
         "y": 50

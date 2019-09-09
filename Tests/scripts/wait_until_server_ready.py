@@ -52,6 +52,8 @@ def is_correct_content_installed(username, password, ips, content_version):
         resp = d.req(method, suffix, None)
         try:
             resp = resp.json()
+            if not isinstance(resp, dict):
+                raise ValueError
             release = resp.get("release")
             notes = resp.get("releaseNotes")
             installed = resp.get("installed")
