@@ -168,7 +168,7 @@ def handle_filters(foundDateFrom=None):
 def get_alerts_helper(params):
     demisto.info("Executing get_alerts with params: {}".format(params))
 
-    resp = req('GET', 'public/v1/data/alerts/alerts-list', params=params)
+    resp = req('GET', 'public/v1/data/alerts/alerts-list', params=params, json_response=True)
 
     alerts_HR = []
     alerts_ctx = []
