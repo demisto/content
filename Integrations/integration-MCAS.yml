@@ -1,0 +1,265 @@
+commonfields:
+  id: Microsoft Cloud App Security
+  version: -1
+name: Microsoft Cloud App Security
+display: Microsoft Cloud App Security
+category: Network Security
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAbcAAAG3BAMAAADFuQbYAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAElBMVEXz8/PzUyWBvAYFpvD/ugj///98Xc9SAAAAAWJLR0QF+G/pxwAAAAd0SU1FB+IECxAWCcy7n+sAAAGSSURBVHja7c9BCQAgEABBxQJawQSCFeyfyZcRTu4xW2CZUiRJkiRJylodwfV3mtHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcF9wUmSJEmSlK62g1vvdKKDg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4P7gpMkSZIkKUsX5n/TJVBjPXQAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTgtMDQtMTFUMTY6MjI6MDkrMDA6MDD3dzx7AAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE4LTA0LTExVDE2OjIyOjA5KzAwOjAwhiqExwAAAABJRU5ErkJggg==
+description: Microsoft Cloud App Security (MCAS)
+configuration:
+- display: Server URL
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Token
+  name: token
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Ignore server certificate
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use System Proxy
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: |-
+    import requests
+    import json
+    import yaml
+
+    SERVER = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
+    TOKEN = demisto.params().get('token')
+    USE_SSL = not demisto.params().get('insecure', False)
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    def mcas_list_alerts():
+        limit = demisto.args()['limit']
+        severity_raw = demisto.args()['severity']
+        if severity_raw == "Low":
+            severity = "0"
+        elif severity_raw == "Medium":
+            severity = "1"
+        elif severity_raw == "High":
+            severity = "2"
+        else:
+            severity = "2,1,0"
+        url = SERVER + '/cas/api/v1/alerts/'
+        data = '{"skip":0,"limit":' + limit + ',"filters":{"resolutionStatus":{"eq":[0]},"severity":{"eq":[' + severity + ']}},"sortField":"date","sortDirection":"desc","performAsyncTotal":true}'
+        headers = {'Authorization': 'Token ' + TOKEN, 'Content-type': 'application/json'}
+        r = requests.post(url=url, headers=headers, data=data, verify=USE_SSL)
+        j = yaml.load(json.dumps(r.json()))
+        x = (len(j['data']))
+        results = []
+        demisto.results(j)
+        print('Number of fields: ' + str(x))
+        for i in range(0, x):
+            ip = "unknown"
+            user = "unknown"
+            email = "unknown"
+            label = "unknown"
+            country = "unknown"
+            policyType = "unknown"
+            policyName = "unknown"
+            url = j['data'][i]['URL']
+            root_id = j['data'][i]['_id']
+            context_id = j['data'][i]['contextId']
+            description_raw = j['data'][i]['description']
+            description = description_raw.replace('<p>'," ").replace('</p>'," ").replace('<br>'," ")
+            title = j['data'][i]['title']
+            timestamp = j['data'][i]['timestamp']
+            entities = j['data'][i]['entities']
+            y = (len(entities))
+            for k in range(0, y):
+                if 'em' in entities[k]:
+                    email = entities[k]['em']
+                    user = entities[k]['label']
+                if 'type' in entities[k]:
+                    if entities[k]['type'] == "user":
+                        email = entities[k]['label']
+                    if entities[k]['type'] == "account":
+                        user = entities[k]['label']
+                    if entities[k]['type'] == "ip":
+                        ip = entities[k]['label']
+                    if entities[k]['type'] == "country":
+                        country = entities[k]['label']
+                    if entities[k]['type'] == "policyRule":
+                        policyType = entities[k]['policyType']
+                        policyName = entities[k]['label']
+            results.append({'ID': root_id, 'title': title, 'description': description, 'policyName': policyName,
+            'policyType': policyType, 'timestamp': timestamp, 'user': user, 'email': email, 'ip': ip, 'country': country})
+        entry = {'Type' : entryTypes['note'],
+                      'Contents' :results,
+                      'ContentsFormat' : formats['json'],
+                      'HumanReadable': tableToMarkdown('MCAS Alerts', results),
+                      'ReadableContentsFormat' : formats['markdown'],
+                      'EntryContext' :{'mcas_alert': results}
+                     }
+        return entry
+
+    def mcas_lookup():
+        res=True
+        user = "unknown"
+        user_id = "unknown"
+        upn_id = "unknown"
+        output_record = ""
+        mcas_out = ""
+        mcas_ip = demisto.args()['ip']
+        url = SERVER + '/api/v1/activities/'
+        data = '{"skip":0,"limit":200,"filters":{"ip.address":{"eq":["' + mcas_ip + '"]}},"sortField":"date","sortDirection":"desc","performAsyncTotal":true}'
+        headers = {'Authorization': 'Token ' + TOKEN, 'Content-type': 'application/json'}
+        r = requests.post(url=url, headers=headers, data=data, verify=USE_SSL)
+
+        # Use yaml library to reformat unicode
+        j = yaml.load(json.dumps(r.json()))
+        # Obtain json index length
+        x = (len(j['data'])) - 1
+        results = []
+        # Loop through all data fields based on json index length
+        for i in range(0, x):
+
+            # Check for raw data field
+            rawDataJson_exist = j['data'][i].get('rawDataJson', 'no_data')
+            if rawDataJson_exist != "no_data":
+                userid_exist = j['data'][i]['rawDataJson'].get('UserId', 'no_data')
+                Upn_exist = j['data'][i]['rawDataJson'].get('Upn', 'no_data')
+                # Check for User_Id field (alerts)
+                if userid_exist != "no_data":
+                    user_id = (j['data'][i]['rawDataJson']['UserId'])
+                    output_record = output_record + "\n" + mcas_ip + "," + user_id
+                    results.append({'IP': mcas_ip, 'user_id': user_id})
+                if Upn_exist != "no_data":
+                    user_id = (j['data'][i]['rawDataJson']['Upn'])
+                    output_record = output_record + "\n" + mcas_ip + "," + user_id
+                    results.append({'IP': mcas_ip, 'user_id': user_id})
+
+        # Print message if no records found
+        if user == "unknown" and user_id == "unknown" and upn_id == "unknown":
+            return "No records found."
+        else:
+            # Print csv output of records; export results to context
+            #print(output_record)
+            entry = {'Type' : entryTypes['note'],
+                      'Contents' :results,
+                      'ContentsFormat' : formats['json'],
+                      'HumanReadable': tableToMarkdown('MCAS list', results),
+                      'ReadableContentsFormat' : formats['markdown'],
+                      'EntryContext' :{'mcas_ip': results}
+                     }
+            return entry
+
+    def mcas_username():
+        res=True
+        description = "unknown"
+        mcas_out = ""
+        mcas_username = demisto.args()['username']
+        url = SERVER + '/api/v1/alerts/'
+        initial_request = SERVER + '/cas/api/v1/autocomplete/entities/?search=' + mcas_username
+        headers = {'Authorization': 'Token ' + TOKEN, 'Content-type': 'application/json'}
+        s = requests.get(url=initial_request, headers=headers)
+        a = yaml.load(json.dumps(s.json()))
+        uid = (a['records'][0]['id'])
+        saas = (a['records'][0]['saas'])
+
+        data = '{"skip":0,"limit":20,"filters":{"resolutionStatus":{"eq":[0]},"entity.entity":{"eq":[{"id":"' + uid + '","saas":' + str(saas) + ',"inst":0}]}},"sortField":"date","sortDirection":"desc","performAsyncTotal":true}'
+        r = requests.post(url=url, headers=headers, data=data, verify=USE_SSL)
+
+        # Use yaml library to reformat unicode
+        j = yaml.load(json.dumps(r.json()))
+        # Obtain json index length
+        x = (len(j['data'])) - 1
+        results = []
+
+        if x == 0:
+            description_exist = j['data'][0].get('description', 'no_data')
+            if description_exist != "no_data":
+                description_raw = (j['data'][0]['description'])
+                description = description_raw.replace('<p>'," ").replace('</p>'," ").replace('<br>'," ")
+                results.append({'Username': mcas_username, 'description': description})
+        else:
+            # Loop through all data fields based on json index length
+            for i in range(0, x):
+                # Check for raw data field
+                description_exist = j['data'][i].get('description', 'no_data')
+                if description_exist != "no_data":
+                    description_raw = (j['data'][i]['description'])
+                    description = description_raw.replace('<p>'," ").replace('</p>'," ").replace('<br>'," ")
+                    results.append({'Username': mcas_username, 'description': description})
+
+        # Print message if no records found
+        if description == "unknown":
+            return "No records found."
+        else:
+            # Export results to context
+            entry = {'Type' : entryTypes['note'],
+                      'Contents' :results,
+                      'ContentsFormat' : formats['json'],
+                      'HumanReadable': tableToMarkdown('MCAS list', results),
+                      'ReadableContentsFormat' : formats['markdown'],
+                      'EntryContext' :{'mcas_username': results}
+                     }
+            return entry
+    try:
+        # The command demisto.command() holds the command sent from the user.
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            demisto.results('ok')
+            sys.exit(0)
+        elif demisto.command() == 'mcas-list-alerts':
+            demisto.results(mcas_list_alerts())
+        elif demisto.command() == 'mcas-lookup-ip':
+            demisto.results(mcas_lookup())
+        elif demisto.command() == 'mcas-lookup-user':
+            demisto.results(mcas_username())
+    except Exception as e:
+        return_error('Error has occurred in the MCAS Integration: {error}\n {message}'.format(error=type(e),
+                                                                                                message=e.message))
+  type: python
+  commands:
+  - name: mcas-lookup-ip
+    arguments:
+    - name: ip
+      required: true
+      description: IP Address
+    outputs:
+    - contextPath: mcas_ip
+      description: JSON field of initial IP and returned username.
+      type: string
+    - contextPath: mcas_username
+      description: JSON field of initial username and corresponding alert.
+    description: This performs an IP lookup
+  - name: mcas-lookup-user
+    arguments:
+    - name: username
+      required: true
+      description: Username
+    description: This command looks up alert descriptions by username.
+  - name: mcas-list-alerts
+    arguments:
+    - name: limit
+      description: Max number of alerts to return (default is 20)
+      defaultValue: "20"
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      - All
+      description: Severity of alerts to display (Default is All)
+      defaultValue: All
+    outputs:
+    - contextPath: mcas_alert
+      description: MCAS Alert
+    description: List MCAS Alerts
+  runonce: false
