@@ -218,8 +218,7 @@ def get_email_context(email_data, mailbox):
         # in case no internalDate field exists will revert to extracting the date from the email payload itself
         # Note: this should not happen in any command other than other than gmail-move-mail which doesn't return the
         # email payload nor internalDate
-        demisto.info("No InternalDate timestamp found - getting Date from mail payload - msg ID:" +
-                     str(email_data['id']))
+        demisto.info("No InternalDate timestamp found - getting Date from mail payload - msg ID:" + str(email_data['id']))
         base_time = str(headers.get('date', ''))
 
     context_gmail = {
