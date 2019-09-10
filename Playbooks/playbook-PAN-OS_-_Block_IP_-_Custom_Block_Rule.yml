@@ -4,8 +4,6 @@ name: PAN-OS - Block IP - Custom Block Rule
 description: |-
   This playbook blocks IP addresses using Custom Block Rules in Palo Alto Networks Panorama or Firewall.
   The playbook receives malicious IP addresses as inputs, creates a custom bi-directional rule to block them, and commits the configuration.
-
-  ***Note - The playbook does not check if the IP address is already blocked.
 starttaskid: "0"
 fromversion: 4.5.0
 tasks:
