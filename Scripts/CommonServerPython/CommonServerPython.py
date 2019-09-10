@@ -3,14 +3,14 @@ This script will be appended to each server script before being executed.
 Please notice that to add custom common code, add it to the CommonServerUserPython script
 """
 import socket
-import datetime
+from datetime import datetime
 import time
 import json
 import sys
 import os
 import re
 import base64
-import collections
+from collections import OrderedDict
 import xml.etree.cElementTree as ET
 import demistomock as demisto
 
@@ -1169,7 +1169,7 @@ def strip_tag(tag):
 def elem_to_internal(elem, strip_ns=1, strip=1):
     """Convert an Element into an internal dictionary (not JSON!)."""
 
-    d = collections.OrderedDict()  # type: dict
+    d = OrderedDict()  # type: dict
     elem_tag = elem.tag
     if strip_ns:
         elem_tag = strip_tag(elem.tag)
@@ -1224,7 +1224,7 @@ def internal_to_elem(pfsh, factory=ET.Element):
     Element class as the factory parameter.
     """
 
-    attribs = collections.OrderedDict()  # type: dict
+    attribs = OrderedDict()  # type: dict
     text = None
     tail = None
     sublist = []
