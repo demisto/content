@@ -36,7 +36,7 @@ def init_driver():
             chrome_options.add_argument('--ignore-certificate-errors')
 
             driver = webdriver.Chrome(options=chrome_options)
-    except ex:
+    except Exception as ex:
         return_error(str(ex))
     finally:
         sys.stdout = DEFAULT_STDOUT
