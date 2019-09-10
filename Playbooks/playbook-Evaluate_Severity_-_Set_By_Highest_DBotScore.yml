@@ -159,10 +159,9 @@ tasks:
     task:
       id: 989a6b3f-7af4-49e6-812b-d5eea5c049f0
       version: -1
-      name: Evaluate score based on DBotScore of indicators
+      name: Evaluate severity based on DBotScore of indicators
       description: |-
-        Determines a severity based on the DBotScores of the indicators involved with the incident. Severity level is assigned according to the following numbers for DBotScores and the corresponding severity level as the output:
-
+        Determines a severity based on the DBotScores of the indicators involved with the incident. Severity level is assigned according to the corresponding DBot score:
         No DBotScores / 0 = Unknown
         1 = Low
         2 = Medium
@@ -253,7 +252,7 @@ tasks:
       id: 052ef69f-e477-4d82-80f2-ae53fd062c10
       version: -1
       name: Set severity to high
-      description: Sets the severity to “High”. This means there were malicious indicators.
+      description: Sets the severity of the incident to “High”. This severity level means that malicious indicators were identified.
       scriptName: Set
       type: regular
       iscommand: false
@@ -287,8 +286,8 @@ tasks:
       id: d541a52f-b49a-473b-8759-ef01fbf11c87
       version: -1
       name: Set severity to medium
-      description: Sets the severity to “Medium”. This means there were suspicious
-        indicators but no malicious indicators.
+      description: Sets the severity of the incident to “Medium”. This severity level means that only suspicious
+        indicators were identified (no malicious indicators).
       scriptName: Set
       type: regular
       iscommand: false
@@ -322,8 +321,8 @@ tasks:
       id: 4aa1d738-871e-450c-8bea-f492b41d0d1c
       version: -1
       name: Set severity to low
-      description: Sets the severity to “Low”. This means there were no suspicious
-        or malicious indicators.
+      description: Sets the severity of the incident to “Low”. This severity level means no suspicious
+        or malicious indicators were identified.
       scriptName: Set
       type: regular
       iscommand: false
@@ -357,8 +356,8 @@ tasks:
       id: 4db66a18-a33b-4d0c-8ade-30c28a877459
       version: -1
       name: Set severity to unknown
-      description: Sets the severity to “Unknown”. This means there were unknown indicators,
-        or no indicators at all.
+      description: Sets the severity of the incident to “Unknown”. This severity level means that either that unknown indicators were identified,
+        or no indicators were identified.
       scriptName: Set
       type: regular
       iscommand: false
@@ -411,7 +410,7 @@ inputs:
   description: 'Array of all indicators associated with the incident. '
 outputs:
 - contextPath: Severities.DBotScoreSeverity
-  description: The severity evaluated by the Evaluate Severity - Set By Highest DBotScore
+  description: The severity level of the incident identified and set in the Evaluate Severity - Set By Highest DBotScore
     playbook.
   type: string
 tests:
