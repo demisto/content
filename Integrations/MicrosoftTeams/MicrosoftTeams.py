@@ -565,10 +565,18 @@ def validate_auth_header(headers: dict) -> bool:
         # Didn't find requested key in cache, getting new keys
         try:
             open_id_url: str = 'https://login.botframework.com/v1/.well-known/openidconfiguration'
-            response: dict = requests.get(open_id_url).json()
-            jwks_uri: str = response.get('jwks_uri', '')
-            keys_response: dict = requests.get(jwks_uri).json()
-            keys = keys_response.get('keys', [])
+            response: requests.Response = requests.get(open_id_url, verify=USE_SSL)
+            if not response.ok:
+                demisto.info(f'Authorization header validation failed to fetch open ID config - {response.reason}')
+                return False
+            response_json: dict = response.json()
+            jwks_uri: str = response_json.get('jwks_uri', '')
+            keys_response: requests.Response = requests.get(jwks_uri, verify=USE_SSL)
+            if not keys_response.ok:
+                demisto.info(f'Authorization header validation failed to fetch keys - {response.reason}')
+                return False
+            keys_response_json: dict = keys_response.json()
+            keys = keys_response_json.get('keys', [])
             open_id_metadata['keys'] = keys
         except ValueError:
             demisto.info('Authorization header validation - failed to parse keys response')
