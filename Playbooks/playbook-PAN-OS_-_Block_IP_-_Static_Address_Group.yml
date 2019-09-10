@@ -2,10 +2,10 @@ id: PAN-OS - Block IP - Static Address Group
 version: -1
 name: PAN-OS - Block IP - Static Address Group
 description: |-
-  This playbook blocks IP addresses using Palo Alto Networks Panorama or Firewall through Static Address Groups.
-  The playbook will get malicious IP addresses and an address group name as inputs, check if the addresses are not already a part of the address group, add them and commit the configuration.
+  This playbook blocks IP addresses using Static Address Groups in Palo Alto Networks Panorama or Firewall.
+  The playbook receives malicious IP addresses and an address group name as inputs, verifies that the addresses are not already a part of the address group, adds them and commits the configuration.
 
-  ***Note - The playbook will not block the address group communication using a policy block rule. This step will be taken once outside of the playbook.
+  ***Note - The playbook does not block the address group communication using a policy block rule. This step will be taken once outside of the playbook.
 starttaskid: "0"
 fromversion: 4.5.0
 tasks:
@@ -41,7 +41,7 @@ tasks:
     task:
       id: 480942ef-335c-4e66-87f7-dc2b3ada2048
       version: -1
-      name: Is Palo Alto Networks PAN-OS enabled?
+      name: Palo Alto Networks PAN-OS enabled?
       description: ""
       type: condition
       iscommand: false
@@ -227,7 +227,7 @@ tasks:
       id: ec1a0c5b-7017-4503-8ee3-c582418808c3
       version: -1
       name: PAN OS - Add IP addresses to address group
-      description: Edit an address group; "static" or "dynamic"
+      description: Add IP addresses to a static or dynamic address group.
       script: '|||panorama-edit-address-group'
       type: regular
       iscommand: true
@@ -362,7 +362,7 @@ tasks:
     task:
       id: 52739aac-151a-484e-8ca0-cb85200d4a9b
       version: -1
-      name: Is AutoCommit Enabled?
+      name: AutoCommit Enabled?
       description: ""
       type: condition
       iscommand: false
@@ -429,7 +429,7 @@ tasks:
       id: 9a28e55c-f29e-4a61-8659-beac27c60f74
       version: -1
       name: PAN OS - Add IP addresses to address group
-      description: Edit an address group; "static" or "dynamic"
+      description: Add IP addresses to a static or dynamic address group.
       script: '|||panorama-edit-address-group'
       type: regular
       iscommand: true
