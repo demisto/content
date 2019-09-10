@@ -224,7 +224,7 @@ def produce_message():
                 message=str(value),
                 partition_key=partitioning_key
             )
-        demisto.results('Message was succefully produced to topic \'{}\''.format(topic))
+        demisto.results('Message was successfully produced to topic \'{}\''.format(topic))
     else:
         return_error('Topic {} was not found in Kafka'.format(topic))
 
@@ -321,7 +321,7 @@ def fetch_incidents():
     """
     incidents = list()
 
-    # Chck for topic in Kafka
+    # Check for topic in Kafka
     if TOPIC in KAFKA_CLIENT.topics:
         kafka_topic = KAFKA_CLIENT.topics[TOPIC]
         offset, partition = check_params(kafka_topic, old_offset=OFFSET, old_partition=PARTITION)
