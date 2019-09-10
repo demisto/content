@@ -36,7 +36,7 @@ def init_driver():
             chrome_options.add_argument('--start-fullscreen')
             chrome_options.add_argument('--ignore-certificate-errors')
 
-            driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(), options=chrome_options)
+            driver = webdriver.Chrome(options=chrome_options)
     except ex:
         return_error(str(ex))
     finally:
@@ -186,6 +186,4 @@ finally:  # just to be extra safe
 # todo: remove web-driver
 # todo: check non root user
 # todo: maybe package
-# todo: 4.5
-# todo: remove from dependencies the webdriver after you find an alternative
 # todo: Unit-Testing - check version
