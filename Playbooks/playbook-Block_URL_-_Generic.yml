@@ -30,7 +30,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 40
+          "y": 30
         }
       }
     note: false
@@ -52,8 +52,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1090
+          "x": 360,
+          "y": 1040
         }
       }
     note: false
@@ -73,16 +73,15 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
-      - "12"
-      - "14"
-      - "15"
+      - "16"
+      - "17"
+      - "18"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1240,
-          "y": 350
+          "x": 377.5,
+          "y": 405
         }
       }
     note: false
@@ -155,8 +154,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 590,
-          "y": 490
+          "x": 740,
+          "y": 690
         }
       }
     note: false
@@ -213,8 +212,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1020,
-          "y": 490
+          "x": -20,
+          "y": 700
         }
       }
     note: false
@@ -244,8 +243,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1020,
-          "y": 770
+          "x": -280,
+          "y": 870
         }
       }
     note: false
@@ -285,8 +284,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1490,
-          "y": 490
+          "x": 1590,
+          "y": 690
         }
       }
     note: false
@@ -329,8 +328,87 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1920,
-          "y": 490
+          "x": 1150,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 689bde32-3a61-4355-8188-12e7de0b7a35
+    type: title
+    task:
+      id: 689bde32-3a61-4355-8188-12e7de0b7a35
+      version: -1
+      name: Palo Alto Networks PAN-OS
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: b6fffb50-ce17-4bdb-87c5-bbec257b383e
+    type: title
+    task:
+      id: b6fffb50-ce17-4bdb-87c5-bbec257b383e
+      version: -1
+      name: Palo Alto Networks MineMeld
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 6ecf3d02-90e2-4d39-8e1c-b05bdc067902
+    type: title
+    task:
+      id: 6ecf3d02-90e2-4d39-8e1c-b05bdc067902
+      version: -1
+      name: Zscaler
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 550
         }
       }
     note: false
@@ -339,15 +417,16 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "12_2_#default#": 0.37,
-      "8_2_#default#": 0.43
+      "12_2_#default#": 0.3,
+      "8_2_#default#": 0.43,
+      "8_5_yes": 0.59
     },
     "paper": {
       "dimensions": {
-        "height": 1115,
-        "width": 1922.5,
-        "x": 377.5,
-        "y": 40
+        "height": 1075,
+        "width": 2250,
+        "x": -280,
+        "y": 30
       }
     }
   }

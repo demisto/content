@@ -54,7 +54,7 @@ tasks:
       {
         "position": {
           "x": 500,
-          "y": 865
+          "y": 1080
         }
       }
     note: false
@@ -74,12 +74,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
-      - "11"
-      - "12"
-      - "14"
-      - "15"
-      - "16"
+      - "17"
+      - "18"
+      - "19"
+      - "20"
     separatecontext: false
     view: |-
       {
@@ -121,8 +119,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 695
+          "x": 960,
+          "y": 905
         }
       }
     note: false
@@ -179,8 +177,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 515
+          "x": 960,
+          "y": 665
         }
       }
     note: false
@@ -253,8 +251,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 952.5,
-          "y": 515
+          "x": 500,
+          "y": 665
         }
       }
     note: false
@@ -309,8 +307,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1390,
-          "y": 515
+          "x": 1400,
+          "y": 665
         }
       }
     note: false
@@ -340,8 +338,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1390,
-          "y": 695
+          "x": 1400,
+          "y": 905
         }
       }
     note: false
@@ -380,8 +378,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 515
+          "x": 80,
+          "y": 665
         }
       }
     note: false
@@ -421,8 +419,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -390,
-          "y": 515
+          "x": -320,
+          "y": 665
         }
       }
     note: false
@@ -465,7 +463,113 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -810,
+          "x": -730,
+          "y": 665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 164943de-1254-456d-84af-095df5ed210d
+    type: title
+    task:
+      id: 164943de-1254-456d-84af-095df5ed210d
+      version: -1
+      name: CheckPoint FireWall
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 5161b9ba-d315-494e-84e2-6f6d183e4d16
+    type: title
+    task:
+      id: 5161b9ba-d315-494e-84e2-6f6d183e4d16
+      version: -1
+      name: Palo Alto Networks MineMeld
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 03453f1c-c69f-4a30-84be-2a6434ea1746
+    type: title
+    task:
+      id: 03453f1c-c69f-4a30-84be-2a6434ea1746
+      version: -1
+      name: Palo Alto Networks PAN-OS
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+      - "15"
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 94c19302-7416-4d0d-82cf-7245a099a2ab
+    type: title
+    task:
+      id: 94c19302-7416-4d0d-82cf-7245a099a2ab
+      version: -1
+      name: Zscaler
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1400,
           "y": 515
         }
       }
@@ -475,14 +579,17 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
+      "12_13_yes": 0.54,
       "7_2_#default#": 0.56,
-      "8_2_#default#": 0.58
+      "7_6_yes": 0.65,
+      "8_2_#default#": 0.5,
+      "8_5_yes": 0.61
     },
     "paper": {
       "dimensions": {
-        "height": 920,
-        "width": 2580,
-        "x": -810,
+        "height": 1135,
+        "width": 2510,
+        "x": -730,
         "y": 10
       }
     }
