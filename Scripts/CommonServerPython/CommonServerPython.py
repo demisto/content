@@ -3,7 +3,8 @@ This script will be appended to each server script before being executed.
 Please notice that to add custom common code, add it to the CommonServerUserPython script
 """
 import socket
-from datetime import datetime, timedelta
+from datetime import datetime
+import datetime
 import time
 import json
 import sys
