@@ -1022,11 +1022,11 @@ def hash_djb2(s, seed=5381):
      :return: The hashed value
      :rtype: ``int``
     """
-    hash = seed
+    hash_name = seed
     for x in s:
-        hash = ((hash << 5) + hash) + ord(x)
+        hash_name = ((hash_name << 5) + hash_name) + ord(x)
 
-    return hash & 0xFFFFFFFF
+    return hash_name & 0xFFFFFFFF
 
 
 def file_result_existing_file(filename, saveFilename=None):
@@ -1510,15 +1510,15 @@ def camelize(src, delim=' '):
         :rtype: ``dict`` or ``list``
     """
 
-    def camelize_str(src_str, delim):
+    def camelize_str(src_str):
         if callable(getattr(src_str, "decode", None)):
             src_str = src_str.decode('utf-8')
         components = src_str.split(delim)
         return ''.join(map(lambda x: x.title(), components))
 
     if isinstance(src, list):
-        return [camelize(x, delim) for x in src]
-    return {camelize_str(k, delim): v for k, v in src.items()}
+        return [camelize(phrase) for phrase in src]
+    return {camelize_str(key): value for key, value in src.items()}
 
 
 # Constants for common merge paths
