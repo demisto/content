@@ -1517,7 +1517,7 @@ def camelize(src, delim=' '):
         return ''.join(map(lambda x: x.title(), components))
 
     if isinstance(src, list):
-        return [camelize(phrase) for phrase in src]
+        return [camelize(phrase, delim) for phrase in src]
     return {camelize_str(key): value for key, value in src.items()}
 
 
