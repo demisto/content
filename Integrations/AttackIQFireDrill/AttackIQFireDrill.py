@@ -464,8 +464,8 @@ def main():
             return_error(f'Command {command} is not supported.')
     except HTTPError as e:
         # e is expected to contain parsed error message
-        e = f'{API_ERR_MSG}{str(e)}'
-        return_error(e)
+        err = f'{API_ERR_MSG}{str(e)}'
+        return_error(err)
     except Exception as e:
         message = f'Unexpected error: {str(e)}, traceback: {traceback.format_exc()}'
         return_error(message)

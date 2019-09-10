@@ -13,7 +13,7 @@ from test_data.constants import DICT_1to5, TRANS_DICT_134, DICT_NESTED_123, TRAN
 
 import requests
 import demistomock as demisto
-from Integrations.AttackIQFireDrill.test_data.constants import ResponseMock
+from test_data.constants import ResponseMock
 
 
 def test_build_transformed_dict_basic():

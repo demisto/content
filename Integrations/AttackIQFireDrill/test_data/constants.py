@@ -6,6 +6,7 @@ class ResponseMock:
     def json(self):
         return self._json
 
+
 # Dictionaries
 DICT_1to5 = {'1': 1, '2': 2, '3': 3, '4': 4, '5': 5}
 DICT_NESTED_123 = {'nested': {'1': 1, '2': 2, '3': 3}}
