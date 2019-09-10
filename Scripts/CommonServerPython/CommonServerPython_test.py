@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
+import copy
 import json
+import os
+import sys
 
 import requests
-from pytest import raises
+from pytest import raises, mark
 
 import demistomock as demisto
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger
-
-import copy
-import os
-import sys
-import pytest
 
 INFO = {'b': 1,
         'a': {
@@ -490,7 +488,7 @@ def test_get_error_need_raise_error_on_non_error_input():
     assert False
 
 
-@pytest.mark.parametrize('data,data_expected', [
+@mark.parametrize('data,data_expected', [
     ("this is a test", b"this is a test"),
     (u"עברית", u"עברית".encode('utf-8')),
     (b"binary data\x15\x00", b"binary data\x15\x00"),
@@ -626,7 +624,7 @@ def test_exception_in_return_error(mocker):
     expected = {'EntryContext': None, 'Type': 4, 'ContentsFormat': 'text', 'Contents': 'Message'}
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(IntegrationLogger, '__call__')
-    with pytest.raises(SystemExit, match='0'):
+    with raises(SystemExit, match='0'):
         return_error("Message", error=ValueError("Error!"))
     results = demisto.results.call_args[0][0]
     assert expected == results
@@ -689,15 +687,27 @@ class TestBuildDBotEntry:
             }
         }
 
+    @staticmethod
+    def test_build_malicious_dbot_entry():
+        from CommonServerPython import build_malicious_dbot_entry
+        res = build_malicious_dbot_entry('8.8.8.8', 'ip', 'Vendor', 'Google DNS')
+        assert res == {'IP(val.Address && val.Address == obj.Address)': {
+            'Address': '8.8.8.8', 'Malicious': {'Vendor': 'Vendor', 'Description': 'Google DNS'}}}
 
-def test_build_malicious_dbot_entry():
-    from CommonServerPython import build_malicious_dbot_entry
-    res = build_malicious_dbot_entry('8.8.8.8', 'ip', 'Vendor', 'Google DNS')
-    assert res == {'IP(val.Address && val.Address == obj.Address)': {
-        'Address': '8.8.8.8', 'Malicious': {'Vendor': 'Vendor', 'Description': 'Google DNS'}}}
+    @staticmethod
+    def test_illegal_dbot_score():
+        from CommonServerPython import build_dbot_entry, DemistoException
+        with raises(DemistoException, match='illegal DBot score'):
+            build_dbot_entry('1', 'ip', 'Vendor', 8)
+
+    @staticmethod
+    def test_illegal_indicator_type():
+        from CommonServerPython import build_dbot_entry, DemistoException
+        with raises(DemistoException, match='illegal indicator type'):
+            build_dbot_entry('1', 'NOTHING', 'Vendor', 2)
 
 
-class TestBaseClient:
+class TestBaseClient(object):
     from CommonServerPython import BaseClient
     text = {"status": "ok"}
     client = BaseClient('http://example.com', '/api/v2/', 'Name', 'name', 'name')
@@ -710,7 +720,7 @@ class TestBaseClient:
     def test_http_request_json_negative(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', text='notjson')
-        with raises(DemistoException, match="Failed to parse json object from response: b'notjson'"):
+        with raises(DemistoException, match="Failed to parse json object from response: notjson'"):
             self.client._http_request('get', 'event')
 
     def test_http_request_text(self, requests_mock):
@@ -719,7 +729,7 @@ class TestBaseClient:
         assert res == json.dumps(self.text)
 
     def test_http_request_content(self, requests_mock):
-        requests_mock.get('http://example.com/api/v2/event', content=bytes(json.dumps(self.text), 'utf-8'))
+        requests_mock.get('http://example.com/api/v2/event', content=bytes(json.dumps(self.text)))
         res = self.client._http_request('get', 'event', resp_type='text')
         assert res == json.dumps(self.text)
 
@@ -741,9 +751,8 @@ class TestBaseClient:
 
     def test_http_request_not_ok_with_json(self, requests_mock):
         from CommonServerPython import DemistoException
-        requests_mock.get('http://example.com/api/v2/event', status_code=500, content=bytes(json.dumps(self.text),
-                                                                                            'utf-8'))
-        with raises(DemistoException, match="None\n{'status': 'ok'}"):
+        requests_mock.get('http://example.com/api/v2/event', status_code=500, content=bytes(json.dumps(self.text)))
+        with raises(DemistoException, match="Error in Name API"):
             self.client._http_request('get', 'event')
 
     def test_http_request_timeout(self, requests_mock):

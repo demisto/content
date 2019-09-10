@@ -1,6 +1,6 @@
 ## [Unreleased]
 - Added ***BaseClient*** and ***DemistoException*** objects.
-- Added ***assign_params***, ***build_dbot_entry***, ***build_malicious_dbot_entry*** functions.
+- Added ***build_dbot_entry***, ***build_malicious_dbot_entry*** functions.
 
 ## [19.9.0] - 2019-09-04
   - IntegrationLogger improvements.

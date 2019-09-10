@@ -1,15 +1,15 @@
-# Common functions script
-# =======================
-# This script will be appended to each server script before being executed.
-# Please notice that to add custom common code, add it to the CommonServerUserPython script
-import socket
+"""Common functions script
+This script will be appended to each server script before being executed.
+Please notice that to add custom common code, add it to the CommonServerUserPython script
+"""
+from socket import inet_pton, error, AF_INET6
 from datetime import datetime, timedelta
-import time
-import json
-import sys
-import os
-import re
-import base64
+from time import mktime, ctime, strptime
+from json import dumps, loads
+from sys import exit, version_info, modules
+from os import rename, environ, getenv
+from re import sub, search, compile, M
+from base64 import b64encode
 from collections import OrderedDict
 import xml.etree.cElementTree as ET
 import demistomock as demisto
@@ -17,10 +17,10 @@ import demistomock as demisto
 # imports something that can be missed from docker image
 try:
     import requests
-except:
+except Exception:
     pass
 
-IS_PY3 = sys.version_info[0] == 3
+IS_PY3 = version_info[0] == 3
 # pylint: disable=undefined-variable
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
@@ -116,13 +116,13 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False):
     proxies = {}  # type: dict
     if demisto.params().get(proxy_param_name, checkbox_default_value):
         proxies = {
-            'http': os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy', ''),
-            'https': os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy', '')
+            'http': environ.get('HTTP_PROXY') or environ.get('http_proxy', ''),
+            'https': environ.get('HTTPS_PROXY') or environ.get('https_proxy', '')
         }
     else:
         for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
-            if k in os.environ:
-                del os.environ[k]
+            if k in environ:
+                del environ[k]
     return proxies
 
 
@@ -259,7 +259,7 @@ def formatEpochDate(t):
        :rtype: ``str``
     """
     if t:
-        return time.ctime(t)
+        return ctime(t)
     return ''
 
 
@@ -568,19 +568,19 @@ class IntegrationLogger(object):
         self.replace_strs = []  # type: list
         # if for some reason you don't want to auto add credentials.password to replace strings
         # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
-        if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')
+        if (not getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')
                 and isinstance(demisto.getParam('credentials'), dict)
                 and demisto.getParam('credentials').get('password')):
             pswrd = self.encode(demisto.getParam('credentials').get('password'))
             to_encode = pswrd
             if IS_PY3:
                 to_encode = pswrd.encode('utf-8', 'ignore')
-            self.add_repalce_strs(pswrd, base64.b64encode(to_encode))
+            self.add_repalce_strs(pswrd, b64encode(to_encode))
 
     def encode(self, message):
         try:
             res = str(message)
-        except UnicodeEncodeError as ex:
+        except UnicodeEncodeError as exceptionx:
             # could not decode the message
             # if message is an Exception, try encode the exception's message
             if isinstance(message, Exception) and message.args and isinstance(message.args[0], STRING_OBJ_TYPES):
@@ -723,7 +723,7 @@ def flattenCell(data, is_pretty=True):
 
         return ',\n'.join(string_list)
     else:
-        return json.dumps(data, indent=indent, ensure_ascii=False)
+        return dumps(data, indent=indent, ensure_ascii=False)
 
 
 def FormatIso8601(t):
@@ -758,7 +758,7 @@ def argToList(arg, separator=','):
         return arg
     if isinstance(arg, STRING_TYPES):
         if arg[0] == '[' and arg[-1] == ']':
-            return json.loads(arg)
+            return loads(arg)
         return [s.strip() for s in arg.split(separator)]
     return arg
 
@@ -1043,7 +1043,7 @@ def file_result_existing_file(filename, saveFilename=None):
        :rtype: ``dict``
     """
     temp = demisto.uniqueFile()
-    os.rename(filename, demisto.investigation()['id'] + '_' + temp)
+    rename(filename, demisto.investigation()['id'] + '_' + temp)
     return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'],
             'File': saveFilename if saveFilename else filename, 'FileID': temp}
 
@@ -1263,9 +1263,9 @@ def elem2json(elem, options, strip_ns=1, strip=1):
         elem = elem.getroot()
 
     if 'pretty' in options:
-        return json.dumps(elem_to_internal(elem, strip_ns=strip_ns, strip=strip), indent=4, separators=(',', ': '))
+        return dumps(elem_to_internal(elem, strip_ns=strip_ns, strip=strip), indent=4, separators=(',', ': '))
     else:
-        return json.dumps(elem_to_internal(elem, strip_ns=strip_ns, strip=strip))
+        return dumps(elem_to_internal(elem, strip_ns=strip_ns, strip=strip))
 
 
 def json2elem(json_data, factory=ET.Element):
@@ -1275,7 +1275,7 @@ def json2elem(json_data, factory=ET.Element):
     as the factory parameter.
     """
 
-    return internal_to_elem(json.loads(json_data), factory)
+    return internal_to_elem(loads(json_data), factory)
 
 
 def xml2json(xmlstring, options={}, strip_ns=1, strip=1):
@@ -1300,7 +1300,7 @@ def json2xml(json_data, factory=ET.Element):
     """
 
     if not isinstance(json_data, dict):
-        json_data = json.loads(json_data)
+        json_data = loads(json_data)
 
     elem = internal_to_elem(json_data, factory)
     return ET.tostring(elem, encoding='utf-8')
@@ -1338,7 +1338,7 @@ def is_mac_address(mac):
     :rtype: ``bool``
     """
 
-    if re.search(r'([0-9A-F]{2}[:]){5}([0-9A-F]){2}', mac.upper()) is not None:
+    if search(r'([0-9A-F]{2}[:]){5}([0-9A-F]){2}', mac.upper()) is not None:
         return True
     else:
         return False
@@ -1355,8 +1355,8 @@ def is_ipv6_valid(address):
     :rtype: ``bool``
     """
     try:
-        socket.inet_pton(socket.AF_INET6, address)
-    except socket.error:  # not a valid address
+        inet_pton(AF_INET6, address)
+    except error:  # not a valid address
         return False
     return True
 
@@ -1455,7 +1455,7 @@ def return_error(message, error='', outputs=None):
             'Contents': message,
             'EntryContext': outputs
         })
-        sys.exit(0)
+        exit(0)
 
 
 def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_extract=False):
@@ -1493,7 +1493,7 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
         "EntryContext": outputs
     })
     if exit:
-        sys.exit(0)
+        exit(0)
 
 
 def camelize(src, delim=' '):
@@ -1525,7 +1525,8 @@ def camelize(src, delim=' '):
 outputPaths = {
     'file': 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || '
             'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || '
-            'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)',
+            'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || '
+            'val.SSDeep && val.SSDeep == obj.SSDeep)',
     'ip': 'IP(val.Address && val.Address == obj.Address)',
     'url': 'URL(val.Data && val.Data == obj.Data)',
     'domain': 'Domain(val.Name && val.Name == obj.Name)',
@@ -1563,7 +1564,7 @@ def replace_in_keys(src, existing='.', new='_'):
 
 
 # ############################## REGEX FORMATTING ###############################
-regexFlags = re.M  # Multi line matching
+regexFlags = M  # Multi line matching
 # for the global(/g) flag use re.findall({regex_format},str)
 # else, use re.match({regex_format},str)
 
@@ -1573,11 +1574,11 @@ hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
            r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
 
-md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
-sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
-sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
+md5Regex = compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
+sha1Regex = compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
+sha256Regex = compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
 
-pascalRegex = re.compile('([A-Z]?[a-z]+)')
+pascalRegex = compile('([A-Z]?[a-z]+)')
 
 
 # ############################## REGEX FORMATTING end ###############################
@@ -1609,8 +1610,8 @@ def camel_case_to_underscore(s):
    :return: The converted string (e.g. hello_world)
    :rtype: ``str``
     """
-    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', s)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+    s1 = sub('(.)([A-Z][a-z]+)', r'\1_\2', s)
+    return sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 
 def snakify(src):
@@ -1778,10 +1779,10 @@ def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
       :rtype: ``int``
     """
     if isinstance(date_str_or_dt, STRING_OBJ_TYPES):
-        return int(time.mktime(time.strptime(date_str_or_dt, date_format)) * 1000)
+        return int(mktime(strptime(date_str_or_dt, date_format)) * 1000)
 
     # otherwise datetime.datetime
-    return int(time.mktime(date_str_or_dt.timetuple()) * 1000)
+    return int(mktime(date_str_or_dt.timetuple()) * 1000)
 
 
 def remove_nulls_from_dictionary(data):
@@ -1800,23 +1801,42 @@ def remove_nulls_from_dictionary(data):
             del data[key]
 
 
-def assign_params(**kwargs):
-    """Creates a dictionary from given kwargs without empty values
-`    Examples:
+def assign_params(keys_to_ignore=None, values_to_ignore=None, **kwargs):
+    """Creates a dictionary from given kwargs without empty values.
+    empty values are: None, '', [], {}, ()
+`   Examples:
         >>> assign_params(a='1', b=True, c=None, d='')
         {'a': '1', 'b': True}
 
         >>> since_time = 'timestamp'
-        >>> assign_params(sinceTime=since_time)
+        >>> assign_params(values_to_ignore=(15, ), sinceTime=since_time, b=15)
         {'sinceTime': 'timestamp'}
+
+        >>> item_id = '1236654'
+        >>> assign_params(keys_to_ignore=['rnd'], ID=item_id, rnd=15)
+        {'ID': '1236654'}
+
+    :type keys_to_ignore: ``tuple`` or ``list``
+    :param keys_to_ignore: Keys to ignore if exists
+
+    :type values_to_ignore: ``tuple`` or ``list``
+    :param values_to_ignore: Values to ignore if exists
 
     :type kwargs: ``kwargs``
     :param kwargs: kwargs to filter
 
     :return: dict without empty values
     :rtype: ``dict``
+
     """
-    return {key: value for key, value in kwargs.items() if value}
+    if values_to_ignore is None:
+        values_to_ignore = tuple()
+    if keys_to_ignore is None:
+        keys_to_ignore = tuple()
+    return {
+        key: value for key, value in kwargs.items()
+        if value and value not in values_to_ignore and key not in keys_to_ignore
+    }
 
 
 def get_demisto_version():
@@ -1852,9 +1872,6 @@ def build_dbot_entry(indicator, indicator_type, vendor, score, description=None,
     :param indicator_type:
         type of indicator ('url, 'domain', 'ip', 'cve', 'email', 'md5', 'sha1', 'sha256', 'crc32', 'sha512', 'ctph')
 
-    :type score: ``int``
-    :param score: score (0, 1, 2 , 3)
-
     :type vendor: ``str``
     :param vendor: Integration ID
 
@@ -1870,7 +1887,14 @@ def build_dbot_entry(indicator, indicator_type, vendor, score, description=None,
     :return: dbot entry
     :rtype: ``dict``
     """
+    indicator_types = ('ip', 'email', 'url', 'domain', 'cve', 'md5', 'sha1', 'sha256', 'crc32', 'sha512', 'ctph')
+    if not 0 <= score <= 3:
+        raise DemistoException('illegal DBot score, expected 0-3, got `{}`'.format(score))
     indicator_type_lower = indicator_type.lower()
+    if indicator_type_lower not in indicator_types:
+        raise DemistoException('illegal indicator type, expected one of {}, got `{}`'.format(
+            indicator_types, indicator_type_lower
+        ))
     dbot_entry = {
         outputPaths['dbotscore']: {
             'Indicator': indicator,
@@ -1878,7 +1902,7 @@ def build_dbot_entry(indicator, indicator_type, vendor, score, description=None,
             'Vendor': vendor,
             'Score': score
         }}
-    if score is 3 and build_malicious:
+    if score == 3 and build_malicious:
         dbot_entry.update(build_malicious_dbot_entry(indicator, indicator_type, score, description))
     return dbot_entry
 
@@ -1937,7 +1961,7 @@ obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'MD5': 'md5hash', 'Malicious':
 
 
 # Will add only if 'requests' module imported
-if 'requests' in sys.modules:
+if 'requests' in modules:
     class BaseClient(object):
         def __init__(self,
                      server,
@@ -1947,8 +1971,7 @@ if 'requests' in sys.modules:
                      integration_context_name,
                      verify=True,
                      proxy=False,
-                     ok_codes=None
-                     ):
+                     ok_codes=None):
             """Base Client for use in integrations.
 
              :type server: ``str``
@@ -1981,8 +2004,8 @@ if 'requests' in sys.modules:
             self._server = server.rstrip('/')
             self._verify = verify
             self._integration_name = str(integration_name)
-            self._integration_name_command = str(integration_command_name)
-            self._integration_name_context = str(integration_context_name)
+            self._integration_command_name = str(integration_command_name)
+            self._integration_context_name = str(integration_context_name)
             self._base_url = '{}{}'.format(self._server, base_suffix)
             self._ok_codes = ok_codes
             if proxy:
@@ -2004,7 +2027,7 @@ if 'requests' in sys.modules:
             return: Integration command name
             :rtype: ``str``
             """
-            return self._integration_name_context
+            return self._integration_context_name
 
         @property
         def integration_command_name(self):
@@ -2012,7 +2035,7 @@ if 'requests' in sys.modules:
             return: Integration command name
             :rtype: ``str``
             """
-            return self._integration_name_command
+            return self._integration_command_name
 
         def _http_request(self, method, url_suffix, full_url=None, headers=None,
                           auth=None, params=None, data=None, files=None,
@@ -2106,43 +2129,42 @@ if 'requests' in sys.modules:
                         error_entry = res.json()
                         err_msg += '\n{}'.format(error_entry)
                         raise DemistoException(err_msg)
-                    except ValueError as e:
-                        raise DemistoException(err_msg, e)
+                    except ValueError as exception:
+                        raise DemistoException(err_msg, exception)
 
                 resp_type = resp_type.lower()
                 try:
                     if resp_type == 'json':
                         return res.json()
-                    elif resp_type == 'text':
+                    if resp_type == 'text':
                         return res.text
-                    elif resp_type == 'content':
+                    if resp_type == 'content':
                         return res.content
-                    else:
-                        return res
-                except ValueError as e:
-                    raise DemistoException('Failed to parse json object from response: {}'.format(res.content), e)
-
-            except requests.exceptions.ConnectTimeout as e:
+                    return res
+                except ValueError as exception:
+                    raise DemistoException('Failed to parse json object from response: {}'
+                                           .format(res.content), exception)
+            except requests.exceptions.ConnectTimeout as exception:
                 err_msg = 'Connection Timeout Error - potential reasons may be that the Server URL parameter' \
                           ' is incorrect or that the Server is not accessible from your host.'
-                raise DemistoException(err_msg, e)
-            except requests.exceptions.SSLError as e:
+                raise DemistoException(err_msg, exception)
+            except requests.exceptions.SSLError as exception:
                 err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' in' \
                           ' the integration configuration.'
-                raise DemistoException(err_msg, e)
-            except requests.exceptions.ProxyError as e:
+                raise DemistoException(err_msg, exception)
+            except requests.exceptions.ProxyError as exception:
                 err_msg = 'Proxy Error - if \'Use system proxy\' in the integration configuration has been' \
                           ' selected, try deselecting it.'
-                raise DemistoException(err_msg, e)
-            except requests.exceptions.ConnectionError as e:
+                raise DemistoException(err_msg, exception)
+            except requests.exceptions.ConnectionError as exception:
                 # Get originating Exception in Exception chain
-                error_class = str(e.__class__)
+                error_class = str(exception.__class__)
                 err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
                 err_msg = '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
                           'Verify that the server URL parameter' \
                           ' is correct and that you have access to the server from your host.' \
-                    .format(err_type, e.errno, e.strerror)
-                raise DemistoException(err_msg, e)
+                    .format(err_type, exception.errno, exception.strerror)
+                raise DemistoException(err_msg, exception)
 
 
 class DemistoException(Exception):
