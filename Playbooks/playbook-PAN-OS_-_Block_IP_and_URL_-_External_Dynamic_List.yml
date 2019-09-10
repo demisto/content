@@ -42,7 +42,7 @@ tasks:
       version: -1
       name: PAN OS - Update IP EDL
       description: Updates the instance context with the specified list name and list
-        items, and then overrides the path of the remote file with the internal list.
+        items, and overrides the path of the remote file with the internal list.
       script: '|||pan-os-edl-update'
       type: regular
       iscommand: true
@@ -179,7 +179,7 @@ tasks:
       version: -1
       name: PAN OS - Update URL EDL
       description: Updates the instance context with the specified list name and list
-        items, and then overrides the path of the remote file with the internal list.
+        items, and overrides the path of the remote file with the internal list.
       script: '|||pan-os-edl-update'
       type: regular
       iscommand: true
@@ -361,9 +361,9 @@ tasks:
       id: 949b0e07-8d93-4b7e-8751-923ef4c6f281
       version: -1
       name: PAN-OS EDL Setup
-      description: Sets up external dynamic list in PAN-OS.\nin case file exists in
-        web server it will sync it to demisto. then it will create an EDL object and
-        a matching rule.
+      description: Sets up external dynamic list in PAN-OS.\nIn case file exists in
+        web server, the file is synchronized with Demisto. Lastly, it creates an EDL object and
+        matching rule.
       playbookName: PAN-OS EDL Setup
       type: playbook
       iscommand: false
