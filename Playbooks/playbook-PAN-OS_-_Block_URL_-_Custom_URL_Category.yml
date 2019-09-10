@@ -175,7 +175,7 @@ tasks:
       id: 62ccb2be-da01-4aa4-8772-de4e7f62d107
       version: -1
       name: PAN-OS - Block Malicious URL Category
-      description: Creates a custom block policy rule
+      description: Creates a custom block policy rule to block communication to URLs in this category.
       script: '|||panorama-custom-block-rule'
       type: regular
       iscommand: true
@@ -247,7 +247,7 @@ tasks:
       id: e22ada48-750d-42ec-8bd4-7d1c2b5f8b60
       version: -1
       name: PAN-OS - Get Custom URL Category
-      description: Returns information for a custom URL category
+      description: Returns information for a specified custom URL category
       script: '|||panorama-get-custom-url-category'
       type: regular
       iscommand: true
@@ -279,7 +279,7 @@ tasks:
     task:
       id: 814170c9-fcf8-46d6-8223-711f0b5a7b60
       version: -1
-      name: Check if the malicious URLs already exist in the Custom URL Category
+      name: Malicious URLs already exist in the Custom URL Category?
       description: ""
       type: condition
       iscommand: false
@@ -318,7 +318,7 @@ tasks:
     task:
       id: 1d9d896f-0796-4e86-8dd9-d6072875a535
       version: -1
-      name: PAN-OS - Check if Custom URL Category exists
+      name: Custom URL Category exists?
       description: ""
       type: condition
       iscommand: false
@@ -355,7 +355,7 @@ tasks:
       id: b6fe22ef-4d81-4088-8368-d830bc741950
       version: -1
       name: PAN-OS - Add malicious URLs to Custom URL Category
-      description: Add sites to, or remove sites from a custom URL category
+      description: Add sites to, or remove sites from, a custom URL category
       script: '|||panorama-edit-custom-url-category'
       type: regular
       iscommand: true
@@ -450,7 +450,7 @@ tasks:
     task:
       id: 80060245-606b-4c59-8baa-c985a309745f
       version: -1
-      name: Is AutoCommit Enabled?
+      name: AutoCommit Enabled?
       description: ""
       type: condition
       iscommand: false
@@ -583,7 +583,7 @@ tasks:
       id: 8030a6cc-ac26-4307-8a1a-d7dab0441d18
       version: -1
       name: PAN-OS - Block Malicious URL Category
-      description: Creates a custom block policy rule
+      description: Creates a custom block policy rule to block communication to URLs in this category.
       script: '|||panorama-custom-block-rule'
       type: regular
       iscommand: true
@@ -660,7 +660,7 @@ tasks:
       name: PAN-OS Commit Configuration
       description: "Commit PAN-OS Panorama or Firewall Configuration.\nIf specified
         as Panorama, will also push the Policies to the specified Device Group in
-        the instance "
+        the instance. "
       playbookName: PAN-OS Commit Configuration
       description: ""
       type: playbook
