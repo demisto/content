@@ -62,6 +62,9 @@ def get_remote_file(full_file_path, tag='master'):
     github_path = os.path.join(CONTENT_GITHUB_LINK, tag, full_file_path).replace('\\', '/')
     res = requests.get(github_path, verify=False)
     if res.status_code != 200:
+        print_warning('Could not find the old entity file under "{}".\n'
+                      'please make sure that you did not break backward compatibility. '
+                      'Reason: {}'.format(github_path, res.reason))
         return {}
 
     if full_file_path.endswith('json'):
