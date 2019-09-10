@@ -13,7 +13,7 @@ detaileddescription: |-
 configuration:
 - display: BitDam API URL
   name: url
-  defaultvalue: http://cloud.bitdam.com/api/v1.0
+  defaultvalue: https://app.bitdam.com/api/v1.0
   type: 0
   required: true
 - display: API Token
@@ -50,18 +50,24 @@ script:
     '''CONSTANTS'''
     READ_BINARY_MODE = 'rb'
     SLASH = '/'
-    SCAN_FILE_URL = 'files/'
-    GET_FILE_VERDICT_URL = 'files/?file_identifier_value={}&file_identifier_type={}'
+    SCAN_FILE_URL = 'direct/scan/file/'
+    GET_FILE_VERDICT_URL = 'direct/verdict/?hash={}'
     TOKEN_PREFIX = 'Bearer'
     RESPONSE_CODE_OK = 200
     STATUS_IN_PROGRESS = 'IN_PROGRESS'
     STATUS_DONE = 'DONE'
-    VERDICT_MALICIOUS = 'MALICIOUS'
-    VERDICT_CLEAN = 'CLEAN'
+
+    VERDICT_SCANNING = 'Scanning'
+    VERDICT_MALICIOUS = 'Malicious'
+    VERDICT_APPROVED = 'Approved'
+    VERDICT_ERROR = 'Error'
+    VERDICT_BENIGN = 'Benign'
+    VERDICT_TIMEOUT = 'Timeout'
+
     BITDAM_COMMAND_PREFIX = 'bitdam'
+    DBOTSCORE_UNKNOWN = 0
     DBOTSCORE_CLEAN = 1
     DBOTSCORE_MALICIOUS = 3
-
 
     '''HANDLE PROXY'''
     if not USE_PROXY:
@@ -111,11 +117,14 @@ script:
 
 
     def verdict_to_dbotscore(verdict):
-        if VERDICT_CLEAN == verdict:
+        if VERDICT_APPROVED == verdict:
             return DBOTSCORE_CLEAN
         elif VERDICT_MALICIOUS == verdict:
             return DBOTSCORE_MALICIOUS
-        return None
+        elif VERDICT_SCANNING == verdict:
+            return DBOTSCORE_UNKNOWN
+        else:
+            return DBOTSCORE_UNKNOWN
 
 
     '''API_IMPL'''
@@ -133,7 +142,7 @@ script:
         entry_id = demisto.args().get('entryId')
         file_name = get_file_name(entry_id)
         file_bytes = get_file_bytes(entry_id)
-        json_data = {'filename': file_name,
+        json_data = {'file_name': file_name,
                          'file_data_base64': base64.b64encode(file_bytes)}
         raw_json = json.dumps(json_data, ensure_ascii=False)
         url = "{}{}".format(get_url_base_with_trailing_slash(), SCAN_FILE_URL)
@@ -149,17 +158,16 @@ script:
         if RESPONSE_CODE_OK != response.status_code:
             raise Exception("Scan file failed. Response code -{}, Data- '{}'".format(str(response.status_code), response.content))
         response_json = json.loads(response.content)
-        if not response_json.has_key('data') or not response_json['data'].has_key('sha1'):
+        if not response_json.has_key('sha1'):
             raise Exception(
                 "Scan file failed. Bad response json - {}".format(response.content))
-        returned_sha1 = response_json['data']['sha1']
+        returned_sha1 = response_json['sha1']
         return returned_sha1
 
 
     def get_file_verdict():
-        identifier_type = demisto.args().get('idType')
         identifier_value = demisto.args().get('idValue')
-        response = get_file_verdict_command(identifier_type, identifier_value)
+        response = get_file_verdict_command(identifier_value)
         verdict, status = parse_get_file_verdict_response(response)
         response_content = {'STATUS' : status,
                             'VERDICT' : verdict,
@@ -198,30 +206,41 @@ script:
         response_json = json.loads(response.content)
         status = ''
         verdict = ''
-        if not response_json.has_key('data') or not response_json['data'].has_key('Verdict'):
+        if not response_json.has_key('scan_data') or not response_json['scan_data'].has_key('verdict'):
+            raise Exception("Get file verdict failed. Unknown response schema. Data- '{}'".format(response.content))
+
+        verdict = response_json['scan_data']['verdict']
+        if verdict == 'Still scanning...' or verdict == VERDICT_SCANNING:
             # Still in progress
+            verdict = VERDICT_SCANNING
             status = STATUS_IN_PROGRESS
         else:
             status = STATUS_DONE
-            if VERDICT_CLEAN.lower() in response_json['data']['Verdict'].lower():
-                verdict = VERDICT_CLEAN
-            else:
-                verdict = VERDICT_MALICIOUS
+
         return verdict, status
 
 
-    def get_file_verdict_command(identifier_type, identifier_value):
+    def get_file_verdict_command(identifier_value):
         # Get data to build the request
-        scan_file_relative_url_formatted = GET_FILE_VERDICT_URL.format(identifier_value, identifier_type)
+        scan_file_relative_url_formatted = GET_FILE_VERDICT_URL.format(identifier_value)
         auth_headers = get_auth_headers()
         url = "{}{}".format(get_url_base_with_trailing_slash(), scan_file_relative_url_formatted)
         # Send the request
         response = requests.get(url, headers=auth_headers, verify=not UNSECURE)
         return response
 
+    def upload_test_file_to_scan():
+        auth_headers = get_auth_headers()
+        d = {
+            "file_name": "demisto.txt",
+            "file_data_base64": 'ZGVtaXN0bw=='
+        }
+        url = "{}{}".format(get_url_base_with_trailing_slash(), SCAN_FILE_URL)
+        response = requests.post(url, headers=auth_headers, json=d, verify=not UNSECURE)
+        return response
 
     def test_module():
-        response = get_file_verdict_command('sha1', '111')
+        response = upload_test_file_to_scan()
         if RESPONSE_CODE_OK == response.status_code:
             return True
         raise Exception("Status code - {}, Error- '{}'".format(str(response.status_code),
@@ -258,16 +277,12 @@ script:
       required: true
       description: The value of the file's unique identifier (for example - file's
         SHA1)
-    - name: idType
-      description: Type of the identifier(default:sha1)
-      defaultValue: sha1
     outputs:
     - contextPath: BitDam.Analysis.Status
       description: Status of the analysis. Can be either 'DONE' or 'IN_PROGRESS'
       type: string
     - contextPath: BitDam.Analysis.Verdict
-      description: Final verdict of the analysis. Can be 'Clean', 'Malicious' or empty
-        if analysis isn't finished.
+      description: Final verdict of the analysis.
       type: string
     - contextPath: BitDam.Analysis.ID
       description: Unique identifier
