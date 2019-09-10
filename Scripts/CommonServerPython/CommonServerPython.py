@@ -580,7 +580,7 @@ class IntegrationLogger(object):
     def encode(self, message):
         try:
             res = str(message)
-        except UnicodeEncodeError as exceptionx:
+        except UnicodeEncodeError as exception:
             # could not decode the message
             # if message is an Exception, try encode the exception's message
             if isinstance(message, Exception) and message.args and isinstance(message.args[0], STRING_OBJ_TYPES):
@@ -589,7 +589,7 @@ class IntegrationLogger(object):
                 # try encode the message itself
                 res = message.encode('utf-8', 'replace')  # type: ignore
             else:
-                res = "Failed encoding message with error: {}".format(ex)
+                res = "Failed encoding message with error: {}".format(exception)
         for s in self.replace_strs:
             res = res.replace(s, '<XX_REPLACED>')
         return res
