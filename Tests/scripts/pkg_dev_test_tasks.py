@@ -287,7 +287,7 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
     project_dir = os.path.abspath(args.dir)
     print('Project Directory: {}'.format(project_dir))
     # load yaml
-    project_dir_list = glob.glob(project_dir)
+    project_dir_list = glob.glob(project_dir + '/')
     print('project dir list: {}'.format(project_dir_list))
     yml_list = glob.glob(project_dir + '/*.yml')
     print('yml path: {}'.format(yml_list))
