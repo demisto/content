@@ -28,7 +28,7 @@ configuration:
     CA certificate of Kafka server (.cer)
   name: ca_cert
   defaultvalue: ""
-  type: 0
+  type: 12
   required: false
 - display: Client certificate (.cer)
   name: client_cert
