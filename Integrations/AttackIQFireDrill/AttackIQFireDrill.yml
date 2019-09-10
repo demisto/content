@@ -26,7 +26,7 @@ name: AttackIQFireDrill
 script:
   commands:
   - arguments:
-    - default: false
+    - default: true
       description: ID of the assessment to get.
       isArray: false
       name: assessment_id
@@ -213,11 +213,11 @@ script:
       description: Number of tests that ran in the assessment.
       type: Number
   - arguments:
-    - default: false
+    - default: true
       description: ID of the assessment to activate.
       isArray: false
       name: assessment_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Activates the assessment. This is required for execution.
@@ -228,7 +228,7 @@ script:
       description: ID of the assessment to run its tests.
       isArray: false
       name: assessment_id
-      required: false
+      required: true
       secret: false
     - default: false
       description: Run only on-demand tests in the assessment, or all tests\ntrue
@@ -243,11 +243,11 @@ script:
     execution: false
     name: attackiq-run-all-tests-in-assessment
   - arguments:
-    - default: false
+    - default: true
       description: The assessment to check status
       isArray: false
       name: assessment_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Get assessment execution status - supports only on demand runs.
@@ -294,11 +294,11 @@ script:
       description: ID of the assessment test.
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: ID of the assessment that contains the tests.
       isArray: false
       name: assessment_id
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Get assessment's test. Will get by default up to 10 test per call.
