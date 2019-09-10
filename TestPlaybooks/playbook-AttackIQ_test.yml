@@ -317,10 +317,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 62a005f8-b9ad-4d67-8239-f12b4310f682
+    taskid: 812c5d7f-2a2a-462b-8c14-5f0ea4530de9
     type: condition
     task:
-      id: 62a005f8-b9ad-4d67-8239-f12b4310f682
+      id: 812c5d7f-2a2a-462b-8c14-5f0ea4530de9
       version: -1
       name: Assert assessments
       type: condition
@@ -333,14 +333,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
               simple: AttackIQ.Assessment.Id
             iscontext: true
-          right:
-            value:
-              simple: f98f4499-419e-484d-b799-878265685cec
       - - operator: isEqualString
           left:
             value:
@@ -357,14 +354,11 @@ tasks:
           right:
             value:
               simple: Test of common ransomware variants
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
               simple: AttackIQ.Assessment.AssessmentState
             iscontext: true
-          right:
-            value:
-              simple: Active
       - - operator: isEqualString
           left:
             value:
@@ -389,22 +383,16 @@ tasks:
           right:
             value:
               simple: akrupnik@paloaltonetworks.com
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
               simple: AttackIQ.Assessment.Created
             iscontext: true
-          right:
-            value:
-              simple: 2019-09-02T11:52:04.945852Z
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
               simple: AttackIQ.Assessment.Modified
             iscontext: true
-          right:
-            value:
-              simple: 2019-09-02T11:51:59.769959Z
       - - operator: containsGeneral
           left:
             value:
@@ -469,22 +457,16 @@ tasks:
           right:
             value:
               simple: 906d5ec6-101c-4ae6-8906-b93ce0529060
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
               simple: AttackIQ.Assessment.AssessmentTemplate.Created
             iscontext: true
-          right:
-            value:
-              simple: 2016-07-01T20:26:43.494459Z
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
               simple: AttackIQ.Assessment.AssessmentTemplate.Modified
             iscontext: true
-          right:
-            value:
-              simple: 2019-02-19T03:31:54.393885Z
       - - operator: isEqualString
           left:
             value:
