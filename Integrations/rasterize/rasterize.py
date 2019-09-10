@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
-from webdriver_manager.chrome import ChromeDriverManager
 import sys
 import base64
 
@@ -182,8 +181,3 @@ except Exception as ex:
 
 finally:  # just to be extra safe
     sys.stdout = DEFAULT_STDOUT
-
-# todo: remove web-driver
-# todo: check non root user
-# todo: maybe package
-# todo: Unit-Testing - check version
