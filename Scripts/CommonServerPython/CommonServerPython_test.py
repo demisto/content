@@ -653,7 +653,7 @@ def test_assign_params():
     assert res == {'a': '1', 'b': True}
 
 
-class TestBuildDBotEntry:
+class TestBuildDBotEntry(object):
     @staticmethod
     def test_build_dbot_entry():
         from CommonServerPython import build_dbot_entry
