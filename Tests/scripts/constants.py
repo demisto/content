@@ -25,27 +25,26 @@ DESCRIPTION_REGEX = r".*\.md"
 CONF_REGEX = "Tests/conf.json"
 SCHEMA_REGEX = "Tests/schemas/.*.yml"
 SCRIPT_TYPE_REGEX = ".*script-.*.yml"
-SCRIPT_PY_REGEX = os.path.join(SCRIPTS_DIR, '(.+)', r'\1.py')
-SCRIPT_JS_REGEX = os.path.join(SCRIPTS_DIR, '(.+)', r'\1.js')
-SCRIPT_YML_REGEX = r"{}.*\.yml$".format(SCRIPTS_DIR)
+SCRIPT_PY_REGEX = os.path.join(SCRIPTS_DIR, r'([^\\/]+)', r'\1.py')
+SCRIPT_JS_REGEX = os.path.join(SCRIPTS_DIR, r'([^\\/]+)', r'\1.js')
+SCRIPT_YML_REGEX = os.path.join(SCRIPTS_DIR, r'([^\\/]+)', r'\1.yml')
 TEST_SCRIPT_REGEX = r"{}.*script-.*\.yml$".format(TEST_PLAYBOOKS_DIR)
 SCRIPT_REGEX = r"{}.*script-.*\.yml$".format(SCRIPTS_DIR)
-INTEGRATION_PY_REGEX = os.path.join(INTEGRATIONS_DIR, '(.+)', r'\1.py')
-INTEGRATION_JS_REGEX = os.path.join(INTEGRATIONS_DIR, '(.+)', r'\1.js')
-INTEGRATION_YML_REGEX = r"{}.*\.yml$".format(INTEGRATIONS_DIR)
+INTEGRATION_PY_REGEX = os.path.join(INTEGRATIONS_DIR, r'([^\\/]+)', r'\1.py')
+INTEGRATION_JS_REGEX = os.path.join(INTEGRATIONS_DIR, r'([^\\/]+)', r'\1.js')
+INTEGRATION_YML_REGEX = os.path.join(INTEGRATIONS_DIR, r'([^\\/]+)', r'\1.yml')
 INTEGRATION_REGEX = r"{}.*integration-.*\.yml$".format(INTEGRATIONS_DIR)
 PLAYBOOK_REGEX = r"(?!Test){}.*playbook-.*\.yml$".format(PLAYBOOKS_DIR)
 TEST_PLAYBOOK_REGEX = r"{}.*playbook-.*\.yml$".format(TEST_PLAYBOOKS_DIR)
 TEST_NOT_PLAYBOOK_REGEX = r"{}.(?!playbook).*-.*\.yml$".format(TEST_PLAYBOOKS_DIR)
 
 
-WIDGETS_REGEX = r"{}.*widget-.*\.json$".format(WIDGETS_DIR)
+WIDGETS_REGEX = os.path.join(WIDGETS_DIR, r'widget-.*\.json$')
 DASHBOARD_REGEX = r"{}.*dashboard-.*\.json$".format(DASHBOARDS_DIR)
 CONNECTIONS_REGEX = r"{}.*canvas-context-connections.*\.json$".format(CONNECTIONS_DIR)
 CLASSIFIER_REGEX = r"{}.*classifier-.*\.json$".format(CLASSIFIERS_DIR)
 LAYOUT_REGEX = r"{}.*layout-.*\.json$".format(LAYOUTS_DIR)
-INCIDENT_FIELDS_REGEX = r"{}.*incidentfields.*\.json$".format(INCIDENT_FIELDS_DIR)
-INCIDENT_FIELD_REGEX = r"{}.*incidentfield-.*\.json$".format(INCIDENT_FIELDS_DIR)
+INCIDENT_FIELD_REGEX = os.path.join(INCIDENT_FIELDS_DIR, r'incidentfield-.*\.json$')
 MISC_REGEX = r"{}.*reputations.*\.json$".format(MISC_DIR)
 REPUTATION_REGEX = r"{}.*reputation-.*\.json$".format(MISC_DIR)
 REPORT_REGEX = r"{}.*report-.*\.json$".format(REPORTS_DIR)
@@ -58,13 +57,13 @@ BETA_INTEGRATION_YML_REGEX = r"{}.*\.yml$".format(BETA_INTEGRATIONS_DIR)
 
 CHECKED_TYPES_REGEXES = [PLAYBOOK_REGEX, INTEGRATION_YML_REGEX, BETA_INTEGRATION_YML_REGEX,
                          WIDGETS_REGEX, DASHBOARD_REGEX, CONNECTIONS_REGEX, CLASSIFIER_REGEX, SCRIPT_YML_REGEX,
-                         LAYOUT_REGEX, INCIDENT_FIELDS_REGEX, INCIDENT_FIELD_REGEX, MISC_REGEX, REPORT_REGEX,
+                         LAYOUT_REGEX, INCIDENT_FIELD_REGEX, MISC_REGEX, REPORT_REGEX,
                          REPUTATION_REGEX]
 
 PACKAGE_SUPPORTING_DIRECTORIES = [INTEGRATIONS_DIR, SCRIPTS_DIR, BETA_INTEGRATIONS_DIR]
 
 
-PACKAGE_YML_FILE_REGEX = r'(?:\./)?(?:Integrations|Scripts)/([\w\d_-]+)/\1.yml'
+PACKAGE_YML_FILE_REGEX = r'(?:\./)?(?:Integrations|Scripts)/([^\\/]+)/\1.yml'
 
 OLD_YML_FORMAT_FILE = [INTEGRATION_REGEX, SCRIPT_REGEX]
 
