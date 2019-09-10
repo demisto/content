@@ -12,13 +12,14 @@ sys.path.append(CONTENT_DIR + '/Tests/demistomock')
 
 import demistomock  # noqa: E402
 
+# PrivateFuncs are functions to ignore when running the script
 jsPrivateFuncs = ["dqQueryBuilder", "toArray", "indent", "formatTableValuesRecursive", "string_to_array",
                   "array_to_hex_string", "SHA256_init", "SHA256_write", "SHA256_finalize", "SHA256_hash",
                   "HMAC_SHA256_init", "HMAC_SHA256_write", "HMAC_SHA256_finalize", "HMAC_SHA256_MAC"]
 
 pyPrivateFuncs = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeColumns", "strip_tag", "elem_to_internal",
                   "internal_to_elem", "json2elem", "elem2json", "json2xml", "OrderedDict", "datetime", "timedelta",
-                  "createContextSingle", "IntegrationLogger", "tblToMd"]
+                  "createContextSingle", "IntegrationLogger", "tblToMd", "DemistoException", "BaseClient"]
 
 pyIrregularFuncs = {"LOG": {"argList": ["message"]}}
 
@@ -33,18 +34,15 @@ def readJsonFile(filepath):
     with open(filepath, 'r') as f:
         out = json.load(f)
         return out
-    return []
 
 
 def readYmlFile(filepath):
     with open(filepath, 'r') as f:
         out = yaml.safe_load(f)
         return out
-    return []
 
 
 def reformatPythonOutput(output, origin, language):
-
     res = []
     isError = False
     for a in output:
@@ -131,7 +129,6 @@ def createJsDocumentation(path, origin, language):
 
 
 def createPyDocumentation(path, origin, language):
-    ignore_names = ('DemistoException', 'BaseClient')
     isErrorPy = False
 
     with open(path, 'r') as file:
@@ -139,7 +136,7 @@ def createPyDocumentation(path, origin, language):
 
     code = compile(pyScript, '<string>', 'exec')
     ns = {'demisto': demistomock}
-    exec(code, ns)  # guardrails-disable-line
+    exec (code, ns)  # guardrails-disable-line
 
     x = []
 
@@ -147,11 +144,8 @@ def createPyDocumentation(path, origin, language):
         if a != 'demisto' and callable(ns.get(a)) and a not in pyPrivateFuncs:
             docstring = inspect.getdoc(ns.get(a))
             if not docstring:
-                if a not in ignore_names:
-                    print("docstring for function " + a + " is empty")
-                    isErrorPy = True
-                else:
-                    print("docstring for function {} is empty but it's in ignore_names".format(a))
+                print("docstring for function " + a + " is empty")
+                isErrorPy = True
             else:
                 y = parser.parse_docstring(docstring)
                 y["name"] = a
