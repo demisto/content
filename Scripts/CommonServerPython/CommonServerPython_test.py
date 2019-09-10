@@ -12,6 +12,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string
+
 INFO = {'b': 1,
         'a': {
             'safd': 3,
@@ -670,19 +671,20 @@ class TestBuildDBotEntry(object):
     def test_build_dbot_entry_malicious():
         from CommonServerPython import build_dbot_entry
         res = build_dbot_entry('user@example.com', 'Email', 'Vendor', 3, 'Malicious email')
+
         assert res == {
-            'DBotScore': {
-                'Indicator': 'user@example.com',
-                'Type': 'email',
-                'Vendor': 'Vendor',
-                'Score': 3
+            "DBotScore": {
+                "Vendor": "Vendor",
+                "Indicator": "user@example.com",
+                "Score": 3,
+                "Type": "email"
             },
-            'Account.Email(val.Address && val.Address == obj.Address)': {
-                'Address': 'user@example.com',
-                'Malicious':
-                    {
-                        'Vendor': 3,
-                        'Description': 'Malicious email'}
+            "Account.Email(val.Address && val.Address == obj.Address)": {
+                "Malicious": {
+                    "Vendor": "Vendor",
+                    "Description": "Malicious email"
+                },
+                "Address": "user@example.com"
             }
         }
 

@@ -1923,15 +1923,15 @@ def build_dbot_entry(indicator, indicator_type, vendor, score, description=None,
     """Build a dbot entry. if score is 3 adds malicious
     Examples:
         >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 1)
-        {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 1}}
+        {'DBotScore': {'Vendor': 'Vendor', 'Indicator': 'user@example.com', 'Score': 1, 'Type': 'email'}}
 
         >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 3,  build_malicious=False)
-        {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 3}}
+        {'DBotScore': {'Vendor': 'Vendor', 'Indicator': 'user@example.com', 'Score': 3, 'Type': 'email'}}
 
         >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 3, 'Malicious email')
-        {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 3},\
- 'Account.Email(val.Address && val.Address == obj.Address)': {'Address': 'user@example.com', 'Malicious': \
-{'Vendor': 3, 'Description': 'Malicious email'}}}
+        {'DBotScore': {'Vendor': 'Vendor', 'Indicator': 'user@example.com', 'Score': 3, 'Type': 'email'}, \
+'Account.Email(val.Address && val.Address == obj.Address)': {'Malicious': {'Vendor': 'Vendor', 'Description': \
+'Malicious email'}, 'Address': 'user@example.com'}}
 
     :type indicator: ``str``
     :param indicator: indicator field. if using file hashes, can be dict
@@ -1971,7 +1971,7 @@ def build_dbot_entry(indicator, indicator_type, vendor, score, description=None,
             'Score': score
         }}
     if score == 3 and build_malicious:
-        dbot_entry.update(build_malicious_dbot_entry(indicator, indicator_type, score, description))
+        dbot_entry.update(build_malicious_dbot_entry(indicator, indicator_type, vendor, description))
     return dbot_entry
 
 
