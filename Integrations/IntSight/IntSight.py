@@ -70,7 +70,7 @@ def req(method, path, json_data=None, params=None, json_response=False):
             return_error('Error in API call to IntSights service - please check you URL address')
         return r
 
-    return r
+    return r.text
 
 
 def convert_iso_string_to_python_date(date_in_iso_format):
