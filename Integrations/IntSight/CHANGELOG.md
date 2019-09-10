@@ -1,1 +1,2 @@
-Fixed an issue with Intsights integration when the server URL is wrong.
+## [Unreleased]
+Improve error handling message.
