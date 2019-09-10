@@ -12,6 +12,7 @@ pytest-mock = "*"
 [packages]
 lxml = "*"
 requests = "*"
+pytest = "*"
 
 [requires]
 python_version = "2.7"

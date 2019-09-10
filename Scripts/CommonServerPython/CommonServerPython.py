@@ -486,7 +486,7 @@ def FormatADTimestamp(ts):
        :return: A string represeting the time
        :rtype: ``str``
     """
-    return (datetime.datetime(year=1601, month=1, day=1) + datetime.timedelta(seconds=int(ts) / 10 ** 7)).ctime()
+    return (datetime(year=1601, month=1, day=1) + timedelta(seconds=int(ts) / 10 ** 7)).ctime()
 
 
 def PrettifyCompactedTimestamp(x):
@@ -1148,7 +1148,7 @@ def isCommandAvailable(cmd):
 
 
 def epochToTimestamp(epoch):
-    return datetime.datetime.utcfromtimestamp(epoch / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
+    return datetime.utcfromtimestamp(epoch / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
 
 
 def formatTimeColumns(data, timeColumnNames):
@@ -1718,29 +1718,29 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
         return_error('Invalid timezone "{}" - must be a number (of type int or float).'.format(timezone))
 
     if utc:
-        end_time = datetime.datetime.now() + datetime.timedelta(hours=timezone)
-        start_time = datetime.datetime.now() + datetime.timedelta(hours=timezone)
+        end_time = datetime.now() + timedelta(hours=timezone)
+        start_time = datetime.now() + timedelta(hours=timezone)
     else:
         end_time = datetime.datetime.utcnow() + datetime.timedelta(hours=timezone)
         start_time = datetime.datetime.utcnow() + datetime.timedelta(hours=timezone)
 
     unit = range_split[1]
     if 'minute' in unit:
-        start_time = end_time - datetime.timedelta(minutes=number)
+        start_time = end_time - timedelta(minutes=number)
     elif 'hour' in unit:
-        start_time = end_time - datetime.timedelta(hours=number)
+        start_time = end_time - timedelta(hours=number)
     elif 'day' in unit:
-        start_time = end_time - datetime.timedelta(days=number)
+        start_time = end_time - timedelta(days=number)
     elif 'month' in unit:
-        start_time = end_time - datetime.timedelta(days=number * 30)
+        start_time = end_time - timedelta(days=number * 30)
     elif 'year' in unit:
-        start_time = end_time - datetime.timedelta(days=number * 365)
+        start_time = end_time - timedelta(days=number * 365)
 
     if to_timestamp:
         return date_to_timestamp(start_time), date_to_timestamp(end_time)
 
     if date_format:
-        return datetime.datetime.strftime(start_time, date_format), datetime.datetime.strftime(end_time, date_format)
+        return datetime.strftime(start_time, date_format), datetime.strftime(end_time, date_format)
 
     return start_time, end_time
 
@@ -1759,7 +1759,7 @@ def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
       :return: The parsed timestamp in the date_format
       :rtype: ``str``
     """
-    return datetime.datetime.fromtimestamp(int(timestamp) / 1000.0).strftime(date_format)
+    return datetime.fromtimestamp(int(timestamp) / 1000.0).strftime(date_format)
 
 
 def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
