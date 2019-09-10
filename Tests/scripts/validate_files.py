@@ -249,8 +249,7 @@ class FilesValidator(object):
                 if not image_validator.is_valid():
                     self._is_valid = False
 
-            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(INCIDENT_FIELDS_REGEX, file_path, re.IGNORECASE):
+            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE):
                 incident_field_validator = IncidentFieldValidator(file_path, old_file_path=old_file_path,
                                                                   old_git_branch=old_branch)
                 if not incident_field_validator.is_valid():
@@ -313,8 +312,7 @@ class FilesValidator(object):
                 if not image_validator.is_valid():
                     self._is_valid = False
 
-            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(INCIDENT_FIELDS_REGEX, file_path, re.IGNORECASE):
+            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE):
                 incident_field_validator = IncidentFieldValidator(file_path)
                 if not incident_field_validator.is_valid():
                     self._is_valid = False
