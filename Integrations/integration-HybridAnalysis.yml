@@ -18,7 +18,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
-- display: Do not validate server certificate (insecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -1028,6 +1028,7 @@ script:
       required: true
       description: The scan ID of the scanned URL.
     - name: min_malicious_scanners
+      required: true
       description: The number of scanners that report the file as malicious to determine whether the file is malicious. Default is "2".
       defaultValue: "2"
     outputs:
