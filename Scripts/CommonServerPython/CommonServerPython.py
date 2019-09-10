@@ -1721,8 +1721,8 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
         end_time = datetime.now() + timedelta(hours=timezone)
         start_time = datetime.now() + timedelta(hours=timezone)
     else:
-        end_time = datetime.datetime.utcnow() + datetime.timedelta(hours=timezone)
-        start_time = datetime.datetime.utcnow() + datetime.timedelta(hours=timezone)
+        end_time = datetime.utcnow() + timedelta(hours=timezone)
+        start_time = datetime.utcnow() + timedelta(hours=timezone)
 
     unit = range_split[1]
     if 'minute' in unit:
