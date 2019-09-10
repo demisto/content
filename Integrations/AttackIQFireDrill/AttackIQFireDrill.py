@@ -1,8 +1,10 @@
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
+from requests import HTTPError
 from typing import Dict, Any
 from json.decoder import JSONDecodeError
 
@@ -28,6 +30,11 @@ HEADERS = {
     'Accept': 'application/json'
 }
 
+# Error messages
+INVALID_ID_ERR_MSG = 'Error in API call. This may be happen if you provided an invalid id.'
+API_ERR_MSG = 'Error in API call to AttackIQ. '
+
+# Transformation dicts
 ASSESSMENTS_TRANS = {
     'id': 'Id',
     'name': 'Name',
@@ -146,7 +153,7 @@ def http_request(method, url_suffix, params=None, data=None):
         # Handle error responses gracefully
         if res.status_code not in {200, 201}:
             error_reason = get_http_error_reason(res)
-            return_error(f'Error in API call to AttackIQ [{res.status_code}] - {error_reason}')
+            raise HTTPError(f'[{res.status_code}] - {error_reason}')
         try:
             return res.json()
         except JSONDecodeError:
@@ -206,7 +213,30 @@ def build_transformed_dict(src, trans_dict):
     return res
 
 
+def create_invalid_id_err_msg(orig_err, error_codes):
+    """
+    Creates an 'invalid id' error message
+    Args:
+        orig_err (str): The original error message
+        error_codes (list): List of error codes to look for
+
+    Returns (str): Error message for invalid id
+    """
+    err_msg = API_ERR_MSG
+    if any(err_code in orig_err for err_code in error_codes):
+        err_msg += f'This may be happen if you provided an invalid id.\n'
+    err_msg += orig_err
+    return err_msg
+
+
 def update_nested_value(src_dict, to_key, to_val):
+    """
+    Updates nested value according to transformation dict structure where 'a.b' key will create {'a': {'b': val}}
+    Args:
+        src_dict (dict): The original dict
+        to_key (str): Key to transform to (expected to contain '.' to mark nested)
+        to_val: The value that'll be put under the nested key
+    """
     sub_res = src_dict
     to_key_lst = to_key.split('.')
     for sub_to_key in to_key_lst[:-1]:
@@ -234,9 +264,12 @@ def activate_assessment_command():
     """ Implements attackiq-activate-assessment command
     """
     ass_id = demisto.getArg('assessment_id')
-    raw_res = http_request('POST', f'/v1/assessments/{ass_id}/activate')
-    hr = raw_res['message'] if 'message' in raw_res else f'Assessment {ass_id} activation was sent successfully.'
-    demisto.results(hr)
+    try:
+        raw_res = http_request('POST', f'/v1/assessments/{ass_id}/activate')
+        hr = raw_res['message'] if 'message' in raw_res else f'Assessment {ass_id} activation was sent successfully.'
+        demisto.results(hr)
+    except HTTPError as e:
+        return_error(create_invalid_id_err_msg(str(e), ['403']))
 
 
 def get_assessment_execution_status_command():
@@ -245,7 +278,7 @@ def get_assessment_execution_status_command():
     ass_id = demisto.getArg('assessment_id')
     raw_res = http_request('GET', f'/v1/assessments/{ass_id}/is_on_demand_running')
     ex_status = raw_res.get('message')
-    hr = f'Assessment {ass_id} execution is {"" if ex_status else "not "}finished.'
+    hr = f'Assessment {ass_id} execution is {"" if ex_status else "not "}running.'
     ec = {
         'AttackIQ.Assessment(val.Id === obj.Id)': {
             'Running': ex_status,
@@ -259,11 +292,14 @@ def get_test_execution_status_command():
     """ Implements attackiq-get-test-execution-status command
     """
     test_id = demisto.getArg('test_id')
-    raw_test_status = http_request('GET', f'/v1/tests/{test_id}/get_status')
-    test_status = build_transformed_dict(raw_test_status, TEST_STATUS_TRANS)
-    test_status['Id'] = test_id
-    hr = tableToMarkdown(f'Test {test_id} status', test_status)
-    return_outputs(hr, {'AttackIQ.Test(val.Id === obj.Id)': test_status}, raw_test_status)
+    try:
+        raw_test_status = http_request('GET', f'/v1/tests/{test_id}/get_status')
+        test_status = build_transformed_dict(raw_test_status, TEST_STATUS_TRANS)
+        test_status['Id'] = test_id
+        hr = tableToMarkdown(f'Test {test_id} status', test_status)
+        return_outputs(hr, {'AttackIQ.Test(val.Id === obj.Id)': test_status}, raw_test_status)
+    except HTTPError as e:
+        return_error(create_invalid_id_err_msg(str(e), ['500']))
 
 
 def build_test_results_hr(test_results, test_id):
@@ -303,10 +339,13 @@ def get_test_results_command(args=demisto.args()):
         'test_id': test_id,
         'show_last_result': args.get('show_last_result') == 'True'
     }
-    raw_test_res = http_request('GET', '/v1/results', params=params)
-    test_res = build_transformed_dict(raw_test_res['results'], TEST_RESULT_TRANS)
-    hr = build_test_results_hr(test_res, test_id)
-    return_outputs(hr, {'AttackIQ.TestResult(val.Id === obj.Id)': test_res}, raw_test_res)
+    try:
+        raw_test_res = http_request('GET', '/v1/results', params=params)
+        test_res = build_transformed_dict(raw_test_res['results'], TEST_RESULT_TRANS)
+        hr = build_test_results_hr(test_res, test_id)
+        return_outputs(hr, {'AttackIQ.TestResult(val.Id === obj.Id)': test_res}, raw_test_res)
+    except HTTPError as e:
+        return_error(create_invalid_id_err_msg(str(e), ['500']))
 
 
 def get_assessments(page='1', assessment_id=None):
@@ -338,11 +377,14 @@ def get_assessment_by_id_command():
     """ Implements attackiq-get-assessment-by-id command
         """
     assessment_id = demisto.getArg('assessment_id')
-    raw_assessments = get_assessments(assessment_id=assessment_id)
-    assessments_res = build_transformed_dict(raw_assessments, ASSESSMENTS_TRANS)
-    hr = tableToMarkdown(f'AttackIQ Assessment {assessment_id}', assessments_res,
-                         headers=['Id', 'Name', 'Description', 'User', 'Created', 'Modified'])
-    return_outputs(hr, {'AttackIQ.Assessment(val.Id === obj.Id)': assessments_res}, raw_assessments)
+    try:
+        raw_assessments = get_assessments(assessment_id=assessment_id)
+        assessments_res = build_transformed_dict(raw_assessments, ASSESSMENTS_TRANS)
+        hr = tableToMarkdown(f'AttackIQ Assessment {assessment_id}', assessments_res,
+                             headers=['Id', 'Name', 'Description', 'User', 'Created', 'Modified'])
+        return_outputs(hr, {'AttackIQ.Assessment(val.Id === obj.Id)': assessments_res}, raw_assessments)
+    except HTTPError as e:
+        return_error(create_invalid_id_err_msg(str(e), ['403']))
 
 
 def build_tests_hr(assessment_res):
@@ -383,10 +425,13 @@ def run_all_tests_in_assessment_command():
     """
     args = demisto.args()
     ass_id = args.get('assessment_id')
-    raw_res = http_request('POST', f'/v1/assessments/{ass_id}/run_all_tests')
-    hr = raw_res['message'] if 'message' in raw_res else \
-        f'Request to run all tests for assessment {ass_id} was sent successfully.'
-    demisto.results(hr)
+    try:
+        raw_res = http_request('POST', f'/v1/assessments/{ass_id}/run_all_tests')
+        hr = raw_res['message'] if 'message' in raw_res else \
+            f'Request to run all tests for assessment {ass_id} was sent successfully.'
+        demisto.results(hr)
+    except HTTPError as e:
+        return_error(create_invalid_id_err_msg(str(e), ['403']))
 
 
 def main():
@@ -414,6 +459,10 @@ def main():
             run_all_tests_in_assessment_command()
         else:
             return_error(f'Command {command} is not supported.')
+    except HTTPError as e:
+        # e is expected to contain parsed error message
+        e = f'{API_ERR_MSG}{str(e)}'
+        return_error(e)
     except Exception as e:
         message = f'Unexpected error: {str(e)}, traceback: {traceback.format_exc()}'
         return_error(message)

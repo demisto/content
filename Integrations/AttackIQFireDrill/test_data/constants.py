@@ -1,3 +1,11 @@
+class ResponseMock:
+    def __init__(self, _json={}):
+        self.status_code = 200
+        self._json = _json
+
+    def json(self):
+        return self._json
+
 # Dictionaries
 DICT_1to5 = {'1': 1, '2': 2, '3': 3, '4': 4, '5': 5}
 DICT_NESTED_123 = {'nested': {'1': 1, '2': 2, '3': 3}}
@@ -478,7 +486,7 @@ GET_ASS_RESULT = {
                                                            "Description": "Showcase different use cases in which FireDrill can help"}},  # noqa: E501
          "DefaultAssetGroupCount": 0}]}
 }
-GET_ASS_EXECUTION_RESULT = {'Type': 1, 'HumanReadable': 'Assessment 1 execution is not finished.',
+GET_ASS_EXECUTION_RESULT = {'Type': 1, 'HumanReadable': 'Assessment 1 execution is not running.',
                             'ContentsFormat': 'json', 'Contents': {'message': False},
                             'EntryContext': {'AttackIQ.Assessment(val.Id === obj.Id)': {'Running': False, 'Id': 1}}}
 GET_TEST_RESULT = {'Type': 1,

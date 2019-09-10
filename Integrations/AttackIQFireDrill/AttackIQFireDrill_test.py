@@ -1,9 +1,10 @@
 import pytest
 
-from AttackIQFireDrill import build_transformed_dict, activate_assessment_command, \
+from AttackIQFireDrill import build_transformed_dict, activate_assessment_command, create_invalid_id_err_msg, \
     get_assessment_execution_status_command, get_test_execution_status_command, get_test_results_command, \
     list_assessments_command, get_assessment_by_id_command, list_tests_by_assessment_command, \
     run_all_tests_in_assessment_command
+
 from test_data.constants import DICT_1to5, TRANS_DICT_134, DICT_NESTED_123, TRANS_DICT_NESTED_12, \
     TRANS_DICT_NESTED_VAL_12, DICT_LST_AAB2B, TRANS_DICT_LST_A2B, DICT_LST_NESTED, TRANS_DICT_LST_NESTED, \
     ACTIVATE_ASS_RESP, ACTIVATE_ASS_RES, GET_ASS_EXECUTION_STATUS_RESP, GET_ASS_EXECUTION_RESULT, \
@@ -12,15 +13,7 @@ from test_data.constants import DICT_1to5, TRANS_DICT_134, DICT_NESTED_123, TRAN
 
 import requests
 import demistomock as demisto
-
-
-class ResponseMock:
-    def __init__(self, _json={}):
-        self.status_code = 200
-        self._json = _json
-
-    def json(self):
-        return self._json
+from Integrations.AttackIQFireDrill.test_data.constants import ResponseMock
 
 
 def test_build_transformed_dict_basic():
@@ -47,6 +40,24 @@ def test_activate_assessment_command(mocker):
     mocker.patch.object(demisto, 'results')
     activate_assessment_command()
     demisto.results.assert_called_with('Successfully activated project c4e352ae-1506-4c74-bd90-853f02dd765a')
+
+
+def test_create_invalid_id_err_msg_no_err():
+    orig_err = 'Error test'
+    actual = create_invalid_id_err_msg(orig_err, ['403'])
+    assert actual == 'Error in API call to AttackIQ. Error test'
+
+
+def test_create_invalid_id_err_msg_with_err():
+    orig_err = 'Error test 403'
+    actual = create_invalid_id_err_msg(orig_err, ['500', '403'])
+    assert actual == 'Error in API call to AttackIQ. This may be happen if you provided an invalid id.\nError test 403'
+
+
+def test_create_invalid_id_err_msg_with_irrelevant_err():
+    orig_err = 'Error test 403'
+    actual = create_invalid_id_err_msg(orig_err, ['500'])
+    assert actual == 'Error in API call to AttackIQ. Error test 403'
 
 
 @pytest.mark.parametrize('command,args,response,expected_result', [
