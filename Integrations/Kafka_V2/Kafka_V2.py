@@ -1,5 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
+
 ''' IMPORTS '''
 import requests
 from pykafka import KafkaClient, SslConfig
@@ -120,7 +121,7 @@ def check_latest_offset(topic, partition_number=None):
     latest_offset = 0
     if partition_number is not None:
         partition = partitions.get(str(partition_number))
-        if partitions:
+        if partitions.get(str(partition)):
             latest_offset = partition[0][0]
         else:
             return_error('Partition does not exist')
@@ -137,7 +138,7 @@ def create_certificate():
     :return certificate:
     :return type: :class: `pykafka.connection.SslConfig`
     """
-    ca_path = 'ca.cert'
+    ca_path = 'ca.cert'  # type: ignore
     client_path = 'client.cert'
     client_key_path = 'client_key.key'
     if CA_CERT:
@@ -149,14 +150,14 @@ def create_certificate():
                 file.write(CLIENT_CERT)
                 client_path = os.path.abspath(client_path)
         else:
-            client_path = None
+            client_path = None  # type: ignore
         if CLIENT_CERT_KEY:
             with open(client_key_path, 'wb') as file:
                 file.write(CLIENT_CERT_KEY)
         else:
-            client_key_path = None
+            client_key_path = None  # type: ignore
     else:
-        ca_path = None
+        ca_path = None  # type: ignore
 
     return SslConfig(
         cafile=ca_path,
@@ -213,9 +214,9 @@ def produce_message():
 
     partitioning_key = str(partitioning_key)
     if partitioning_key.isdigit():
-        partitioning_key = int(partitioning_key)
+        partitioning_key = int(partitioning_key)  # type: ignore
     else:
-        partitioning_key = None
+        partitioning_key = None  # type: ignore
 
     if topic in KAFKA_CLIENT.topics:
         kafka_topic = KAFKA_CLIENT.topics[topic]
