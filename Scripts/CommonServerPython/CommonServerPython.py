@@ -1946,14 +1946,14 @@ def build_malicious_dbot_entry(indicator, indicator_type, vendor, description=No
     """ Build Malicious dbot entry
     Examples:
         >>> build_malicious_dbot_entry('8.8.8.8', 'ip', 'Vendor', 'Google DNS')
-        {'IP(val.Address && val.Address == obj.Address)': {'Address': '8.8.8.8', 'Malicious': {'Vendor': 'Vendor'\
-, 'Description': 'Google DNS'}}}
+        {'IP(val.Address && val.Address == obj.Address)': {'Malicious': {'Vendor': 'Vendor', 'Description': 'Google DNS\
+'}, 'Address': '8.8.8.8'}}
 
         >>> build_malicious_dbot_entry('md5hash', 'MD5', 'Vendor', 'Malicious File')
-        {'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 ||\
-val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 ==\
-obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'MD5': 'md5hash', 'Malicious': {'Vendor': 'Vendor',\
-'Description': 'Malicious File'}}}
+        {'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA\
+256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 =\
+= obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'Malicious': {'Vendor': 'Vendor', 'Description': 'Malicious File'}\
+, 'MD5': 'md5hash'}}
 
     :type indicator: ``str``
     :param indicator: Value (e.g. 8.8.8.8)
