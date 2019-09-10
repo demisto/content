@@ -1,5 +1,5 @@
 ## [Unreleased]
--
+Added the ***parse_date_string*** function, which parses the date string to a datetime object.
 
 ## [19.9.0] - 2019-09-04
   - IntegrationLogger improvements.
