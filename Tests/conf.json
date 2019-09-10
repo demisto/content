@@ -1771,6 +1771,12 @@
         {
             "integrations": "Threat Crowd",
             "playbookID": "ThreatCrowd - Test"
+        },
+        {
+            "integrations": "Hybrid Analysis",
+            "playbookID": "HybridAnalysis-Test",
+            "timeout": 500,
+            "fromversion": "4.1.0"
         }
     ],
     "skipped_tests": {
