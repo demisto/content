@@ -2,10 +2,8 @@ id: PAN-OS - Block IP - Custom Block Rule
 version: -1
 name: PAN-OS - Block IP - Custom Block Rule
 description: |-
-  This playbook blocks IP addresses using Palo Alto Networks Panorama or Firewall through Custom Block Rules.
-  The playbook will get malicious IP addresses as inputs, create a custom bi-directional rule to block them, and commit the configuration.
-
-  ***Note - The playbook will not check if the IP address is already blocked.
+  This playbook blocks IP addresses using Custom Block Rules in Palo Alto Networks Panorama or Firewall.
+  The playbook receives malicious IP addresses as inputs, creates a custom bi-directional rule to block them, and commits the configuration.
 starttaskid: "0"
 fromversion: 4.5.0
 tasks:
@@ -41,7 +39,7 @@ tasks:
     task:
       id: 957428b9-9a0c-4ae3-8917-83ae0a83de43
       version: -1
-      name: Is Palo Alto Networks PAN-OS enabled?
+      name: Palo Alto Networks PAN-OS enabled?
       description: ""
       type: condition
       iscommand: false
@@ -97,7 +95,7 @@ tasks:
       id: ab705923-4389-4dd6-875a-a506594ecd3a
       version: -1
       name: Panorama - Create custom block rule
-      description: Creates a custom block policy rule
+      description: Creates a custom block policy rule in Panorama.
       script: '|||panorama-custom-block-rule'
       type: regular
       iscommand: true
@@ -205,7 +203,7 @@ tasks:
     task:
       id: 487327fa-0151-4546-8cd2-e8d0bc710b29
       version: -1
-      name: PAN-OS - Create address objects
+      name: PAN-OS - Create address object
       description: Creates an address object
       script: '|||panorama-create-address'
       type: regular
@@ -296,7 +294,7 @@ tasks:
     task:
       id: 4d41a27f-1818-4f90-8bba-39b3881a4af3
       version: -1
-      name: Is AutoCommit Enabled?
+      name: AutoCommit Enabled?
       description: ""
       type: condition
       iscommand: false
@@ -363,7 +361,7 @@ tasks:
       id: a208b4df-bc52-4e61-823f-fa5f79954086
       version: -1
       name: Panorama - Create custom block rule
-      description: Creates a custom block policy rule
+      description: Creates a custom block policy rule in Panorama.
       script: '|||panorama-custom-block-rule'
       type: regular
       iscommand: true
