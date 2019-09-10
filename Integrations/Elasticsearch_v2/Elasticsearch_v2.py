@@ -17,9 +17,9 @@ USERNAME = demisto.params().get('credentials', {}).get('identifier')
 PASSWORD = demisto.params().get('credentials', {}).get('password')
 PROXY = demisto.params().get('proxy')
 HTTP_ERRORS = {
-    400: '400 Bad Request - Wrong or invalid parameters',
-    401: '401 Unauthorized - Wrong or invalid username or password',
-    403: '403 Forbidden - The account is not allowed to preform this task',
+    400: '400 Bad Request - Incorrect or invalid parameters',
+    401: '401 Unauthorized - Incorrect or invalid username or password',
+    403: '403 Forbidden - The account does not support performing this task',
     404: '404 Not Found - Elasticsearch server was not found',
     408: '408 Timeout - Check port number or Elasticsearch server credentials',
     410: '410 Gone - Elasticsearch server no longer exists in the service',
@@ -160,19 +160,19 @@ def search_command():
 def fetch_params_check():
     str_error = []  # type:List
     if TIME_FIELD == '':
-        str_error.append("Time field is not configured for fetch in the integration parameters")
+        str_error.append("Index time field is not configured.")
 
     if FETCH_INDEX == '':
-        str_error.append("Index is not configured for fetch in the integration parameters")
+        str_error.append("Index is not configured.")
 
     if FETCH_QUERY == '':
-        str_error.append("Query is not configured for fetch in the integration parameters")
+        str_error.append("Query by which to fetch incidents is not configured.")
 
     if TIME_FORMAT == '':
-        str_error.append("Time format is not configured for fetch in the integration parameters")
+        str_error.append("Time format is not configured.")
 
     if len(str_error) > 0:
-        return_error("Got The following errors in test:\n" + '\n'.join(str_error))
+        return_error("Got the following errors in test:\nFetches incidents is enabled.\n" + '\n'.join(str_error))
 
 
 def test_general_query(es):
@@ -182,17 +182,17 @@ def test_general_query(es):
     _, total_results = get_total_results(response)
 
     if total_results == 0:
-        return_error("Fetch incidents test failed - Please check Index given")
+        return_error("Fetch incidents test failed. Index value incorrect.")
 
 
 def test_date_field(es):
-    query = QueryString(query=TIME_FIELD+':*')
+    query = QueryString(query=TIME_FIELD + ':*')
     search = Search(using=es, index=FETCH_INDEX)[0:1].query(query)
     response = search.execute().to_dict()
     _, total_results = get_total_results(response)
 
     if total_results == 0:
-        return_error("Fetch incidents test failed - Please check Date field given")
+        return_error("Fetch incidents test failed. Date field value incorrect.")
 
     else:
         return response
@@ -217,10 +217,10 @@ def test_func():
         else:
             res = requests.get(SERVER, verify=INSECURE)
         if res.status_code >= 400:
-            return_error("Failed to connect, Got the following error: " + HTTP_ERRORS[int(res.status_code)])
+            return_error("Failed to connect. The following error occurred: " + HTTP_ERRORS[int(res.status_code)])
 
     except requests.exceptions.RequestException as e:
-        return_error("Failed to connect, Check Server URL and Port number. Error message: "+str(e))
+        return_error("Failed to connect. Check Server URL field and port number.\nError message: " + str(e))
 
     if demisto.params().get('isFetch'):
         # check the existence of all necessary fields for fetch
@@ -245,7 +245,7 @@ def test_func():
             datetime.strptime(hit_date, TIME_FORMAT).isoformat() + 'Z'
 
         except ValueError as e:
-            return_error("Inserted time format does not match your index. " + str(e) + '\nDate fetched: ' + hit_date)
+            return_error("Inserted time format is incorrect.\n" + str(e) + '\n' + TIME_FIELD + ' fetched: ' + hit_date)
 
     demisto.results('ok')
 
@@ -272,7 +272,7 @@ def results_to_incidents(response, current_fetch, last_fetch):
             # avoid duplication due to weak time query
             if hit_date > current_fetch:
                 inc = {
-                    'name': 'Elasticsearch: Index: ' + str(FETCH_INDEX) + ", ID: " + str(hit.get('_id')),
+                    'name': 'Elasticsearch v2: Index: ' + str(FETCH_INDEX) + ", ID: " + str(hit.get('_id')),
                     'rawJSON': json.dumps(hit),
                     'labels': incident_label_maker(hit.get('_source')),
                     'occurred': hit_date.isoformat() + 'Z'
