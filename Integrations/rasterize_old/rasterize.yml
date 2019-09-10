@@ -16,7 +16,7 @@ configuration:
 description: Rasterize URLs or emails given to it
 display: Rasterize
 name: Rasterize
-toVersion: '4.5.9'
+toversion: '4.5.9'
 script:
   commands:
   - arguments:
