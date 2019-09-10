@@ -942,3 +942,115 @@ def test_changed_beta_integration_without_beta_field():
     assert validator.is_valid_beta_integration() is False, \
         "The Beta validator approved the integration" \
         "but it should have fail it because it is missing 'beta' field with the value true"
+
+
+def test_proxy_sanity_check():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "proxy",
+                "type": 8,
+                "display": "Use system proxy settings",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_proxy_configured_correctly()
+
+
+def test_proxy_wrong_type():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "proxy",
+                "type": 9,
+                "display": "Use system proxy settings",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_proxy_configured_correctly() is False
+
+
+def test_proxy_wrong_display():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "proxy",
+                "type": 8,
+                "display": "bla",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_proxy_configured_correctly() is False
+
+
+def test_proxy_wrong_required():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "proxy",
+                "type": 8,
+                "display": "Use system proxy settings",
+                "required": True
+            }
+        ]
+    }
+
+    assert validator.is_proxy_configured_correctly() is False
+
+
+def test_insecure_wrong_display():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "insecure",
+                "type": 8,
+                "display": "Use system proxy settings",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_insecure_configured_correctly() is False
+
+
+def test_unsecure_wrong_display():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "unsecure",
+                "type": 8,
+                "display": "Use system proxy settings",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_insecure_configured_correctly() is False
+
+
+def test_unsecure_correct_display():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "unsecure",
+                "type": 8,
+                "display": "Trust any certificate (not secure)",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_insecure_configured_correctly()
