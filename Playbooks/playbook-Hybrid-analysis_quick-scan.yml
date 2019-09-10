@@ -23,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
@@ -32,10 +32,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: c2770f23-4efb-4b70-8a36-0d1c988a6a1c
+    taskid: c331db18-b495-4259-8a42-3bd8b339d196
     type: playbook
     task:
-      id: c2770f23-4efb-4b70-8a36-0d1c988a6a1c
+      id: c331db18-b495-4259-8a42-3bd8b339d196
       version: -1
       name: GenericPolling
       description: ""
@@ -47,8 +47,10 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
+      AdditionalPollingCommandArgNames:
+        simple: 'min_malicious_scanners'
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.min_malicious_scanners}
       Ids:
         simple: ${HybridAnalysis.URL.ScanID}
       Interval:
@@ -60,7 +62,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: HybridAnalysis.URL(val.Finished != 'true').ScanID
+        simple: HybridAnalysis.URL(val.Finished != true).ScanID
     separatecontext: true
     loop:
       iscommand: false
@@ -69,8 +71,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 420
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -103,8 +105,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 230
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -138,8 +140,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 630
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -161,8 +163,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 810
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -173,9 +175,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 825,
-        "width": 390,
-        "x": 440,
+        "height": 735,
+        "width": 380,
+        "x": 50,
         "y": 50
       }
     }
