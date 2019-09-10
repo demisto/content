@@ -21,7 +21,7 @@ configuration:
     CA certificate of Kafka server (.cer)
   name: ca_cert
   required: false
-  type: 0
+  type: 12
 - display: Client certificate (.cer)
   name: client_cert
   required: false
