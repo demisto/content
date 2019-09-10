@@ -144,7 +144,7 @@ def createPyDocumentation(path, origin, language):
         if a != 'demisto' and callable(ns.get(a)) and a not in pyPrivateFuncs:
             docstring = inspect.getdoc(ns.get(a))
             if not docstring:
-                print("docstring for function " + a + " is empty")
+                print("docstring for function {} is empty".format(a))
                 isErrorPy = True
             else:
                 y = parser.parse_docstring(docstring)

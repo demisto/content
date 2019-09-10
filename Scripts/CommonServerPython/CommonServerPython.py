@@ -2064,7 +2064,7 @@ if 'requests' in sys.modules:
              :param proxy: Use system proxy
 
              :type ok_codes: ``tuple``
-             :param ok_codes: acceptable OK codes. in None will use response.ok
+             :param ok_codes: acceptable OK codes. If None will use response.ok
 
              :return: No data returned
              :rtype: ``None``
@@ -2149,7 +2149,7 @@ if 'requests' in sys.modules:
                 would like the full response object returned.
 
             :type ok_codes: ``tuple``
-            :param ok_codes: acceptable OK codes. in None will use response.ok
+            :param ok_codes: acceptable OK codes. If None will use response.ok
 
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``requests.Response``
