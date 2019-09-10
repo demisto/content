@@ -360,8 +360,8 @@ def build_tests_hr(assessment_res):
         scenarios = ass_cpy.pop('Scenarios', {})
         test_name = ass_cpy.get('Name')
         hr += tableToMarkdown(f'Test - {test_name}', ass_cpy,
-                             headers=['Id', 'Name', 'Created', 'Modified', 'Runnable', 'LastResult'],
-                             headerTransform=pascalToSpace)
+                              headers=['Id', 'Name', 'Created', 'Modified', 'Runnable', 'LastResult'],
+                              headerTransform=pascalToSpace)
         hr += tableToMarkdown(f'Assets ({test_name})', assets)
         hr += tableToMarkdown(f'Scenarios ({test_name})', scenarios)
     return hr
