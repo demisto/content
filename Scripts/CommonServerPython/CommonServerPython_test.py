@@ -11,8 +11,7 @@ import demistomock as demisto
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger
-
+    IntegrationLogger, parse_date_string
 INFO = {'b': 1,
         'a': {
             'safd': 3,
@@ -778,3 +777,25 @@ class TestBaseClient(object):
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectionError)
         with raises(DemistoException, match="Verify that the server URL parameter"):
             self.client._http_request('get', 'event', resp_type='response')
+
+
+def test_parse_date_string():
+    # test unconverted data remains: Z
+    assert parse_date_string('2019-09-17T06:16:39Z') == datetime(2019, 9, 17, 6, 16, 39)
+
+    # test unconverted data remains: .22Z
+    assert parse_date_string('2019-09-17T06:16:39.22Z') == datetime(2019, 9, 17, 6, 16, 39, 220000)
+
+    # test time data without ms does not match format with ms
+    assert parse_date_string('2019-09-17T06:16:39Z', '%Y-%m-%dT%H:%M:%S.%f') == datetime(2019, 9, 17, 6, 16, 39)
+
+    # test time data with timezone Z does not match format with timezone +05:00
+    assert parse_date_string('2019-09-17T06:16:39Z', '%Y-%m-%dT%H:%M:%S+05:00') == datetime(2019, 9, 17, 6, 16, 39)
+
+    # test time data with timezone +05:00 does not match format with timezone Z
+    assert parse_date_string('2019-09-17T06:16:39+05:00', '%Y-%m-%dT%H:%M:%SZ') == datetime(2019, 9, 17, 6, 16, 39)
+
+    # test time data with timezone -05:00 and with ms does not match format with timezone +02:00 without ms
+    assert parse_date_string(
+        '2019-09-17T06:16:39.4040+05:00', '%Y-%m-%dT%H:%M:%S+02:00'
+    ) == datetime(2019, 9, 17, 6, 16, 39, 404000)

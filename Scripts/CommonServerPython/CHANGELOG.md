@@ -1,6 +1,7 @@
 ## [Unreleased]
-- Added ***BaseClient*** and ***DemistoException*** objects.
-- Added ***build_dbot_entry***, ***build_malicious_dbot_entry*** functions.
+  - Added ***BaseClient*** and ***DemistoException*** objects.
+  - Added ***build_dbot_entry***, ***build_malicious_dbot_entry*** functions.
+  - Added the ***parse_date_string*** function, which parses the date string to a datetime object.
 
 ## [19.9.0] - 2019-09-04
   - IntegrationLogger improvements.
