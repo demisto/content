@@ -3,13 +3,13 @@ This script will be appended to each server script before being executed.
 Please notice that to add custom common code, add it to the CommonServerUserPython script
 """
 import socket
-import datetime
+from datetime import datetime, timedelta
+import time
 import json
 import sys
 import os
 import re
 import base64
-import time
 from collections import OrderedDict
 import xml.etree.cElementTree as ET
 import demistomock as demisto
@@ -1874,7 +1874,7 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
         :rtype: ``(datetime.datetime, datetime.datetime)``
     """
     try:
-        return datetime.datetime.strptime(date_string, date_format)
+        return datetime.strptime(date_string, date_format)
     except ValueError as e:
         error_message = str(e)
 
@@ -1916,7 +1916,7 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
             # found timezone - appending it to the date format
             date_format += time_zone[0]
 
-        return datetime.datetime.strptime(date_string, date_format)
+        return datetime.strptime(date_string, date_format)
 
 
 def build_dbot_entry(indicator, indicator_type, vendor, score, description=None, build_malicious=True):
@@ -1979,14 +1979,14 @@ def build_malicious_dbot_entry(indicator, indicator_type, vendor, description=No
     """ Build Malicious dbot entry
     Examples:
         >>> build_malicious_dbot_entry('8.8.8.8', 'ip', 'Vendor', 'Google DNS')
-        {'IP(val.Address && val.Address == obj.Address)': {'Address': '8.8.8.8', 'Malicious': {'Vendor': 'Vendor'\
-, 'Description': 'Google DNS'}}}
+        {'IP(val.Address && val.Address == obj.Address)': {'Malicious': {'Vendor': 'Vendor', 'Description': 'Google DNS\
+'}, 'Address': '8.8.8.8'}}
 
         >>> build_malicious_dbot_entry('md5hash', 'MD5', 'Vendor', 'Malicious File')
-        {'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 ||\
-val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 ==\
-obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'MD5': 'md5hash', 'Malicious': {'Vendor': 'Vendor',\
-'Description': 'Malicious File'}}}
+        {'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA\
+256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTP\
+H || val.SSDeep && val.SSDeep == obj.SSDeep)': {'Malicious': {'Vendor': 'Vendor', 'Description': 'Malicious File'}, 'MD5\
+': 'md5hash'}}
 
     :type indicator: ``str``
     :param indicator: Value (e.g. 8.8.8.8)
