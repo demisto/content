@@ -1,6 +1,6 @@
 category: Messaging
 commonfields:
-  id: Kafka V2_copy
+  id: Kafka V2
   version: -1
 configuration:
 - display: CSV list of Kafka brokers to connect to, e.g. 172.16.20.207:9092,172.16.20.234:9093
@@ -62,8 +62,8 @@ configuration:
   required: false
   type: 0
 description: The Open source distributed streaming platform
-display: Kafka V2_copy
-name: Kafka V2_copy
+display: Kafka V2
+name: Kafka V2
 script:
   commands:
   - deprecated: false
@@ -157,5 +157,6 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python2
 tests:
 - No Test - Can not connect to instance from remote
