@@ -30,7 +30,7 @@ configuration:
   required: false
 - display: Enable public submissions by default.
   name: is_public
-  defaultvalue: false
+  defaultvalue: true
   type: 8
   required: false
 script:
