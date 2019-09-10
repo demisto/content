@@ -1775,7 +1775,7 @@
         {
             "integrations": "Hybrid Analysis",
             "playbookID": "HybridAnalysis-Test",
-            "timeout": 1000,
+            "timeout": 500,
             "fromversion": "4.1.0"
         }
     ],
