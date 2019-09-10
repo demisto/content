@@ -354,6 +354,11 @@
             "integrations": "Luminate"
         },
         {
+            "playbookID": "Palo Alto Networks - Malware Remediation Test",
+            "integrations": "Palo Alto Minemeld",
+            "fromversion": "4.5.0"
+        },
+        {
             "playbookID": "SumoLogic-Test",
             "integrations": "SumoLogic",
             "fromversion": "4.1.0"
