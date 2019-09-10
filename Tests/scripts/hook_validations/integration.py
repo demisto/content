@@ -66,6 +66,8 @@ class IntegrationValidator(object):
         """Check whether the Integration is valid or not, update the _is_valid field to determine that"""
         self.is_valid_subtype()
         self.is_default_arguments()
+        self.is_proxy_configured_correctly()
+        self.is_insecure_configured_correctly()
 
         return self._is_valid
 
@@ -74,6 +76,48 @@ class IntegrationValidator(object):
         self.is_default_arguments()
         self.is_valid_beta(is_new)
         return self._is_valid
+
+    def is_valid_param(self, param_name, param_display):
+        """Check if the given parameter has the right configuration."""
+        err_msgs = []
+        configuration = self.current_integration.get('configuration', [])
+        for configuration_param in configuration:
+            configuration_param_name = configuration_param['name']
+            if configuration_param_name == param_name:
+                if configuration_param['display'] != param_display:
+                    err_msgs.append('The display name of the {} parameter should be \'{}\''.format(param_name,
+                                                                                                   param_display))
+
+                elif configuration_param.get('defaultvalue', '') != '':
+                    err_msgs.append('The default value of the {} parameter should be \'\''.format(param_name))
+
+                elif configuration_param.get('required', False):
+                    err_msgs.append('The required field of the {} parameter should be False'.format(param_name))
+
+                elif configuration_param.get('type') != 8:
+                    err_msgs.append('The type field of the {} parameter should be 8'.format(param_name))
+
+        if err_msgs:
+            print_error('Received the following error for {} validation:\n{}'.format(param_name, '\n'.join(err_msgs)))
+            self._is_valid = False
+            return False
+
+        return True
+
+    def is_proxy_configured_correctly(self):
+        """Check that if an integration has a proxy parameter that it is configured properly."""
+        return self.is_valid_param('proxy', 'Use system proxy settings')
+
+    def is_insecure_configured_correctly(self):
+        """Check that if an integration has a insecure parameter that it is configured properly."""
+        insecure_field_name = ''
+        configuration = self.current_integration.get('configuration', [])
+        for configuration_param in configuration:
+            if configuration_param['name'] == 'insecure' or configuration_param['name'] == 'unsecure':
+                insecure_field_name = configuration_param['name']
+
+        if insecure_field_name:
+            return self.is_valid_param(insecure_field_name, 'Trust any certificate (not secure)')
 
     def is_default_arguments(self):
         """Check if a reputation command (domain/email/file/ip/url)

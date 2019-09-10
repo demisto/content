@@ -1,0 +1,664 @@
+id: HybridAnalysis-Test
+version: -1
+fromversion: 4.1.0
+name: HybridAnalysis-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b2d70110-f597-4f63-8f7f-c62350b38c1f
+    type: start
+    task:
+      id: b2d70110-f597-4f63-8f7f-c62350b38c1f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 705c8f95-d80e-4260-8201-e3218c24db3d
+    type: regular
+    task:
+      id: 705c8f95-d80e-4260-8201-e3218c24db3d
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: fbe56d92-ec38-4117-84bf-cbcee07f9616
+    type: title
+    task:
+      id: fbe56d92-ec38-4117-84bf-cbcee07f9616
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 9ffe7883-9e27-4376-8932-5bcb23c8ed14
+    type: regular
+    task:
+      id: 9ffe7883-9e27-4376-8932-5bcb23c8ed14
+      version: -1
+      name: hybrid-analysis-scan
+      description: Get summary information for a given MD5, SHA1 or SHA256 and all
+        the reports generated for any environment ID
+      script: '|||hybrid-analysis-scan'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      file:
+        complex:
+          root: File
+          accessor: SHA256
+      malicious_threat_levels: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 82d1869a-a384-4f04-886c-bd9a7f3d2744
+    type: condition
+    task:
+      id: 82d1869a-a384-4f04-886c-bd9a7f3d2744
+      version: -1
+      name: verify-scan
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: Hybrid Analysis
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.submitname
+            iscontext: true
+          right:
+            value:
+              simple: test_file.pdf
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: File.environmentId
+            iscontext: true
+          right:
+            value:
+              simple: "100"
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 33a74522-fb29-4501-8be5-597f5243aaab
+    type: regular
+    task:
+      id: 33a74522-fb29-4501-8be5-597f5243aaab
+      version: -1
+      name: hybrid-analysis-submit-url
+      description: Submit a website's url or url with file for analysis
+      script: '|||hybrid-analysis-submit-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      environmentID:
+        simple: "100"
+      url:
+        simple: www.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 21e15bba-3e7a-495d-8c29-c41f89520449
+    type: regular
+    task:
+      id: 21e15bba-3e7a-495d-8c29-c41f89520449
+      version: -1
+      name: verify submission through scan
+      description: Get summary information for a given MD5, SHA1 or SHA256 and all
+        the reports generated for any environment ID
+      script: '|||hybrid-analysis-scan'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      file:
+        simple: ${HybridAnalysis.Submit.SHA256}
+      malicious_threat_levels: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 415817ca-d2ce-46e4-8b0f-ce855fd9d588
+    type: condition
+    task:
+      id: 415817ca-d2ce-46e4-8b0f-ce855fd9d588
+      version: -1
+      name: verify submission scan
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: dede989a-6d42-44de-8c98-2d02633adf95
+    type: regular
+    task:
+      id: dede989a-6d42-44de-8c98-2d02633adf95
+      version: -1
+      name: hybrid-analysis-search
+      description: Search the database using the Hybrid Analysis search syntax
+      script: '|||hybrid-analysis-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      authentihash: {}
+      av_detect: {}
+      context: {}
+      country: {}
+      domain: {}
+      env_id: {}
+      filename:
+        simple: test.exe
+      filetype: {}
+      filetype_desc: {}
+      host: {}
+      imp_hash: {}
+      min_malicious_scanners: {}
+      port: {}
+      query: {}
+      similar_to: {}
+      ssdeep: {}
+      tag: {}
+      url: {}
+      verdict: {}
+      vx_family: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: d6d16cd8-f9d5-4797-8aad-725071e28700
+    type: condition
+    task:
+      id: d6d16cd8-f9d5-4797-8aad-725071e28700
+      version: -1
+      name: verify-search
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: test.exe
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 127b7109-71c8-4162-8738-42b14cd68bc3
+    type: regular
+    task:
+      id: 127b7109-71c8-4162-8738-42b14cd68bc3
+      version: -1
+      name: Create sample file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+      - "5"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/pdfworking.pdf
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 95dd4a7c-4f4b-42e1-8ba4-19ee130346d0
+    type: regular
+    task:
+      id: 95dd4a7c-4f4b-42e1-8ba4-19ee130346d0
+      version: -1
+      name: hybrid-analysis-submit-sample
+      description: Submit a file from investigation to analysis server  (NOTE - minimum
+        required authorization is `default`)
+      script: '|||hybrid-analysis-submit-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      entryId:
+        complex:
+          root: File
+          accessor: EntryID
+      environmentID:
+        simple: "100"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 0146e801-7563-41a3-83ce-e3382bd0cf4d
+    type: condition
+    task:
+      id: 0146e801-7563-41a3-83ce-e3382bd0cf4d
+      version: -1
+      name: verify-submission
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: HybridAnalysis.Submit.EnvironmentID
+            iscontext: true
+          right:
+            value:
+              simple: "100"
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: bc8f396b-c95e-4417-8cac-698331be2522
+    type: regular
+    task:
+      id: bc8f396b-c95e-4417-8cac-698331be2522
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: scan failed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: d34b87e7-b45a-4fe5-84d7-7dac891f51a1
+    type: regular
+    task:
+      id: d34b87e7-b45a-4fe5-84d7-7dac891f51a1
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: search failed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: eb5cc410-f11a-4ed4-8e11-978178d02daf
+    type: condition
+    task:
+      id: eb5cc410-f11a-4ed4-8e11-978178d02daf
+      version: -1
+      name: verify quick-scan results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HybridAnalysis.URL.SubmissionType
+            iscontext: true
+          right:
+            value:
+              simple: page_url
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 4c290456-9fd0-48b8-8796-7c01e5ee31d4
+    type: regular
+    task:
+      id: 4c290456-9fd0-48b8-8796-7c01e5ee31d4
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: quick-scan failed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: b7c5c3a7-5097-4317-82a2-632545d0bbc4
+    type: playbook
+    task:
+      id: b7c5c3a7-5097-4317-82a2-632545d0bbc4
+      version: -1
+      name: Hybrid-analysis quick-scan
+      playbookName: Hybrid-analysis quick-scan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      min_malicious_scanners:
+        simple: "2"
+      scan_type:
+        simple: all
+      url:
+        simple: www.google.com
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_11_yes": 0.35
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2485,
+        "width": 1465,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
