@@ -550,36 +550,47 @@ def validate_auth_header(headers: dict) -> bool:
     integration_context: dict = demisto.getIntegrationContext()
     open_id_metadata: dict = json.loads(integration_context.get('open_id_metadata', '{}'))
     keys: list = open_id_metadata.get('keys', [])
-    last_updated: float = open_id_metadata.get('last_updated', 0)
-    if last_updated < datetime.timestamp(datetime.now() + timedelta(days=5)):
+
+    unverified_headers: dict = jwt.get_unverified_header(jwt_token)
+    key_id: str = unverified_headers.get('kid', '')
+    key_object: dict = dict()
+
+    # Check if we got the requested key in cache
+    for key in keys:
+        if key.get('kid') == key_id:
+            key_object = key
+            break
+
+    if not key_object:
+        # Didn't find requested key in cache, getting new keys
         try:
             open_id_url: str = 'https://login.botframework.com/v1/.well-known/openidconfiguration'
             response: dict = requests.get(open_id_url).json()
             jwks_uri: str = response.get('jwks_uri', '')
             keys_response: dict = requests.get(jwks_uri).json()
             keys = keys_response.get('keys', [])
-            last_updated = datetime.timestamp(datetime.now())
             open_id_metadata['keys'] = keys
-            open_id_metadata['last_updated'] = last_updated
         except ValueError:
             demisto.info('Authorization header validation - failed to parse keys response')
             return False
+
     if not keys:
+        # Didn't get new keys
         demisto.info('Authorization header validation - failed to get keys')
         return False
 
-    unverified_headers: dict = jwt.get_unverified_header(jwt_token)
-    key_id: str = unverified_headers.get('kid', '')
-    key_object: dict = dict()
+    # Find requested key in new keys
     for key in keys:
         if key.get('kid') == key_id:
             key_object = key
             break
+
     if not key_object:
+        # Didn't find requested key in new keys
         demisto.info('Authorization header validation - failed to find relevant key')
         return False
-    endorsements: list = key_object.get('endorsements', [])
 
+    endorsements: list = key_object.get('endorsements', [])
     if not endorsements or 'msteams' not in endorsements:
         demisto.info('Authorization header validation - failed to verify endorsements')
         return False
