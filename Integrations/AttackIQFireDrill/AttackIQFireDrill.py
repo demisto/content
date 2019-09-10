@@ -276,16 +276,19 @@ def get_assessment_execution_status_command():
     """ Implements attackiq-get-assessment-execution-status command
     """
     ass_id = demisto.getArg('assessment_id')
-    raw_res = http_request('GET', f'/v1/assessments/{ass_id}/is_on_demand_running')
-    ex_status = raw_res.get('message')
-    hr = f'Assessment {ass_id} execution is {"" if ex_status else "not "}running.'
-    ec = {
-        'AttackIQ.Assessment(val.Id === obj.Id)': {
-            'Running': ex_status,
-            'Id': ass_id
+    try:
+        raw_res = http_request('GET', f'/v1/assessments/{ass_id}/is_on_demand_running')
+        ex_status = raw_res.get('message')
+        hr = f'Assessment {ass_id} execution is {"" if ex_status else "not "}running.'
+        ec = {
+            'AttackIQ.Assessment(val.Id === obj.Id)': {
+                'Running': ex_status,
+                'Id': ass_id
+            }
         }
-    }
-    return_outputs(hr, ec, raw_res)
+        return_outputs(hr, ec, raw_res)
+    except HTTPError as e:
+        return_error(create_invalid_id_err_msg(str(e), ['403']))
 
 
 def get_test_execution_status_command():
