@@ -1,5 +1,3 @@
-import demistomock as demisto
-
 # Common functions script
 # =======================
 # This script will be appended to each server script before being executed.
@@ -15,6 +13,7 @@ import base64
 from collections import OrderedDict
 import socket
 import xml.etree.cElementTree as ET
+import demistomock as demisto
 
 IS_PY3 = sys.version_info[0] == 3
 # pylint: disable=undefined-variable
@@ -486,14 +485,13 @@ def FormatADTimestamp(ts):
 
 
 def PrettifyCompactedTimestamp(x):
-    """
-       Formats a compacted timestamp string into human readable time representation
+    """Formats a compacted timestamp string into human readable time representation
 
-       :type x: ``str``
-       :param x: The timestamp to be formatted (required)
+   :type x: ``str``
+   :param x: The timestamp to be formatted (required)
 
-       :return: A string represeting the time
-       :rtype: ``str``
+   :return: A string represeting the time
+   :rtype: ``str``
     """
     return '%s-%s-%sT%s:%s:%s' % (x[:4], x[4:6], x[6:8], x[8:10], x[10:12], x[12:])
 
