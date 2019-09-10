@@ -88,7 +88,7 @@ class IntegrationValidator(object):
                     err_msgs.append('The display name of the {} parameter should be \'{}\''.format(param_name,
                                                                                                    param_display))
 
-                elif configuration_param.get('defaultvalue', '') != '':
+                elif configuration_param.get('defaultvalue', '') and configuration_param.get('defaultvalue', '') != '':
                     err_msgs.append('The default value of the {} parameter should be \'\''.format(param_name))
 
                 elif configuration_param.get('required', False):
