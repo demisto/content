@@ -9,10 +9,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: aecc8d7e-1dae-4671-86a2-3b6c5c68d3e3
+    taskid: 7144823f-b498-4a71-8d20-8836daf980e2
     type: start
     task:
-      id: aecc8d7e-1dae-4671-86a2-3b6c5c68d3e3
+      id: 7144823f-b498-4a71-8d20-8836daf980e2
       version: -1
       name: ""
       description: ""
@@ -20,14 +20,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
-      - "5"
+      - "14"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 387.5,
-          "y": -40
+          "y": -210
         }
       }
     note: false
@@ -35,10 +34,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 7ecb1dab-3891-4af5-8ade-1ed207b6c292
+    taskid: e22b070d-665b-4617-8c22-b9c70dd9d9e3
     type: regular
     task:
-      id: 7ecb1dab-3891-4af5-8ade-1ed207b6c292
+      id: e22b070d-665b-4617-8c22-b9c70dd9d9e3
       version: -1
       name: PAN OS - Update IP EDL
       description: Updates the instance context with the specified list name and list
@@ -88,10 +87,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 5212cc76-4229-4640-8c48-2c6dc5121df7
+    taskid: 3b58c187-0f80-4fe1-86e9-7e39f7e073db
     type: regular
     task:
-      id: 5212cc76-4229-4640-8c48-2c6dc5121df7
+      id: 3b58c187-0f80-4fe1-86e9-7e39f7e073db
       version: -1
       name: PAN-OS - Refresh IP EDL
       description: Refreshes the specified external dynamic list
@@ -120,10 +119,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: fcbcfb15-baa5-4f17-820b-f7e35759a5d8
+    taskid: 8349b9db-d407-4d95-80c3-3a17c8626c91
     type: title
     task:
-      id: fcbcfb15-baa5-4f17-820b-f7e35759a5d8
+      id: 8349b9db-d407-4d95-80c3-3a17c8626c91
       version: -1
       name: Malicious IPs
       description: ""
@@ -146,10 +145,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 3366edec-5e23-4f77-88e9-556bd94d8e71
+    taskid: 7d26ed7d-02a6-4ccb-80b9-d3b8b52c92d0
     type: title
     task:
-      id: 3366edec-5e23-4f77-88e9-556bd94d8e71
+      id: 7d26ed7d-02a6-4ccb-80b9-d3b8b52c92d0
       version: -1
       name: Malicious URLs
       description: ""
@@ -172,10 +171,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: cde82816-b42f-414f-8621-21dfaac45790
+    taskid: 4030a77b-b3b2-4a4f-87c6-e43217117f37
     type: regular
     task:
-      id: cde82816-b42f-414f-8621-21dfaac45790
+      id: 4030a77b-b3b2-4a4f-87c6-e43217117f37
       version: -1
       name: PAN OS - Update URL EDL
       description: Updates the instance context with the specified list name and list
@@ -226,10 +225,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 75e39c57-8319-4af9-812f-3a1f7d644094
+    taskid: 133163e9-86c8-4e91-87e1-94c4dd3b5362
     type: regular
     task:
-      id: 75e39c57-8319-4af9-812f-3a1f7d644094
+      id: 133163e9-86c8-4e91-87e1-94c4dd3b5362
       version: -1
       name: PAN-OS - Refresh URL EDL
       description: Refreshes the specified external dynamic list
@@ -258,10 +257,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 0b19e64b-b14b-438f-8872-a43815f985b7
+    taskid: 126ef010-3b9e-403b-8f7a-0a3e27fdf3d7
     type: title
     task:
-      id: 0b19e64b-b14b-438f-8872-a43815f985b7
+      id: 126ef010-3b9e-403b-8f7a-0a3e27fdf3d7
       version: -1
       name: Done
       description: ""
@@ -281,10 +280,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 9f4e43ff-b102-424c-8b1e-8f0c860ddea5
+    taskid: ee05bf94-70c7-4fa3-86ce-7fbd5b2f63b3
     type: condition
     task:
-      id: 9f4e43ff-b102-424c-8b1e-8f0c860ddea5
+      id: ee05bf94-70c7-4fa3-86ce-7fbd5b2f63b3
       version: -1
       name: Are there IP addresses to update?
       description: ""
@@ -318,10 +317,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 912cc3a0-e7ee-4d6d-8391-7cd617b9dd96
+    taskid: d94f2109-4196-42b6-8e1a-1ac606354080
     type: condition
     task:
-      id: 912cc3a0-e7ee-4d6d-8391-7cd617b9dd96
+      id: d94f2109-4196-42b6-8e1a-1ac606354080
       version: -1
       name: Are there URLs to update?
       description: ""
@@ -355,15 +354,15 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 949b0e07-8d93-4b7e-8751-923ef4c6f281
+    taskid: 03ac66c8-ebed-49d0-8d8a-8675db38e88a
     type: playbook
     task:
-      id: 949b0e07-8d93-4b7e-8751-923ef4c6f281
+      id: 03ac66c8-ebed-49d0-8d8a-8675db38e88a
       version: -1
       name: PAN-OS EDL Setup
       description: Sets up external dynamic list in PAN-OS.\nIn case file exists in
-        web server, the file is synchronized with Demisto. Lastly, it creates an EDL object and
-        matching rule.
+        web server, the file is synchronized with Demisto. Lastly, it creates an EDL
+        object and matching rule.
       playbookName: PAN-OS EDL Setup
       type: playbook
       iscommand: false
@@ -413,10 +412,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 4703ac5c-ade6-4d1f-8c9a-68ec7ced496d
+    taskid: 1b142fd6-27ca-4cad-8291-57380d422c8e
     type: playbook
     task:
-      id: 4703ac5c-ade6-4d1f-8c9a-68ec7ced496d
+      id: 1b142fd6-27ca-4cad-8291-57380d422c8e
       version: -1
       name: PAN-OS EDL Setup
       playbookName: PAN-OS EDL Setup
@@ -466,18 +465,75 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 0390aedf-db29-4159-8ee7-e2f83dbddefa
+    type: condition
+    task:
+      id: 0390aedf-db29-4159-8ee7-e2f83dbddefa
+      version: -1
+      name: Is Palo Alto Networks PAN-OS EDL Management Enabled?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "4"
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: palo_alto_networks_pan_os_edl_management
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
       "10_9_#default#": 0.45,
-      "11_9_#default#": 0.45
+      "11_9_#default#": 0.44,
+      "14_9_#default#": 0.84
     },
     "paper": {
       "dimensions": {
-        "height": 1035,
+        "height": 1205,
         "width": 1520,
         "x": -180,
-        "y": -40
+        "y": -210
       }
     }
   }

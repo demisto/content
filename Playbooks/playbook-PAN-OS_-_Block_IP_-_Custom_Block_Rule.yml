@@ -294,7 +294,7 @@ tasks:
     task:
       id: 4d41a27f-1818-4f90-8bba-39b3881a4af3
       version: -1
-      name: AutoCommit Enabled?
+      name: AutoCommit defined?
       description: ""
       type: condition
       iscommand: false

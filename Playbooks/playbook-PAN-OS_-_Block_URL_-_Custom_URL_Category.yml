@@ -450,7 +450,7 @@ tasks:
     task:
       id: 80060245-606b-4c59-8baa-c985a309745f
       version: -1
-      name: AutoCommit Enabled?
+      name: AutoCommit defined?
       description: ""
       type: condition
       iscommand: false
@@ -516,7 +516,7 @@ tasks:
     task:
       id: 3c782409-7469-45c5-80e0-c95308ad57bf
       version: -1
-      name: Is AutoCommit Enabled?
+      name: AutoCommit defined?
       description: ""
       type: condition
       iscommand: false

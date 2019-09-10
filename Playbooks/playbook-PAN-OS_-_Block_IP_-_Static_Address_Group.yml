@@ -362,7 +362,7 @@ tasks:
     task:
       id: 52739aac-151a-484e-8ca0-cb85200d4a9b
       version: -1
-      name: AutoCommit Enabled?
+      name: AutoCommit defined?
       description: ""
       type: condition
       iscommand: false
