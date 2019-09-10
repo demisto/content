@@ -721,7 +721,7 @@ class TestBaseClient(object):
     def test_http_request_json_negative(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', text='notjson')
-        with raises(DemistoException, match="Failed to parse json object from response: notjson'"):
+        with raises(DemistoException, match="Failed to parse json"):
             self.client._http_request('get', 'event')
 
     def test_http_request_text(self, requests_mock):
@@ -730,7 +730,7 @@ class TestBaseClient(object):
         assert res == json.dumps(self.text)
 
     def test_http_request_content(self, requests_mock):
-        requests_mock.get('http://example.com/api/v2/event', content=bytes(json.dumps(self.text)))
+        requests_mock.get('http://example.com/api/v2/event', content=str.encode(json.dumps(self.text)))
         res = self.client._http_request('get', 'event', resp_type='text')
         assert res == json.dumps(self.text)
 
@@ -752,7 +752,7 @@ class TestBaseClient(object):
 
     def test_http_request_not_ok_with_json(self, requests_mock):
         from CommonServerPython import DemistoException
-        requests_mock.get('http://example.com/api/v2/event', status_code=500, content=bytes(json.dumps(self.text)))
+        requests_mock.get('http://example.com/api/v2/event', status_code=500, content=str.encode(json.dumps(self.text)))
         with raises(DemistoException, match="Error in Name API"):
             self.client._http_request('get', 'event')
 
