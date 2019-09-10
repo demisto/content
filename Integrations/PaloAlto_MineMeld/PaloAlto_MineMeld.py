@@ -72,7 +72,6 @@ class APIClient(object):
 
         if method is not None:
             api_request.get_method = lambda: method  # type: ignore
-
         try:
             result = urllib2.urlopen(
                 api_request,
@@ -86,9 +85,9 @@ class APIClient(object):
             result.close()
 
         except urllib2.HTTPError, e:
-            demisto.debug(e.reason)
+            demisto.info(e.reason)
             if e.code != 400:
-                raise
+                return_error(e.reason)
             content = '{ "result":[] }'
 
         return content

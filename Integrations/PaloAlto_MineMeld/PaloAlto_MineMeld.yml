@@ -19,8 +19,7 @@ configuration:
   name: whitelist
   required: false
   type: 0
-- defaultvalue: 'false'
-  display: Use system proxy settings
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
