@@ -3176,6 +3176,62 @@ def parse_email_headers(header, raw=False):
     return parsed_headers
 
 
+def get_msg_mail_format(msg_dict):
+    try:
+        return msg_dict['Headers'].split('Content-type:')[1].split(';')[0]
+    except ValueError:
+        return ''
+    except IndexError:
+        return ''
+
+
+def is_valid_header_to_parse(header):
+    return len(header) > 0 and not header == ' ' and 'From nobody' not in header
+
+
+def create_headers_map(msg_dict_headers):
+    headers = []
+    headers_map = dict()  # type: dict
+    header_key = 'initial key'
+    header_value = 'initial header'
+
+    for header in msg_dict_headers.split('\n'):
+        if is_valid_header_to_parse(header):
+            if not header[0] == ' ' and not header[0] == '\t':
+                if header_value != 'initial header':
+                    header_value = convert_to_unicode(header_value)
+                    headers.append(
+                        {
+                            'name': header_key,
+                            'value': header_value
+                        }
+                    )
+
+                    if header_key in headers_map:
+                        # in case there is already such header
+                        # then add that header value to value array
+                        if not isinstance(headers_map[header_key], list):
+                            # convert the existing value to array
+                            headers_map[header_key] = [headers_map[header_key]]
+
+                        # add the new value to the value array
+                        headers_map[header_key].append(header_value)
+                    else:
+                        headers_map[header_key] = header_value
+
+                header_words = header.split(' ', 1)
+
+                header_key = header_words[0][:-1]
+                header_value = ' '.join(header_words[1:])
+                if not header_value == '' and header_value[-1] == ' ':
+                    header_value = header_value[:-1]
+
+            else:
+                header_value += header[:-1] if header[-1:] == ' ' else header
+
+    return headers, headers_map
+
+
 ########################################################################################################################
 ENCODINGS_TYPES = set(['utf-8', 'iso8859-1'])
 REGEX_EMAIL = r"\b[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+\b"
@@ -3225,7 +3281,7 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
         md += u"* {0}:\t{1}\n".format('Body/HTML', email_data['HTML'] or "")
 
     md += u"* {0}:\t{1}\n".format('Attachments', email_data.get('Attachments') or "")
-    md += u"\n\n" + tableToMarkdown("Headers", email_data['HeadersMap'])
+    md += u"\n\n" + tableToMarkdown('HeadersMap', email_data['HeadersMap'])
     return md
 
 
@@ -3309,7 +3365,23 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
     if not msg:
         raise Exception("Could not parse msg file!")
 
-    email_data = msg.as_dict(max_depth)
+    msg_dict = msg.as_dict(max_depth)
+    mail_format_type = get_msg_mail_format(msg_dict)
+    headers, headers_map = create_headers_map(msg_dict['Headers'])
+
+    email_data = {
+        'To': msg_dict['To'],
+        'CC': msg_dict['CC'],
+        'From': msg_dict['From'],
+        'Subject': headers_map['Subject'],
+        'HTML': msg_dict['HTML'],
+        'Text': msg_dict['Text'],
+        'Headers': headers,
+        'HeadersMap': headers_map,
+        'Attachments': '',
+        'Format': mail_format_type,
+        'Depth': MAX_DEPTH_CONST - max_depth
+    }
 
     if parse_only_headers:
         return {"HeadersMap": email_data.get("HeadersMap")}, []
@@ -3407,8 +3479,8 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                         attachment_file_name = os.path.basename(attachment_file_name)
 
                 if "message/rfc822" in part.get("Content-Type", "") \
-                    or ("application/octet-stream" in part.get("Content-Type", "")
-                        and attachment_file_name.endswith(".eml")):
+                        or ("application/octet-stream" in part.get("Content-Type", "")
+                            and attachment_file_name.endswith(".eml")):
 
                     # .eml files
                     file_content = ""  # type: str
@@ -3507,6 +3579,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 'Headers': header_list,
                 'HeadersMap': headers_map,
                 'Attachments': ','.join(attachment_names) if attachment_names else '',
+                'AttachmentNames': attachment_names if attachment_names else [],
                 'Format': eml.get_content_type(),
                 'Depth': MAX_DEPTH_CONST - max_depth
             }
@@ -3576,7 +3649,7 @@ def main():
             output = create_email_output(email_data, attached_emails)
 
         elif ('ascii text' in file_type_lower or 'unicode text' in file_type_lower
-              or ('data' == file_type_lower and file_name and file_name.lower().endswith('.eml'))):
+              or ('data' == file_type_lower.strip() and file_name and file_name.lower().strip().endswith('.eml'))):
             try:
                 # Try to open the email as-is
                 with open(file_path, 'rb') as f:
@@ -3601,7 +3674,7 @@ def main():
                 return_error("Exception while trying to decode email from within base64: {}\n\nTrace:\n{}"
                              .format(str(e), traceback.format_exc()))
         else:
-            return_error("Unknown file format: " + file_type)
+            return_error("Unknown file format: [{}] for file: [{}]".format(file_type, file_name))
         output = recursive_convert_to_unicode(output)
         email = output  # output may be a single email
         if isinstance(output, list) and len(output) > 0:

@@ -1,3 +1,5 @@
+import socket
+
 import demistomock as demisto
 # Common functions script
 # =======================
@@ -9,6 +11,7 @@ import json
 import sys
 import os
 import re
+import base64
 from collections import OrderedDict
 
 import xml.etree.cElementTree as ET
@@ -545,7 +548,8 @@ class IntegrationLogger(object):
     """
       a logger for python integrations:
       use LOG(<message>) to add a record to the logger (message can be any object with __str__)
-      use LOG.print_log() to display all records in War-Room and server log.
+      use LOG.print_log(verbose=True/False) to display all records in War-Room (if verbose) and server log.
+      use add_replace_strs to add sensitive strings that should be replaced before going to the log.
 
       :type message: ``str``
       :param message: The message to be logged
@@ -556,29 +560,70 @@ class IntegrationLogger(object):
 
     def __init__(self, ):
         self.messages = []  # type: list
+        self.write_buf = []  # type: list
+        self.replace_strs = []  # type: list
+        # if for some reason you don't want to auto add credentails.password to replace strings
+        # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
+        if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')
+                and isinstance(demisto.getParam('credentials'), dict)
+                and demisto.getParam('credentials').get('password')):
+            pswrd = self.encode(demisto.getParam('credentials').get('password'))
+            to_encode = pswrd
+            if IS_PY3:
+                to_encode = pswrd.encode('utf-8', 'ignore')
+            self.add_repalce_strs(pswrd, base64.b64encode(to_encode))
 
-    def __call__(self, message):
+    def encode(self, message):
         try:
-            self.messages.append(str(message))
-
+            res = str(message)
         except UnicodeEncodeError as ex:
             # could not decode the message
             # if message is an Exception, try encode the exception's message
             if isinstance(message, Exception) and message.args and isinstance(message.args[0], STRING_OBJ_TYPES):
-                self.messages.append(message.args[0].encode('utf-8', 'replace'))
+                res = message.args[0].encode('utf-8', 'replace')  # type: ignore
             elif isinstance(message, STRING_OBJ_TYPES):
                 # try encode the message itself
-                self.messages.append(message.encode('utf-8', 'replace'))
+                res = message.encode('utf-8', 'replace')  # type: ignore
             else:
-                self.messages.append("Failed encoding message with error: {}".format(ex))
+                res = "Failed encoding message with error: {}".format(ex)
+        for s in self.replace_strs:
+            res = res.replace(s, '<XX_REPLACED>')
+        return res
+
+    def __call__(self, message):
+        self.messages.append(self.encode(message))
+
+    def add_repalce_strs(self, *args):
+        '''
+            Add strings which will be replaced when logging.
+            Meant for avoiding passwords and so forth in the log.
+        '''
+        to_add = [self.encode(a) for a in args]
+        self.replace_strs.extend(to_add)
 
     def print_log(self, verbose=False):
+        if self.write_buf:
+            self.messages.append("".join(self.write_buf))
         if self.messages:
             text = 'Full Integration Log:\n' + '\n'.join(self.messages)
             if verbose:
                 demisto.log(text)
             demisto.info(text)
             self.messages = []
+
+    def write(self, msg):
+        # same as __call__ but allows IntegrationLogger to act as a File like object.
+        msg = self.encode(msg)
+        has_newline = False
+        if '\n' in msg:
+            has_newline = True
+            # if new line is last char we trim it out
+            if msg[-1] == '\n':
+                msg = msg[:-1]
+        self.write_buf.append(msg)
+        if has_newline:
+            self.messages.append("".join(self.write_buf))
+            self.write_buf = []
 
 
 """
@@ -829,9 +874,10 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
             vals = [stringEscapeMD((formatCell(entry.get(h, ''), False) if entry.get(h) is not None else ''),
                                    True, True) for h in headers]
             mdResult += '|'
-            if len(vals) == 1:
-                mdResult += vals[0]
-            else:
+            try:
+                mdResult += '|'.join(vals)
+            except UnicodeDecodeError:
+                vals = [str(v) for v in vals]
                 mdResult += '|'.join(vals)
             mdResult += '|\n'
 
@@ -1297,26 +1343,50 @@ def is_mac_address(mac):
         return False
 
 
-def is_ip_valid(s):
+def is_ipv6_valid(address):
     """
-       Checks if the given string represents a valid IPv4 address
+    Checks if the given string represents a valid IPv6 address.
+
+    :type address: str
+    :param address: The string to check.
+
+    :return: True if the given string represents a valid IPv6 address.
+    :rtype: ``bool``
+    """
+    try:
+        socket.inet_pton(socket.AF_INET6, address)
+    except socket.error:  # not a valid address
+        return False
+    return True
+
+
+def is_ip_valid(s, accept_v6_ips=False):
+    """
+       Checks if the given string represents a valid IP address.
+       By default, will only return 'True' for IPv4 addresses.
 
        :type s: ``str``
        :param s: The string to be checked (required)
+       :type accept_v6_ips: ``bool``
+       :param accept_v6_ips: A boolean determining whether the
+       function should accept IPv6 addresses
 
        :return: True if the given string represents a valid IP address, False otherwise
        :rtype: ``bool``
     """
     a = s.split('.')
-    if len(a) != 4:
+    if accept_v6_ips and is_ipv6_valid(s):
+        return True
+    elif len(a) != 4:
         return False
-    for x in a:
-        if not x.isdigit():
-            return False
-        i = int(x)
-        if i < 0 or i > 255:
-            return False
-    return True
+    else:
+        for x in a:
+            if not x.isdigit():
+                return False
+            i = int(x)
+            if i < 0 or i > 255:
+                return False
+        return True
 
 
 def return_outputs(readable_output, outputs, raw_response=None):
@@ -1359,7 +1429,7 @@ def return_error(message, error='', outputs=None):
         :type message: ``str``
         :param message: The message to return in the entry (required)
 
-        :type error: ``str``
+        :type error: ``str`` or Exception
         :param error: The raw error message to log (optional)
 
         :type outputs: ``dict or None``
@@ -1370,20 +1440,26 @@ def return_error(message, error='', outputs=None):
     """
     LOG(message)
     if error:
-        LOG(error)
+        LOG(str(error))
     LOG.print_log()
-    demisto.results({
-        'Type': entryTypes['error'],
-        'ContentsFormat': formats['text'],
-        'Contents': str(message),
-        "EntryContext": outputs
-    })
-    sys.exit(0)
+    if not isinstance(message, str):
+        message = message.encode('utf8') if hasattr(message, 'encode') else str(message)
+
+    if hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents', 'long-running-execution'):
+        raise Exception(message)
+    else:
+        demisto.results({
+            'Type': entryTypes['error'],
+            'ContentsFormat': formats['text'],
+            'Contents': message,
+            'EntryContext': outputs
+        })
+        sys.exit(0)
 
 
 def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_extract=False):
     """
-        Returns an error entry with the specified message, and exits the script.
+        Returns a warning entry with the specified message, and exits the script.
 
         :type message: ``str``
         :param message: The message to return in the entry (required).
@@ -1409,7 +1485,7 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
     LOG.print_log()
 
     demisto.results({
-        'Type': 11,
+        'Type': entryTypes['warning'],
         'ContentsFormat': formats['text'],
         'IgnoreAutoExtract': ignore_auto_extract,
         'Contents': str(message),
@@ -1720,3 +1796,85 @@ def remove_nulls_from_dictionary(dict):
     for key in list_of_keys:
         if dict[key] in ('', None, [], {}, ()):
             del dict[key]
+
+
+def get_demisto_version():
+    """
+        Returns the Demisto version and build number.
+
+        :return: Demisto version object if Demisto class has attribute demistoVersion, else raises AttributeError
+        :rtype: ``dict``
+    """
+    if hasattr(demisto, 'demistoVersion'):
+        return demisto.demistoVersion()
+    else:
+        raise AttributeError('demistoVersion attribute not found.')
+
+
+def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
+    """
+        Parses the date_string function to the corresponding datetime object.
+        Note: If possible (e.g. running Python 3), it is suggested to use
+              dateutil.parser.parse or dateparser.parse functions instead.
+
+        Examples:
+        >>> parse_date_string('2019-09-17T06:16:39Z')
+        datetime(2019, 9, 17, 6, 16, 39)
+        >>> parse_date_string('2019-09-17T06:16:39.22Z')
+        datetime(2019, 9, 17, 6, 16, 39, 220000)
+        >>> parse_date_string('2019-09-17T06:16:39.4040+05:00', '%Y-%m-%dT%H:%M:%S+02:00')
+        datetime(2019, 9, 17, 6, 16, 39, 404000)
+
+        :type date_string: ``str``
+        :param date_string: The date string to parse. (required)
+
+        :type date_format: ``str``
+        :param date_format: The date format of the date string. If the date format is known, it should be provided. (optional)
+
+        :return: The parsed datetime.
+        :rtype: ``(datetime.datetime, datetime.datetime)``
+    """
+    try:
+        return datetime.strptime(date_string, date_format)
+    except ValueError as e:
+        error_message = str(e)
+
+        date_format = '%Y-%m-%dT%H:%M:%S'
+        time_data_regex = r'time data \'(.*?)\''
+        time_data_match = re.findall(time_data_regex, error_message)
+        sliced_time_data = ''
+
+        if time_data_match:
+            # found time date which does not match date format
+            # example of caught error message:
+            # "time data '2019-09-17T06:16:39Z' does not match format '%Y-%m-%dT%H:%M:%S.%fZ'"
+            time_data = time_data_match[0]
+
+            # removing YYYY-MM-DDThh:mm:ss from the time data to keep only milliseconds and time zone
+            sliced_time_data = time_data[19:]
+        else:
+            unconverted_data_remains_regex = r'unconverted data remains: (.*)'
+            unconverted_data_remains_match = re.findall(unconverted_data_remains_regex, error_message)
+
+            if unconverted_data_remains_match:
+                # found unconverted_data_remains
+                # example of caught error message:
+                # "unconverted data remains: 22Z"
+                sliced_time_data = unconverted_data_remains_match[0]
+
+        if not sliced_time_data:
+            # did not catch expected error
+            raise ValueError(e)
+
+        if '.' in sliced_time_data:
+            # found milliseconds - appending ".%f" to date format
+            date_format += '.%f'
+
+        timezone_regex = r'[Zz+-].*'
+        time_zone = re.findall(timezone_regex, sliced_time_data)
+
+        if time_zone:
+            # found timezone - appending it to the date format
+            date_format += time_zone[0]
+
+        return datetime.strptime(date_string, date_format)
