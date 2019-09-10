@@ -2,15 +2,15 @@
 This script will be appended to each server script before being executed.
 Please notice that to add custom common code, add it to the CommonServerUserPython script
 """
-from socket import inet_pton, error, AF_INET6
-from datetime import datetime, timedelta
-from time import mktime, ctime, strptime
-from json import dumps, loads
-from sys import exit, version_info, modules
-from os import rename, environ, getenv
-from re import sub, search, compile, M
-from base64 import b64encode
-from collections import OrderedDict
+import socket
+import datetime
+import time
+import json
+import sys
+import os
+import re
+import base64
+import collections
 import xml.etree.cElementTree as ET
 import demistomock as demisto
 
@@ -20,7 +20,7 @@ try:
 except Exception:
     pass
 
-IS_PY3 = version_info[0] == 3
+IS_PY3 = sys.version_info[0] == 3
 # pylint: disable=undefined-variable
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
@@ -116,13 +116,13 @@ def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False):
     proxies = {}  # type: dict
     if demisto.params().get(proxy_param_name, checkbox_default_value):
         proxies = {
-            'http': environ.get('HTTP_PROXY') or environ.get('http_proxy', ''),
-            'https': environ.get('HTTPS_PROXY') or environ.get('https_proxy', '')
+            'http': os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy', ''),
+            'https': os.environ.get('HTTPS_PROXY') or os.environ.get('https_proxy', '')
         }
     else:
         for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
-            if k in environ:
-                del environ[k]
+            if k in os.environ:
+                del os.environ[k]
     return proxies
 
 
@@ -259,7 +259,7 @@ def formatEpochDate(t):
        :rtype: ``str``
     """
     if t:
-        return ctime(t)
+        return time.ctime(t)
     return ''
 
 
@@ -486,7 +486,7 @@ def FormatADTimestamp(ts):
        :return: A string represeting the time
        :rtype: ``str``
     """
-    return (datetime(year=1601, month=1, day=1) + timedelta(seconds=int(ts) / 10 ** 7)).ctime()
+    return (datetime.datetime(year=1601, month=1, day=1) + datetime.timedelta(seconds=int(ts) / 10 ** 7)).ctime()
 
 
 def PrettifyCompactedTimestamp(x):
@@ -568,14 +568,14 @@ class IntegrationLogger(object):
         self.replace_strs = []  # type: list
         # if for some reason you don't want to auto add credentials.password to replace strings
         # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
-        if (not getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')
+        if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')
                 and isinstance(demisto.getParam('credentials'), dict)
                 and demisto.getParam('credentials').get('password')):
             pswrd = self.encode(demisto.getParam('credentials').get('password'))
             to_encode = pswrd
             if IS_PY3:
                 to_encode = pswrd.encode('utf-8', 'ignore')
-            self.add_repalce_strs(pswrd, b64encode(to_encode))
+            self.add_repalce_strs(pswrd, base64.b64encode(to_encode))
 
     def encode(self, message):
         try:
@@ -723,7 +723,7 @@ def flattenCell(data, is_pretty=True):
 
         return ',\n'.join(string_list)
     else:
-        return dumps(data, indent=indent, ensure_ascii=False)
+        return json.dumps(data, indent=indent, ensure_ascii=False)
 
 
 def FormatIso8601(t):
@@ -758,7 +758,7 @@ def argToList(arg, separator=','):
         return arg
     if isinstance(arg, STRING_TYPES):
         if arg[0] == '[' and arg[-1] == ']':
-            return loads(arg)
+            return json.loads(arg)
         return [s.strip() for s in arg.split(separator)]
     return arg
 
@@ -1043,7 +1043,7 @@ def file_result_existing_file(filename, saveFilename=None):
        :rtype: ``dict``
     """
     temp = demisto.uniqueFile()
-    rename(filename, demisto.investigation()['id'] + '_' + temp)
+    os.rename(filename, demisto.investigation()['id'] + '_' + temp)
     return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': entryTypes['file'],
             'File': saveFilename if saveFilename else filename, 'FileID': temp}
 
@@ -1148,7 +1148,7 @@ def isCommandAvailable(cmd):
 
 
 def epochToTimestamp(epoch):
-    return datetime.utcfromtimestamp(epoch / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
+    return datetime.datetime.utcfromtimestamp(epoch / 1000.0).strftime("%Y-%m-%d %H:%M:%S")
 
 
 def formatTimeColumns(data, timeColumnNames):
@@ -1169,7 +1169,7 @@ def strip_tag(tag):
 def elem_to_internal(elem, strip_ns=1, strip=1):
     """Convert an Element into an internal dictionary (not JSON!)."""
 
-    d = OrderedDict()  # type: dict
+    d = collections.OrderedDict()  # type: dict
     elem_tag = elem.tag
     if strip_ns:
         elem_tag = strip_tag(elem.tag)
@@ -1224,7 +1224,7 @@ def internal_to_elem(pfsh, factory=ET.Element):
     Element class as the factory parameter.
     """
 
-    attribs = OrderedDict()  # type: dict
+    attribs = collections.OrderedDict()  # type: dict
     text = None
     tail = None
     sublist = []
@@ -1263,9 +1263,9 @@ def elem2json(elem, options, strip_ns=1, strip=1):
         elem = elem.getroot()
 
     if 'pretty' in options:
-        return dumps(elem_to_internal(elem, strip_ns=strip_ns, strip=strip), indent=4, separators=(',', ': '))
+        return json.dumps(elem_to_internal(elem, strip_ns=strip_ns, strip=strip), indent=4, separators=(',', ': '))
     else:
-        return dumps(elem_to_internal(elem, strip_ns=strip_ns, strip=strip))
+        return json.dumps(elem_to_internal(elem, strip_ns=strip_ns, strip=strip))
 
 
 def json2elem(json_data, factory=ET.Element):
@@ -1275,7 +1275,7 @@ def json2elem(json_data, factory=ET.Element):
     as the factory parameter.
     """
 
-    return internal_to_elem(loads(json_data), factory)
+    return internal_to_elem(json.loads(json_data), factory)
 
 
 def xml2json(xmlstring, options={}, strip_ns=1, strip=1):
@@ -1300,7 +1300,7 @@ def json2xml(json_data, factory=ET.Element):
     """
 
     if not isinstance(json_data, dict):
-        json_data = loads(json_data)
+        json_data = json.loads(json_data)
 
     elem = internal_to_elem(json_data, factory)
     return ET.tostring(elem, encoding='utf-8')
@@ -1338,7 +1338,7 @@ def is_mac_address(mac):
     :rtype: ``bool``
     """
 
-    if search(r'([0-9A-F]{2}[:]){5}([0-9A-F]){2}', mac.upper()) is not None:
+    if re.search(r'([0-9A-F]{2}[:]){5}([0-9A-F]){2}', mac.upper()) is not None:
         return True
     else:
         return False
@@ -1355,8 +1355,8 @@ def is_ipv6_valid(address):
     :rtype: ``bool``
     """
     try:
-        inet_pton(AF_INET6, address)
-    except error:  # not a valid address
+        socket.inet_pton(socket.AF_INET6, address)
+    except socket.error:  # not a valid address
         return False
     return True
 
@@ -1455,7 +1455,7 @@ def return_error(message, error='', outputs=None):
             'Contents': message,
             'EntryContext': outputs
         })
-        exit(0)
+        sys.exit(0)
 
 
 def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_extract=False):
@@ -1564,7 +1564,7 @@ def replace_in_keys(src, existing='.', new='_'):
 
 
 # ############################## REGEX FORMATTING ###############################
-regexFlags = M  # Multi line matching
+regexFlags = re.M  # Multi line matching
 # for the global(/g) flag use re.findall({regex_format},str)
 # else, use re.match({regex_format},str)
 
@@ -1574,11 +1574,11 @@ hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
            r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
 
-md5Regex = compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
-sha1Regex = compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
-sha256Regex = compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
+md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
+sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
+sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
 
-pascalRegex = compile('([A-Z]?[a-z]+)')
+pascalRegex = re.compile('([A-Z]?[a-z]+)')
 
 
 # ############################## REGEX FORMATTING end ###############################
@@ -1610,8 +1610,8 @@ def camel_case_to_underscore(s):
    :return: The converted string (e.g. hello_world)
    :rtype: ``str``
     """
-    s1 = sub('(.)([A-Z][a-z]+)', r'\1_\2', s)
-    return sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', s)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 
 def snakify(src):
@@ -1719,29 +1719,29 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
         return_error('Invalid timezone "{}" - must be a number (of type int or float).'.format(timezone))
 
     if utc:
-        end_time = datetime.now() + timedelta(hours=timezone)
-        start_time = datetime.now() + timedelta(hours=timezone)
+        end_time = datetime.datetime.now() + datetime.timedelta(hours=timezone)
+        start_time = datetime.datetime.now() + datetime.timedelta(hours=timezone)
     else:
-        end_time = datetime.utcnow() + timedelta(hours=timezone)
-        start_time = datetime.utcnow() + timedelta(hours=timezone)
+        end_time = datetime.datetime.utcnow() + datetime.timedelta(hours=timezone)
+        start_time = datetime.datetime.utcnow() + datetime.timedelta(hours=timezone)
 
     unit = range_split[1]
     if 'minute' in unit:
-        start_time = end_time - timedelta(minutes=number)
+        start_time = end_time - datetime.timedelta(minutes=number)
     elif 'hour' in unit:
-        start_time = end_time - timedelta(hours=number)
+        start_time = end_time - datetime.timedelta(hours=number)
     elif 'day' in unit:
-        start_time = end_time - timedelta(days=number)
+        start_time = end_time - datetime.timedelta(days=number)
     elif 'month' in unit:
-        start_time = end_time - timedelta(days=number * 30)
+        start_time = end_time - datetime.timedelta(days=number * 30)
     elif 'year' in unit:
-        start_time = end_time - timedelta(days=number * 365)
+        start_time = end_time - datetime.timedelta(days=number * 365)
 
     if to_timestamp:
         return date_to_timestamp(start_time), date_to_timestamp(end_time)
 
     if date_format:
-        return datetime.strftime(start_time, date_format), datetime.strftime(end_time, date_format)
+        return datetime.datetime.strftime(start_time, date_format), datetime.datetime.strftime(end_time, date_format)
 
     return start_time, end_time
 
@@ -1760,7 +1760,7 @@ def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
       :return: The parsed timestamp in the date_format
       :rtype: ``str``
     """
-    return datetime.fromtimestamp(int(timestamp) / 1000.0).strftime(date_format)
+    return datetime.datetime.fromtimestamp(int(timestamp) / 1000.0).strftime(date_format)
 
 
 def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
@@ -1779,10 +1779,10 @@ def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
       :rtype: ``int``
     """
     if isinstance(date_str_or_dt, STRING_OBJ_TYPES):
-        return int(mktime(strptime(date_str_or_dt, date_format)) * 1000)
+        return int(time.mktime(time.strptime(date_str_or_dt, date_format)) * 1000)
 
     # otherwise datetime.datetime
-    return int(mktime(date_str_or_dt.timetuple()) * 1000)
+    return int(time.mktime(date_str_or_dt.timetuple()) * 1000)
 
 
 def remove_nulls_from_dictionary(data):
@@ -1961,7 +1961,7 @@ obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)': {'MD5': 'md5hash', 'Malicious':
 
 
 # Will add only if 'requests' module imported
-if 'requests' in modules:
+if 'requests' in sys.modules:
     class BaseClient(object):
         def __init__(self,
                      server,
