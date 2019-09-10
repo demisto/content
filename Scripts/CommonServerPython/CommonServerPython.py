@@ -3,14 +3,13 @@ This script will be appended to each server script before being executed.
 Please notice that to add custom common code, add it to the CommonServerUserPython script
 """
 import socket
-from datetime import datetime
 import datetime
-import time
 import json
 import sys
 import os
 import re
 import base64
+import time
 from collections import OrderedDict
 import xml.etree.cElementTree as ET
 import demistomock as demisto
@@ -1765,7 +1764,7 @@ def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
 
 def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
     """
-      Parses date_str_or_dt in the given format (default: %Y-%m-%dT%H:%M:%S) to miliseconds
+      Parses date_str_or_dt in the given format (default: %Y-%m-%dT%H:%M:%S) to milliseconds
       Examples: ('2018-11-06T08:56:41', '2018-11-06T08:56:41', etc.)
 
       :type date_str_or_dt: ``str`` or ``datetime.datetime``
@@ -1859,11 +1858,11 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
 
         Examples:
         >>> parse_date_string('2019-09-17T06:16:39Z')
-        datetime(2019, 9, 17, 6, 16, 39)
+        datetime.datetime(2019, 9, 17, 6, 16, 39)
         >>> parse_date_string('2019-09-17T06:16:39.22Z')
-        datetime(2019, 9, 17, 6, 16, 39, 220000)
+        datetime.datetime(2019, 9, 17, 6, 16, 39, 220000)
         >>> parse_date_string('2019-09-17T06:16:39.4040+05:00', '%Y-%m-%dT%H:%M:%S+02:00')
-        datetime(2019, 9, 17, 6, 16, 39, 404000)
+        datetime.datetime(2019, 9, 17, 6, 16, 39, 404000)
 
         :type date_string: ``str``
         :param date_string: The date string to parse. (required)
@@ -1875,7 +1874,7 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
         :rtype: ``(datetime.datetime, datetime.datetime)``
     """
     try:
-        return datetime.strptime(date_string, date_format)
+        return datetime.datetime.strptime(date_string, date_format)
     except ValueError as e:
         error_message = str(e)
 
@@ -1917,7 +1916,7 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
             # found timezone - appending it to the date format
             date_format += time_zone[0]
 
-        return datetime.strptime(date_string, date_format)
+        return datetime.datetime.strptime(date_string, date_format)
 
 
 def build_dbot_entry(indicator, indicator_type, vendor, score, description=None, build_malicious=True):
