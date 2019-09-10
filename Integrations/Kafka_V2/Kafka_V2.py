@@ -121,7 +121,7 @@ def check_latest_offset(topic, partition_number=None):
     latest_offset = 0
     if partition_number is not None:
         partition = partitions.get(str(partition_number))
-        if partitions.get(str(partition)):
+        if partitions:
             latest_offset = partition[0][0]
         else:
             return_error('Partition does not exist')
