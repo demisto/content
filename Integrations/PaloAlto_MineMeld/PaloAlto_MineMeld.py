@@ -86,7 +86,7 @@ class APIClient(object):
             result.close()
 
         except urllib2.HTTPError, e:
-            demisto.debug(json.dumps(e))
+            demisto.debug(e.reason)
             if e.code != 400:
                 raise
             content = '{ "result":[] }'
