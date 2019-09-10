@@ -98,7 +98,7 @@ class IntegrationValidator(object):
                     err_msgs.append('The type field of the {} parameter should be 8'.format(param_name))
 
         if err_msgs:
-            print_error('Received the following error for {} validation:\n {}'.format(param_name, '\n'.join(err_msgs)))
+            print_error('Received the following error for {} validation:\n'.format(param_name, '\n'.join(err_msgs)))
             self._is_valid = False
             return False
 
