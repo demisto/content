@@ -2,7 +2,7 @@ id: Evaluate Severity - Set By Highest Score
 version: -1
 fromversion: 4.5.0
 name: Evaluate Severity - Set By Highest Score
-description: Calculate and assign the incident severity based on the combination of
+description: Calculates and sets the incident severity based on the combination of
   the current incident severity, and the severity returned from the Evaluate Severity
   - Set By Highest DBotScore playbook.
 starttaskid: "0"
@@ -40,8 +40,8 @@ tasks:
     task:
       id: d750bb71-4ef5-4de1-88ec-02d5035a0177
       version: -1
-      name: Assign incident severity to "Low"
-      description: Assigns the incident severity to "Low".
+      name: Set incident severity to "Low"
+      description: Sets the severity of the incident to "Low".
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -221,8 +221,8 @@ tasks:
     task:
       id: 9c7487d4-53f2-4645-8f7b-2653d6c76676
       version: -1
-      name: Assign incident severity  to "Medium"
-      description: Assigns the incident severity to "Medium".
+      name: Set incident severity to "Medium"
+      description: Sets the severity of the incident to "Medium".
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -397,8 +397,8 @@ tasks:
     task:
       id: 77f20a17-499a-4ed3-85ad-a24e697b4792
       version: -1
-      name: Assign incident severity to "High"
-      description: Assigns the incident severity to "High".
+      name: Set incident severity to "High"
+      description: Sets the severity of the incident to "High".
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -601,8 +601,8 @@ tasks:
     task:
       id: ffcb1963-a04f-4f3b-8ff8-37e6829ac96c
       version: -1
-      name: Assign incident severity to "Critical"
-      description: Assigns the incident severity to "Critical".
+      name: Set incident severity to "Critical"
+      description: Sets the severity of the incident to "Critical".
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -780,7 +780,7 @@ tasks:
       id: 14b9554d-23ca-4e85-86f8-51f290b2a18d
       version: -1
       name: Set severity based on the highest severity
-      description: Determines  & sets the incident severity based on the highest result
+      description: Determines and sets the incident severity based on the highest result
         of all severity calculations.
       type: condition
       iscommand: false
@@ -962,8 +962,8 @@ tasks:
       id: 64da7797-a618-454e-8243-37cfde94d1c5
       version: -1
       name: Evaluate Severity - Set By Highest DBotScore
-      description: Calculates the incident severity level according to the highest
-        indicator DBotScore.
+      description: Calculates the incident severity level according to the indicator with the highest
+        DBotScore.
       playbookName: Evaluate Severity - Set By Highest DBotScore
       type: playbook
       iscommand: false
@@ -999,8 +999,8 @@ tasks:
     task:
       id: c78dbddd-05c3-4810-8b62-9a0f5958dc73
       version: -1
-      name: Assign incident severity to "Unknown"
-      description: Assigns the incident severity to "Unknown".
+      name: Set incident severity to "Unknown"
+      description: Sets the incident severity to "Unknown".
       script: Builtin|||setIncident
       type: regular
       iscommand: true
