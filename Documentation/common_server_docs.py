@@ -19,7 +19,8 @@ jsPrivateFuncs = ["dqQueryBuilder", "toArray", "indent", "formatTableValuesRecur
 
 pyPrivateFuncs = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeColumns", "strip_tag", "elem_to_internal",
                   "internal_to_elem", "json2elem", "elem2json", "json2xml", "OrderedDict", "datetime", "timedelta",
-                  "createContextSingle", "IntegrationLogger", "tblToMd", "DemistoException", "BaseClient"]
+                  "createContextSingle", "IntegrationLogger", "tblToMd", "DemistoException", "BaseClient",
+                  "BaseHTTPClient"]
 
 pyIrregularFuncs = {"LOG": {"argList": ["message"]}}
 
