@@ -3,7 +3,7 @@ version: -1
 name: Block Indicators - Generic
 fromversion: 4.0.0
 description: |
-  This playbook blocks malicious Indicators using all integrations that you have enabled.
+  This playbook blocks malicious Indicators using all integrations that are enabled.
 
   Supported integrations for this playbook:
   * Active Directory
@@ -147,7 +147,7 @@ tasks:
       version: -1
       name: Block Account - Generic
       description: |-
-        This playbook blocks malicious usernames using all integrations that you have enabled.
+        This playbook blocks malicious usernames using all integrations that are enabled.
 
         Supported integrations for this playbook:
         * Active Directory
@@ -386,19 +386,19 @@ outputs:
 - contextPath: CheckpointFWRule.DestinationNegate
   description: True if negate is set for destination.
 - contextPath: CheckpointFWRule.Action
-  description: Accept, Drop, Apply Layer, Ask, Info. How much details are returned
+  description: Accept, Drop, Apply Layer, Ask, Info. The level of detail returned
     depends on the details-level field of the request. This table shows the level
     of detail shown when details-level is set to standard.
 - contextPath: CheckpointFWRule.Destination
-  description: Collection of Network objects identified by the name or UID. How much
-    details are returned depends on the details-level field of the request. This table
+  description: Collection of Network objects identified by the name or UID. The level of detail
+    depends on the details-level field of the request. This table
     shows the level of detail shown when details-level is set to standard.
 - contextPath: CheckpointFWRule.ActionSetting
   description: Action settings.
 - contextPath: CheckpointFWRule.CustomFields
   description: Custom fields.
 - contextPath: CheckpointFWRule.Data
-  description: How much details are returned depends on the details-level field of
+  description: The level of detail returned depends on the details-level field of
     the request. This table shows the level of detail shown when details-level is
     set to standard.
 - contextPath: CheckpointFWRule.DataDirection
@@ -408,7 +408,7 @@ outputs:
 - contextPath: CheckpointFWRule.Hits
   description: Hits count object.
 - contextPath: PanoramaRule.Direction
-  description: Direction of the Panorama rule, could be 'to','from', 'both'
+  description: Direction of the Panorama rule. Can be 'to','from', 'both'
   type: string
 - contextPath: PanoramaRule.IP
   description: The IP the Panorama rule blocks
