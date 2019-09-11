@@ -1,1 +1,2 @@
-New script - Allow sending an entitlement message to either a user or a channel.
+## [Unreleased]
+Added support for users to reply within a thread to messages sent from the Demisto integration.
