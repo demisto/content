@@ -7,7 +7,7 @@ configuration:
   name: serverUrl
   required: true
   type: 0
-- display: TQ Client ID
+- display: ThreatQ client ID
   name: client_id
   required: true
   type: 0
