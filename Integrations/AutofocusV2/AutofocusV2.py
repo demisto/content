@@ -641,7 +641,7 @@ def search_samples(query=None, scope=None, size=None, sort=None, order=None, fil
     if not query:
         validate_no_multiple_indicators_for_search([file_hash, domain, ip, url])
         query = build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated)
-    return run_search('samples', query=json.dumps(query), scope=scope, size=size, sort=sort, order=order)
+    return run_search('samples', query=query, scope=scope, size=size, sort=sort, order=order)
 
 
 def build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated):
@@ -663,7 +663,8 @@ def build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, firs
         filtering_args_for_search['last_updated'] = last_updated
     filters_list = build_children_query(filtering_args_for_search)
     filters_list.append(indicator_query)
-    return build_logic_query('AND', filters_list)
+    logic_query = build_logic_query('AND', filters_list)
+    return json.dumps(logic_query)
 
 
 def search_sessions(query=None, size=None, sort=None, order=None, file_hash=None, domain=None, ip=None, url=None,
@@ -672,7 +673,7 @@ def search_sessions(query=None, size=None, sort=None, order=None, file_hash=None
     if not query:
         validate_no_multiple_indicators_for_search([file_hash, domain, ip, url])
         query = build_session_search_query(file_hash, domain, ip, url, time_range, time_after, time_before)
-    return run_search('sessions', query=json.dumps(query), size=size, sort=sort, order=order)
+    return run_search('sessions', query=query, size=size, sort=sort, order=order)
 
 
 def build_session_search_query(file_hash, domain, ip, url, time_range, time_after, time_before):
@@ -696,7 +697,8 @@ def build_session_search_query(file_hash, domain, ip, url, time_range, time_afte
         filtering_args_for_search = {'time_before': time_before}
     filters_list = build_children_query(filtering_args_for_search)
     filters_list.append(indicator_query)
-    return build_logic_query('AND', filters_list)
+    logic_query = build_logic_query('AND', filters_list)
+    return json.dumps(logic_query)
 
 
 def build_logic_query(logic_operator, condition_list):
