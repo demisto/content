@@ -1,6 +1,6 @@
 from datetime import datetime
 from unittest.mock import patch
-from Elasticsearch_v2 import TIME_FIELD, TIME_FORMAT
+
 """MOCKED RESPONSES"""
 
 ES_V6_RESPONSE = {
@@ -170,8 +170,79 @@ MOCK_ES6_HIT_CONTEXT = str([
     }
 ])
 
-MOCK_ES7_INCIDENTS = str([{'name': 'Elasticsearch: Index: customer, ID: 123', 'rawJSON': '{"_index": "customer", "_type": "doc", "_id": "123", "_score": 0.6814878, "_source": {"Date": "2019-08-27T18:00:00Z"}}', 'labels': [{'type': 'Date', 'value': '2019-08-27T18:00:00Z'}], 'occurred': '2019-08-27T18:00:00Z'}, {'name': 'Elasticsearch: Index: customer, ID: 456', 'rawJSON': '{"_index": "customer", "_type": "doc", "_id": "456", "_score": 0.6814878, "_source": {"Date": "2019-08-27T18:01:00Z"}}', 'labels': [{'type': 'Date', 'value': '2019-08-27T18:01:00Z'}], 'occurred': '2019-08-27T18:01:00Z'}])
-MOCK_ES6_INCIDETNS = str([{'name': 'Elasticsearch: Index: users, ID: 123', 'rawJSON': '{"_index": "users", "_type": "_doc", "_id": "123", "_score": 1.3862944, "_source": {"Date": "2019-08-29T14:45:00Z"}}', 'labels': [{'type': 'Date', 'value': '2019-08-29T14:45:00Z'}], 'occurred': '2019-08-29T14:45:00Z'}, {'name': 'Elasticsearch: Index: users, ID: 456', 'rawJSON': '{"_index": "users", "_type": "_doc", "_id": "456", "_score": 0.9517491, "_source": {"Date": "2019-08-29T14:46:00Z"}}', 'labels': [{'type': 'Date', 'value': '2019-08-29T14:46:00Z'}], 'occurred': '2019-08-29T14:46:00Z'}])
+MOCK_ES7_INCIDENTS = str([
+    {
+        'name': 'Elasticsearch: Index: customer, ID: 123',
+        'rawJSON': '{'
+                   '"_index": "customer", '
+                   '"_type": "doc", '
+                   '"_id": "123", '
+                   '"_score": 0.6814878, '
+                   '"_source": {"Date": "2019-08-27T18:00:00Z"}'
+                   '}',
+        'labels': [
+            {
+                'type': 'Date',
+                'value': '2019-08-27T18:00:00Z'
+            }
+        ],
+        'occurred': '2019-08-27T18:00:00Z'
+    }, {
+        'name': 'Elasticsearch: Index: customer, ID: 456',
+        'rawJSON': '{'
+                   '"_index": "customer", '
+                   '"_type": "doc", '
+                   '"_id": "456", '
+                   '"_score": 0.6814878, '
+                   '"_source": {"Date": "2019-08-27T18:01:00Z"}'
+                   '}',
+        'labels': [
+            {
+                'type': 'Date',
+                'value': '2019-08-27T18:01:00Z'
+            }
+        ],
+        'occurred': '2019-08-27T18:01:00Z'
+    }
+])
+
+MOCK_ES6_INCIDETNS = str([
+    {
+        'name': 'Elasticsearch: Index: users, ID: 123',
+        'rawJSON': '{'
+                   '"_index": "users", '
+                   '"_type": "_doc", '
+                   '"_id": "123", '
+                   '"_score": 1.3862944, '
+                   '"_source": {"Date": "2019-08-29T14:45:00Z"}'
+                   '}',
+        'labels':
+            [
+                {
+                    'type': 'Date',
+                    'value': '2019-08-29T14:45:00Z'
+                }
+            ],
+        'occurred': '2019-08-29T14:45:00Z'
+    }, {
+        'name': 'Elasticsearch: Index: users, ID: 456',
+        'rawJSON': '{'
+                   '"_index": "users", '
+                   '"_type": "_doc", '
+                   '"_id": "456", '
+                   '"_score": 0.9517491, '
+                   '"_source": {"Date": "2019-08-29T14:46:00Z"}'
+                   '}',
+        'labels':
+            [
+                {
+                    'type': 'Date',
+                    'value': '2019-08-29T14:46:00Z'
+                }
+            ],
+        'occurred': '2019-08-29T14:46:00Z'
+    }
+])
 
 
 def test_context_creation_es7():
