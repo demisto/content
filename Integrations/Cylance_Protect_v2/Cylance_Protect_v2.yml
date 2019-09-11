@@ -42,10 +42,6 @@ configuration:
   name: file_threshold
   type: 0
   required: false
-- display: Deletion Batch Size
-  name: batch_size
-  defaultvalue: "20"
-  type: 0
 description: Manage Endpoints using Cylance protect
 display: Cylance Protect v2
 name: Cylance Protect v2
@@ -944,18 +940,17 @@ script:
     - contextPath: Cylance.Policy.Timestamp
       description: The date and time (in UTC) that the policy was created.
       type: string
-  - arguments:
-    - default: false
-      description: The unique identifiers for the devices to delete. The maximum
+  - name: cylance-protect-delete-devices
+    arguments:
+    - name: deviceIds
+      required: true
+      description: The unique identifiers for the devices to be deleted. The maximum
         number of Device IDs per request is 20.
       isArray: true
-      name: deviceIds
-      required: true
-      secret: false
-    deprecated: false
-    description: Deletes one or more devices from an organization.
-    execution: true
-    name: cylance-protect-delete-devices
+    - name: batch_size
+      description: The size of the batches in which the device IDs will be sent for
+        deletion.
+      defaultValue: "20"
     outputs:
     - contextPath: Cylance.Device.Id
       description: The unique identifier of the deletion request.
@@ -966,6 +961,8 @@ script:
     - contextPath: Cylance.Device.Deleted
       description: A boolean to check if the device was deleted.
       type: boolean
+    description: Delete one or more devices from an organization.
+    execution: true
   dockerimage: demisto/cylance_protect_v2
   isfetch: true
   runonce: false
