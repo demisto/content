@@ -47,10 +47,118 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: get package
     execution: false
     name: tn-get-package
+  - arguments:
+    - default: false
+      isArray: false
+      name: question-text
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: parameters
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tn-ask-question
+  - arguments:
+    - default: false
+      isArray: false
+      name: question-id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tn-get-question-result
+  - arguments:
+    - default: false
+      defaultValue: '5'
+      isArray: false
+      name: count
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tn-list-sensors
+  - arguments:
+    - default: false
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tn-get-sensor
+  - arguments:
+    - default: false
+      isArray: false
+      name: question-id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tn-create-saved-question
+  - arguments:
+    - default: false
+      defaultValue: '5'
+      isArray: false
+      name: count
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tn-list-saved-questions
+  - arguments:
+    - default: false
+      isArray: false
+      name: question-id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tn-get-saved-question-result
+  - deprecated: false
+    execution: false
+    name: tn-get-system-status
+  - arguments:
+    - default: false
+      isArray: false
+      name: command
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tn-create-package
+  - arguments:
+    - default: false
+      isArray: false
+      name: count
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tn-list-packages
   isfetch: false
   runonce: false
   script: '-'
   type: python
+tests:
+  - No test
+
