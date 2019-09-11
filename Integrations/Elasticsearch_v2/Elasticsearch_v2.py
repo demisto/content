@@ -130,7 +130,7 @@ def search_command():
     es = elasticsearch_builder()
 
     que = QueryString(query=query)
-    search = Search(using=es, index=index)[base_page:base_page + size].query(que)
+    search = Search(using=es, index=index).query(que)[base_page:base_page + size]
     if explain:
         # if 'explain parameter is set to 'true' - adds explanation section to search results
         search = search.extra(explain=True)
@@ -178,7 +178,7 @@ def fetch_params_check():
 
 def test_general_query(es, que, test_num):
     query = QueryString(query=que)
-    search = Search(using=es, index=FETCH_INDEX)[0:1].query(query)
+    search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
     response = search.execute().to_dict()
     _, total_results = get_total_results(response)
 
