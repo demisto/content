@@ -1,0 +1,89 @@
+commonfields:
+  id: BitDam
+  version: -1
+name: BitDam
+display: BitDam
+category: Email Gateway
+description: BitDam secure email gateway protects from advanced content-borne threats
+  with the most accurate prevention of known and unknown threats, at their source.
+detaileddescription: |-
+  In order to generate an API token, log in to BitDam Dashboard.
+  Navigate to your profile, click on 'API token' tab and then 'Generate API Token'.
+configuration:
+- display: BitDam API URL
+  name: url
+  defaultvalue: https://app.bitdam.com/api/v1.0
+  type: 0
+  required: true
+- display: API Token
+  name: apitoken
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: bitdam-upload-file
+    arguments:
+    - name: entryId
+      required: true
+      description: File's entry ID from war room. Supported types are doc, dot, docx,
+        docm, dotx, dotm, pdf, rtf, xls, xlt, xlsx, xlsm, xltx, xltm, xlsb, xlam,
+        csv, ppt, pptx, pptm, potx, potm, ppam, ppsx, ppsm and pps.
+    outputs:
+    - contextPath: BitDam.FileScan.SHA1
+      description: SHA 1
+      type: string
+    description: Upload a file sample to BitDam's service
+  - name: bitdam-get-verdict
+    arguments:
+    - name: idValue
+      required: true
+      description: The value of the file's unique identifier (for example - file's
+        SHA1)
+    outputs:
+    - contextPath: BitDam.Analysis.Status
+      description: Status of the analysis. Can be either 'DONE' or 'IN_PROGRESS'
+      type: string
+    - contextPath: BitDam.Analysis.Verdict
+      description: Final verdict of the analysis.
+      type: string
+    - contextPath: BitDam.Analysis.ID
+      description: Unique identifier
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The Indicator
+      type: string
+    - contextPath: DBotScore.Score
+      description: The DBot score
+      type: number
+    - contextPath: DBotScore.Type
+      description: The Indicator Type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The DBot score vendor
+      type: string
+    - contextPath: File.Malicious.Name
+      description: File's name
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+      type: string
+    description: Get verdict for a scanned file
+  runonce: false
+tests:
+- Detonate File - BitDam Test
