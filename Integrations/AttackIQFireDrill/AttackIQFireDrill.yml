@@ -486,7 +486,7 @@ script:
     - contextPath: AttackIQ.TestResult.Outcome.Name
       description: Test outcome result.
       type: String
-  dockerimage: demisto/python3:3.7.4.977
+  dockerimage: demisto/python3:3.7.4.1502
   isfetch: false
   longRunning: false
   longRunningPort: false
