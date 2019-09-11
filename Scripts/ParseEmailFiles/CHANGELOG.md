@@ -1,10 +1,9 @@
 ## [Unreleased]
-- Removed the hyperlink from links.
-
+Removed the hyperlink from links.
 
 ## [19.9.0] - 2019-09-04
-- Improved EML file type detection.
-- Added ***Email.AttachmentNames*** output, which contains a list of all the names of the email attachments.
+  - Improved EML file type detection.
+  - Added the *Email.AttachmentNames* output, which contains a list of the names of all email attachments.
 
 
 ## [19.8.2] - 2019-08-22
