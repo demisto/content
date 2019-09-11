@@ -174,8 +174,10 @@ def test_module():
     """
     If we got here, the instance is working without any error
     """
-    if KAFKA_CLIENT.topics:
+    if KAFKA_CLIENT.topics is not None:
         demisto.results('ok')
+    else:
+        return_error('Failed in test_module')
 
 
 def print_topics():
