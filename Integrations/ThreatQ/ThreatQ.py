@@ -196,14 +196,13 @@ def get_errors_string_from_bad_request(bad_request_results, status_code):
 
 
 def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_response=False, allow_redirects=True):
+    api_call_headers = None
     if url_suffix != '/token':
         access_token = get_access_token()
         api_call_headers = {'Authorization': 'Bearer ' + access_token}
 
         if not files:
             params = json.dumps(params)
-    else:
-        api_call_headers = None
 
     response = requests.request(method, API_URL + url_suffix, data=params, headers=api_call_headers,
                                 verify=USE_SSL, files=files, allow_redirects=allow_redirects)
