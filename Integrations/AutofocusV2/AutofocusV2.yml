@@ -28,7 +28,7 @@ script:
         on how to build your query using the AF GUI, see the detailed description.
       isArray: false
       name: query
-      required: true
+      required: false
       secret: false
     - default: false
       defaultValue: '30'
@@ -116,8 +116,8 @@ script:
     - default: false
       description: |-
         Creation date in range structure.
-        Format: ["YYY Y-MM-DDTHH:MM:SS","YYYY-MM-DDTHH:MM:SS"] where the first date is the beginning and the second is the end.
-        Example: ["2019-09-09T00:00:00","2019-09-09T23:01:59"]
+        Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end.
+        Example: 2019-09-09T00:00:00,2019-09-09T23:01:59
       isArray: false
       name: first_seen
       required: false
@@ -125,8 +125,8 @@ script:
     - default: false
       description: |-
         Date of update in range structure.
-        Format: ["YYY Y-MM-DDTHH:MM:SS","YYYY-MM-DDTHH:MM:SS"] where the first date is the beginning and the second is the end.
-        Example: ["2019-09-09T00:00:00","2019-09-09T23:01:59"]
+        Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end.
+        Example: 2019-09-09T00:00:00,2019-09-09T23:01:59
       isArray: false
       name: last_updated
       required: false
@@ -151,7 +151,7 @@ script:
         on how to build your query using the AF GUI, see the detailed description.
       isArray: false
       name: query
-      required: true
+      required: false
       secret: false
     - default: false
       defaultValue: '30'
@@ -223,8 +223,8 @@ script:
       secret: false
     - default: false
       description: |-
-        Format: ["YYY Y-MM-DDTHH:MM:SS","YYYY-MM-DDTHH:MM:SS"] where the first date is the beginning and the second is the end.
-        Example: ["2019-09-09T00:00:00","2019-09-09T23:01:59"]
+        Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end.
+        Example: 2019-09-09T00:00:00,2019-09-09T23:01:59
       isArray: false
       name: time_range
       predefined:
@@ -234,8 +234,8 @@ script:
     - default: false
       description: |-
         All sessions after the given time.
-        Format: ["YYYY-MM-DDTHH:MM:SS"]
-        Example: ["2019-09-09T23:01:59"]
+        Format: YYYY-MM-DDTHH:MM:SS
+        Example: 2019-09-09T23:01:59
       isArray: false
       name: time_after
       required: false
@@ -243,8 +243,8 @@ script:
     - default: false
       description: |-
         All sessions before the given time.
-        Format: ["YYYY-MM-DDTHH:MM:SS"]
-        Example: ["2019-09-09T23:01:59"]
+        Format: YYYY-MM-DDTHH:MM:SS
+        Example: 2019-09-09T23:01:59
       isArray: false
       name: time_before
       required: false
@@ -650,10 +650,10 @@ script:
       description: Search status ("in progress" or "complete").
       type: String
   dockerimage: demisto/python3:3.7.2.214
-  subtype: python3
   isfetch: false
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
 - AutoFocus V2 test
