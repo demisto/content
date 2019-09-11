@@ -11,33 +11,40 @@ The package is converted into a YAML file, which include all the package compone
 
 ---
 
-A package should be a sub-directory of either Integrations or Scripts directory, and contain the following files:
-
- - `<INTEGRATION-NAME>.py` - Integration / automation script Python code.
- - `<INTEGRATION-NAME>_test.py` - Python unit test code.
- - `<INTEGRATION-NAME>.yml` - Configuration YAML file.
- - `<INTEGRATION-NAME>_image.png ` - Integration PNG logo (for integrations only).
- - `<INTEGRATION-NAME>_description.md` - Detailed instructions markdown file (for integrations only).
- - [CHANGELOG.md](https://github.com/demisto/content/blob/master/docs/release_notes/README.MD) - a markdown file which include the script/integration release notes.
- - `Pipfile` (can be copied from Tests/scripts/dev_envs/default_python3)
- - `Pipfile.lock` (can be copied from Tests/scripts/dev_envs/default_python3)
-    - Note: Since Python 2.7 will not be maintained past 2020, we refer only to Python 3.
+```
+ .
+├── <INTEGRATION-NAME>.py              // Integration / automation script Python code.
+├── <INTEGRATION-NAME>_test.py         // Python unit test code.
+├── <INTEGRATION-NAME>.yml             // Configuration YAML file.
+├── <INTEGRATION-NAME>_image.png       // Integration PNG logo (for integrations only).
+├── <INTEGRATION-NAME>_description.md  // Detailed instructions markdown file (for integrations only)
+├── CHANGELOG.md                       // markdown file which include the script/integration release notes.
+├── Pipfile                            // Can be copied from Tests/scripts/dev_envs/default_python3
+└── Pipfile.lock                       // Can be copied from Tests/scripts/dev_envs/default_python3    
+```
+   - Note: Since Python 2.7 will not be maintained past 2020, we refer only to Python 3.
  
 For example, a package of the integration [Palo Alto Networks Cortex](https://github.com/demisto/content/tree/master/Integrations/PaloAltoNetworksCortex) is stored under Integrations directory in a sub-directory names PaloAltoNetworksCortex and contain the following files:
 
- - `PaloAltoNetworksCortex.py` - the integration code.
- - `PaloAltoNetworksCortex.yml` - the integration configuration.
- - `PaloAltoNetworksCortex_image.png` - the integration logo.
- - `PaloAltoNetworksCortex_test.py` - the integration unit tests.
- - `PaloAltoNetworksCortex_description.md` - the integration detailed instructions.
- - `Pipfile`
- - `Pipfile.lock`
- 
+```
+.Integrations   
+│
+└─── .PaloAltoNetworksCortex
+│    ├── PaloAltoNetworksCortex.py
+│    ├── PaloAltoNetworksCortex_test.py
+│    ├── PaloAltoNetworksCortex.yml
+│    ├── PaloAltoNetworksCortex_image.png
+│    ├── PaloAltoNetworksCortex_description.md
+│    ├── Pipfile
+│    ├── Pipfile.lock
+```
+
 ---
 
 You can extract a package from a YAML file by using the following:
  - [Demisto IntelliJ Plugin](https://plugins.jetbrains.com/plugin/12093-demisto-add-on-for-pycharm)
- -  `package_extractor.py` script from the Content repository.
+ -  `package_extractor.py` script from the Content repository. 
+    - Usage example: `python3 package_extractor.py -i /Integrations/integration-WildFire.yml -o Integrations/WildFire -m`
 
 
 
