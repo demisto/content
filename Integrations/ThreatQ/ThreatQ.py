@@ -130,7 +130,7 @@ TYPE_ID_TO_FILE_TYPE = {
 
 TABLE_HEADERS = {
     'indicator': ['ID', 'Type', 'Value', 'Description', 'Status',
-                  'TQScore', 'CreatedAt', 'UpdatedAt', 'DBotScore', 'URL'],
+                  'TQScore', 'CreatedAt', 'UpdatedAt', 'URL'],
     'adversary': ['ID', 'Name', 'CreatedAt', 'UpdatedAt', 'URL'],
     'event': ['ID', 'Type', 'Title', 'Description', 'Occurred', 'CreatedAt', 'UpdatedAt', 'URL'],
     'attachment': ['ID', 'Name', 'Title', 'FileType', 'Size', 'Description', 'MD5', 'CreatedAt', 'UpdatedAt',
@@ -576,13 +576,10 @@ def build_readable_for_search_by_name(ioc_context, event_context, adversary_cont
     return human_readable
 
 
-def build_readable(readable_title, obj_type, data, dbot_score=None, metadata=None):
+def build_readable(readable_title, obj_type, data, metadata=None):
     if isinstance(data, dict):  # One object data
-        data['DBotScore'] = dbot_score  # We add DBot Score data only for the readable output - then we pop it back
         readable = tableToMarkdown(readable_title, data, headers=TABLE_HEADERS[obj_type],
                                    headerTransform=pascalToSpace, removeNull=True, metadata=metadata)
-        data.pop('DBotScore')
-
         if 'Attribute' in data:
             readable += tableToMarkdown('Attributes', data['Attribute'], headers=TABLE_HEADERS['attributes'],
                                         removeNull=True, headerTransform=pascalToSpace, metadata=metadata)
@@ -668,10 +665,9 @@ def search_by_id_command():
         indicator_type = TQ_TO_DEMISTO_IOC_TYPES.get(raw['Type'])
         if indicator_type is not None:
             ec['DBotScore'] = create_dbot_context(raw['Value'], indicator_type, raw['TQScore'])
-            dbot_score = ec['DBotScore']['Score']
 
     readable_title = 'Search results for {0} with ID {1}'.format(obj_type, obj_id)
-    readable = build_readable(readable_title, obj_type, raw, dbot_score)
+    readable = build_readable(readable_title, obj_type, raw)
 
     return_outputs(readable, ec, raw)
 
