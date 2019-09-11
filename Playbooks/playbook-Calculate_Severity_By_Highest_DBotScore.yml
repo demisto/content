@@ -414,4 +414,4 @@ outputs:
     playbook.
   type: string
 tests:
-  - Calculate Severity By Highest DBotScore
+  - Severity Reevaluation Based on Indicator Reputation - Test
