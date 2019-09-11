@@ -641,7 +641,7 @@ def search_samples(query=None, scope=None, size=None, sort=None, order=None, fil
     if not query:
         validate_no_multiple_indicators_for_search([file_hash, domain, ip, url])
         query = build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated)
-    return run_search('samples', query=query, scope=scope, size=size, sort=sort, order=order)
+    return run_search('samples', query=json.dumps(query), scope=scope, size=size, sort=sort, order=order)
 
 
 def build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated):
@@ -653,12 +653,15 @@ def build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, firs
     }
     indicator_list = build_indicator_children_query(indicator_args_for_query)
     indicator_query = build_logic_query('OR', indicator_list)
-    filtering_args_for_search = {
-        'wildfire_verdict': API_PARAM_DICT['search_arguments'][wildfire_verdict]['translate'][wildfire_verdict],
-        'first_seen': first_seen,
-        'last_updated': last_updated
-    }
-    filters_list = build_children_query(filtering_args_for_search).append(indicator_query)
+    filtering_args_for_search = {}
+    if wildfire_verdict:
+        filtering_args_for_search['wildfire_verdict'] = API_PARAM_DICT['search_arguments'][wildfire_verdict]['translate'][wildfire_verdict]
+    if first_seen:
+        filtering_args_for_search['first_seen'] = first_seen
+    if last_updated:
+        filtering_args_for_search['last_updated'] = last_updated
+    filters_list = build_children_query(filtering_args_for_search)
+    filters_list.append(indicator_query)
     return build_logic_query('AND', filters_list)
 
 
@@ -668,7 +671,7 @@ def search_sessions(query=None, size=None, sort=None, order=None, file_hash=None
     if not query:
         validate_no_multiple_indicators_for_search([file_hash, domain, ip, url])
         query = build_session_search_query(file_hash, domain, ip, url, time_range, time_after, time_before)
-    return run_search('sessions', query=query, size=size, sort=sort, order=order)
+    return run_search('sessions', query=json.dumps(query), size=size, sort=sort, order=order)
 
 
 def build_session_search_query(file_hash, domain, ip, url, time_range, time_after, time_before):
@@ -680,12 +683,18 @@ def build_session_search_query(file_hash, domain, ip, url, time_range, time_afte
     }
     indicator_list = build_indicator_children_query(indicator_args_for_query)
     indicator_query = build_logic_query('OR', indicator_list)
-    filtering_args_for_search = {
-        'time_range': time_range,
-        'time_after': time_after,
-        'time_before': time_before
-    }
-    filters_list = build_children_query(filtering_args_for_search).append(indicator_query)
+
+    if time_range and time_after or time_after and time_before or time_before and time_range:
+        return_error('search session is able to use only a single time argument, two or more such arguments were given')
+    filtering_args_for_search = {}
+    if time_range:
+        filtering_args_for_search = {'time_range': time_range}
+    elif time_after:
+        filtering_args_for_search = {'time_after': time_after}
+    elif time_before:
+        filtering_args_for_search = {'time_before': time_before}
+    filters_list = build_children_query(filtering_args_for_search)
+    filters_list.append(indicator_query)
     return build_logic_query('AND', filters_list)
 
 
@@ -719,12 +728,12 @@ def build_indicator_children_query(args_for_query):
     return children_list
 
 
-def children_list_generator(field_name, val_list):
+def children_list_generator(field_name, operator, val_list):
     query_list = []
     for value in val_list:
         query_list.append({
             'field': field_name,
-            'operator': 'contains',
+            'operator': operator,
             'value': value
         })
     return query_list
@@ -734,18 +743,20 @@ def validate_no_query_and_indicators(query, arg_list):
     if query:
         for arg in arg_list:
             if arg:
-                return_error(f'The command can either run a custom query or use the builtin arguments, but not both')
+                return_error(f'The search command can either run a search using a custom query '
+                             f'or use the builtin arguments, but not both')
 
 
 def validate_no_multiple_indicators_for_search(arg_list):
     used_arg = None
     for arg in arg_list:
         if arg and used_arg:
-            return_error(f'This command can receive one builtin argument. Two were given: {used_arg}, {arg}')
+            return_error(f'The search command can receive one indicator type at a time, two were given: {used_arg}, '
+                         f'{arg}. For multiple indicator types use the custom query')
         elif arg:
             used_arg = arg
     if not used_arg:
-        return_error('In order tp perform a samples/sessions search a query or an indicator must be given.')
+        return_error('In order to perform a samples/sessions search a query or an indicator must be given.')
     return
 
 
@@ -778,8 +789,8 @@ def search_samples_command():
     ip = argToList(args.get('ip'))
     url = argToList(args.get('url'))
     wildfire_verdict = args.get('wildfire_verdict')
-    first_seen = args.get('first_seen')
-    last_updated = args.get('last_updated')
+    first_seen = argToList(args.get('first_seen'))
+    last_updated = argToList(args.get('last_updated'))
     query = args.get('query')
     scope = args.get('scope')
     max_results = args.get('max_results')
@@ -804,9 +815,9 @@ def search_sessions_command():
     domain = argToList(args.get('domain'))
     ip = argToList(args.get('ip'))
     url = argToList(args.get('url'))
-    time_range = args.get('time_range')
-    time_after = args.get('time_after')
-    time_before = args.get('time_before')
+    time_range = argToList(args.get('time_range'))
+    time_after = argToList(args.get('time_after'))
+    time_before = argToList(args.get('time_before'))
     query = args.get('query')
     max_results = args.get('max_results')
     sort = args.get('sort')
