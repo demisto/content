@@ -290,7 +290,10 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Union[
         else:
             try:
                 if res.status_code not in {200, 201}:
-                    res_data = json.loads(res.text)
+                    try:
+                        res_data = json.loads(res.text)
+                    except ValueError:
+                        raise Exception('Failure resolving URL.')
                     if isinstance(res_data, dict) and 'non_field_errors' in res_data:
                         # case of wrong credentials
                         err_msg_list = res_data.get('non_field_errors')
@@ -309,20 +312,17 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Union[
         err_msg = 'Failure verying SSL certificate. Try selecting \'Trust any certificate\' in' \
                   ' the integration configuration.'
         raise Exception(err_msg)
-    # except requests.exceptions.ProxyError:
-    #     err_msg = 'Proxy Error - try clearing \'Use system proxy\' in the integration configuration if it has been' \
-    #               ' selected.'
-    #     raise Exception(err_msg)
+    except requests.exceptions.ProxyError:
+        err_msg = 'Proxy Error - try clearing \'Use system proxy\' in the integration configuration if it has been' \
+                  ' selected.'
+        raise Exception(err_msg)
     except requests.exceptions.ConnectionError as e:
         # Get originating Exception in Exception chain
         while '__context__' in dir(e) and e.__context__:
             e = cast(Any, e.__context__)
-        if not isinstance(e, TypeError):
-            err_msg = f'\nMESSAGE: {e.strerror}\n' \
-                      f'ADVICE: Check that the Server URL parameter is correct and that you' \
-                      f' have access to the Server from your host.'
-        else:
-            err_msg = str(e)
+        err_msg = f'\nMESSAGE: {e.strerror}\n' \
+                  f'ADVICE: Check that the Server URL parameter is correct and that you' \
+                  f' have access to the Server from your host.'
         raise Exception(err_msg)
 
 
