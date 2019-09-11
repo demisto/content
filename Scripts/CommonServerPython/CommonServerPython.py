@@ -2028,82 +2028,87 @@ H || val.SSDeep && val.SSDeep == obj.SSDeep)': {'Malicious': {'Vendor': 'Vendor'
     return {outputPaths[indicator_type_lower]: entry}
 
 
+class BaseClient(object):
+    def __init__(self,
+                 integration_name,
+                 integration_command_name,
+                 integration_context_name):
+        """Base Client for use in integrations.
+
+         :type integration_name: ``str``
+         :param integration_name: Name as shown in UI (`Integration Name`)
+
+         :type integration_command_name: ``str``
+         :param integration_command_name: lower case with `-` divider (`integration-name`)
+
+         :type integration_context_name: ``str``
+         :param integration_context_name: camelcase with no dividers (`IntegrationName`)
+
+         :return: No data returned
+         :rtype: ``None``
+         """
+        self._integration_name = str(integration_name)
+        self._integration_command_name = str(integration_command_name)
+        self._integration_context_name = str(integration_context_name)
+
+    @property
+    def integration_name(self):
+        """Property of integration name
+        return: Integration command name
+        :rtype: ``str``
+        """
+        return self._integration_name
+
+    @property
+    def integration_context_name(self):
+        """Property of integration name context
+        return: Integration command name
+        :rtype: ``str``
+        """
+        return self._integration_context_name
+
+    @property
+    def integration_command_name(self):
+        """Property of integration name command
+        return: Integration command name
+        :rtype: ``str``
+        """
+        return self._integration_command_name
+
+
 # Will add only if 'requests' module imported
 if 'requests' in sys.modules:
-    class BaseClient(object):
-        def __init__(self,
-                     server,
-                     base_suffix,
-                     integration_name,
-                     integration_command_name,
-                     integration_context_name,
-                     verify=True,
-                     proxy=False,
-                     ok_codes=None):
-            """Base Client for use in integrations.
+    class BaseHTTPClient(BaseClient):
+        def __init__(self, integration_name, integration_command_name, integration_context_name, server,
+                     base_suffix, verify, proxy, ok_codes=tuple()):
+            """
+            :type server: ``str``
+            :param server: Base server address
 
-             :type server: ``str``
-             :param server: Base server address
+            :type base_suffix: ``str``
+            :param base_suffix: suffix of API (e.g`/api/v2/`)
 
-             :type base_suffix: ``str``
-             :param base_suffix: suffix of API (e.g`/api/v2/`)
+            :type verify: ``bool``
+            :param verify: Verify SSL
 
-             :type integration_name: ``str``
-             :param integration_name: Name as shown in UI (`Integration Name`)
+            :type proxy: ``bool``
+            :param proxy: Use system proxy
 
-             :type integration_command_name: ``str``
-             :param integration_command_name: lower case with `-` divider (`integration-name`)
+            :type ok_codes: ``tuple``
+            :param ok_codes: acceptable OK codes. If None will use response.ok
 
-             :type integration_context_name: ``str``
-             :param integration_context_name: camelcase with no dividers (`IntegrationName`)
-
-             :type verify: ``bool``
-             :param verify: Verify SSL
-
-             :type proxy: ``bool``
-             :param proxy: Use system proxy
-
-             :type ok_codes: ``tuple``
-             :param ok_codes: acceptable OK codes. If None will use response.ok
-
-             :return: No data returned
-             :rtype: ``None``
-             """
+            :return: No data returned
+            :rtype: ``None``
+            """
             self._server = server.rstrip('/')
             self._verify = verify
-            self._integration_name = str(integration_name)
-            self._integration_command_name = str(integration_command_name)
-            self._integration_context_name = str(integration_context_name)
             self._base_url = '{}{}'.format(self._server, base_suffix)
             self._ok_codes = ok_codes
             if proxy:
                 self._proxies = handle_proxy()
             else:
                 self._proxies = None
-
-        @property
-        def integration_name(self):
-            """Property of integration name
-            return: Integration command name
-            :rtype: ``str``
-            """
-            return self._integration_name
-
-        @property
-        def integration_context_name(self):
-            """Property of integration name context
-            return: Integration command name
-            :rtype: ``str``
-            """
-            return self._integration_context_name
-
-        @property
-        def integration_command_name(self):
-            """Property of integration name command
-            return: Integration command name
-            :rtype: ``str``
-            """
-            return self._integration_command_name
+            super().__init__(integration_name, integration_command_name, integration_context_name)
 
         def _http_request(self, method, url_suffix, full_url=None, headers=None,
                           auth=None, params=None, data=None, files=None,
