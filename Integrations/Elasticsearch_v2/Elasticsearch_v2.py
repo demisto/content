@@ -302,6 +302,7 @@ def fetch_incidents():
 
     demisto.incidents(incidents)
 
+
 try:
     LOG('command is %s' % (demisto.command(),))
     if demisto.command() == 'test-module':
