@@ -21,8 +21,8 @@ These instructions explain how to build a query for the `query` argument. You ca
    3. Build a query by selecting fields operators and relevant values. You can always add an additional condition by 
    selecting the **+** button on the right. For more information on how to use the search editor see [Work with the Search Editor
 ](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-search/work-with-the-search-editor.html#id791798e0-2277-41b5-a723-383bd0787816_id597cae40-646e-4a2f-acf5-5fe04d9e2cf0).
-4. To get the query you built, open the API syntax, click the **>_API** button.
-5. Copy the query value from the opening curly bracket `{`  until the `,"scope"` parameter and paste it as the value for the `query` argument for both search commands. For example:
+4. To export the query you built, click the **Export Search** button.
+5. Copy the query value  and paste it as the value for the `query` argument for both search commands. For example:
 ```
 {"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1},{"field":"sample.create_date","operator":"is after","value":["2019-06-13","2019-06-13"]}]}
 ``` 
