@@ -147,15 +147,27 @@ def rasterize_email_command():
     name = f'email.{"pdf" if r_type.lower() == "pdf" else "png"}'  # type: ignore
     with open('htmlBody.html', 'w') as f:
         f.write(f'<html style="background:white";>{html_body}</html>')
-        results = rasterize(file_name=name, path=f'file://{os.path.realpath(f.name)}', r_type=r_type, width=w, height=h)
+
+    results = rasterize(file_name=name, path=f'file://{os.path.realpath(f.name)}', r_type=r_type, width=w, height=h)
 
     demisto.results(results)
 
 
 def test():
-    with open('htmlBody.html', 'w') as f:
-        f.write('<html style="background:white";><head></head><body><div>Hello World!</div></body></html>')
-        rasterize(file_name='test.png', path=f'file://{os.path.realpath(f.name)}', r_type='png', width=800, height=800)
+    # setting up a mock email file
+    with open('htmlBodyTest.html', 'w') as test_file:
+        test_file.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
+                        '</head><body><br>---------- TEST FILE ----------<br></body></html>')
+        file_path = f'file://{os.path.realpath(test_file.name)}'
+
+    # rasterizing the file
+    driver = init_driver()
+    driver.get(file_path)
+    driver.implicitly_wait(5)
+    driver.set_window_size(250, 250)
+    driver.get_screenshot_as_png()
+    driver.quit()
+
     demisto.results('ok')
     sys.exit(0)
 
