@@ -108,10 +108,10 @@ tasks:
       id: 04197795-431b-4d8b-8b82-b4bcfbdb9b15
       version: -1
       name: Get malicious URL reputation using Minemeld
-      script: Palo Alto Minemeld New|||url
+      script: Palo Alto Minemeld|||url
       type: regular
       iscommand: true
-      brand: Palo Alto Minemeld New
+      brand: Palo Alto Minemeld
     nexttasks:
       '#none#':
       - "5"
