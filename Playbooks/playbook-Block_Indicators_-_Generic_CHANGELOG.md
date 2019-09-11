@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added new subplaybook - *Block IP - Generic v2*
+Added the subplaybook **Block IP - Generic v2**.
