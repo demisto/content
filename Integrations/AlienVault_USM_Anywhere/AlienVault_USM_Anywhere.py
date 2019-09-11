@@ -232,7 +232,7 @@ def dict_value_to_int(target_dict: Dict, key: str):
                 target_dict[key] = int(value)
                 return target_dict[key]
     except ValueError:
-        raise ValueError(f'This value for {key} must be an integer.')
+        raise ValueError(f'The value for {key} must be an integer.')
 
 
 def item_to_incident(item):
