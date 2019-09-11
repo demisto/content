@@ -1,0 +1,32 @@
+args:
+- default: false
+  isArray: true
+  name: ip
+  required: false
+  secret: false
+- default: false
+  isArray: true
+  name: hash
+  required: false
+  secret: false
+- default: false
+  isArray: true
+  name: domain
+  required: false
+  secret: false
+comment: The script accepts indicators and creates relevant queries in relevant products.
+commonfields:
+  id: IndicatorCreateQueries
+  version: -1
+enabled: false
+name: IndicatorCreateQueries
+outputs:
+- contextPath: Query.IP.CortexTrapsIP
+  type: Unknown
+script: '-'
+system: false
+timeout: '0'
+type: python
+subtype: python3
+tests:
+  - No test
