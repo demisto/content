@@ -2,6 +2,7 @@ id: PAN-OS - Block IP and URL - External Dynamic List Test
 version: -1
 name: PAN-OS - Block IP and URL - External Dynamic List Test
 starttaskid: "0"
+fromversion: "4.5.0"
 tasks:
   "0":
     id: "0"
