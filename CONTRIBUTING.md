@@ -6,6 +6,18 @@ Welcome to Demisto content repo!
 
 ## How to contribute
 
+To get you started, refer to our [Getting Started article](https://github.com/demisto/content/blob/master/docs/README.md)
+
+After you finish developing, there are two steps left before you can create a pull request:
+
+ - Run linting and test checks as detailed [here](https://github.com/demisto/content/tree/master/docs/linting)
+
+ - Document your changes in the relevant changelog file as detailed [here](https://github.com/demisto/content/tree/master/docs/release_notes).
+
+You should now be ready to push your changes to the Content GitHub repository, please do as follows.
+
+## Push changes to GitHub
+
 Demisto content is MIT Licensed and accepts contributions via GitHub pull requests.
 If you are a first time GitHub contributor, please look at these links explaining on how to create a Pull Request to a GitHub repo:
 * https://guides.github.com/activities/forking/

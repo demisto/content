@@ -180,7 +180,14 @@ def http_request(uri: str, method: str, headers: Dict = {},
     # handle @code
     if 'response' in json_result and '@code' in json_result['response']:
         if json_result['response']['@code'] in PAN_OS_ERROR_DICT:
-            return_error('Request Failed.\n' + PAN_OS_ERROR_DICT[json_result['response']['@code']])
+            error_message = 'Request Failed.\n' + PAN_OS_ERROR_DICT[json_result['response']['@code']]
+            if json_result['response']['@code'] == '7' and DEVICE_GROUP:
+                device_group_names = get_device_groups_names()
+                if DEVICE_GROUP not in device_group_names:
+                    error_message += (f'\nDevice Group: {DEVICE_GROUP} does not exist.'
+                                      f' The available Device Groups for this instance:'
+                                      f' {", ".join(device_group_names)}.')
+            return_error(error_message)
         if json_result['response']['@code'] not in ['19', '20']:
             # error code non exist in dict and not of success
             if 'msg' in json_result['response']:
@@ -315,9 +322,9 @@ def panorama_test():
     demisto.results('ok')
 
 
-def device_group_test():
+def get_device_groups_names():
     """
-    Test module for the Device group specified
+    Get device group names in the Panorama
     """
     params = {
         'action': 'get',
@@ -333,20 +340,25 @@ def device_group_test():
     )
 
     device_groups = result['response']['result']['entry']
+    device_group_names = []
     if isinstance(device_groups, dict):
         # only one device group in the panorama
-        device_group_name = device_groups.get('@name')
-        if device_group_name != DEVICE_GROUP:
-            return_error(f'Device Group: {DEVICE_GROUP} does not exist.'
-                         f'These is the available Device Group for this instance: {device_group_name}')
+        device_group_names.append(device_groups.get('@name'))
     else:
-        # panorama has more than one device group configured
-        device_groups_arr = []
         for device_group in device_groups:
-            device_groups_arr.append(device_group.get('@name'))
-        if DEVICE_GROUP not in device_groups_arr:
-            return_error(f'Device Group: {DEVICE_GROUP} does not exist.'
-                         f'These are the available Device Groups for this instance: {str(device_groups_arr)}')
+            device_group_names.append(device_group.get('@name'))
+
+    return device_group_names
+
+
+def device_group_test():
+    """
+    Test module for the Device group specified
+    """
+    device_group_names = get_device_groups_names()
+    if DEVICE_GROUP not in device_group_names:
+        return_error(f'Device Group: {DEVICE_GROUP} does not exist.'
+                     f' The available Device Groups for this instance: {", ".join(device_group_names)}.')
 
 
 @logger

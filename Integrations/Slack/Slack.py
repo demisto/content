@@ -494,7 +494,7 @@ async def handle_dm(user: dict, text: str, client: slack.WebClient):
     :param client: The Slack client
     :return: Text to return to the user
     """
-
+    demisto.info('Slack - handling direct message.')
     message: str = text.lower()
     if message.find('incident') != -1 and (message.find('create') != -1
                                            or message.find('open') != -1
@@ -532,6 +532,7 @@ async def translate_create(demisto_user: dict, message: str) -> str:
     json_pattern = r'(?<=json=).*'
     name_pattern = r'(?<=name=).*'
     type_pattern = r'(?<=type=).*'
+    message = message.replace("\n", '').replace('`', '').replace('```', '')
     json_match = re.search(json_pattern, message)
     created_incident = None
     data = ''
@@ -616,17 +617,19 @@ async def listen(**payload):
         user_id = data.get('user', '')
         channel = data.get('channel', '')
         message_bot_id = data.get('bot_id', '')
+        thread = data.get('thread_ts', '')
+        message = data.get('message', {})
 
-        if subtype == 'bot_message' or message_bot_id:
+        if subtype == 'bot_message' or message_bot_id or message.get('subtype') == 'bot_message':
             return
 
         integration_context = demisto.getIntegrationContext()
         user = await get_user_by_id_async(client, integration_context, user_id)
-        if channel and channel[0] == 'D':
+        if await check_and_handle_entitlement(text, user, thread):
+            await client.chat_postMessage(channel=channel, text='Thank you for your response.', thread_ts=thread)
+        elif channel and channel[0] == 'D':
             # DM
             await handle_dm(user, text, client)
-        elif await check_and_handle_entitlement(text, user):
-            await client.chat_postMessage(channel=channel, text='Response received by {}'.format(user.get('name')))
         else:
             if not integration_context or 'mirrors' not in integration_context:
                 return
@@ -690,7 +693,7 @@ async def handle_text(client: slack.WebClient, investigation_id: str, text: str,
     :param text: The received text
     :param user: The sender
     """
-
+    demisto.info('Slack - adding entry to incident {}'.format(investigation_id))
     if text:
         demisto.addEntry(id=investigation_id,
                          entry=await clean_message(text, client),
@@ -700,23 +703,59 @@ async def handle_text(client: slack.WebClient, investigation_id: str, text: str,
                          )
 
 
-async def check_and_handle_entitlement(text: str, user: dict) -> bool:
+async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) -> bool:
+    """
+    Handles an entitlement message (a reply to a question)
+    :param text: The message text
+    :param user: The user who sent the reply
+    :param thread_id: The thread ID
+    :return: Whether the message is a reply to a question or not
+    """
+
     entitlement_match = re.search(ENTITLEMENT_REGEX, text)
     if entitlement_match:
-        entitlement = entitlement_match.group()
-        parts = entitlement.split('@')
-        guid = parts[0]
-        id_and_task = parts[1].split('|')
-        incident_id = id_and_task[0]
-        task_id = ''
-        if len(id_and_task) > 1:
-            task_id = id_and_task[1]
-        content = text.replace(entitlement, '', 1)
+        demisto.info('Slack - handling entitlement in message.')
+        content, guid, incident_id, task_id = await extract_entitlement(entitlement_match.group(), text)
         demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'), content, task_id)
 
         return True
+    else:
+        integration_context = demisto.getIntegrationContext()
+        questions = integration_context.get('questions', [])
+        if questions and thread_id:
+            questions = json.loads(questions)
+            question_filter = list(filter(lambda q: q.get('thread') == thread_id, questions))
+            if question_filter:
+                demisto.info('Slack - handling entitlement in thread.')
+                entitlement = question_filter[0].get('entitlement')
+                content, guid, incident_id, task_id = await extract_entitlement(entitlement, text)
+                demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'), content,
+                                                 task_id)
+                questions.remove(question_filter[0])
+                set_to_latest_integration_context('questions', questions)
+
+                return True
 
     return False
+
+
+async def extract_entitlement(entitlement, text):
+    """
+    Extracts entitlement components from an entitlement string
+    :param entitlement: The entitlement itself
+    :param text: The actual reply text
+    :return: Entitlement components
+    """
+    parts = entitlement.split('@')
+    guid = parts[0]
+    id_and_task = parts[1].split('|')
+    incident_id = id_and_task[0]
+    task_id = ''
+    if len(id_and_task) > 1:
+        task_id = id_and_task[1]
+    content = text.replace(entitlement, '', 1)
+
+    return content, guid, incident_id, task_id
 
 
 ''' SEND '''
@@ -760,6 +799,8 @@ def slack_send():
     ignore_add_url = demisto.args().get('ignoreAddURL', False) or demisto.args().get('IgnoreAddURL', False)
     thread_id = demisto.args().get('threadID', '')
     severity = demisto.args().get('severity')  # From server
+    blocks = demisto.args().get('blocks')
+    entitlement = ''
 
     if message_type == MIRROR_TYPE and original_message.find(MESSAGE_FOOTER) != -1:
         # return so there will not be a loop of messages
@@ -785,10 +826,21 @@ def slack_send():
     if not (to or group or channel):
         return_error('Either a user, group or channel must be provided.')
 
-    response = slack_send_request(to, channel, group, entry, ignore_add_url, thread_id, message=message)
+    entitlement_match = re.search(ENTITLEMENT_REGEX, message)
+    if entitlement_match:
+        try:
+            parsed_message = json.loads(message)
+            entitlement = parsed_message['entitlement']
+            message = parsed_message['message']
+        except Exception:
+            pass
+    response = slack_send_request(to, channel, group, entry, ignore_add_url, thread_id, message=message, blocks=blocks)
 
     if response:
         thread = response.get('ts')
+        if entitlement:
+            save_entitlement(entitlement, thread)
+
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': 'Message sent to Slack successfully.\nThread ID is: {}'.format(thread),
@@ -801,6 +853,24 @@ def slack_send():
         })
     else:
         demisto.results('Could not send the message to Slack.')
+
+
+def save_entitlement(entitlement, thread):
+    """
+    Saves an entitlement with its thread
+    :param entitlement: The entitlement
+    :param thread: The thread
+    """
+    integration_context = demisto.getIntegrationContext()
+    questions = integration_context.get('questions', [])
+    if questions:
+        questions = json.loads(integration_context['questions'])
+    questions.append({
+        'thread': thread,
+        'entitlement': entitlement
+    })
+
+    set_to_latest_integration_context('questions', questions)
 
 
 def slack_send_file():
@@ -840,7 +910,7 @@ def slack_send_file():
 
 
 def send_message(destinations: list, entry: str, ignore_add_url: bool, integration_context: dict, message: str,
-                 thread_id: str):
+                 thread_id: str, blocks: str):
     """
     Sends a message to Slack.
     :param destinations: The destinations to send to.
@@ -849,28 +919,31 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
     :param integration_context: Current integration context.
     :param message: The message to send.
     :param thread_id: The Slack thread ID to send the message to.
+    :param blocks: Message blocks to send
     :return: The Slack send response.
     """
-    if not message:
+    if not message and not blocks:
         message = '\n'
-    if ignore_add_url and isinstance(ignore_add_url, str):
-        ignore_add_url = bool(strtobool(ignore_add_url))
-    if not ignore_add_url:
-        investigation = demisto.investigation()
-        server_links = demisto.demistoUrls()
-        if investigation:
-            if investigation.get('type') != PLAYGROUND_INVESTIGATION_TYPE:
-                link = server_links.get('warRoom')
-                if link:
-                    if entry:
-                        link += '/' + entry
-                    message += '\n{} {}'.format('View it on:', link)
-            else:
-                link = server_links.get('server', '')
-                if link:
-                    message += '\n{} {}'.format('View it on:', link + '#/home')
+
+    if message:
+        if ignore_add_url and isinstance(ignore_add_url, str):
+            ignore_add_url = bool(strtobool(ignore_add_url))
+        if not ignore_add_url:
+            investigation = demisto.investigation()
+            server_links = demisto.demistoUrls()
+            if investigation:
+                if investigation.get('type') != PLAYGROUND_INVESTIGATION_TYPE:
+                    link = server_links.get('warRoom')
+                    if link:
+                        if entry:
+                            link += '/' + entry
+                        message += '\n{} {}'.format('View it on:', link)
+                else:
+                    link = server_links.get('server', '')
+                    if link:
+                        message += '\n{} {}'.format('View it on:', link + '#/home')
     try:
-        response = send_message_to_destinations(destinations, message, thread_id)
+        response = send_message_to_destinations(destinations, message, thread_id, blocks)
     except SlackApiError as e:
         if str(e).find('not_in_channel') == -1 and str(e).find('channel_not_found') == -1:
             raise
@@ -879,22 +952,30 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
             bot_id = get_bot_id()
         for dest in destinations:
             invite_users_to_conversation(dest, [bot_id])
-        response = send_message_to_destinations(destinations, message, thread_id)
+        response = send_message_to_destinations(destinations, message, thread_id, blocks)
     return response
 
 
-def send_message_to_destinations(destinations: list, message: str, thread_id: str) -> dict:
+def send_message_to_destinations(destinations: list, message: str, thread_id: str, blocks: str = '') -> dict:
     """
     Sends a message to provided destinations Slack.
     :param destinations: Destinations to send to.
     :param message: The message to send.
     :param thread_id: Slack thread ID to send to.
+    :param blocks: Message blocks to send
     :return: The Slack send response.
     """
     response: dict = {}
-    kwargs: dict = {'text': message}
+    kwargs: dict = {}
+
+    if message:
+        kwargs['text'] = message
+    if blocks:
+        block_list = json.loads(blocks)
+        kwargs['blocks'] = block_list
     if thread_id:
         kwargs['thread_ts'] = thread_id
+
     for destination in destinations:
         response = CLIENT.chat_postMessage(channel=destination, **kwargs)
     return response
@@ -947,7 +1028,7 @@ def send_file_to_destinations(destinations: list, file: dict, thread_id: str) ->
 
 
 def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignore_add_url: bool = False,
-                       thread_id: str = '', message: str = '', file: dict = None) -> dict:
+                       thread_id: str = '', message: str = '', blocks: str = '', file: dict = None) -> dict:
     """
     Requests to send a message or a file to Slack.
     :param to: A Slack user to send to.
@@ -957,6 +1038,7 @@ def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignor
     :param ignore_add_url: Do not add a Demisto URL to the message.
     :param thread_id: The Slack thread ID to send to.
     :param message: A message to send.
+    :param blocks: Blocks to send with a slack message
     :param file: A file to send.
     :return: The Slack send response.
     """
@@ -1013,7 +1095,7 @@ def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignor
         return response
 
     response = send_message(destinations, entry, ignore_add_url, integration_context, message,
-                            thread_id)
+                            thread_id, blocks)
 
     return response
 
