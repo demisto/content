@@ -176,8 +176,6 @@ def test_module():
     """
     if KAFKA_CLIENT.topics is not None:
         demisto.results('ok')
-    else:
-        return_error('Failed in test_module')
 
 
 def print_topics():
