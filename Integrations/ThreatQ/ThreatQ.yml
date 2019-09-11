@@ -73,7 +73,7 @@ script:
       description: Adversary's name
       type: String
   - arguments:
-    - default: false
+    - default: true
       defaultValue: 8.8.8.8
       description: IP address
       isArray: false
