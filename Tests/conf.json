@@ -366,6 +366,30 @@
             "playbookID": "ParseEmailFiles-test"
         },
         {
+            "playbookID": "PAN-OS - Block IP and URL - External Dynamic List Test",
+            "integrations": "palo_alto_networks_pan_os_edl_management",
+            "fromversion": "4.5.0"
+
+        },
+        {
+            "playbookID": "PAN-OS - Block IP - Custom Block Rule Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "fromversion": "4.5.0"
+        },
+        {
+            "playbookID": "PAN-OS - Block IP - Static Address Group Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "fromversion": "4.5.0"
+        },
+        {
+            "playbookID": "PAN-OS - Block URL - Custom URL Category Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "fromversion": "4.5.0"
+        },
+        {
             "playbookID": "ParseExcel-test"
         },
         {
@@ -1775,6 +1799,12 @@
         {
             "integrations": "Threat Crowd",
             "playbookID": "ThreatCrowd - Test"
+        },
+        {
+            "integrations": "Hybrid Analysis",
+            "playbookID": "HybridAnalysis-Test",
+            "timeout": 500,
+            "fromversion": "4.1.0"
         }
     ],
     "skipped_tests": {
