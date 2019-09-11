@@ -1,4 +1,3 @@
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -33,6 +32,7 @@ HEADERS = {
 # Error messages
 INVALID_ID_ERR_MSG = 'Error in API call. This may be happen if you provided an invalid id.'
 API_ERR_MSG = 'Error in API call to AttackIQ. '
+DEFAULT_PAGE_SIZE = 10
 
 # Transformation dicts
 ASSESSMENTS_TRANS = {
@@ -59,10 +59,7 @@ ASSESSMENTS_TRANS = {
     'project_template.modified': 'AssessmentTemplate.Modified',
     'project_template.template_name': 'AssessmentTemplate.TemplateName',
     'project_template.default_schedule': 'AssessmentTemplate.DefaultSchedule',
-    'project_template.template_description': 'AssessmentTemplate.TemplateDescription',
-    'project_template.project_template_type.id': 'AssessmentTemplate.AssessmentTemplateType.Id',
-    'project_template.project_template_type.name': 'AssessmentTemplate.AssessmentTemplateType.Name',
-    'project_template.project_template_type.description': 'AssessmentTemplate.AssessmentTemplateType.Description',
+    'project_template.template_description': 'AssessmentTemplate.TemplateDescription'
 }
 
 TESTS_TRANS = {
@@ -368,12 +365,18 @@ def get_assessments(page='1', assessment_id=None):
 def list_assessments_command():
     """ Implements attackiq-list-assessments command
     """
-    page = demisto.getArg('page_number')
+    page = demisto.args().get('page_number')
+    try:
+        page_size = int(demisto.args().get('page_size', DEFAULT_PAGE_SIZE))
+    except (ValueError, TypeError):
+        page_size = DEFAULT_PAGE_SIZE
     raw_assessments = get_assessments(page=page)
     assessments_res = build_transformed_dict(raw_assessments.get('results'), ASSESSMENTS_TRANS)
-    hr = tableToMarkdown(f'AttackIQ Assessments Page #{page}', assessments_res,
+    ass_cnt = raw_assessments.get('count')
+    context = {'AttackIQ.Assessment(val.Id === obj.Id)': assessments_res, 'AttackIQ.Assessment(val.Count === obj).Count': ass_cnt}
+    hr = tableToMarkdown(f'AttackIQ Assessments Page {page}/{(ass_cnt//page_size) + 1}', assessments_res,
                          headers=['Id', 'Name', 'Description', 'User', 'Created', 'Modified'])
-    return_outputs(hr, {'AttackIQ.Assessment(val.Id === obj.Id)': assessments_res}, raw_assessments)
+    return_outputs(hr, context, raw_assessments)
 
 
 def get_assessment_by_id_command():

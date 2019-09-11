@@ -317,10 +317,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 812c5d7f-2a2a-462b-8c14-5f0ea4530de9
+    taskid: 5796c4a4-dcfe-41c0-82a6-70a2bb8fe70e
     type: condition
     task:
-      id: 812c5d7f-2a2a-462b-8c14-5f0ea4530de9
+      id: 5796c4a4-dcfe-41c0-82a6-70a2bb8fe70e
       version: -1
       name: Assert assessments
       type: condition
@@ -467,30 +467,6 @@ tasks:
             value:
               simple: AttackIQ.Assessment.AssessmentTemplate.Modified
             iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: AttackIQ.Assessment.AssessmentTemplate.AssessmentTemplateType.Id
-            iscontext: true
-          right:
-            value:
-              simple: b1e7ac80-1417-4f7b-a387-35fb49f218c8
-      - - operator: isEqualString
-          left:
-            value:
-              simple: AttackIQ.Assessment.AssessmentTemplate.AssessmentTemplateType.Name
-            iscontext: true
-          right:
-            value:
-              simple: Use Cases
-      - - operator: isEqualString
-          left:
-            value:
-              simple: AttackIQ.Assessment.AssessmentTemplate.AssessmentTemplateType.Description
-            iscontext: true
-          right:
-            value:
-              simple: Showcase different use cases in which FireDrill can help
     view: |-
       {
         "position": {

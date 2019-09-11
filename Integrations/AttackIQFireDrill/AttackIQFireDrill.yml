@@ -67,15 +67,6 @@ script:
     - contextPath: AttackIQ.Assessment.AssessmentTemplate.TemplateDescription
       description: Assessment template description.
       type: String
-    - contextPath: AttackIQ.Assessment.AssessmentTemplate.AssessmentTemplateType.Id
-      description: Assessment template type ID.
-      type: String
-    - contextPath: AttackIQ.Assessment.AssessmentTemplate.AssessmentTemplateType.Name
-      description: Assessment template type name.
-      type: String
-    - contextPath: AttackIQ.Assessment.AssessmentTemplate.AssessmentTemplateType.Description
-      description: Assessment template type description.
-      type: String
     - contextPath: AttackIQ.Assessment.AssessmentTemplate.DefaultSchedule
       description: Assessment's template default schedule timing (cron).
       type: Unknown
@@ -126,6 +117,13 @@ script:
       name: page_number
       required: false
       secret: false
+    - default: false
+      defaultValue: '10'
+      description: The page size as set up in your attackIQ instance.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
     deprecated: false
     description: Get all assessments in a page (up to 10 assessments per page).
     execution: false
@@ -160,15 +158,6 @@ script:
       type: String
     - contextPath: AttackIQ.Assessment.AssessmentTemplate.TemplateDescription
       description: Assessment template description.
-      type: String
-    - contextPath: AttackIQ.Assessment.AssessmentTemplate.AssessmentTemplateType.Id
-      description: Assessment template type ID.
-      type: String
-    - contextPath: AttackIQ.Assessment.AssessmentTemplate.AssessmentTemplateType.Name
-      description: Assessment template type name.
-      type: String
-    - contextPath: AttackIQ.Assessment.AssessmentTemplate.AssessmentTemplateType.Description
-      description: Assessment template type description.
       type: String
     - contextPath: AttackIQ.Assessment.AssessmentTemplate.DefaultSchedule
       description: Assessment's template default schedule timing (cron).

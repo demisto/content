@@ -441,52 +441,7 @@ RUN_ALL_TESTS_RESP = {
 
 # Results
 ACTIVATE_ASS_RES = ACTIVATE_ASS_RESP['message']
-GET_ASS_RESULT = {
-    "Type": 1,
-    "HumanReadable": "### AttackIQ Assessments Page #1\n|Id|Name|Description|User|Created|Modified|\n|---|---|---|---|---|---|\n|2e53e597-0388-48bb-8eb8-00bb28874434|Arseny's ransomware project|Test of common ransomware variants|akrupnik@paloaltonetworks.com|2019-09-02T11:51:57.507486Z|2019-09-02T11:51:59.769959Z|\n",  # noqa: E501
-    "ContentsFormat": "json",
-    "Contents": {"count": 1, "next": None, "previous": None, "results": [
-        {"id": "2e53e597-0388-48bb-8eb8-00bb28874434", "name": "Arseny's ransomware project",
-         "description": "Test of common ransomware variants", "start_date": None, "end_date": None,
-         "project_state": "Inactive", "default_schedule": None,
-         "project_template": {"id": "59d35f4a-2da0-4c4a-a08a-c30cb41dae6b", "template_name": "Ransomware Project",
-                              "template_description": "Variety of common ransomware variants",
-                              "project_name": "Ransomware Project",
-                              "project_description": "Test of common ransomware variants",
-                              "icon": "ransomware_template_icon.svg",
-                              "project_template_type": {"id": "b1e7ac80-1417-4f7b-a387-35fb49f218c8",
-                                                        "name": "Use Cases",
-                                                        "description": "Showcase different use cases in which FireDrill can help"},  # noqa: E501
-                              "default_schedule": None, "report_types": [
-                 {"id": "38f24061-a70f-415a-b378-bc9575b7ac6a", "name": "Security Assessment Differential Report"},
-                 {"id": "986fce3c-89a5-47f0-843d-99ba269b576b", "name": "Security Assessment Detailed Report"},
-                 {"id": "fdb6a5b9-ec10-4a5b-b387-7433ed4e78df", "name": "Ransomware Executive Summary"}],
-                              "widgets": ["b955b352-e59f-4b8f-8c93-f88a7d5aa026",
-                                          "938589ec-653c-45be-a7cc-6cd632387bb7"], "meta_data": {"hidden": True},
-                              "company": "906d5ec6-101c-4ae6-8906-b93ce0529060",
-                              "created": "2016-07-01T20:26:43.494459Z", "modified": "2019-02-19T03:31:54.393885Z"},
-         "creator": "akrupnik@paloaltonetworks.com", "owner": "akrupnik@paloaltonetworks.com",
-         "user": "akrupnik@paloaltonetworks.com", "created": "2019-09-02T11:51:57.507486Z",
-         "modified": "2019-09-02T11:51:59.769959Z", "users": ["71e92cf9-5159-466c-8050-142d1ba279ea"], "groups": [],
-         "default_asset_count": 0, "default_asset_group_count": 0, "master_job_count": 3,
-         "meta_data": {"hidden": True}}]},
-    "EntryContext": {"AttackIQ.Assessment(val.Id === obj.Id)": [
-        {"Id": "2e53e597-0388-48bb-8eb8-00bb28874434", "Name": "Arseny's ransomware project",
-         "User": "akrupnik@paloaltonetworks.com", "Users": ["71e92cf9-5159-466c-8050-142d1ba279ea"],
-         "Owner": "akrupnik@paloaltonetworks.com", "Groups": [], "Creator": "akrupnik@paloaltonetworks.com",
-         "Created": "2019-09-02T11:51:57.507486Z", "EndDate": None, "Modified": "2019-09-02T11:51:59.769959Z",
-         "StartDate": None, "Description": "Test of common ransomware variants", "AssessmentState": "Inactive",
-         "MasterJobCount": 3, "DefaultSchedule": None, "DefaultAssetCount": 0,
-         "AssessmentTemplate": {"Id": "59d35f4a-2da0-4c4a-a08a-c30cb41dae6b",
-                                "Company": "906d5ec6-101c-4ae6-8906-b93ce0529060",
-                                "Created": "2016-07-01T20:26:43.494459Z", "Modified": "2019-02-19T03:31:54.393885Z",
-                                "TemplateName": "Ransomware Project", "DefaultSchedule": None,
-                                "TemplateDescription": "Variety of common ransomware variants",
-                                "AssessmentTemplateType": {"Id": "b1e7ac80-1417-4f7b-a387-35fb49f218c8",
-                                                           "Name": "Use Cases",
-                                                           "Description": "Showcase different use cases in which FireDrill can help"}},  # noqa: E501
-         "DefaultAssetGroupCount": 0}]}
-}
+GET_ASS_RESULT = {'Type': 1, 'HumanReadable': "### AttackIQ Assessments Page 1/1\n|Id|Name|Description|User|Created|Modified|\n|---|---|---|---|---|---|\n|2e53e597-0388-48bb-8eb8-00bb28874434|Arseny's ransomware project|Test of common ransomware variants|akrupnik@paloaltonetworks.com|2019-09-02T11:51:57.507486Z|2019-09-02T11:51:59.769959Z|\n", 'ContentsFormat': 'json', 'Contents': {'count': 1, 'next': None, 'previous': None, 'results': [{'id': '2e53e597-0388-48bb-8eb8-00bb28874434', 'name': "Arseny's ransomware project", 'description': 'Test of common ransomware variants', 'start_date': None, 'end_date': None, 'project_state': 'Inactive', 'default_schedule': None, 'project_template': {'id': '59d35f4a-2da0-4c4a-a08a-c30cb41dae6b', 'template_name': 'Ransomware Project', 'template_description': 'Variety of common ransomware variants', 'project_name': 'Ransomware Project', 'project_description': 'Test of common ransomware variants', 'icon': 'ransomware_template_icon.svg', 'project_template_type': {'id': 'b1e7ac80-1417-4f7b-a387-35fb49f218c8', 'name': 'Use Cases', 'description': 'Showcase different use cases in which FireDrill can help'}, 'default_schedule': None, 'report_types': [{'id': '38f24061-a70f-415a-b378-bc9575b7ac6a', 'name': 'Security Assessment Differential Report'}, {'id': '986fce3c-89a5-47f0-843d-99ba269b576b', 'name': 'Security Assessment Detailed Report'}, {'id': 'fdb6a5b9-ec10-4a5b-b387-7433ed4e78df', 'name': 'Ransomware Executive Summary'}], 'widgets': ['b955b352-e59f-4b8f-8c93-f88a7d5aa026', '938589ec-653c-45be-a7cc-6cd632387bb7'], 'meta_data': {'hidden': True}, 'company': '906d5ec6-101c-4ae6-8906-b93ce0529060', 'created': '2016-07-01T20:26:43.494459Z', 'modified': '2019-02-19T03:31:54.393885Z'}, 'creator': 'akrupnik@paloaltonetworks.com', 'owner': 'akrupnik@paloaltonetworks.com', 'user': 'akrupnik@paloaltonetworks.com', 'created': '2019-09-02T11:51:57.507486Z', 'modified': '2019-09-02T11:51:59.769959Z', 'users': ['71e92cf9-5159-466c-8050-142d1ba279ea'], 'groups': [], 'default_asset_count': 0, 'default_asset_group_count': 0, 'master_job_count': 3, 'meta_data': {'hidden': True}}]}, 'EntryContext': {'AttackIQ.Assessment(val.Id === obj.Id)': [{'Id': '2e53e597-0388-48bb-8eb8-00bb28874434', 'Name': "Arseny's ransomware project", 'User': 'akrupnik@paloaltonetworks.com', 'Users': ['71e92cf9-5159-466c-8050-142d1ba279ea'], 'Owner': 'akrupnik@paloaltonetworks.com', 'Groups': [], 'Creator': 'akrupnik@paloaltonetworks.com', 'Created': '2019-09-02T11:51:57.507486Z', 'EndDate': None, 'Modified': '2019-09-02T11:51:59.769959Z', 'StartDate': None, 'Description': 'Test of common ransomware variants', 'AssessmentState': 'Inactive', 'MasterJobCount': 3, 'DefaultSchedule': None, 'DefaultAssetCount': 0, 'AssessmentTemplate': {'Id': '59d35f4a-2da0-4c4a-a08a-c30cb41dae6b', 'Company': '906d5ec6-101c-4ae6-8906-b93ce0529060', 'Created': '2016-07-01T20:26:43.494459Z', 'Modified': '2019-02-19T03:31:54.393885Z', 'TemplateName': 'Ransomware Project', 'DefaultSchedule': None, 'TemplateDescription': 'Variety of common ransomware variants'}, 'DefaultAssetGroupCount': 0}], 'AttackIQ.Assessment(val.Count === obj).Count': 1}}  # noqa: E501
 GET_ASS_EXECUTION_RESULT = {'Type': 1, 'HumanReadable': 'Assessment 1 execution is not running.',
                             'ContentsFormat': 'json', 'Contents': {'message': False},
                             'EntryContext': {'AttackIQ.Assessment(val.Id === obj.Id)': {'Running': False, 'Id': 1}}}
@@ -676,65 +631,5 @@ GET_TEST_RESULT_RESULT = {
                    "Modified": "2019-09-05T12:10:01.590138Z", "AssetGroup": None}, "JobState": {"Name": "Finished"},
          "Outcome": {"Name": "Passed"}}]}
 }
-GET_ASS_BY_ID_RESULT = {
-    'Type': 1,
-    'HumanReadable': '### AttackIQ Assessment 1\n|Id|Name|Description|User|Created|Modified|\n|---|---|---|---|---|---|\n|||||||\n',  # noqa: E501
-    'ContentsFormat': 'json',
-    'Contents': {
-        'count': 1, 'next': None, 'previous': None, 'results': [
-            {
-                'id': '2e53e597-0388-48bb-8eb8-00bb28874434', 'name': "Arseny's ransomware project",
-                'description': 'Test of common ransomware variants', 'start_date': None, 'end_date': None,
-                'project_state': 'Inactive', 'default_schedule': None,
-                'project_template': {
-                    'id': '59d35f4a-2da0-4c4a-a08a-c30cb41dae6b',
-                    'template_name': 'Ransomware Project',
-                    'template_description': 'Variety of common ransomware variants',
-                    'project_name': 'Ransomware Project',
-                    'project_description': 'Test of common ransomware variants',
-                    'icon': 'ransomware_template_icon.svg',
-                    'project_template_type': {
-                        'id': 'b1e7ac80-1417-4f7b-a387-35fb49f218c8',
-                        'name': 'Use Cases',
-                        'description': 'Showcase different use cases in which FireDrill can help'},
-                    'default_schedule': None, 'report_types':
-                        [
-                            {
-                                'id': '38f24061-a70f-415a-b378-bc9575b7ac6a',
-                                'name': 'Security Assessment Differential Report'
-                            },
-                            {
-                                'id': '986fce3c-89a5-47f0-843d-99ba269b576b',
-                                'name': 'Security Assessment Detailed Report'
-                            },
-                            {
-                                'id': 'fdb6a5b9-ec10-4a5b-b387-7433ed4e78df', 'name': 'Ransomware Executive Summary'
-                            }
-                        ],
-                    'widgets': ['b955b352-e59f-4b8f-8c93-f88a7d5aa026',
-                                '938589ec-653c-45be-a7cc-6cd632387bb7'], 'meta_data': {'hidden': True},
-                    'company': '906d5ec6-101c-4ae6-8906-b93ce0529060',
-                    'created': '2016-07-01T20:26:43.494459Z',
-                    'modified': '2019-02-19T03:31:54.393885Z'},
-                'creator': 'akrupnik@paloaltonetworks.com', 'owner': 'akrupnik@paloaltonetworks.com',
-                'user': 'akrupnik@paloaltonetworks.com', 'created': '2019-09-02T11:51:57.507486Z',
-                'modified': '2019-09-02T11:51:59.769959Z', 'users': ['71e92cf9-5159-466c-8050-142d1ba279ea'],
-                'groups': [],
-                'default_asset_count': 0, 'default_asset_group_count': 0, 'master_job_count': 3,
-                'meta_data': {'hidden': True}}]},
-    'EntryContext': {
-        'AttackIQ.Assessment(val.Id === obj.Id)': {
-            'Id': None, 'Name': None, 'User': None, 'Users': None, 'Owner': None,
-            'Groups': None, 'Creator': None, 'Created': None, 'EndDate': None,
-            'Modified': None, 'StartDate': None, 'Description': None,
-            'AssessmentState': None, 'MasterJobCount': None,
-            'DefaultSchedule': None, 'DefaultAssetCount': None,
-            'AssessmentTemplate': {'Id': None, 'Company': None, 'Created': None,
-                                   'Modified': None, 'TemplateName': None,
-                                   'DefaultSchedule': None,
-                                   'TemplateDescription': None,
-                                   'AssessmentTemplateType': {'Id': None,
-                                                              'Name': None,
-                                                              'Description': None}},
-            'DefaultAssetGroupCount': None}}}
+GET_ASS_BY_ID_RESULT = {'Type': 1, 'HumanReadable': '### AttackIQ Assessment 1\n|Id|Name|Description|User|Created|Modified|\n|---|---|---|---|---|---|\n|||||||\n', 'ContentsFormat': 'json', 'Contents': {'count': 1, 'next': None, 'previous': None, 'results': [{'id': '2e53e597-0388-48bb-8eb8-00bb28874434', 'name': "Arseny's ransomware project", 'description': 'Test of common ransomware variants', 'start_date': None, 'end_date': None, 'project_state': 'Inactive', 'default_schedule': None, 'project_template': {'id': '59d35f4a-2da0-4c4a-a08a-c30cb41dae6b', 'template_name': 'Ransomware Project', 'template_description': 'Variety of common ransomware variants', 'project_name': 'Ransomware Project', 'project_description': 'Test of common ransomware variants', 'icon': 'ransomware_template_icon.svg', 'project_template_type': {'id': 'b1e7ac80-1417-4f7b-a387-35fb49f218c8', 'name': 'Use Cases', 'description': 'Showcase different use cases in which FireDrill can help'}, 'default_schedule': None, 'report_types': [{'id': '38f24061-a70f-415a-b378-bc9575b7ac6a', 'name': 'Security Assessment Differential Report'}, {'id': '986fce3c-89a5-47f0-843d-99ba269b576b', 'name': 'Security Assessment Detailed Report'}, {'id': 'fdb6a5b9-ec10-4a5b-b387-7433ed4e78df', 'name': 'Ransomware Executive Summary'}], 'widgets': ['b955b352-e59f-4b8f-8c93-f88a7d5aa026', '938589ec-653c-45be-a7cc-6cd632387bb7'], 'meta_data': {'hidden': True}, 'company': '906d5ec6-101c-4ae6-8906-b93ce0529060', 'created': '2016-07-01T20:26:43.494459Z', 'modified': '2019-02-19T03:31:54.393885Z'}, 'creator': 'akrupnik@paloaltonetworks.com', 'owner': 'akrupnik@paloaltonetworks.com', 'user': 'akrupnik@paloaltonetworks.com', 'created': '2019-09-02T11:51:57.507486Z', 'modified': '2019-09-02T11:51:59.769959Z', 'users': ['71e92cf9-5159-466c-8050-142d1ba279ea'], 'groups': [], 'default_asset_count': 0, 'default_asset_group_count': 0, 'master_job_count': 3, 'meta_data': {'hidden': True}}]}, 'EntryContext': {'AttackIQ.Assessment(val.Id === obj.Id)': {'Id': None, 'Name': None, 'User': None, 'Users': None, 'Owner': None, 'Groups': None, 'Creator': None, 'Created': None, 'EndDate': None, 'Modified': None, 'StartDate': None, 'Description': None, 'AssessmentState': None, 'MasterJobCount': None, 'DefaultSchedule': None, 'DefaultAssetCount': None, 'AssessmentTemplate': {'Id': None, 'Company': None, 'Created': None, 'Modified': None, 'TemplateName': None, 'DefaultSchedule': None, 'TemplateDescription': None}, 'DefaultAssetGroupCount': None}}}  # noqa: E501
 RUN_ALL_TESTS_RESULT = 'Successfully started running all tests in project: ATT&CK by the Numbers @ NOVA BSides 2019'
