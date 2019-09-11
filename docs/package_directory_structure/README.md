@@ -36,7 +36,7 @@ For example, a package of the integration [Palo Alto Networks Cortex](https://gi
 │    ├── PaloAltoNetworksCortex_image.png
 │    ├── PaloAltoNetworksCortex_description.md
 │    ├── Pipfile
-│    ├── Pipfile.lock
+|    └── Pipfile.lock
 ```
 
 ---
