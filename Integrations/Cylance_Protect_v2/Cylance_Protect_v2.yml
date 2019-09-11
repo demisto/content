@@ -948,8 +948,7 @@ script:
         number of Device IDs per request is 20.
       isArray: true
     - name: batch_size
-      description: The size of the batches in which the device IDs will be sent for
-        deletion.
+      description: The number of devices to delete per batch. The default is 20, which is also the maximum number of devices that can be deleted per request.
       defaultValue: "20"
     outputs:
     - contextPath: Cylance.Device.Id
