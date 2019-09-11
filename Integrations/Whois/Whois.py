@@ -8252,29 +8252,43 @@ def whois_command():
 
     md = {'Name': domain}
     ec = {'Name': domain}
+    standard_ec = {}  # type:dict
+    standard_ec['WHOIS'] = {}
     if 'status' in whois_result:
         ec['DomainStatus'] = whois_result.get('status')
+        standard_ec['DomainStatus'] = whois_result.get('status')
+        standard_ec['WHOIS']['DomainStatus'] = whois_result.get('status')
         md['Domain Status'] = whois_result.get('status')
     if 'raw' in whois_result:
         ec['Raw'] = whois_result.get('raw')
     if 'nameservers' in whois_result:
         ec['NameServers'] = whois_result.get('nameservers')
+        standard_ec['NameServers'] = whois_result.get('nameservers')
+        standard_ec['WHOIS']['NameServers'] = whois_result.get('nameservers')
         md['NameServers'] = whois_result.get('nameservers')
 
     try:
         if 'creation_date' in whois_result:
             ec['CreationDate'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
+            standard_ec['CreationDate'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
+            standard_ec['WHOIS']['CreationDate'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
             md['Creation Date'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
         if 'updated_date' in whois_result:
             ec['UpdatedDate'] = whois_result.get('updated_date')[0].strftime('%d-%m-%Y')
+            standard_ec['UpdatedDate'] = whois_result.get('updated_date')[0].strftime('%d-%m-%Y')
+            standard_ec['WHOIS']['UpdatedDate'] = whois_result.get('updated_date')[0].strftime('%d-%m-%Y')
             md['Updated Date'] = whois_result.get('updated_date')[0].strftime('%d-%m-%Y')
         if 'expiration_date' in whois_result:
             ec['ExpirationDate'] = whois_result.get('expiration_date')[0].strftime('%d-%m-%Y')
+            standard_ec['ExpirationDate'] = whois_result.get('expiration_date')[0].strftime('%d-%m-%Y')
+            standard_ec['WHOIS']['ExpirationDate'] = whois_result.get('expiration_date')[0].strftime(
+                '%d-%m-%Y')
             md['Expiration Date'] = whois_result.get('expiration_date')[0].strftime('%d-%m-%Y')
     except ValueError as e:
         return_error('Date could not be parsed. Please check the date again.\n{error}'.format(type(e)))
     if 'registrar' in whois_result:
         ec.update({'Registrar': {'Name': whois_result.get('registrar')}})
+        standard_ec['WHOIS']['Registrar'] = whois_result.get('registrar')
         md['Registrar'] = whois_result.get('registrar')
     if 'id' in whois_result:
         ec['ID'] = whois_result.get('id')
@@ -8283,10 +8297,13 @@ def whois_command():
         contacts = whois_result['contacts']
         if 'registrant' in contacts and contacts['registrant'] is not None:
             md['Registrant'] = contacts['registrant']
+            standard_ec['Registrant'] = contacts['registrant']
             ec['Registrant'] = contacts['registrant']
         if 'admin' in contacts and contacts['admin'] is not None:
             md['Administrator'] = contacts['admin']
             ec['Administrator'] = contacts['admin']
+            standard_ec['Admin'] = contacts['admin']
+            standard_ec['WHOIS']['Admin'] = contacts['admin']
         if 'tech' in contacts and contacts['tech'] is not None:
             md['Tech Admin'] = contacts['tech']
             ec['TechAdmin'] = contacts['tech']
@@ -8300,11 +8317,11 @@ def whois_command():
     ec['QueryStatus'] = 'Success'
     md['QueryStatus'] = 'Success'
 
+    standard_ec['Name'] = domain
+    standard_ec['Whois'] = ec
+
     context = ({
-        outputPaths['domain']: {
-            'Name': domain,
-            'Whois': ec
-        },
+        outputPaths['domain']: standard_ec
     })
 
     demisto.results({
