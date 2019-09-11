@@ -283,9 +283,9 @@ def do_search(search_object, query, scope, size=None, sort=None, order=None, err
         'size': size
     }
     if scope:
-        data.update({'scope': API_PARAM_DICT['scope'][scope]})
+        data.update({'scope': API_PARAM_DICT['scope'][scope]})  # type: ignore
     if validate_sort_and_order(sort, order):
-        data.update({'sort': {API_PARAM_DICT['sort'][sort]: {'order': API_PARAM_DICT['order'][order]}}})
+        data.update({'sort': {API_PARAM_DICT['sort'][sort]: {'order': API_PARAM_DICT['order'][order]}}})  # type: ignore
 
     # Remove nulls
     data = createContext(data, removeNull=True)
@@ -491,7 +491,7 @@ def validate_tag_scopes(private, public, commodity, unit42):
 
 def autofocus_top_tags_search(scope, tag_class_display, private, public, commodity, unit42):
     validate_tag_scopes(private, public, commodity, unit42)
-    tag_class = API_PARAM_DICT['tag_class'][tag_class_display]
+    tag_class = API_PARAM_DICT['tag_class'][tag_class_display]  # type: ignore
     query = {
         "operator": "all",
         "children": [
@@ -630,7 +630,7 @@ def filter_object_entries_by_dict_values(result_object, response_dict_name):
     result_object_filtered = {}
     if af_params_dict:
         for key in result_object.keys():
-            if key in af_params_dict.values():
+            if key in af_params_dict.values():  # type: ignore
                 result_object_filtered[key] = result_object.get(key)
     return result_object_filtered
 
@@ -653,7 +653,7 @@ def build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, firs
     }
     indicator_list = build_indicator_children_query(indicator_args_for_query)
     indicator_query = build_logic_query('OR', indicator_list)
-    filtering_args_for_search = {}
+    filtering_args_for_search = {}  # type: ignore
     if wildfire_verdict:
         filtering_args_for_search['wildfire_verdict'] = \
             demisto.get(API_PARAM_DICT, f'search_arguments.wildfire_verdict.translate.{wildfire_verdict}')
@@ -688,7 +688,7 @@ def build_session_search_query(file_hash, domain, ip, url, time_range, time_afte
 
     if time_range and time_after or time_after and time_before or time_before and time_range:
         return_error('search session is able to use only a single time argument, two or more such arguments were given')
-    filtering_args_for_search = {}
+    filtering_args_for_search = {}  # type: ignore
     if time_range:
         filtering_args_for_search = {'time_range': time_range}
     elif time_after:
@@ -714,10 +714,10 @@ def build_logic_query(logic_operator, condition_list):
 
 
 def build_children_query(args_for_query):
-    children_list = []
+    children_list = []  # type: ignore
     for key, val in args_for_query.items():
-        field_api_name = API_PARAM_DICT['search_arguments'][key]['api_name']
-        operator = API_PARAM_DICT['search_arguments'][key]['operator']
+        field_api_name = API_PARAM_DICT['search_arguments'][key]['api_name']    # type: ignore
+        operator = API_PARAM_DICT['search_arguments'][key]['operator']  # type: ignore
         children_list += children_list_generator(field_api_name, operator, [val])
     return children_list
 
@@ -725,8 +725,8 @@ def build_children_query(args_for_query):
 def build_indicator_children_query(args_for_query):
     for key, val in args_for_query.items():
         if val:
-            field_api_name = API_PARAM_DICT['search_arguments'][key]['api_name']
-            operator = API_PARAM_DICT['search_arguments'][key]['operator']
+            field_api_name = API_PARAM_DICT['search_arguments'][key]['api_name']    # type: ignore
+            operator = API_PARAM_DICT['search_arguments'][key]['operator']  # type: ignore
             children_list = children_list_generator(field_api_name, operator, val)
     return children_list
 
