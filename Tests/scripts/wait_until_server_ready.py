@@ -54,7 +54,8 @@ def is_correct_content_installed(username, password, ips, content_version):
         try:
             resp_json = resp.json()
             if not isinstance(resp_json, dict):
-                raise ValueError('Response from server is not a Dict')
+                raise ValueError('Response from server is not a Dict, got [{}].\n'
+                                 'Text: {}'.format(type(resp_json), resp.text))
             release = resp_json.get("release")
             notes = resp_json.get("releaseNotes")
             installed = resp_json.get("installed")
