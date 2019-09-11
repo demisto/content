@@ -19,7 +19,7 @@ READ_BINARY_MODE = 'rb'
 SLASH = '/'
 SCAN_FILE_URL = 'direct/scan/file/'
 GET_FILE_VERDICT_URL = 'direct/verdict/?hash={}'
-TOKEN_PREFIX = 'Bearer' # guardrails-disable-line
+TOKEN_PREFIX = 'Bearer'  # guardrails-disable-line
 RESPONSE_CODE_OK = 200
 STATUS_IN_PROGRESS = 'IN_PROGRESS'
 STATUS_DONE = 'DONE'
