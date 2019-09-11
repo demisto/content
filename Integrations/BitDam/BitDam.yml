@@ -84,7 +84,6 @@ script:
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason for the vendor to make the decision
       type: string
-    description: Get verdict for a scanned file
   runonce: false
 tests:
 - Detonate File - BitDam Test
