@@ -84,7 +84,6 @@ def generate_hash_queries(hashes):
     }
     queries['AutofocusSessionsHash'] = json.dumps(query_autofocus_sessions_hash)
 
-
     # Panorama IP
     hash_fields = ["( filedigest eq {} )".format(hash) for hash in hashes]
     query_panorama_hash = ' or '.join(hash_fields)
@@ -108,14 +107,13 @@ def generate_domain_queries(domains):
     children = [{
         'field': 'alias.domain',
         'operator': 'contains',
-        'value': hash
+        'value': domain
     } for domain in domains]
     query_autofocus_sessions_domain = {
         'operator': 'any',
         'children': children
     }
     queries['AutofocusSessionsDomain'] = json.dumps(query_autofocus_sessions_domain)
-
 
     # Panorama Domain
     domain_fields = ["( url contains {} )".format(domain) for domain in domains]
@@ -148,5 +146,5 @@ def main(args):
     return_outputs(human_readable, outputs)
 
 
-if __name__ in ('builtins', '__main__'):
+if __name__ in ('builtins', '__main__', '__builtin__'):
     main(demisto.args())
