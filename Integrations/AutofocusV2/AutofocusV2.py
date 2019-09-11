@@ -656,7 +656,7 @@ def build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, firs
     filtering_args_for_search = {}
     if wildfire_verdict:
         filtering_args_for_search['wildfire_verdict'] = \
-        API_PARAM_DICT['search_arguments'][wildfire_verdict]['translate'][wildfire_verdict]
+            demisto.get(API_PARAM_DICT, f'search_arguments.wildfire_verdict.translate.{wildfire_verdict}')
     if first_seen:
         filtering_args_for_search['first_seen'] = first_seen
     if last_updated:
