@@ -57,33 +57,38 @@ def generate_hash_queries(hashes):
         return {}
 
     queries = {}
+    # Cortex traps Hash
+    hash_fields = ["messageData.files.sha256='{}'".format(hash) for hash in hashes]
+    query_cortex_traps_hash = ' OR '.join(hash_fields)
+    queries['CortexTrapsHash'] = 'SELECT * from tms.threat where {}'.format(query_cortex_traps_hash)
 
-    # TBD
-    #     ### Cortex traps Hash ###
-    #     seperatorCortexTrapsHash = "' OR messageData.files.sha256='"
-    #     queryCortexTrapsHash = seperatorCortexTrapsHash.join(HASHList)
-    #     print("SELECT * from tms.threat  where messageData.files.sha256 ='" + queryCortexTrapsHash + "'")
-    #
-    #     ### Cortex Analytics Hash ###
-    #     seperatorCortexAnalyticsHash = "' OR messageData.sha256='"
-    #     queryCortexAnalyticsHash = seperatorCortexAnalyticsHash.join(HASHList)
-    #     print("SELECT * from tms.analytics  where messageData.sha256='" + queryCortexAnalyticsHash + "'")
-    #
-    #     ### Cortex threat Hash ###
-    #     seperatorCortexThreatHash = "' OR filedigest='"
-    #     queryCortexThreatHash = seperatorCortexThreatHash.join(HASHList)
-    #     print("SELECT * from panw.threat WHERE filedigest='" + queryCortexThreatHash + "'")
-    #
-    #     ### Autofocus Hash ###
-    #     seperatorAutofocusSessionsHash = "\"}" + ",{\"field\":\"alias.hash\"" + "," + "\"operator\":\"contains\"" + "," + "\"value\":\""
-    #     queryAutofocusSessionsHash = seperatorAutofocusSessionsHash.join(HASHList)
-    #     print(
-    #         "{\"operator\":\"any\",\"children\":[{\"field\":\"alias.hash\",\"operator\":\"contains\",\"value\":" + "\"" + queryAutofocusSessionsHash + "\"" + "}]}")
-    #
-    #     ### Panorama Hash ###
-    #     seperatorPanoramaHash = " ) or ( filedigest eq "
-    #     queryPanoramaHash = seperatorPanoramaHash.join(HASHList)
-    #     print("( filedigest eq " + queryPanoramaHash + " )")
+    # Cortex Analytics Hash
+    hash_fields = ["messageData.sha256='{}'".format(hash) for hash in hashes]
+    query_cortex_analytics_hash = ' OR '.join(hash_fields)
+    queries['CortexAnalyticsHash'] = 'SELECT * from tms.analytics where {}'.format(query_cortex_analytics_hash)
+
+    # Cortex Threat Hash
+    hash_fields = ["filedigest='{}'".format(hash) for hash in hashes]
+    query_cortex_threat_hash = ' OR '.join(hash_fields)
+    queries['CortexThreatHash'] = 'SELECT * from panw.threat where {}'.format(query_cortex_threat_hash)
+
+    # Autofocus Hash
+    children = [{
+        'field': 'alias.hash',
+        'operator': 'contains',
+        'value': hash
+    } for hash in hashes]
+    query_autofocus_sessions_hash = {
+        'operator': 'any',
+        'children': children
+    }
+    queries['AutofocusSessionsHash'] = json.dumps(query_autofocus_sessions_hash)
+
+
+    # Panorama IP
+    hash_fields = ["( filedigest eq {} )".format(hash) for hash in hashes]
+    query_panorama_hash = ' or '.join(hash_fields)
+    queries['PanoramaHash'] = query_panorama_hash
 
     return queries
 
@@ -94,22 +99,28 @@ def generate_domain_queries(domains):
 
     queries = {}
 
-    # TBD
     # Cortex Threat Domain
-    #     seperatorCortexThreatDomain = "'* OR misc LIKE '*"
-    #     queryCortexThreatDomain = seperatorCortexThreatDomain.join(DOMAINList)
-    #     print("SELECT * from panw.threat WHERE misc LIKE '*" + queryCortexThreatDomain + "*'")
-    #
-    #     ### Autofocus Domain ###
-    #     seperatorAutofocusSessionsDomain = "\"}" + ",{\"field\":\"alias.domain\"" + "," + "\"operator\":\"contains\"" + "," + "\"value\":\""
-    #     queryAutofocusSessionsDomain = seperatorAutofocusSessionsDomain.join(DOMAINList)
-    #     print(
-    #         "{\"operator\":\"any\",\"children\":[{\"field\":\"alias.domain\",\"operator\":\"contains\",\"value\":" + "\"" + queryAutofocusSessionsDomain + "\"" + "}]}")
-    #
-    #     ### Panorama Domain ###
-    #     seperatorPanoramaDomain = " ) or ( url contains "
-    #     queryPanoramaDomain = seperatorPanoramaDomain.join(DOMAINList)
-    #     print("( url contains " + queryPanoramaDomain + " )")
+    hash_fields = ["misc LIKE'{}'".format(domain) for domain in domains]
+    query_cortex_threat_domain = ' OR '.join(domain_fields)
+    queries['CortexThreatDomain'] = 'SELECT * from panw.threat where {}'.format(query_cortex_threat_domain)
+
+    # Autofocus Domain
+    children = [{
+        'field': 'alias.domain',
+        'operator': 'contains',
+        'value': hash
+    } for domain in domains]
+    query_autofocus_sessions_domain = {
+        'operator': 'any',
+        'children': children
+    }
+    queries['AutofocusSessionsDomain'] = json.dumps(query_autofocus_sessions_domain)
+
+
+    # Panorama Domain
+    hash_fields = ["( url contains {} )".format(domain) for domain in domains]
+    query_panorama_domain = ' or '.join(domain_fields)
+    queries['PanoramaDomain'] = query_panorama_domain
 
     return queries
 
