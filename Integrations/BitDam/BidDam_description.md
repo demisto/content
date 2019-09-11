@@ -1,2 +1,2 @@
-BitDam secure email gateway protects from advanced content-borne threats
-  with the most accurate prevention of known and unknown threats, at their source.
+In order to generate an API token, log in to BitDam Dashboard.
+  Navigate to your profile, click on 'API token' tab and then 'Generate API Token'.
