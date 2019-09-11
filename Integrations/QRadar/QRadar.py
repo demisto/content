@@ -677,7 +677,7 @@ def update_offense_command():
     args = demisto.args()
     if 'closing_reason_name' in args:
         args['closing_reason_id'] = convert_closing_reason_name_to_id(args.get('closing_reason_name'))
-    elif 'CLOSED' == args.get('status') and not args.get('closing_reasond_id'):
+    elif 'CLOSED' == args.get('status') and not args.get('closing_reason_id'):
         raise ValueError(
             'Invalid input - must provide closing reason name or id (may use "qradar-get-closing-reasons" command to '
             'get them) to close offense')
