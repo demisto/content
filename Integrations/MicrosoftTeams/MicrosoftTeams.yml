@@ -164,7 +164,7 @@ script:
     description: Deletes the specified Microsoft Teams channel.
     execution: false
     name: close-channel
-  dockerimage: demisto/teams:1.0.0.1405
+  dockerimage: demisto/teams:1.0.0.1701
   isfetch: false
   longRunning: true
   longRunningPort: true
