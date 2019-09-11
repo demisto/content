@@ -2079,8 +2079,8 @@ class BaseClient(object):
 # Will add only if 'requests' module imported
 if 'requests' in sys.modules:
     class BaseHTTPClient(BaseClient):
-        def __init__(self, integration_name, integration_command_name, integration_context_name, server,
-                     base_suffix, verify=True, proxy=False, ok_codes=tuple()):
+        def __init__(self, integration_name, integration_command_name, integration_context_name, server, base_suffix,
+                     verify=True, proxy=False, ok_codes=tuple()):
             """Wrapper of BaseClient with added _http_request functionality
 
             :type server: ``str``
@@ -2101,6 +2101,7 @@ if 'requests' in sys.modules:
             :return: No data returned
             :rtype: ``None``
             """
+            super(BaseHTTPClient, self).__init__(integration_name, integration_command_name, integration_context_name)
             self._server = server.rstrip('/')
             self._verify = verify
             self._base_url = '{}{}'.format(self._server, base_suffix)
@@ -2109,7 +2110,6 @@ if 'requests' in sys.modules:
                 self._proxies = handle_proxy()
             else:
                 self._proxies = None
-            super().__init__(integration_name, integration_command_name, integration_context_name)
 
         def _http_request(self, method, url_suffix, full_url=None, headers=None,
                           auth=None, params=None, data=None, files=None,
