@@ -709,9 +709,9 @@ class TestBuildDBotEntry(object):
 
 
 class TestBaseClient(object):
-    from CommonServerPython import BaseClient
+    from CommonServerPython import BaseHTTPClient
     text = {"status": "ok"}
-    client = BaseClient('http://example.com', '/api/v2/', 'Name', 'name', 'name')
+    client = BaseHTTPClient('Name', 'name', 'name', 'http://example.com', '/api/v2/')
 
     def test_http_request_json(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))

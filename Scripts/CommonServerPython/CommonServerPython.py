@@ -2080,8 +2080,9 @@ class BaseClient(object):
 if 'requests' in sys.modules:
     class BaseHTTPClient(BaseClient):
         def __init__(self, integration_name, integration_command_name, integration_context_name, server,
-                     base_suffix, verify, proxy, ok_codes=tuple()):
-            """
+                     base_suffix, verify=True, proxy=False, ok_codes=tuple()):
+            """Wrapper of BaseClient with added _http_request functionality
+
             :type server: ``str``
             :param server: Base server address
 
@@ -2095,7 +2096,7 @@ if 'requests' in sys.modules:
             :param proxy: Use system proxy
 
             :type ok_codes: ``tuple``
-            :param ok_codes: acceptable OK codes. If None will use response.ok
+            :param ok_codes: acceptable OK codes. If None will use requests.Response.ok
 
             :return: No data returned
             :rtype: ``None``
