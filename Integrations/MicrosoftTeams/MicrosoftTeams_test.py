@@ -203,7 +203,7 @@ def test_mirror_investigation(mocker, requests_mock):
         mirror_investigation()
     assert str(e.value) == 'Can not perform this action in playground.'
 
-    # verify channel is mirrored successfully
+    # verify channel is mirrored successfully and a message is sent to it
     mocker.patch.object(
         demisto,
         'investigation',
@@ -211,11 +211,18 @@ def test_mirror_investigation(mocker, requests_mock):
             'id': '2'
         }
     )
+    channel_id: str = 'channel-id'
+    # create channel mock request
     requests_mock.post(
         f'https://graph.microsoft.com/v1.0/teams/{team_aad_id}/channels',
         json={
-            'id': 'channel-id'
+            'id': channel_id
         }
+    )
+    # send message mock request
+    requests_mock.post(
+        f'{service_url}/v3/conversations/{channel_id}/activities',
+        json={}
     )
     mirror_investigation()
     updated_mirrored_channels: list = mirrored_channels[:]
@@ -244,11 +251,20 @@ def test_mirror_investigation(mocker, requests_mock):
         'displayName': 'incident-2',
         'description': 'Channel to mirror incident 2'
     }
-    assert demisto.setIntegrationContext.call_count == 2
+    assert requests_mock.request_history[3].json() == {
+        'text': 'This channel was created to mirror [incident 2](https://test-address:8443#/WarRoom/2) between '
+                'Teams and Demisto. In order for your Teams messages to be mirrored in Demisto, you need to'
+                ' mention the Demisto Bot in the message.',
+        'type': 'message'
+    }
+
+    assert demisto.setIntegrationContext.call_count == 3
     set_integration_context = demisto.setIntegrationContext.call_args[0]
     assert len(set_integration_context) == 1
     set_integration_context[0].pop('graph_access_token')
     set_integration_context[0].pop('graph_valid_until')
+    set_integration_context[0].pop('bot_access_token')
+    set_integration_context[0].pop('bot_valid_until')
     assert set_integration_context[0] == expected_integration_context
     results = demisto.results.call_args[0]
     assert len(results) == 1
@@ -297,7 +313,7 @@ def test_mirror_investigation(mocker, requests_mock):
     )
 
     mirror_investigation()
-    assert requests_mock.request_history[3].json() == {
+    assert requests_mock.request_history[5].json() == {
         'displayName': 'booya',
         'description': 'Channel to mirror incident 14'
     }
@@ -404,7 +420,7 @@ def test_send_message(mocker, requests_mock):
         }
     }
     send_message()
-    assert requests_mock.request_history[1].json() == expected_create_personal_conversation_data
+    assert requests_mock.request_history[0].json() == expected_create_personal_conversation_data
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0] == 'Message was sent successfully.'
@@ -499,7 +515,7 @@ def test_send_message(mocker, requests_mock):
     }
 
     send_message()
-    assert requests_mock.request_history[5].json() == expected_ask_user_message
+    assert requests_mock.request_history[4].json() == expected_ask_user_message
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0] == 'Message was sent successfully.'
@@ -575,7 +591,7 @@ def test_send_message(mocker, requests_mock):
         'attachments': [adaptive_card]
     }
     send_message()
-    assert requests_mock.request_history[7].json() == expected_conversation
+    assert requests_mock.request_history[6].json() == expected_conversation
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0] == 'Message was sent successfully.'
@@ -1169,3 +1185,69 @@ def test_direct_message_handler(mocker, requests_mock):
         }],
         'type': 'message'
     }
+
+    # verify error message raised by Demisto server is sent as message as expectec
+    mocker.patch.object(
+        demisto,
+        'directMessage',
+        side_effect=ValueError(
+            'I\'m sorry but I was unable to find you as a Demisto user for email [johnnydepp@gmail.com]'
+        )
+    )
+    direct_message_handler(integration_context, request_body, conversation, message)
+    assert requests_mock.request_history[3].json() == {
+        'type': 'message',
+        'text': 'I\'m sorry but I was unable to find you as a Demisto user for email [johnnydepp@gmail.com]'
+    }
+
+
+def test_error_parser():
+    from MicrosoftTeams import error_parser
+
+    class MockResponse:
+        def __init__(self, json_data, status_code, text=''):
+            self.json_data = json_data
+            self.status_code = status_code
+            self.text = text
+
+        def json(self):
+            return self.json_data
+
+    # verify bot framework error parsed as expected
+    error_description: str = "AADSTS700016: Application with identifier '2bc5202b-ad6a-4458-8821-e104af433bbb' " \
+                             "was not found in the directory 'botframework.com'. This can happen if the application " \
+                             "has not been installed by the administrator of the tenant or consented to by any user " \
+                             "in the tenant. You may have sent your authentication request to the wrong tenant.\r\n" \
+                             "Trace ID: 9eaeeec8-7f9e-4fb8-b319-5413581f0a00\r\nCorrelation ID: " \
+                             "138cb511-2484-410e-b9c1-14b15accbeba\r\nTimestamp: 2019-08-28 13:18:44Z"
+
+    bot_error_json_response: dict = {
+        'error': 'unauthorized_client',
+        'error_description': error_description,
+        'error_codes': [
+            700016
+        ],
+        'timestamp': '2019-08-28 13:18:44Z',
+        'trace_id': '9eaeeec8-7f9e-4fb8-b319-5413581f0a11',
+        'correlation_id': '138cb111-2484-410e-b9c1-14b15accbeba',
+        'error_uri': 'https://login.microsoftonline.com/error?code=700016'
+    }
+
+    bot_error_json_response = MockResponse(bot_error_json_response, 400)
+    assert error_parser(bot_error_json_response, 'bot') == error_description
+
+    # verify graph error parsed as expected
+    error_code: str = 'InvalidAuthenticationToken'
+    error_message: str = 'Access token validation failure.'
+    graph_error_json_response: dict = {
+        'error': {
+            'code': error_code,
+            'message': error_message,
+            'innerError': {
+                'request-id': 'c240ab22-4463-4a1f-82bc-8509d8190a77',
+                'date': '2019-08-28T13:37:14'
+            }
+        }
+    }
+    graph_error_json_response = MockResponse(graph_error_json_response, 401)
+    assert error_parser(graph_error_json_response) == f'{error_code}: {error_message}'

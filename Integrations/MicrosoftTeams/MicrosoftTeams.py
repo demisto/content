@@ -11,6 +11,7 @@ import time
 from threading import Thread
 from typing import Match, Union, Optional, cast, Dict, Any, List
 import re
+from jwt.algorithms import RSAAlgorithm
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -51,18 +52,24 @@ def epoch_seconds(d: datetime = None) -> int:
     return int((d - datetime.utcfromtimestamp(0)).total_seconds())
 
 
-def error_parser(resp_err: requests.Response) -> str:
+def error_parser(resp_err: requests.Response, api: str = 'graph') -> str:
     """
-    Parses error message from Requests response
+    Parses Microsoft API error message from Requests response
     :param resp_err: response with error
+    :param api: API to query (graph/bot)
     :return: string of error
     """
     try:
-        response = resp_err.json()
-        error = response.get('error', {})
-        err_str = f"{error.get('code')}: {error.get('message')}"
-        if err_str:
-            return err_str
+        response: dict = resp_err.json()
+        if api == 'graph':
+            error: dict = response.get('error', {})
+            err_str: str = f"{error.get('code', '')}: {error.get('message', '')}"
+            if err_str:
+                return err_str
+        elif api == 'bot':
+            error_description: str = response.get('error_description', '')
+            if error_description:
+                return error_description
         # If no error message
         raise ValueError()
     except ValueError:
@@ -393,7 +400,7 @@ def get_bot_access_token() -> str:
         verify=USE_SSL
     )
     if not response.ok:
-        error = error_parser(response)
+        error = error_parser(response, 'bot')
         raise ValueError(f'Failed to get bot access token [{response.status_code}] - {error}')
     try:
         response_json: dict = response.json()
@@ -490,7 +497,7 @@ def http_request(
         )
 
         if not response.ok:
-            error = error_parser(response)
+            error: str = error_parser(response, api)
             raise ValueError(f'Error in API call to Microsoft Teams: [{response.status_code}] - {error}')
 
         if response.status_code in {202, 204}:
@@ -531,46 +538,86 @@ def validate_auth_header(headers: dict) -> bool:
     scehma: str = parts[0]
     jwt_token: str = parts[1]
     if scehma != 'Bearer' or not jwt_token:
+        demisto.info('Authorization header validation - failed to verify schema')
         return False
+
     decoded_payload: dict = jwt.decode(jwt_token, verify=False)
     issuer: str = decoded_payload.get('iss', '')
     if issuer != 'https://api.botframework.com':
+        demisto.info('Authorization header validation - failed to verify issuer')
         return False
-    # integration_context: dict = demisto.getIntegrationContext()
-    # open_id_metadata: dict = integration_context.get('open_id_metadata', {})
-    # keys: list = open_id_metadata.get('keys', [])
-    # last_updated: int = open_id_metadata.get('last_updated', 0)
-    # if last_updated < datetime.timestamp(datetime.now() + timedelta(days=5)):
-    #     open_id_url: str = 'https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration'
-    #     response: dict = http_request('GET', open_id_url, api='bot')
-    #     jwks_uri: str = response.get('jwks_uri', '')
-    #     keys_response: dict = http_request('GET', jwks_uri, api='bot')
-    #     keys = keys_response.get('keys', [])
-    #     last_updated = datetime.timestamp(datetime.now())
-    #     open_id_metadata['keys'] = keys
-    #     open_id_metadata['last_updated'] = last_updated
-    # if not keys:
-    #     return False
-    # unverified_headers: dict = jwt.get_unverified_header(jwt_token)
-    # key_id: str = unverified_headers.get('kid', '')
-    # key_object: dict = dict()
-    # for key in keys:
-    #     if key.get('kid') == key_id:
-    #         key_object = key
-    #         break
-    # if not key_object:
-    #     return False
-    # public_key: str = RSAAlgorithm.from_jwk(json.dumps(key_object))
-    # options = {
-    #     'verify_aud': False,
-    #     'verify_exp': True
-    # }
-    # decoded_payload = jwt.decode(jwt_token, public_key, options=options)
+
+    integration_context: dict = demisto.getIntegrationContext()
+    open_id_metadata: dict = json.loads(integration_context.get('open_id_metadata', '{}'))
+    keys: list = open_id_metadata.get('keys', [])
+
+    unverified_headers: dict = jwt.get_unverified_header(jwt_token)
+    key_id: str = unverified_headers.get('kid', '')
+    key_object: dict = dict()
+
+    # Check if we got the requested key in cache
+    for key in keys:
+        if key.get('kid') == key_id:
+            key_object = key
+            break
+
+    if not key_object:
+        # Didn't find requested key in cache, getting new keys
+        try:
+            open_id_url: str = 'https://login.botframework.com/v1/.well-known/openidconfiguration'
+            response: requests.Response = requests.get(open_id_url, verify=USE_SSL)
+            if not response.ok:
+                demisto.info(f'Authorization header validation failed to fetch open ID config - {response.reason}')
+                return False
+            response_json: dict = response.json()
+            jwks_uri: str = response_json.get('jwks_uri', '')
+            keys_response: requests.Response = requests.get(jwks_uri, verify=USE_SSL)
+            if not keys_response.ok:
+                demisto.info(f'Authorization header validation failed to fetch keys - {response.reason}')
+                return False
+            keys_response_json: dict = keys_response.json()
+            keys = keys_response_json.get('keys', [])
+            open_id_metadata['keys'] = keys
+        except ValueError:
+            demisto.info('Authorization header validation - failed to parse keys response')
+            return False
+
+    if not keys:
+        # Didn't get new keys
+        demisto.info('Authorization header validation - failed to get keys')
+        return False
+
+    # Find requested key in new keys
+    for key in keys:
+        if key.get('kid') == key_id:
+            key_object = key
+            break
+
+    if not key_object:
+        # Didn't find requested key in new keys
+        demisto.info('Authorization header validation - failed to find relevant key')
+        return False
+
+    endorsements: list = key_object.get('endorsements', [])
+    if not endorsements or 'msteams' not in endorsements:
+        demisto.info('Authorization header validation - failed to verify endorsements')
+        return False
+
+    public_key: str = RSAAlgorithm.from_jwk(json.dumps(key_object))
+    options = {
+        'verify_aud': False,
+        'verify_exp': True
+    }
+    decoded_payload = jwt.decode(jwt_token, public_key, options=options)
+
     audience_claim: str = decoded_payload.get('aud', '')
     if audience_claim != demisto.params().get('bot_id'):
+        demisto.info('Authorization header validation - failed to verify audience_claim')
         return False
-    # integration_context['open_id_metadata'] = json.dumps(open_id_metadata)
-    # demisto.setIntegrationContext(integration_context)
+
+    integration_context['open_id_metadata'] = json.dumps(open_id_metadata)
+    demisto.setIntegrationContext(integration_context)
+
     return True
 
 
@@ -1001,8 +1048,19 @@ def mirror_investigation():
         demisto.results('Investigation mirror was updated successfully.')
     else:
         channel_name: str = demisto.args().get('channel_name', '') or f'incident-{investigation_id}'
-        channel_description = f'Channel to mirror incident {investigation_id}'
-        channel_id = create_channel(team_aad_id, channel_name, channel_description)
+        channel_description: str = f'Channel to mirror incident {investigation_id}'
+        channel_id: str = create_channel(team_aad_id, channel_name, channel_description)
+        service_url: str = integration_context.get('service_url', '')
+        server_links: dict = demisto.demistoUrls()
+        server_link: str = server_links.get('server', '')
+        warroom_link: str = f'{server_link}#/WarRoom/{investigation_id}'
+        conversation: dict = {
+            'type': 'message',
+            'text': f'This channel was created to mirror [incident {investigation_id}]({warroom_link}) '
+                    f'between Teams and Demisto. In order for your Teams messages to be mirrored in Demisto, '
+                    f'you need to mention the Demisto Bot in the message.'
+        }
+        send_message_request(service_url, channel_id, conversation)
         mirrored_channels.append({
             'channel_id': channel_id,
             'investigation_id': investigation_id,
@@ -1159,8 +1217,8 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
             formatted_message = urlify_hyperlinks(data)
     else:
         try:
-            return_card = True
             data = demisto.directMessage(message, username, user_email, allow_external_incidents_creation)
+            return_card = True
             if data.startswith('`'):  # We got a list of incidents/tasks:
                 data_by_line: list = data.replace('```', '').strip().split('\n')
                 return_card = True
