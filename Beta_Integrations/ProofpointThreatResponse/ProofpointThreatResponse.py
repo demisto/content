@@ -170,7 +170,7 @@ def delete_indicator(list_id, indicator_filter):
     if len(indicator) == 0:
         return_error('{} not exists in {}'.format(indicator_filter, list_id))
 
-    indicator_id = indicator.get('id')
+    indicator_id = indicator.get('id')  # pylint: disable=E1101
     fullurl = BASE_URL + 'api/lists/{}/members/{}.json'.format(list_id, indicator_id)
     res = requests.delete(
         fullurl,
