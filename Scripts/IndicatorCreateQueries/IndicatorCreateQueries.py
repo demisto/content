@@ -100,7 +100,7 @@ def generate_domain_queries(domains):
     queries = {}
 
     # Cortex Threat Domain
-    hash_fields = ["misc LIKE'{}'".format(domain) for domain in domains]
+    domain_fields = ["misc LIKE'{}'".format(domain) for domain in domains]
     query_cortex_threat_domain = ' OR '.join(domain_fields)
     queries['CortexThreatDomain'] = 'SELECT * from panw.threat where {}'.format(query_cortex_threat_domain)
 
@@ -118,7 +118,7 @@ def generate_domain_queries(domains):
 
 
     # Panorama Domain
-    hash_fields = ["( url contains {} )".format(domain) for domain in domains]
+    domain_fields = ["( url contains {} )".format(domain) for domain in domains]
     query_panorama_domain = ' or '.join(domain_fields)
     queries['PanoramaDomain'] = query_panorama_domain
 
