@@ -3,7 +3,7 @@ commonfields:
   id: ThreatQ v2
   version: -1
 configuration:
-- display: TQ SERVER URL E.g. https://192.168.1.136
+- display: ThreatQ server URL (e.g. https://192.168.1.136)
   name: serverUrl
   required: true
   type: 0
