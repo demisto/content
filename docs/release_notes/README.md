@@ -42,6 +42,14 @@ For single line RNs, follow this format:
 Release note here.
 ```
 
+For single line RNs with a nested list, follow this format:
+```
+## [Unreleased]
+Release note here.
+  - List item 1
+  - List item 2
+```
+
 For multiple line RNs (or appending to existing RN), follow this format:
 ```
 ## [Unreleased]
