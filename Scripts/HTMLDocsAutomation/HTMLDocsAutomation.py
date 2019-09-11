@@ -7,7 +7,7 @@ CMD_ARGS_REGEX = re.compile(r'([\w_-]+)=((?:\"[^"]+\")|(?:`.+`)|(?:\"\"\".+\"\"\
 
 """STRING TEMPLATES"""
 OVERVIEW: str = '''<p>
-  Overview description in this section without a header.
+{overview}
 </p>
 '''
 
