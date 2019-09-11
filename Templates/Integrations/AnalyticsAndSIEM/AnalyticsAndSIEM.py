@@ -15,7 +15,7 @@ Todo:
 urllib3.disable_warnings()
 
 
-class Client(BaseClient):
+class Client(BaseHTTPClient):
     """
     Wrapper class for BaseClient with additional functionality for the integration.
     """
@@ -189,7 +189,7 @@ def build_context(events: Union[Dict, List]) -> Union[Dict, List]:
 ''' COMMANDS '''
 
 
-def test_module(client: Client, *args) -> Tuple[str, Dict, Dict]:
+def test_module(client: Client, _) -> Tuple[str, Dict, Dict]:
     """Performs basic get request to see if the API is reachable and authentication works.
     """
     results = client.test_module_request()
@@ -198,13 +198,12 @@ def test_module(client: Client, *args) -> Tuple[str, Dict, Dict]:
     raise DemistoException('Test module failed, {}'.format(results))
 
 
-def fetch_incidents(client: Client, *args):
+def fetch_incidents(client: Client, last_run):
     """Uses to fetch credentials into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_credentials
     """
     timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ"'
     # Get incidents from API
-    last_run = demisto.getLastRun()
     if not last_run:  # if first time running
         last_run, _ = parse_date_range(demisto.params().get('fetch_time'))
         last_run_string = last_run.strftime(timestamp_format)
@@ -362,7 +361,7 @@ def main():
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy')
     base_suffix = '/api/v2/'
-    client: Client = Client(server,
+    client: Client = Client(server=server,
                             integration_name=integration_name,
                             integration_command_name=integration_command_name,
                             integration_context_name=integration_context_name,
@@ -385,7 +384,7 @@ def main():
     }
     try:
         if command == 'fetch-incidents':
-            commands[command](client)
+            commands[command](client, last_run=demisto.getLastRun())
         elif command in commands:
             human_readable, context, raw_response = commands[command](client, demisto.args())
             return_outputs(human_readable, context, raw_response)
