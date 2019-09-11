@@ -15,8 +15,13 @@ configuration:
   name: credentials
   required: true
   type: 9
+- defaultvalue: '8'
+  display: Indicator threshold (minimum TQ score to consider the indicator malicious).
+  name: threshold
+  required: false
+  type: 0
 - defaultvalue: 'false'
-  display: Insecure
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -24,21 +29,17 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: '8'
-  display: Indicator threshold. Minimum TQ score to consider the indicator malicious.
-  name: threshold
-  required: false
-  type: 0
-description: ThreatQ Integration
+description: ThreatQ provides indicator scoring weighting for indicators and their contextual information
+  such as sources, attributes and indicator types, as they are added to ThreatQ.
 display: ThreatQ v2
 name: ThreatQ v2
 script:
   commands:
   - arguments:
     - default: true
-      description: keyword
+      description: name
       isArray: false
-      name: keyword
+      name: name
       required: true
       secret: false
     - default: false
@@ -49,7 +50,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Search ThreatQ repository by keywords. Search result default limit
+    description: Search ThreatQ repository by names. Search result default limit
       is 10 records.
     execution: false
     name: threatq-search-by-name
@@ -81,7 +82,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Run ip check against ThreatQ
+    description: Run IP check against ThreatQ
     execution: false
     name: ip
     outputs:
@@ -146,15 +147,15 @@ script:
       description: Indicator's type
       type: String
   - arguments:
-    - default: false
-      defaultValue: www.google.com
-      description: URL or FQDN
+    - default: true
+      defaultValue: ''
+      description: URL
       isArray: false
       name: url
       required: true
       secret: false
     deprecated: false
-    description: Run url check against ThreatQ
+    description: Run URL check against ThreatQ
     execution: false
     name: url
     outputs:
@@ -219,9 +220,9 @@ script:
       description: Indicator's type
       type: String
   - arguments:
-    - default: false
-      defaultValue: google.exe
-      description: File name, MD5 or SHA
+    - default: true
+      defaultValue: ''
+      description: File MD5, SHA-1 or SHA-256
       isArray: false
       name: file
       required: false
@@ -264,7 +265,7 @@ script:
     - contextPath: File.Malicious.Vendor
       description: File vendor
       type: String
-    - contextPath: File.Malicious.Malicious
+    - contextPath: File.Malicious.Description
       description: File Malicious description
       type: String
     - contextPath: ThreatQ.Indicator.ID
@@ -307,9 +308,9 @@ script:
       description: Indicator's type
       type: String
   - arguments:
-    - default: false
-      defaultValue: example@gmail.com
-      description: pre-commit
+    - default: true
+      defaultValue: ''
+      description: Email address
       isArray: false
       name: email
       required: true
@@ -380,8 +381,8 @@ script:
       description: Indicator's type
       type: String
   - arguments:
-    - default: false
-      description: pre-commit
+    - default: true
+      description: Domain or FQDN
       isArray: false
       name: domain
       required: true
@@ -456,7 +457,7 @@ script:
       default: false
       description: Indicator type
       isArray: false
-      name: ioc_type
+      name: indicator_type
       predefined:
       - Binary String
       - CIDR Block
@@ -512,27 +513,29 @@ script:
       required: true
       secret: false
     - default: false
-      description: Source(s) name(s)
+      description: Sources names list, seperated by commas
       isArray: true
-      name: source_lst
+      name: sources
       required: false
       secret: false
     - default: false
-      description: Add Attribute
+      description: Attributes names list, seperated by commas. The i-th element in the attributes names list
+        corresponds to the i-th element in the attributes values list.
       isArray: true
-      name: attr_names_lst
+      name: attributes_names
       required: false
       secret: false
     - default: false
-      description: Attribute values
+      description: Attributes values list, seperated by commas. The i-th element in the attributes values list
+        corresponds to the i-th element in the attributes names list.
       isArray: true
-      name: attr_values_lst
+      name: attributes_values
       required: false
       secret: false
     deprecated: false
     description: Create a new indicator in ThreatQ
     execution: false
-    name: threatq-create-ioc
+    name: threatq-create-indicator
     outputs:
     - contextPath: ThreatQ.Indicator.ID
       description: Indicator's ID
@@ -577,13 +580,13 @@ script:
     - default: false
       description: The attribute name
       isArray: false
-      name: attr_name
+      name: attribute_name
       required: true
       secret: false
     - default: false
       description: The Attribute value
       isArray: false
-      name: attr_value
+      name: attribute_value
       required: true
       secret: false
     - auto: PREDEFINED
@@ -630,13 +633,13 @@ script:
     - default: false
       description: Attribute id
       isArray: false
-      name: attr_id
+      name: attribute_id
       required: true
       secret: false
     - default: false
       description: New attribute's value
       isArray: false
-      name: attr_value
+      name: attribute_value
       required: true
       secret: false
     deprecated: false
@@ -690,21 +693,23 @@ script:
       required: true
       secret: false
     - default: false
-      description: Source(s) name(s)
+      description: Sources names list, seperated by commas
       isArray: true
-      name: source_lst
+      name: sources
       required: false
       secret: false
     - default: false
-      description: Add Attribute
+      description: Attributes names list, seperated by commas. The i-th element in the attributes names list
+        corresponds to the i-th element in the attributes values list.
       isArray: true
-      name: attr_names_lst
+      name: attributes_names
       required: false
       secret: false
     - default: false
-      description: Attribute values
+      description: Attributes values list, seperated by commas. The i-th element in the attributes values list
+        corresponds to the i-th element in the attributes names list.
       isArray: true
-      name: attr_values_lst
+      name: attributes_values
       required: false
       secret: false
     deprecated: false
@@ -774,22 +779,23 @@ script:
       required: true
       secret: false
     - default: false
-      description: Add Source
+      description: Sources names list, seperated by commas
       isArray: true
-      name: source_lst
+      name: sources
       required: false
       secret: false
     - default: false
-      description: List of attribute names, seperated by comma
+      description: Attributes names list, seperated by commas. The i-th element in the attributes names list
+        corresponds to the i-th element in the attributes values list.
       isArray: true
-      name: attr_names_lst
+      name: attributes_names
       required: false
       secret: false
     - default: false
-      description: Attribute values list, seperated by comma. The i-th element in
-        this list is the value of the i-th attribute in attr_names_lst
+      description: Attributes values list, seperated by commas. The i-th element in the attributes values list
+        corresponds to the i-th element in the attributes names list.
       isArray: true
-      name: attr_values_lst
+      name: attributes_values
       required: false
       secret: false
     deprecated: false
@@ -854,7 +860,7 @@ script:
     deprecated: false
     description: Get related Indicators in ThreatQ
     execution: false
-    name: threatq-get-related-ioc
+    name: threatq-get-related-indicators
     outputs:
     - contextPath: ThreatQ.Indicator.RelatedIndicator.ID
       description: Related indicator's ID
@@ -986,7 +992,7 @@ script:
     - default: false
       description: Indicator's ID
       isArray: false
-      name: ioc_id
+      name: indicator_id
       required: true
       secret: false
     - auto: PREDEFINED
@@ -1277,7 +1283,7 @@ script:
       default: false
       description: File category
       isArray: false
-      name: file_type
+      name: file_category
       predefined:
       - Cuckoo
       - CrowdStrike Intelligence
@@ -1697,7 +1703,7 @@ script:
     - default: false
       description: Indicator ID
       isArray: false
-      name: ioc_id
+      name: indicator_id
       required: true
       secret: false
     - default: false
@@ -1710,7 +1716,7 @@ script:
       default: false
       description: New indicator type
       isArray: false
-      name: ioc_type
+      name: indicator_type
       predefined:
       - Binary String
       - CIDR Block
@@ -1755,7 +1761,7 @@ script:
     deprecated: false
     description: Update an indicator in ThreatQ.
     execution: false
-    name: threatq-edit-ioc
+    name: threatq-edit-indicator
     outputs:
     - contextPath: ThreatQ.Indicator.ID
       description: Indicator's ID
@@ -1887,7 +1893,7 @@ script:
     - default: false
       description: Indicator's ID
       isArray: false
-      name: ioc_id
+      name: indicator_id
       required: true
       secret: false
     - auto: PREDEFINED
@@ -1984,7 +1990,7 @@ script:
     deprecated: false
     description: Get all indicators in ThreatQ
     execution: false
-    name: threatq-get-all-iocs
+    name: threatq-get-all-indicators
     outputs:
     - contextPath: ThreatQ.Indicator.ID
       description: Indicator's ID
