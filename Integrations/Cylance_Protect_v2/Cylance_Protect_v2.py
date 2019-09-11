@@ -54,7 +54,6 @@ APP_SECRET = demisto.params()['app_secret']
 TID = demisto.params()['tid']
 SERVER_URL = load_server_url()
 FILE_THRESHOLD = demisto.params()['file_threshold']
-BATCH_SIZE = int(demisto.params()['batch_size'])
 USE_SSL = not demisto.params().get('unsecure', False)
 
 
@@ -160,10 +159,6 @@ def test():
     access_token = get_authentication_token()
     if not access_token:
         raise Exception('Unable to get access token')
-    try:
-        int(BATCH_SIZE)
-    except ValueError:
-        return_error("Batch Size specified must represent an int.")
     demisto.results('ok')
 
 
@@ -1160,9 +1155,13 @@ def delete_devices():
             'Device Name': device_name,
             'Deletion status': True
         })
-
-    for i in range(0, len(device_ids_list), BATCH_SIZE):
-        current_deleted_devices_batch = device_ids_list[i:i + BATCH_SIZE]
+    batch_size = demisto.args().get("batch_size", 20)
+    try:
+        batch_size = int(batch_size)
+    except ValueError:
+        return_error("Error: Batch Size specified must represent an int.")
+    for i in range(0, len(device_ids_list), batch_size):
+        current_deleted_devices_batch = device_ids_list[i:i + batch_size]
         delete_devices_request(current_deleted_devices_batch)
 
     context = {
