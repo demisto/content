@@ -11,8 +11,10 @@ from datetime import datetime
 import json
 import requests
 
+# Disable insecure warnings
+requests.packages.urllib3.disable_warnings()
 
-SERVER = demisto.params()['url'].rstrip('/')
+SERVER = demisto.params().get('url', '').rstrip('/')
 USERNAME = demisto.params().get('credentials', {}).get('identifier')
 PASSWORD = demisto.params().get('credentials', {}).get('password')
 PROXY = demisto.params().get('proxy')
@@ -57,7 +59,7 @@ def elasticsearch_builder():
             return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection, verify_certs=INSECURE)
 
 
-def get_hit_table(hit, fields):
+def get_hit_table(hit):
     table_context = {
         '_index': hit.get('_index'),
         '_id': hit.get('_id'),
@@ -67,14 +69,13 @@ def get_hit_table(hit, fields):
     headers = ['_index', '_id', '_type', '_score']
     if hit.get('_source') is not None:
         for source_field in hit.get('_source').keys():
-            if fields is None or source_field in fields:  # filtering only the requested fields to display
-                table_context[str(source_field)] = hit.get('_source').get(str(source_field))
-                headers.append(source_field)
+            table_context[str(source_field)] = hit.get('_source').get(str(source_field))
+            headers.append(source_field)
 
     return table_context, headers
 
 
-def results_to_context(index, query, base_page, size, total_dict, fields, response):
+def results_to_context(index, query, base_page, size, total_dict, response):
     search_context = {
         'Server': SERVER,
         'Index': index,
@@ -91,9 +92,9 @@ def results_to_context(index, query, base_page, size, total_dict, fields, respon
     hit_tables = []
     if total_dict.get('value') > 0:
         for hit in response.get('hits').get('hits'):
-            single_hit_table, single_header = get_hit_table(hit, fields)
+            single_hit_table, single_header = get_hit_table(hit)
             hit_tables.append(single_hit_table)
-            hit_headers = list(set(single_header + hit_headers) - set(['_id', '_type', '_index', '_score']))
+            hit_headers = list(set(single_header + hit_headers) - {'_id', '_type', '_index', '_score'})
         hit_headers = ['_id', '_index', '_type', '_score'] + hit_headers
 
     search_context['Results'] = response.get('hits').get('hits')
@@ -142,10 +143,10 @@ def search_command():
         search = search.sort({sort_field: {'order': sort_order}})
 
     response = search.execute().to_dict()
+
     total_dict, total_results = get_total_results(response)
     search_context, meta_headers, hit_tables, hit_headers = results_to_context(index, query, base_page,
-                                                                               size, total_dict, fields, response)
-
+                                                                               size, total_dict, response)
     search_human_readable = tableToMarkdown('Search Metadata:', search_context, meta_headers, removeNull=True)
     hits_human_readable = tableToMarkdown('Hits:', hit_tables, hit_headers, removeNull=True)
     total_human_readable = search_human_readable + '\n' + hits_human_readable
@@ -175,37 +176,27 @@ def fetch_params_check():
         return_error("Got the following errors in test:\nFetches incidents is enabled.\n" + '\n'.join(str_error))
 
 
-def test_general_query(es):
-    query = QueryString(query='*')
+def test_general_query(es, que, test_num):
+    query = QueryString(query=que)
     search = Search(using=es, index=FETCH_INDEX)[0:1].query(query)
     response = search.execute().to_dict()
     _, total_results = get_total_results(response)
 
     if total_results == 0:
-        return_error("Fetch incidents test failed. Index value incorrect.")
+        # failed in general query - '*'
+        if test_num == 1:
+            return_error("Fetch incidents test failed. Index value incorrect.")
 
+        # failed in getting the TIME_FIELD
+        if test_num == 2:
+            return_error("Fetch incidents test failed. Date field value incorrect.")
 
-def test_date_field(es):
-    query = QueryString(query=TIME_FIELD + ':*')
-    search = Search(using=es, index=FETCH_INDEX)[0:1].query(query)
-    response = search.execute().to_dict()
-    _, total_results = get_total_results(response)
+        # failed to get the TIME_FIELD with the FETCH_QUERY
+        # this can happen and not be an error if the FETCH_QUERY doesn't have results yet.
+        # Thus this does not return an error message
+        if test_num == 3:
+            return None
 
-    if total_results == 0:
-        return_error("Fetch incidents test failed. Date field value incorrect.")
-
-    else:
-        return response
-
-
-def test_fetch_query(es):
-    query = QueryString(query=str(TIME_FIELD) + ":* AND " + FETCH_QUERY)
-    search = Search(using=es, index=FETCH_INDEX)[0:1].query(query)
-    response = search.execute().to_dict()
-    _, total_results = get_total_results(response)
-
-    if total_results == 0:
-        return None
     else:
         return response
 
@@ -231,18 +222,18 @@ def test_func():
             es = elasticsearch_builder()
 
             # test if FETCH_INDEX exists
-            test_general_query(es)
+            test_general_query(es, '*', 1)
 
             # test if TIME_FIELD in index exists
-            response = test_date_field(es)
+            response = test_general_query(es, TIME_FIELD + ':*', 2)
 
             # try to get response from FETCH_QUERY - if exists check the time field from that query
-            temp = test_fetch_query(es)
+            temp = test_general_query(es, str(TIME_FIELD) + ":* AND " + FETCH_QUERY, 3)
             if temp:
                 response = temp
 
             hit_date = str(response.get('hits', {}).get('hits')[0].get('_source').get(str(TIME_FIELD)))
-            datetime.strptime(hit_date, TIME_FORMAT).isoformat() + 'Z'
+            datetime.strptime(hit_date, TIME_FORMAT)
 
         except ValueError as e:
             return_error("Inserted time format is incorrect.\n" + str(e) + '\n' + TIME_FIELD + ' fetched: ' + hit_date)
@@ -262,9 +253,7 @@ def results_to_incidents(response, current_fetch, last_fetch):
     incidents = []
     for hit in response.get('hits', {}).get('hits'):
         if hit.get('_source') is not None and hit.get('_source').get(str(TIME_FIELD)) is not None:
-            hit_date = datetime.strptime(
-                str(hit.get('_source')[str(TIME_FIELD)]), TIME_FORMAT).isoformat() + 'Z'
-            hit_date = datetime.strptime(hit_date, '%Y-%m-%dT%H:%M:%SZ')
+            hit_date = datetime.strptime(str(hit.get('_source')[str(TIME_FIELD)]), TIME_FORMAT)
             # update last run
             if hit_date > last_fetch:
                 last_fetch = hit_date
@@ -272,7 +261,7 @@ def results_to_incidents(response, current_fetch, last_fetch):
             # avoid duplication due to weak time query
             if hit_date > current_fetch:
                 inc = {
-                    'name': 'Elasticsearch v2: Index: ' + str(FETCH_INDEX) + ", ID: " + str(hit.get('_id')),
+                    'name': 'Elasticsearch: Index: ' + str(FETCH_INDEX) + ", ID: " + str(hit.get('_id')),
                     'rawJSON': json.dumps(hit),
                     'labels': incident_label_maker(hit.get('_source')),
                     'occurred': hit_date.isoformat() + 'Z'
@@ -288,11 +277,11 @@ def fetch_incidents():
 
     # handle first time fetch
     if last_fetch is None:
-        last_fetch, _ = parse_date_range(date_range=FETCH_TIME, utc=False, to_timestamp=False)
-        last_fetch = datetime.strptime(str(last_fetch.isoformat()).split('.')[0] + 'Z', '%Y-%m-%dT%H:%M:%SZ')
+        last_fetch, _ = parse_date_range(date_range=FETCH_TIME, date_format=TIME_FORMAT, utc=False, to_timestamp=False)
+        last_fetch = datetime.strptime(str(last_fetch), TIME_FORMAT)
 
     else:
-        last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
+        last_fetch = datetime.strptime(last_fetch, TIME_FORMAT)
 
     current_fetch = last_fetch
 
@@ -309,19 +298,17 @@ def fetch_incidents():
         incidents, last_fetch = results_to_incidents(response, current_fetch, last_fetch)
 
         demisto.info('extract {} incidents'.format(len(incidents)))
-        demisto.setLastRun({'time': last_fetch.isoformat().split('.')[0] + 'Z'})
+        demisto.setLastRun({'time': datetime.strftime(last_fetch, TIME_FORMAT)})
 
     demisto.incidents(incidents)
 
-
 try:
     LOG('command is %s' % (demisto.command(),))
-    handle_proxy()
     if demisto.command() == 'test-module':
         test_func()
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents()
-    elif demisto.command() == 'search':
+    elif demisto.command() in ['search', 'elasticsearch-search']:
         search_command()
 except Exception as e:
-    return_error(str(e))
+    return_error("Failed executing {}.\nError message: {}".format(demisto.command(), str(e)), error=e)
