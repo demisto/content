@@ -639,7 +639,7 @@ script:
         The maximum length is 100 characters.
     outputs:
     - contextPath: Account.Type
-      description: 'The account type. For example, "AD", "LocalOS", "Google", "AppleID", and so on.'
+      description: 'The account type. For example, "AD", "LocalOS", "Google", "AppleID", and so on.
       type: String
     - contextPath: Account.ID
       description: The unique ID for the account (integration specific). For AD accounts
