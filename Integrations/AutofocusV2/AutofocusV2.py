@@ -407,7 +407,7 @@ def parse_coverage_sub_categories(coverage_data):
     for sub_category_name, sub_category_data in coverage_data.items():
         if sub_category_name in SAMPLE_ANALYSIS_COVERAGE_KEYS:
             new_sub_category_data = get_data_from_coverage_sub_category(sub_category_name, sub_category_data)
-            new_sub_category_name = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get(   # type: ignore
+            new_sub_category_name = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get(  # type: ignore
                 'display_name')  # type: ignore
             new_coverage[new_sub_category_name] = new_sub_category_data
     return {'coverage': new_coverage}
@@ -668,15 +668,15 @@ def build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, firs
 
 
 def search_sessions(query=None, size=None, sort=None, order=None, file_hash=None, domain=None, ip=None, url=None,
-                    time_range=None, time_after=None, time_before=None):
-    validate_no_query_and_indicators(query, [file_hash, domain, ip, url, time_range, time_after, time_before])
+                    from_time=None, to_time=None):
+    validate_no_query_and_indicators(query, [file_hash, domain, ip, url, from_time, to_time])
     if not query:
         validate_no_multiple_indicators_for_search([file_hash, domain, ip, url])
-        query = build_session_search_query(file_hash, domain, ip, url, time_range, time_after, time_before)
+        query = build_session_search_query(file_hash, domain, ip, url, from_time, to_time)
     return run_search('sessions', query=query, size=size, sort=sort, order=order)
 
 
-def build_session_search_query(file_hash, domain, ip, url, time_range, time_after, time_before):
+def build_session_search_query(file_hash, domain, ip, url, from_time, to_time):
     indicator_args_for_query = {
         'file_hash': file_hash,
         'domain': domain,
@@ -685,17 +685,15 @@ def build_session_search_query(file_hash, domain, ip, url, time_range, time_afte
     }
     indicator_list = build_indicator_children_query(indicator_args_for_query)
     indicator_query = build_logic_query('OR', indicator_list)
+    time_filters_for_search = {}  # type: ignore
+    if from_time and to_time:
+        time_filters_for_search = {'time_range': [from_time, to_time]}
+    elif from_time:
+        time_filters_for_search = {'time_after': [from_time]}
+    elif to_time:
+        time_filters_for_search = {'time_before': [to_time]}
 
-    if time_range and time_after or time_after and time_before or time_before and time_range:
-        return_error('search session is able to use only a single time argument, two or more such arguments were given')
-    filtering_args_for_search = {}  # type: ignore
-    if time_range:
-        filtering_args_for_search = {'time_range': time_range}
-    elif time_after:
-        filtering_args_for_search = {'time_after': time_after}
-    elif time_before:
-        filtering_args_for_search = {'time_before': time_before}
-    filters_list = build_children_query(filtering_args_for_search)
+    filters_list = build_children_query(time_filters_for_search)
     filters_list.append(indicator_query)
     logic_query = build_logic_query('AND', filters_list)
     return json.dumps(logic_query)
@@ -716,7 +714,7 @@ def build_logic_query(logic_operator, condition_list):
 def build_children_query(args_for_query):
     children_list = []  # type: ignore
     for key, val in args_for_query.items():
-        field_api_name = API_PARAM_DICT['search_arguments'][key]['api_name']    # type: ignore
+        field_api_name = API_PARAM_DICT['search_arguments'][key]['api_name']  # type: ignore
         operator = API_PARAM_DICT['search_arguments'][key]['operator']  # type: ignore
         children_list += children_list_generator(field_api_name, operator, [val])
     return children_list
@@ -725,7 +723,7 @@ def build_children_query(args_for_query):
 def build_indicator_children_query(args_for_query):
     for key, val in args_for_query.items():
         if val:
-            field_api_name = API_PARAM_DICT['search_arguments'][key]['api_name']    # type: ignore
+            field_api_name = API_PARAM_DICT['search_arguments'][key]['api_name']  # type: ignore
             operator = API_PARAM_DICT['search_arguments'][key]['operator']  # type: ignore
             children_list = children_list_generator(field_api_name, operator, val)
     return children_list
@@ -759,7 +757,7 @@ def validate_no_multiple_indicators_for_search(arg_list):
         elif arg:
             used_arg = arg
     if not used_arg:
-        return_error('In order to perform a samples/sessions search a query or an indicator must be given.')
+        return_error('In order to perform a samples/sessions search, a query or an indicator must be given.')
     return
 
 
@@ -818,15 +816,14 @@ def search_sessions_command():
     domain = argToList(args.get('domain'))
     ip = argToList(args.get('ip'))
     url = argToList(args.get('url'))
-    time_range = argToList(args.get('time_range'))
-    time_after = argToList(args.get('time_after'))
-    time_before = argToList(args.get('time_before'))
+    from_time = args.get('from_time')
+    to_time = args.get('to_time')
     query = args.get('query')
     max_results = args.get('max_results')
     sort = args.get('sort')
     order = args.get('order')
     info = search_sessions(query=query, size=max_results, sort=sort, order=order, file_hash=file_hash, domain=domain,
-                           ip=ip, url=url, time_range=time_range, time_after=time_after, time_before=time_before)
+                           ip=ip, url=url, from_time=from_time, to_time=to_time)
     md = tableToMarkdown(f'Search Sessions Info:', info)
     demisto.results({
         'Type': entryTypes['note'],
