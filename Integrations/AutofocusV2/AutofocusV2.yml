@@ -222,30 +222,20 @@ script:
       secret: false
     - default: false
       description: |-
-        Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end.
-        Example: 2019-09-09T00:00:00,2019-09-09T23:01:59
-      isArray: false
-      name: time_range
-      predefined:
-      - ''
-      required: false
-      secret: false
-    - default: false
-      description: |-
         All sessions after the given time.
-        Format: YYYY-MM-DDTHH:MM:SS
-        Example: 2019-09-09T23:01:59
+        Format: YYYY-MM-DDTHH:MM:SS. Example: 2019-09-09T23:01:59.
+        Note: Quering a time range is possible by filling both from_time and to_time arguments.
       isArray: false
-      name: time_after
+      name: from_time
       required: false
       secret: false
     - default: false
       description: |-
         All sessions before the given time.
-        Format: YYYY-MM-DDTHH:MM:SS
-        Example: 2019-09-09T23:01:59
+        Format: YYYY-MM-DDTHH:MM:SS. Example: 2019-09-09T23:01:59.
+        Note: Quering a time range is possible by filling both from_time and to_time arguments.
       isArray: false
-      name: time_before
+      name: to_time
       required: false
       secret: false
     deprecated: false
