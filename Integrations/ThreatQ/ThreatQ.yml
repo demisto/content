@@ -74,7 +74,7 @@ script:
       type: String
   - arguments:
     - default: true
-      defaultValue: 8.8.8.8
+      defaultValue: ''
       description: IP address
       isArray: false
       name: ip
