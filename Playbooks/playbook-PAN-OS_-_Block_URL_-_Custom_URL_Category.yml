@@ -5,7 +5,7 @@ description: |-
   This playbook blocks URLs using Palo Alto Networks Panorama or Firewall through Custom URL Categories.
   The playbook checks whether the input URL category already exists, and if the URLs are a part of this category. Otherwise, it will create the category, block the URLs, and commit the configuration.
 starttaskid: "0"
-fromversion: 4.5.0
+fromversion: 4.0.0
 tasks:
   "0":
     id: "0"
