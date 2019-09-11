@@ -148,6 +148,7 @@ script:
     name: tn-create-package
   - arguments:
     - default: false
+      defaultValue: '5'
       isArray: false
       name: count
       required: false
@@ -155,10 +156,10 @@ script:
     deprecated: false
     execution: false
     name: tn-list-packages
+  dockerimage: demisto/python3:3.7.4.977
   isfetch: false
   runonce: false
   script: '-'
   type: python
 tests:
-  - No test
-
+- No test
