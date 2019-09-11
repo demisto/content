@@ -3276,7 +3276,8 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
     md += u"* {0}:\t{1}\n".format('CC', email_data.get('CC') or "")
     md += u"* {0}:\t{1}\n".format('Subject', email_data.get('Subject') or "")
     if 'Text' in email_data:
-        md += u"* {0}:\t{1}\n".format('Body/Text', email_data['Text'] or "")
+        text = email_data['Text'].replace('<', '[').replace('>', ']')
+        md += u"* {0}:\t{1}\n".format('Body/Text', text or "")
     if 'HTML' in email_data:
         md += u"* {0}:\t{1}\n".format('Body/HTML', email_data['HTML'] or "")
 
