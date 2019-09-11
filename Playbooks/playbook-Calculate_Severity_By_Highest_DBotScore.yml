@@ -1,10 +1,10 @@
-id: Evaluate Severity - Set By Highest DBotScore
+id: Calculate Severity By Highest DBotScore
 version: -1
-fromversion: 4.5.0
-name: Evaluate Severity - Set By Highest DBotScore
+name: Calculate Severity By Highest DBotScore
 description: Calculates the incident severity level according to the highest indicator
   DBotScore.
 starttaskid: "0"
+fromversion: "4.5.0"
 tasks:
   "0":
     id: "0"
@@ -161,7 +161,7 @@ tasks:
       version: -1
       name: Evaluate severity based on DBotScore of indicators
       description: |-
-        Determines a severity based on the DBotScores of the indicators involved with the incident. Severity level is assigned according to the corresponding DBot score:
+        Determines a severity based on the DBotScores of the indicators involved with the incident. Severity level is assigned according to the corresponding DBotScore:
         No DBotScores / 0 = Unknown
         1 = Low
         2 = Medium
@@ -356,7 +356,7 @@ tasks:
       id: 4db66a18-a33b-4d0c-8ade-30c28a877459
       version: -1
       name: Set severity to unknown
-      description: Sets the severity of the incident to “Unknown”. This severity level means that either that unknown indicators were identified,
+      description: Sets the severity of the incident to “Unknown”. This severity level means that either unknown indicators were identified,
         or no indicators were identified.
       scriptName: Set
       type: regular
@@ -410,8 +410,8 @@ inputs:
   description: 'Array of all indicators associated with the incident. '
 outputs:
 - contextPath: Severities.DBotScoreSeverity
-  description: The severity level of the incident identified and set in the Evaluate Severity - Set By Highest DBotScore
+  description: The severity level of the incident identified and set in the Calculate Severity By Highest DBotScore
     playbook.
   type: string
 tests:
-  - Evaluate Severity - Set By Highest Score - Test
+  - Calculate Severity By Highest DBotScore

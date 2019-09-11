@@ -1,10 +1,9 @@
-id: Evaluate Severity - Set By Highest Score
+id: Severity Reevaluation Based on Indicator Reputation
 version: -1
-fromversion: 4.5.0
-name: Evaluate Severity - Set By Highest Score
+name: Severity Reevaluation Based on Indicator Reputation
 description: Calculates and sets the incident severity based on the combination of
-  the current incident severity, and the severity returned from the Evaluate Severity
-  - Set By Highest DBotScore playbook.
+  the current incident severity, and the severity returned from the Evaluate Severity - Set By Highest DBotScore playbook.
+fromversion: 4.5.0
 starttaskid: "0"
 tasks:
   "0":
@@ -962,9 +961,8 @@ tasks:
       id: 64da7797-a618-454e-8243-37cfde94d1c5
       version: -1
       name: Evaluate Severity - Set By Highest DBotScore
-      description: Calculates the incident severity level according to the indicator with the highest
-        DBotScore.
-      playbookName: Evaluate Severity - Set By Highest DBotScore
+      description: Calculates the incident severity level according to the indicator with the highest DBotScore.
+      playbookName: Calculate Severity By Highest DBotScore
       type: playbook
       iscommand: false
       brand: ""
@@ -1198,4 +1196,4 @@ inputs:
   description: A list of DBotScores of indicators.
 outputs: []
 tests:
-  - Evaluate Severity - Set By Highest Score - Test
+  - Severity Reevaluation Based on Indicator Reputation - Test

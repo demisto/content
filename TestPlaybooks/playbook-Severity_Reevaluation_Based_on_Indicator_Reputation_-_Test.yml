@@ -1,9 +1,9 @@
-id: Evaluate Severity - Set By Highest Score - Test
+id: Severity Reevaluation Based on Indicator Reputation - Test
 version: -1
-fromversion: 4.5.0
-name: Evaluate Severity - Set By Highest Score - Test
-description: A test playbook for the Evaluate Severity - Set By Highest DBotScore
+name: Severity Reevaluation Based on Indicator Reputation - Test
+description: A test playbook for the Severity Reevaluation Based on Indicator Reputation
   playbook.
+fronmversion: 4.5.0
 starttaskid: "0"
 tasks:
   "0":
@@ -318,7 +318,7 @@ tasks:
       version: -1
       name: Calculate Severity - Core
       description: ""
-      playbookName: Evaluate Severity - Set By Highest Score
+      playbookName: Severity Reevaluation Based on Indicator Reputation
       type: playbook
       iscommand: false
       brand: ""
