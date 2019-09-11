@@ -101,8 +101,7 @@ script:
       default: true
       defaultValue: all
       description: The mirroring type. Can be "all", which mirrors everything, "chat",
-        which mirrors only chatting (not commands), or "none", which stops all mirroring.
-        to mirror only chatting but not commands, or "none" to stop mirroring.
+        which mirrors only chats (not commands), or "none", which stops all mirroring.
       isArray: false
       name: mirror_type
       predefined:
@@ -165,7 +164,7 @@ script:
     description: Deletes the specified Microsoft Teams channel.
     execution: false
     name: close-channel
-  dockerimage: demisto/teams:1.0.0.1405
+  dockerimage: demisto/teams:1.0.0.1701
   isfetch: false
   longRunning: true
   longRunningPort: true
