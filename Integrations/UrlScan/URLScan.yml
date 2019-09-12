@@ -234,6 +234,18 @@ script:
     - contextPath: URLScan.File.Hostname
       description: URL where the file was found
       type: string
+    - contextPath: File.SHA256
+      description: SHA256 of file found
+      type: string
+    - contextPath: File.Name
+      description: File name of file found
+      type: string
+    - contextPath: File.Type
+      description: File type of the file found
+      type: string
+    - contextPath: File.Hostname
+      description: URL where the file was found
+      type: string
     - contextPath: URLScan.Certificates
       description: Certificates found for the URL scanned
       type: string
