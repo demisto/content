@@ -1917,7 +1917,6 @@
         "Tenable.io": "Unstable instance (issue 16115)",
 
       "_comment": "~~~ OTHER ~~~",
-        "GitHub": "The integration and test are getting updated very shortly",
         "EclecticIQ Platform": "Old API is deprecated (Issue 8821)",
         "Pwned": "Old API is deprecated",
         "iDefense": "DevOps investigation",
