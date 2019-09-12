@@ -32,7 +32,7 @@ class Client(BaseClient):
         return self._fetch_limit
 
     def test_module_request(self) -> Dict:
-        """Performs basic get request to see if the API is reachable and authentication works.
+        """Performs basic GET request to check if the API is reachable and authentication is successful.
 
         Returns:
             Response json
@@ -40,11 +40,11 @@ class Client(BaseClient):
         return self._http_request('GET', 'version')
 
     def list_events_request(self, limit: Union[int, str] = None, since_time: Optional[str] = None) -> Dict:
-        """Gets all events from API.
+        """Returns all events by sending a GET request.
 
         Args:
-            limit: limit results
-            since_time: timestamp to start pull events from
+            limit: The maximum number of events to return.
+            since_time: Returns events created after this date.
 
         Returns:
             Response from API. from since_time if supplied else returns all events in given limit.
@@ -57,7 +57,7 @@ class Client(BaseClient):
         return self._http_request('GET', suffix, params=params)
 
     def event_request(self, event_id: AnyStr) -> Dict:
-        """Gets events by ID
+        """Return an event by the event ID.
 
         Args:
             event_id: event id to get
@@ -73,10 +73,10 @@ class Client(BaseClient):
         return self._http_request('GET', suffix, params=params)
 
     def close_event_request(self, event_id: AnyStr) -> Dict:
-        """Closes event by ID
+        """Closes the sepcified event.
 
         Args:
-            event_id: event to delete
+            event_id: The ID of the event to close.
 
         Returns:
             Response from API
@@ -90,12 +90,12 @@ class Client(BaseClient):
 
     def update_event_request(self, event_id: AnyStr, description: Optional[AnyStr] = None,
                              assignee: Optional[List[str]] = None) -> Dict:
-        """Update given event
+        """Updates the specified event.
 
         Args:
-            event_id: event ID
-            assignee: User to assign event to
-            description: change description of event
+            event_id: The ID of the event to update.
+            assignee: A list of user IDs to assign to the event.
+            description: The updated description of the event.
 
 
         Returns:
@@ -109,11 +109,11 @@ class Client(BaseClient):
         return self._http_request('POST', suffix, params=params)
 
     def create_event_request(self, description: str, assignee: List[str] = None) -> Dict:
-        """Creates given event.
+        """Creates an event in the service.
 
         Args:
-            description: change description of event
-            assignee: User to assign event to
+            description: A description of the event.
+            assignee: A list of user IDs to assign to the event.
 
         Returns:
             Response from API
@@ -126,10 +126,10 @@ class Client(BaseClient):
         return self._http_request('POST', suffix, params=params)
 
     def query_request(self, **kwargs) -> Dict:
-        """Query given kwargs
+        """Query the specified kwargs.
 
         Args:
-            **kwargs:
+            **kwargs: The keyword argument for which to search.
 
         Returns:
             Response from API
@@ -144,13 +144,13 @@ class Client(BaseClient):
 
 
 def build_context(events: Union[Dict, List]) -> Union[Dict, List]:
-    """Formatting API response to Demisto Context
+    """Formats the API response to Demisto context.
 
     Args:
-        events: Raw response from API call, can be List or Dict
+        events: The raw response from the API call. Can be a List or Dict.
 
     Returns:
-        formatted Dict/List (according to the input type)
+        The formatted Dict or List.
 
     Examples:
         >>> build_context({'eventId': '1', 'description': 'event description', 'createdAt':\
@@ -160,13 +160,13 @@ def build_context(events: Union[Dict, List]) -> Union[Dict, List]:
     """
 
     def build_dict(event: Dict) -> Dict:
-        """Builds Dict formatted for Demisto
+        """Builds a Dict formatted for Demisto.
 
         Args:
-            event: One event from API
+            event: A single event from the API call.
 
         Returns:
-            Dict formatted for Demisto
+            A Dict formatted for Demisto context.
         """
         return {
             'ID': event.get('eventId'),
@@ -190,7 +190,7 @@ def build_context(events: Union[Dict, List]) -> Union[Dict, List]:
 
 
 def test_module(client: Client, *args) -> Tuple[str, Dict, Dict]:
-    """Performs basic get request to see if the API is reachable and authentication works.
+    """Performs a basic GET request to check if the API is reachable and authentication is successful.
     """
     results = client.test_module_request()
     if 'version' in results:
@@ -199,7 +199,7 @@ def test_module(client: Client, *args) -> Tuple[str, Dict, Dict]:
 
 
 def fetch_incidents(client: Client, *args):
-    """Uses to fetch credentials into Demisto
+    """Use to fetch incidents and ingest them in Demisto.
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_credentials
     """
     timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ"'
@@ -246,7 +246,7 @@ def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 def get_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
-    Gets details about a raw_response using ID or some other filters
+    Gets details about a raw_response using the event ID or other valid filters.
     """
     # Get arguments from user
     event_id: str = args.get('event_id', '')
@@ -268,7 +268,7 @@ def get_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 def close_event(client: Client, args: Dict) -> Tuple[str, Dict, None]:
     """
-    Gets details about a raw_response using ID or some other filters
+    Gets details about a raw_response using the event ID or other valid filters.
     """
     # Get arguments from user
     event_id: str = args.get('event_id', '')
