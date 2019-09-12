@@ -488,8 +488,8 @@ tasks:
     task:
       id: bca42b7d-262b-46d2-8ac7-d7674e346173
       version: -1
-      name: Decide if the instance type is Panorama or Firewall
-      description: Automatically detects the type of the product
+      name: Identify the instance type
+      description: Automatically detects the type of the product (Panorama/Firewall)
       type: condition
       iscommand: false
       brand: ""
@@ -551,3 +551,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+  - No Tests
