@@ -40,6 +40,7 @@ log_handler = None
 
 
 def start_logging():
+    logging.raiseExceptions = False
     global log_stream
     global log_handler
     if log_stream is None:
