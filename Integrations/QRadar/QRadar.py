@@ -19,7 +19,9 @@ USERNAME = CREDENTIALS['identifier'] if CREDENTIALS else ''
 PASSWORD = CREDENTIALS['password'] if CREDENTIALS else ''
 TOKEN = demisto.params().get('token')
 USE_SSL = not demisto.params().get('insecure', False)
-AUTH_HEADERS = {'SEC': str(TOKEN), 'Content-Type': 'application/json'}
+AUTH_HEADERS = {'Content-Type': 'application/json'}
+if TOKEN:
+    AUTH_HEADERS['SEC'] = str(TOKEN)
 OFFENSES_PER_CALL = int(demisto.params().get('offensesPerCall', 50))
 OFFENSES_PER_CALL = 50 if OFFENSES_PER_CALL > 50 else OFFENSES_PER_CALL
 
@@ -200,7 +202,14 @@ def dict_values_to_comma_separated_string(dic):
 # Sends request to the server using the given method, url, headers and params
 def send_request(method, url, headers=AUTH_HEADERS, params=None):
     try:
-        res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, auth=(USERNAME, PASSWORD))
+        log_hdr = deepcopy(headers)
+        log_hdr.pop('SEC', None)
+        LOG('qradar is attempting {method} request sent to {url} with headers:\n{headers}\nparams:\n{params}'
+            .format(method=method, url=url, headers=json.dumps(log_hdr, indent=4), params=json.dumps(params, indent=4)))
+        if TOKEN:
+            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL)
+        else:
+            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, auth=(USERNAME, PASSWORD))
         res.raise_for_status()
     except HTTPError:
         err_json = res.json()
@@ -364,7 +373,7 @@ def get_offense_types():
     url = '{0}/api/siem/offense_types'.format(SERVER)
     # Due to a bug in QRadar, this functions does not work if username/password was not provided
     if USERNAME and PASSWORD:
-        return send_request('GET', url, headers=None)
+        return send_request('GET', url)
     return {}
 
 
@@ -701,7 +710,7 @@ def get_search_results_command():
     search_id = demisto.args().get('search_id')
     raw_search_results = get_search_results(search_id, demisto.args().get('range'))
     result_key = raw_search_results.keys()[0]
-    title = 'QRadar Search Results from ' + result_key
+    title = 'QRadar Search Results from {}'.format(convert_to_str(result_key))
     context_key = demisto.args().get('output_path') if demisto.args().get(
         'output_path') else 'QRadar.Search(val.ID === "{0}").Result.{1}'.format(search_id, result_key)
     context_obj = unicode_to_str_recur(raw_search_results[result_key])
@@ -1050,7 +1059,7 @@ try:
     elif demisto.command() == 'qradar-get-domain-by-id':
         demisto.results(get_domains_by_id_command())
 except Exception as e:
-    message = e.message if hasattr(e, 'message') else ''
+    message = e.message if hasattr(e, 'message') else convert_to_str(e)
     error = 'Error has occurred in the QRadar Integration: {error}\n {message}'.format(error=type(e), message=message)
     LOG(traceback.format_exc())
     if demisto.command() == 'fetch-incidents':
