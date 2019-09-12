@@ -1006,5 +1006,3 @@ except Exception as e:
     LOG(e)
     LOG.print_log()
     return_error(f'Unexpected error: {e}')
-
-
