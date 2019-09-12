@@ -312,7 +312,7 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
                 docker_image_created = docker_image_create(docker, requirements)
                 docker_run(project_dir, docker_image_created, args.no_test, args.no_pylint, args.keep_container, args.root)
         except subprocess.CalledProcessError as ex:
-            sys.stderr.write("[FAILED {}] Error: {}. Output: {}\n".format(project_dir, str(ex), ex.output))
+            sys.stderr.write("[FAILED {}] Error: {}.\nOutput:\n{}\n".format(project_dir, str(ex), ex.output))
             return 2
         finally:
             sys.stdout.flush()
