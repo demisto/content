@@ -1,4 +1,4 @@
-from IndicatorCreateQueries import generate_ip_queries  #  , generate_hash_queries, generate_domain_queries
+from IndicatorCreateQueries import generate_ip_queries  # , generate_hash_queries, generate_domain_queries
 
 
 def test_generate_ip_queries():
