@@ -106,7 +106,7 @@ script:
       isArray: false
       name: wildfire_verdict
       predefined:
-      - Malwar
+      - Malware
       - Grayware
       - Benign
       - Phishing
