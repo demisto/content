@@ -1258,10 +1258,10 @@ tasks:
     ignoreworker: false
   "38":
     id: "38"
-    taskid: 16c350d3-d2d8-41da-825c-9081aa2c1ba4
+    taskid: ae60e120-76f7-4849-802d-d8e4765e0a2b
     type: regular
     task:
-      id: 16c350d3-d2d8-41da-825c-9081aa2c1ba4
+      id: ae60e120-76f7-4849-802d-d8e4765e0a2b
       version: -1
       name: gmail-set-autoreply - reset to original autoreply
       description: 'Set auto-reply for the user. Note: if body is not set, the current
@@ -1275,7 +1275,7 @@ tasks:
       - "50"
     scriptarguments:
       enable-autoReply:
-        simple: ${Account.Gmail.AutoReply.EnableAutoReply}
+        simple: "false"
       response-body:
         simple: ${Account.Gmail.AutoReply.ResponseBody}
       response-subject:
