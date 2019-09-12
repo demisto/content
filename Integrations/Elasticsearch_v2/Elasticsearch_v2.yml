@@ -68,7 +68,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: A CSV list of the fields of a document to fetch. Leaving the fields empty fetches the entire document.
+      description: A comma separated list of the fields of a document to fetch. Leaving the fields empty fetches the entire document.
       isArray: false
       name: fields
       required: false
@@ -177,7 +177,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-seperated list of the fields of a document to fetch. Leaving the fields empty fetches the entire document.
+      description: A comma separated list of the fields of a document to fetch. Leaving the fields empty fetches the entire document.
       isArray: false
       name: fields
       required: false
