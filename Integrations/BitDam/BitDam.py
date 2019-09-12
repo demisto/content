@@ -12,7 +12,7 @@ requests.packages.urllib3.disable_warnings()
 API_TOKEN = demisto.params().get('apitoken')
 URL_BASE = demisto.params().get('url')
 USE_PROXY = demisto.params().get('proxy', False)
-UNSECURE = demisto.params().get('insecure', False)
+UNSECURE = not demisto.params().get('insecure', False)
 
 '''CONSTANTS'''
 READ_BINARY_MODE = 'rb'
@@ -23,6 +23,9 @@ TOKEN_PREFIX = 'Bearer'  # guardrails-disable-line
 RESPONSE_CODE_OK = 200
 STATUS_IN_PROGRESS = 'IN_PROGRESS'
 STATUS_DONE = 'DONE'
+AUTH_HEADERS = {
+    'Authorization': "{} {}".format(TOKEN_PREFIX, API_TOKEN)
+}
 
 VERDICT_SCANNING = 'Scanning'
 VERDICT_MALICIOUS = 'Malicious'
@@ -30,6 +33,7 @@ VERDICT_APPROVED = 'Approved'
 VERDICT_ERROR = 'Error'
 VERDICT_BENIGN = 'Benign'
 VERDICT_TIMEOUT = 'Timeout'
+SCAN_ONGOING = 'Still scanning...'
 
 BITDAM_COMMAND_PREFIX = 'bitdam'
 DBOTSCORE_UNKNOWN = 0
@@ -61,12 +65,6 @@ def get_url_base_with_trailing_slash():
     '''
     url_base = URL_BASE
     return url_base if url_base.endswith(SLASH) else url_base + SLASH
-
-
-def get_auth_headers():
-    headers = {}
-    headers['Authorization'] = "{} {}".format(TOKEN_PREFIX, API_TOKEN)
-    return headers
 
 
 def build_json_response(content, context, human_readable):
@@ -117,10 +115,9 @@ def scan_file_command():
                  'file_data_base64': base64.b64encode(file_bytes)}
     raw_json = json.dumps(json_data, ensure_ascii=False)
     url = "{}{}".format(get_url_base_with_trailing_slash(), SCAN_FILE_URL)
-    auth_headers = get_auth_headers()
 
     # Send the HTTP request
-    response = requests.post(url, data=raw_json, headers=auth_headers, verify=not UNSECURE)
+    response = requests.post(url, data=raw_json, headers=AUTH_HEADERS, verify=UNSECURE)
     return response
 
 
@@ -183,7 +180,7 @@ def parse_get_file_verdict_response(response):
         raise Exception("Get file verdict failed. Unknown response schema. Data- '{}'".format(response.content))
 
     verdict = response_json['scan_data']['verdict']
-    if verdict == 'Still scanning...' or verdict == VERDICT_SCANNING:
+    if verdict == SCAN_ONGOING or verdict == VERDICT_SCANNING:
         # Still in progress
         verdict = VERDICT_SCANNING
         status = STATUS_IN_PROGRESS
@@ -196,21 +193,20 @@ def parse_get_file_verdict_response(response):
 def get_file_verdict_command(identifier_value):
     # Get data to build the request
     scan_file_relative_url_formatted = GET_FILE_VERDICT_URL.format(identifier_value)
-    auth_headers = get_auth_headers()
+
     url = "{}{}".format(get_url_base_with_trailing_slash(), scan_file_relative_url_formatted)
     # Send the request
-    response = requests.get(url, headers=auth_headers, verify=not UNSECURE)
+    response = requests.get(url, headers=AUTH_HEADERS, verify=UNSECURE)
     return response
 
 
 def upload_test_file_to_scan():
-    auth_headers = get_auth_headers()
     d = {
         "file_name": "demisto.txt",
         "file_data_base64": 'ZGVtaXN0bw=='
     }
     url = "{}{}".format(get_url_base_with_trailing_slash(), SCAN_FILE_URL)
-    response = requests.post(url, headers=auth_headers, json=d, verify=not UNSECURE)
+    response = requests.post(url, headers=AUTH_HEADERS, json=d, verify=UNSECURE)
     return response
 
 
@@ -223,12 +219,16 @@ def test_module():
 
 
 '''COMMAND_CLASIFIER'''
-if demisto.command() == 'test-module':
-    # This is the call made when pressing the integration test button.
-    if test_module():
-        demisto.results('ok')
-    sys.exit(0)
-elif demisto.command() == 'bitdam-upload-file':
-    demisto.results(scan_file())
-elif demisto.command() == 'bitdam-get-verdict':
-    demisto.results(get_file_verdict())
+try:
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        if test_module():
+            demisto.results('ok')
+        sys.exit(0)
+    elif demisto.command() == 'bitdam-upload-file':
+        demisto.results(scan_file())
+    elif demisto.command() == 'bitdam-get-verdict':
+        demisto.results(get_file_verdict())
+except Exception as e:
+    LOG(e)
+    return_error("Error: {}".format(str(e)))
