@@ -6,4 +6,4 @@ For further information about request response fields, see: https://www.elastic.
 
 For further information about Elasticsearch type mapping, see: https://www.elastic.co/guide/en/elasticsearch/reference/7.x/mapping.html#mapping-type
 
-Note: Not all fields can be sorted in Elasticsearch. The field by which to sort the results table. The supported result types are boolean, numeric, date, and keyword fields.
+Note: Not all fields can be sorted in Elasticsearch. The fields are used to sort the results table.  The supported result types are boolean, numeric, date, and keyword fields.
