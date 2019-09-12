@@ -20,388 +20,364 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: search engine for Internet-connected devices
+description: A search engine used for searching Internet-connected devices
 display: Shodan_v2
 name: Shodan_v2
 script:
   commands:
   - arguments:
     - default: true
-      description: 'Shodan search query. The provided string is used to search the
-        database of banners in Shodan, with the additional option to provide filters
-        inside the search query using a "filter:value" format. For example, the following
-        search query would find Apache webservers located in Germany: "apache country:DE"'
+      description: The query for searching the database of banners. The search query supports filtering using the "filter:value" format to narrow your search. For example, the query "apache country:DE" returns Apache web servers located in Germany.
       isArray: false
       name: query
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of properties to get summary information
-        on. Property names can also be in the format of "property:count", where "count"
-        is the number of facets that will be returned for a property (i.e. "country:100"
-        to get the top 100 countries for a search query)
+      description: A CSV list of properties on which to get summary information. The search query supports filtering using the "property:count" format to define the number of facets to return for a property. For example, the query "country:100" returns the top 100 countries.
       isArray: false
       name: facets
       required: false
       secret: false
     - default: false
       defaultValue: '1'
-      description: Result page number to be fetched. Each page contains up to 100
-        results.
+      description: The page number of the fetched results. Each page contains a maximum of 100 results.
       isArray: false
       name: page
       required: false
       secret: false
     deprecated: false
-    description: Search Shodan using the same query syntax as the website and use
-      facets to get summary information for different properties.
+    description: Searches Shodan using facets to get summary information on properties.
     execution: false
     name: search
     outputs:
     - contextPath: Shodan.Banner.Org
-      description: The name of the organization that is assigned the IP space for
-        this device
+      description: The name of the organization to which the space of the IP address space for the searched device is assigned.
       type: String
     - contextPath: Shodan.Banner.Isp
-      description: The ISP that is providing the organization with the IP space for
-        this device. Consider this the "parent" of the organization in terms of IP
-        ownership
+      description: The Internet Service Provider that provides the organization with the IP address space for the searched device.
       type: String
     - contextPath: Shodan.Banner.Transport
-      description: Either "udp" or "tcp" to indicate which IP transport protocol was
-        used to fetch the information
+      description: The IP address transport protocol used to fetch the summary information. Can be "UDP" or "TCP".
       type: String
     - contextPath: Shodan.Banner.Asn
-      description: The autonomous system number (ex. "AS4837").
+      description: The Autonomous System Number. For example, "AS4837".
       type: String
     - contextPath: Shodan.Banner.IP
-      description: The IP address of the host as a string
+      description: The IP address of the host as a string.
       type: String
     - contextPath: Shodan.Banner.Port
-      description: The port number that the service is operating on
+      description: The port number on which the service is operating.
       type: Number
     - contextPath: Shodan.Banner.Ssl.versions
-      description: 'list of SSL versions that are supported by the server. If a version
-        isnt supported the value is prefixed with a "-". Example: ["TLSv1", "-SSLv2"]
-        means that the server supports TLSv1 but doesnt support SSLv2.'
+      description: The list of SSL versions that are supported by the server. Unsupported versions are prefixed with a "-". For example, ["TLSv1", "-SSLv2"] means that the server supports TLSv1, but does not support SSLv2.
       type: String
     - contextPath: Shodan.Banner.Hostnames
-      description: An array of strings containing all of the hostnames that have been
-        assigned to the IP address for this device.
+      description: An array of strings containing all of the host names that have been assigned to the IP address for the searched device.
       type: String
     - contextPath: Shodan.Banner.Location.City
-      description: The name of the city where the device is located
+      description: The city in which the searched device is located.
       type: String
     - contextPath: Shodan.Banner.Location.Longitude
-      description: The longitude for the geolocation of the device
+      description: The longitude of the geolocation of the searched device.
       type: Number
     - contextPath: Shodan.Banner.Location.Latitude
-      description: The latitude for the geolocation of the device
+      description: The latitude of the geolocation of the searched device.
       type: Number
     - contextPath: Shodan.Banner.Location.Country
-      description: The name of the country where the device is located
+      description: The country in which the searched device is located.
       type: String
     - contextPath: Shodan.Banner.Timestamp
-      description: The timestamp for when the banner was fetched from the device in
-        the UTC timezone
+      description: The timestamp in UTC format indicating when the banner was fetched from the searched device.
       type: Date
     - contextPath: Shodan.Banner.Domains
-      description: An array of strings containing the top-level domains for the hostnames
-        of the device. This is a utility property in case you want to filter by TLD
-        instead of subdomain. It is smart enough to handle global TLDs with several
-        dots in the domain (ex. "co.uk")
+      description: An array of strings containing the top-level domains for the host names of the searched device. It is a utility property for filtering by a top-level domain instead of a subdomain. It supports handling global top-level domains that have several dots in the domain. For example, "co.uk".
       type: String
     - contextPath: Shodan.Banner.OS
-      description: The operating system that powers the device
+      description: The operating system that powers the searched device.
       type: String
   - arguments:
     - default: true
-      description: Host IP address
+      description: The IP address of the host.
       isArray: false
       name: ip
       required: true
       secret: false
     deprecated: false
-    description: Returns all services that have been found on the given host IP.
+    description: Returns all services that have been found on the IP address of the searched host.
     execution: false
     name: ip
     outputs:
     - contextPath: IP.ASN
-      description: Autonomous System Number (ASN) such as IP owner
+      description: The Autonomous System Number.
       type: Unknown
     - contextPath: IP.Address
-      description: IP Address
+      description: The IP address.
       type: Unknown
     - contextPath: IP.Geo.Country
-      description: Country of given IP
+      description: The country of a given IP address.
       type: Unknown
     - contextPath: IP.Geo.Description
-      description: 'Description of location '
+      description: The description of the location.
       type: Unknown
     - contextPath: IP.Geo.Location
-      description: Latitude and longitude of given IP
+      description: The latitude and longitude of an IP address.
       type: Unknown
     - contextPath: IP.Hostname
-      description: Hostname
+      description: The hostname of the IP address.
       type: Unknown
     - contextPath: Shodan.IP.Tags
-      description: The tags related to the IP
+      description: The tags associated with the IP address.
       type: String
     - contextPath: Shodan.IP.Latitude
-      description: The latitude for the geolocation of the device
+      description: The latitude of the geolocation of the searched device.
       type: Number
     - contextPath: Shodan.IP.Org
-      description: The name of the organization that is assigned the IP space for this device
+      description: The name of the organization to which the IP space for the searched device is assigned.
       type: String
     - contextPath: Shodan.IP.ASN
-      description: The autonomous system number (ex. "AS4837").
+      description: The Autonomous System Number. For example, "AS4837".
       type: String
     - contextPath: Shodan.IP.ISP
-      description: The ISP that is providing the organization with the IP space for this device. Consider this the "parent" of the organization in terms of IP ownership
+      description: The Internet Service Provider that provides the organization with the IP space for the searched device.
       type: String
     - contextPath: Shodan.IP.Longitude
-      description: The Longitude for the geolocation of the device
+      description: The longitude of the geolocation of the searched device.
       type: Number
     - contextPath: Shodan.IP.LastUpdate
-      description: The timestamp for when the banner was fetched from the device in the UTC timezone
+      description: The timestamp in UTC format indicating when the banner was fetched from the searched device.
       type: Date
     - contextPath: Shodan.IP.CountryName
-      description: The name of the country where the device is located
+      description: The country in which the searched device is located.
       type: String
     - contextPath: Shodan.IP.OS
-      description: The operating system that powers the device
+      description: The operating system on which the searched device is running.
       type: String
     - contextPath: Shodan.IP.Port
-      description: The port number that the service is operating on
+      description: The port number on which the service is operating.
       type: Number
     - contextPath: Shodan.IP.Address
-      description: The IP address of the host as a string
+      description: The IP address of the host as a string.
       type: String
   - arguments:
     - default: false
-      description: Shodan search query. The provided string is used to search the
-        database of banners in Shodan, with the additional option to provide filters
-        inside the search query using a "filter:value" format.
+      description: The query for searching the database of banners. The search query supports filtering using the "filter:value" format to narrow your search. For example, the query "apache country:DE" returns Apache web servers located in Germany.
       isArray: false
       name: query
       required: true
       secret: false
     deprecated: false
-    description: This method behaves identical to "shodan-search" with the only difference that this method does not return any host results, it only returns the total number of results that matched the query and any facet information that was requested. As a result this method does not consume query credits.
+    description: Returns the total number of results that match only the specified query or facet settings. This command does not return host results. This command does not consume query credits.
     execution: false
     name: shodan-search-count
     outputs:
     - contextPath: Shodan.Search.ResultCount
-      description: Number of results generated by the search query
+      description: The number of results matched in the search query.
       type: Number
   - arguments:
     - default: false
-      description: A comma-separated list of IPs or netblocks (in CIDR notation) that
-        should get crawled.
+      description: A CSV list of IP addresses or netblocks for Shodan to crawl defined in CIDR notation.
       isArray: false
       name: ips
       required: true
       secret: false
     deprecated: false
-    description: Use this method to request Shodan to crawl a network.
+    description: Requests Shodan to crawl a network.
     execution: false
     name: shodan-scan-ip
     outputs:
     - contextPath: Shodan.Scan.ID
-      description: The unique scan ID that was returned by shodan-scan-ip.
+      description: The unique ID of the scan.
       type: String
     - contextPath: Shodan.Scan.Status
-      description: The status of the scan job
+      description: The status of the scan.
       type: String
   - arguments:
     - default: false
-      description: The port that Shodan should crawl the Internet for
+      description: The port for which Shodan crawls the Internet.
       isArray: false
       name: port
       required: true
       secret: false
     - default: false
-      description: The name of the protocol that should be used to interrogate the
-        port.
+      description: The name of the protocol used to interrogate the port.
       isArray: false
       name: protocol
       required: true
       secret: false
     deprecated: false
-    description: This method is restricted to security researchers and companies with
-      a Shodan Enterprise Data license
+    description: Requests for Shodan to perform a scan on the specified port and protocol.
     execution: false
     name: shodan-scan-internet
     outputs:
     - contextPath: Shodan.Scan.ID
-      description: The id of the scan job
+      description: The ID of the initial scan.
       type: String
   - arguments:
     - default: false
-      description: The unique scan ID that was returned by shodan-scan.
+      description: The unique ID of the initial scan.
       isArray: false
       name: scanID
       required: true
       secret: false
     deprecated: false
-    description: Check the progress of a previously submitted scan request
+    description: Checks the progress of a previously submitted scan request on the specified port and protocol.
     execution: false
     name: shodan-scan-status
     outputs:
     - contextPath: Shodan.Scan.Id
-      description: The unique scan ID that was returned by shodan-scan
+      description: The unique ID of the scan request checked for progress.
       type: String
     - contextPath: Shodan.Scan.Status
-      description: The status of the scan job
+      description: The status of the scan job checked for progress.
       type: String
   - arguments:
     - default: false
-      description: The name to describe the network alert
+      description: The name of the network alert.
       isArray: false
       name: alertName
       required: true
       secret: false
     - default: false
-      description: A list of IPs or network ranges defined using CIDR notation
+      description: A list of IP addresses or network ranges defined in CIDR notation.
       isArray: false
       name: ip
       required: true
       secret: false
     - default: false
-      description: Number of seconds that the alert should be active
+      description: The number of seconds for the network alert to remain active.
       isArray: false
       name: expires
       required: false
       secret: false
     deprecated: false
-    description: Use this method to create a network alert for a defined IP/ netblock which can be used to subscribe to changes/ events that are discovered within that range.
+    description: Creates a network alert for a defined IP address or netblock used for subscribing to changes or events that are discovered within the netblock's range.
     execution: false
     name: shodan-create-network-alert
     outputs:
     - contextPath: Shodan.Alert.ID
-      description: The id of the alert subscription
+      description: The ID of the subscription of the specified network alert.
       type: String
     - contextPath: Shodan.Alert.Expires
-      description: Number of seconds that the alert should be active
+      description: The number of seconds that the specified network alert remains active.
       type: String
   - arguments:
     - default: false
-      description: AlertID
+      description: The ID of the network alert.
       isArray: false
       name: alertID
       required: true
       secret: false
     deprecated: false
-    description: Get the details for a network alert
+    description: Gets the details of a network alert.
     execution: false
     name: shodan-network-get-alert-by-id
     outputs:
     - contextPath: Shodan.Alert.ID
-      description: The id of the alert subscription
+      description: The ID of the subscription of the network alert.
       type: String
     - contextPath: Shodan.Alert.Expires
-      description: Number of seconds that the alert should be active
+      description: The number of seconds that the network alert remains active.
       type: String
   - deprecated: false
-    description: Get a list of all the created alerts
+    description: Gets a list of all created network alerts.
     execution: false
     name: shodan-network-get-alerts
     outputs:
     - contextPath: Shodan.Alert.ID
-      description: The id of the alert subscription
+      description: The IDs of the subscriptions of the network alerts.
       type: String
     - contextPath: Shodan.Alert.Expires
-      description: Number of seconds that the alert should be active
+      description: The number of seconds that the network alerts remain active.
       type: String
   - arguments:
     - default: false
-      description: AlertID
+      description: The ID of the network alert to remove.
       isArray: false
       name: alertID
       required: true
       secret: false
     deprecated: false
-    description: Remove the specified network alert.
+    description: Removes the specified network alert.
     execution: false
     name: shodan-network-delete-alert
   - arguments:
     - default: false
-      description: AlertID
+      description: The ID of the network alert for which to enable notifications.
       isArray: false
       name: alertID
       required: true
       secret: false
     - default: false
-      description: Trigger name
+      description: The name of the trigger.
       isArray: false
       name: Trigger
       required: true
       secret: false
     deprecated: false
-    description: Get notifications when the specified trigger is met.
+    description: Enables receiving notifications for network alerts that are set off by the specified triggers.
     execution: false
     name: shodan-network-alert-set-trigger
   - arguments:
     - default: false
-      description: AlertID
+      description: The ID of the network alert for which to disable notifications.
       isArray: false
       name: alertID
       required: true
       secret: false
     - default: false
-      description: Trigger name
+      description: The name of the trigger.
       isArray: false
       name: Trigger
       required: true
       secret: false
     deprecated: false
-    description: Stop getting notifications for the specified trigger.
+    description: Disables receiving notifications for network alerts that are set off by the specified triggers.
     execution: false
     name: shodan-network-alert-remove-trigger
   - arguments:
     - default: false
-      description: AlertID
+      description: The ID of the network alert for which to ignore the specified services.
       isArray: false
       name: alertID
       required: true
       secret: false
     - default: false
-      description: Trigger name
+      description: The name of the trigger.
       isArray: false
       name: trigger
       required: true
       secret: false
     - default: false
-      description: Service specified in the format "ip:port" (ex. "1.1.1.1:80")
+      description: The service specified in the "ip:port" format. For example, "1.1.1.1:80".
       isArray: false
       name: service
       required: true
       secret: false
     deprecated: false
-    description: Ignore the specified service when it is matched for the trigger.
+    description: Ignores the specified services for network alerts that are set off by the specified triggers.
     execution: false
     name: shodan-network-alert-whitelist-service
   - arguments:
     - default: false
-      description: AlertID
+      description: The ID of the alert for which to resume the specified services.
       isArray: false
       name: alertID
       required: true
       secret: false
     - default: false
-      description: Trigger name
+      description: The name of the trigger.
       isArray: false
       name: trigger
       required: true
       secret: false
     - default: false
-      description: Service specified in the format "ip:port" (ex. "1.1.1.1:80")
+      description: The service specified in the "ip:port" format. For example, "1.1.1.1:80".
       isArray: false
       name: service
       required: true
       secret: false
     deprecated: false
-    description: Start getting notifications again for the specified trigger
+    description: Resumes receiving notifications for network alerts that are set off by the specified triggers.
     execution: false
     name: shodan-network-alert-remove-service-from-whitelist
   dockerimage: demisto/python3:3.7.3.286
