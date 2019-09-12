@@ -806,7 +806,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: CVE.Id
+              simple: CVE.ID
             iscontext: true
       - - operator: isExists
           left:
@@ -906,7 +906,6 @@ tasks:
         simple: IPv4
       indicator_type:
         simple: IPv4
-      threshold_results: {}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -1038,7 +1037,6 @@ tasks:
         simple: IPv4
       indicator_type:
         simple: IPv4
-      threshold_results: {}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -1165,8 +1163,6 @@ tasks:
     scriptarguments:
       page:
         simple: "1"
-      threshold_results:
-        simple: "3"
     continueonerror: true
     separatecontext: false
     view: |-
@@ -1562,8 +1558,6 @@ tasks:
         simple: IPv4
       indicator_type:
         simple: IPv4
-      threshold_results:
-        simple: "3"
     continueonerror: true
     separatecontext: false
     view: |-

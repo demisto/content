@@ -6,21 +6,21 @@ configuration:
 - defaultvalue: https://otx.alienvault.com
   display: Server address
   name: server
-  required: false
+  required: true
   type: 0
-- display: Token
+- display: API Token
   name: api_token
   required: false
   type: 4
-- display: Trust any certificate
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-description: Query IOCs in AlienVault
+description: Query IOCs in AlienVault OTX.
 display: AlienVault OTX v2
 name: AlienVault_OTX_v2
 script:
@@ -33,36 +33,36 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Query IP in AlienVault OTX
+    description: Query IP in AlienVault OTX.
     execution: false
     name: ip
     outputs:
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: IP.ASN
-      description: IP ASN
+      description: 'The autonomous system name for the IP address, for example: "AS8948".'
       type: String
     - contextPath: IP.Geo.Country
-      description: IP geographic country
+      description: The country in which the IP address is located.
       type: String
     - contextPath: IP.Geo.Location
-      description: IP latitude, longtitude
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
       type: String
     - contextPath: AlienVaultOTX.IP.Reputation
-      description: IP reputation
+      description: IP reputation.
       type: String
     - contextPath: DBotScore.Score
-      description: The score from AlienVault
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: AlienVault vendor
+      description: AlienVault OTX vendor.
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
       type: String
   - arguments:
     - default: true
@@ -72,12 +72,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Query domain in AlienVault OTX
+    description: Query domain in AlienVault OTX.
     execution: false
     name: domain
     outputs:
     - contextPath: Domain.Name
-      description: Domain name
+      description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: AlienVaultOTX.Domain.Alexa
       description: Alexa URL for domain data
@@ -86,16 +86,16 @@ script:
       description: Whois URL for domain data
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator checked
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Score
-      description: The score from AlienVault
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: AlienVault vendor
+      description: AlienVault OTX vendor.
       type: String
   - arguments:
     - default: true
@@ -110,25 +110,25 @@ script:
     name: alienvault-search-ipv6
     outputs:
     - contextPath: IP.Address
-      description: IP Address
+      description: IP address.
       type: String
     - contextPath: IP.ASN
-      description: IP ASN
+      description: 'The autonomous system name for the IP address, for example: "AS8948".'
       type: String
     - contextPath: IP.AlienVaultOTX.Reputation
-      description: AlienVault IP reputation
+      description: AlienVault IP reputation.
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Score
-      description: The score from AlienVault
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: AlienVault vendor
+      description: AlienVault OTX vendor..
       type: String
   - arguments:
     - default: true
@@ -138,119 +138,119 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Query hostname in AlienVault OTX
+    description: Query hostname in AlienVault OTX.
     execution: false
     name: alienvault-search-hostname
     outputs:
     - contextPath: Endpoint.Hostname
-      description: Endpoint hostname
+      description: The hostname that is mapped to this endpoint.
       type: String
     - contextPath: Endpoint.AlienVaultOTX.Alexa
-      description: Endpoint Alexa URL
+      description: Endpoint Alexa URL.
       type: String
     - contextPath: Endpoint.AlienVaultOTX.Whois
-      description: Endpoint Whois URL
+      description: Endpoint Whois URL.
       type: String
     - contextPath: DBotScore.Score
-      description: The score from AlienVault
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: AlienVault vendor
+      description: AlienVault OTX vendor.
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
       type: String
   - arguments:
     - default: true
-      description: File hash to query
+      description: File hash to query.
       isArray: false
       name: file
       required: true
       secret: false
     deprecated: false
-    description: Query file in AlienVault OTX
+    description: Query file in AlienVault OTX.
     execution: false
     name: file
     outputs:
     - contextPath: File.MD5
-      description: MD5 Hash of the file
+      description: The MD5 hash of the file.
       type: String
     - contextPath: File.SHA1
-      description: SHA1 Hash of the file
+      description: The SHA1 hash of the file.
       type: String
     - contextPath: File.SHA256
-      description: SHA256 Hash of the file
-      type: String
-    - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-      type: String
-    - contextPath: DBotScore.Score
-      description: The score from AlienVault
-      type: Number
-    - contextPath: DBotScore.Type
-      description: Indicator type
-      type: String
-    - contextPath: DBotScore.Vendor
-      description: AlienVault vendor
+      description: The SHA256 hash of the file.
       type: String
     - contextPath: File.Malicious.PulseIDs
-      description: IDs of pulses marked this as malicious
+      description: IDs of pulses marked this as malicious.
       type: String
     - contextPath: File.Type
-      description: File.Type /*use file.class from the api*/
+      description: The file type, as determined by libmagic (same as displayed in file entries).
       type: String
     - contextPath: File.Size
-      description: Size of the file in bytes
-      type: String
+      description: The size of the file in bytes.
+      type: Number
     - contextPath: File.SSDeep
-      description: The ssdeep value for the file
+      description: The ssdeep hash of the file (same as displayed in file entries).
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: AlienVault OTX vendor.
       type: String
   - arguments:
     - default: true
-      description: The cve to query
+      description: The cve to query.
       isArray: false
       name: cve_id
       required: true
       secret: false
     deprecated: false
-    description: Query CVE in AlienVault OTX
+    description: Query CVE in AlienVault OTX.
     execution: false
     name: alienvault-search-cve
     outputs:
-    - contextPath: CVE.Id
-      description: Id of the CVE
+    - contextPath: CVE.ID
+      description: 'The ID of the CVE, for example: "CVE-2015-1653".'
       type: String
     - contextPath: CVE.CVSS
-      description: The CVSS score of the CVE
+      description: 'The CVSS of the CVE, for example: "10.0".'
       type: String
     - contextPath: CVE.Published
-      description: date published
+      description: The timestamp of when the CVE was published.
       type: String
     - contextPath: CVE.Modified
-      description: date Modified
+      description: The timestamp of when the CVE was last modified.
       type: String
     - contextPath: CVE.Description
-      description: CVE description
+      description: A description of the CVE.
       type: String
     - contextPath: DBotScore.Score
-      description: The score from AlienVault
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: AlienVault vendor
+      description: AlienVault OTX vendor.
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: the type of the indicator
+      description: The type of the indicator.
       isArray: false
       name: indicator_type
       predefined:
@@ -262,43 +262,29 @@ script:
       required: true
       secret: false
     - default: false
-      description: the indicator to search related hashes for
+      description: The indicator to search related hashes for.
       isArray: false
       name: indicator
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: '3'
-      description: Max number of printing in war room
-      isArray: false
-      name: threshold_results
-      predefined:
-      - '1'
-      - '2'
-      - '3'
-      - '4'
-      - '5'
-      required: false
-      secret: false
     deprecated: false
-    description: URLs analyzed by AlienVault Labs on this indicator
+    description: URLs analyzed by AlienVault Labs on this indicator.
     execution: false
     name: alienvault-get-related-urls-by-indicator
     outputs:
     - contextPath: AlienVaultOTX.URL.Data
-      description: the path of the url
+      description: path of the related URLs.
       type: Unknown
   - arguments:
     - default: false
-      description: the indicator to search related hashes for
+      description: The indicator to search related hashes for.
       isArray: false
       name: indicator
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: the type of the indicator
+      description: The type of the indicator.
       isArray: false
       name: indicator_type
       predefined:
@@ -308,32 +294,18 @@ script:
       - hostname
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: '3'
-      description: Max number of printing in war room
-      isArray: false
-      name: threshold_results
-      predefined:
-      - '1'
-      - '2'
-      - '3'
-      - '4'
-      - '5'
-      required: false
-      secret: false
     deprecated: false
-    description: Malwares analyzed by AlienVault Labs on this indicator
+    description: Malwares analyzed by AlienVault Labs on this indicator.
     execution: false
     name: alienvault-get-related-hashes-by-indicator
     outputs:
     - contextPath: AlienVaultOTX.File.Hash
-      description: the path of the url
+      description: The path of the url.
       type: Unknown
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: the type of the indicator
+      description: The type of the indicator.
       isArray: false
       name: indicator_type
       predefined:
@@ -349,20 +321,6 @@ script:
       name: indicator
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: '3'
-      description: Max number of printing in war room
-      isArray: false
-      name: threshold_results
-      predefined:
-      - '1'
-      - '2'
-      - '3'
-      - '4'
-      - '5'
-      required: false
-      secret: false
     deprecated: false
     description: Passive dns records observed by AlienVault Labs pointing to this
       indicator
@@ -370,43 +328,29 @@ script:
     name: alienvault-get-passive-dns-data-by-indicator
     outputs:
     - contextPath: AlienVaultOTX.PassiveDNS.Hostname
-      description: the domain value
+      description: The domain value.
       type: String
-    - contextPath: AlienVaultOTX.PassiveDNS.Ip
-      description: Ip passive dns
+    - contextPath: AlienVaultOTX.PassiveDNS.IP
+      description: IP passive dns.
       type: String
     - contextPath: AlienVaultOTX.PassiveDNS.Domain
-      description: the domain value
+      description: The domain value.
       type: String
     - contextPath: AlienVaultOTX.PassiveDNS.Type
-      description: the asset type
+      description: The asset type.
       type: String
     - contextPath: AlienVaultOTX.PassiveDNS.FirstSeen
-      description: the first seen date
+      description: The first seen date.
       type: Date
     - contextPath: AlienVaultOTX.PassiveDNS.LastSeen
-      description: the last seen date
+      description: The last seen date.
       type: Date
   - arguments:
     - default: true
-      description: The page of pulses to get
+      description: The page of pulses to get.
       isArray: false
       name: page
       required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: '3'
-      description: Amount of results to print
-      isArray: false
-      name: threshold_results
-      predefined:
-      - '1'
-      - '2'
-      - '3'
-      - '4'
-      - '5'
-      required: false
       secret: false
     deprecated: false
     description: Search for pulses in AlienVault OTX
@@ -484,36 +428,36 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Query url in AlienVault OTX
+    description: Query url in AlienVault OTX.
     execution: false
     name: url
     outputs:
     - contextPath: URL.Data
-      description: URL path
+      description: The URL.
       type: String
     - contextPath: AlienVaultOTX.URL.Hostname
-      description: URL Hostname
+      description: URL Hostname.
       type: String
     - contextPath: AlienVaultOTX.URL.Domain
-      description: URL Domain
+      description: URL Domain.
       type: String
     - contextPath: AlienVaultOTX.URL.Alexa
-      description: Alexa URL for domain data
+      description: Alexa URL for domain data.
       type: String
     - contextPath: AlienVaultOTX.URL.Whois
-      description: Whois URL for domain data
+      description: Whois URL for domain data.
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator checked
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Score
-      description: The score from AlienVault
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: AlienVault vendor
+      description: AlienVault OTX vendor.
       type: String
   dockerimage: demisto/python3:3.7.4.1150
   isfetch: false
@@ -522,5 +466,6 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
-- Alienvault_OTX_v2-test
+  - Alienvault_OTX_v2-test

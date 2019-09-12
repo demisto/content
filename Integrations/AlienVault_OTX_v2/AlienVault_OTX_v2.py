@@ -7,7 +7,7 @@ from CommonServerUserPython import *
 import requests
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' GLOBALS/PARAMS '''
 # Integration configuration
@@ -41,7 +41,6 @@ def http_request(source, value=None, command=None, section=None, params=None):
         url=url,
         verify=USE_SSL_VERIFY,
         params=params,
-        data=None,
         headers=headers
     )
 
@@ -63,13 +62,13 @@ def geo_by_ec(lat: str, long_: str):
     return None
 
 
-def dbot_score(pulse_info: dict):
+def dbot_score(pulse_info: dict, default_threshold=2):
     """
-    calculate dBot score for query
+    calculate DBot score for query
     :param pulse_info: returned from general section as dictionary
+    :param default_threshold: default threshold for score
     :return: score - good (if 0), bad (if grater than default), suspicious if between
     """
-    default_threshold = 2
     count = pulse_info.get('count')
     if isinstance(count, int) and count >= 0:
         if count == 0:
@@ -112,19 +111,25 @@ def create_list_by_ec(list_entries: list, list_type: str):
         if list_type == 'passive_dns':
             return ({
                 'Hostname': entry.get('hostname'),
-                'Ip': entry.get('address'),
+                'IP': entry.get('address'),
                 'Type:': entry.get('asset_type'),
                 'FirstSeen': entry.get('first'),
                 'LastSeen': entry.get('last')
             })
-        elif list_type == 'url_list':
+
+        if list_type == 'url_list':
             return remove_none({
                 'Data': entry.get('url')
             })
-        elif list_type == 'hash_list':
+
+        if list_type == 'hash_list':
             return remove_none({
                 'Hash': entry.get('hash')
             })
+
+        # should not
+        return {}
+
     return [create_entry_by_ec(entry) for entry in list_entries]
 
 
@@ -136,10 +141,11 @@ def remove_none(obj):
     """
     if isinstance(obj, (list, tuple, set)):
         return type(obj)(remove_none(x) for x in obj if x is not None)
-    elif isinstance(obj, dict):
+
+    if isinstance(obj, dict):
         return type(obj)((remove_none(k), remove_none(v)) for k, v in obj.items() if v is not None)
-    else:
-        return obj
+
+    return obj
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -150,23 +156,23 @@ def test_module():
     """
     Performs basic get request to get item samples
     """
-    ipv4(ip='8.8.8.8')
+    ip_request('8.8.8.8', 'IPv4')
     demisto.results('ok')
 
 
 # IP command
 @logger
-def ipv4(ip):
+def ip_request(ip_address, ip_version):
     api_path = {
         'source': 'indicators',
-        'command': 'IPv4',
-        'value': ip,
+        'command': ip_version,
+        'value': ip_address,
         'section': 'general'
     }
     # raw_data
     raw = http_request(**api_path)
     # Entry context
-    ec = {
+    output = {
         'IP': {
             'Address': raw.get('indicator'),
             'ASN': raw.get('asn'),
@@ -183,39 +189,37 @@ def ipv4(ip):
         'DBotScore': {
             'Indicator': raw.get('indicator'),
             'Score': dbot_score(raw.get('pulse_info')),
-            'Type': 'IPv6',
+            'Type': ip_version,
             'Vendor': 'AlienVault OTX'
         }
     }
 
-    ec = remove_none(ec)
+    output = remove_none(output)
 
-    return raw, ec
+    return raw, output
 
 
 @logger
 def ipv4_command(ip):
-    raw, ec = ipv4(ip)
+    raw, output = ip_request(ip, 'IPv4')
 
     human_readable = ''
     # Table 1
-    if ec.get('IP'):
-        if ec.get('IP', {}).get('Geo'):
-            human_readable += tableToMarkdown(t=ec.get('IP').get('Geo'),
+    if output.get('IP'):
+        if output.get('IP', {}).get('Geo'):
+            human_readable += tableToMarkdown(t=output.get('IP').get('Geo'),
                                               name='Geographic info')
     # Table 2
-    if ec.get('AlienVaultOTX'):
-        if ec.get('AlienVaultOTX', {}).get('IP'):
-            human_readable += tableToMarkdown(t=ec.get('AlienVaultOTX').get('IP'),
+    if output.get('AlienVaultOTX'):
+        if output.get('AlienVaultOTX', {}).get('IP'):
+            human_readable += tableToMarkdown(t=output.get('AlienVaultOTX').get('IP'),
                                               name='Reputation score')
     # Table 3
-    keys_others = ['ASN', 'Address']
-    ec_others = {k: ec['IP'][k] for k in ec['IP'] if k in keys_others}
-    human_readable += tableToMarkdown(t=ec_others,
-                                      name='General')
+    general_keys = ['ASN', 'Address']
+    human_readable += tableToMarkdown(name='General', t=output['IP'], headers=general_keys)
 
     return_outputs(readable_output=human_readable,
-                   outputs=ec,
+                   outputs=output,
                    raw_response=raw)
 
 
@@ -231,7 +235,7 @@ def domain_sub(domain):
     # raw_data
     raw = http_request(**api_path)
     # Entry context
-    ec = {
+    output = {
         'Domain': {
             'Name': raw.get('indicator'),
         },
@@ -249,91 +253,51 @@ def domain_sub(domain):
         }
     }
 
-    ec = remove_none(ec)
+    output = remove_none(output)
 
-    return raw, ec
+    return raw, output
 
 
 @logger
 def domain_command(domain):
-    raw, ec = domain_sub(domain)
+    raw, output = domain_sub(domain)
 
     human_readable = ''
     # Table 1
-    if ec.get('Domain'):
-        human_readable += tableToMarkdown(t=ec.get('Domain'),
+    if output.get('Domain'):
+        human_readable += tableToMarkdown(t=output.get('Domain'),
                                           name='Domain')
     # Table 2
-    if ec.get('AlienVaultOTX', {}).get('Domain'):
-        human_readable += tableToMarkdown(t=ec.get('AlienVaultOTX', {}).get('Domain'),
+    if output.get('AlienVaultOTX', {}).get('Domain'):
+        human_readable += tableToMarkdown(t=output.get('AlienVaultOTX', {}).get('Domain'),
                                           name='Domain extra services')
 
     return_outputs(readable_output=human_readable,
-                   outputs=ec,
+                   outputs=output,
                    raw_response=raw)
-
-
-# alienvault-search-ipv6 command
-@logger
-def alienvault_search_ipv6(ip):
-    api_path = {
-        'source': 'indicators',
-        'command': 'IPv6',
-        'value': ip,
-        'section': 'general'
-    }
-    # raw_data
-    raw = http_request(**api_path)
-    # Entry context
-    ec = {
-        'IP': {
-            'Address': raw.get('indicator'),
-            'ASN': raw.get('asn'),
-            'Geo': {
-                'Country': raw.get('country_code'),
-                'Location': geo_by_ec(raw.get('latitude'), raw.get('longitude'))
-            }
-        },
-        'AlienVaultOTX': {
-            'IP': {
-                'Reputation': raw.get('reputation')
-            }
-        },
-        'DBotScore': {
-            'Indicator': raw.get('indicator'),
-            'Score': dbot_score(raw.get('pulse_info')),
-            'Type': 'IPv6',
-            'Vendor': 'AlienVault OTX'
-        }
-    }
-    ec = remove_none(ec)
-
-    return raw, ec
 
 
 @logger
 def alienvault_search_ipv6_command(ip):
-    raw, ec = alienvault_search_ipv6(ip)
+    raw, output = ip_request(ip, 'IPv6')
 
     human_readable = ''
     # Table 1
-    if ec.get('IP'):
-        if ec.get('IP', {}).get('Geo'):
-            human_readable += tableToMarkdown(t=ec.get('IP').get('Geo'),
+    if output.get('IP'):
+        if output.get('IP', {}).get('Geo'):
+            human_readable += tableToMarkdown(t=output.get('IP').get('Geo'),
                                               name='Geographic info')
     # Table 2
-    if ec.get('AlienVaultOTX'):
-        if ec.get('AlienVaultOTX', {}).get('IP'):
-            human_readable += tableToMarkdown(t=ec.get('AlienVaultOTX').get('IP'),
+    if output.get('AlienVaultOTX'):
+        if output.get('AlienVaultOTX', {}).get('IP'):
+            human_readable += tableToMarkdown(t=output.get('AlienVaultOTX').get('IP'),
                                               name='Reputation score')
     # Table 3
-    keys_others = ['ASN', 'Address']
-    ec_others = {k: ec['IP'][k] for k in ec['IP'] if k in keys_others}
-    human_readable += tableToMarkdown(t=ec_others,
-                                      name='General')
+    general_keys = ['ASN', 'Address']
+    human_readable += tableToMarkdown(name='General', t=output['IP'], headers=general_keys)
 
     return_outputs(readable_output=human_readable,
-                   outputs=ec,
+                   outputs=output,
                    raw_response=raw)
 
 
@@ -349,7 +313,7 @@ def alienvault_search_hostname(hostname):
     # raw_data
     raw = http_request(**api_path)
     # Entry context
-    ec = {
+    output = {
         'Endpoint': {
             'Hostname': raw.get('indicator'),
             'AlienVaultOTX': {
@@ -365,39 +329,37 @@ def alienvault_search_hostname(hostname):
         }
     }
 
-    ec = remove_none(ec)
+    output = remove_none(output)
 
-    return raw, ec
+    return raw, output
 
 
 @logger
 def alienvault_search_hostname_command(hostname):
-    raw, ec = alienvault_search_hostname(hostname)
+    raw, output = alienvault_search_hostname(hostname)
     human_readable = ''
 
     # Table 1
-    if ec.get('Endpoint'):
-        if ec['Endpoint'].get('AlienVaultOTX'):
-            human_readable += tableToMarkdown(t=ec['Endpoint'].get('AlienVaultOTX'),
+    if output.get('Endpoint'):
+        if output['Endpoint'].get('AlienVaultOTX'):
+            human_readable += tableToMarkdown(t=output['Endpoint'].get('AlienVaultOTX'),
                                               name='Other services')
         # Table 2
-        keys_others = ['Hostname']
-        ec_others = {k: ec['Endpoint'][k] for k in ec['Endpoint'] if k in keys_others}
-        human_readable += tableToMarkdown(t=ec_others,
-                                          name='General')
+        general_keys = ['Hostname']
+        human_readable += tableToMarkdown(name='General', t=output['Endpoint'], headers=general_keys)
 
     return_outputs(readable_output=human_readable,
-                   outputs=ec,
+                   outputs=output,
                    raw_response=raw)
 
 
 # file command
 @logger
-def file_sub(file):
+def file_sub(file_):
     api_path = {
         'source': 'indicators',
         'command': 'file',
-        'value': file,
+        'value': file_,
         'section': ['analysis', 'general']
     }
     # raw_data
@@ -410,14 +372,15 @@ def file_sub(file):
                                value=api_path['value'],
                                section=api_path['section'][1])
     # Entry context
-    ec = {
+    results = raw_analysis.get('analysis', {}).get('info').get('results', {})
+    output = {
         'File': {
-            'MD5': raw_analysis.get('analysis').get('info').get('results').get('md5'),
-            'SHA1': raw_analysis.get('analysis').get('info').get('results').get('sha1'),
-            'SHA256': raw_analysis.get('analysis').get('info').get('results').get('sha256'),
-            'SSDeep': raw_analysis.get('analysis').get('info').get('results').get('ssdeep'),
-            'Size': raw_analysis.get('analysis').get('info').get('results').get('filesize'),
-            'Type': raw_analysis.get('analysis').get('info').get('results').get('file_type'),
+            'MD5': results.get('md5'),
+            'SHA1':  results.get('sha1'),
+            'SHA256': results.get('sha256'),
+            'SSDeep': results.get('ssdeep'),
+            'Size': results.get('filesize'),
+            'Type': results.get('file_type'),
             'Malicious': {
                 'PulseIDs': raw_general.get('pulse_info').get('pulses')
             }
@@ -430,29 +393,28 @@ def file_sub(file):
         }
     }
 
-    ec = remove_none(ec)
+    output = remove_none(output)
     raw = [raw_general, raw_analysis]
 
-    return raw, ec
+    return raw, output
 
 
 @logger
 def file_command(file):
-    raw, ec = file_sub(file)
+    raw, output = file_sub(file)
 
     human_readable = ''
     # Table 1
-    key_not_need = ['Malicious']
-    ec_others = {k: ec['File'][k] for k in ec['File'] if k not in key_not_need}
-    human_readable += tableToMarkdown(t=ec_others,
-                                      name='File')
+    general_keys = ['Malicious']
+    human_readable += tableToMarkdown(name='General', t=output['File'], headers=general_keys)
+
     # Table 2
-    if ec.get('Malicious'):
-        human_readable += tableToMarkdown(t=ec.get('Malicious'),
-                                          name='Malicioud pulse ids')
+    if output.get('Malicious'):
+        human_readable += tableToMarkdown(t=output.get('Malicious'),
+                                          name='Malicious pulse ids')
 
     return_outputs(readable_output=human_readable,
-                   outputs=ec,
+                   outputs=output,
                    raw_response=raw)
 
 
@@ -468,9 +430,9 @@ def alienvault_search_cve(cve_id):
     # raw_data
     raw = http_request(**api_path)
     # Entry context
-    ec = {
+    output = {
         'CVE': {
-            'Id': raw.get('indicator'),
+            'ID': raw.get('indicator'),
             'CVSS': raw['cvss'].get('Score') if raw.get('cvss') else None,
             'Published': raw.get('date_created'),
             'Modified': raw.get('date_modified'),
@@ -484,23 +446,21 @@ def alienvault_search_cve(cve_id):
         }
     }
 
-    ec = remove_none(ec)
+    output = remove_none(output)
 
-    return raw, ec
+    return raw, output
 
 
 @logger
 def alienvault_search_cve_command(cve_id):
-    raw, ec = alienvault_search_cve(cve_id)
+    raw, output = alienvault_search_cve(cve_id)
 
-    human_readable = ''
     # Table 1
-    if ec.get('CVE'):
-        human_readable = tableToMarkdown(t=ec['CVE'],
-                                         name='Common Vulnerabilities and Exposures')
+    human_readable = tableToMarkdown(t=output.get('CVE', []),
+                                     name='Common Vulnerabilities and Exposures')
 
     return_outputs(readable_output=human_readable,
-                   outputs=ec,
+                   outputs=output,
                    raw_response=raw)
 
 
@@ -516,24 +476,25 @@ def alienvault_get_related_urls_by_indicator(indicator_type, indicator):
     # raw_data
     raw = http_request(**api_path)
     # Entry context
-    ec = {
+    output = {
         'AlienVaultOTX': {
             'URL': {
                 'Data': create_list_by_ec(list_entries=raw.get('url_list'), list_type='url_list')
             }
         }
     }
-    return raw, ec
+
+    return raw, output
 
 
 @logger
 def alienvault_get_related_urls_by_indicator_command(indicator_type, indicator, threshold_results=3):
-    raw, ec = alienvault_get_related_urls_by_indicator(indicator_type, indicator)
+    raw, output = alienvault_get_related_urls_by_indicator(indicator_type, indicator)
 
     human_readable = ''
     # Add three tables at most by threshold 3, change value for more
     counter = 1
-    entries = ec['AlienVaultOTX'].get('URL').get('Data')
+    entries = output['AlienVaultOTX'].get('URL').get('Data')
     total_num_entries = len(entries)
     for entry in entries:
         human_readable += tableToMarkdown(t=entry,
@@ -543,7 +504,7 @@ def alienvault_get_related_urls_by_indicator_command(indicator_type, indicator, 
             break
 
     return_outputs(readable_output=human_readable,
-                   outputs=ec,
+                   outputs=output,
                    raw_response=raw)
 
 
@@ -560,7 +521,7 @@ def alienvault_get_related_hashes_by_indicator(indicator_type, indicator):
     # raw_data
     raw = http_request(**api_path)
     # Entry context
-    ec = {
+    output = {
         'AlienVaultOTX': {
             'File': {
                 'Hash': create_list_by_ec(list_entries=raw.get('data'), list_type='hash_list')
@@ -568,17 +529,17 @@ def alienvault_get_related_hashes_by_indicator(indicator_type, indicator):
         }
     }
 
-    return raw, ec
+    return raw, output
 
 
 @logger
 def alienvault_get_related_hashes_by_indicator_command(indicator_type, indicator, threshold_results=3):
-    raw, ec = alienvault_get_related_hashes_by_indicator(indicator_type, indicator)
+    raw, output = alienvault_get_related_hashes_by_indicator(indicator_type, indicator)
 
     human_readable = ''
     # Add three tables at most by threshold 3, change value for more
     counter = 1
-    pulses = ec['AlienVaultOTX']['File']['Hash']
+    pulses = output['AlienVaultOTX']['File']['Hash']
     total_num_pulse = len(pulses)
     for pulse in pulses:
         human_readable += tableToMarkdown(t=pulse,
@@ -588,7 +549,7 @@ def alienvault_get_related_hashes_by_indicator_command(indicator_type, indicator
             break
 
     return_outputs(readable_output=human_readable,
-                   outputs=ec,
+                   outputs=output,
                    raw_response=raw)
 
 
@@ -604,22 +565,22 @@ def alienvault_get_passive_dns_data_by_indicator(indicator_type, indicator):
     # raw_data
     raw = http_request(**api_path)
     # Entry context
-    ec = {
+    output = {
         'AlienVaultOTX': {
             'PassiveDNS': create_list_by_ec(list_entries=raw.get('passive_dns'), list_type='passive_dns')
         }
     }
-    return raw, ec
+    return raw, output
 
 
 @logger
 def alienvault_get_passive_dns_data_by_indicator_command(indicator_type, indicator, threshold_results=3):
-    raw, ec = alienvault_get_passive_dns_data_by_indicator(indicator_type, indicator)
+    raw, output = alienvault_get_passive_dns_data_by_indicator(indicator_type, indicator)
 
     human_readable = ''
     # Add three tables at most by threshold 3, change value for more
     counter = 1
-    entries = ec['AlienVaultOTX'].get('PassiveDNS')
+    entries = output['AlienVaultOTX'].get('PassiveDNS')
     total_num_entries = len(entries)
     for entry in entries:
         human_readable += tableToMarkdown(t=entry,
@@ -629,7 +590,7 @@ def alienvault_get_passive_dns_data_by_indicator_command(indicator_type, indicat
             break
 
     return_outputs(readable_output=human_readable,
-                   outputs=ec,
+                   outputs=output,
                    raw_response=raw)
 
 
@@ -644,24 +605,24 @@ def alienvault_search_pulses(page):
     # raw_data
     raw = http_request(**api_path)
     # Entry context
-    ec = {
+    output = {
         'AlienVaultOTX': {
             'Pulses': create_page_pulse(raw.get('results'))
         }
     }
 
-    return raw, ec
+    return raw, output
 
 
 @logger
 def alienvault_search_pulses_command(page, threshold_results=3):
-    raw, ec = alienvault_search_pulses(page)
+    raw, output = alienvault_search_pulses(page)
 
     human_readable = ''
     # Add three tables at most by threshold 3, change value for more
     counter = 1
     page_num = page
-    pulses = ec.get('AlienVaultOTX', {}).get('Pulses')
+    pulses = output.get('AlienVaultOTX', {}).get('Pulses')
     total_num_pulse = len(pulses)
     for pulse in pulses:
         human_readable += tableToMarkdown(t=pulse,
@@ -671,7 +632,7 @@ def alienvault_search_pulses_command(page, threshold_results=3):
             break
 
     return_outputs(readable_output=human_readable,
-                   outputs=ec,
+                   outputs=output,
                    raw_response=raw)
 
 
@@ -685,7 +646,7 @@ def alienvault_get_pulse_details(pulse_id):
     # raw_data
     raw = http_request(**api_path)
     # Entry context
-    ec = {
+    output = {
         'AlienVaultOTX': {
             'Pulses': {
                 'Description': raw.get('description'),
@@ -701,34 +662,35 @@ def alienvault_get_pulse_details(pulse_id):
         }
     }
 
-    ec = remove_none(ec)
+    output = remove_none(output)
 
-    return raw, ec
+    return raw, output
 
 
 @logger
 def alienvault_get_pulse_details_command(pulse_id):
-    raw, ec = alienvault_get_pulse_details(pulse_id)
+    raw, output = alienvault_get_pulse_details(pulse_id)
 
     human_readable = ''
-    if ec.get('AlienVaultOTX'):
-        if ec.get('AlienVaultOTX', {}).get('Pulses'):
-            if ec.get('AlienVaultOTX', {}).get('Pulses').get('Author'):
+    if output.get('AlienVaultOTX'):
+        if output.get('AlienVaultOTX', {}).get('Pulses'):
+            if output.get('AlienVaultOTX', {}).get('Pulses').get('Author'):
                 # Table 1
-                human_readable = tableToMarkdown(t=ec['AlienVaultOTX']['Pulses']['Author'],
+                human_readable = tableToMarkdown(t=output['AlienVaultOTX']['Pulses']['Author'],
                                                  name='Pulse author')
-            if ec.get('AlienVaultOTX', {}).get('Pulses').get('Tags'):
+            if output.get('AlienVaultOTX', {}).get('Pulses').get('Tags'):
                 # Table 2
-                human_readable = tableToMarkdown(t={'Tags': ec['AlienVaultOTX']['Pulses']['Tags']},
+                human_readable = tableToMarkdown(t={'Tags': output['AlienVaultOTX']['Pulses']['Tags']},
                                                  name='Tags')
             key_not_need = ['Author', 'Tags']
-            ec_other = {k: ec['AlienVaultOTX']['Pulses'][k] for k in ec['AlienVaultOTX']['Pulses'] if k not in key_not_need}
+            ec_other = {key: value for key, value in output['AlienVaultOTX']['Pulses'].items()
+                        if key not in key_not_need}
             # Table 3
             human_readable += tableToMarkdown(t=ec_other,
                                               name='Pulses General')
 
     return_outputs(readable_output=human_readable,
-                   outputs=ec,
+                   outputs=output,
                    raw_response=raw)
 
 
@@ -744,7 +706,7 @@ def url_sub(url):
     # raw_data
     raw = http_request(**api_path)
     # Entry context
-    ec = {
+    output = {
         'URL': {
             'Data': raw.get('indicator')
         },
@@ -764,26 +726,26 @@ def url_sub(url):
         }
     }
 
-    ec = remove_none(ec)
-    return raw, ec
+    output = remove_none(output)
+    return raw, output
 
 
 @logger
 def url_command(url):
-    raw, ec = url_sub(url)
+    raw, output = url_sub(url)
 
     human_readable = ''
     # Table 1
-    if ec.get('URL'):
-        human_readable += tableToMarkdown(t=ec.get('URL'),
+    if output.get('URL'):
+        human_readable += tableToMarkdown(t=output.get('URL'),
                                           name='URL')
     # Table 2
-    if ec.get('AlienVaultOTX', {}).get('URL'):
-        human_readable += tableToMarkdown(t=ec.get('AlienVaultOTX', {}).get('URL'),
+    if output.get('AlienVaultOTX', {}).get('URL'):
+        human_readable += tableToMarkdown(t=output.get('AlienVaultOTX', {}).get('URL'),
                                           name='URL AlienVaultOTX')
 
     return_outputs(readable_output=human_readable,
-                   outputs=ec,
+                   outputs=output,
                    raw_response=raw)
 
 
@@ -811,8 +773,8 @@ def main():
     handle_proxy()
     try:
         COMMANDS[demisto.command()](**demisto.args())
-    except Exception as e:
-        return_error(str(e))
+    except Exception as exc:  # pylint: disable=broad-except
+        return_error(str(exc))
 
 
 # python2 uses __builtin__ python3 uses builtins

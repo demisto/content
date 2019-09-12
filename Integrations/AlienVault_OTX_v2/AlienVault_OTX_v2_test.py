@@ -17,10 +17,10 @@ arg_values_geo = [
 
 @pytest.mark.parametrize(argnames=arg_names_geo, argvalues=arg_values_geo)
 def test_geo_by_ec(lat: str, long: str, point_ec: str):
-    assert geo_by_ec(lat, long) == point_ec, f"Geo point wrong convention lat: {lat},long : {long}"
+    assert geo_by_ec(lat, long) == point_ec, f"Geo point wrong convention lat: {lat}, long : {long}"
 
 
-# dBot calculation Test
+# DBot calculation Test
 arg_names_dbot = "count, score"
 
 arg_values_dbot = [
@@ -35,7 +35,7 @@ arg_values_dbot = [
 
 @pytest.mark.parametrize(argnames=arg_names_dbot, argvalues=arg_values_dbot)
 def test_dbot_score(count: dict, score: str):
-    assert dbot_score(count) == score, f"Error calculate dBot score {count}"
+    assert dbot_score(count) == score, f"Error calculate DBot Score {count}"
 
 
 arg_names_to_remove = "to_remove, after_remove"
