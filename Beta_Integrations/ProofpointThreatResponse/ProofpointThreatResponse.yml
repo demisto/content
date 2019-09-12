@@ -1,0 +1,132 @@
+commonfields:
+  id: Proofpoint Threat Response
+  version: -1
+name: Proofpoint Threat Response
+display: Proofpoint Threat Response (Beta)
+category: Email Gateway
+description: 'Threat management platform to orchestrate and automate incident response.'
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: ID of IPs blacklist
+  name: blacklist_ip
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: ID of Domains blacklist
+  name: blacklist_domain
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: ID of URLs blacklist
+  name: blacklist_url
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: ID of hashes blacklist
+  name: blacklist_hash
+  defaultvalue: ""
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: proofpoint-tr-get-list
+    arguments:
+    - name: list-id
+      required: true
+      description: ID of the list
+    description: Get list items
+  - name: proofpoint-tr-add-to-list
+    arguments:
+    - name: list-id
+      required: true
+    - name: indicator
+      required: true
+      description: 'Could be ip,url,domain,hash. For example: "192.168.1.1,192.168.1.2"'
+      isArray: true
+    - name: comment
+      description: Comment regarding the member
+    - name: expiration
+      description: Expiration of the  member
+    description: Add member to list
+    execution: true
+  - name: proofpoint-tr-block-ip
+    arguments:
+    - name: ip
+      required: true
+      description: List of IPs
+      isArray: true
+    - name: expiration
+      description: Expiration of the IP
+    description: 'Block IP '
+    execution: true
+  - name: proofpoint-tr-block-domain
+    arguments:
+    - name: domain
+      required: true
+      description: List of domains
+      isArray: true
+    - name: expiration
+      description: Expiration of the Domain
+    description: Block Domain
+  - name: proofpoint-tr-search-indicator
+    arguments:
+    - name: list-id
+      required: true
+      description: ID of the list
+    - name: filter
+      required: true
+      description: Filter for the search. For example, "1.1" will return [1.1.1.1,
+        22.22.1.1,1.1.22.22]
+    description: 'Return a list of indicators '
+  - name: proofpoint-tr-delete-indicator
+    arguments:
+    - name: list-id
+      required: true
+      description: ID of the list
+    - name: indicator
+      required: true
+      description: 'Could be ip,url,domain,hash. For example: "demisto.com"'
+    description: Delete an indicator from a list
+  - name: proofpoint-tr-block-url
+    arguments:
+    - name: url
+      required: true
+      description: List of URLs
+      isArray: true
+    - name: expiration
+      description: Expiration of the URLs
+    description: Block URL
+  - name: proofpoint-tr-block-hash
+    arguments:
+    - name: hash
+      required: true
+      description: List of hashes
+      isArray: true
+    - name: expiration
+      description: Expiration of the hash
+    description: Block hash
+  runonce: false
+beta: true
+tests:
+- No test - beta_integration
