@@ -160,16 +160,16 @@ def search_command():
 
 def fetch_params_check():
     str_error = []  # type:List
-    if TIME_FIELD == '':
+    if TIME_FIELD == '' or TIME_FIELD is None:
         str_error.append("Index time field is not configured.")
 
-    if FETCH_INDEX == '':
+    if FETCH_INDEX == '' or FETCH_INDEX is None:
         str_error.append("Index is not configured.")
 
-    if FETCH_QUERY == '':
+    if FETCH_QUERY == '' or FETCH_QUERY is None:
         str_error.append("Query by which to fetch incidents is not configured.")
 
-    if TIME_FORMAT == '':
+    if TIME_FORMAT == '' or TIME_FORMAT is None:
         str_error.append("Time format is not configured.")
 
     if len(str_error) > 0:
