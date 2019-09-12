@@ -1120,7 +1120,7 @@ tasks:
       domain: {}
       file_hash: {}
       from_time:
-        simple: 2019-07-09T24:00:00
+        simple: 2019-07-09T23:00:00
       ip:
         simple: 23.62.60.187
       max_results: {}
