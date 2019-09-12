@@ -62,7 +62,7 @@ tasks:
       version: -1
       name: List Rules
       description: "List all rules"
-      script: |||panorama-list-rules
+      script: '|||panorama-list-rules'
       type: regular
       iscommand: true
       brand: ""
