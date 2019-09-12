@@ -314,7 +314,7 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
         except subprocess.CalledProcessError as ex:
             sys.stderr.write("[FAILED {}] Error: {}\n".format(project_dir, str(ex)))
             if not LOG_VERBOSE:
-                sys.stderr.write("Need a more detailed log?" 
+                sys.stderr.write("Need a more detailed log?"
                                  " try running with the -v options as so: \n{} -v\n".format(" ".join(sys.argv[:])))
             return 2
         finally:
