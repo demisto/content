@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Added batching mechanism to delete-devices command.
+- An external PR merged into content, and modifications to the test playbook.
