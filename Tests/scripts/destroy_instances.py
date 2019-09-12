@@ -8,8 +8,9 @@ import Tests.scripts.awsinstancetool.aws_functions as aws_functions
 
 def main():
     circle_aritfact = sys.argv[1]
+    envfile = sys.argv[2]
 
-    with open('./env_results.json', 'r') as json_file:
+    with open(envfile, 'r') as json_file:
         env_results = json.load(json_file)
 
     for env in env_results:

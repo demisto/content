@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 732a7e22-56e6-4494-82f4-334bf7cfc558
+    taskid: 9062ef61-9bd8-47ba-88a9-4d64016c463b
     type: start
     task:
-      id: 732a7e22-56e6-4494-82f4-334bf7cfc558
+      id: 9062ef61-9bd8-47ba-88a9-4d64016c463b
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 1c5df073-1f71-4fcb-8e9e-8db36c7ce4b1
+    taskid: c4637eaa-d766-4f32-8ba6-ca9891b83e8e
     type: title
     task:
-      id: 1c5df073-1f71-4fcb-8e9e-8db36c7ce4b1
+      id: c4637eaa-d766-4f32-8ba6-ca9891b83e8e
       version: -1
       name: Legacy Commands
       type: title
@@ -59,10 +59,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 437508b8-b95a-43c1-877b-1a325083ccb3
+    taskid: 7985f72a-3c57-4143-8f5b-7e34593bd3b8
     type: regular
     task:
-      id: 437508b8-b95a-43c1-877b-1a325083ccb3
+      id: 7985f72a-3c57-4143-8f5b-7e34593bd3b8
       version: -1
       name: umbrella-domain-categorization
       script: '|||umbrella-domain-categorization'
@@ -88,10 +88,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: b1028c04-ef78-4257-8294-6c7c95f2ef34
+    taskid: 22e6df43-af1d-4f1c-8649-a99b0d4241f4
     type: regular
     task:
-      id: b1028c04-ef78-4257-8294-6c7c95f2ef34
+      id: 22e6df43-af1d-4f1c-8649-a99b0d4241f4
       version: -1
       name: umbrella-domain-co-occurrences
       script: '|||umbrella-domain-co-occurrences'
@@ -117,10 +117,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: ca874def-bc9a-4f0f-8178-c62e0de32141
+    taskid: 08376eb3-ccf6-478c-816b-9a640b0e8783
     type: regular
     task:
-      id: ca874def-bc9a-4f0f-8178-c62e0de32141
+      id: 08376eb3-ccf6-478c-816b-9a640b0e8783
       version: -1
       name: umbrella-domain-related
       script: '|||umbrella-domain-related'
@@ -146,10 +146,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 555597f6-f092-45c1-8d39-4c61367a07b9
+    taskid: 3116a1c8-bbb2-4342-8466-6ddf273b1a7e
     type: regular
     task:
-      id: 555597f6-f092-45c1-8d39-4c61367a07b9
+      id: 3116a1c8-bbb2-4342-8466-6ddf273b1a7e
       version: -1
       name: umbrella-domain-security
       script: '|||umbrella-domain-security'
@@ -175,10 +175,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 25319073-f6d5-48ca-8d3b-a1f1fe8b5838
+    taskid: df89cc41-7780-44b4-861b-02de9da1aadc
     type: regular
     task:
-      id: 25319073-f6d5-48ca-8d3b-a1f1fe8b5838
+      id: df89cc41-7780-44b4-861b-02de9da1aadc
       version: -1
       name: umbrella-domain-dns-history
       script: '|||umbrella-domain-dns-history'
@@ -204,10 +204,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 4f5d93fa-dc6e-4b64-8ac5-b0240ee344f2
+    taskid: 29a09303-779d-4918-8a37-0638d7ce609c
     type: regular
     task:
-      id: 4f5d93fa-dc6e-4b64-8ac5-b0240ee344f2
+      id: 29a09303-779d-4918-8a37-0638d7ce609c
       version: -1
       name: umbrella-ip-dns-history
       script: '|||umbrella-ip-dns-history'
@@ -233,10 +233,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 7570d149-ae3b-4cd6-86d0-7b27a2024dd5
+    taskid: b0a0ac89-1c34-4a9a-8860-e38aec3a0af5
     type: condition
     task:
-      id: 7570d149-ae3b-4cd6-86d0-7b27a2024dd5
+      id: b0a0ac89-1c34-4a9a-8860-e38aec3a0af5
       version: -1
       name: Test Domain Categorization Context
       type: condition
@@ -269,10 +269,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: a1345a5f-67d7-4f9b-8714-c486c60eda91
+    taskid: d95dc3ab-9022-4211-8858-5b348561319b
     type: regular
     task:
-      id: a1345a5f-67d7-4f9b-8714-c486c60eda91
+      id: d95dc3ab-9022-4211-8858-5b348561319b
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -303,10 +303,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: c74eab82-29a7-4b58-8f5f-65bf64cfdb1b
+    taskid: 00c10914-72c9-4523-82a4-84b5dae6179c
     type: condition
     task:
-      id: c74eab82-29a7-4b58-8f5f-65bf64cfdb1b
+      id: 00c10914-72c9-4523-82a4-84b5dae6179c
       version: -1
       name: Test domain co-occurrences context
       type: condition
@@ -339,10 +339,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: c2280e89-a086-4b8d-849a-45b0d397267b
+    taskid: a4bdf2bb-a273-4850-86e0-7913cf8570f3
     type: condition
     task:
-      id: c2280e89-a086-4b8d-849a-45b0d397267b
+      id: a4bdf2bb-a273-4850-86e0-7913cf8570f3
       version: -1
       name: Test related domains context
       type: condition
@@ -391,10 +391,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: c3affb5c-8048-4942-8936-b9b65e81e4c0
+    taskid: 0c862efe-ff03-4705-8cb3-f6d26e402f0d
     type: condition
     task:
-      id: c3affb5c-8048-4942-8936-b9b65e81e4c0
+      id: 0c862efe-ff03-4705-8cb3-f6d26e402f0d
       version: -1
       name: Test domain security context
       type: condition
@@ -427,10 +427,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: e32120b9-97c1-46d5-8913-8d02d292b6a0
+    taskid: a7256aa8-1be5-4e32-88ad-32ff6f5c8af6
     type: condition
     task:
-      id: e32120b9-97c1-46d5-8913-8d02d292b6a0
+      id: a7256aa8-1be5-4e32-88ad-32ff6f5c8af6
       version: -1
       name: Test domain dns history context
       type: condition
@@ -463,10 +463,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 9538b30c-8398-4f5c-858c-fe7c48f383d7
+    taskid: 9c83d737-b7d3-4bdb-83b6-ae49bee8c8ab
     type: condition
     task:
-      id: 9538b30c-8398-4f5c-858c-fe7c48f383d7
+      id: 9c83d737-b7d3-4bdb-83b6-ae49bee8c8ab
       version: -1
       name: Test ip dns history context
       type: condition
@@ -499,10 +499,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: e08de398-8be2-465c-8419-b724482fd05d
+    taskid: 9d70346d-c418-4a54-80e7-2d6431fa896f
     type: regular
     task:
-      id: e08de398-8be2-465c-8419-b724482fd05d
+      id: 9d70346d-c418-4a54-80e7-2d6431fa896f
       version: -1
       name: umbrella-ip-malicious-domains
       script: '|||umbrella-ip-malicious-domains'
@@ -528,10 +528,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 8b37dc7f-b9e3-444e-8b50-a6f3c8ff9b87
+    taskid: fd9e35b8-3f6b-4bb4-87a8-9324c2923340
     type: condition
     task:
-      id: 8b37dc7f-b9e3-444e-8b50-a6f3c8ff9b87
+      id: fd9e35b8-3f6b-4bb4-87a8-9324c2923340
       version: -1
       name: Test IP malicious domains context
       type: condition
@@ -596,10 +596,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: ee61c1f4-1b1a-456c-86c4-7866540928b9
+    taskid: 6424dcb9-aba8-4a49-8367-da11da8e099c
     type: regular
     task:
-      id: ee61c1f4-1b1a-456c-86c4-7866540928b9
+      id: 6424dcb9-aba8-4a49-8367-da11da8e099c
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -629,10 +629,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 906fbd4c-b298-40a5-8f93-90a85cad1b7b
+    taskid: 7fd36bac-ec55-45f9-89ee-15791555acc8
     type: regular
     task:
-      id: 906fbd4c-b298-40a5-8f93-90a85cad1b7b
+      id: 7fd36bac-ec55-45f9-89ee-15791555acc8
       version: -1
       name: umbrella-domain-search
       description: Regex search in the service, may take up to 10 sec to retrieve
@@ -662,10 +662,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 032192f0-b45c-45e4-8e51-c6907b27452e
+    taskid: 86c09fb8-9318-4659-83c0-466b94aa768c
     type: condition
     task:
-      id: 032192f0-b45c-45e4-8e51-c6907b27452e
+      id: 86c09fb8-9318-4659-83c0-466b94aa768c
       version: -1
       name: Test domain search context
       type: condition
@@ -698,10 +698,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 1f5e1f9d-dfe0-45e3-89e2-c564d69e83a6
+    taskid: 95771430-7e5c-4f4b-8f17-7aef14e3b45d
     type: regular
     task:
-      id: 1f5e1f9d-dfe0-45e3-89e2-c564d69e83a6
+      id: 95771430-7e5c-4f4b-8f17-7aef14e3b45d
       version: -1
       name: Domain reputation
       script: Cisco Umbrella Investigate|||domain
@@ -732,10 +732,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: b1b29817-0096-4a2b-8219-8e268a7660a5
+    taskid: adcdff80-eb70-4fb4-8ad5-6e71508e2af1
     type: condition
     task:
-      id: b1b29817-0096-4a2b-8219-8e268a7660a5
+      id: adcdff80-eb70-4fb4-8ad5-6e71508e2af1
       version: -1
       name: Test domain reputation context
       type: condition
@@ -781,10 +781,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: c1d48cd7-5686-4936-83d1-0969b2b96483
+    taskid: be3a62e1-eb9a-4618-8245-ebb1da34fd97
     type: regular
     task:
-      id: c1d48cd7-5686-4936-83d1-0969b2b96483
+      id: be3a62e1-eb9a-4618-8245-ebb1da34fd97
       version: -1
       name: Delete context
       scriptName: DeleteContext
@@ -819,10 +819,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: 89b11f07-9c56-44a7-8af2-dd1b1d09045c
+    taskid: 84b37965-d05f-4a5f-86f7-db603a8c22f3
     type: regular
     task:
-      id: 89b11f07-9c56-44a7-8af2-dd1b1d09045c
+      id: 84b37965-d05f-4a5f-86f7-db603a8c22f3
       version: -1
       name: umbrella-get-related-domains
       script: '|||umbrella-get-related-domains'
@@ -850,10 +850,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: 6edaabfe-f909-4421-89d3-1769176d7e3f
+    taskid: 248d5be6-fb80-41dc-8b87-aee3e8673bbc
     type: regular
     task:
-      id: 6edaabfe-f909-4421-89d3-1769176d7e3f
+      id: 248d5be6-fb80-41dc-8b87-aee3e8673bbc
       version: -1
       name: umbrella-get-domain-classifiers
       script: '|||umbrella-get-domain-classifiers'
@@ -879,10 +879,10 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: d262b42b-0ef1-4008-8c49-9738523e2026
+    taskid: dae7cdb9-af1c-4afc-8974-97fcd9115ca2
     type: regular
     task:
-      id: d262b42b-0ef1-4008-8c49-9738523e2026
+      id: dae7cdb9-af1c-4afc-8974-97fcd9115ca2
       version: -1
       name: umbrella-get-domain-queryvolume
       script: '|||umbrella-get-domain-queryvolume'
@@ -914,10 +914,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: 4fc473d4-58e2-4ea2-8589-af74875d55c1
+    taskid: 81b1cd8f-a858-4510-836b-7200ea1e7ff0
     type: regular
     task:
-      id: 4fc473d4-58e2-4ea2-8589-af74875d55c1
+      id: 81b1cd8f-a858-4510-836b-7200ea1e7ff0
       version: -1
       name: umbrella-get-domain-details
       script: '|||umbrella-get-domain-details'
@@ -943,10 +943,10 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: b7c35e0e-3676-43d4-87a1-5250eb3c2a2c
+    taskid: ffeb645d-5c7f-4ae1-89f3-98e4029578a7
     type: regular
     task:
-      id: b7c35e0e-3676-43d4-87a1-5250eb3c2a2c
+      id: ffeb645d-5c7f-4ae1-89f3-98e4029578a7
       version: -1
       name: umbrella-get-domains-for-email-registrar
       script: '|||umbrella-get-domains-for-email-registrar'
@@ -975,10 +975,10 @@ tasks:
     ignoreworker: false
   "28":
     id: "28"
-    taskid: 62eb0c2c-b0f9-470f-8b9c-01c1eca645fc
+    taskid: 46d9e0fe-e1b9-48dc-883d-875a1406d431
     type: regular
     task:
-      id: 62eb0c2c-b0f9-470f-8b9c-01c1eca645fc
+      id: 46d9e0fe-e1b9-48dc-883d-875a1406d431
       version: -1
       name: umbrella-get-domains-for-nameserver
       script: '|||umbrella-get-domains-for-nameserver'
@@ -1009,10 +1009,10 @@ tasks:
     ignoreworker: false
   "30":
     id: "30"
-    taskid: e88e2c33-ac43-469d-8481-f94e0a49cf98
+    taskid: 8c5db59b-19fa-4a43-8e3d-6fc01968545c
     type: regular
     task:
-      id: e88e2c33-ac43-469d-8481-f94e0a49cf98
+      id: 8c5db59b-19fa-4a43-8e3d-6fc01968545c
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -1047,10 +1047,10 @@ tasks:
     ignoreworker: false
   "31":
     id: "31"
-    taskid: a093fc9f-e344-4777-8047-175b6124e103
+    taskid: 5475160f-bb68-4706-8af9-dc92b055a574
     type: condition
     task:
-      id: a093fc9f-e344-4777-8047-175b6124e103
+      id: 5475160f-bb68-4706-8af9-dc92b055a574
       version: -1
       name: Test umbrella-get-related-domains Context
       type: condition
@@ -1083,10 +1083,10 @@ tasks:
     ignoreworker: false
   "32":
     id: "32"
-    taskid: acf35bbd-8da6-4712-85cb-91176eb83aee
+    taskid: 0c1b2cc2-903b-432d-8034-1c85245f6262
     type: condition
     task:
-      id: acf35bbd-8da6-4712-85cb-91176eb83aee
+      id: 0c1b2cc2-903b-432d-8034-1c85245f6262
       version: -1
       name: Test umbrella-get-domain-classifiers Context
       type: condition
@@ -1119,10 +1119,10 @@ tasks:
     ignoreworker: false
   "33":
     id: "33"
-    taskid: bd97143d-6a3e-4452-8757-2ff8efe41835
+    taskid: 1ac00612-b4d4-4417-8288-bb50963f23dd
     type: condition
     task:
-      id: bd97143d-6a3e-4452-8757-2ff8efe41835
+      id: 1ac00612-b4d4-4417-8288-bb50963f23dd
       version: -1
       name: Test umbrella-get-domain-queryvolume Context
       type: condition
@@ -1155,10 +1155,10 @@ tasks:
     ignoreworker: false
   "34":
     id: "34"
-    taskid: f8afe2b1-70b0-49c9-879a-adc2cd9e5b00
+    taskid: 6f9ff36c-ab93-4150-8315-ce22d78d0858
     type: condition
     task:
-      id: f8afe2b1-70b0-49c9-879a-adc2cd9e5b00
+      id: 6f9ff36c-ab93-4150-8315-ce22d78d0858
       version: -1
       name: Test umbrella-get-domain-details Context
       type: condition
@@ -1191,10 +1191,10 @@ tasks:
     ignoreworker: false
   "35":
     id: "35"
-    taskid: 2b64ee9b-6002-47d3-8719-b198f024dff3
+    taskid: bdfd9c58-eb90-4d1b-8a13-2676ef092716
     type: condition
     task:
-      id: 2b64ee9b-6002-47d3-8719-b198f024dff3
+      id: bdfd9c58-eb90-4d1b-8a13-2676ef092716
       version: -1
       name: Test umbrella-get-domains-for-email-registrar Context
       type: condition
@@ -1227,10 +1227,10 @@ tasks:
     ignoreworker: false
   "36":
     id: "36"
-    taskid: a4431517-9d1e-4cbe-8d9c-fbc881a32058
+    taskid: 40b88832-c464-44af-81db-63aa2c657aa7
     type: condition
     task:
-      id: a4431517-9d1e-4cbe-8d9c-fbc881a32058
+      id: 40b88832-c464-44af-81db-63aa2c657aa7
       version: -1
       name: Test umbrella-get-domains-for-nameserver Context
       type: condition
@@ -1271,10 +1271,10 @@ tasks:
     ignoreworker: false
   "37":
     id: "37"
-    taskid: 9df3fde5-35bf-4671-8f64-0d6371c239ee
+    taskid: ec510acb-a04c-47b2-82bd-28e8afb7d466
     type: regular
     task:
-      id: 9df3fde5-35bf-4671-8f64-0d6371c239ee
+      id: ec510acb-a04c-47b2-82bd-28e8afb7d466
       version: -1
       name: umbrella-get-whois-for-domain
       script: '|||umbrella-get-whois-for-domain'
@@ -1300,10 +1300,10 @@ tasks:
     ignoreworker: false
   "38":
     id: "38"
-    taskid: 68489429-09ea-4d73-85e0-baca8bee8a91
+    taskid: 9732b4ec-02e1-42a0-831e-4c96f8132382
     type: regular
     task:
-      id: 68489429-09ea-4d73-85e0-baca8bee8a91
+      id: 9732b4ec-02e1-42a0-831e-4c96f8132382
       version: -1
       name: umbrella-get-malicious-domains-for-ip
       script: '|||umbrella-get-malicious-domains-for-ip'
@@ -1329,10 +1329,10 @@ tasks:
     ignoreworker: false
   "39":
     id: "39"
-    taskid: 561c3724-ac39-40b4-8c29-e5bca3542882
+    taskid: ee3c9c69-9247-495d-8780-f8eea2763d5a
     type: regular
     task:
-      id: 561c3724-ac39-40b4-8c29-e5bca3542882
+      id: ee3c9c69-9247-495d-8780-f8eea2763d5a
       version: -1
       name: umbrella-get-domains-using-regex
       script: '|||umbrella-get-domains-using-regex'
@@ -1366,10 +1366,10 @@ tasks:
     ignoreworker: false
   "40":
     id: "40"
-    taskid: fa80572d-0ce1-498e-8f7e-2e31ddac754c
+    taskid: 098ff0da-43ad-4a34-85bb-70d26ce3d048
     type: regular
     task:
-      id: fa80572d-0ce1-498e-8f7e-2e31ddac754c
+      id: 098ff0da-43ad-4a34-85bb-70d26ce3d048
       version: -1
       name: umbrella-get-domain-timeline
       script: '|||umbrella-get-domain-timeline'
@@ -1395,10 +1395,10 @@ tasks:
     ignoreworker: false
   "41":
     id: "41"
-    taskid: 6d090f6c-d8c6-4dc2-82ef-691b55e2b3ba
+    taskid: 07103ccf-6183-4023-88b3-f2f8a16ee68e
     type: regular
     task:
-      id: 6d090f6c-d8c6-4dc2-82ef-691b55e2b3ba
+      id: 07103ccf-6183-4023-88b3-f2f8a16ee68e
       version: -1
       name: umbrella-get-ip-timeline
       script: '|||umbrella-get-ip-timeline'
@@ -1424,10 +1424,10 @@ tasks:
     ignoreworker: false
   "42":
     id: "42"
-    taskid: 8786abd9-600a-4977-82a2-a323bde76f6a
+    taskid: b6c2366f-43fa-46e8-8c1d-edff546437b7
     type: regular
     task:
-      id: 8786abd9-600a-4977-82a2-a323bde76f6a
+      id: b6c2366f-43fa-46e8-8c1d-edff546437b7
       version: -1
       name: umbrella-get-url-timeline
       script: '|||umbrella-get-url-timeline'
@@ -1453,10 +1453,10 @@ tasks:
     ignoreworker: false
   "43":
     id: "43"
-    taskid: e80f344c-d9ed-4323-8d6c-9a19bde86cec
+    taskid: d72d59b2-95fc-4417-870e-090d3a0544be
     type: condition
     task:
-      id: e80f344c-d9ed-4323-8d6c-9a19bde86cec
+      id: d72d59b2-95fc-4417-870e-090d3a0544be
       version: -1
       name: Test umbrella-get-whois-for-domain Context
       type: condition
@@ -1477,6 +1477,97 @@ tasks:
           right:
             value:
               simple: "299"
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Admin.Country
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Admin.Email
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Admin.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Admin.Phone
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Registrant.Country
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Registrant.Email
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Registrant.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Registrant.Phone
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: CreationDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: DomainStatus
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: UpdatedDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: ExpirationDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Registrar.Name
+            iscontext: true
     view: |-
       {
         "position": {
@@ -1489,21 +1580,24 @@ tasks:
     ignoreworker: false
   "44":
     id: "44"
-    taskid: f754db1b-6314-4015-8e10-ba36a541770e
+    taskid: ccf8f214-815c-4ede-80e1-b91a3bf05180
     type: title
     task:
-      id: f754db1b-6314-4015-8e10-ba36a541770e
+      id: ccf8f214-815c-4ede-80e1-b91a3bf05180
       version: -1
-      name: Test is Completed
+      name: Check Bang Domain
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 420,
-          "y": 4310
+          "x": 440,
+          "y": 4410
         }
       }
     note: false
@@ -1511,10 +1605,10 @@ tasks:
     ignoreworker: false
   "45":
     id: "45"
-    taskid: 760d088e-cb48-4cbc-89c6-a33a76950f1e
+    taskid: 4317a66e-a467-4975-81d6-dfba1bacdd89
     type: condition
     task:
-      id: 760d088e-cb48-4cbc-89c6-a33a76950f1e
+      id: 4317a66e-a467-4975-81d6-dfba1bacdd89
       version: -1
       name: Test umbrella-get-malicious-domains-for-ip Context
       type: condition
@@ -1571,10 +1665,10 @@ tasks:
     ignoreworker: false
   "46":
     id: "46"
-    taskid: 314d92aa-1264-4dab-8f79-1d79a7e3c4e4
+    taskid: 821c3602-70c0-4660-85f7-d5296a4a62dc
     type: condition
     task:
-      id: 314d92aa-1264-4dab-8f79-1d79a7e3c4e4
+      id: 821c3602-70c0-4660-85f7-d5296a4a62dc
       version: -1
       name: umbrella-get-domains-using-regex
       type: condition
@@ -1615,10 +1709,10 @@ tasks:
     ignoreworker: false
   "47":
     id: "47"
-    taskid: 7651f1d3-d774-4021-83ea-91968e5e235f
+    taskid: b0da84a1-e95e-47b4-8f96-dc11f4ad2fd7
     type: condition
     task:
-      id: 7651f1d3-d774-4021-83ea-91968e5e235f
+      id: b0da84a1-e95e-47b4-8f96-dc11f4ad2fd7
       version: -1
       name: Test umbrella-get-domain-timeline Context
       type: condition
@@ -1659,7 +1753,7 @@ tasks:
       {
         "position": {
           "x": 1050,
-          "y": 3770
+          "y": 3780
         }
       }
     note: false
@@ -1667,10 +1761,10 @@ tasks:
     ignoreworker: false
   "48":
     id: "48"
-    taskid: 64cb9c83-c5bc-4556-8a60-26af31033ce2
+    taskid: f8f7eb90-c0b9-43eb-8297-c183c6d604c0
     type: condition
     task:
-      id: 64cb9c83-c5bc-4556-8a60-26af31033ce2
+      id: f8f7eb90-c0b9-43eb-8297-c183c6d604c0
       version: -1
       name: Test umbrella-get-ip-timeline Context
       type: condition
@@ -1703,10 +1797,10 @@ tasks:
     ignoreworker: false
   "49":
     id: "49"
-    taskid: 42d7dd06-9e79-4143-819a-f83046eda27a
+    taskid: 897e6acb-7449-4829-8756-dd898bac260a
     type: condition
     task:
-      id: 42d7dd06-9e79-4143-819a-f83046eda27a
+      id: 897e6acb-7449-4829-8756-dd898bac260a
       version: -1
       name: Test umbrella-get-url-timeline context
       type: condition
@@ -1739,10 +1833,10 @@ tasks:
     ignoreworker: false
   "50":
     id: "50"
-    taskid: 0b53852c-83b6-4ea7-8749-5f92e7fbd15f
+    taskid: 69b2ed8c-61c5-42b3-8276-24d5510e4328
     type: regular
     task:
-      id: 0b53852c-83b6-4ea7-8749-5f92e7fbd15f
+      id: 69b2ed8c-61c5-42b3-8276-24d5510e4328
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -1772,10 +1866,10 @@ tasks:
     ignoreworker: false
   "51":
     id: "51"
-    taskid: 3bbf515f-4880-4c0a-8713-aa7c2c6da688
+    taskid: 4ea3f746-7025-41d8-8701-29ba2f7ac57d
     type: title
     task:
-      id: 3bbf515f-4880-4c0a-8713-aa7c2c6da688
+      id: 4ea3f746-7025-41d8-8701-29ba2f7ac57d
       version: -1
       name: New Commands
       type: title
@@ -1795,12 +1889,219 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "52":
+    id: "52"
+    taskid: dccdfc85-081c-4ee8-86a1-d69eb5b33580
+    type: regular
+    task:
+      id: dccdfc85-081c-4ee8-86a1-d69eb5b33580
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 4550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "53":
+    id: "53"
+    taskid: d5f44f6b-b554-4f20-8a33-98a11f3b2e1f
+    type: regular
+    task:
+      id: d5f44f6b-b554-4f20-8a33-98a11f3b2e1f
+      version: -1
+      name: domain
+      description: Get Domain Reputation info using Cisco Umbrella Investigate. Domain
+        reputation score is either true or false from the service and cannot be modified
+        using a threshold.
+      script: Cisco Umbrella Investigate|||domain
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Investigate
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      domain:
+        simple: www.cnn.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 4730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "54":
+    id: "54"
+    taskid: 4b4beb2d-4cfa-42c9-809e-89849b42c3e6
+    type: condition
+    task:
+      id: 4b4beb2d-4cfa-42c9-809e-89849b42c3e6
+      version: -1
+      name: Test domain context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "55"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Admin.Country
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Admin.Email
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Admin.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Admin.Phone
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Registrant.Country
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Registrant.Email
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Registrant.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Registrant.Phone
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: CreationDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: DomainStatus
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: UpdatedDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: ExpirationDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Registrar.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 4910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "55":
+    id: "55"
+    taskid: 60f60aa6-20fb-45bc-8fec-4c97476ba7ea
+    type: title
+    task:
+      id: 60f60aa6-20fb-45bc-8fec-4c97476ba7ea
+      version: -1
+      name: Test is complete
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 5090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4475,
+        "height": 5255,
         "width": 4490,
         "x": -1580,
         "y": -100
