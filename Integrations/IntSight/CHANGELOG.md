@@ -1,2 +1,2 @@
 ## [Unreleased]
-Improve error handling message.
+Improved the error message in cases where the URL address is incorrect.
