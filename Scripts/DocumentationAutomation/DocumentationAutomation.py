@@ -118,16 +118,8 @@ def run_command(command_example):
 
 
 def add_lines(line):
-    output = []
-    last_digit = 0
-    for i in range(len(line)):
-        if line[i].isdigit():
-            if line[i + 1] == '.':
-                output.append(line[last_digit:i])
-                last_digit = i
-    output.append(line[last_digit:len(line)])
-
-    return output
+    output = re.findall(r'^\d+\..+', line, re.MULTILINE)
+    return output if output else [line]
 
 
 def addErrorLines(scriptToScan, scriptType):
@@ -254,7 +246,7 @@ def generate_single_command_section(index, cmd, example_dict):
                 errors.append(
                     'Error! You are missing description in input {} of command {}'.format(arg['name'], cmd['name']))
             required_status = 'Required' if arg.get('required') else 'Optional'
-            section.append('| {} | {} | {} | '.format(arg['name'], stringEscapeMD(arg.get('description'), True, True),
+            section.append('| {} | {} | {} | '.format(arg['name'], stringEscapeMD(arg.get('description', ''), True, True),
                                                       required_status))
         section.append('')
 

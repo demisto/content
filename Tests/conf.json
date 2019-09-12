@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "ZeroFox",
+            "playbookID": "ZeroFox-Test",
+            "fromversion": "4.1.0"
+        },
+        {
             "integrations": "AlienVault_OTX_v2",
             "playbookID": "Alienvault_OTX_v2-test"
         },
@@ -359,6 +364,30 @@
         },
         {
             "playbookID": "ParseEmailFiles-test"
+        },
+        {
+            "playbookID": "PAN-OS - Block IP and URL - External Dynamic List Test",
+            "integrations": "palo_alto_networks_pan_os_edl_management",
+            "fromversion": "4.0.0"
+
+        },
+        {
+            "playbookID": "PAN-OS - Block IP - Custom Block Rule Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "fromversion": "4.0.0"
+        },
+        {
+            "playbookID": "PAN-OS - Block IP - Static Address Group Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "fromversion": "4.0.0"
+        },
+        {
+            "playbookID": "PAN-OS - Block URL - Custom URL Category Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "fromversion": "4.0.0"
         },
         {
             "playbookID": "ParseExcel-test"
@@ -1402,6 +1431,12 @@
             "nightly": true
         },
         {
+            "integrations": "Google Cloud Storage",
+            "playbookID": "GCS - Test",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
             "integrations": "Freshdesk",
             "playbookID": "Freshdesk-Test",
             "timeout": 500,
@@ -1760,17 +1795,27 @@
         {
             "integrations": "VulnDB",
             "playbookID": "Test-VulnDB"
+        },
+        {
+            "integrations": "Threat Crowd",
+            "playbookID": "ThreatCrowd - Test"
+        },
+        {
+            "integrations": "Hybrid Analysis",
+            "playbookID": "HybridAnalysis-Test",
+            "timeout": 500,
+            "fromversion": "4.1.0"
         }
     ],
     "skipped_tests": {
+        "TestParseEmailHeaders": "Fails on conditional task (Issue 18815)",
+        "Pwned v2 test": "Pwned v2 test fails on conditional task (Issue 18793).",
         "CheckpointFW-test": "Test is not stable (Issue 18643)",
-        "LogRhythm REST test": "A command's response doesnt match the expected results (issue #18385)",
         "search_endpoints_by_hash_-_tie_-_test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
         "McAfee-TIE Test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
         "Autoextract - Test": "See issue #18343 for further information",
         "rsa_packets_and_logs_test": "A command searches for a session ID which doesn't exist on our local server - asked RSA to help (issue #18332)",
         "TestUptycs": "There is not enough data in uptycs instance in order the test to pass. Data need to be generated like open connections",
-        "LogRhythmRest": "Unstable environment Adi is checking",
         "InfoArmorVigilanteATITest": "Test fails on verify context (issue 17358)",
         "calculate_severity_-_critical_assets_-_test": "Fails on verify context (issue 17924)",
         "Forescout-Test": "Should be skipped (issue 17016)",
@@ -1811,7 +1856,9 @@
         "Intezer Testing": "Old test for old version of inteze",
         "Test - Windows Defender Advanced Threat Protection": "One of the commands has an internal server error. Check again 20/08/2019. Issue - #18552",
         "CarbonBlackLiveResponseTest": "Task: cb-session-create-and-wait fails (issue 18691)",
-        "nexpose_test": "Failed to create site (issue 18694)"
+        "nexpose_test": "Failed to create site (issue 18694)",
+        "Recorded Future Test": "Looks like a bug in the product, pending support answer (issue 18922)",
+        "IntSights Mssp Test": "Account Expired (issue #16351)"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1820,15 +1867,19 @@
         "VMware": "no License, and probably not going to get it",
         "AWS Sagemaker": "License expired, and probably not going to get it",
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
-        "EclecticIQ Platform": "Instance Issues",
         "Google Cloud Compute": "Can't test yet",
         "Cymon": "The service was discontinued since April 30th, 2019.",
         "FireEye ETP": "No instance",
         "ProofpointTAP_v2": "No instance",
         "remedy_sr_beta": "No instance",
+        "Minerva Labs Anti-Evasion Platform": "No instance (Issue 18835)",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "ZeroFox": "No data (Alerts) in the product, which is required because record isn't working (issue 19161)",
+        "Jask": "Returning 401 (issue 18879)",
+        "SumoLogic": "No credentials (Issue 18441)",
+        "Lastline": "Temporally moved to skipped in order to not fail nightly",
         "vmray": "VMRay license expired (Issue 18752)",
         "Anomali ThreatStream v2": "Credentials are invalid (issue 18561)",
         "Anomali ThreatStream": "Credentials are invalid (issue 18561)",
@@ -1849,7 +1900,6 @@
         "Threat Grid": "instance problem (issue 16197)",
         "Kafka V2": "Can not connect to instance from remote",
         "Check Point Sandblast": "No access (issue 15948)",
-        "IntSights": "Account Expired (issue #16351)",
         "Remedy AR": "getting 'Not Found' in test button",
         "XFE": "License expired",
         "RedLock": "Credentials and API problems (issue 15493)",
@@ -1859,10 +1909,10 @@
         "LogRhythm": "Need to fix SOAP api",
         "ANYRUN": "No instance",
         "Snowflake": "Looks like account expired, needs looking into",
-        "Cisco Spark": "No instance",
-        "Minerva Labs Anti-Evasion Platform": "No instance",
-        "Phish.AI": "Unauthorized. will be re-branded soon as Cofense",
+        "Cisco Spark": "No instance (Issue 18940)",
+        "Phish.AI": "Unauthorized. will be re-branded soon as Cofense (Issue 17291)",
         "QRadar": "No license (issue 17794)",
+        "MaxMind GeoIP2": "License has expired (Issue 18932).",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -1871,11 +1921,11 @@
         "Tenable.io": "Unstable instance (issue 16115)",
 
       "_comment": "~~~ OTHER ~~~",
+        "EclecticIQ Platform": "Old API is deprecated (Issue 8821)",
         "Pwned": "Old API is deprecated",
-        "SumoLogic": "Shelly working on fixing it",
         "iDefense": "DevOps investigation",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
-        "BitDam": "Changes in service (issue #16247)",
+        "BitDam": "Changes in service (issue #17247)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
         "MailListener - POP3": "Failing test module (issue 18580)",
 
@@ -1890,6 +1940,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
         "Whois": "Mocks does not support sockets",
         "Panorama": "Exception: Proxy process took to long to go up. https://circleci.com/gh/demisto/content/24826",
@@ -1900,7 +1951,6 @@
         "VxStream": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544. Detonate URL: Large mock file.",
         "PagerDuty v2": "Integration requires SSL",
         "TCPIPUtils": "Integration requires SSL",
-        "AWS - S3": "Integration requires SSL",
         "Luminate": "Integration has no proxy checkbox",
         "Pwned": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
@@ -1925,8 +1975,6 @@
         "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
         "Anomali ThreatStream": "'proxy' parameter not working",
         "Palo Alto Networks Cortex": "SDK",
-        "AWS - EC2": "SSL Validation fails for STS",
-        "AWS - Lambda": "AWS not accepting self-signed certs",
         "Recorded Future": "might be dynamic test",
         "AlphaSOC Wisdom": "Test module issue",
         "Microsoft Graph": "Test direct access to oproxy",
