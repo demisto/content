@@ -75,6 +75,7 @@ script: '-'
 system: false
 timeout: '0'
 type: python
+tags: []
 tests:
 - No test
 subtype: python3
