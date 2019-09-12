@@ -2036,13 +2036,13 @@ class BaseClient(object):
         """Base Client for use in integrations.
 
          :type integration_name: ``str``
-         :param integration_name: Name as shown in UI (`Integration Name`)
+         :param integration_name: Name of the integration as shown in the integration UI, for example: Microsoft Graph User.
 
          :type integration_command_name: ``str``
-         :param integration_command_name: lower case with `-` divider (`integration-name`)
+         :param integration_command_name: Command names should be written in all lower-case letters, and each word separated with a hyphen, for example: msgraph-user.
 
          :type integration_context_name: ``str``
-         :param integration_context_name: camelcase with no dividers (`IntegrationName`)
+         :param integration_context_name: Context output names should be written in camel case, for example: MSGraphUser.
 
          :return: No data returned
          :rtype: ``None``
@@ -2054,7 +2054,7 @@ class BaseClient(object):
     @property
     def integration_name(self):
         """Property of integration name
-        return: Integration command name
+        return: Integration command name.
         :rtype: ``str``
         """
         return self._integration_name
@@ -2084,19 +2084,19 @@ if 'requests' in sys.modules:
             """Wrapper of BaseClient with added _http_request functionality
 
             :type server: ``str``
-            :param server: Base server address
+            :param server: Base server address, for example: https://example.com.
 
             :type base_suffix: ``str``
-            :param base_suffix: suffix of API (e.g`/api/v2/`)
+            :param base_suffix: Suffix appended to the base URI of the API, for example: /api/v2/
 
             :type verify: ``bool``
-            :param verify: Verify SSL
+            :param verify: Whether the request should verify the SSL certificate.
 
             :type proxy: ``bool``
-            :param proxy: Use system proxy
+            :param proxy: Whether to run the integration using the system proxy.
 
             :type ok_codes: ``tuple``
-            :param ok_codes: acceptable OK codes. If None will use requests.Response.ok
+            :param ok_codes: The request codes to accept as OK, for example: (200, 201, 204). If you specify "None", will use requests.Response.ok
 
             :return: No data returned
             :rtype: ``None``
@@ -2117,14 +2117,14 @@ if 'requests' in sys.modules:
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
-            :param method: HTTP method, e.g. 'GET', 'POST' ... etc.
+            :param method: The HTTP method, for example: GET, POST, and so on.
 
             :type url_suffix: ``str``
-            :param url_suffix: API endpoint.
+            :param url_suffix: The API endpoint.
 
             :type full_url: ``str``
             :param full_url:
-                Bypasses the use of self._base_url + url_suffix. Useful if there is a need to
+                Bypasses the use of self._base_url + url_suffix. This is useful if you need to
                 make a request to an address outside of the scope of the integration
                 API.
 
@@ -2132,50 +2132,49 @@ if 'requests' in sys.modules:
             :param headers: Headers to send in the request.
 
             :type auth: ``tuple``
-            :param auth: Auth tuple to enable Basic/Digest/Custom HTTP Auth.
+            :param auth: The authorization tuple (usually username/password) to enable Basic/Digest/Custom HTTP Auth.
 
             :type params: ``dict``
-            :param params: URL parameters.
+            :param params: URL parameters to specify the query.
 
             :type data: ``dict``
-            :param data: Data to be sent in a 'POST' request.
+            :param data: The data to send in a 'POST' request.
 
             :type files: ``dict``
-            :param files: File data to be sent in a 'POST' request.
+            :param files: The file data to send in a 'POST' request.
 
             :type timeout: ``float``
             :param timeout:
-                The amount of time in seconds a Request will wait for a client to
-                establish a connection to a remote machine.
+                The amount of time (in seconds) that a request will wait for a client to
+                establish a connection to a remote machine before a timeout occurs.
 
             :type resp_type: ``str``
             :param resp_type:
-                Determines what to return from having made the HTTP request. The default
-                is 'json'. Other options are 'text', 'content' or 'response' if the user
-                would like the full response object returned.
+                Determines which data format to return from the HTTP request. The default
+                is 'json'. Other options are 'text', 'content' or 'response'. Use 'response' to return the full response object.
 
             :type ok_codes: ``tuple``
-            :param ok_codes: acceptable OK codes. If None will use response.ok
+            :param ok_codes: The request codes to accept as OK, for example: (200, 201, 204). If you specify "None", will use self._ok_codes.
 
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``requests.Response``
             """
 
             def is_status_code_valid(response, status_codes=None):
-                """If status code is OK return True
+                """If the status code is OK, return 'True'.
 
                 :type response: ``requests.Response``
-                :param response: Response from API to check status in
+                :param response: Response from API after the request for which to check the status.
 
                 :type status_codes: ``tuple``
-                :param status_codes: OK status codes
+                :param status_codes: The request codes to accept as OK, for example: (200, 201, 204). If you specify "None", will use Response.ok.
 
-                :return: If status of response is valid
+                :return: Whether the status of the response is valid.
                 :rtype: ``bool``
                 """
                 if status_codes:
                     return response.status_code in status_codes
-                return res.ok
+                return response.ok
 
             try:
                 address = full_url if full_url else self._base_url + url_suffix
@@ -2219,16 +2218,16 @@ if 'requests' in sys.modules:
                     raise DemistoException('Failed to parse json object from response: {}'
                                            .format(res.content), exception)
             except requests.exceptions.ConnectTimeout as exception:
-                err_msg = 'Connection Timeout Error - potential reasons may be that the Server URL parameter' \
+                err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
                           ' is incorrect or that the Server is not accessible from your host.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.SSLError as exception:
-                err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' in' \
+                err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
                           ' the integration configuration.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.ProxyError as exception:
-                err_msg = 'Proxy Error - if \'Use system proxy\' in the integration configuration has been' \
-                          ' selected, try deselecting it.'
+                err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
+                          ' selected, try clearing the checkbox.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.ConnectionError as exception:
                 # Get originating Exception in Exception chain
