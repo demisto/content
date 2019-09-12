@@ -41,11 +41,7 @@ DBOTSCORE_CLEAN = 1
 DBOTSCORE_MALICIOUS = 3
 
 '''HANDLE PROXY'''
-if not USE_PROXY:
-    del os.environ["HTTP_PROXY"]
-    del os.environ["HTTPS_PROXY"]
-    del os.environ["http_proxy"]
-    del os.environ["https_proxy"]
+handle_proxy()
 
 
 '''HELPER FUNCTIONS'''
