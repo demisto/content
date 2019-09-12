@@ -61,7 +61,7 @@ def aws_session(service='ec2', region=None, roleArn=None, roleSessionName=None, 
     if kwargs and AWS_ACCESS_KEY_ID is None:
 
         if AWS_ACCESS_KEY_ID is None:
-            sts_client = boto3.client('sts')
+            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE)
             sts_response = sts_client.assume_role(**kwargs)
             if region is not None:
                 client = boto3.client(
@@ -1510,6 +1510,51 @@ def authorize_security_group_ingress_command(args):
         roleSessionDuration=args.get('roleSessionDuration'),
     )
     kwargs = {'GroupId': args.get('groupId')}
+    IpPermissions = []
+    IpPermissions_dict = {}
+    UserIdGroupPairs = []
+    UserIdGroupPairs_dict = {}
+
+    if args.get('IpPermissionsfromPort') is not None:
+        IpPermissions_dict.update({'FromPort': int(args.get('IpPermissionsfromPort'))})
+    if args.get('IpPermissionsIpProtocol') is not None:
+        IpPermissions_dict.update({'IpProtocol': str(args.get('IpPermissionsIpProtocol'))})  # type: ignore
+    if args.get('IpPermissionsToPort') is not None:
+        IpPermissions_dict.update({'ToPort': int(args.get('IpPermissionsToPort'))})
+
+    if args.get('IpRangesCidrIp') is not None:
+        IpRanges = [{
+            'CidrIp': args.get('IpRangesCidrIp'),
+            'Description': args.get('IpRangesDesc', None)
+        }]
+        IpPermissions_dict.update({'IpRanges': IpRanges})  # type: ignore
+    if args.get('Ipv6RangesCidrIp') is not None:
+        Ipv6Ranges = [{
+            'CidrIp': args.get('Ipv6RangesCidrIp'),
+            'Description': args.get('Ipv6RangesDesc', None)
+        }]
+        IpPermissions_dict.update({'Ipv6Ranges': Ipv6Ranges})  # type: ignore
+    if args.get('PrefixListId') is not None:
+        PrefixListIds = [{
+            'PrefixListId': args.get('PrefixListId'),
+            'Description': args.get('PrefixListIdDesc', None)
+        }]
+        IpPermissions_dict.update({'PrefixListIds': PrefixListIds})  # type: ignore
+
+    if args.get('UserIdGroupPairsDescription') is not None:
+        UserIdGroupPairs_dict.update({'Description': args.get('UserIdGroupPairsDescription')})
+    if args.get('UserIdGroupPairsGroupId') is not None:
+        UserIdGroupPairs_dict.update({'GroupId': args.get('UserIdGroupPairsGroupId')})
+    if args.get('UserIdGroupPairsGroupName') is not None:
+        UserIdGroupPairs_dict.update({'GroupName': args.get('UserIdGroupPairsGroupName')})
+    if args.get('UserIdGroupPairsPeeringStatus') is not None:
+        UserIdGroupPairs_dict.update({'PeeringStatus': args.get('UserIdGroupPairsPeeringStatus')})
+    if args.get('UserIdGroupPairsUserId') is not None:
+        UserIdGroupPairs_dict.update({'UserId': args.get('UserIdGroupPairsUserId')})
+    if args.get('UserIdGroupPairsVpcId') is not None:
+        UserIdGroupPairs_dict.update({'VpcId': args.get('UserIdGroupPairsVpcId')})
+    if args.get('UserIdGroupPairsVpcPeeringConnectionId') is not None:
+        UserIdGroupPairs_dict.update({'VpcPeeringConnectionId': args.get('UserIdGroupPairsVpcPeeringConnectionId')})
 
     if args.get('fromPort') is not None:
         kwargs.update({'FromPort': int(args.get('fromPort'))})
@@ -1521,6 +1566,16 @@ def authorize_security_group_ingress_command(args):
         kwargs.update({'IpProtocol': args.get('ipProtocol')})
     if args.get('sourceSecurityGroupName') is not None:
         kwargs.update({'SourceSecurityGroupName': args.get('sourceSecurityGroupName')})
+    if args.get('SourceSecurityGroupOwnerId') is not None:
+        kwargs.update({'SourceSecurityGroupOwnerId': args.get('SourceSecurityGroupOwnerId')})
+
+    if UserIdGroupPairs_dict is not None:
+        UserIdGroupPairs.append(UserIdGroupPairs_dict)
+        IpPermissions_dict.update({'UserIdGroupPairs': UserIdGroupPairs})  # type: ignore
+
+    if IpPermissions_dict is not None:
+        IpPermissions.append(IpPermissions_dict)
+        kwargs.update({'IpPermissions': IpPermissions})
 
     response = client.authorize_security_group_ingress(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
