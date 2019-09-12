@@ -67,7 +67,7 @@ def req(method, path, json_data=None, params=None, json_response=False):
         try:
             return r.json()
         except ValueError:
-            return_error('Error in API call to IntSights service - please check you URL address')
+            return_error('Error in API call to IntSights service - please check your configured URL address')
 
     return r.text
 
