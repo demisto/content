@@ -258,7 +258,7 @@ config = None  # type: ignore
 
 
 def main():
-    global USERNAME, PASSWORD, ACCOUNT_EMAIL
+    global USERNAME, PASSWORD, ACCOUNT_EMAIL, log_stream
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
     ACCOUNT_EMAIL = demisto.params().get('mailbox', None)
@@ -314,7 +314,6 @@ def main():
         else:
             return_error(error_message + '\n' + debug_log)
     finally:
-        global log_stream
         if log_stream:
             try:
                 logging.getLogger().removeHandler(log_handler)  # type: ignore
