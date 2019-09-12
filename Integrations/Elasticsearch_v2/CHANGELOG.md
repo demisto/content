@@ -1,3 +1,2 @@
 ##[Unreleased]
- - new Elasticsearch v2 integration - now supports versions 6 and up.
- 
+New Elasticsearch v2 integration. Supports Elasticsearch 6.0.0. and later.
