@@ -326,26 +326,55 @@ def fetch_incidents():
     if TOPIC in KAFKA_CLIENT.topics:
         kafka_topic = KAFKA_CLIENT.topics[TOPIC]
         offset, partition = check_params(kafka_topic, old_offset=OFFSET, old_partition=PARTITION)
-        last_offset = demisto.getLastRun().get('last_offset')
-        last_fetch = last_offset if last_offset > offset else offset
+        last_offset = demisto.getLastRun()
 
-        # If need to fetch
-        latest_offset = check_latest_offset(kafka_topic, partition)
-        if latest_offset > last_fetch:
+        if last_offset is None:     # this is the first time fetching
             consumer = kafka_topic.get_simple_consumer(
-                auto_offset_reset=last_fetch,
+                auto_offset_reset=offset,
                 reset_offset_on_start=True
             )
-            for i in range(last_fetch, latest_offset):
-                """
-                consumer.consume() will consume only one message from the given offset.
-                """
-                message = consumer.consume()
-                incidents.append(create_incident(message=message, topic=TOPIC))
-                if message.offset == latest_offset:
-                    break
-            demisto.setLastRun({'last_offset': latest_offset})
-        demisto.incidents(incidents)
+            if partition is None:
+                demisto.setLastRun({'last_fetch_offset': offset})
+            else:
+                for partition_id in consumer.partitions.keys():
+                    demisto.setLastRun({partition_id: offset})
+            last_offset = offset
+
+        else:
+            if partition is not None:
+                last_offset = demisto.getLastRun()['last_fetch_offset']
+            else:
+                last_offset = min(demisto.getLastRun().values())
+
+            consumer = kafka_topic.get_simple_consumer(
+                auto_offset_reset=last_offset,
+                reset_offset_on_start=True
+            )
+
+        if partition is not None:   # fetch from a single partition
+            p = consumer.partitions.get(partition)
+            op = consumer._partitions.get(p)
+            if last_offset < op.last_offset_consumed:    # need to fetch
+                for i in range(last_offset, op.last_offset_consumed):
+                    message = op.consume()
+                    incidents.append(create_incident(message=message, topic=TOPIC))
+            demisto.setLastRun({'last_fetch_offset': op.last_offset_consumed})
+            demisto.incidents(incidents)
+
+        else:   # fetch from multiple partitions
+            for p, op in consumer._partitions.iteritems():
+                if last_offset < op.last_offset_consumed:  # need to fetch
+                    partition_incidents = []
+                    for i in range(last_offset, op.last_offset_consumed):
+                        message = op.consume()
+                        partition_incidents.append(create_incident(message=message, topic=TOPIC))
+
+                    partition_start_offset = demisto.getLastRun().get(p.id)
+                    if last_offset < partition_start_offset:
+                        partition_incidents = partition_incidents[partition_start_offset-last_offset+1:]
+
+                    demisto.setLastRun({p.id: op.last_offset_consumed})
+                    demisto.incidents(partition_incidents)
     else:
         return_error('No such topic \'{}\' to fetch incidents from.'.format(TOPIC))
 
