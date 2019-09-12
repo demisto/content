@@ -7,5 +7,5 @@
     - ***gmail-delegate-user-mailbox***
     - ***gmail-remove-delegated-mailbox*** 
     - ***send-mail***
-  - Fixed an issue where emails from different timezones occaisonally did not create incidents.
+  - Fixed an issue where emails from different timezones occaisonally did not create incidents. This may cause duplicate incidents after upgrading.
    
