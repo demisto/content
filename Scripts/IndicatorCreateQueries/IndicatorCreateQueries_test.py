@@ -17,7 +17,7 @@ def test_generate_ip_queries():
     assert expected2['CortexTrapsIP'] == queries2_1['CortexTrapsIP']
 
 
-#def test_generate_hash_queries():
+# def test_generate_hash_queries():
 #    expected1 = {
 #        'CortexTrapsHash': "SELECT * from tms.threat where messageData.files.sha256 ='ababababababababab'"
 #    }
@@ -31,7 +31,7 @@ def test_generate_ip_queries():
 #    assert expected2['CortexTrapsHash'] == queries2_1['CortexTrapsHash']
 #
 #
-#def test_generate_domain_queries():
+# def test_generate_domain_queries():
 #    expected1 = {
 #        'CortexThreatDomain': "SELECT * from panw.threat where misc LIKE 'demisto.com'"
 #    }
