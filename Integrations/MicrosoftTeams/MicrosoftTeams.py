@@ -1372,8 +1372,8 @@ def long_running_loop():
     The infinite loop which runs the mirror loop and the bot app in two different threads
     """
 
-    certificate = demisto.params().get('certificate', '')
-    private_key = demisto.params().get('key', '')
+    certificate: str = demisto.params().get('certificate', '')
+    private_key: str = demisto.params().get('key', '')
 
     try:
         port_mapping: str = PARAMS.get('longRunningPort', '')
@@ -1383,6 +1383,7 @@ def long_running_loop():
             raise ValueError('No port mapping was provided')
         Thread(target=channel_mirror_loop, daemon=True).start()
         demisto.info('Started channel mirror loop thread')
+
         if certificate and private_key:
             # Starting HTTPS server
             f = open('cert.pem', 'wb')
@@ -1390,10 +1391,12 @@ def long_running_loop():
             f.flush()
             f.close()
             certificate_path: str = os.path.abspath('cert.pem')
+
             f = open('key.pem', 'wb')
             f.write(bytes(private_key, 'utf-8'))
             f.close()
             private_key_path: str = os.path.abspath('key.pem')
+
             server = WSGIServer(('', port), APP, keyfile=private_key_path, certfile=certificate_path)
             demisto.info('Starting HTTPS Server')
             server.serve_forever()
