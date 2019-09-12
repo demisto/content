@@ -54,6 +54,41 @@ args:
   - 'false'
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: buttons
+  description: How the user should response to the question.
+  isArray: false
+  name: responseType
+  predefined:
+  - buttons
+  - thread
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: green
+  description: Style for the option 1 button.
+  isArray: false
+  name: option1Style
+  predefined:
+  - black
+  - green
+  - red
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: red
+  description: Style for the option 2 button.
+  isArray: false
+  name: option2Style
+  predefined:
+  - black
+  - green
+  - red
+  required: false
+  secret: false
 comment: Sends a message (question) to either user (in a direct message) or to a channel.
   The message includes predefined reply options. The response can also close a task
   (might be conditional) in a playbook.

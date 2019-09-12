@@ -7,6 +7,7 @@ from slack.errors import SlackApiError
 from distutils.util import strtobool
 import asyncio
 import concurrent
+import requests
 
 
 ''' CONSTANTS '''
@@ -35,8 +36,8 @@ WARNING_ENTRY_TYPE = 11
 ''' GLOBALS '''
 
 
-TOKEN: str
-CHANNEL_TOKEN: str
+BOT_TOKEN: str
+ACCESS_TOKEN: str
 PROXY: str
 DEDICATED_CHANNEL: str
 CLIENT: slack.WebClient
@@ -45,6 +46,7 @@ ALLOW_INCIDENTS: bool
 NOTIFY_INCIDENTS: bool
 INCIDENT_TYPE: str
 SEVERITY_THRESHOLD: int
+ENDPOINT_URL: str
 
 
 ''' HELPER FUNCTIONS '''
@@ -394,17 +396,67 @@ def mirror_investigation():
 
 def long_running_loop():
     """
-    Runs in a long running container - checking for newly mirrored investigations.
+    Runs in a long running container - checking for newly mirrored investigations and answered questions.
     """
     while True:
         try:
             check_for_mirrors()
+            check_for_answers()
         except Exception as e:
             error = 'An error occurred: {}'.format(str(e))
             demisto.error(error)
             demisto.updateModuleHealth(error)
         finally:
-            time.sleep(5)
+            time.sleep(1.5)
+
+
+def check_for_answers():
+    """
+    Checks for answered questions
+    """
+
+    integration_context = demisto.getIntegrationContext()
+    questions = integration_context.get('questions', [])
+    users = integration_context.get('users', [])
+    if questions:
+        questions = json.loads(questions)
+    if users:
+        users = json.loads(users)
+
+    for question in questions:
+        headers = {'Accept': 'application/json'}
+        body = {
+            'token': BOT_TOKEN,
+            'entitlement': question['entitlement']
+        }
+        res = requests.post(ENDPOINT_URL, data=body, headers=headers)
+        if res.status_code != 200:
+            demisto.error('Slack - failed to poll for answers: {}'.format(res.content))
+            continue
+        answer = res.json()
+        if not answer:
+            continue
+        payload = json.loads(answer).get('payload')
+        if isinstance(payload, list):
+            payload = payload[0]
+        actions = payload.get('actions', [])
+        if actions:
+            demisto.info('Slack - got answer from user, handling entitlement.')
+            user_id = payload.get('user', {}).get('id')
+            user_filter = list(filter(lambda u: u['id'] == user_id, users))
+            if user_filter:
+                user = user_filter[0]
+            else:
+                user = CLIENT.users_info(user=user_id).get('user', {})
+                users.append(user)
+                set_to_latest_integration_context('users', users)
+
+            content, guid, incident_id, task_id = extract_entitlement(actions[0].get('value'),
+                                                                      actions[0].get('text', {}).get('text'))
+            demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'),
+                                             content, task_id)
+            questions.remove(question)
+            set_to_latest_integration_context('questions', questions)
 
 
 def check_for_mirrors():
@@ -434,6 +486,25 @@ def check_for_mirrors():
                 set_to_latest_integration_context('mirrors', mirrors)
 
 
+def extract_entitlement(entitlement, text):
+    """
+    Extracts entitlement components from an entitlement string
+    :param entitlement: The entitlement itself
+    :param text: The actual reply text
+    :return: Entitlement components
+    """
+    parts = entitlement.split('@')
+    guid = parts[0]
+    id_and_task = parts[1].split('|')
+    incident_id = id_and_task[0]
+    task_id = ''
+    if len(id_and_task) > 1:
+        task_id = id_and_task[1]
+    content = text.replace(entitlement, '', 1)
+
+    return content, guid, incident_id, task_id
+
+
 async def slack_loop():
     """
     Starts a Slack RTM client while checking the connection.
@@ -443,7 +514,7 @@ async def slack_loop():
         rtm_client = None
         try:
             rtm_client = slack.RTMClient(
-                token=TOKEN,
+                token=BOT_TOKEN,
                 run_async=True,
                 loop=loop,
                 auto_reconnect=False
@@ -715,7 +786,7 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
     entitlement_match = re.search(ENTITLEMENT_REGEX, text)
     if entitlement_match:
         demisto.info('Slack - handling entitlement in message.')
-        content, guid, incident_id, task_id = await extract_entitlement(entitlement_match.group(), text)
+        content, guid, incident_id, task_id = extract_entitlement(entitlement_match.group(), text)
         demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'), content, task_id)
 
         return True
@@ -728,7 +799,7 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
             if question_filter:
                 demisto.info('Slack - handling entitlement in thread.')
                 entitlement = question_filter[0].get('entitlement')
-                content, guid, incident_id, task_id = await extract_entitlement(entitlement, text)
+                content, guid, incident_id, task_id = extract_entitlement(entitlement, text)
                 demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'), content,
                                                  task_id)
                 questions.remove(question_filter[0])
@@ -737,25 +808,6 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
                 return True
 
     return False
-
-
-async def extract_entitlement(entitlement, text):
-    """
-    Extracts entitlement components from an entitlement string
-    :param entitlement: The entitlement itself
-    :param text: The actual reply text
-    :return: Entitlement components
-    """
-    parts = entitlement.split('@')
-    guid = parts[0]
-    id_and_task = parts[1].split('|')
-    incident_id = id_and_task[0]
-    task_id = ''
-    if len(id_and_task) > 1:
-        task_id = id_and_task[1]
-    content = text.replace(entitlement, '', 1)
-
-    return content, guid, incident_id, task_id
 
 
 ''' SEND '''
@@ -826,14 +878,25 @@ def slack_send():
     if not (to or group or channel):
         return_error('Either a user, group or channel must be provided.')
 
-    entitlement_match = re.search(ENTITLEMENT_REGEX, message)
-    if entitlement_match:
-        try:
-            parsed_message = json.loads(message)
-            entitlement = parsed_message['entitlement']
-            message = parsed_message['message']
-        except Exception:
-            pass
+    if message:
+        entitlement_match = re.search(ENTITLEMENT_REGEX, message)
+        if entitlement_match:
+            try:
+                parsed_message = json.loads(message)
+                entitlement = parsed_message.get('entitlement')
+                message = parsed_message.get('message')
+            except Exception:
+                pass
+    elif blocks:
+        entitlement_match = re.search(ENTITLEMENT_REGEX, blocks)
+        if entitlement_match:
+            try:
+                parsed_message = json.loads(blocks)
+                entitlement = parsed_message.get('entitlement')
+                blocks = parsed_message.get('blocks')
+            except Exception:
+                pass
+
     response = slack_send_request(to, channel, group, entry, ignore_add_url, thread_id, message=message, blocks=blocks)
 
     if response:
@@ -1312,19 +1375,20 @@ def init_globals():
     """
     Initializes global variables according to the integration parameters
     """
-    global TOKEN, CHANNEL_TOKEN, PROXY, DEDICATED_CHANNEL, CLIENT, CHANNEL_CLIENT
-    global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE
+    global BOT_TOKEN, ACCESS_TOKEN, PROXY, DEDICATED_CHANNEL, CLIENT, CHANNEL_CLIENT
+    global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, ENDPOINT_URL
 
-    TOKEN = demisto.params().get('bot_token')
-    CHANNEL_TOKEN = demisto.params().get('access_token')
+    BOT_TOKEN = demisto.params().get('bot_token')
+    ACCESS_TOKEN = demisto.params().get('access_token')
     PROXY = handle_proxy().get('https')
     DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel')
-    CLIENT = slack.WebClient(token=TOKEN, proxy=PROXY)
-    CHANNEL_CLIENT = slack.WebClient(token=CHANNEL_TOKEN, proxy=PROXY)
+    CLIENT = slack.WebClient(token=BOT_TOKEN, proxy=PROXY)
+    CHANNEL_CLIENT = slack.WebClient(token=ACCESS_TOKEN, proxy=PROXY)
     SEVERITY_THRESHOLD = SEVERITY_DICT.get(demisto.params().get('min_severity', 'Low'), 1)
     ALLOW_INCIDENTS = demisto.params().get('allow_incidents', False)
     NOTIFY_INCIDENTS = demisto.params().get('notify_incidents', True)
     INCIDENT_TYPE = demisto.params().get('incidentType')
+    ENDPOINT_URL = demisto.params().get('slackEndpoint')
 
 
 def main():

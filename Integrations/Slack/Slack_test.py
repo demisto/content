@@ -204,6 +204,108 @@ MIRRORS = '''
   }]
 '''
 
+BLOCK_JSON = [{
+    'type': 'section',
+    'text': {
+        'type': 'mrkdwn',
+        'text': 'text'
+    }
+}, {
+    'type': 'actions',
+    'elements': [{
+            'type': 'button',
+            'text': {
+                'type': 'plain_text',
+                'emoji': True,
+                'text': 'yes'
+            },
+        'style': 'primary',
+        'value': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'
+    }, {
+        'type': 'button',
+        'text': {
+            'type': 'plain_text',
+            'emoji': True,
+            'text': 'no'
+        },
+        'style': 'danger',
+        'value': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'
+    }]}]
+
+PAYLOAD_JSON = '''
+ {
+ "payload":[{
+         "type":"block_actions",
+         "team":{
+            "id":"T9XJ4RGNQ",
+            "domain":"dombo60"
+         },
+         "user":{
+            "id":"U012A3CDE",
+            "username":"spengler",
+            "name":"spengler",
+            "team_id":"T9XJ4RGNQ"
+         },
+         "api_app_id":"AMU4M2QL8",
+         "token":"GBGG7mn61zg0a62MT9blXJnn",
+         "container":{
+            "type":"message",
+            "message_ts":"1567945126.000100",
+            "channel_id":"DMGSNFCSX",
+            "is_ephemeral":false
+         },
+         "trigger_id":"754598374743.337616866772.8c4b2dc28ca7fd4c8941247c1a01c7dd",
+         "channel":{
+            "id":"DMGSNFCSX",
+            "name":"directmessage"
+         },
+         "message":{
+            "type":"message",
+            "subtype":"bot_message",
+            "text":"This content can't be displayed.",
+            "ts":"1567945126.000100",
+            "username":"BlockTest",
+            "bot_id":"BMWFS6KSA",
+            "blocks":[
+               {
+                  "type":"section",
+                  "block_id":"F9iYK",
+                  "text":{
+                     "type":"mrkdwn",
+                     "text":"Hopa this is a test. ",
+                     "verbatim":false
+                  },
+                  "accessory":{
+                     "type":"button",
+                     "text":{
+                        "type":"plain_text",
+                        "text":"Eyy",
+                        "emoji":true
+                     },
+                     "value":"e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43",
+                     "action_id":"W9J"
+                  }
+               }
+            ]
+         },
+         "response_url":"hooks.slack.com",
+         "actions":[
+            {
+               "action_id":"W9J",
+               "block_id":"F9iYK",
+               "text":{
+                  "type":"plain_text",
+                  "text":"Eyy",
+                  "emoji":true
+               },
+               "value":"e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43",
+               "type":"button",
+               "action_ts":"1567949681.728426"
+            }
+         ]
+      }]}
+'''
+
 
 def get_integration_context():
     return INTEGRATION_CONTEXT
@@ -1419,6 +1521,208 @@ async def test_handle_text(mocker):
     assert entry_args['footer'] == '\n**From Slack**'
 
 
+def test_check_for_answers(mocker, requests_mock):
+    import Slack
+
+    # Set
+    mocker.patch.object(demisto, 'params', return_value={'slackEndpoint': 'https://ninja.oproxy.works/slack'})
+
+    Slack.init_globals()
+
+    mocker.patch.object(demisto, 'handleEntitlementForUser')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+
+    requests_mock.post(
+        'https://ninja.oproxy.works/slack',
+        json=PAYLOAD_JSON
+    )
+
+    integration_context = get_integration_context()
+    integration_context['questions'] = json.dumps([{
+        'thread': 'cool',
+        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'
+    }, {
+        'thread': 'notcool',
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+    }])
+
+    set_integration_context(integration_context)
+
+    # Arrange
+    Slack.check_for_answers()
+
+    result_args = demisto.handleEntitlementForUser.call_args_list[0][0]
+
+    # Assert
+    assert demisto.handleEntitlementForUser.call_count == 1
+
+    assert result_args[0] == '22'
+    assert result_args[1] == 'e95cb5a1-e394-4bc5-8ce0-508973aaf298'
+    assert result_args[2] == 'spengler@ghostbusters.example.com'
+    assert result_args[3] == 'Eyy'
+    assert result_args[4] == '43'
+
+    # Should delete the question
+    assert demisto.getIntegrationContext()['questions'] == json.dumps([{
+        'thread': 'notcool',
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+    }])
+
+
+def test_check_for_answers_continue(mocker, requests_mock):
+    import Slack
+
+    # Set
+    mocker.patch.object(demisto, 'params', return_value={'slackEndpoint': 'https://ninja.oproxy.works/slack'})
+
+    Slack.init_globals()
+
+    mocker.patch.object(demisto, 'handleEntitlementForUser')
+    mocker.patch.object(demisto, 'error')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+
+    requests_mock.post(
+        'https://ninja.oproxy.works/slack',
+        [{'json': {}, 'status_code': 200},
+         {'json': {}, 'status_code': 401},
+         {'json': PAYLOAD_JSON, 'status_code': 200}]
+
+    )
+
+    integration_context = get_integration_context()
+    integration_context['questions'] = json.dumps([{
+        'thread': 'notcool',
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+    }, {
+        'thread': 'notcool2',
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+    }, {
+        'thread': 'cool',
+        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'
+    }])
+
+    set_integration_context(integration_context)
+
+    # Arrange
+    Slack.check_for_answers()
+
+    result_args = demisto.handleEntitlementForUser.call_args_list[0][0]
+
+    # Assert
+    assert demisto.handleEntitlementForUser.call_count == 1
+    assert demisto.error.call_count == 1
+
+    assert result_args[0] == '22'
+    assert result_args[1] == 'e95cb5a1-e394-4bc5-8ce0-508973aaf298'
+    assert result_args[2] == 'spengler@ghostbusters.example.com'
+    assert result_args[3] == 'Eyy'
+    assert result_args[4] == '43'
+
+    # Should delete the question
+    assert demisto.getIntegrationContext()['questions'] == json.dumps([{
+        'thread': 'notcool',
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+    }, {
+        'thread': 'notcool2',
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+    }])
+
+
+def test_check_for_answers_no_answer(mocker, requests_mock):
+    import Slack
+
+    # Set
+    mocker.patch.object(demisto, 'params', return_value={'slackEndpoint': 'https://ninja.oproxy.works/slack'})
+
+    Slack.init_globals()
+
+    mocker.patch.object(demisto, 'handleEntitlementForUser')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+
+    requests_mock.post(
+        'https://ninja.oproxy.works/slack',
+        json={}
+    )
+
+    integration_context = get_integration_context()
+    integration_context['questions'] = json.dumps([{
+        'thread': 'cool',
+        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'
+    }, {
+        'thread': 'notcool',
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+    }])
+
+    set_integration_context(integration_context)
+
+    # Arrange
+    Slack.check_for_answers()
+
+    # Assert
+
+    assert demisto.handleEntitlementForUser.call_count == 0
+
+    # Should not delete the question
+    assert demisto.getIntegrationContext()['questions'] == json.dumps([{
+        'thread': 'cool',
+        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'
+    }, {
+        'thread': 'notcool',
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+    }])
+
+
+def test_check_for_answers_error(mocker, requests_mock):
+    import Slack
+
+    # Set
+    mocker.patch.object(demisto, 'params', return_value={'slackEndpoint': 'https://ninja.oproxy.works/slack'})
+
+    Slack.init_globals()
+
+    mocker.patch.object(demisto, 'handleEntitlementForUser')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(demisto, 'error')
+
+    requests_mock.post(
+        'https://ninja.oproxy.works/slack',
+        json={},
+        status_code=401
+    )
+
+    integration_context = get_integration_context()
+    integration_context['questions'] = json.dumps([{
+        'thread': 'cool',
+        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'
+    }, {
+        'thread': 'notcool',
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+    }])
+
+    set_integration_context(integration_context)
+
+    # Arrange
+    Slack.check_for_answers()
+
+    # Assert
+
+    assert demisto.handleEntitlementForUser.call_count == 0
+    assert demisto.error.call_count == 2
+
+    # Should not delete the question
+    assert demisto.getIntegrationContext()['questions'] == json.dumps([{
+        'thread': 'cool',
+        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'
+    }, {
+        'thread': 'notcool',
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+    }])
+
+
 @pytest.mark.asyncio
 async def test_check_entitlement(mocker):
     from Slack import check_and_handle_entitlement
@@ -1764,6 +2068,58 @@ def test_send_request_with_entitlement(mocker):
     assert send_args[2] is False
     assert send_args[4] == 'hi test@demisto.com'
     assert send_args[5] == ''
+
+    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+
+    assert demisto.getIntegrationContext()['questions'] == json.dumps(questions)
+
+
+def test_send_request_with_entitlement_blocks(mocker):
+    import Slack
+
+    # Set
+
+    def users_list(**kwargs):
+        return {'members': json.loads(USERS)}
+
+    def conversations_list(**kwargs):
+        return {'channels': json.loads(CONVERSATIONS)}
+
+    mocker.patch.object(demisto, 'args', return_value={
+        'blocks': json.dumps({
+            'blocks': json.dumps(BLOCK_JSON),
+            'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'}),
+        'to': 'spengler'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
+    mocker.patch.object(slack.WebClient, 'conversations_list', side_effect=conversations_list)
+    mocker.patch.object(slack.WebClient, 'im_open', return_value={'channel': {'id': 'im_channel'}})
+    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+
+    questions = [{
+        'thread': 'cool',
+        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'
+    }]
+
+    # Arrange
+    Slack.slack_send()
+
+    send_args = Slack.send_message.call_args[0]
+
+    results = demisto.results.call_args_list[0][0]
+    # Assert
+
+    assert slack.WebClient.users_list.call_count == 0
+    assert slack.WebClient.conversations_list.call_count == 0
+    assert Slack.send_message.call_count == 1
+
+    assert send_args[0] == ['im_channel']
+    assert send_args[1] is None
+    assert send_args[2] is False
+    assert send_args[4] == ''
+    assert send_args[6] == json.dumps(BLOCK_JSON)
 
     assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
 
