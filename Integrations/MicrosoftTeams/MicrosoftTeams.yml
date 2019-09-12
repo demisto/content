@@ -20,6 +20,14 @@ configuration:
   name: incident_notifications_channel
   required: true
   type: 0
+- display: Certificate (Required for HTTPS)
+  name: certificate
+  required: false
+  type: 12
+- display: Private Key (Required for HTTPS)
+  name: key
+  required: false
+  type: 4
 - defaultvalue: Low
   display: Minimum incident severity to send notifications to Teams by
   name: min_incident_severity
@@ -46,7 +54,8 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- display: Port mapping (<host port>:<docker port>)
+- display: Port mapping, e.g. <host port>:<docker port> (Required for investigation
+    mirroring and direct messages)
   name: longRunningPort
   required: false
   type: 0
