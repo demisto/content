@@ -98,7 +98,7 @@ tasks:
       id: ec91eb2d-9d4d-4a1a-8c47-a522d7489968
       version: -1
       name: Is there a DBotScore?
-      description: Checks if there is a “DBotScore” in the playbook inputs.
+      description: Checks if there is a "DBotScore" in the playbook inputs.
       type: condition
       iscommand: false
       brand: ""
@@ -252,7 +252,7 @@ tasks:
       id: 052ef69f-e477-4d82-80f2-ae53fd062c10
       version: -1
       name: Set severity to high
-      description: Sets the severity of the incident to “High”. This severity level means that malicious indicators were identified.
+      description: Sets the severity of the incident to "High". This severity level means that malicious indicators were identified.
       scriptName: Set
       type: regular
       iscommand: false
@@ -286,7 +286,7 @@ tasks:
       id: d541a52f-b49a-473b-8759-ef01fbf11c87
       version: -1
       name: Set severity to medium
-      description: Sets the severity of the incident to “Medium”. This severity level means that only suspicious
+      description: Sets the severity of the incident to "Medium". This severity level means that only suspicious
         indicators were identified (no malicious indicators).
       scriptName: Set
       type: regular
@@ -321,7 +321,7 @@ tasks:
       id: 4aa1d738-871e-450c-8bea-f492b41d0d1c
       version: -1
       name: Set severity to low
-      description: Sets the severity of the incident to “Low”. This severity level means no suspicious
+      description: Sets the severity of the incident to "Low". This severity level means no suspicious
         or malicious indicators were identified.
       scriptName: Set
       type: regular
@@ -356,7 +356,7 @@ tasks:
       id: 4db66a18-a33b-4d0c-8ade-30c28a877459
       version: -1
       name: Set severity to unknown
-      description: Sets the severity of the incident to “Unknown”. This severity level means that either unknown indicators were identified,
+      description: Sets the severity of the incident to "Unknown". This severity level means that either unknown indicators were identified,
         or no indicators were identified.
       scriptName: Set
       type: regular
