@@ -320,64 +320,47 @@ def fetch_incidents():
     """
     Fetches incidents
     """
-    incidents = list()
 
     # Check for topic in Kafka
     if TOPIC in KAFKA_CLIENT.topics:
         kafka_topic = KAFKA_CLIENT.topics[TOPIC]
         offset, partition = check_params(kafka_topic, old_offset=OFFSET, old_partition=PARTITION)
-        last_offset = demisto.getLastRun()
+        last_run = demisto.getLastRun()
 
-        if last_offset is None:     # this is the first time fetching
-            consumer = kafka_topic.get_simple_consumer(
-                auto_offset_reset=offset,
-                reset_offset_on_start=True
-            )
-            if partition is None:
-                demisto.setLastRun({'last_fetch_offset': offset})
-            else:
-                for partition_id in consumer.partitions.keys():
-                    demisto.setLastRun({partition_id: offset})
-            last_offset = offset
-
-        else:
+        if last_run is None:     # this is the first time fetching
             if partition is not None:
-                last_offset = demisto.getLastRun()['last_fetch_offset']
+                last_run = {partition: offset}
+                demisto.setLastRun(last_run) #TODO insert as key:val
             else:
-                last_offset = min(demisto.getLastRun().values())
+                last_run = {partition_id: offset for partition_id in kafka_topic.partitions.keys()}
+                demisto.setLastRun(last_run)
 
-            consumer = kafka_topic.get_simple_consumer(
-                auto_offset_reset=last_offset,
-                reset_offset_on_start=True
-            )
+        incidents = list()
+        new_last_run = dict()
+        for partition_id, offset in last_run.items():
+            new_incidents, new_offset = pull_messages(kafka_topic, partition_id, offset)
+            incidents.extend(new_incidents)
+            new_last_run[partition_id] = new_offset + 1 # TODO add comment
 
-        if partition is not None:   # fetch from a single partition
-            p = consumer.partitions.get(partition)
-            op = consumer._partitions.get(p)
-            if last_offset < op.last_offset_consumed:    # need to fetch
-                for i in range(last_offset, op.last_offset_consumed):
-                    message = op.consume()
-                    incidents.append(create_incident(message=message, topic=TOPIC))
-            demisto.setLastRun({'last_fetch_offset': op.last_offset_consumed})
-            demisto.incidents(incidents)
-
-        else:   # fetch from multiple partitions
-            for p, op in consumer._partitions.iteritems():
-                if last_offset < op.last_offset_consumed:  # need to fetch
-                    partition_incidents = []
-                    for i in range(last_offset, op.last_offset_consumed):
-                        message = op.consume()
-                        partition_incidents.append(create_incident(message=message, topic=TOPIC))
-
-                    partition_start_offset = demisto.getLastRun().get(p.id)
-                    if last_offset < partition_start_offset:
-                        partition_incidents = partition_incidents[partition_start_offset-last_offset+1:]
-
-                    demisto.setLastRun({p.id: op.last_offset_consumed})
-                    demisto.incidents(partition_incidents)
+        demisto.setLastRun(new_last_run)
+        demisto.incidents(incidents)
     else:
         return_error('No such topic \'{}\' to fetch incidents from.'.format(TOPIC))
 
+
+def pull_messages(kafka_topic, partition_id, offset):
+    incidents = list()
+    consumer = kafka_topic.get_simple_consumer(
+        auto_offset_reset=offset,
+        reset_offset_on_start=True
+    )
+    p = consumer.partitions.get(partition_id)
+    op = consumer._partitions.get(p)
+    if offset < op.last_offset_consumed:  # need to fetch
+        for i in range(offset, op.last_offset_consumed):
+            message = op.consume()
+            incidents.append(create_incident(message=message, topic=TOPIC))
+    return incidents, op.last_offset_consumed
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
