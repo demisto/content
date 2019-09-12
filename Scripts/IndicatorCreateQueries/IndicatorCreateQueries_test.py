@@ -32,6 +32,7 @@ def test_generate_hash_queries():
     assert expected1['CortexTrapsHash'] == queries1_2['CortexTrapsHash']
     assert expected2['CortexTrapsHash'] == queries2_1['CortexTrapsHash']
 
+
 def test_generate_domain_queries():
     expected1 = {
         'CortexTrapsIP': "SELECT * from panw.threat where misc LIKE 'demisto.com'"

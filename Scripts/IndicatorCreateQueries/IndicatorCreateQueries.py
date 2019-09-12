@@ -146,5 +146,5 @@ def main(args):
     return_outputs(human_readable, outputs)
 
 
-if __name__ in ('builtins', '__main__', '__builtin__'):
+if __name__ in ('builtins', '__builtin__'):
     main(demisto.args())
