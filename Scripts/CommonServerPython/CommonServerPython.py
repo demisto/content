@@ -1868,7 +1868,8 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
         :param date_string: The date string to parse. (required)
 
         :type date_format: ``str``
-        :param date_format: The date format of the date string. If the date format is known, it should be provided. (optional)
+        :param date_format:
+            The date format of the date string. If the date format is known, it should be provided. (optional)
 
         :return: The parsed datetime.
         :rtype: ``(datetime.datetime, datetime.datetime)``
@@ -1985,8 +1986,8 @@ def build_malicious_dbot_entry(indicator, indicator_type, vendor, description=No
         >>> build_malicious_dbot_entry('md5hash', 'MD5', 'Vendor', 'Malicious File')
         {'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA\
 256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTP\
-H || val.SSDeep && val.SSDeep == obj.SSDeep)': {'Malicious': {'Vendor': 'Vendor', 'Description': 'Malicious File'}, 'MD5\
-': 'md5hash'}}
+H || val.SSDeep && val.SSDeep == obj.SSDeep)': {'Malicious': {'Vendor': 'Vendor', 'Description': 'Malicious File'}\
+, 'MD5': 'md5hash'}}
 
     :type indicator: ``str``
     :param indicator: Value (e.g. 8.8.8.8)
@@ -2036,13 +2037,17 @@ class BaseClient(object):
         """Base Client for use in integrations.
 
          :type integration_name: ``str``
-         :param integration_name: Name of the integration as shown in the integration UI, for example: Microsoft Graph User.
+         :param integration_name:
+            Name of the integration as shown in the integration UI, for example: Microsoft Graph User.
 
          :type integration_command_name: ``str``
-         :param integration_command_name: Command names should be written in all lower-case letters, and each word separated with a hyphen, for example: msgraph-user.
+         :param integration_command_name:
+            Command names should be written in all lower-case letters,
+            and each word separated with a hyphen, for example: msgraph-user.
 
          :type integration_context_name: ``str``
-         :param integration_context_name: Context output names should be written in camel case, for example: MSGraphUser.
+         :param integration_context_name:
+            Context output names should be written in camel case, for example: MSGraphUser.
 
          :return: No data returned
          :rtype: ``None``
@@ -2096,7 +2101,9 @@ if 'requests' in sys.modules:
             :param proxy: Whether to run the integration using the system proxy.
 
             :type ok_codes: ``tuple``
-            :param ok_codes: The request codes to accept as OK, for example: (200, 201, 204). If you specify "None", will use requests.Response.ok
+            :param ok_codes:
+                The request codes to accept as OK, for example: (200, 201, 204).
+                If you specify "None", will use requests.Response.ok
 
             :return: No data returned
             :rtype: ``None``
@@ -2151,10 +2158,13 @@ if 'requests' in sys.modules:
             :type resp_type: ``str``
             :param resp_type:
                 Determines which data format to return from the HTTP request. The default
-                is 'json'. Other options are 'text', 'content' or 'response'. Use 'response' to return the full response object.
+                is 'json'. Other options are 'text', 'content' or 'response'. Use 'response'
+                 to return the full response object.
 
             :type ok_codes: ``tuple``
-            :param ok_codes: The request codes to accept as OK, for example: (200, 201, 204). If you specify "None", will use self._ok_codes.
+            :param ok_codes:
+                The request codes to accept as OK, for example: (200, 201, 204). If you specify
+                "None", will use self._ok_codes.
 
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``requests.Response``
@@ -2167,7 +2177,9 @@ if 'requests' in sys.modules:
                 :param response: Response from API after the request for which to check the status.
 
                 :type status_codes: ``tuple``
-                :param status_codes: The request codes to accept as OK, for example: (200, 201, 204). If you specify "None", will use Response.ok.
+                :param status_codes:
+                    The request codes to accept as OK, for example: (200, 201, 204).
+                    If you specify "None", will use Response.ok.
 
                 :return: Whether the status of the response is valid.
                 :rtype: ``bool``
