@@ -26,8 +26,8 @@ def test_generate_hash_queries():
                          "messageData.files.sha256 ='cbcbcbcbcbcbcbcbcb'"
     }
     queries1_1 = generate_hash_queries(['ababababababababab'])
-    queries1_2 = generate_hash_queries(['ababababababababab',''])
-    queries2_1 = generate_hash_queries(['ababababababababab','cbcbcbcbcbcbcbcbcb'])
+    queries1_2 = generate_hash_queries(['ababababababababab', ''])
+    queries2_1 = generate_hash_queries(['ababababababababab', 'cbcbcbcbcbcbcbcbcb'])
     assert expected1['CortexTrapsHash'] == queries1_1['CortexTrapsHash']
     assert expected1['CortexTrapsHash'] == queries1_2['CortexTrapsHash']
     assert expected2['CortexTrapsHash'] == queries2_1['CortexTrapsHash']
@@ -42,8 +42,8 @@ def test_generate_domain_queries():
                          "misc LIKE 'paloaltonetworks.com'"
     }
     queries1_1 = generate_domain_queries(['demisto.com'])
-    queries1_2 = generate_domain_queries(['demisto.com',''])
-    queries2_1 = generate_domain_queries(['demisto.com','paloaltonetworks.com'])
+    queries1_2 = generate_domain_queries(['demisto.com', ''])
+    queries2_1 = generate_domain_queries(['demisto.com', 'paloaltonetworks.com'])
     assert expected1['CortexThreatDomain'] == queries1_1['CortexThreatDomain']
     assert expected1['CortexThreatDomain'] == queries1_2['CortexThreatDomain']
     assert expected2['CortexThreatDomain'] == queries2_1['CortexThreatDomain']
