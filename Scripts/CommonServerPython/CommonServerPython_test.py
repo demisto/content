@@ -422,6 +422,10 @@ def test_is_error_true():
     assert is_error(execute_command_results)
 
 
+def test_is_error_false():
+    assert not is_error(None)
+
+
 def test_is_error_single_entry():
     execute_command_results = {
         "Type": entryTypes["error"],
@@ -731,7 +735,7 @@ class TestBaseClient(object):
 
     def test_http_request_content(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', content=str.encode(json.dumps(self.text)))
-        res = self.client._http_request('get', 'event', resp_type='text')
+        res = self.client._http_request('get', 'event', resp_type='content')
         assert res == json.dumps(self.text)
 
     def test_http_request_response(self, requests_mock):
