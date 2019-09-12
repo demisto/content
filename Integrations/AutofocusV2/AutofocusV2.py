@@ -243,6 +243,7 @@ def parse_response(resp, err_operation):
             sys.exit(0)
         elif res_json.get("message").find("AF Cookie Not Found") != -1:
             demisto.results(err_msg)
+            sys.exit(0)
         elif err_operation == 'Tag details operation failed' and \
                 res_json.get("message").find("Tag") != -1 and res_json.get("message").find("not found") != -1:
             demisto.results(err_msg)
@@ -865,7 +866,7 @@ def sessions_search_results_command():
     if len(results) < 1:
         md = results = 'No entries found that match the query'
     else:
-        md = tableToMarkdown(f'Search Samples Results is {status}', results)
+        md = tableToMarkdown(f'Search Sessions Results is {status}', results)
     context = {
         'AutoFocus.SessionsResults(val.ID === obj.ID)': results,
         'AutoFocus.SessionsSearch(val.AFCookie === obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
@@ -1005,3 +1006,5 @@ except Exception as e:
     LOG(e)
     LOG.print_log()
     return_error(f'Unexpected error: {e}')
+
+
