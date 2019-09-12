@@ -55,11 +55,11 @@ def event_list_output(*args, **kwargs):
 
 def mock_client() -> Client:
     return Client(
-        'http://api.service.com',
-        'v1',
         'Analytics And SIEM',
         'analytics-and-siem',
         'AnalyticsAndSIEM',
+        'http://api.service.com',
+        'v1',
         False,
         False
     )

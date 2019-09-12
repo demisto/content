@@ -24,177 +24,177 @@ script:
   commands:
   - arguments:
     - default: false
-      description: ID of event
+      description: The ID of event for which to get information.
       isArray: false
       name: event_id
       required: true
       secret: false
     deprecated: false
-    description: Gets an event from service
+    description: Returns an event by event ID.
     execution: false
     name: analytics-and-siem-get-event
     outputs:
     - contextPath: AnalyticsAndSIEM.Event.ID
-      description: ID of Event
+      description: The ID of event.
       type: String
     - contextPath: AnalyticsAndSIEM.Event.Description
-      description: Description of event
+      description: A description of the event.
       type: String
     - contextPath: AnalyticsAndSIEM.Event.Created
-      description: Time of event creation
+      description: The date/time that the event was created.
       type: Date
     - contextPath: AnalyticsAndSIEM.Event.IsActive
-      description: Status of event
+      description: Whether the event is active.
       type: Boolean
     - contextPath: AnalyticsAndSIEM.Event.Assignee.Name
-      description: Name of assigned user
+      description: The name of the user assigned to the event.
       type: String
     - contextPath: AnalyticsAndSIEM.Event.Assignee.ID
-      description: ID of assigned user
+      description: The ID of the user assigned to the event.
       type: String
   - arguments:
     - default: false
-      description: ID of event to close
+      description: The ID of the event to close.
       isArray: false
       name: event_id
       required: true
       secret: false
     deprecated: false
-    description: Close event in service
+    description: Closes the specified event.
     execution: false
     name: analytics-and-siem-close-event
     outputs:
     - contextPath: AnalyticsAndSIEM.Event.ID
-      description: ID of event
+      description: The ID of the event.
       type: String
     - contextPath: AnalyticsAndSIEM.Event.Assignee.IsActive
-      description: Is event active
+      description: Whether the event is active.
       type: Boolean
   - arguments:
     - default: false
-      description: ID of an event
+      description: The ID of the event to update.
       isArray: false
       name: event_id
       required: true
       secret: false
     - default: false
-      description: description of the event
+      description: The updated description of the event.
       isArray: false
       name: description
       required: false
       secret: false
     - default: false
-      description: A CSV list of user ID to assigne
+      description: A CSV list of user IDs to assign to the event. This list will replace the users currently assigned to the event.
       isArray: true
       name: assignee
       required: false
       secret: false
     deprecated: false
-    description: Updates a given event
+    description: Updates the specified event.
     execution: false
     name: analytics-and-siem-update-event
     outputs:
     - contextPath: AnalyticsAndSIEM.Event.ID
-      description: ID of Event
+      description: The ID of the event.
       type: String
     - contextPath: AnalyticsAndSIEM.Event.Description
-      description: Description of event
+      description: The updated description of the event.
       type: String
     - contextPath: AnalyticsAndSIEM.Event.Created
-      description: Time of event creation
+      description: The date/time that the event was created.
       type: Date
     - contextPath: AnalyticsAndSIEM.Event.IsActive
-      description: Status of event
+      description: Whether the event is active.
       type: Boolean
     - contextPath: AnalyticsAndSIEM.Event.Assignee.Name
-      description: Name of assigned user
+      description: A list of names of users currently assigned to the event.
       type: String
     - contextPath: AnalyticsAndSIEM.Event.Assignee.ID
-      description: ID of assigned user
+      description: A list of IDs of users currently assigned to the event.
       type: String
   - arguments:
     - default: false
-      description: description of the event
+      description: A description of the event.
       isArray: false
       name: description
       required: true
       secret: false
     - default: false
-      description: A CSV list of user ID to assigne
+      description: A CSV list of user IDs to assign to the event.
       isArray: true
       name: assignee
       required: false
       secret: false
     deprecated: false
-    description: Updates a given event
+    description: Creates an event in the service system
     execution: false
     name: analytics-and-siem-create-event
     outputs:
     - contextPath: AnalyticsAndSIEM.Event.ID
-      description: ID of Event
+      description: The ID of the event.
       type: String
     - contextPath: AnalyticsAndSIEM.Event.Description
-      description: Description of event
+      description: The description of the event.
       type: String
     - contextPath: AnalyticsAndSIEM.Event.Created
-      description: Time of event creation
+      description: The date/time that the event was created.
       type: Date
     - contextPath: AnalyticsAndSIEM.Event.IsActive
-      description: Status of event
+      description: Whether the event is active.
       type: Boolean
     - contextPath: AnalyticsAndSIEM.Event.Assignee.Name
-      description: Name of assigned user
+      description: A list of names of users assigned to the event.
       type: String
     - contextPath: AnalyticsAndSIEM.Event.Assignee.ID
-      description: ID of assigned user
+      description: A list of IDs of users assigned to the event.
       type: String
   - arguments:
     - default: false
-      description: ID of event
+      description: A CSV list of event IDs.
       isArray: false
       name: event_id
       required: false
       secret: false
     - default: false
-      description: Timestamp to search from
+      description: The date/time from which to begin the search.
       isArray: false
       name: since_time
       required: false
       secret: false
     - default: false
-      description: A CSV list of user ID to assigne
+      description: A CSV list of user IDs.
       isArray: false
       name: assignee
       required: false
       secret: false
     - default: false
-      description: Search for active or incative events
+      description: Whether the event is active. Can be "true" or "false". If empty, will return active and inactive events.
       isArray: false
       name: is_active
       required: false
       secret: false
     deprecated: false
-    description: Return event matches query
+    description: Returns events that match the specified query.
     execution: false
     name: analytics-and-siem-query
     outputs:
     - contextPath: AnalyticsAndSIEM.Event.ID
-      description: ID of Event
+      description: The ID of the event.
       type: String
     - contextPath: AnalyticsAndSIEM.Event.Description
-      description: Description of event
+      description: The description of the event.
       type: String
     - contextPath: AnalyticsAndSIEM.Event.Created
-      description: Time of event creation
+      description: The date/time that the event was created.
       type: Date
     - contextPath: AnalyticsAndSIEM.Event.IsActive
-      description: Status of event
+      description: Whether the event is active.
       type: Boolean
     - contextPath: AnalyticsAndSIEM.Event.Assignee.Name
-      description: Name of assigned user
+      description: A list of names of users assigned to the event.
       type: String
     - contextPath: AnalyticsAndSIEM.Event.Assignee.ID
-      description: ID of assigned user
+      description: A list of IDs of users assigned to the event.
       type: String
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false

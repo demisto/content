@@ -21,30 +21,33 @@ class Client(BaseHTTPClient):
     """
 
     def __init__(self, *args, **kwargs):
-        # Adds a fetch limit to client
-        self._fetch_limit = kwargs.get('limit')
-        # remove `limit`
-        kwargs.pop('limit', None)
+        # Adds a max_results to client
+        self._fetch_max_results = kwargs.get('max_results')
+        # remove `max_results`
+        kwargs.pop('max_results', None)
         super().__init__(*args, **kwargs)
 
     @property
-    def fetch_limit(self):
-        return self._fetch_limit
+    def max_results(self):
+        return self._fetch_max_results
 
     def test_module_request(self) -> Dict:
-        """Performs basic get request to see if the API is reachable and authentication works.
+        """Performs basic GET request to check if the API is reachable and authentication is successful.
 
         Returns:
             Response json
         """
         return self._http_request('GET', 'version')
 
-    def list_events_request(self, limit: Union[int, str] = None, since_time: Optional[str] = None) -> Dict:
-        """Gets all events from API.
+    def list_events_request(self, max_results: Union[int, str] = None,
+                            event_created_date_after: Optional[str] = None,
+                            event_created_date_before: Optional[str] = None) -> Dict:
+        """Returns all events by sending a GET request.
 
         Args:
-            limit: limit results
-            since_time: timestamp to start pull events from
+            max_results: The maximum number of events to return.
+            event_created_date_after: Returns events created after this date.
+            event_created_date_before: Returns events created before this date.
 
         Returns:
             Response from API. from since_time if supplied else returns all events in given limit.
@@ -52,12 +55,15 @@ class Client(BaseHTTPClient):
         # The service endpoint to request from
         suffix = 'event'
         # Dictionary of params for the request
-        params = assign_params(sinceTime=since_time, limit=limit)
+        params = assign_params(
+            sinceTime=event_created_date_after,
+            fromTime=event_created_date_before,
+            limit=max_results)
         # Send a request using our http_request wrapper
         return self._http_request('GET', suffix, params=params)
 
     def event_request(self, event_id: AnyStr) -> Dict:
-        """Gets events by ID
+        """Return an event by the event ID.
 
         Args:
             event_id: event id to get
@@ -73,10 +79,10 @@ class Client(BaseHTTPClient):
         return self._http_request('GET', suffix, params=params)
 
     def close_event_request(self, event_id: AnyStr) -> Dict:
-        """Closes event by ID
+        """Closes the sepcified event.
 
         Args:
-            event_id: event to delete
+            event_id: The ID of the event to close.
 
         Returns:
             Response from API
@@ -90,12 +96,12 @@ class Client(BaseHTTPClient):
 
     def update_event_request(self, event_id: AnyStr, description: Optional[AnyStr] = None,
                              assignee: Optional[List[str]] = None) -> Dict:
-        """Update given event
+        """Updates the specified event.
 
         Args:
-            event_id: event ID
-            assignee: User to assign event to
-            description: change description of event
+            event_id: The ID of the event to update.
+            assignee: A list of user IDs to assign to the event.
+            description: The updated description of the event.
 
 
         Returns:
@@ -109,11 +115,11 @@ class Client(BaseHTTPClient):
         return self._http_request('POST', suffix, params=params)
 
     def create_event_request(self, description: str, assignee: List[str] = None) -> Dict:
-        """Creates given event.
+        """Creates an event in the service.
 
         Args:
-            description: change description of event
-            assignee: User to assign event to
+            description: A description of the event.
+            assignee: A list of user IDs to assign to the event.
 
         Returns:
             Response from API
@@ -126,10 +132,10 @@ class Client(BaseHTTPClient):
         return self._http_request('POST', suffix, params=params)
 
     def query_request(self, **kwargs) -> Dict:
-        """Query given kwargs
+        """Query the specified kwargs.
 
         Args:
-            **kwargs:
+            **kwargs: The keyword argument for which to search.
 
         Returns:
             Response from API
@@ -144,13 +150,13 @@ class Client(BaseHTTPClient):
 
 
 def build_context(events: Union[Dict, List]) -> Union[Dict, List]:
-    """Formatting API response to Demisto Context
+    """Formats the API response to Demisto context.
 
     Args:
-        events: Raw response from API call, can be List or Dict
+        events: The raw response from the API call. Can be a List or Dict.
 
     Returns:
-        formatted Dict/List (according to the input type)
+        The formatted Dict or List.
 
     Examples:
         >>> build_context({'eventId': '1', 'description': 'event description', 'createdAt':\
@@ -160,13 +166,13 @@ def build_context(events: Union[Dict, List]) -> Union[Dict, List]:
     """
 
     def build_dict(event: Dict) -> Dict:
-        """Builds Dict formatted for Demisto
+        """Builds a Dict formatted for Demisto.
 
         Args:
-            event: One event from API
+            event: A single event from the API call.
 
         Returns:
-            Dict formatted for Demisto
+            A Dict formatted for Demisto context.
         """
         return {
             'ID': event.get('eventId'),
@@ -189,8 +195,8 @@ def build_context(events: Union[Dict, List]) -> Union[Dict, List]:
 ''' COMMANDS '''
 
 
-def test_module(client: Client, _) -> Tuple[str, Dict, Dict]:
-    """Performs basic get request to see if the API is reachable and authentication works.
+def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
+    """Performs a basic GET request to check if the API is reachable and authentication is successful.
     """
     results = client.test_module_request()
     if 'version' in results:
@@ -209,8 +215,9 @@ def fetch_incidents(client: Client, last_run):
         last_run_string = last_run.strftime(timestamp_format)
     else:
         last_run_string = datetime.strptime(last_run, timestamp_format)
-    incidents: List[Dict] = list()
-    raw_response = client.list_events_request(since_time=last_run_string, limit=client.fetch_limit)
+    incidents = list()
+    raw_response = client.list_events_request(event_created_date_after=last_run_string,
+                                              max_results=client.max_results)
     events: List[Dict] = raw_response.get('event', [])
     if events:
         # Creates incident entry
@@ -228,8 +235,13 @@ def fetch_incidents(client: Client, last_run):
 
 
 def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    limit: Optional[str] = args.get('limit')
-    raw_response = client.list_events_request(limit=limit)
+    max_results: Optional[str] = args.get('max_results')
+    event_created_date_before: Optional[str] = args.get('event_created_date_before')
+    event_created_date_after: Optional[str] = args.get('event_created_date_after')
+    raw_response = client.list_events_request(
+        event_created_date_before=event_created_date_before,
+        event_created_date_after=event_created_date_after,
+        max_results=max_results)
     events = raw_response.get('event', [])
     if events:
         title: str = f'{client.integration_name} - List events:'
@@ -245,7 +257,7 @@ def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 def get_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
-    Gets details about a raw_response using ID or some other filters
+    Gets details about a raw_response using the event ID or other valid filters.
     """
     # Get arguments from user
     event_id: str = args.get('event_id', '')
@@ -267,7 +279,7 @@ def get_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 def close_event(client: Client, args: Dict) -> Tuple[str, Dict, None]:
     """
-    Gets details about a raw_response using ID or some other filters
+    Gets details about a raw_response using the event ID or other valid filters.
     """
     # Get arguments from user
     event_id: str = args.get('event_id', '')
