@@ -19,11 +19,11 @@ def test_generate_ip_queries():
 
 def test_generate_hash_queries():
     expected1 = {
-        'CortexTrapsIP': "SELECT * from tms.threat where messageData.files.sha256 ='ababababababababab'"
+        'CortexTrapsHash': "SELECT * from tms.threat where messageData.files.sha256 ='ababababababababab'"
     }
     expected2 = {
-        'CortexTrapsIP': "SELECT * from tms.threat where messageData.files.sha256='ababababababababab' OR "
-                         "messageData.files.sha256 ='cbcbcbcbcbcbcbcbcb'"
+        'CortexTrapsHash': "SELECT * from tms.threat where messageData.files.sha256='ababababababababab' OR "
+                           "messageData.files.sha256 ='cbcbcbcbcbcbcbcbcb'"
     }
     queries1_1 = generate_hash_queries(['ababababababababab'])
     queries1_2 = generate_hash_queries(['ababababababababab', ''])
@@ -35,11 +35,11 @@ def test_generate_hash_queries():
 
 def test_generate_domain_queries():
     expected1 = {
-        'CortexTrapsIP': "SELECT * from panw.threat where misc LIKE 'demisto.com'"
+        'CortexThreatDomain': "SELECT * from panw.threat where misc LIKE 'demisto.com'"
     }
     expected2 = {
-        'CortexTrapsIP': "SELECT * from panw.threat where misc LIKE 'demisto.com' OR "
-                         "misc LIKE 'paloaltonetworks.com'"
+        'CortexThreatDomain': "SELECT * from panw.threat where misc LIKE 'demisto.com' OR "
+                              "misc LIKE 'paloaltonetworks.com'"
     }
     queries1_1 = generate_domain_queries(['demisto.com'])
     queries1_2 = generate_domain_queries(['demisto.com', ''])
