@@ -408,7 +408,7 @@ def parse_coverage_sub_categories(coverage_data):
         if sub_category_name in SAMPLE_ANALYSIS_COVERAGE_KEYS:
             new_sub_category_data = get_data_from_coverage_sub_category(sub_category_name, sub_category_data)
             new_sub_category_name = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get(  # type: ignore
-                'display_name')  # type: ignore
+                'display_name')
             new_coverage[new_sub_category_name] = new_sub_category_data
     return {'coverage': new_coverage}
 
