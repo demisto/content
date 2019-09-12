@@ -52,14 +52,14 @@ ASSESSMENTS_TRANS = {
     'master_job_count': 'MasterJobCount',
     'default_schedule': 'DefaultSchedule',
     'default_asset_count': 'DefaultAssetCount',
-    'project_template.id': 'AssessmentTemplate.Id',
+    'project_template.id': 'AssessmentTemplateId',
     'default_asset_group_count': 'DefaultAssetGroupCount',
-    'project_template.company': 'AssessmentTemplate.Company',
-    'project_template.created': 'AssessmentTemplate.Created',
-    'project_template.modified': 'AssessmentTemplate.Modified',
-    'project_template.template_name': 'AssessmentTemplate.TemplateName',
-    'project_template.default_schedule': 'AssessmentTemplate.DefaultSchedule',
-    'project_template.template_description': 'AssessmentTemplate.TemplateDescription'
+    'project_template.company': 'AssessmentTemplateCompany',
+    'project_template.created': 'AssessmentTemplateCreated',
+    'project_template.modified': 'AssessmentTemplateModified',
+    'project_template.template_name': 'AssessmentTemplateName',
+    'project_template.default_schedule': 'AssessmentTemplateDefaultSchedule',
+    'project_template.template_description': 'AssessmentTemplateDescription'
 }
 
 TESTS_TRANS = {
@@ -105,20 +105,6 @@ TEST_RESULT_TRANS = {
     'modified': 'Modified',
     'project.id': 'Assessment.Id',
     'project.name': 'Assessment.Name',
-    'master_job.id': 'MasterJob.Id',
-    'master_job.assets': {
-        'ipv4_address': 'Ipv4Address',
-        'hostname': 'Hostname',
-        'product_name': 'ProductName',
-        'id': 'Id',
-        'modified': 'Modified',
-        'status': 'Status'
-    },
-    'master_job.scenarios': {
-        'id': 'Id',
-        'name': 'Name',
-        'description': 'Description'
-    },
     'scenario.id': 'Scenario.Id',
     'scenario.name': 'Scenario.Name',
     'scenario.description': 'Scenario.Description',
@@ -297,7 +283,7 @@ def get_test_execution_status_command():
         test_status = build_transformed_dict(raw_test_status, TEST_STATUS_TRANS)
         test_status['Id'] = test_id
         hr = tableToMarkdown(f'Test {test_id} status', test_status)
-        return_outputs(hr, {'AttackIQ.Test(val.Id === obj.Id)': test_status}, raw_test_status)
+        return_outputs(hr, {'AttackIQTest(val.Id === obj.Id)': test_status}, raw_test_status)
     except HTTPError as e:
         return_error(create_invalid_id_err_msg(str(e), ['500']))
 
@@ -343,7 +329,7 @@ def get_test_results_command(args=demisto.args()):
         raw_test_res = http_request('GET', '/v1/results', params=params)
         test_res = build_transformed_dict(raw_test_res['results'], TEST_RESULT_TRANS)
         hr = build_test_results_hr(test_res, test_id)
-        return_outputs(hr, {'AttackIQ.TestResult(val.Id === obj.Id)': test_res}, raw_test_res)
+        return_outputs(hr, {'AttackIQTestResult(val.Id === obj.Id)': test_res}, raw_test_res)
     except HTTPError as e:
         return_error(create_invalid_id_err_msg(str(e), ['500']))
 
@@ -368,13 +354,23 @@ def list_assessments_command():
     page = demisto.args().get('page_number')
     try:
         page_size = int(demisto.args().get('page_size', DEFAULT_PAGE_SIZE))
+        page = int(page)
     except (ValueError, TypeError):
         page_size = DEFAULT_PAGE_SIZE
     raw_assessments = get_assessments(page=page)
     assessments_res = build_transformed_dict(raw_assessments.get('results'), ASSESSMENTS_TRANS)
     ass_cnt = raw_assessments.get('count')
-    context = {'AttackIQ.Assessment(val.Id === obj.Id)': assessments_res, 'AttackIQ.Assessment(val.Count === obj).Count': ass_cnt}
-    hr = tableToMarkdown(f'AttackIQ Assessments Page {page}/{(ass_cnt//page_size) + 1}', assessments_res,
+    total_pages = (ass_cnt // page_size) + 1
+    try:
+        remaining_pages = total_pages - page
+    except (ValueError, TypeError):
+        remaining_pages = None
+    context = {
+        'AttackIQ.Assessment(val.Id === obj.Id)': assessments_res,
+        'AttackIQ.Assessment(val.Count).Count': ass_cnt,
+        'AttackIQ.Assessment(val.RemainingPages).RemainingPages': remaining_pages
+    }
+    hr = tableToMarkdown(f'AttackIQ Assessments Page {page}/{total_pages}', assessments_res,
                          headers=['Id', 'Name', 'Description', 'User', 'Created', 'Modified'])
     return_outputs(hr, context, raw_assessments)
 
@@ -421,7 +417,7 @@ def list_tests_by_assessment_command():
     ass_id = demisto.getArg('assessment_id')
     raw_res = http_request('GET', f'/v1/tests', params={'project': ass_id})
     assessment_res = build_transformed_dict(raw_res.get('results'), TESTS_TRANS)
-    ec = {'AttackIQ.Test(val.Id === obj.Id)': assessment_res}
+    ec = {'AttackIQTest(val.Id === obj.Id)': assessment_res}
     hr = build_tests_hr(assessment_res)
     return_outputs(hr, ec, raw_res)
 
