@@ -12,6 +12,7 @@ from threading import Thread
 from typing import Match, Union, Optional, cast, Dict, Any, List
 import re
 from jwt.algorithms import RSAAlgorithm
+from tempfile import NamedTemporaryFile
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -1384,28 +1385,35 @@ def long_running_loop():
         Thread(target=channel_mirror_loop, daemon=True).start()
         demisto.info('Started channel mirror loop thread')
 
+        ssl_args = dict()
+        certificate_path = str()
+        private_key_path = str()
+
         if certificate and private_key:
-            # Starting HTTPS server
-            f = open('cert.pem', 'wb')
-            f.write(bytes(certificate, 'utf-8'))
-            f.flush()
-            f.close()
-            certificate_path: str = os.path.abspath('cert.pem')
+            certificate_file = NamedTemporaryFile(delete=False)
+            certificate_path = certificate_file.name
+            certificate_file.write(bytes(certificate, 'utf-8'))
+            certificate_file.close()
+            ssl_args['certfile'] = certificate_path
 
-            f = open('key.pem', 'wb')
-            f.write(bytes(private_key, 'utf-8'))
-            f.close()
-            private_key_path: str = os.path.abspath('key.pem')
+            private_key_file = NamedTemporaryFile(delete=False)
+            private_key_path = private_key_file.name
+            private_key_file.write(bytes(private_key, 'utf-8'))
+            private_key_file.close()
+            ssl_args['keyfile'] = private_key_path
 
-            server = WSGIServer(('', port), APP, keyfile=private_key_path, certfile=certificate_path)
             demisto.info('Starting HTTPS Server')
-            server.serve_forever()
         else:
             # Starting HTTP server
-            server = WSGIServer(('', port), APP)
             demisto.info('Starting HTTP Server')
-            server.serve_forever()
+
+        server = WSGIServer(('', port), APP, **ssl_args)
+        server.serve_forever()
     except Exception as e:
+        if certificate_path:
+            os.unlink(certificate_path)
+        if private_key_path:
+            os.unlink(private_key_path)
         demisto.error(f'An error occurred in long running loop: {str(e)}')
         raise ValueError(str(e))
 

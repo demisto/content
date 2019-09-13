@@ -27,7 +27,7 @@ configuration:
 - display: Private Key (Required for HTTPS)
   name: key
   required: false
-  type: 4
+  type: 12
 - defaultvalue: Low
   display: Minimum incident severity to send notifications to Teams by
   name: min_incident_severity
