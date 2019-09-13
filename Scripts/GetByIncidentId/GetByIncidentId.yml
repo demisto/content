@@ -1,6 +1,6 @@
 commonfields:
   id: GetByIncidentId
-  version: 4
+  version: -1
 name: GetByIncidentId
 script: |
   from functools import reduce
