@@ -225,7 +225,7 @@ script:
       description: File MD5, SHA-1 or SHA-256
       isArray: false
       name: file
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Run file check against ThreatQ
