@@ -31,7 +31,7 @@ REGEX_MAP = {
     'domain': re.compile(domainRegex, regexFlags)
 }
 
-TQ_TO_DEMISTO_IOC_TYPES = {
+TQ_TO_DEMISTO_INDICATOR_TYPES = {
     'IP Address': 'ip',
     'IPv6 Address': 'ip',
     'Email Address': 'email',
@@ -50,7 +50,7 @@ STATUS_ID_TO_STATUS = {
     5: 'Whitelisted'
 }
 
-TYPE_ID_TO_IOC_TYPE = {
+TYPE_ID_TO_INDICATOR_TYPE = {
     1: 'Binary String',
     2: 'CIDR Block',
     3: 'CVE',
@@ -285,20 +285,20 @@ def make_edit_request_for_an_object(obj_id, obj_type, params):
     return_outputs(readable, entry_context, raw)
 
 
-def make_ioc_reputation_request(indicator_type, value, generic_context):
-    # Search for the IOC ID by keyword:
+def make_indicator_reputation_request(indicator_type, value, generic_context):
+    # Search for the indicator ID by keyword:
     url_suffix = '/search?query={0}&limit=1'.format(value)
     res = tq_request('GET', url_suffix)
 
     raw_context = {}  # type: Dict[str, Any]
     if res['data'] and res['data'][0].get('value') == value:  # ThreatQ returns results whose prefixes match the query
-        # Search for detailed information about the IOC
+        # Search for detailed information about the indicator
         url_suffix = '/indicators/{0}?with=attributes,sources,score,type'.format(res['data'][0].get('id'))
         res = tq_request('GET', url_suffix)
         raw_context = indicator_data_to_demisto_format(res['data'])
 
     dbot_context = create_dbot_context(value, indicator_type, raw_context.get('TQScore', -1))
-    entry_context = set_ioc_entry_context(indicator_type, raw_context, dbot_context, generic_context)
+    entry_context = set_indicator_entry_context(indicator_type, raw_context, dbot_context, generic_context)
 
     readable_title = 'Search results for {0} {1}'.format(indicator_type, value)
     readable = build_readable(readable_title, 'indicator', raw_context)
@@ -466,7 +466,7 @@ def indicator_data_to_demisto_format(data):
         'CreatedAt': data.get('created_at'),
         'Value': data.get('value'),
         'Status': STATUS_ID_TO_STATUS[data.get('status_id')],
-        'Type': TYPE_ID_TO_IOC_TYPE[data.get('type_id')],
+        'Type': TYPE_ID_TO_INDICATOR_TYPE[data.get('type_id')],
         'URL': '{0}/indicators/{1}/details'.format(SERVER_URL, data.get('id')),
         'TQScore': get_tq_score_from_response(data.get('score')),
         'Description': clean_html_from_string(data.get('description')),
@@ -545,7 +545,7 @@ def add_malicious_data(generic_context, tq_score):
     }
 
 
-def set_ioc_entry_context(indicator_type, raw, dbot, generic):
+def set_indicator_entry_context(indicator_type, raw, dbot, generic):
     if dbot.get('Score') == 3:
         add_malicious_data(generic, raw.get('TQScore', -1))
 
@@ -558,13 +558,13 @@ def set_ioc_entry_context(indicator_type, raw, dbot, generic):
     return ec
 
 
-def build_readable_for_search_by_name(ioc_context, event_context, adversary_context, file_context):
-    if not (ioc_context or event_context or adversary_context or file_context):
+def build_readable_for_search_by_name(indicator_context, event_context, adversary_context, file_context):
+    if not (indicator_context or event_context or adversary_context or file_context):
         return 'No results.'
 
     human_readable = ''
-    if ioc_context:
-        human_readable += tableToMarkdown('Search Results - Indicators', ioc_context)
+    if indicator_context:
+        human_readable += tableToMarkdown('Search Results - Indicators', indicator_context)
     if event_context:
         human_readable += tableToMarkdown('Search Results - Events', event_context)
     if adversary_context:
@@ -621,14 +621,14 @@ def search_by_name_command():
     url_suffix = '/search?query={0}&limit={1}'.format(name, limit)
     res = tq_request('GET', url_suffix)
 
-    ioc_context = [{'ID': e['id'], 'Value': e['value']} for e in res['data'] if e['object'] == 'indicator']
+    indicator_context = [{'ID': e['id'], 'Value': e['value']} for e in res['data'] if e['object'] == 'indicator']
     event_context = [{'ID': e['id'], 'Title': e['value']} for e in res['data'] if e['object'] == 'event']
     adversary_context = [{'ID': e['id'], 'Name': e['value']} for e in res['data'] if e['object'] == 'adversary']
     file_context = [{'ID': e['id'], 'Name': e['value'].split()[1]} for e in res['data'] if e['object'] == 'attachment']
     # file value in response is returned in the form ["title" name], thus we use the split method above
 
     entry_context = {
-        CONTEXT_PATH['indicator']: ioc_context,
+        CONTEXT_PATH['indicator']: indicator_context,
         CONTEXT_PATH['event']: event_context,
         CONTEXT_PATH['adversary']: adversary_context,
         CONTEXT_PATH['attachment']: file_context
@@ -637,7 +637,7 @@ def search_by_name_command():
     # Remove items with empty values:
     entry_context = {k: v for k, v in entry_context.items() if v}
 
-    human_readable = build_readable_for_search_by_name(ioc_context, event_context, adversary_context, file_context)
+    human_readable = build_readable_for_search_by_name(indicator_context, event_context, adversary_context, file_context)
 
     return_outputs(human_readable, entry_context)
 
@@ -661,7 +661,7 @@ def search_by_id_command():
 
     dbot_score = None
     if obj_type == 'indicator':
-        indicator_type = TQ_TO_DEMISTO_IOC_TYPES.get(raw['Type'])
+        indicator_type = TQ_TO_DEMISTO_INDICATOR_TYPES.get(raw['Type'])
         if indicator_type is not None:
             ec['DBotScore'] = create_dbot_context(raw['Value'], indicator_type, raw['TQScore'])
 
@@ -671,9 +671,9 @@ def search_by_id_command():
     return_outputs(readable, ec, raw)
 
 
-def create_ioc_command():
+def create_indicator_command():
     args = demisto.args()
-    indicator_type = args.get('indicator_type')
+    indicator_type = args.get('type')
     status = args.get('status')
     value = args.get('value')
     sources = args.get('sources')
@@ -709,7 +709,7 @@ def create_adversary_command():
 
 def create_event_command():
     args = demisto.args()
-    event_type = args.get('event_type')
+    event_type = args.get('type')
     title = args.get('title')
     date = args.get('date')
     sources = args.get('sources')
@@ -727,15 +727,15 @@ def create_event_command():
     make_create_object_request('event', params)
 
 
-def edit_ioc_command():
+def edit_indicator_command():
     args = demisto.args()
-    indicator_id = args.get('indicator_id')
+    indicator_id = args.get('id')
     value = args.get('value')
-    indicator_type = args.get('indicator_type')
+    indicator_type = args.get('type')
     description = args.get('description')
 
     if isinstance(indicator_id, str) and not indicator_id.isdigit():
-        return_error('Argument indicator_id must be an integer.')
+        return_error('Argument id must be an integer.')
 
     params = {
         'value': value,
@@ -748,11 +748,11 @@ def edit_ioc_command():
 
 def edit_adversary_command():
     args = demisto.args()
-    adversary_id = args.get('adversary_id')
+    adversary_id = args.get('id')
     name = args.get('name')
 
     if isinstance(adversary_id, str) and not adversary_id.isdigit():
-        return_error('Argument adversary_id must be an integer.')
+        return_error('Argument id must be an integer.')
 
     params = {
         'name': name
@@ -763,14 +763,14 @@ def edit_adversary_command():
 
 def edit_event_command():
     args = demisto.args()
-    event_id = args.get('event_id')
-    event_type = args.get('event_type')
+    event_id = args.get('id')
+    event_type = args.get('type')
     title = args.get('title')
     date = args.get('date')
     description = args.get('description')
 
     if isinstance(event_id, str) and not event_id.isdigit():
-        return_error('Argument event_id must be an integer.')
+        return_error('Argument id must be an integer.')
 
     params = {
         'title': title,
@@ -788,7 +788,7 @@ def delete_object_command():
     obj_id = args.get('obj_id')
 
     if isinstance(obj_id, str) and not obj_id.isdigit():
-        return_error('Argument object_id must be an integer.')
+        return_error('Argument obj_id must be an integer.')
 
     url_suffix = '/{0}/{1}'.format(OBJ_DIRECTORY[obj_type], obj_id)
     tq_request('DELETE', url_suffix)
@@ -867,11 +867,11 @@ def unlink_objects_command():
 def update_score_command():
     # Note: We can't update DBot Score because API doesn't retrieve the indicator value.
     args = demisto.args()
-    indicator_id = args.get('indicator_id')
+    indicator_id = args.get('id')
     score = args.get('score')
 
     if isinstance(indicator_id, str) and not indicator_id.isdigit():
-        return_error('Argument indicator_id must be an integer.')
+        return_error('Argument id must be an integer.')
 
     if isinstance(score, str) and not score.isdigit():  # User chose 'Generated Score' option
         manual_score = None
@@ -934,8 +934,8 @@ def delete_source_command():
 
 def add_attribute_command():
     args = demisto.args()
-    attribute_name = args.get('attribute_name')
-    attribute_value = args.get('attribute_value')
+    attribute_name = args.get('name')
+    attribute_value = args.get('value')
     obj_type = args.get('obj_type')
     obj_id = args.get('obj_id')
 
@@ -991,11 +991,11 @@ def delete_attribute_command():
 
 def update_status_command():
     args = demisto.args()
-    indicator_id = args.get('indicator_id')
+    indicator_id = args.get('id')
     status = args.get('status')
 
     if isinstance(indicator_id, str) and not indicator_id.isdigit():
-        return_error('Argument indicator_id must be an integer.')
+        return_error('Argument id must be an integer.')
 
     url_suffix = '/indicators/{0}'.format(indicator_id)
     params = {'status': status}
@@ -1058,7 +1058,10 @@ def upload_file_command():
 
 def download_file_command():
     args = demisto.args()
-    file_id = args.get('file_id')
+    file_id = args.get('id')
+
+    if isinstance(file_id, str) and not file_id.isdigit():
+        return_error('Argument id must be an integer.')
 
     url_suffix = '/attachments/{0}/download'.format(file_id)
 
@@ -1106,7 +1109,7 @@ def get_ip_reputation():
 
     generic_context = {'Address': ip}
 
-    make_ioc_reputation_request(indicator_type='ip', value=ip, generic_context=generic_context)
+    make_indicator_reputation_request(indicator_type='ip', value=ip, generic_context=generic_context)
 
 
 def get_url_reputation():
@@ -1118,7 +1121,7 @@ def get_url_reputation():
 
     generic_context = {'Data': url}
 
-    make_ioc_reputation_request(indicator_type='url', value=url, generic_context=generic_context)
+    make_indicator_reputation_request(indicator_type='url', value=url, generic_context=generic_context)
 
 
 def get_email_reputation():
@@ -1130,7 +1133,7 @@ def get_email_reputation():
 
     generic_context = {'Address': email}
 
-    make_ioc_reputation_request(indicator_type='email', value=email, generic_context=generic_context)
+    make_indicator_reputation_request(indicator_type='email', value=email, generic_context=generic_context)
 
 
 def get_domain_reputation():
@@ -1142,7 +1145,7 @@ def get_domain_reputation():
 
     generic_context = {'Name': domain}
 
-    make_ioc_reputation_request(indicator_type='domain', value=domain, generic_context=generic_context)
+    make_indicator_reputation_request(indicator_type='domain', value=domain, generic_context=generic_context)
 
 
 def get_file_reputation():
@@ -1161,7 +1164,7 @@ def get_file_reputation():
         'SHA256': file if fmt == 'sha256' else None
     }, removeNull=True)
 
-    make_ioc_reputation_request(indicator_type='file', value=file, generic_context=generic_context)
+    make_indicator_reputation_request(indicator_type='file', value=file, generic_context=generic_context)
 
 
 ''' EXECUTION CODE '''
@@ -1176,13 +1179,13 @@ try:
     elif command == 'threatq-search-by-id':
         search_by_id_command()
     elif command == 'threatq-create-indicator':
-        create_ioc_command()
+        create_indicator_command()
     elif command == 'threatq-create-event':
         create_event_command()
     elif command == 'threatq-create-adversary':
         create_adversary_command()
     elif command == 'threatq-edit-indicator':
-        edit_ioc_command()
+        edit_indicator_command()
     elif command == 'threatq-edit-event':
         edit_event_command()
     elif command == 'threatq-edit-adversary':
