@@ -1479,6 +1479,102 @@ def download_attachment_request(attachment_id):
     return response.content
 
 
+def search_mail():
+    """ Newer endpoint to search for mails """
+    headers = []  # type: List[Any]
+    contents = [] # type: List[Any]
+    context = {}
+    emails_context = []
+    search_params = {}
+    search_reason = demisto.args().get('search_reason', '').encode('utf-8')
+    start = demisto.args().get('start', '').encode('utf-8')
+    end = demisto.args().get('end', '').encode('utf-8')
+    sender_ip = demisto.args().get('sender_ip', '').encode('utf-8')
+    mail_to = demisto.args().get('mail_to', '').encode('utf-8')
+    mail_from_ = demisto.args().get('mail_from_', '').encode('utf-8')
+    subject = argToList(demisto.args().get('subject', '').encode('utf-8'))
+    message_id = argToList(demisto.args().get('message_id', '').encode('utf-8'))
+    limit = int(demisto.args().get('limit', 100))
+
+    if search_reason:
+        search_params['searchReason'] = search_reason
+    if start:
+        search_params['start'] = start
+    if end:
+        search_params['end'] = end
+    if message_id:
+        search_params['messageId'] = message_id
+    if mail_from_:
+        search_params['from'] = mail_from_
+    if mail_to:
+        search_params['to'] = mail_to
+    if subject:
+        search_params['subject'] = subject
+    if sender_ip:
+        search_params['senderIP'] = sender_ip
+
+    tracked_mails = search_mail_request(search_params)
+    if limit:
+        tracked_mails = tracked_mails[:limit]
+    for tracked_mail in tracked_mails:
+        contents.append({
+            'Result Count': result_count,
+            'Hits': impersonation_log.get('hits'),
+            'Malicious': impersonation_log.get('taggedMalicious'),
+            'Sender IP': impersonation_log.get('senderIpAddress'),
+            'Sender Address': impersonation_log.get('senderAddress'),
+            'Subject': impersonation_log.get('subject'),
+            'Identifiers': impersonation_log.get('identifiers'),
+            'Date': impersonation_log.get('eventTime'),
+            'Action': impersonation_log.get('action'),
+            'Policy': impersonation_log.get('definition'),
+            'ID': impersonation_log.get('id'),
+            'Recipient Address': impersonation_log.get('recipientAddress'),
+            'External': impersonation_log.get('taggedExternal')
+        })
+        emails_context.append({
+            'ResultCount': result_count,
+            'Hits': impersonation_log.get('hits'),
+            'Malicious': impersonation_log.get('taggedMalicious'),
+            'SenderIP': impersonation_log.get('senderIpAddress'),
+            'SenderAddress': impersonation_log.get('senderAddress'),
+            'Subject': impersonation_log.get('subject'),
+            'Identifiers': impersonation_log.get('identifiers'),
+            'Date': impersonation_log.get('eventTime'),
+            'Action': impersonation_log.get('action'),
+            'Policy': impersonation_log.get('definition'),
+            'ID': impersonation_log.get('id'),
+            'RecipientAddress': impersonation_log.get('recipientAddress'),
+            'External': impersonation_log.get('taggedExternal')
+        })
+
+    context['Mimecast.TrackedEmails'] = emails_context
+
+    results = {
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': contents,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Mimecast Search: ', contents, headers),
+        'EntryContext': context
+    }
+
+    return results
+
+
+def search_mail_request(search_params):
+    # Setup required variables
+    api_endpoint = '/api/message-finder/search'
+    payload = {
+        'data': [search_params]
+    }
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if response.get('fail'):
+        return_error(json.dumps(response.get('fail')[0].get('errors')))
+    return response.get('data')[0].get('trackedEmails')
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('command is %s' % (demisto.command(),))
@@ -1530,6 +1626,8 @@ try:
         demisto.results(get_message())
     elif demisto.command() == 'mimecast-download-attachments':
         demisto.results(download_attachment())
+    elif demisto.command() == 'mimecast-search-mail':
+        demisto.results(search_mail())
 
 
 except Exception as e:
