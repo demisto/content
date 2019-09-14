@@ -33,7 +33,7 @@ configuration:
   required: false
   type: 4
 - defaultvalue: 'true'
-  display: Trust any certificate (unsecure)
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -1185,7 +1185,117 @@ script:
     - contextPath: File.MD5
       description: MD5 hash of the file
       type: string
+  - arguments:
+    - default: false
+      description: Reason for Tracking a email, used for activity tracking purposes.
+      isArray: false
+      name: search_reason
+      required: false
+      secret: false
+    - default: false
+      description: The date and time of the earliest message to track, in the following
+        format, 2011-12-03T10:15:30+0000
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: false
+      description: The date and time of the latest message to track, in the following
+        format, 2011-12-03T10:15:30+0000
+      isArray: false
+      name: end
+      required: false
+      secret: false
+    - default: false
+      description: The source IP address of messages to track.
+      isArray: false
+      name: sender_ip
+      required: false
+      secret: false
+    - default: false
+      description: The recipient email address or domain of the messages to track.
+      isArray: false
+      name: mail_to
+      required: false
+      secret: false
+    - default: false
+      description: The sending email address or domain of the messages to track.
+      isArray: false
+      name: mail_from
+      required: false
+      secret: false
+    - default: false
+      description: The subject of the messages to track.
+      isArray: false
+      name: subject
+      required: false
+      secret: false
+    - default: false
+      description: The message id of the message to track.
+      isArray: false
+      name: message_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for emails
+    execution: false
+    name: mimecast-search
+    outputs:
+    - contextPath: Mimecast.TrackedEmails.Status
+      description: The status of the message.
+      type: string
+    - contextPath: Mimecast.TrackedEmails.Received
+      description: The date and time the message was received by Mimecast.
+      type: date
+    - contextPath: Mimecast.TrackedEmails.FromEnv
+      description: An object describing the envelope from address of the message.
+      type: Unknown
+    - contextPath: Mimecast.TrackedEmails.FromEnv.DisplayableName
+      description: The display name of the recipient.
+      type: string
+    - contextPath: Mimecast.TrackedEmails.FromEnv.EmailAddress
+      description: The email address of the recipient.
+      type: string
+    - contextPath: Mimecast.TrackedEmails.FromHdr
+      description: An object describing the headers from address of the message.
+      type: Unknown
+    - contextPath: Mimecast.TrackedEmails.FromHdr.DisplayableName
+      description: The display name of the recipient.
+      type: string
+    - contextPath: Mimecast.TrackedEmails.FromHdr.EmailAddress
+      description: The email address of the recipient.
+      type: string
+    - contextPath: Mimecast.TrackedEmails.Attachments
+      description: If the message has attachments.
+      type: boolean
+    - contextPath: Mimecast.TrackedEmails.To
+      description: An array of recipient objects.
+      type: Unknown
+    - contextPath: Mimecast.TrackedEmails.To.DisplayableName
+      description: The display name of the recipient.
+      type: string
+    - contextPath: Mimecast.TrackedEmails.To.EmailAddress
+      description: The email address of the recipient.
+      type: string
+    - contextPath: Mimecast.TrackedEmails.SenderIP
+      description: The source IP address of the message.
+      type: string
+    - contextPath: Mimecast.TrackedEmails.Route
+      description: The route of the message.
+      type: string
+    - contextPath: Mimecast.TrackedEmails.ID
+      description: The Mimecast ID of the message. Used to load more information about
+        the message.
+      type: string
+    - contextPath: Mimecast.TrackedEmails.Sent
+      description: The date and time that the message was sent / processed by Mimecast.
+      type: date
+    - contextPath: Mimecast.TrackedEmails.Subject
+      description: The subject of the message.
+      type: string
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   type: python

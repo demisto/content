@@ -1482,18 +1482,18 @@ def download_attachment_request(attachment_id):
 def search_mail():
     """ Newer endpoint to search for mails """
     headers = []  # type: List[Any]
-    contents = [] # type: List[Any]
-    context = {}
-    emails_context = []
-    search_params = {}
+    contents = []  # type: List[Any]
+    context = {}  # type: Dict[Any, Any]
+    search_params = {}  # type: Dict[Any, Any]
+    advanced_params = {}  # type: Dict[Any, Any]
     search_reason = demisto.args().get('search_reason', '').encode('utf-8')
     start = demisto.args().get('start', '').encode('utf-8')
     end = demisto.args().get('end', '').encode('utf-8')
     sender_ip = demisto.args().get('sender_ip', '').encode('utf-8')
     mail_to = demisto.args().get('mail_to', '').encode('utf-8')
-    mail_from_ = demisto.args().get('mail_from_', '').encode('utf-8')
-    subject = argToList(demisto.args().get('subject', '').encode('utf-8'))
-    message_id = argToList(demisto.args().get('message_id', '').encode('utf-8'))
+    mail_from_ = demisto.args().get('mail_from', '').encode('utf-8')
+    subject = demisto.args().get('subject', '').encode('utf-8')
+    message_id = demisto.args().get('message_id', '').encode('utf-8')
     limit = int(demisto.args().get('limit', 100))
 
     if search_reason:
@@ -1505,50 +1505,49 @@ def search_mail():
     if message_id:
         search_params['messageId'] = message_id
     if mail_from_:
-        search_params['from'] = mail_from_
+        advanced_params['from'] = mail_from_
     if mail_to:
-        search_params['to'] = mail_to
+        advanced_params['to'] = mail_to
     if subject:
-        search_params['subject'] = subject
+        advanced_params['subject'] = subject
     if sender_ip:
-        search_params['senderIP'] = sender_ip
+        advanced_params['senderIP'] = sender_ip
 
+    search_params['advancedTrackAndTraceOptions'] = advanced_params
     tracked_mails = search_mail_request(search_params)
     if limit:
         tracked_mails = tracked_mails[:limit]
+
     for tracked_mail in tracked_mails:
+        to = []  # type: List[Any]
+        receivers = tracked_mail.get('to')
+        for receiver in receivers:
+            to.append({
+                'RecipientAddress': receiver.get('recipientAddress'),
+                'TaggedExternal': receiver.get('taggedExternal')
+            })
+
         contents.append({
-            'Result Count': result_count,
-            'Hits': impersonation_log.get('hits'),
-            'Malicious': impersonation_log.get('taggedMalicious'),
-            'Sender IP': impersonation_log.get('senderIpAddress'),
-            'Sender Address': impersonation_log.get('senderAddress'),
-            'Subject': impersonation_log.get('subject'),
-            'Identifiers': impersonation_log.get('identifiers'),
-            'Date': impersonation_log.get('eventTime'),
-            'Action': impersonation_log.get('action'),
-            'Policy': impersonation_log.get('definition'),
-            'ID': impersonation_log.get('id'),
-            'Recipient Address': impersonation_log.get('recipientAddress'),
-            'External': impersonation_log.get('taggedExternal')
-        })
-        emails_context.append({
-            'ResultCount': result_count,
-            'Hits': impersonation_log.get('hits'),
-            'Malicious': impersonation_log.get('taggedMalicious'),
-            'SenderIP': impersonation_log.get('senderIpAddress'),
-            'SenderAddress': impersonation_log.get('senderAddress'),
-            'Subject': impersonation_log.get('subject'),
-            'Identifiers': impersonation_log.get('identifiers'),
-            'Date': impersonation_log.get('eventTime'),
-            'Action': impersonation_log.get('action'),
-            'Policy': impersonation_log.get('definition'),
-            'ID': impersonation_log.get('id'),
-            'RecipientAddress': impersonation_log.get('recipientAddress'),
-            'External': impersonation_log.get('taggedExternal')
+            'Status': tracked_mail.get('status'),
+            'Received': tracked_mail.get('received'),
+            'FromEnv': {
+                'DisplayableName': tracked_mail.get('fromEnv', {}).get('displayableName'),
+                'EmailAddress': tracked_mail.get('fromEnv', {}).get('emailAddress')
+            },
+            'FromHdr': {
+                'DisplayableName': tracked_mail.get('FromHdr', {}).get('displayableName'),
+                'EmailAddress': tracked_mail.get('FromHdr', {}).get('emailAddress')
+            },
+            'Attachments': tracked_mail.get('attachments'),
+            'To': to,
+            'SenderIP': tracked_mail.get('senderIP'),
+            'Route': tracked_mail.get('route'),
+            'ID': tracked_mail.get('id'),
+            'Sent': tracked_mail.get('sent'),
+            'Subject': tracked_mail.get('subject')
         })
 
-    context['Mimecast.TrackedEmails'] = emails_context
+    context['Mimecast.TrackedEmails'] = contents
 
     results = {
         'Type': entryTypes['note'],
