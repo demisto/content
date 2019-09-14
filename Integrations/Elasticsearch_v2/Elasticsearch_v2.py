@@ -208,7 +208,18 @@ def test_func():
         else:
             res = requests.get(SERVER, verify=INSECURE)
         if res.status_code >= 400:
-            return_error("Failed to connect. The following error occurred: " + HTTP_ERRORS[int(res.status_code)])
+            try:
+                res.raise_for_status()
+
+            except requests.exceptions.HTTPError as e:
+                if HTTP_ERRORS.get(res.status_code) is not None:
+                    # if it is a known http error - get the message form the preset messages
+                    return_error("Failed to connect. "
+                                 "The following error occurred: {}".format(HTTP_ERRORS.get(res.status_code)))
+
+                else:
+                    # if it is unknown error - get the message from the error itself
+                    return_error("Failed to connect. The following error occurred: {}".format(str(e)))
 
     except requests.exceptions.RequestException as e:
         return_error("Failed to connect. Check Server URL field and port number.\nError message: " + str(e))
