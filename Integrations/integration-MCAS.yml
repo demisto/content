@@ -22,7 +22,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Use System Proxy
+- display: Use system proxy settings
   name: proxy
   defaultvalue: ""
   type: 8
