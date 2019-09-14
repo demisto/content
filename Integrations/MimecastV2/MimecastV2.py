@@ -1523,8 +1523,8 @@ def search_mail():
         receivers = tracked_mail.get('to', [])
         for receiver in receivers:
             to.append({
-                'RecipientAddress': receiver.get('recipientAddress'),
-                'TaggedExternal': receiver.get('taggedExternal')
+                'DisplayableName': receiver.get('displayableName'),
+                'EmailAddress': receiver.get('emailAddress')
             })
 
         contents.append({
