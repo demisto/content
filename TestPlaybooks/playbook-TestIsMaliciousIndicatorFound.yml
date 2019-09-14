@@ -5,17 +5,17 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 42e0edf4-e9d1-4bb5-8a5f-3d58d63e2356
+    taskid: 0ddb979f-1b5d-47de-8ec6-faac0a253175
     type: start
     task:
-      id: 42e0edf4-e9d1-4bb5-8a5f-3d58d63e2356
+      id: 0ddb979f-1b5d-47de-8ec6-faac0a253175
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "22"
     separatecontext: false
     view: |-
       {
@@ -26,12 +26,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 866765ba-f9c0-4f85-8518-d01fc655ebfe
+    taskid: 4166af2f-e470-48a8-802e-35c672da804b
     type: regular
     task:
-      id: 866765ba-f9c0-4f85-8518-d01fc655ebfe
+      id: 4166af2f-e470-48a8-802e-35c672da804b
       version: -1
       name: Create good indicator
       description: Modify indicator reputation
@@ -64,20 +65,23 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 370
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: c57ef545-7f2b-47e2-8fc7-a70d4801f8a1
+    taskid: 63eb8f92-be65-49e3-88ca-02b21f08b91d
     type: condition
     task:
-      id: c57ef545-7f2b-47e2-8fc7-a70d4801f8a1
+      id: 63eb8f92-be65-49e3-88ca-02b21f08b91d
       version: -1
       name: IsMaliciuosFound
-      scriptName: IsMaliciousIndicatorFound
+      description: Checks if the investigation found any Malicious File/URL/IP, if
+        so return yes, otherwise no.
+      scriptName: IsMaliciousIndicatorFound_js
       type: condition
       iscommand: false
       brand: ""
@@ -85,118 +89,11 @@ tasks:
       "no":
       - "7"
     scriptarguments:
+      includeManual: {}
       includeSuspicious: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 250,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-  "4":
-    id: "4"
-    taskid: d009cfd6-90be-4a56-883b-c752702edf74
-    type: regular
-    task:
-      id: d009cfd6-90be-4a56-883b-c752702edf74
-      version: -1
-      name: Create Bad indicator
-      script: Builtin|||createNewIndicator
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      internal: {}
-      merge: {}
-      note: {}
-      relatedIncidents:
-        simple: ${incident.id}
-      reputation:
-        simple: Bad
-      shorttextfield: {}
-      source: {}
-      sourceTimeStamp: {}
-      tags: {}
-      tmp: {}
-      type:
-        simple: Email
-      value:
-        simple: dudu@demisto.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-  "6":
-    id: "6"
-    taskid: 408a28ff-a4d2-47b9-82d3-55601d39d702
-    type: condition
-    task:
-      id: 408a28ff-a4d2-47b9-82d3-55601d39d702
-      version: -1
-      name: IsMaliciuosFound
-      scriptName: IsMaliciousIndicatorFound
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "20"
-    scriptarguments:
-      includeSuspicious: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 240,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-  "7":
-    id: "7"
-    taskid: e0d7c288-b8b6-4fcd-8d5d-3ff762aeb1ab
-    type: regular
-    task:
-      id: e0d7c288-b8b6-4fcd-8d5d-3ff762aeb1ab
-      version: -1
-      name: Create suspiciuos indicator
-      script: Builtin|||createNewIndicator
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      internal: {}
-      merge: {}
-      note: {}
-      relatedIncidents:
-        simple: ${incident.id}
-      reputation:
-        simple: Suspicious
-      shorttextfield: {}
-      source: {}
-      sourceTimeStamp: {}
-      tags: {}
-      tmp: {}
-      type:
-        simple: Email
-      value:
-        simple: yulu@demisto.com
+      maliciousQueryOverride: {}
+      queryIndicators:
+        simple: "no"
     separatecontext: false
     view: |-
       {
@@ -207,52 +104,82 @@ tasks:
       }
     note: false
     timertriggers: []
-  "8":
-    id: "8"
-    taskid: f84df226-83ad-4682-8a91-85c2e0e68f79
-    type: condition
-    task:
-      id: f84df226-83ad-4682-8a91-85c2e0e68f79
-      version: -1
-      name: IsMaliciuosFound-no-suspicious
-      scriptName: IsMaliciousIndicatorFound
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "16"
-    scriptarguments:
-      includeSuspicious: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 240,
-          "y": 910
-        }
-      }
-    note: false
-    timertriggers: []
-  "14":
-    id: "14"
-    taskid: 6779d5dc-45b7-4033-8c7c-d0d9f2679c3f
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: bd8121ca-abf7-42e9-8f9d-d28492194f6e
     type: regular
     task:
-      id: 6779d5dc-45b7-4033-8c7c-d0d9f2679c3f
+      id: bd8121ca-abf7-42e9-8f9d-d28492194f6e
       version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
+      name: Create Bad indicator
+      script: Builtin|||createNewIndicator
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "6"
     scriptarguments:
-      seconds:
-        simple: "1"
+      associatedfilenames: {}
+      comment: {}
+      customFields: {}
+      internal: {}
+      md5: {}
+      merge: {}
+      note: {}
+      relatedIncidents:
+        simple: ${incident.id}
+      reputation:
+        simple: Bad
+      seenNow: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      shorttextfield: {}
+      source: {}
+      sourceTimeStamp: {}
+      ssdeep: {}
+      tags: {}
+      tmp: {}
+      type:
+        simple: Email
+      value:
+        simple: dudu@demisto.com
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 8ad4dff8-dc75-40f8-82ef-d8f05c354315
+    type: condition
+    task:
+      id: 8ad4dff8-dc75-40f8-82ef-d8f05c354315
+      version: -1
+      name: IsMaliciuosFound
+      description: Checks if the investigation found any Malicious File/URL/IP, if
+        so return yes, otherwise no.
+      scriptName: IsMaliciousIndicatorFound_js
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    scriptarguments:
+      includeManual: {}
+      includeSuspicious: {}
+      maliciousQueryOverride: {}
+      queryIndicators: {}
     separatecontext: false
     view: |-
       {
@@ -263,24 +190,49 @@ tasks:
       }
     note: false
     timertriggers: []
-  "15":
-    id: "15"
-    taskid: eda1d742-5215-451e-848d-01a19c41d3d1
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 3d1d1a97-69d8-4d75-8c4f-aa5218a2df26
     type: regular
     task:
-      id: eda1d742-5215-451e-848d-01a19c41d3d1
+      id: 3d1d1a97-69d8-4d75-8c4f-aa5218a2df26
       version: -1
-      name: sleep 1 sec
-      scriptName: Sleep
+      name: Create suspiciuos indicator
+      script: Builtin|||createNewIndicator
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "8"
     scriptarguments:
-      seconds:
-        simple: "1"
+      associatedfilenames: {}
+      comment: {}
+      customFields: {}
+      internal: {}
+      md5: {}
+      merge: {}
+      note: {}
+      relatedIncidents:
+        simple: ${incident.id}
+      reputation:
+        simple: Suspicious
+      seenNow: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      shorttextfield: {}
+      source: {}
+      sourceTimeStamp: {}
+      ssdeep: {}
+      tags: {}
+      tmp: {}
+      type:
+        simple: Email
+      value:
+        simple: yulu@demisto.com
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {
@@ -291,12 +243,47 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: b4eb3c85-5254-4605-84d1-bf097348852a
+    type: condition
+    task:
+      id: b4eb3c85-5254-4605-84d1-bf097348852a
+      version: -1
+      name: IsMaliciuosFound-no-suspicious
+      description: Checks if the investigation found any Malicious File/URL/IP, if
+        so return yes, otherwise no.
+      scriptName: IsMaliciousIndicatorFound_js
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "16"
+    scriptarguments:
+      includeManual: {}
+      includeSuspicious: {}
+      maliciousQueryOverride: {}
+      queryIndicators:
+        simple: "no"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
-    taskid: ebb38caa-8b84-4722-8055-7ab188d49277
+    taskid: c091366c-0e5f-49f4-853e-b4a5aa66db67
     type: regular
     task:
-      id: ebb38caa-8b84-4722-8055-7ab188d49277
+      id: c091366c-0e5f-49f4-853e-b4a5aa66db67
       version: -1
       name: Set Domain.Malicious to True
       scriptName: Set
@@ -322,15 +309,18 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "19":
     id: "19"
-    taskid: 4965fd9b-8efe-496c-8379-64d9e10ded8a
+    taskid: a616af16-3956-4f5e-840c-c0f5849d3de3
     type: condition
     task:
-      id: 4965fd9b-8efe-496c-8379-64d9e10ded8a
+      id: a616af16-3956-4f5e-840c-c0f5849d3de3
       version: -1
       name: IsMaliciuosFound
-      scriptName: IsMaliciousIndicatorFound
+      description: Checks if the investigation found any Malicious File/URL/IP, if
+        so return yes, otherwise no.
+      scriptName: IsMaliciousIndicatorFound_js
       type: condition
       iscommand: false
       brand: ""
@@ -338,26 +328,29 @@ tasks:
       "yes":
       - "21"
     scriptarguments:
+      includeManual: {}
       includeSuspicious: {}
       maliciousQueryOverride: {}
+      queryIndicators: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 1250
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "20":
     id: "20"
-    taskid: 3ce90dd0-9cb5-49cd-8900-84f98c389648
+    taskid: 6ebce3fd-71eb-4dd3-8335-de12de3ab47b
     type: title
     task:
-      id: 3ce90dd0-9cb5-49cd-8900-84f98c389648
+      id: 6ebce3fd-71eb-4dd3-8335-de12de3ab47b
       version: -1
-      name: Done!!!
+      name: Done
       type: title
       iscommand: false
       brand: ""
@@ -366,17 +359,18 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 1945
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "21":
     id: "21"
-    taskid: edc52fd9-2dc5-478d-8514-5ea55bbbaabb
+    taskid: 919b6309-27ca-4fab-8539-c6a9dfcea2bf
     type: regular
     task:
-      id: edc52fd9-2dc5-478d-8514-5ea55bbbaabb
+      id: 919b6309-27ca-4fab-8539-c6a9dfcea2bf
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -403,13 +397,48 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 77266dab-946c-4298-8ecb-450b378aec7c
+    type: regular
+    task:
+      id: 77266dab-946c-4298-8ecb-450b378aec7c
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2135,
-        "width": 580,
+        "height": 1960,
+        "width": 380,
         "x": 50,
         "y": 50
       }
