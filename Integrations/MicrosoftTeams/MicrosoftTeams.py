@@ -1404,7 +1404,6 @@ def long_running_loop():
 
             demisto.info('Starting HTTPS Server')
         else:
-            # Starting HTTP server
             demisto.info('Starting HTTP Server')
 
         server = WSGIServer(('', port), APP, **ssl_args)
