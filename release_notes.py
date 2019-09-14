@@ -550,7 +550,7 @@ def get_release_notes_draft(github_token, asset_id):
     if drafts:
         if len(drafts) == 1:
             return re.sub(r'Release Notes for version .* \((\d{5,})\)',
-                          "Release Notes for version ({})".format(asset_id), drafts[0]['body'])
+                          'Release Notes for version ({})'.format(asset_id), drafts[0]['body'])
 
         print_warning('Too many drafts to choose from ({}), skipping update.'.format(len(drafts)))
 
