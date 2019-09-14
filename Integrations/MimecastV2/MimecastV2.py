@@ -1520,7 +1520,7 @@ def search_mail():
 
     for tracked_mail in tracked_mails:
         to = []  # type: List[Any]
-        receivers = tracked_mail.get('to')
+        receivers = tracked_mail.get('to', [])
         for receiver in receivers:
             to.append({
                 'RecipientAddress': receiver.get('recipientAddress'),
