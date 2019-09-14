@@ -1,5 +1,6 @@
 ## [Unreleased]
-Added the ***parse_date_string*** function, which parses the date string to a datetime object.
+  - Added the ***parse_date_string*** function, which parses the date string to a datetime object.
+  - Added requests debugging logger when `debug-mode=True`
 
 ## [19.9.0] - 2019-09-04
   - IntegrationLogger improvements.
