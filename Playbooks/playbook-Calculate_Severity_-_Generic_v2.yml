@@ -1411,3 +1411,5 @@ outputs:
 - contextPath: CriticalAssets.CriticalUserGroups
   description: Critical user-groups involved in the incident.
   type: unknown
+tests:
+  - Calculate Severity - Generic v2 - Test

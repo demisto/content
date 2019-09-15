@@ -1612,3 +1612,6 @@ inputs:
   description: Whether the authenticity of the email should be verified, using SPF,
     DKIM and DMARC checks.
 outputs: []
+tests:
+  - Phishing v2 Test - Attachment
+  - Phishing v2 Test - Inline

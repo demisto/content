@@ -393,3 +393,5 @@ outputs:
   description: The maliciousness score evaluated by the Calculate Severity - Email
     Authenticity playbook.
   type: number
+tests:
+  - Calculate Severity - Generic v2 - Test

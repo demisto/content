@@ -1433,6 +1433,13 @@
             "nightly": true
         },
         {
+            "playbookID": "Calculate Severity - Generic v2 - Test",
+            "integrations": [
+                "Palo Alto Minemeld",
+                "Active Directory Query v2"
+            ]
+        },
+        {
             "integrations": "Freshdesk",
             "playbookID": "Freshdesk-Test",
             "timeout": 500,
