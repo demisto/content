@@ -9,10 +9,8 @@ configuration:
   type: 8
 - display: Proxy URL. Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080)
   name: proxy_url
-  defaultvalue: ""
   required: false
   type: 0
-  required: false
 description: Provides data enrichment for domains.
 display: Whois
 name: Whois
@@ -30,6 +28,48 @@ script:
     execution: false
     name: whois
     outputs:
+    - contextPath: Domain.DomainStatus
+      description: The domain status.
+      type: string
+    - contextPath: Domain.WHOIS.DomainStatus
+      description: The domain status.
+      type: string
+    - contextPath: Domain.NameServers
+      description: The name servers.
+      type: string
+    - contextPath: Domain.WHOIS.NameServers
+      description: The name servers.
+      type: string
+    - contextPath: Domain.CreationDate
+      description: The date that the domain was created.
+      type: date
+    - contextPath: Domain.WHOIS.CreationDate
+      description: The date that the domain was created.
+      type: date
+    - contextPath: Domain.UpdatedDate
+      description: The date that the domain was last updated.
+      type: date
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: The date that the domain was last updated.
+      type: date
+    - contextPath: Domain.ExpirationDate
+      description: The date that the domain expires.
+      type: date
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: The date that the domain expires.
+      type: date
+    - contextPath: Domain.WHOIS.Registrar
+      description: The name of the registrar.
+      type: string
+    - contextPath: Domain.Registrant.name
+      description: The name of the registrant.
+      type: string
+    - contextPath: Domain.Admin.name
+      description: The name of domain administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.name
+      description: The name of domain administrator.
+      type: string
     - contextPath: Domain.Whois.Name
       description: The domain name.
       type: string
@@ -153,7 +193,7 @@ script:
   dockerimage: demisto/ippysocks
   isfetch: false
   runonce: false
-  script: '-'
+  script: ''
   type: python
   subtype: python2
 defaultEnabled: false
