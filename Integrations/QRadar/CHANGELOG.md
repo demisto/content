@@ -1,6 +1,6 @@
 ## [Unreleased]
   - The *note_id* argument is now optional in the ***qradar-get-note*** command. If the *note_id* argument is not specified, the command will return all notes for the the offense.
-  - Fixed an issue when closing an offense with the ***qradar-update-offense*** command, in which a user would specify a close reason, an error was returned specifying that there was no close reason.  
+  - Fixed an issue when closing an offense with the ***qradar-update-offense*** command, in which a user would specify a close reason, but an error was returned specifying that there was no close reason.  
 
 ## [19.9.0] - 2019-09-04
   - Fixed an issue in which the ***qradar-get-search-results*** command failed when the root of the result contained a non-ascii character.
