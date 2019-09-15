@@ -20,17 +20,6 @@ class Client(BaseHTTPClient):
     Wrapper class for BaseClient with additional functionality for the integration.
     """
 
-    def __init__(self, *args, **kwargs):
-        # Adds a max_results to client
-        self._fetch_max_results = kwargs.get('max_results')
-        # remove `max_results`
-        kwargs.pop('max_results', None)
-        super().__init__(*args, **kwargs)
-
-    @property
-    def max_results(self):
-        return self._fetch_max_results
-
     def test_module_request(self) -> Dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
 
@@ -205,8 +194,8 @@ def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
 
 
 def fetch_incidents(client: Client, last_run):
-    """Uses to fetch credentials into Demisto
-    Documentation: https://github.com/demisto/content/tree/master/docs/fetching_credentials
+    """Uses to fetch incidents into Demisto
+    Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
     """
     timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ"'
     # Get incidents from API
@@ -216,9 +205,8 @@ def fetch_incidents(client: Client, last_run):
     else:
         last_run_string = datetime.strptime(last_run, timestamp_format)
     incidents = list()
-    raw_response = client.list_events_request(event_created_date_after=last_run_string,
-                                              max_results=client.max_results)
-    events: List[Dict] = raw_response.get('event', [])
+    raw_response = client.list_events_request(event_created_date_after=last_run_string)
+    events = raw_response.get('event', [])
     if events:
         # Creates incident entry
         incidents = [{
@@ -339,14 +327,15 @@ def create_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 def query(client: Client, args: Dict):
     # Get arguments from user
     query_dict = assign_params(
-        eventId=args.get('event_id'),
-        sinceTime=args.get('since_time'),
+        eventId=argToList(args.get('event_id')),
+        sinceTime=args.get('event_created_date_after'),
+        fromTime=args.get('event_created_date_before'),
         assignee=argToList(args.get('assignee')),
         isActive=args.get('is_active') == 'true'
     )
     # Make request and get raw response
-    raw_response: Dict = client.query_request(**query_dict)
-    events: List = raw_response.get('event', [])
+    raw_response = client.query_request(**query_dict)
+    events = raw_response.get('event', [])
     # Parse response into context & content entries
     if events:
         title = f'{client.integration_name} - Results for given query'
@@ -373,13 +362,13 @@ def main():
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy')
     base_suffix = '/api/v2/'
-    client: Client = Client(server=server,
-                            integration_name=integration_name,
-                            integration_command_name=integration_command_name,
-                            integration_context_name=integration_context_name,
-                            base_suffix=base_suffix,
-                            verify=verify_ssl,
-                            proxy=proxy)
+    client = Client(integration_name=integration_name,
+                    integration_command_name=integration_command_name,
+                    integration_context_name=integration_context_name,
+                    server=server,
+                    base_suffix=base_suffix,
+                    verify=verify_ssl,
+                    proxy=proxy)
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 

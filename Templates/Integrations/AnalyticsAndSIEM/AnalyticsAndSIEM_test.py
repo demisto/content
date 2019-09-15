@@ -90,7 +90,7 @@ class TestTestModule:
         from AnalyticsAndSIEM import test_module
         client = mock_client()
         monkeypatch.setattr(client, 'test_module_request', lambda: {'version': '1.0.0'})
-        assert test_module(client)
+        assert test_module(client) == ('ok', {}, {})
 
     def test_test_module_negative(self, monkeypatch):
         from AnalyticsAndSIEM import test_module, DemistoException
