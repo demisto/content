@@ -7,7 +7,7 @@ configuration:
   name: access_token
   required: true
   type: 4
-- display: Slack Bot API token
+- display: Slack API bot token
   name: bot_token
   required: true
   type: 4
