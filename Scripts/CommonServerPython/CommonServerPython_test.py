@@ -3,7 +3,6 @@ import copy
 import json
 import os
 import sys
-
 import requests
 from pytest import raises, mark
 
@@ -422,7 +421,7 @@ def test_is_error_true():
     assert is_error(execute_command_results)
 
 
-def test_is_error_false():
+def test_is_error_none():
     assert not is_error(None)
 
 
@@ -712,10 +711,10 @@ class TestBuildDBotEntry(object):
             build_dbot_entry('1', 'NOTHING', 'Vendor', 2)
 
 
-class TestBaseClient(object):
+class TestHTTPBaseClient(object):
     from CommonServerPython import BaseHTTPClient
     text = {"status": "ok"}
-    client = BaseHTTPClient('Name', 'name', 'name', 'http://example.com', '/api/v2/')
+    client = BaseHTTPClient('Name', 'name', 'name', 'http://example.com', '/api/v2/', ok_codes=(200, 201))
 
     def test_http_request_json(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
@@ -736,7 +735,7 @@ class TestBaseClient(object):
     def test_http_request_content(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', content=str.encode(json.dumps(self.text)))
         res = self.client._http_request('get', 'event', resp_type='content')
-        assert res == json.dumps(self.text)
+        assert json.loads(res) == self.text
 
     def test_http_request_response(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event')
@@ -783,6 +782,42 @@ class TestBaseClient(object):
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectionError)
         with raises(DemistoException, match="Verify that the server URL parameter"):
             self.client._http_request('get', 'event', resp_type='response')
+
+    def test_is_valid_ok_codes_empty(self):
+        from requests import Response
+        response = Response()
+        response.status_code = 200
+        assert self.client._is_status_code_valid(response, None)
+
+    def test_is_valid_ok_codes_from_function(self):
+        from requests import Response
+        response = Response()
+        response.status_code = 200
+        assert self.client._is_status_code_valid(response, (200, 201))
+
+    def test_is_valid_ok_codes_from_self(self):
+        from requests import Response
+        response = Response()
+        response.status_code = 200
+        assert self.client._is_status_code_valid(response, None)
+
+    def test_is_valid_ok_codes_empty_false(self):
+        from requests import Response
+        response = Response()
+        response.status_code = 400
+        assert not self.client._is_status_code_valid(response, None)
+
+    def test_is_valid_ok_codes_from_function_false(self):
+        from requests import Response
+        response = Response()
+        response.status_code = 400
+        assert not self.client._is_status_code_valid(response, (200, 201))
+
+    def test_is_valid_ok_codes_from_self_false(self):
+        from requests import Response
+        response = Response()
+        response.status_code = 400
+        assert not self.client._is_status_code_valid(response, None)
 
 
 def test_parse_date_string():

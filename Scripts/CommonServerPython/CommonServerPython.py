@@ -1,9 +1,9 @@
 """Common functions script
 This script will be appended to each server script before being executed.
-Please notice that to add custom common code, add it to the CommonServerUserPython script
+Please notice that to add custom common code, add it to the CommonServerUserPython script.
+Note that adding code to CommonServerUserPython can override functions in CommonServerPython
 """
 import socket
-from datetime import datetime, timedelta
 import time
 import json
 import sys
@@ -12,6 +12,8 @@ import re
 import base64
 from collections import OrderedDict
 import xml.etree.cElementTree as ET
+from datetime import datetime, timedelta
+
 import demistomock as demisto
 
 # imports something that can be missed from docker image
@@ -81,6 +83,19 @@ dbotscores = {
     'Informational': 0.5
 }
 
+INDICATOR_TYPES = {
+    'ip': 'Address',
+    'email': 'Address',
+    'url': 'Data',
+    'domain': 'Name',
+    'cve': 'ID',
+    'md5': 'file',
+    'sha1': 'file',
+    'sha256': 'file',
+    'crc32': 'file',
+    'sha512': 'file',
+    'ctph': 'file'
+}
 # ===== Fix fetching credentials from vault instances =====
 # ====================================================================================
 try:
@@ -815,7 +830,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :keyword headerTransform: A function that formats the original data headers (optional)
 
        :type removeNull: ``bool``
-       :keyword removeNull: Remove empty columns from the table. Deafult is False
+       :keyword removeNull: Remove empty columns from the table. Default is False
 
        :type metadata: ``str``
        :param metadata: Metadata about the table contents
@@ -896,23 +911,22 @@ tblToMd = tableToMarkdown
 
 
 def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):
-    """
-        Recieves a dict with flattened key values, and converts them into nested dicts
+    """Receives a dict with flattened key values, and converts them into nested dicts
 
-        :type data: ``dict`` or ``list``
-        :param data: The data to be added to the context (required)
+    :type obj: ``dict`` or ``list``
+    :param obj: The data to be added to the context (required)
 
-        :type id: ``str``
-        :keyword id: The ID of the context entry
+    :type id: ``str``
+    :keyword id: The ID of the context entry
 
-        :type keyTransform: ``function``
-        :keyword keyTransform: A formatting function for the markdown table headers
+    :type keyTransform: ``function``
+    :keyword keyTransform: A formatting function for the markdown table headers
 
-        :type removeNull: ``bool``
-        :keyword removeNull: True if empty columns should be removed, false otherwise
+    :type removeNull: ``bool``
+    :keyword removeNull: True if empty columns should be removed, false otherwise
 
-        :return: The converted context list
-        :rtype: ``list``
+    :return: The converted context list
+    :rtype: ``list``
     """
     res = {}  # type: dict
     if keyTransform is None:
@@ -935,8 +949,7 @@ def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):
 
 
 def createContext(data, id=None, keyTransform=None, removeNull=False):
-    """
-        Recieves a dict with flattened key values, and converts them into nested dicts
+    """Receives a dict with flattened key values, and converts them into nested dicts
 
         :type data: ``dict`` or ``list``
         :param data: The data to be added to the context (required)
@@ -1956,13 +1969,12 @@ def build_dbot_entry(indicator, indicator_type, vendor, score, description=None,
     :return: dbot entry
     :rtype: ``dict``
     """
-    indicator_types = ('ip', 'email', 'url', 'domain', 'cve', 'md5', 'sha1', 'sha256', 'crc32', 'sha512', 'ctph')
     if not 0 <= score <= 3:
         raise DemistoException('illegal DBot score, expected 0-3, got `{}`'.format(score))
     indicator_type_lower = indicator_type.lower()
-    if indicator_type_lower not in indicator_types:
+    if indicator_type_lower not in INDICATOR_TYPES:
         raise DemistoException('illegal indicator type, expected one of {}, got `{}`'.format(
-            indicator_types, indicator_type_lower
+            INDICATOR_TYPES.keys(), indicator_type_lower
         ))
     dbot_entry = {
         outputPaths['dbotscore']: {
@@ -2004,29 +2016,24 @@ H || val.SSDeep && val.SSDeep == obj.SSDeep)': {'Malicious': {'Vendor': 'Vendor'
     :return: A malicious DBot entry
     :rtype: ``dict``
     """
-    file_types = ('md5', 'sha1', 'sha256', 'crc32', 'sha512', 'ctph')
     indicator_type_lower = indicator_type.lower()
-    if indicator_type_lower in ('ip', 'email'):
-        key = 'Address'
-    elif indicator_type_lower == 'url':
-        key = 'Data'
-    elif indicator_type_lower == 'domain':
-        key = 'Name'
-    elif indicator_type_lower == 'cve':
-        key = 'ID'
-    elif indicator_type_lower in file_types:
-        key = indicator_type_lower.upper()
-        indicator_type_lower = 'file'
-    else:
-        raise DemistoException('Wrong indicator type supplied: {}'.format(indicator_type))
-    entry = {
-        key: indicator,
-        'Malicious': {
-            'Vendor': vendor,
-            'Description': description
+    if indicator_type_lower in INDICATOR_TYPES:
+        key = INDICATOR_TYPES[indicator_type_lower]
+        # `file` indicator works a little different
+        if key == 'file':
+            key = indicator_type_lower.upper()
+            indicator_type_lower = 'file'
+        entry = {
+            key: indicator,
+            'Malicious': {
+                'Vendor': vendor,
+                'Description': description
+            }
         }
-    }
-    return {outputPaths[indicator_type_lower]: entry}
+        return {outputPaths[indicator_type_lower]: entry}
+    else:
+        raise DemistoException('Wrong indicator type supplied: {}, expected {}'
+                               .format(indicator_type, INDICATOR_TYPES))
 
 
 class BaseClient(object):
@@ -2035,6 +2042,8 @@ class BaseClient(object):
                  integration_command_name,
                  integration_context_name):
         """Base Client for use in integrations.
+        The BaseClient ment to be used when using SDKs and not http calls. For integrations using http call, use
+        BaseHTTPClient object.
 
          :type integration_name: ``str``
          :param integration_name:
@@ -2085,7 +2094,7 @@ class BaseClient(object):
 if 'requests' in sys.modules:
     class BaseHTTPClient(BaseClient):
         def __init__(self, integration_name, integration_command_name, integration_context_name, server, base_suffix,
-                     verify=True, proxy=False, ok_codes=tuple()):
+                     verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
             """Wrapper of BaseClient with added _http_request functionality
 
             :type server: ``str``
@@ -2105,6 +2114,16 @@ if 'requests' in sys.modules:
                 The request codes to accept as OK, for example: (200, 201, 204).
                 If you specify "None", will use requests.Response.ok
 
+            :type headers: ``dict``
+            :param headers:
+                The request headers, for example: {'Accept`: `application/json`}.
+                Can be None.
+
+            :type auth: ``dict`` or ``tuple``
+            :param auth:
+                The request authorization, for example: (username, password).
+                Can be None.
+
             :return: No data returned
             :rtype: ``None``
             """
@@ -2113,6 +2132,8 @@ if 'requests' in sys.modules:
             self._verify = verify
             self._base_url = '{}{}'.format(self._server, base_suffix)
             self._ok_codes = ok_codes
+            self._headers = headers
+            self._auth = auth
             if proxy:
                 self._proxies = handle_proxy()
             else:
@@ -2136,10 +2157,12 @@ if 'requests' in sys.modules:
                 API.
 
             :type headers: ``dict``
-            :param headers: Headers to send in the request.
+            :param headers: Headers to send in the request. If None, will use self._headers.
 
             :type auth: ``tuple``
-            :param auth: The authorization tuple (usually username/password) to enable Basic/Digest/Custom HTTP Auth.
+            :param auth:
+                The authorization tuple (usually username/password) to enable Basic/Digest/Custom HTTP Auth.
+                if None, will use self._auth.
 
             :type params: ``dict``
             :param params: URL parameters to specify the query.
@@ -2169,27 +2192,12 @@ if 'requests' in sys.modules:
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``requests.Response``
             """
-
-            def is_status_code_valid(response, status_codes=None):
-                """If the status code is OK, return 'True'.
-
-                :type response: ``requests.Response``
-                :param response: Response from API after the request for which to check the status.
-
-                :type status_codes: ``tuple``
-                :param status_codes:
-                    The request codes to accept as OK, for example: (200, 201, 204).
-                    If you specify "None", will use Response.ok.
-
-                :return: Whether the status of the response is valid.
-                :rtype: ``bool``
-                """
-                if status_codes:
-                    return response.status_code in status_codes
-                return response.ok
-
             try:
+                # Replace params if supplied
                 address = full_url if full_url else self._base_url + url_suffix
+                headers = headers if headers else self._headers
+                auth = auth if auth else self._auth
+                # Execute
                 res = requests.request(
                     method,
                     address,
@@ -2204,9 +2212,7 @@ if 'requests' in sys.modules:
                     **kwargs
                 )
                 # Handle error responses gracefully
-                # Get wanted ok codes
-                ok_status = ok_codes if ok_codes else self._ok_codes
-                if not is_status_code_valid(res, ok_status):
+                if not self._is_status_code_valid(res, ok_codes):
                     err_msg = 'Error in {} API call [{}] - {}' \
                         .format(self._integration_name, res.status_code, res.reason)
                     try:
@@ -2250,6 +2256,26 @@ if 'requests' in sys.modules:
                           ' is correct and that you have access to the server from your host.' \
                     .format(err_type, exception.errno, exception.strerror)
                 raise DemistoException(err_msg, exception)
+
+        def _is_status_code_valid(self, response, ok_codes):
+            """If the status code is OK, return 'True'.
+
+            :type response: ``requests.Response``
+            :param response: Response from API after the request for which to check the status.
+
+            :type ok_codes: ``tuple`` or ``list``
+            :param ok_codes:
+                The request codes to accept as OK, for example: (200, 201, 204). If you specify
+                "None", will use response.ok.
+
+            :return: Whether the status of the response is valid.
+            :rtype: ``bool``
+            """
+            # Get wanted ok codes
+            status_codes = ok_codes if ok_codes else self._ok_codes
+            if status_codes:
+                return response.status_code in status_codes
+            return response.ok
 
 
 class DemistoException(Exception):
