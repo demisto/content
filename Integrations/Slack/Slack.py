@@ -9,6 +9,8 @@ import asyncio
 import concurrent
 import requests
 
+# disable insecure warnings
+requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
@@ -47,7 +49,7 @@ NOTIFY_INCIDENTS: bool
 INCIDENT_TYPE: str
 SEVERITY_THRESHOLD: int
 ENDPOINT_URL: str
-
+VERIFY_ENDPOINT: bool
 
 ''' HELPER FUNCTIONS '''
 
@@ -399,15 +401,21 @@ def long_running_loop():
     Runs in a long running container - checking for newly mirrored investigations and answered questions.
     """
     while True:
+        error = ''
         try:
             check_for_mirrors()
             check_for_answers()
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
+                requests.exceptions.TooManyRedirects,
+                requests.exceptions.RequestException, requests.exceptions.SSLError) as e:
+            error = 'Could not connect to the Slack endpoint: {}'.format(str(e))
         except Exception as e:
             error = 'An error occurred: {}'.format(str(e))
             demisto.error(error)
-            demisto.updateModuleHealth(error)
         finally:
-            time.sleep(1.5)
+            if error:
+                demisto.updateModuleHealth(error)
+            time.sleep(1)
 
 
 def check_for_answers():
@@ -424,24 +432,25 @@ def check_for_answers():
         users = json.loads(users)
 
     for question in questions:
-        headers = {'Accept': 'application/json'}
+        headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
         body = {
             'token': BOT_TOKEN,
-            'entitlement': question['entitlement']
+            'entitlement': question.get('entitlement')
         }
-        res = requests.post(ENDPOINT_URL, data=body, headers=headers)
+        res = requests.post(ENDPOINT_URL, data=json.dumps(body), headers=headers, verify=VERIFY_ENDPOINT)
         if res.status_code != 200:
-            demisto.error('Slack - failed to poll for answers: {}'.format(res.content))
+            demisto.error('Slack - failed to poll for answers: {}, status code: {}'
+                          .format(res.content, res.status_code))
             continue
         answer = res.json()
         if not answer:
             continue
-        payload = json.loads(answer).get('payload')
-        if isinstance(payload, list):
+        payload: dict = answer.get('payload')
+        if payload and isinstance(payload, list):
             payload = payload[0]
         actions = payload.get('actions', [])
         if actions:
-            demisto.info('Slack - got answer from user, handling entitlement.')
+            demisto.info('Slack - received answer from user.')
             user_id = payload.get('user', {}).get('id')
             user_filter = list(filter(lambda u: u['id'] == user_id, users))
             if user_filter:
@@ -985,10 +994,13 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
     :param blocks: Message blocks to send
     :return: The Slack send response.
     """
-    if not message and not blocks:
-        message = '\n'
+    if not message:
+        if blocks:
+            message = 'New message from SOC Bot'
+        else:
+            message = '\n'
 
-    if message:
+    if message and not blocks:
         if ignore_add_url and isinstance(ignore_add_url, str):
             ignore_add_url = bool(strtobool(ignore_add_url))
         if not ignore_add_url:
@@ -1376,7 +1388,7 @@ def init_globals():
     Initializes global variables according to the integration parameters
     """
     global BOT_TOKEN, ACCESS_TOKEN, PROXY, DEDICATED_CHANNEL, CLIENT, CHANNEL_CLIENT
-    global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, ENDPOINT_URL
+    global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, ENDPOINT_URL, VERIFY_ENDPOINT
 
     BOT_TOKEN = demisto.params().get('bot_token')
     ACCESS_TOKEN = demisto.params().get('access_token')
@@ -1389,6 +1401,7 @@ def init_globals():
     NOTIFY_INCIDENTS = demisto.params().get('notify_incidents', True)
     INCIDENT_TYPE = demisto.params().get('incidentType')
     ENDPOINT_URL = demisto.params().get('slackEndpoint')
+    VERIFY_ENDPOINT = demisto.params().get('verifyEndpoint', False)
 
 
 def main():

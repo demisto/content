@@ -3,40 +3,43 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 STYLES_DICT = {
-    'black': 'default',
+    'black': '',
     'green': 'primary',
     'red': 'danger'
 }
 
 
-def create_blocks(text, option1, option2, entitlement):
-    return [{
+def create_blocks(text: str, entitlement: str, options: list) -> list:
+    blocks: list = [{
         'type': 'section',
         'text': {
             'type': 'mrkdwn',
             'text': text
         }
-    }, {
-        'type': 'actions',
-        'elements': [{
+    }]
+
+    elements = []
+    for option in options:
+        element = {
             'type': 'button',
             'text': {
                 'type': 'plain_text',
                 'emoji': True,
-                'text': option1['text']
+                'text': option['text']
             },
-            'style': option1['style'],
             'value': entitlement
-        }, {
-            'type': 'button',
-            'text': {
-                'type': 'plain_text',
-                'emoji': True,
-                'text': option2['text']
-            },
-            'style': option2['style'],
-            'value': entitlement
-        }]}]
+        }
+        if 'style' in option:
+            element['style'] = option['style']
+        elements.append(element)
+    if elements:
+        actions = {
+            'type': 'actions',
+            'elements': elements
+        }
+        blocks.append(actions)
+
+    return blocks
 
 
 def main():
@@ -47,13 +50,8 @@ def main():
         sys.exit(0)
     entitlement = demisto.get(res[0], 'Contents')
     option1 = demisto.get(demisto.args(), 'option1')
-    if not option1:
-        option1 = 'yes'
-    option1_style = demisto.args().get('option1Style', 'black')
     option2 = demisto.get(demisto.args(), 'option2')
-    if not option2:
-        option2 = 'no'
-    option2_style = demisto.args().get('option2Style', 'black')
+    extra_options = argToList(demisto.args().get('additionalOptions', ''))
     entitlement_string = entitlement + '@' + demisto.investigation()['id']
     if demisto.get(demisto.args(), 'task'):
         entitlement_string += '|' + demisto.get(demisto.args(), 'task')
@@ -62,23 +60,31 @@ def main():
     args = {
         'ignoreAddURL': 'true'
     }
-
+    user_options = [option1, option2]
+    options = []
+    if extra_options:
+        user_options += extra_options
     if response_type == 'thread':
-        message = '%s - Please reply to this thread with `%s` or `%s`' % (demisto.args()['message'], option1, option2)
+        for option in user_options:
+            options.append(option.split(';')[0])
+        string_options = ' or '.join(list(map(lambda o: '`{}`'.format(o), options)))
+        message = '{} - Please reply to this thread with {}'.format(demisto.args()['message'], string_options)
         args['message'] = json.dumps({
             'message': message,
             'entitlement': entitlement_string
         })
     else:
-        option1 = {
-            'text': option1,
-            'style': STYLES_DICT.get(option1_style)
-        }
-        option2 = {
-            'text': option2,
-            'style': STYLES_DICT.get(option2_style)
-        }
-        blocks = json.dumps(create_blocks(demisto.args()['message'], option1, option2, entitlement_string))
+        for option in user_options:
+            option = option.split(';')
+            button = {
+                'text': option[0]
+            }
+            if len(option) > 1:
+                style = STYLES_DICT.get(option[1])
+                if style:
+                    button['style'] = style
+            options.append(button)
+        blocks = json.dumps(create_blocks(demisto.args()['message'], entitlement_string, options))
         args['blocks'] = json.dumps({
             'blocks': blocks,
             'entitlement': entitlement_string
@@ -97,5 +103,5 @@ def main():
     demisto.results(demisto.executeCommand('send-notification', args))
 
 
-if __name__ in ('__builtin__', '__main__'):
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()

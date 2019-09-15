@@ -19,13 +19,19 @@ args:
   required: true
   secret: false
 - default: false
-  description: First reply option. Default is "yes".
+  defaultValue: Yes;green
+  description: First reply option. Default is "yes". To change the button color, add
+    a semicolon with the desired color - green, red or black (green by default). for
+    example - "yes;green".
   isArray: false
   name: option1
   required: false
   secret: false
 - default: false
-  description: Second reply option. Default is "no".
+  defaultValue: No;red
+  description: Second reply option. Default is "no". To change the button color, add
+    a semicolon with the desired color - green, red or black (red by default). for
+    example - "no;red".
   isArray: false
   name: option2
   required: false
@@ -65,28 +71,11 @@ args:
   - thread
   required: false
   secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: green
-  description: Style for the option 1 button.
+- default: false
+  description: A CSV list of more options to add in the format of "option;color",
+    e.g., "maybe;red" (black by default).
   isArray: false
-  name: option1Style
-  predefined:
-  - black
-  - green
-  - red
-  required: false
-  secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: red
-  description: Style for the option 2 button.
-  isArray: false
-  name: option2Style
-  predefined:
-  - black
-  - green
-  - red
+  name: additionalOptions
   required: false
   secret: false
 comment: Sends a message (question) to either user (in a direct message) or to a channel.
@@ -111,3 +100,4 @@ dependson:
   - send-notification
 subtype: python3
 fromversion: 5.0.0
+dockerimage: demisto/python3:3.7.3.221

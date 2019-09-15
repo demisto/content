@@ -35,6 +35,16 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- defaultvalue: dummyURL
+  display: URL of a service to poll for Slack interactive responses
+  name: slackEndpoint
+  required: false
+  type: 0
+- defaultvalue: 'true'
+  display: Verify Slack endpoint certificate
+  name: verifyEndpoint
+  required: false
+  type: 8
 - display: Allow external users to create incidents via DM
   name: allow_incidents
   required: false
@@ -49,11 +59,6 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- defaultvalue: https://us-central1-oproxy-dev.cloudfunctions.net/slack-buttons_SlackDemistoFunction
-  display: URL of a service to poll for Slack interactive responses.
-  name: slackEndpoint
-  required: false
-  type: 0
 description: Send messages and notifications to your Slack team.
 display: Slack v2
 name: SlackV2

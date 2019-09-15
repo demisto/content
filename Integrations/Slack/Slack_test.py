@@ -1535,7 +1535,7 @@ def test_check_for_answers(mocker, requests_mock):
 
     requests_mock.post(
         'https://ninja.oproxy.works/slack',
-        json=PAYLOAD_JSON
+        json=json.loads(PAYLOAD_JSON)
     )
 
     integration_context = get_integration_context()
@@ -1586,8 +1586,8 @@ def test_check_for_answers_continue(mocker, requests_mock):
     requests_mock.post(
         'https://ninja.oproxy.works/slack',
         [{'json': {}, 'status_code': 200},
-         {'json': {}, 'status_code': 401},
-         {'json': PAYLOAD_JSON, 'status_code': 200}]
+         {'json': 'error', 'status_code': 401},
+         {'json': json.loads(PAYLOAD_JSON), 'status_code': 200}]
 
     )
 
@@ -1690,7 +1690,7 @@ def test_check_for_answers_error(mocker, requests_mock):
 
     requests_mock.post(
         'https://ninja.oproxy.works/slack',
-        json={},
+        json='error',
         status_code=401
     )
 
