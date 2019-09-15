@@ -42,7 +42,7 @@ class FilesValidator(object):
     Attributes:
         _is_valid (bool): saves the status of the whole validation(instead of mingling it between all the functions).
         is_circle (bool): whether we are running on circle or local env.
-        conf_json_validator (ConfJsonValidator): object for validating the conf.json file.
+        conf_json_validator (ConfJsonValidator): object for validating the conf.json file.i
         id_set_validator (IDSetValidator): object for validating the id_set.json file(Created in Circle only).
     """
 
