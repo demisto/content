@@ -16,7 +16,7 @@ configuration:
   name: key
   required: true
   type: 4
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -211,7 +211,7 @@ script:
       type: string
   - arguments:
     - default: true
-      description: Specifies a device group (Panorama instances).
+      description: The device group for which to return addresses (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -232,13 +232,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Specifies a device group for the addresses (Panorama instances).
+      description: The device group for which to return addresses (Panorama instances).
       isArray: false
       name: device-group
       required: false
       secret: false
     - default: false
-      description: Tag to filter the addresses.
+      description: Tag for which to filter the list of addresses.
       isArray: false
       name: tag
       required: false
@@ -255,10 +255,10 @@ script:
       description: Address description.
       type: string
     - contextPath: Panorama.Addresses.FQDN
-      description: Address fqdn
+      description: Address FQDN.
       type: string
     - contextPath: Panorama.Addresses.IP_Netmask
-      description: Address IP netmask.
+      description: Address IP Netmask.
       type: string
     - contextPath: Panorama.Addresses.IP_Range
       description: Address IP range.
@@ -277,7 +277,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specifies a device group for the address (Panorama instances).
+      description: The device group for which to return addresses (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -294,10 +294,10 @@ script:
       description: Address description.
       type: string
     - contextPath: Panorama.Addresses.FQDN
-      description: Address fqdn.
+      description: Address FQDN.
       type: string
     - contextPath: Panorama.Addresses.IP_Netmask
-      description: Address IP netmask.
+      description: Address IP Netmask.
       type: string
     - contextPath: Panorama.Addresses.IP_Range
       description: Address IP range.
@@ -328,7 +328,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: IP netmask of the new address. For example, 10.10.10.10/24
+      description: IP Netmask of the new address. For example, 10.10.10.10/24
       isArray: false
       name: ip_netmask
       required: false
@@ -340,13 +340,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies a device group for the new address (Panorama instances).
+      description: The device group for which to return addresses (Panorama instances).
       isArray: false
       name: device-group
       required: false
       secret: false
     - default: false
-      description: New address tag.
+      description: The tag for the new address.
       isArray: true
       name: tag
       required: false
@@ -366,7 +366,7 @@ script:
       description: Address FQDN.
       type: string
     - contextPath: Panorama.Addresses.IP_Netmask
-      description: Address IP netmask.
+      description: Address IP Netmask.
       type: string
     - contextPath: Panorama.Addresses.IP_Range
       description: Address IP range.
@@ -385,7 +385,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specifies a device group for the address to delete (Panorama instances).
+      description: The device group for which to return addresses (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -403,13 +403,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Specifies a device group for the address groups (Panorama instances).
+      description: The device group for which to return addresses (Panorama instances).
       isArray: false
       name: device-group
       required: false
       secret: false
     - default: false
-      description: Tag to filter the Address groups.
+      description: Tag for which to filter the Address groups.
       isArray: false
       name: tag
       required: false
@@ -448,7 +448,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specifies a device group for the address group (Panorama instances).
+      description: The device group for which to return addresses (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -515,13 +515,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies a device group for the address group (Panorama instances).
+      description: The device group for which to return addresses (Panorama instances).
       isArray: false
       name: device-group
       required: false
       secret: false
     - default: false
-      description: Address group tags.
+      description: The tags for the Address group.
       isArray: true
       name: tags
       required: false
@@ -560,7 +560,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specifies a device group for the address group (Panorama instances).
+      description: The device group for which to return addresses (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -620,13 +620,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Address group new tag.
+      description: The tag of the Address group to edit.
       isArray: true
       name: tags
       required: false
       secret: false
     deprecated: false
-    description: Edit a static or dynamic address group.
+    description: Edits a static or dynamic address group.
     execution: false
     name: panorama-edit-address-group
     outputs:
@@ -649,17 +649,17 @@ script:
       description: Device group for the address group (Panorama instances).
       type: String
     - contextPath: Panorama.AddressGroups.Tags
-      description: Address group new tags.
+      description: Address group tags.
       type: String
   - arguments:
     - default: false
-      description: Specifies a device group for the services (Panorama instances).
+      description: The device group for which to return addresses (Panorama instances).
       isArray: false
       name: device-group
       required: false
       secret: false
     - default: false
-      description: Tag to filter the Services.
+      description: Tag for which to filter the Services.
       isArray: false
       name: tag
       required: false
@@ -688,7 +688,7 @@ script:
       description: Device group in which the service was configured (Panorama instances).
       type: string
     - contextPath: Panorama.Services.Tags
-      description: Sevice tags.
+      description: Service tags.
       type: String
   - arguments:
     - default: false
@@ -698,7 +698,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies a device group for the service (Panorama instances).
+      description: The device group for which to return addresses (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -766,7 +766,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies a device group for the service (Panorama instances).
+      description: The device group for which to return addresses (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -811,7 +811,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specifies a device group for the service (Panorama instances).
+      description: The device group for which to return addresses (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -829,13 +829,13 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Specifies a device group for the service groups (Panorama instances).
+      description: The device group for which to return addresses (Panorama instances).
       isArray: false
       name: device-group
       required: false
       secret: false
     - default: false
-      description: Tag to filter the Service groups.
+      description: Tags for which to filter the Service groups.
       isArray: true
       name: tag
       required: false
@@ -865,7 +865,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specifies a device group for the service group (Panorama instances).
+      description: The device group for which to return addresses (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -901,13 +901,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specifies a device group for the service group (Panorama instances).
+      description: The device group for which to return addresses (Panorama instances).
       isArray: false
       name: device-group
       required: false
       secret: false
     - default: false
-      description: Service group tags.
+      description: Tags for which to filter Service groups.
       isArray: true
       name: tags
       required: false
@@ -937,7 +937,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specifies a device group for the service group (Panorama instances).
+      description: The device group for which to return addresses (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -975,7 +975,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Service group tags.
+      description: Tag of the Service group to edit.
       isArray: true
       name: tags
       required: false
@@ -1005,8 +1005,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specifies a device group for the custom URL category (Panorama
-        instances).
+      description: The device group for which to return addresses for the custom URL category (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -1048,7 +1047,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies a device group for the custom URL category (Panorama
+      description: The device group for which to return addresses for the custom URL category (Panorama
         instances).
       isArray: false
       name: device-group
@@ -1079,8 +1078,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies a device group for the custom url category (Panorama
-        instances).
+      description: The device group for which to return addresses (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -1162,7 +1160,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specifies a device group for the URL Filter (Panorama instances).
+      description: The device group for which to return addresses for the URL Filter (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -1239,7 +1237,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies a device group for the URL Filter (Panorama instances).
+      description: The device group for which to return addresses for the URL Filter (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -1340,7 +1338,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specifies a device group for the URL filter (Panorama instances)
+      description: The device group for which to return addresses for the URL filter (Panorama instances)
       isArray: false
       name: device-group
       required: false
@@ -1358,7 +1356,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Specifies a device group for the EDL (Panorama instances).
+      description: The device group for which to return addresses for the EDL (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -1397,7 +1395,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specifies a device group for the EDL (Panorama instances)
+      description: The device group for which to return addresses for the EDL (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -1476,7 +1474,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies a device group for the EDL (Panorama instances).
+      description: The device group for which to return addresses for the EDL (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -1564,7 +1562,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specifies a device group for the EDL (Panorama instances).
+      description: The device group for which to return addresses for the EDL (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -1588,7 +1586,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specifies a device group for the EDL (Panorama instances).
+      description: The device group for which to return addresses for the EDL (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -1708,13 +1706,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies a device group for the rule (Panorama instances).
+      description: The device group for which to return addresses for the rule (Panorama instances).
       isArray: false
       name: device-group
       required: false
       secret: false
     - default: false
-      description: Tags for the rule to create.
+      description: Rule tags to create.
       isArray: true
       name: tags
       required: false
@@ -1829,13 +1827,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies a device group for the rule (Panorama instances).
+      description: The device group for which to return addresses for the rule (Panorama instances).
       isArray: false
       name: device-group
       required: false
       secret: false
     - default: false
-      description: Tags for the rule.
+      description: Tags for which to use for the custom block policy rule.
       isArray: true
       name: tags
       required: false
@@ -1904,7 +1902,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies a device group for the rule (Panorama instances).
+      description: The device group for which to return addresses for the rule (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -2025,7 +2023,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies a device group for the rule (Panorama instances).
+      description: The device group for which to return addresses for the rule (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -2226,7 +2224,7 @@ script:
     name: panorama-list-pcaps
   - arguments:
     - default: false
-      description: Tag to which to register IP addresses.
+      description: Tag for which to register IP addresses.
       isArray: false
       name: tag
       required: true
@@ -2255,14 +2253,14 @@ script:
     name: panorama-register-ip-tag
     outputs:
     - contextPath: Panorama.DynamicTags.Tag
-      description: Name for the tag.
+      description: Name of the tag.
       type: string
     - contextPath: Panorama.DynamicTags.IPs
       description: Registered IP addresses.
       type: string
   - arguments:
     - default: false
-      description: Tag from which to unregister IP addresses.
+      description: Tag for which to unregister IP addresses.
       isArray: false
       name: tag
       required: true
@@ -2452,13 +2450,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies a device group for the rule (Panorama instances).
+      description: The device group for which to return addresses (Panorama instances).
       isArray: false
       name: device-group
       required: false
       secret: false
     - default: false
-      description: Tag to filter the rules.
+      description: Tag for which to filter the rules.
       isArray: false
       name: tag
       required: false
