@@ -33,7 +33,7 @@ def test_generate_hash_queries():
 
 def test_generate_domain_queries():
     expected1 = {
-       'CortexThreatDomain': "SELECT * from panw.threat where misc LIKE 'demisto.com'"
+        'CortexThreatDomain': "SELECT * from panw.threat where misc LIKE 'demisto.com'"
     }
     expected2 = {
         'CortexThreatDomain': "SELECT * from panw.threat where misc LIKE 'demisto.com' OR "
