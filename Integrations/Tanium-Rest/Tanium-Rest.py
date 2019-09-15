@@ -12,8 +12,6 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-
-
 class Client:
     def __init__(self, username, password, domain, url, use_ssl):
         self.url = url
@@ -125,7 +123,6 @@ class Client:
         res = self.do_request('POST', 'questions', question_body)
         return res.get('data').get('id'),res
 
-
     def parse_question_results(self, result):
         results_sets = result.get('data').get('result_sets')[0]
         if results_sets.get('estimated_total') != results_sets.get('mr_tested'):
@@ -133,11 +130,10 @@ class Client:
         if results_sets.get('row_count') == 0:
             return []
 
+        rows=[]
         columns = []
         for column in results_sets.get('columns'):
             columns.append(column.get('name'))
-
-        rows=[]
 
         for row in results_sets.get('rows'):
             i=0
@@ -148,12 +144,191 @@ class Client:
             rows.append(tmp_row)
         return rows
 
+    def update_id(self, obj):
+        if 'id' in obj:
+            obj['ID'] = obj['id']
+            del obj['id']
+            return obj
+        return obj
+
+    def get_package_item(self, package):
+        item = {}
+        item['ContentSet'] = {}
+        item['ModUser'] = {}
+        item['Command'] = package['command']
+        item['CommandTimeout'] = package['command_timeout']
+        item['ContentSet']['Id'] = package['content_set']['id']
+        item['ContentSet']['Name'] = package['content_set']['name']
+        item['CreationTime'] = package['creation_time']
+        item['DisplayName'] = package['display_name']
+        item['ExpireSeconds'] = package['expire_seconds']
+        item['ID'] = package['id']
+        item['LastModifiedBy'] = package['last_modified_by']
+        item['LastUpdate'] = package['last_update']
+        item['ModUser']['Domain'] = package['mod_user']['domain']
+        item['ModUser']['Id'] = package['mod_user']['id']
+        item['ModUser']['Name'] = package['mod_user']['name']
+        item['ModificationTime'] = package['modification_time']
+        item['Name'] = package['name']
+        item['SourceId'] = package['source_id']
+        item['VerifyExpireSeconds'] = package['verify_expire_seconds']
+        item['Parameters'] = self.get_parameter_item(package)
+
+        files = package.get('files')
+        files_list = []
+        if files:
+            for file in files:
+                tmp = {}
+                tmp['Id'] = file.get('id')
+                tmp['Hash'] = file.get('hash')
+                tmp['Name'] = file.get('name')
+                files_list.append(tmp)
+
+        item['Files'] = files_list
+        return item
+
+    def get_question_item(self, question):
+        item = {}
+        item['ID'] = question['id']
+        item['Expiration'] = question['expiration']
+        item['ExpireSeconds'] = question['expire_seconds']
+        item['ForceComputerIdFlag'] = question['force_computer_id_flag']
+        item['IsExpired'] = question['is_expired']
+        item['QueryText'] = question['query_text']
+
+        saved_question_id = question['saved_question']['id']
+        if saved_question_id:
+            item['SavedQuestionId'] = saved_question_id
+        item['UserId'] = question['user']['id']
+        item['UserName'] = question['user']['name']
+        return item
+
+    def get_saved_question_item(self, question):
+        item = {}
+        item['ArchiveEnabledFlag'] = question['archive_enabled_flag']
+        item['ArchiveOwner'] = question['archive_owner']
+        item['ExpireSeconds'] = question['expire_seconds']
+        item['ID'] = question['id']
+        item['IssueSeconds'] = question['issue_seconds']
+        item['IssueSecondsNeverFlag'] = question['issue_seconds_never_flag']
+        item['KeepSeconds'] = question['keep_seconds']
+        item['ModTime'] = question['mod_time']
+        item['ModUserDomain'] = question['mod_user']['domain']
+        item['ModUserId'] = question['mod_user']['id']
+        item['ModUserName'] = question['mod_user']['name']
+        item['MostRecentQuestionId'] = question['most_recent_question_id']
+        item['Name'] = question['name']
+        item['QueryText'] = question['query_text']
+        item['QuestionId'] = question['question']['id']
+        item['RowCountFlag'] = question['row_count_flag']
+        item['SortColumn'] = question['sort_column']
+        item['UserId'] = question['user']['id']
+        item['UserName'] = question['user']['name']
+        return item
+
+    def get_sensor_item(self, sensor):
+        item = {}
+        item['Category'] = sensor['category']
+        item['ContentSetId'] = sensor['content_set']['id']
+        item['ContentSetName'] = sensor['content_set']['name']
+        item['CreationTime'] = sensor['creation_time']
+        item['Description'] = sensor['description']
+        item['Hash'] = sensor['hash']
+        item['ID'] = sensor['id']
+        item['IgnoreCaseFlag'] = sensor['ignore_case_flag']
+        item['KeepDuplicatesFlag'] = sensor['keep_duplicates_flag']
+        item['LastModifiedBy'] = sensor['last_modified_by']
+        item['MaxAgeSeconds'] = sensor['max_age_seconds']
+        item['ModUserDomain'] = sensor['mod_user']['domain']
+        item['ModUserId'] = sensor['mod_user']['id']
+        item['ModUserName'] = sensor['mod_user']['name']
+        item['ModificationTime'] = sensor['modification_time']
+        item['Name'] = sensor['name']
+        item['SourceId'] = sensor['source_id']
+        item['Parameters'] = self.get_parameter_item(sensor)
+        return item
+
+    def get_parameter_item(self, sensor):
+        parameters = sensor.get('parameter_definition')
+        params_list = []
+        if parameters:
+            try:
+                parameters = json.loads(parameters).get('parameters')
+            except ValueError:
+                return {'Value': parameters}
+            for param in parameters:
+                tmp = {}
+                tmp['key'] = param.get('key')
+                tmp['Label'] = param.get('label')
+                tmp['Values'] = param.get('values')
+                tmp['ParameterType'] = param.get('parameterType')
+                params_list.append(tmp)
+        return params_list
+
+    def get_action_item(self, action):
+        item = {}
+        item['ActionGroupId'] = action['action_group']['id']
+        item['ActionGroupName'] = action['action_group']['name']
+        item['ApproverId'] = action['approver']['id']
+        item['ApproverName'] = action['approver']['name']
+        item['CreationTime'] = action['creation_time']
+        item['ExpirationTime'] = action['expiration_time']
+        item['ExpireSeconds'] = action['expire_seconds']
+        item['HistorySavedQuestionId'] = action['history_saved_question']['id']
+        item['ID'] = action['id']
+        item['Name'] = action['name']
+        item['PackageId'] = action['package_spec']['id']
+        item['PackageName'] = action['package_spec']['name']
+        item['SavedActionId'] = action['saved_action']['id']
+        item['StartTime'] = action['start_time']
+        item['Status'] = action['status']
+        item['StoppedFlag'] = action['stopped_flag']
+        item['TargetGroupId'] = action['target_group']['id']
+        item['TargetGroupName'] = action['target_group']['name']
+        item['UserDomain'] = action['user']['domain']
+        item['UserId'] = action['user']['id']
+        item['UserName'] = action['user']['name']
+        return item
+
+    def get_saved_action_item(self, action):
+        item = {}
+        item['ActionGroupId'] = action['action_group_id']
+        item['ApprovedFlag'] = action['approved_flag']
+        item['ApproverId'] = action['approver']['id']
+        item['ApproverName'] = action['approver']['name']
+        item['CreationTime'] = action['creation_time']
+        item['EndTime'] = action['end_time']
+        item['ExpireSeconds'] = action['expire_seconds']
+        item['ID'] = action['id']
+        item['LastActionId'] = action['last_action']['id']
+        item['LastActionStartTime'] = action['last_action']['start_time']
+        item['TargetGroupId'] = action['target_group']['id']
+        item['LastStartTime'] = action['last_start_time']
+        item['Name'] = action['name']
+        item['NextStartTime'] = action['next_start_time']
+        item['PackageId'] = action['package_spec']['id']
+        item['PackageName'] = action['package_spec']['name']
+        item['PackageSourceHash'] = action['package_spec']['source_hash']
+        item['StartTime'] = action['start_time']
+        item['Status'] = action['status']
+        item['UserId'] = action['user']['id']
+        item['UserName'] = action['user']['name']
+        return item
+
+    def get_saved_action_pending_item(self, action):
+        item = {}
+        item['ApprovedFlag'] = action['approved_flag']
+        item['ID'] = action['id']
+        item['Name'] = action['name']
+        item['OwnerUserId'] = action['owner_user_id']
+        return item
+
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
 def test_module(client):
-    client.do_request('GET', 'groups')
+    client.do_request('GET', 'system_status')
 
 
 def get_package(client, data_args):
@@ -167,33 +342,38 @@ def get_package(client, data_args):
     if name:
         endpoint_url = 'packages/by-name/' + name
 
-
     raw_response = client.do_request('GET', endpoint_url)
-    response = raw_response.get('data')
-    response['ID'] = response['id']
-    del response['id']
+    package = client.get_package_item(raw_response.get('data'))
+    params = package.get('Parameters')
+    files = package.get('Files')
+    del package['Parameters']
+    del package['Files']
 
-    context = createContext(response, removeNull=True)
-    outputs = {'Tanium.Package(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Package information', context)
+    context = createContext(package, removeNull=True)
+    outputs = {'TaniumPackage(val.ID === obj.ID)': context}
+
+    human_readable = tableToMarkdown('Package information', package)
+    human_readable += tableToMarkdown('Parameters information', params)
+    human_readable += tableToMarkdown('Files information', files)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
 
 def get_packages(client, data_args):
     count = int(data_args.get('count'))
-
     raw_response = client.do_request('GET', 'packages')
 
     packages = []
 
     for package in raw_response.get('data')[:-1][:count]:
-        package['ID'] = package['id']
-        del package['id']
+        package = client.get_package_item(package)
+
+        del package['Files']
+        del package['Parameters']
         packages.append(package)
 
     context = createContext(packages, removeNull=True)
-    outputs = {'Tanium.Package(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Package information', context)
+    outputs = {'TaniumPackage(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Packages', packages)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
 
@@ -203,14 +383,18 @@ def create_package(client, data_args):
     body = {'name': name, 'command': command}
 
     raw_response = client.do_request('POST', 'packages', body)
+    package = client.get_package_item(raw_response.get('data'))
 
-    package = raw_response.get('data')
-    package['ID'] = package['id']
-    del package['id']
+    params = package.get('Parameters')
+    files = package.get('Files')
+    del package['Parameters']
+    del package['Files']
 
     context = createContext(package, removeNull=True)
-    outputs = {'Tanium.Package(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Package information', context)
+    outputs = {'TaniumPackage(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Package information', package)
+    human_readable += tableToMarkdown('Parameters information', params)
+    human_readable += tableToMarkdown('Files information', files)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
 def ask_question(client, data_args):
@@ -221,7 +405,7 @@ def ask_question(client, data_args):
     id, res = client.create_question(body)
     context = {'ID': id,'text': question_text}
     context = createContext(context, removeNull=True)
-    outputs = {'Tanium.Questions(val.ID === obj.ID)': context}
+    outputs = {'Tanium.Question(val.ID === obj.ID)': context}
     return_outputs(readable_output='New question created. ID: ' + str(id), outputs=outputs, raw_response=res)
 
 
@@ -237,7 +421,7 @@ def get_question_results(client, data_args):
 
     context = {'QuestionID': id,'Results':rows}
     context = createContext(context, removeNull=True)
-    outputs = {'Tanium.results(val.QuestionID === question_id)': context}
+    outputs = {'Tanium.QuestionResult(val.QuestionID === question_id)': context}
     human_readable = tableToMarkdown('question results:', rows)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
@@ -248,8 +432,7 @@ def get_sensors(client, data_args):
 
     sensors=[]
     for sensor in res.get('data')[:-1][:count]:
-        sensor['ID'] = sensor['id']
-        del sensor['id']
+        sensor = client.update_id(sensor)
         sensors.append(sensor)
 
     context = createContext(sensors, removeNull=True)
@@ -270,28 +453,31 @@ def get_sensor(client, data_args):
         endpoint_url = 'sensors/by-name/' + name
 
     raw_response = client.do_request('GET', endpoint_url)
-    response = raw_response.get('data')
-    response['ID'] = response['id']
-    del response['id']
+    sensor = client.get_sensor_item(raw_response.get('data'))
 
-    context = createContext(response, removeNull=True)
-    outputs = {'Tanium.Sensor(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Sensor information', context)
-    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=response)
+    context = createContext(sensor, removeNull=True)
+    outputs = {'TaniumSensor(val.ID === obj.ID)': context}
+
+    params = sensor['Parameters']
+    del sensor['Parameters']
+
+    human_readable = tableToMarkdown('Sensor information', sensor)
+    human_readable += tableToMarkdown('Parameter information', params)
+
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
 
 def create_saved_question(client, data_args):
     id = data_args.get('question-id')
     name = data_args.get('name')
     body ={'name':name,'question':{'id':id}}
-    raw_response = client.do_request('POST', 'saved_questions',body)
+    raw_response = client.do_request('POST', 'saved_questions', body)
 
     response = raw_response.get('data')
-    response['ID'] = response['id']
-    del response['id']
+    response = client.update_id(response)
 
     context = createContext(response, removeNull=True)
-    outputs = {'Tanium.SavedQuestions(val.ID === obj.ID)': context}
+    outputs = {'Tanium.SavedQuestion(val.ID === obj.ID)': context}
     return_outputs(readable_output='Question saved. ID = ' + str(response['ID']), outputs=outputs, raw_response=raw_response)
 
 
@@ -301,12 +487,11 @@ def get_saved_questions(client, data_args):
 
     questions=[]
     for question in raw_response.get('data')[:-1][:count]:
-        question['ID'] = question['id']
-        del question['id']
+        question = client.update_id(question)
         questions.append(question)
 
     context = createContext(questions, removeNull=True)
-    outputs = {'Tanium.SavedQuestions(val.ID === obj.ID)': context}
+    outputs = {'Tanium.SavedQuestion(val.ID === obj.ID)': context}
     human_readable = tableToMarkdown('Saved questions:', questions)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
@@ -323,7 +508,7 @@ def get_saved_question_results(client, data_args):
 
     context = {'SavedQuestionID': id, 'Results':rows}
     context = createContext(context, removeNull=True)
-    outputs = {'Tanium.SavedQuestionsResults(val.SavedQuestionID === id)': context}
+    outputs = {'Tanium.SavedQuestionResult(val.Tanium.SavedQuestionID === obj.ID)': context}
     human_readable = tableToMarkdown('question results:', rows)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
@@ -332,7 +517,7 @@ def get_system_status(client):
     raw_response = client.do_request('GET', 'system_status')
     response = raw_response.get('data')
 
-    context =[]
+    context = []
     for item in response:
         if item.get('computer_id'):
             context.append(item)
@@ -341,6 +526,145 @@ def get_system_status(client):
     outputs = {'Tanium.SystemStatus(val.computer_id === obj.computer_id)': context}
     human_readable = tableToMarkdown('System status:', context)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+
+def get_question_metadata(client, data_args):
+    id = data_args.get('question-id')
+    raw_response = client.do_request('GET', 'questions/' + str(id))
+    question_data = raw_response.get('data')
+    question_data = client.get_question_item(question_data)
+
+    context = createContext(question_data, removeNull=True)
+    outputs = {'Tanium.Question(val.Tanium.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('question results:', question_data)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+
+def get_saved_question_metadata(client, data_args):
+    id = data_args.get('question-id')
+    name = data_args.get('question-name')
+    endpoint_url = ''
+    if not id and not name:
+        return_error('question id and question name arguments are missing')
+    if id:
+        endpoint_url = 'saved_questions/' + str(id)
+    if name:
+        endpoint_url = 'saved_questions/by-name/' + name
+
+    raw_response = client.do_request('GET', endpoint_url)
+    response = client.get_saved_question_item(raw_response.get('data'))
+
+    context = createContext(response, removeNull=True)
+    outputs = {'Tanium.SavedQuestion(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Saved question information', context)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+
+def get_saved_actions(client, data_args):
+    count = int(data_args.get('count'))
+    raw_response = client.do_request('GET', 'saved_actions')
+
+    actions = []
+    for action in raw_response.get('data')[:-1][:count]:
+        action = client.get_saved_action_item(action)
+        actions.append(action)
+
+    context = createContext(actions, removeNull=True)
+    outputs = {'Tanium.SavedAction(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Saved actions:', actions)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+
+def get_saved_action(client, data_args):
+    id = data_args.get('id')
+    name = data_args.get('name')
+    endpoint_url = ''
+    if not id and not name:
+        return_error('id and name arguments are missing')
+    if id:
+        endpoint_url = 'saved_actions/' + str(id)
+    if name:
+        endpoint_url = 'saved_actions/by-name/' + name
+
+    raw_response = client.do_request('GET', endpoint_url)
+    response = client.get_saved_action_item(raw_response.get('data'))
+
+    context = createContext(response, removeNull=True)
+    outputs = {'Tanium.SavedAction(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Saved action information', context)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+
+def create_saved_action(client, data_args):
+    action_group_id = data_args.get('action-group-id')
+    package_id = data_args.get('package-id')
+    name = data_args.get('name')
+
+    body = {'name': name, 'action_group': {'id': action_group_id}, 'package_spec': {'id': package_id}}
+    raw_response = client.do_request('POST', 'saved_actions', body)
+    response = client.get_saved_action_item(raw_response.get('data'))
+
+    context = createContext(response, removeNull=True)
+    outputs = {'Tanium.SavedAction(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Saved action created', context)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+
+def create_action(client, data_args):
+    package_id = data_args.get('package-id')
+
+    body = {'package_spec': {'id': package_id}}
+    raw_response = client.do_request('POST', 'actions', body)
+    action = client.get_action_item(raw_response.get('data'))
+
+    context = createContext(action, removeNull=True)
+    outputs = {'Tanium.Action(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Action created', action)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+
+def get_actions(client, data_args):
+    count = int(data_args.get('count'))
+    raw_response = client.do_request('GET', 'actions')
+
+    actions = []
+    for action in raw_response.get('data')[:-1][:count]:
+        action = client.get_action_item(action)
+        actions.append(action)
+
+    context = createContext(actions, removeNull=True)
+    outputs = {'Tanium.Action(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Actions:', actions)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+
+def get_action(client, data_args):
+    id = data_args.get('id')
+    raw_response = client.do_request('GET', 'actions/' + str(id))
+    action = raw_response.get('data')
+    action = client.get_action_item(action)
+
+    context = createContext(action, removeNull=True)
+    outputs = {'Tanium.Action(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Action information:', action)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+
+def get_saved_actions_pending(client,data_args):
+    count = int(data_args.get('count'))
+    raw_response = client.do_request('GET', 'saved_action_approvals')
+
+    actions = []
+    for action in raw_response.get('data')[:count]:
+        action = client.get_saved_action_pending_item(action)
+        actions.append(action)
+
+    context = createContext(actions, removeNull=True)
+    outputs = {'Tanium.PendingSavedAction(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Saved actions peding approval:', actions)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -390,6 +714,24 @@ def main():
             create_package(client, demisto.args())
         elif demisto.command() == 'tn-list-packages':
             get_packages(client, demisto.args())
+        elif demisto.command() == 'tn-get-question-metadata':
+            get_question_metadata(client, demisto.args())
+        elif demisto.command() == 'tn-get-saved-question-metadata':
+            get_saved_question_metadata(client, demisto.args())
+        elif demisto.command() == 'tn-list-saved-actions':
+            get_saved_actions(client, demisto.args())
+        elif demisto.command() == 'tn-get-saved-action':
+            get_saved_action(client, demisto.args())
+        elif demisto.command() == 'tn-create-saved-action':
+            create_saved_action(client, demisto.args())
+        elif demisto.command() == 'tn-create-action':
+            create_action(client, demisto.args())
+        elif demisto.command() == 'tn-list-actions':
+            get_actions(client, demisto.args())
+        elif demisto.command() == 'tn-get-action':
+            get_action(client, demisto.args())
+        elif demisto.command() == 'tn-list-saved-actions-pending-approval':
+            get_saved_actions_pending(client,demisto.args())
 
     # Log exceptions
     except Exception as e:
