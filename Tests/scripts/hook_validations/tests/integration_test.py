@@ -1066,4 +1066,3 @@ def test_is_valid_category():
     validator_endpoint.current_integration = {"category": "Endpoint"}
 
     assert validator_endpoint.is_valid_category()
-

@@ -3,7 +3,7 @@ import os
 import requests
 import yaml
 
-from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES
+from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES, INTEGRATION_CATEGORIES
 from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare
 
 # disable insecure warnings
@@ -122,12 +122,7 @@ class IntegrationValidator(object):
     def is_valid_category(self):
         """Check that the integration category is in the schema."""
         category = self.current_integration.get('category', None)
-        valid_categories = ['Analytics & SIEM', 'Utilities', 'Messaging', 'Endpoint', 'Network Security',
-                            'Vulnerability Management', 'Case Management', 'Forensics & Malware Analysis',
-                            'IT Services', 'Data Enrichment & Threat Intelligence', 'Authentication', 'Database',
-                            'Deception', 'Email Gateway']
-
-        if not category or category not in valid_categories:
+        if not category or category not in INTEGRATION_CATEGORIES:
             self._is_valid = False
             print_error("The category '{}' is not in the integration schemas".format(category))
 
