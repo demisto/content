@@ -18,7 +18,7 @@ import exchangelib
 from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
     ErrorInvalidIdMalformed, \
     ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, \
-    AutoDiscoverFailed, ErrorNameResolutionNoResults
+    AutoDiscoverFailed, ErrorNameResolutionNoResults, ErrorInvalidPropertyRequest
 from exchangelib.items import Item, Message, Contact
 from exchangelib.services import EWSService, EWSAccountService
 from exchangelib.util import create_element, add_xml_child
@@ -1095,7 +1095,13 @@ def parse_incident_from_item(item, is_fetch):
                 if attachment.item.mime_content:
                     attached_email = email.message_from_string(attachment.item.mime_content)
                     if attachment.item.headers:
-                        map(lambda h: attached_email.add_header(h.name, h.value), attachment.item.headers)
+                        attached_email_headers = [(h, ' '.join(map(str.strip, v.split('\r\n')))) for (h, v) in
+                                                  attached_email.items()]
+                        for header in attachment.item.headers:
+                            if (header.name, header.value) not in attached_email_headers \
+                                    and header.name != 'Content-Type':
+                                attached_email.add_header(header.name, header.value)
+
                     file_result = fileResult(get_attachment_name(attachment.name) + ".eml", attached_email.as_string())
 
                 if file_result:
@@ -1976,6 +1982,8 @@ def main():
             error_message_simple = "Could not connect to the server.\n" \
                                    "Verify that the Hostname or IP address is correct.\n\n" \
                                    "Additional information: {}".format(e.message)
+        if isinstance(e, ErrorInvalidPropertyRequest):
+            error_message_simple = "Verify that the Exchange version is correct."
         elif exchangelib.__version__ == "1.12.0":
             from exchangelib.errors import MalformedResponseError
 
