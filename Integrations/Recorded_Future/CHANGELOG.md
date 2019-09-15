@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added new *Suspicious Threshold* parameter.
+Added the *Suspicious Threshold* parameter.
