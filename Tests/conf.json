@@ -1437,7 +1437,8 @@
             "integrations": [
                 "Palo Alto Minemeld",
                 "Active Directory Query v2"
-            ]
+            ],
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "Freshdesk",
