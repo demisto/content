@@ -199,7 +199,7 @@ def is_text_equal_by_x_different_words(text1, text2, number_of_different_words, 
             words_set2.difference(words_set1)) <= number_of_different_words
 
 
-def verify_map_equals(values_map1, values_map2, equality_map, use_dt_expression=False):
+def verify_map_equals(values_map1, values_map2, equality_map):
     if not equality_map or len(equality_map) == 0:
         return True
     if not values_map1 or len(values_map1) == 0 or not values_map2 or len(values_map2) == 0:
@@ -207,12 +207,8 @@ def verify_map_equals(values_map1, values_map2, equality_map, use_dt_expression=
     for key in equality_map:
         if key not in values_map1 or key not in values_map2:
             return False
-        if use_dt_expression:
-            value1 = demisto.dt(values_map1, key)
-            value2 = demisto.dt(values_map2, key)
-        else:
-            value1 = values_map1[key]
-            value2 = values_map2[key]
+        value1 = values_map1[key]
+        value2 = values_map2[key]
         if isinstance(value1, basestring) and isinstance(value2, basestring):
             is_values_equals = is_text_equal_by_x_different_words(values_map1[key], values_map2[key], equality_map[key])
             if not is_values_equals:
