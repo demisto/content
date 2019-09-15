@@ -17,12 +17,12 @@ args:
   name: domain
   required: false
   secret: false
-comment: The script accepts indicators and creates relevant queries in relevant products.
+comment: The script accepts indicators and creates relevant queries in Panw products.
 commonfields:
-  id: IndicatorCreateQueries
+  id: PanwIndicatorCreateQueries
   version: -1
 enabled: false
-name: IndicatorCreateQueries
+name: PanwIndicatorCreateQueries
 outputs:
 - contextPath: Query.IP.CortexTrapsIP
   description: Query for ip in Cortex Traps table tms.threat (this is the agent ip).
@@ -75,7 +75,6 @@ script: '-'
 system: false
 timeout: '0'
 type: python
-tags: []
 tests:
 - No test
 subtype: python3
