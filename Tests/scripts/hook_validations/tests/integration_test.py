@@ -1067,4 +1067,3 @@ def test_is_valid_category():
 
     assert validator_endpoint.is_valid_category()
 
-
