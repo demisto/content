@@ -1819,6 +1819,16 @@
             "playbookID": "HybridAnalysis-Test",
             "timeout": 500,
             "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "es_v7",
+            "playbookID": "Elasticsearch_v2_test"
+        },
+        {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "es_v6",
+            "playbookID": "Elasticsearch_v2_test-v6"
         }
     ],
     "skipped_tests": {
