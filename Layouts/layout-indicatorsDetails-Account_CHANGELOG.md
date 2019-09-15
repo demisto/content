@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Added account indicator layout.
+Added a layout for the account indicator.
