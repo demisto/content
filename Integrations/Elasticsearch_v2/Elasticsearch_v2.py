@@ -342,7 +342,7 @@ try:
         test_func()
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents()
-    elif demisto.command() in ['search', 'elasticsearch-search']:
+    elif demisto.command() in ['search', 'es-search']:
         search_command()
 except Exception as e:
     return_error("Failed executing {}.\nError message: {}".format(demisto.command(), str(e)), error=e)
