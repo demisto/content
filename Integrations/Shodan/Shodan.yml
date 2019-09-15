@@ -12,7 +12,7 @@ configuration:
   name: api_url
   required: true
   type: 0
-- display: Trust self-signed certificate (insecure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -381,6 +381,7 @@ script:
     execution: false
     name: shodan-network-alert-remove-service-from-whitelist
   dockerimage: demisto/python3:3.7.3.286
+  subtype: python3
   isfetch: false
   runonce: false
   script: '-'
