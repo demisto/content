@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from typing import Any, Dict, Tuple, List, AnyStr, Union
+from typing import Dict, Tuple, List, AnyStr, Union
 import urllib3
 
 # Disable insecure warnings
@@ -171,34 +171,6 @@ def build_credentials_fetch(credentials: Union[Dict, List]) -> Union[Dict, List]
     if isinstance(credentials, list):
         return [build_dict(credential) for credential in credentials]
     return build_dict(credentials)
-
-
-def remove_password_key(raw: Any) -> Any:
-    """Filtering out `password` key from dict, if not dict returns self.
-
-    Args:
-        raw: Any input that may contain dict with `password` key
-
-    Returns:
-        raw, if dict - will return without `password` key
-
-    Examples:
-        >>> remove_password_key({'password': 'oyvey'})
-        {}
-
-        >>> remove_password_key([{'password': 'oyvey'}])
-        [{}]
-
-        >>> remove_password_key('oyvey')
-        'oyvey'
-    """
-    if isinstance(raw, dict):
-        if 'password' in raw:
-            raw.pop('password')
-        return {key: remove_password_key(value) for key, value in raw.items()}
-    if isinstance(raw, list):
-        return [remove_password_key(value) for value in raw]
-    return raw
 
 
 ''' COMMANDS '''
