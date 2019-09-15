@@ -137,7 +137,7 @@ def createPyDocumentation(path, origin, language):
 
     code = compile(pyScript, '<string>', 'exec')
     ns = {'demisto': demistomock}
-    exec (code, ns)  # guardrails-disable-line
+    exec(code, ns)  # guardrails-disable-line
 
     x = []
 
