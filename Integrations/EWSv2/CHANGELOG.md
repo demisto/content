@@ -1,5 +1,6 @@
 ## [Unreleased]
-Improved handling of uploaded EMLfiles.
+- Improved implementation of **ews-move-item-between-mailboxes** command.
+- Improved handling of uploaded EMLfiles.
 
 ## [19.9.0] - 2019-09-04
 - Improved implementation of the ***ews-get-contacts*** command.
