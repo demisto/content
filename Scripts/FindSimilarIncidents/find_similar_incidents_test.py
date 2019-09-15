@@ -1,6 +1,7 @@
+import pytest
+
 from CommonServerPython import *
 from FindSimilarIncidents import main
-import pytest
 
 default_args = {
     'hoursBack': 5,
@@ -120,21 +121,6 @@ def test_similar_incidents_missing_fields(mocker):
         args['skipMissingValues'] = 'no'
         main()
     assert err.type == SystemExit
-
-
-
-def test_similar_incidents_list_field(mocker):
-    args = dict(default_args)
-    args.update({'similarIncidentFields': 'attachment.name:1'})
-
-    mocker.patch.object(demisto, 'args', return_value=args)
-    mocker.patch.object(demisto, 'incidents', return_value=[incident1])
-    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
-
-    result = main()
-    assert len(result['EntryContext']['similarIncidentList']) == 2
-    assert result['EntryContext']['similarIncidentList'][0]['rawId'] == 3
-    assert result['EntryContext']['similarIncidentList'][1]['rawId'] == 2
 
 
 def test_similar_incidents_list_field(mocker):
