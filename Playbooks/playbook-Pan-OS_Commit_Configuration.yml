@@ -2,8 +2,8 @@ id: PAN-OS Commit Configuration
 version: -1
 name: PAN-OS Commit Configuration
 fromversion: 4.0.0
-description: "Commit PAN-OS Panorama or Firewall Configuration.\nIf specified as Panorama,
-  will also push the Policies to the specified Device Group in the instance "
+description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified as Panorama,
+  it also pushes the Policies to the specified Device Group in the instance.
 starttaskid: "0"
 tasks:
   "0":
@@ -363,7 +363,7 @@ tasks:
       id: 9af18cb1-8e90-40a7-88aa-30ee4ef8a796
       version: -1
       name: Filter JobID
-      description: Filter JobID to validate only new push configuration JobIDs
+      description: Filter JobID to validate only new push configuration JobIDs.
       type: condition
       iscommand: false
       brand: ""
@@ -399,7 +399,7 @@ tasks:
       id: 3123d9ad-2650-478e-8746-3401631faa14
       version: -1
       name: Filter JobID
-      description: Filter JobID to validate only new push configuration JobIDs
+      description: Filter JobID to validate only new push configuration JobIDs.
       type: condition
       iscommand: false
       brand: ""
@@ -435,7 +435,7 @@ tasks:
       id: b319325d-4649-4d0a-85b6-ca86878fe32f
       version: -1
       name: Fetch instance info
-      description: Run any command supported in the API
+      description: Run any command supported in the API.
       script: Panorama|||panorama
       type: regular
       iscommand: true
@@ -489,7 +489,7 @@ tasks:
       id: bca42b7d-262b-46d2-8ac7-d7674e346173
       version: -1
       name: Identify the instance type
-      description: Automatically detects the type of the product (Panorama/Firewall)
+      description: Automatically detects the product (Panorama/Firewall).
       type: condition
       iscommand: false
       brand: ""
