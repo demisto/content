@@ -209,7 +209,7 @@ def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_resp
 
     if response.status_code >= 400:
         errors_string = get_errors_string_from_bad_request(response, response.status_code)
-        error_message = 'Received and error - status code [{0}].\n{1}'.format(response.status_code, errors_string)
+        error_message = 'Received an error - status code [{0}].\n{1}'.format(response.status_code, errors_string)
         return_error(error_message)
 
     if retrieve_entire_response:
@@ -407,7 +407,7 @@ def attributes_to_request_format(attributes_names, attributes_values):
     if isinstance(attributes_values, str):
         attributes_values = attributes_values.split(',')
     if not attributes_names or not attributes_values or len(attributes_names) != len(attributes_values):
-        return_error('Arguments attributes_names and attributes_values should have the same length.')
+        return_error('Attributes_names and attributes_values arguments must have the same length.')
 
     return [{'name': name, 'value': val} for name, val in zip(attributes_names, attributes_values)]
 
@@ -616,7 +616,7 @@ def search_by_name_command():
     limit = args.get('limit')
 
     if limit and isinstance(limit, str) and not limit.isdigit():
-        return_error('Argument limit must be an integer.')
+        return_error('limit argument must be an integer.')
 
     url_suffix = '/search?query={0}&limit={1}'.format(name, limit)
     res = tq_request('GET', url_suffix)
@@ -648,7 +648,7 @@ def search_by_id_command():
     obj_id = args.get('obj_id')
 
     if isinstance(obj_id, str) and not obj_id.isdigit():
-        return_error('Argument obj_id must be an integer.')
+        return_error('obj_id argument must be an integer.')
 
     url_suffix = '/{0}/{1}?with=attributes,sources'.format(OBJ_DIRECTORY[obj_type], obj_id)
     if obj_type == 'indicator':
@@ -735,7 +735,7 @@ def edit_indicator_command():
     description = args.get('description')
 
     if isinstance(indicator_id, str) and not indicator_id.isdigit():
-        return_error('Argument id must be an integer.')
+        return_error('id argument must be an integer.')
 
     params = {
         'value': value,
@@ -752,7 +752,7 @@ def edit_adversary_command():
     name = args.get('name')
 
     if isinstance(adversary_id, str) and not adversary_id.isdigit():
-        return_error('Argument id must be an integer.')
+        return_error('id argument must be an integer.')
 
     params = {
         'name': name
@@ -770,7 +770,7 @@ def edit_event_command():
     description = args.get('description')
 
     if isinstance(event_id, str) and not event_id.isdigit():
-        return_error('Argument id must be an integer.')
+        return_error('id argument must be an integer.')
 
     params = {
         'title': title,
@@ -788,7 +788,7 @@ def delete_object_command():
     obj_id = args.get('obj_id')
 
     if isinstance(obj_id, str) and not obj_id.isdigit():
-        return_error('Argument obj_id must be an integer.')
+        return_error('obj_id argument must be an integer.')
 
     url_suffix = '/{0}/{1}'.format(OBJ_DIRECTORY[obj_type], obj_id)
     tq_request('DELETE', url_suffix)
@@ -801,7 +801,7 @@ def get_related_objs_command(related_type):
     obj_id = args.get('obj_id')
 
     if isinstance(obj_id, str) and not obj_id.isdigit():
-        return_error('Argument obj_id must be an integer.')
+        return_error('obj_id argument must be an integer.')
 
     url_suffix = '/{0}/{1}/{2}?with=sources'.format(OBJ_DIRECTORY[obj_type], obj_id, OBJ_DIRECTORY[related_type])
     if related_type == 'indicator':
@@ -830,7 +830,7 @@ def link_objects_command():
     obj2_id = args.get('obj2_id')
 
     if isinstance(obj1_id, str) and not obj1_id.isdigit() or isinstance(obj2_id, str) and not obj2_id.isdigit():
-        return_error('Arguments obj1_id, obj2_id must be integers.')
+        return_error('obj1_id, obj2_id arguments must be integers.')
 
     if obj1_type == obj2_type and obj1_id == obj2_id:
         return_error('Cannot link an object to itself.')
@@ -852,7 +852,7 @@ def unlink_objects_command():
     obj2_id = args.get('obj2_id')
 
     if isinstance(obj1_id, str) and not obj1_id.isdigit() or isinstance(obj2_id, str) and not obj2_id.isdigit():
-        return_error('Arguments obj1_id, obj2_id must be integers.')
+        return_error('obj1_id, obj2_id arguments must be integers.')
 
     if obj1_type == obj2_type and obj1_id == obj2_id:
         return_error('An object cannot be linked to itself.')
@@ -871,7 +871,7 @@ def update_score_command():
     score = args.get('score')
 
     if isinstance(indicator_id, str) and not indicator_id.isdigit():
-        return_error('Argument id must be an integer.')
+        return_error('id argument must be an integer.')
 
     if isinstance(score, str) and not score.isdigit():  # User chose 'Generated Score' option
         manual_score = None
@@ -904,7 +904,7 @@ def add_source_command():
     obj_type = args.get('obj_type')
 
     if isinstance(obj_id, str) and not obj_id.isdigit():
-        return_error('Argument obj_id must be an integer.')
+        return_error('obj_id argument must be an integer.')
 
     url_suffix = '/{0}/{1}/sources'.format(OBJ_DIRECTORY[obj_type], obj_id)
     params = {
@@ -922,9 +922,9 @@ def delete_source_command():
     obj_type = args.get('obj_type')
 
     if isinstance(obj_id, str) and not obj_id.isdigit():
-        return_error('Argument obj_id must be an integer.')
+        return_error('obj_id argument must be an integer.')
     if isinstance(source_id, str) and not source_id.isdigit():
-        return_error('Argument source_id must be an integer.')
+        return_error('source_id argument must be an integer.')
 
     url_suffix = '/{0}/{1}/sources/{2}'.format(OBJ_DIRECTORY[obj_type], obj_id, source_id)
 
@@ -940,7 +940,7 @@ def add_attribute_command():
     obj_id = args.get('obj_id')
 
     if isinstance(obj_id, str) and not obj_id.isdigit():
-        return_error('Argument obj_id must be an integer.')
+        return_error('obj_id argument must be an integer.')
 
     url_suffix = '/{0}/{1}/attributes'.format(OBJ_DIRECTORY[obj_type], obj_id)
     params = {
@@ -960,9 +960,9 @@ def modify_attribute_command():
     obj_id = args.get('obj_id')
 
     if isinstance(obj_id, str) and not obj_id.isdigit():
-        return_error('Argument obj_id must be an integer.')
+        return_error('obj_id argument must be an integer.')
     if isinstance(attribute_id, str) and not attribute_id.isdigit():
-        return_error('Argument attribute_id must be an integer.')
+        return_error('attribute_id argument must be an integer.')
 
     url_suffix = '/{0}/{1}/attributes/{2}'.format(OBJ_DIRECTORY[obj_type], obj_id, attribute_id)
     params = {'value': attribute_value}
@@ -979,9 +979,9 @@ def delete_attribute_command():
     obj_id = args.get('obj_id')
 
     if isinstance(obj_id, str) and not obj_id.isdigit():
-        return_error('Argument obj_id must be an integer.')
+        return_error('obj_id argument must be an integer.')
     if isinstance(attribute_id, str) and not attribute_id.isdigit():
-        return_error('Argument attribute_id must be an integer.')
+        return_error('attribute_id argument must be an integer.')
 
     url_suffix = '/{0}/{1}/attributes/{2}'.format(OBJ_DIRECTORY[obj_type], obj_id, attribute_id)
 
@@ -995,7 +995,7 @@ def update_status_command():
     status = args.get('status')
 
     if isinstance(indicator_id, str) and not indicator_id.isdigit():
-        return_error('Argument id must be an integer.')
+        return_error('id argument must be an integer.')
 
     url_suffix = '/indicators/{0}'.format(indicator_id)
     params = {'status': status}
@@ -1061,7 +1061,7 @@ def download_file_command():
     file_id = args.get('id')
 
     if isinstance(file_id, str) and not file_id.isdigit():
-        return_error('Argument id must be an integer.')
+        return_error('id argument must be an integer.')
 
     url_suffix = '/attachments/{0}/download'.format(file_id)
 
@@ -1105,7 +1105,7 @@ def get_ip_reputation():
     ip = args.get('ip')
 
     if not is_ip_valid(ip, accept_v6_ips=True):
-        return_error('Argument {0} is not a valid IP address.'.format(ip))
+        return_error('{0} is not a valid IP address.'.format(ip))
 
     generic_context = {'Address': ip}
 
@@ -1117,7 +1117,7 @@ def get_url_reputation():
     url = args.get('url')
 
     if not REGEX_MAP['url'].match(url):
-        return_error('Argument {0} is not a valid URL.'.format(url))
+        return_error('{0} is not a valid URL.'.format(url))
 
     generic_context = {'Data': url}
 
@@ -1129,7 +1129,7 @@ def get_email_reputation():
     email = args.get('email')
 
     if not REGEX_MAP['email'].match(email):
-        return_error('Argument {0} is not a valid email address.'.format(email))
+        return_error('{0} is not a valid email address.'.format(email))
 
     generic_context = {'Address': email}
 
@@ -1141,7 +1141,7 @@ def get_domain_reputation():
     domain = args.get('domain')
 
     if not REGEX_MAP['domain'].match(domain):
-        return_error('Argument {0} is not a valid domain.'.format(domain))
+        return_error('{0} is not a valid domain.'.format(domain))
 
     generic_context = {'Name': domain}
 
@@ -1156,7 +1156,7 @@ def get_file_reputation():
         if REGEX_MAP[fmt].match(file):
             break
     else:
-        return_error('Argument {0} is not a valid file format.'.format(file))
+        return_error('{0} is not a valid file format.'.format(file))
 
     generic_context = createContext({
         'MD5': file if fmt == 'md5' else None,
