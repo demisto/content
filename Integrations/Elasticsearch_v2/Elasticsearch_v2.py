@@ -176,37 +176,59 @@ def fetch_params_check():
         return_error("Got the following errors in test:\nFetches incidents is enabled.\n" + '\n'.join(str_error))
 
 
-def test_general_query(es, que, test_num):
-    query = QueryString(query=que)
+def test_general_query(es):
+    query = QueryString(query='*')
     search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
     response = search.execute().to_dict()
     _, total_results = get_total_results(response)
 
     if total_results == 0:
         # failed in general query - '*'
-        if test_num == 1:
-            return_error("Fetch incidents test failed. Index value incorrect.")
+        return_error("Fetch incidents test failed. Index value incorrect.")
 
+
+def test_time_field_query(es):
+    query = QueryString(query=TIME_FIELD + ':*')
+    search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
+    response = search.execute().to_dict()
+    _, total_results = get_total_results(response)
+
+    if total_results == 0:
         # failed in getting the TIME_FIELD
-        if test_num == 2:
-            return_error("Fetch incidents test failed. Date field value incorrect.")
-
-        # failed to get the TIME_FIELD with the FETCH_QUERY
-        # this can happen and not be an error if the FETCH_QUERY doesn't have results yet.
-        # Thus this does not return an error message
-        if test_num == 3:
-            return None
+        return_error("Fetch incidents test failed. Date field value incorrect.")
 
     else:
         return response
 
 
+def test_fetch_query(es):
+    query = QueryString(query=str(TIME_FIELD) + ":* AND " + FETCH_QUERY)
+    search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
+    response = search.execute().to_dict()
+    _, total_results = get_total_results(response)
+
+    if total_results > 0:
+        return response
+
+    else:
+        # failed to get the TIME_FIELD with the FETCH_QUERY
+        # this can happen and not be an error if the FETCH_QUERY doesn't have results yet.
+        # Thus this does not return an error message
+        return None
+
+
 def test_func():
+    headers = {
+        'Content-Type': "application/json"
+    }
+
     try:
         if USERNAME:
-            res = requests.get(SERVER, auth=(USERNAME, PASSWORD), verify=INSECURE)
+            res = requests.get(SERVER, auth=(USERNAME, PASSWORD), verify=INSECURE, headers=headers)
+
         else:
-            res = requests.get(SERVER, verify=INSECURE)
+            res = requests.get(SERVER, verify=INSECURE, headers=headers)
+
         if res.status_code >= 400:
             try:
                 res.raise_for_status()
@@ -233,13 +255,13 @@ def test_func():
             es = elasticsearch_builder()
 
             # test if FETCH_INDEX exists
-            test_general_query(es, '*', 1)
+            test_general_query(es)
 
             # test if TIME_FIELD in index exists
-            response = test_general_query(es, TIME_FIELD + ':*', 2)
+            response = test_time_field_query(es)
 
             # try to get response from FETCH_QUERY - if exists check the time field from that query
-            temp = test_general_query(es, str(TIME_FIELD) + ":* AND " + FETCH_QUERY, 3)
+            temp = test_fetch_query(es)
             if temp:
                 response = temp
 
@@ -272,7 +294,7 @@ def results_to_incidents(response, current_fetch, last_fetch):
             # avoid duplication due to weak time query
             if hit_date > current_fetch:
                 inc = {
-                    'name': 'Elasticsearch: Index: ' + str(FETCH_INDEX) + ", ID: " + str(hit.get('_id')),
+                    'name': 'Elasticsearch: Index: ' + str(hit.get('_index')) + ", ID: " + str(hit.get('_id')),
                     'rawJSON': json.dumps(hit),
                     'labels': incident_label_maker(hit.get('_source')),
                     'occurred': hit_date.isoformat() + 'Z'
