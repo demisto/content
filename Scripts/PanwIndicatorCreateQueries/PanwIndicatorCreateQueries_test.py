@@ -19,7 +19,7 @@ def test_generate_ip_queries():
 
 def test_generate_hash_queries():
     expected1 = {
-        'CortexTrapsHash': "SELECT * from tms.threat where messageData.files.sha256 ='ababababababababab'"
+        'CortexTrapsHash': "SELECT * from tms.threat where messageData.files.sha256='ababababababababab'"
     }
     expected2 = {
         'CortexTrapsHash': "SELECT * from tms.threat where messageData.files.sha256='ababababababababab' OR "
