@@ -1,5 +1,5 @@
 """
-The script accepts indicators and creates relevant queries in relevant products
+The script accepts indicators and creates relevant queries in Panw products
 """
 import demistomock as demisto
 from CommonServerPython import *
