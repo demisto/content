@@ -156,6 +156,110 @@ script:
     deprecated: false
     execution: false
     name: tn-list-packages
+  - arguments:
+    - default: false
+      isArray: false
+      name: question-id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tn-get-question-metadata
+  - arguments:
+    - default: false
+      defaultValue: '5'
+      isArray: false
+      name: count
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tn-list-saved-actions
+  - arguments:
+    - default: false
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tn-get-saved-action
+  - arguments:
+    - default: false
+      isArray: false
+      name: question-id
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: question-name
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tn-get-saved-question-metadata
+  - arguments:
+    - default: false
+      isArray: false
+      name: action-group-id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: package-id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tn-create-saved-action
+  - arguments:
+    - default: false
+      isArray: false
+      name: package-id
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tn-create-action
+  - arguments:
+    - default: false
+      defaultValue: '5'
+      isArray: false
+      name: count
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tn-list-actions
+  - arguments:
+    - default: false
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tn-get-action
+  - arguments:
+    - default: false
+      defaultValue: '5'
+      isArray: false
+      name: count
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tn-list-saved-actions-pending-approval
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false
   runonce: false
