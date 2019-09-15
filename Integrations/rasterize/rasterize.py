@@ -45,7 +45,7 @@ def init_driver():
     return driver
 
 
-def rasterize(file_name: str, path: str, width: int, height: int, r_type='png'):
+def rasterize(path: str, width: int, height: int, r_type='png'):
     driver = init_driver()
 
     try:
@@ -57,11 +57,11 @@ def rasterize(file_name: str, path: str, width: int, height: int, r_type='png'):
         demisto.debug('Navigating to url - COMPLETED')
 
         if r_type.lower() == 'pdf':
-            result = get_pdf(driver, file_name, width, height)
+            output = get_pdf(driver, width, height)
         else:
-            result = get_image(driver, file_name, width, height)
+            output = get_image(driver, width, height)
 
-        return result
+        return output
 
     except NoSuchElementException as ex:
         if 'invalid argument' in str(ex):
@@ -70,7 +70,7 @@ def rasterize(file_name: str, path: str, width: int, height: int, r_type='png'):
         return_error(str(ex)) if WITH_ERRORS else return_warning(str(ex))
 
 
-def get_image(driver, file_name: str, width: int, height: int):
+def get_image(driver, width: int, height: int):
     demisto.debug('Capturing screenshot')
 
     # Set windows size
@@ -79,14 +79,12 @@ def get_image(driver, file_name: str, width: int, height: int):
     image = driver.get_screenshot_as_png()
     driver.quit()
 
-    file = fileResult(filename=file_name, data=image)
-    file['Type'] = entryTypes['image']
     demisto.debug('Capturing screenshot - COMPLETED')
 
-    return file
+    return image
 
 
-def get_pdf(driver, file_name: str, width: int, height: int):
+def get_pdf(driver, width: int, height: int):
     demisto.debug('Generating PDF')
 
     driver.set_window_size(width, height)
@@ -98,11 +96,10 @@ def get_pdf(driver, file_name: str, width: int, height: int):
         demisto.results(response.get('status'))
         return_error(response.get('value'))
 
-    file = fileResult(filename=file_name, data=base64.b64decode(response.get('value').get('data')))
-    file['Type'] = entryTypes['file']
+    data = base64.b64decode(response.get('value').get('data'))
     demisto.debug('Generating PDF - COMPLETED')
 
-    return file
+    return data
 
 
 def rasterize_command():
@@ -113,14 +110,16 @@ def rasterize_command():
 
     if not (url.startswith('http')):
         url = f'http://{url}'
-    friendly_name = f'url.{"pdf" if r_type == "pdf" else "png"}'  # type: ignore
+    filename = f'url.{"pdf" if r_type == "pdf" else "png"}'  # type: ignore
     proxy_flag = ""
     if PROXY:
         proxy_flag = f"--proxy={HTTPS_PROXY if url.startswith('https') else HTTP_PROXY}"  # type: ignore
     demisto.debug('rasterize proxy settings: ' + proxy_flag)
 
-    results = rasterize(file_name=friendly_name, path=url, r_type=r_type, width=w, height=h)
-    demisto.results(results)
+    output = rasterize(path=url, r_type=r_type, width=w, height=h)
+    file = fileResult(filename=filename, data=output)
+
+    demisto.results(file)
 
 
 def rasterize_image_command():
@@ -129,13 +128,16 @@ def rasterize_image_command():
     h = demisto.args().get('height', 800)
 
     file_path = demisto.getFilePath(entry_id).get('path')
-    name = 'image.png'  # type: ignore
+    filename = 'image.png'  # type: ignore
 
     with open(file_path, 'rb') as f, open('output_image', 'w') as image:
         data = base64.b64encode(f.read()).decode('utf-8')
         image.write(data)
-        results = rasterize(file_name=name, path=f'file://{os.path.realpath(f.name)}', width=w, height=h)
-        demisto.results(results)
+        output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=w, height=h)
+        file = fileResult(filename=filename, data=output)
+        file['Type'] = entryTypes['image']
+
+        demisto.results(file)
 
 
 def rasterize_email_command():
@@ -144,13 +146,15 @@ def rasterize_email_command():
     h = demisto.args().get('height', 800)
     r_type = demisto.args().get('type', 'png')
 
-    name = f'email.{"pdf" if r_type.lower() == "pdf" else "png"}'  # type: ignore
+    filename = f'email.{"pdf" if r_type.lower() == "pdf" else "png"}'  # type: ignore
     with open('htmlBody.html', 'w') as f:
         f.write(f'<html style="background:white";>{html_body}</html>')
+    path = f'file://{os.path.realpath(f.name)}'
 
-    results = rasterize(file_name=name, path=f'file://{os.path.realpath(f.name)}', r_type=r_type, width=w, height=h)
+    output = rasterize(path=path, r_type=r_type, width=w, height=h)
+    file = fileResult(filename=filename, data=output)
 
-    demisto.results(results)
+    demisto.results(file)
 
 
 def test():
@@ -169,27 +173,31 @@ def test():
     driver.quit()
 
     demisto.results('ok')
-    sys.exit(0)
 
 
-try:
-    if demisto.command() == 'test-module':
-        test()
+def main():
+    try:
+        if demisto.command() == 'test-module':
+            test()
 
-    elif demisto.command() == 'rasterize-image':
-        rasterize_image_command()
+        elif demisto.command() == 'rasterize-image':
+            rasterize_image_command()
 
-    elif demisto.command() == 'rasterize-email':
-        rasterize_email_command()
+        elif demisto.command() == 'rasterize-email':
+            rasterize_email_command()
 
-    elif demisto.command() == 'rasterize':
-        rasterize_command()
+        elif demisto.command() == 'rasterize':
+            rasterize_command()
 
-    else:
-        return_error('Unrecognized command')
+        else:
+            return_error('Unrecognized command')
 
-except Exception as ex:
-    return_error(str(ex))
+    except Exception as ex:
+        return_error(str(ex))
 
-finally:  # just to be extra safe
-    sys.stdout = DEFAULT_STDOUT
+    finally:  # just to be extra safe
+        sys.stdout = DEFAULT_STDOUT
+
+
+if __name__ in ["__builtin__", "builtins"]:
+    main()
