@@ -3,7 +3,7 @@ import demistomock as demisto
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string, IS_PY3, DebugLogger
+    IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode
 
 import copy
 import os
@@ -541,6 +541,17 @@ def test_logger_write(mocker):
     assert 'This is a test' in args[0]
     assert 'my_password' not in args[0]
     assert '<XX_REPLACED>' in args[0]
+
+
+def test_logger_replace_strs(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'apikey': 'my_apikey',
+    })
+    ilog = IntegrationLogger()
+    ilog.add_repalce_strs('special_str', '')  # also check that empty string is not added by mistake
+    ilog('my_apikey is special_str and b64: ' + b64_encode('my_apikey'))
+    assert ('' not in ilog.replace_strs)
+    assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
 
 
 def test_is_mac_address():

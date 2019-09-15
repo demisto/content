@@ -556,6 +556,8 @@ def b64_encode(text):
     :return: encoded string
     :rtype: str
     """
+    if not text:
+        return ''
     to_encode = text
     if IS_PY3:
         to_encode = text.encode('utf-8', 'ignore')
@@ -630,7 +632,7 @@ class IntegrationLogger(object):
             Add strings which will be replaced when logging.
             Meant for avoiding passwords and so forth in the log.
         '''
-        to_add = [self.encode(a) for a in args]
+        to_add = list(filter(None, [self.encode(a) for a in args]))  # type: list
         self.replace_strs.extend(to_add)
 
     def set_buffering(self, state):
