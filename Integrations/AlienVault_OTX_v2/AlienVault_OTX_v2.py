@@ -266,7 +266,7 @@ def domain_request(domain, threshold):
 
 
 @logger
-def domain_command(domain, threshold):
+def domain_command(domain, threshold=None):
     raw, output = domain_request(domain, threshold)
 
     human_readable = ''
@@ -285,7 +285,7 @@ def domain_command(domain, threshold):
 
 
 @logger
-def alienvault_search_ipv6_command(ip, threshold):
+def alienvault_search_ipv6_command(ip, threshold=None):
     raw, output = ip_request(ip, 'IPv6', threshold)
 
     human_readable = ''
@@ -342,7 +342,7 @@ def alienvault_search_hostname(hostname, threshold):
 
 
 @logger
-def alienvault_search_hostname_command(hostname, threshold):
+def alienvault_search_hostname_command(hostname, threshold=None):
     raw, output = alienvault_search_hostname(hostname, threshold)
     human_readable = ''
 
@@ -407,7 +407,7 @@ def file_request(file_, threshold):
 
 
 @logger
-def file_command(file, threshold):
+def file_command(file, threshold=None):
     raw, output = file_request(file, threshold)
 
     human_readable = ''
@@ -459,7 +459,7 @@ def alienvault_search_cve(cve_id, threshold):
 
 
 @logger
-def alienvault_search_cve_command(cve_id, threshold):
+def alienvault_search_cve_command(cve_id, threshold=None):
     raw, output = alienvault_search_cve(cve_id, threshold)
 
     # Table 1
@@ -676,7 +676,7 @@ def url_request(url, threshold):
 
 
 @logger
-def url_command(url, threshold):
+def url_command(url, threshold=None):
     raw, output = url_request(url, threshold)
 
     human_readable = ''
