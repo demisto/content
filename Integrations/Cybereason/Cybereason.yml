@@ -732,6 +732,6 @@ script:
   runonce: false
   script: '-'
   type: python
-  subytpe: python2
+  subtype: python2
 tests:
 - Cybereason Test
