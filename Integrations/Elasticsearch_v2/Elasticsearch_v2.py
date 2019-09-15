@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 '''IMPORTS'''
 from typing import List
-from elasticsearch import Elasticsearch, RequestsHttpConnection
+from elasticsearch import Elasticsearch, RequestsHttpConnection, NotFoundError
 from elasticsearch_dsl import Search
 from elasticsearch_dsl.query import QueryString
 from datetime import datetime
@@ -177,14 +177,14 @@ def fetch_params_check():
 
 
 def test_general_query(es):
-    query = QueryString(query='*')
-    search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
-    response = search.execute().to_dict()
-    _, total_results = get_total_results(response)
+    try:
+        query = QueryString(query='*')
+        search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
+        response = search.execute().to_dict()
+        _, total_results = get_total_results(response)
 
-    if total_results == 0:
-        # failed in general query - '*'
-        return_error("Fetch incidents test failed. Index value incorrect.")
+    except NotFoundError as e:
+        return_error("Fetch incidents test failed.\nError message: {}.".format(str(e).split(',')[2]))
 
 
 def test_time_field_query(es):
@@ -195,7 +195,7 @@ def test_time_field_query(es):
 
     if total_results == 0:
         # failed in getting the TIME_FIELD
-        return_error("Fetch incidents test failed. Date field value incorrect.")
+        return_error("Fetch incidents test failed.\nDate field value incorrect.")
 
     else:
         return response
