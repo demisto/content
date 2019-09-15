@@ -140,7 +140,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: AutoFocus V3
+                        simple: AutoFocus V2
                 - - operator: isEqualString
                     left:
                       value:
