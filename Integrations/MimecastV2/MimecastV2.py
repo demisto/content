@@ -1491,7 +1491,7 @@ def search_mail():
     end = demisto.args().get('end', '').encode('utf-8')
     sender_ip = demisto.args().get('sender_ip', '').encode('utf-8')
     mail_to = demisto.args().get('mail_to', '').encode('utf-8')
-    mail_from_ = demisto.args().get('mail_from', '').encode('utf-8')
+    mail_from = demisto.args().get('mail_from', '').encode('utf-8')
     subject = demisto.args().get('subject', '').encode('utf-8')
     message_id = demisto.args().get('message_id', '').encode('utf-8')
     limit = int(demisto.args().get('limit', 100))
@@ -1520,11 +1520,11 @@ def search_mail():
 
     for tracked_mail in tracked_mails:
         to = []  # type: List[Any]
-        receivers = tracked_mail.get('to')
+        receivers = tracked_mail.get('to', [])
         for receiver in receivers:
             to.append({
-                'RecipientAddress': receiver.get('recipientAddress'),
-                'TaggedExternal': receiver.get('taggedExternal')
+                'DisplayableName': receiver.get('displayableName'),
+                'EmailAddress': receiver.get('emailAddress')
             })
 
         contents.append({
@@ -1554,7 +1554,7 @@ def search_mail():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Mimecast Search: ', contents, headers),
+        'HumanReadable': tableToMarkdown('Mimecast Search', contents, headers),
         'EntryContext': context
     }
 
