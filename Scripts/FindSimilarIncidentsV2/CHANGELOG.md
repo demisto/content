@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+  - Fixed bug - support for list values in context keys and incident fields
 
 ## [19.9.0] - 2019-09-04
   - Added support for the "\n" character in incident fields.
