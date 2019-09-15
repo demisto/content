@@ -68,7 +68,7 @@ outputs:
 - contextPath: Query.Domain.AutofocusSessionsDomain
   description: Query for domain in Autofocus
   type: String
-- contextPath: Query.Domain.PanoramaSessionDomain
+- contextPath: Query.Domain.PanoramaDomain
   description: Query for domain in Panorama
   type: String
 script: '-'
