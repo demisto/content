@@ -56,6 +56,13 @@ script:
       - 10_years_ago
       required: true
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: Limit of authentication logs.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Returns authentication logs associated with a user. Limited to 30
       at a time
