@@ -184,7 +184,7 @@ def test_general_query(es):
         _, total_results = get_total_results(response)
 
     except NotFoundError as e:
-        return_error("Fetch incidents test failed.\nError message: {}.".format(str(e).split(',')[2]))
+        return_error("Fetch incidents test failed.\nError message: {}.".format(str(e).split(',')[2][2:-1]))
 
 
 def test_time_field_query(es):
@@ -195,7 +195,7 @@ def test_time_field_query(es):
 
     if total_results == 0:
         # failed in getting the TIME_FIELD
-        return_error("Fetch incidents test failed.\nDate field value incorrect.")
+        return_error("Fetch incidents test failed.\nDate field value incorrect [{}].".format(TIME_FIELD))
 
     else:
         return response
