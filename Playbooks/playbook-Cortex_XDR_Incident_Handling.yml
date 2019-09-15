@@ -577,6 +577,7 @@ tasks:
       id: 5cad4ba7-6c85-4f82-8ed3-734fd059eb25
       version: -1
       name: Calculate Severity - Standard
+      description: ""
       playbookName: Calculate Severity - Standard
       type: playbook
       iscommand: false
