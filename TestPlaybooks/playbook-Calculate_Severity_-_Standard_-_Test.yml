@@ -1,7 +1,7 @@
-id: Severity Reevaluation Based on Indicator Reputation - Test
+id: Calculate Severity - Standard - Test
 version: -1
-name: Severity Reevaluation Based on Indicator Reputation - Test
-description: A test playbook for the Severity Reevaluation Based on Indicator Reputation
+name: Calculate Severity - Standard - Test
+description: A test playbook for the Calculate Severity - Standard playbook.
   playbook.
 fromversion: 4.5.0
 starttaskid: "0"
@@ -318,7 +318,7 @@ tasks:
       version: -1
       name: Calculate Severity - Core
       description: ""
-      playbookName: Severity Reevaluation Based on Indicator Reputation
+      playbookName: Calculate Severity - Standard
       type: playbook
       iscommand: false
       brand: ""

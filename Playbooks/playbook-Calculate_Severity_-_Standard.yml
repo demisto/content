@@ -1,6 +1,6 @@
-id: Severity Reevaluation Based on Indicator Reputation
+id: Calculate Severity - Standard
 version: -1
-name: Severity Reevaluation Based on Indicator Reputation
+name: Calculate Severity - Standard
 description: Calculates and sets the incident severity based on the combination of
   the current incident severity, and the severity returned from the Evaluate Severity - Set By Highest DBotScore playbook.
 fromversion: 4.5.0

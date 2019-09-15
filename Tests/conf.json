@@ -1477,7 +1477,7 @@
             "playbookID": "TestShowScheduledEntries"
         },
         {
-            "playbookID": "Severity Reevaluation Based on Indicator Reputation - Test",
+            "playbookID": "Calculate Severity - Standard - Test",
             "integrations": "Palo Alto Minemeld",
             "fromversion": "4.5.0"
         },
