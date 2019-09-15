@@ -1554,7 +1554,7 @@ def search_mail():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Mimecast Search: ', contents, headers),
+        'HumanReadable': tableToMarkdown('Mimecast Search', contents, headers),
         'EntryContext': context
     }
 
