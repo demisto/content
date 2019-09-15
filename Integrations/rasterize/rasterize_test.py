@@ -21,7 +21,7 @@ def test_rasterize_email_image():
     print("*********" * 10)
     print('test_rasterize_email_image')
     print("*********" * 10)
-    print(output[output.find(b'stream'): output.find(b'stream') + 100])
+    print(output[:100])
     print("*********" * 10)
     assert expected in output
 
@@ -41,7 +41,7 @@ def test_rasterize_url_image():
     print("*********" * 10)
     print('test_rasterize_url_image')
     print("*********" * 10)
-    print(output[output.find(b'stream'): output.find(b'stream') + 100])
+    print(output[:100])
     print("*********" * 10)
     assert expected in output
 
@@ -58,11 +58,10 @@ def test_rasterize_email_pdf():
             r_type='pdf'
         )
     os.remove(path)
-    print("*********" * 10)
-    print('test_rasterize_email_pdf')
-    print("*********" * 10)
-    print(output[output.find(b'stream'): output.find(b'stream') + 100])
-    print("*********" * 10)
+    expected = b'stream\nx\x9cm\x8d\xb1\x0e\xc20\x10C\xf7\xfb\n\xcfH\x1c\xb9s\x94K\xbe\xa03,|\x00\x82N Q\xfe_"i' \
+               b'\x07:\xe0\xb7\xd8\x83mu\xb6UH\x9d\xa3\xeeb4\xc7\xed)o1+Z\x862v\xd6\xe9I+I0' \
+               b'\x95\xaa\x8c\x96\xb1\xdc\xe5z\xc0\xabw\xa8\xe6QS\x94u\xf7\x97\xfeo\xf5\x1b\xc3\xe02a'
+
     assert expected in output
 
 
@@ -74,12 +73,8 @@ def test_rasterize_url_pdf():
         r_type='pdf'
     )
 
-    expected = b"stream\nx\x9c\xed]\xebs[\xc7u\x87H\x8ar\xfa\x1f\xd4\x9ei-*\x95\x12YJD\xe2AI\x14\x85\xbb\xf7^@T-w" \
-               b"\xaa$\xb4f:\xfd\x10\xff'0\xee\x05@J\x8ej\xfbC\x93\xce\xf4K\xed\xcc\xb4\xe3\x89\x9ci" \
-               b"\xf3\xb2\xf8\xb0j+\xcd\x97\xa83M\xf3\xb1M\xfa!\x8e\x88\x07%\xe2\r\x82\x00\xe7\xf6\x9c"
-    print("*********" * 10)
-    print('test_rasterize_url_pdf')
-    print("*********" * 10)
-    print(output[output.find(b'stream'): output.find(b'stream') + 100])
-    print("*********" * 10)
+    expected = b'stream\nx\x9c+\xe42\xd236\xb30\xb447R0\x00B\x04O\xd7\xc8X\xcf\x18\x04\xcc\x14tMM`\xcc\xe4\\.}wc' \
+               b'\x85\xf4b.\xa7\x10.}7\x13\x05Cc\x85\x904.C\xb0f]C\x05#S\x05cS\x85\x90\\.\x1b\x03\x03#\x13;\x85\x90,.' \
+               b'K\xa0LH\x8a\x02P\xc0\xc4\x14,`\x0e'
+
     assert expected in output[output.find(b'stream'):output.find(b'stream') + 100]
