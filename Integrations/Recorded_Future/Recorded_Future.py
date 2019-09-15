@@ -1,5 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
+
 ''' IMPORTS '''
 import requests
 import os
@@ -48,7 +49,7 @@ def http_request(method, url_suffix, params=None):
         res = requests.request(
             method,
             BASE_URL + url_suffix,
-            params = params,
+            params=params,
             headers=HEADERS,
             verify=USE_SSL
         )
@@ -63,15 +64,18 @@ def http_request(method, url_suffix, params=None):
         return_error(e.message)
     return res.text
 
+
 def translate_score(score, threshold):
     '''
     Translates Recorded Future score to DBot score
     '''
-    if score >= threshold: # Bad
+    if score >= threshold:  # Bad
         return 3
-    elif score >= SUSPICIOUS_THRESHOLD: # Suspicious
+    elif score >= SUSPICIOUS_THRESHOLD:  # Suspicious
         return 2
-    else: return 0 # Unknown
+    else:
+        return 0  # Unknown
+
 
 def determine_hash(hash):
     '''
@@ -87,7 +91,8 @@ def determine_hash(hash):
         return 'MD5'
     elif len(hash) == 8:
         return 'CRC32'
-    else: return 'CTPH'
+    else:
+        return 'CTPH'
 
 
 ''' FUNCTIONS '''
@@ -121,7 +126,8 @@ def domain_command():
                     'Rule Triggered': detail.get('rule'),
                     'Rule Triggered Time': detail.get('timestamp')
                 })
-            hr += tableToMarkdown('Triggered Risk Rules', hr_table, ['Evidence Summary', 'Rule Criticality', 'Rule Triggered', 'Rule Triggered Time'])
+            hr += tableToMarkdown('Triggered Risk Rules', hr_table,
+                                  ['Evidence Summary', 'Rule Criticality', 'Rule Triggered', 'Rule Triggered Time'])
         sightings_table = []
         for raw_sighting in sightings:
             sighting = {
@@ -135,7 +141,8 @@ def domain_command():
                 sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
             sightings_table.append(sighting)
         if sightings_table:
-            hr += tableToMarkdown('References collected for this domain', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+            hr += tableToMarkdown('References collected for this domain', sightings_table,
+                                  ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
         ec = {}
         ec[outputPaths['domain']] = {
             'Name': domain,
@@ -177,6 +184,7 @@ def domain_command():
         'EntryContext': ec
     })
 
+
 def domain_lookup(domain):
     cmd_url = 'domain/' + domain
     params = {
@@ -185,6 +193,7 @@ def domain_lookup(domain):
 
     response = http_request('get', cmd_url, params=params)
     return response
+
 
 def url_command():
     url = demisto.args().get('url')
@@ -215,7 +224,8 @@ def url_command():
                     'Rule Triggered': detail.get('rule'),
                     'Rule Triggered Time': detail.get('timestamp')
                 })
-            hr += tableToMarkdown('Triggered Risk Rules', hr_table, ['Evidence Summary', 'Rule Criticality', 'Rule Triggered', 'Rule Triggered Time'])
+            hr += tableToMarkdown('Triggered Risk Rules', hr_table,
+                                  ['Evidence Summary', 'Rule Criticality', 'Rule Triggered', 'Rule Triggered Time'])
         sightings_table = []
         for raw_sighting in sightings:
             sighting = {
@@ -229,7 +239,8 @@ def url_command():
                 sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
             sightings_table.append(sighting)
         if sightings_table:
-            hr += tableToMarkdown('References collected for this URL', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+            hr += tableToMarkdown('References collected for this URL', sightings_table,
+                                  ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
         ec = {}
         ec[outputPaths['url']] = {
             'Data': url,
@@ -271,6 +282,7 @@ def url_command():
         'EntryContext': ec
     })
 
+
 def url_lookup(url):
     encoded_url = urllib.quote_plus(url)
     cmd_url = 'url/' + encoded_url
@@ -280,6 +292,7 @@ def url_lookup(url):
 
     response = http_request('get', cmd_url, params=params)
     return response
+
 
 def ip_command():
     ip = demisto.args().get('ip')
@@ -309,7 +322,8 @@ def ip_command():
                     'Rule Triggered': detail.get('rule'),
                     'Rule Triggered Time': detail.get('timestamp')
                 })
-            hr += tableToMarkdown('Triggered Risk Rules', evidence_table, ['Evidence Summary', 'Rule Criticality', 'Rule Triggered', 'Rule Triggered Time'])
+            hr += tableToMarkdown('Triggered Risk Rules', evidence_table,
+                                  ['Evidence Summary', 'Rule Criticality', 'Rule Triggered', 'Rule Triggered Time'])
         sightings_table = []
         for raw_sighting in sightings:
             sighting = {
@@ -323,7 +337,8 @@ def ip_command():
                 sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
             sightings_table.append(sighting)
         if sightings_table:
-            hr += tableToMarkdown('References collected for this IP', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+            hr += tableToMarkdown('References collected for this IP', sightings_table,
+                                  ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
         ec = {}
         ec[outputPaths['ip']] = {
             'Address': ip,
@@ -366,6 +381,7 @@ def ip_command():
         'EntryContext': ec
     })
 
+
 def ip_lookup(ip):
     cmd_url = 'ip/' + ip
 
@@ -375,6 +391,7 @@ def ip_lookup(ip):
 
     response = http_request('get', cmd_url, params=params)
     return response
+
 
 def file_command():
     file = demisto.args().get('file')
@@ -404,7 +421,8 @@ def file_command():
                     'Rule Triggered': detail.get('rule'),
                     'Rule Triggered Time': detail.get('timestamp')
                 })
-            hr += tableToMarkdown('Triggered Risk Rules', hr_table, ['Rule Triggered', 'Rule Criticality', 'Evidence Summary', 'Rule Triggered Time'])
+            hr += tableToMarkdown('Triggered Risk Rules', hr_table,
+                                  ['Rule Triggered', 'Rule Criticality', 'Evidence Summary', 'Rule Triggered Time'])
         sightings_table = []
         for raw_sighting in sightings:
             sighting = {
@@ -418,7 +436,8 @@ def file_command():
                 sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
             sightings_table.append(sighting)
         if sightings_table:
-            hr += tableToMarkdown('References collected for this hash', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+            hr += tableToMarkdown('References collected for this hash', sightings_table,
+                                  ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
         hash_type = determine_hash(file)
         ec = {}
         ec[outputPaths['file']] = {
@@ -462,6 +481,7 @@ def file_command():
         'EntryContext': ec
     })
 
+
 def file_lookup(file):
     cmd_url = 'hash/' + file
 
@@ -470,6 +490,7 @@ def file_lookup(file):
     }
     response = http_request('get', cmd_url, params=params)
     return response
+
 
 def get_related_entities_command():
     entity_value = demisto.args().get('entityValue')
@@ -487,7 +508,8 @@ def get_related_entities_command():
         entity_result_type = entity_result_type.split(',')
         entity_types = []
         if 'All' in entity_result_type:
-            entity_types = ['RelatedIpAddress', 'RelatedInternetDomainName', 'RelatedHash', 'RelatedMalware', 'RelatedAttackVector', 'RelatedURL']
+            entity_types = ['RelatedIpAddress', 'RelatedInternetDomainName', 'RelatedHash', 'RelatedMalware',
+                            'RelatedAttackVector', 'RelatedURL']
         else:
             if 'IP' in entity_result_type:
                 entity_types.append('RelatedIpAddress')
@@ -559,7 +581,6 @@ def get_related_entities_command():
             hr += tableToMarkdown('URL', url_outputs)
             related_entities_ec['URL'] = url_outputs
 
-
         if hr:
             hr = '### Recorded Future related entities to ' + entity_value + '\n' + hr
             if entity_type == 'ip':
@@ -595,7 +616,6 @@ def get_related_entities_command():
     else:
         hr = 'No results found'
 
-
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': response,
@@ -605,6 +625,7 @@ def get_related_entities_command():
         'EntryContext': ec
     })
 
+
 def get_related_entities(entity_value, entity_type):
     cmd_url = entity_type + '/' + entity_value
 
@@ -613,6 +634,7 @@ def get_related_entities(entity_value, entity_type):
     }
     response = http_request('get', cmd_url, params=params)
     return response
+
 
 def hashlist_command():
     detailed = False if demisto.args().get('detailed') == 'false' else True
@@ -657,7 +679,8 @@ def hashlist_command():
                     'Rule Triggered': detail.get('rule'),
                     'Rule Triggered Time': detail.get('timestamp')
                 })
-            hr += tableToMarkdown('Triggered Risk Rules', hr_table, ['Rule Triggered', 'Rule Criticality', 'Evidence Summary', 'Rule Triggered Time'])
+            hr += tableToMarkdown('Triggered Risk Rules', hr_table,
+                                  ['Rule Triggered', 'Rule Criticality', 'Evidence Summary', 'Rule Triggered Time'])
         sightings_table = []
         for raw_sighting in sightings:
             sighting = {
@@ -671,7 +694,8 @@ def hashlist_command():
                 sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
             sightings_table.append(sighting)
         if sightings_table:
-            hr += tableToMarkdown('References collected for this hash', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+            hr += tableToMarkdown('References collected for this hash', sightings_table,
+                                  ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
         ec = {}
         ec[outputPaths['file']] = {
             hash_type: file,
@@ -695,13 +719,14 @@ def hashlist_command():
             }
 
         demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr,
-        'EntryContext': ec
-    })
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        })
+
 
 def hashlist_lookup(limit, risk_lower, risk_higher, orderby, direction):
     cmd_url = 'hash/search'
@@ -721,6 +746,7 @@ def hashlist_lookup(limit, risk_lower, risk_higher, orderby, direction):
 
     response = http_request('get', cmd_url, params=params)
     return response
+
 
 def iplist_command():
     detailed = False if demisto.args().get('detailed') == 'false' else True
@@ -763,7 +789,8 @@ def iplist_command():
                     'Rule Triggered': detail.get('rule'),
                     'Rule Triggered Time': detail.get('timestamp')
                 })
-            hr += tableToMarkdown('Triggered Risk Rules', hr_table, ['Rule Triggered', 'Rule Criticality', 'Evidence Summary', 'Rule Triggered Time'])
+            hr += tableToMarkdown('Triggered Risk Rules', hr_table,
+                                  ['Rule Triggered', 'Rule Criticality', 'Evidence Summary', 'Rule Triggered Time'])
         sightings_table = []
         for raw_sighting in sightings:
             sighting = {
@@ -778,7 +805,8 @@ def iplist_command():
                 sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
             sightings_table.append(sighting)
         if sightings_table:
-            hr += tableToMarkdown('References collected for this IP', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+            hr += tableToMarkdown('References collected for this IP', sightings_table,
+                                  ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
         ec = {}
         ec[outputPaths['ip']] = {
             'Address': ip,
@@ -802,13 +830,14 @@ def iplist_command():
             }
 
         demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr,
-        'EntryContext': ec
-    })
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        })
+
 
 def iplist_lookup(limit, risk_lower, risk_higher, orderby, direction):
     cmd_url = 'ip/search'
@@ -828,6 +857,7 @@ def iplist_lookup(limit, risk_lower, risk_higher, orderby, direction):
 
     response = http_request('get', cmd_url, params=params)
     return response
+
 
 def domainlist_command():
     detailed = False if demisto.args().get('detailed') == 'false' else True
@@ -869,7 +899,8 @@ def domainlist_command():
                     'Rule Triggered': detail.get('rule'),
                     'Rule Triggered Time': detail.get('timestamp')
                 })
-            hr += tableToMarkdown('Triggered Risk Rules', hr_table, ['Rule Triggered', 'Rule Criticality', 'Evidence Summary', 'Rule Triggered Time'])
+            hr += tableToMarkdown('Triggered Risk Rules', hr_table,
+                                  ['Rule Triggered', 'Rule Criticality', 'Evidence Summary', 'Rule Triggered Time'])
         sightings_table = []
         for raw_sighting in sightings:
             sighting = {
@@ -883,7 +914,8 @@ def domainlist_command():
                 sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
             sightings_table.append(sighting)
         if sightings_table:
-            hr += tableToMarkdown('References collected for this domain', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+            hr += tableToMarkdown('References collected for this domain', sightings_table,
+                                  ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
         ec = {}
         ec[outputPaths['domain']] = {
             'Name': domain,
@@ -904,16 +936,17 @@ def domainlist_command():
             ec[outputPaths['domain']]['Malicious'] = {
                 'Vendor': 'Recorded Future',
                 'Description': 'Score above ' + str(rf_score)
-        }
+            }
 
         demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr,
-        'EntryContext': ec
-    })
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        })
+
 
 def domainlist_lookup(limit, risk_lower, risk_higher, orderby, direction):
     cmd_url = 'domain/search'
@@ -933,6 +966,7 @@ def domainlist_lookup(limit, risk_lower, risk_higher, orderby, direction):
 
     response = http_request('get', cmd_url, params=params)
     return response
+
 
 def urllist_command():
     detailed = False if demisto.args().get('detailed') == 'false' else True
@@ -975,7 +1009,8 @@ def urllist_command():
                     'Rule Triggered': detail.get('rule'),
                     'Rule Triggered Time': detail.get('timestamp')
                 })
-            hr += tableToMarkdown('Triggered Risk Rules', hr_table, ['Rule Triggered', 'Rule Criticality', 'Evidence Summary', 'Rule Triggered Time'])
+            hr += tableToMarkdown('Triggered Risk Rules', hr_table,
+                                  ['Rule Triggered', 'Rule Criticality', 'Evidence Summary', 'Rule Triggered Time'])
         sightings_table = []
         for raw_sighting in sightings:
             sighting = {
@@ -989,7 +1024,8 @@ def urllist_command():
                 sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
             sightings_table.append(sighting)
         if sightings_table:
-            hr += tableToMarkdown('References collected for this URL', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+            hr += tableToMarkdown('References collected for this URL', sightings_table,
+                                  ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
         ec = {}
         ec[outputPaths['url']] = {
             'Data': url,
@@ -1013,13 +1049,14 @@ def urllist_command():
             }
 
         demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr,
-        'EntryContext': ec
-    })
+            'Type': entryTypes['note'],
+            'Contents': response,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        })
+
 
 def urllist_lookup(limit, risk_lower, risk_higher, orderby, direction):
     cmd_url = 'url/search'
@@ -1039,6 +1076,7 @@ def urllist_lookup(limit, risk_lower, risk_higher, orderby, direction):
 
     response = http_request('get', cmd_url, params=params)
     return response
+
 
 def vulnlist_command():
     detailed = False if demisto.args().get('detailed') == 'false' else True
@@ -1082,7 +1120,8 @@ def vulnlist_command():
                     'Rule Triggered': detail.get('rule'),
                     'Rule Triggered Time': detail.get('timestamp')
                 })
-            hr += tableToMarkdown('Triggered Risk Rules', hr_table, ['Rule Triggered', 'Rule Criticality', 'Evidence Summary', 'Rule Triggered Time'])
+            hr += tableToMarkdown('Triggered Risk Rules', hr_table,
+                                  ['Rule Triggered', 'Rule Criticality', 'Evidence Summary', 'Rule Triggered Time'])
         sightings_table = []
         for raw_sighting in sightings:
             sighting = {
@@ -1096,7 +1135,8 @@ def vulnlist_command():
                 sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
             sightings_table.append(sighting)
         if sightings_table:
-            hr += tableToMarkdown('References collected for this vulnerability', sightings_table, ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
+            hr += tableToMarkdown('References collected for this vulnerability', sightings_table,
+                                  ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
         ec = {}
         ec[outputPaths['cve']] = {
             'ID': vuln,
@@ -1115,6 +1155,7 @@ def vulnlist_command():
         'HumanReadable': hr,
         'EntryContext': ec
     })
+
 
 def vulnlist_lookup(limit, risk_lower, risk_higher, orderby, direction):
     cmd_url = 'vulnerability/search'
@@ -1135,6 +1176,7 @@ def vulnlist_lookup(limit, risk_lower, risk_higher, orderby, direction):
     response = http_request('get', cmd_url, params=params)
     return response
 
+
 def get_url_risklist_command():
     specific_list = demisto.args().get('list')
 
@@ -1143,7 +1185,8 @@ def get_url_risklist_command():
     if not res:
         return_error('Received empty response')
 
-    demisto.results(fileResult(filename='url_risk_list.csv', data=res.encode('utf-8'), file_type=entryTypes['entryInfoFile']))
+    demisto.results(
+        fileResult(filename='url_risk_list.csv', data=res.encode('utf-8'), file_type=entryTypes['entryInfoFile']))
 
 
 def get_url_risklist(specific_list):
@@ -1158,6 +1201,7 @@ def get_url_risklist(specific_list):
 
     return http_request('get', cmd_url, params=params)
 
+
 def get_domain_risklist_command():
     specific_list = demisto.args().get('list')
 
@@ -1166,7 +1210,8 @@ def get_domain_risklist_command():
     if not res:
         return_error('Received empty response')
 
-    demisto.results(fileResult(filename='domain_risk_list.csv', data=res.encode('utf-8'), file_type=entryTypes['entryInfoFile']))
+    demisto.results(
+        fileResult(filename='domain_risk_list.csv', data=res.encode('utf-8'), file_type=entryTypes['entryInfoFile']))
 
 
 def get_domain_risklist(specific_list):
@@ -1181,6 +1226,7 @@ def get_domain_risklist(specific_list):
 
     return http_request('get', cmd_url, params=params)
 
+
 def get_ip_risklist_command():
     specific_list = demisto.args().get('list')
 
@@ -1189,7 +1235,8 @@ def get_ip_risklist_command():
     if not res:
         return_error('Received empty response')
 
-    demisto.results(fileResult(filename='ip_risk_list.csv', data=res.encode('utf-8'), file_type=entryTypes['entryInfoFile']))
+    demisto.results(
+        fileResult(filename='ip_risk_list.csv', data=res.encode('utf-8'), file_type=entryTypes['entryInfoFile']))
 
 
 def get_ip_risklist(specific_list):
@@ -1213,7 +1260,8 @@ def get_hash_risklist_command():
     if not res:
         return_error('Received empty response')
 
-    demisto.results(fileResult(filename='hash_list.csv', data=res.encode('utf-8'), file_type=entryTypes['entryInfoFile']))
+    demisto.results(
+        fileResult(filename='hash_list.csv', data=res.encode('utf-8'), file_type=entryTypes['entryInfoFile']))
 
 
 def get_hash_risklist(specific_list):
@@ -1237,7 +1285,8 @@ def get_vulnerability_risklist_command():
     if not res:
         return_error('Received empty response')
 
-    demisto.results(fileResult(filename='cve_risk_list.csv', data=res.encode('utf-8'), file_type=entryTypes['entryInfoFile']))
+    demisto.results(
+        fileResult(filename='cve_risk_list.csv', data=res.encode('utf-8'), file_type=entryTypes['entryInfoFile']))
 
 
 def get_vulnerability_risklist(specific_list):
@@ -1251,6 +1300,7 @@ def get_vulnerability_risklist(specific_list):
         params['list'] = specific_list
 
     return http_request('get', cmd_url, params=params)
+
 
 def get_domain_riskrules_command():
     response = json.loads(get_hash_riskrules())
@@ -1272,11 +1322,13 @@ def get_domain_riskrules_command():
         'Contents': response,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Recorded Future Domain risk rules', mapped_rules, headers=headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('Recorded Future Domain risk rules', mapped_rules, headers=headers,
+                                         removeNull=True),
         'EntryContext': {
             'RecordedFuture.RiskRule.Domain(val.Name === obj.Name)': createContext(mapped_rules)
         }
     })
+
 
 def get_domain_riskrules():
     cmd_url = 'domain/riskrules'
@@ -1307,11 +1359,13 @@ def get_hash_riskrules_command():
         'Contents': response,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Recorded Future Hash risk rules', mapped_rules, headers=headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('Recorded Future Hash risk rules', mapped_rules, headers=headers,
+                                         removeNull=True),
         'EntryContext': {
             'RecordedFuture.RiskRule.Hash(val.Name === obj.Name)': createContext(mapped_rules)
         }
     })
+
 
 def get_hash_riskrules():
     cmd_url = 'hash/riskrules'
@@ -1342,11 +1396,13 @@ def get_ip_riskrules_command():
         'Contents': response,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Recorded Future IP risk rules', mapped_rules, headers=headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('Recorded Future IP risk rules', mapped_rules, headers=headers,
+                                         removeNull=True),
         'EntryContext': {
             'RecordedFuture.RiskRule.IP(val.Name === obj.Name)': createContext(mapped_rules)
         }
     })
+
 
 def get_ip_riskrules():
     cmd_url = 'ip/riskrules'
@@ -1354,6 +1410,7 @@ def get_ip_riskrules():
     res = http_request('get', cmd_url)
 
     return res
+
 
 def get_url_riskrules_command():
     response = json.loads(get_url_riskrules())
@@ -1376,11 +1433,13 @@ def get_url_riskrules_command():
         'Contents': response,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Recorded Future URL risk rules', mapped_rules, headers=headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('Recorded Future URL risk rules', mapped_rules, headers=headers,
+                                         removeNull=True),
         'EntryContext': {
             'RecordedFuture.RiskRule.URL(val.Name === obj.Name)': createContext(mapped_rules)
         }
     })
+
 
 def get_url_riskrules():
     cmd_url = 'url/riskrules'
@@ -1388,6 +1447,7 @@ def get_url_riskrules():
     res = http_request('get', cmd_url)
 
     return res
+
 
 def get_vulnerability_riskrules_command():
     response = json.loads(get_vulnerability_riskrules())
@@ -1410,11 +1470,13 @@ def get_vulnerability_riskrules_command():
         'Contents': response,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Recorded Future Vulnerability risk rules', mapped_rules, headers=headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('Recorded Future Vulnerability risk rules', mapped_rules, headers=headers,
+                                         removeNull=True),
         'EntryContext': {
             'RecordedFuture.RiskRule.Vulnerability(val.Name === obj.Name)': createContext(mapped_rules)
         }
     })
+
 
 def get_vulnerability_riskrules():
     cmd_url = 'vulnerability/riskrules'
@@ -1454,6 +1516,7 @@ def get_alert_rules_command():
         }
     })
 
+
 def get_alert_rules(rule_name=None, limit=None):
     cmd_url = 'alert/rule'
 
@@ -1483,12 +1546,12 @@ def get_alerts_command():
         date, _ = parse_date_range(triggered, date_format='%Y-%m-%d %H:%M:%S')
         triggered_time = '[{},)'.format(date)
 
-    response = json.loads(get_alerts(rule_id, triggered_time, limit, assignee, status, freetext, offset, orderby, direction))
+    response = json.loads(
+        get_alerts(rule_id, triggered_time, limit, assignee, status, freetext, offset, orderby, direction))
 
     if not response or 'data' not in response:
         demisto.results('No results found')
         return
-
 
     headers = ['ID', 'Name', 'Type', 'Triggered', 'Status', 'Assignee', 'Rule']
 
@@ -1518,7 +1581,8 @@ def get_alerts_command():
     })
 
 
-def get_alerts(rule_id=None, triggered=None, limit=None, assignee=None, status=None, freetext=None, offset=None, orderby=None, direction=None):
+def get_alerts(rule_id=None, triggered=None, limit=None, assignee=None, status=None, freetext=None, offset=None,
+               orderby=None, direction=None):
     cmd_url = 'alert/search'
 
     params = {}
@@ -1543,6 +1607,7 @@ def get_alerts(rule_id=None, triggered=None, limit=None, assignee=None, status=N
         params['direction'] = direction
 
     return http_request('get', cmd_url, params=params)
+
 
 def get_alert(alert_id):
     cmd_url = 'alert/' + alert_id
@@ -1615,7 +1680,7 @@ def fetch_incidents():
 
 
 ''' EXECUTION CODE '''
-LOG('command is %s' % (demisto.command(), ))
+LOG('command is %s' % (demisto.command(),))
 
 try:
     if demisto.command() == 'test-module':
