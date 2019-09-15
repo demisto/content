@@ -32,7 +32,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The user associated with the logs
+      description: The user associated with the logs.
       isArray: false
       name: username
       required: true
@@ -227,8 +227,11 @@ script:
     name: duoadmin-associate-device-to-user
   dockerimage: demisto/duoadmin:1.0.0.147
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   type: python
+  subtype: python2
 tests:
 - DuoAdmin API test playbook
