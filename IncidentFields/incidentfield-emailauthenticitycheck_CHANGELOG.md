@@ -1,2 +1,2 @@
 ## [Unreleased]
-The verdict regarding the authenticity of the email. This check is done using the CheckEmailAuthenticity script.
+Indicates the authenticity of the email. This is done using the CheckEmailAuthenticity script.
