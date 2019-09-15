@@ -514,7 +514,7 @@ tasks:
             value:
               complex:
                 root: Panorama
-                accessor: Addresses.Tags
+                accessor: AddressGroups.Tags
             iscontext: true
           right:
             value:
