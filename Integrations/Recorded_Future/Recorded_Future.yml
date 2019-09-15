@@ -17,7 +17,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Suspicious threshold
+- display: Suspicious Threshold. Minimum risk score to consider an indicator suspicious.
   name: suspicious_threshold
   defaultvalue: "5"
   type: 0
