@@ -3,221 +3,101 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from typing import cast, Any, Dict, Tuple, List, AnyStr, Optional
-import requests
+from typing import Any, Dict, Tuple, List, AnyStr, Union
 import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-INTEGRATION_NAME: str = 'Authentication Integration'
-# lowercase with `-` dividers
-INTEGRATION_NAME_COMMAND: str = 'authentication'
-# No dividers
-INTEGRATION_NAME_CONTEXT: str = 'AuthenticationIntegration'
 
 
-class Client:
-    def __init__(self, server: str, use_ssl: bool, proxy: Optional[bool]):
-        self._server: str = server.rstrip(chars='/')
-        self._use_ssl: bool = use_ssl
-        if proxy:
-            self._proxies: Optional[Dict] = handle_proxy()
-        else:
-            self._proxies = None
-        self._base_url: str = self._server + '/api/v2.0/'
-
-    def _http_request(self, method: str, url_suffix: str, full_url: str = None, headers: Dict = None,
-                      auth: Tuple = None, params: Dict = None, data: Dict = None, files: Dict = None,
-                      timeout: float = 10, resp_type: str = 'json') -> Any:
-        """A wrapper for requests lib to send our requests and handle requests
-        and responses better
-
-        Args:
-            method:
-                HTTP method, e.g. 'GET', 'POST' ... etc.
-            url_suffix:
-                API endpoint.
-            full_url:
-                Bypasses the use of BASE_URL + url_suffix. Useful if there is a need to
-                make a request to an address outside of the scope of the integration
-                API.
-            headers:
-                Headers to send in the request.
-            auth:
-                Auth tuple to enable Basic/Digest/Custom HTTP Auth.
-            params:
-                URL parameters.
-            data:
-                Data to be sent in a 'POST' request.
-            files:
-                File data to be sent in a 'POST' request.
-            timeout:
-                The amount of time in seconds a Request will wait for a client to
-                establish a connection to a remote machine.
-            resp_type:
-                Determines what to return from having made the HTTP request. The default
-                is 'json'. Other options are 'text', 'content' or 'response' if the user
-                would like the full response object returned.
+class Client(BaseHTTPClient):
+    def test_module_request(self) -> Dict:
+        """Performs basic GET request to check if the API is reachable and authentication is successful.
 
         Returns:
-                Response JSON from having made the request.
+            Response JSON
         """
-        try:
-            address = full_url if full_url else self._base_url + url_suffix
-            res = requests.request(
-                method,
-                address,
-                verify=self._use_ssl,
-                params=params,
-                data=data,
-                files=files,
-                headers=headers,
-                auth=auth,
-                timeout=timeout,
-                proxies=self._proxies
-            )
+        return self._http_request('GET', 'version')
 
-            # Handle error responses gracefully
-            if res.status_code not in (200, 201):
-                err_msg = f'Error in {INTEGRATION_NAME} API call [{res.status_code}] - {res.reason}'
-                try:
-                    # Try to parse json error response
-                    res_json = res.json()
-                    return_error(res_json)
-                except json.decoder.JSONDecodeError:
-                    return_error(err_msg)
-
-            resp_type = resp_type.casefold()
-            try:
-                if resp_type == 'json':
-                    return res.json()
-                elif resp_type == 'text':
-                    return res.text
-                elif resp_type == 'content':
-                    return res.content
-                else:
-                    return res
-            except json.decoder.JSONDecodeError:
-                return_error(f'Failed to parse json object from response: {res.content}')
-
-        except requests.exceptions.ConnectTimeout:
-            err_msg = 'Connection Timeout Error - potential reasons may be that the Server URL parameter' \
-                      ' is incorrect or that the Server is not accessible from your host.'
-            return_error(err_msg)
-        except requests.exceptions.SSLError:
-            err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' in' \
-                      ' the integration configuration.'
-            return_error(err_msg)
-        except requests.exceptions.ProxyError:
-            err_msg = 'Proxy Error - if \'Use system proxy\' in the integration configuration has been' \
-                      ' selected, try deselecting it.'
-            return_error(err_msg)
-        except requests.exceptions.ConnectionError as e:
-            # Get originating Exception in Exception chain
-            while '__context__' in dir(e) and e.__context__:
-                e = cast(Any, e.__context__)
-
-            error_class = str(e.__class__)
-            err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
-            err_msg = f'\nError Type: {err_type}\nError Number: [{e.errno}]\nMessage: {e.strerror}\n' \
-                f'Verify that the server URL parameter' \
-                f' is correct and that you have access to the server from your host.'
-            return_error(err_msg)
-
-    def test_module(self) -> bool:
-        """Performs basic get request to get item samples
-
+    def list_credentials_request(self) -> Dict:
+        """Uses to fetch incidents into Demisto
+        Documentation:https://github.com/demisto/content/tree/master/docs/fetching_incidents
         Returns:
-            True if request succeeded
-        """
-        self._http_request('GET', 'version')
-        return True
-
-    def fetch_credentials(self) -> Dict:
-        """Gets all credentials from API.
-
-        Returns:
-            credentials
+            Response JSON
         """
         suffix = 'credentials'
         return self._http_request('GET', suffix)
 
-    def lock_account_request(self, account: AnyStr) -> Dict:
-        """Gets events from given IDS
+    def lock_account_request(self, account_id: AnyStr) -> Dict:
+        """Locks an account by the account ID.
 
         Args:
-            account: account to lock
+            account_id: Account ID to lock.
 
         Returns:
-            locked account
+            Response JSON
         """
         # The service endpoint to request from
-        suffix: str = 'account/lock'
+        suffix = 'account/lock'
         # Dictionary of params for the request
-        params = {
-            'account': account
-        }
+        params = {'account': account_id}
         return self._http_request('POST', suffix, params=params)
 
-    def unlock_account_request(self, account: AnyStr):
-        """Gets events from given IDS
+    def unlock_account_request(self, account_id: AnyStr) -> Dict:
+        """Returns events by the account ID.
 
         Args:
-            account: account to unlock
+            account_id: Account ID to unlock.
 
         Returns:
-            response json
+            Response JSON
         """
         # The service endpoint to request from
-        suffix: str = 'account/unlock'
+        suffix = 'account/unlock'
         # Dictionary of params for the request
-        params = {
-            'account': account
-        }
+        params = {'account': account_id}
         # Send a request using our http_request wrapper
         return self._http_request('POST', suffix, params=params)
 
-    def reset_account_request(self, account: str):
-        """Gets events from given IDS
+    def reset_account_request(self, account_id: str):
+        """Resets an account by account ID.
 
         Args:
-            account: account to unlock
+            account_id: Account ID to reset.
 
         Returns:
-            response json
+            Response JSON
         """
         # The service endpoint to request from
-        suffix: str = 'account/reset'
+        suffix = 'account/reset'
         # Dictionary of params for the request
-        params = {
-            'account': account
-        }
+        params = {'account': account_id}
         # Send a request using our http_request wrapper
         return self._http_request('POST', suffix, params=params)
 
-    def unlock_vault_request(self, vault_to_lock) -> Dict:
-        """Unlocks vault
+    def unlock_vault_request(self, vault_to_lock: AnyStr) -> Dict:
+        """Unlocks a vault by vault ID.
 
         Args:
-            vault_to_lock: vault to lock
+            vault_to_lock: Vault ID to lock
 
         Returns:
-            locked state
+            Response JSON
         """
         suffix = 'vault/unlock'
         params = {'vault_id': vault_to_lock}
         return self._http_request('POST', suffix, params=params)
 
     def lock_vault_request(self, vault_to_lock: AnyStr) -> Dict:
-        """Locks vault
+        """Locks vault by vault ID.
 
         Args:
-            vault_to_lock: vault to lock
+            vault_to_lock: Vault ID to lock.
 
         Returns:
-            locked state
+            Response JSON
         """
         suffix = 'vault/lock'
         params = {'vault_id': vault_to_lock}
@@ -226,189 +106,284 @@ class Client:
 
 ''' HELPER FUNCTIONS '''
 
+
+def build_credentials_context(credentials: Union[Dict, List]) -> Union[Dict, List]:
+    """Formats the API response to Demisto context.
+
+    Args:
+        credentials: The raw response from the API call. Can be a List or Dict.
+
+    Returns:
+        The formatted Dict or List.
+
+    Examples:
+        >>> build_credentials_context()
+    """
+
+    def build_dict(credential: Dict) -> Dict:
+        """Builds a Dict formatted for Demisto.
+
+        Args:
+            credential: A single event from the API call.
+
+        Returns:
+            A Dict formatted for Demisto context.
+        """
+        return assign_params(
+            User=credential.get('username'),
+            Name=credential.get('title'),
+            IsLocked=credential.get('isLocked')
+        )
+
+    if isinstance(credentials, list):
+        return [build_dict(credential) for credential in credentials]
+    return build_dict(credentials)
+
+
+def build_credentials_fetch(credentials: Union[Dict, List]) -> Union[Dict, List]:
+    """Formats the API response to Demisto context.
+
+    Args:
+        credentials: The raw response from the API call. Can be a List or Dict.
+
+    Returns:
+        The formatted Dict or List.
+
+    Examples:
+        >>> build_credentials_context()
+    """
+
+    def build_dict(credential: Dict) -> Dict:
+        """Builds a Dict formatted for Demisto.
+
+        Args:
+            credential: A single event from the API call.
+
+        Returns:
+            A Dict formatted for Demisto context.
+        """
+        return {
+            'user': credential.get('username'),
+            'name': credential.get('name'),
+            'password': credential.get('password'),
+        }
+
+    if isinstance(credentials, list):
+        return [build_dict(credential) for credential in credentials]
+    return build_dict(credentials)
+
+
+def remove_password_key(raw: Any) -> Any:
+    """Filtering out `password` key from dict, if not dict returns self.
+
+    Args:
+        raw: Any input that may contain dict with `password` key
+
+    Returns:
+        raw, if dict - will return without `password` key
+
+    Examples:
+        >>> remove_password_key({'password': 'oyvey'})
+        {}
+
+        >>> remove_password_key([{'password': 'oyvey'}])
+        [{}]
+
+        >>> remove_password_key('oyvey')
+        'oyvey'
+    """
+    if isinstance(raw, dict):
+        if 'password' in raw:
+            raw.pop('password')
+        return {key: remove_password_key(value) for key, value in raw.items()}
+    if isinstance(raw, list):
+        return [remove_password_key(value) for value in raw]
+    return raw
+
+
 ''' COMMANDS '''
 
 
-def test_module(client: Client):
+def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
+    """Performs a basic GET request to check if the API is reachable and authentication is successful.
     """
-    Performs basic get request to get item samples
-    """
-    if client.test_module():
-        demisto.results('ok')
+    results = client.test_module_request()
+    if 'version' in results:
+        return 'ok', {}, {}
+    raise DemistoException('Test module failed, {}'.format(results))
 
 
-def fetch_credentials(client: Client):
+def fetch_credentials(client: Client, *_):
     """Uses to fetch credentials into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_credentials
     """
     # Get credentials from api
-    raw_response: Dict = client.fetch_credentials()
-    raw_credentials: List[Dict] = raw_response.get('credentials', [])
+    raw_response = client.list_credentials_request()
+    raw_credentials = raw_response.get('credentials', [])
     # Creates credentials entry
-    credentials = [{
-        'user': credential.get('username'),
-        'password': credential.get('password'),
-        'name': credential.get('name')
-    } for credential in raw_credentials]
+    credentials = build_credentials_fetch(raw_credentials)
     demisto.credentials(credentials)
 
 
-def lock_account(client: Client):
+def lock_account(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Locks an account by account ID.
     """
-    Gets details about a raw_response using IDs or some other filters
-    """
-    # Initialize main vars
-    context: Dict = dict()
     # Get arguments from user
-    account_to_lock: str = demisto.args().get('account_id', '')
+    account_id = args.get('account_id', '')
     # Make request and get raw response
-    raw_response: Dict = client.lock_account_request(account_to_lock)
+    raw_response = client.lock_account_request(account_id)
     # Parse response into context & content entries
-    if raw_response.get('locked_account') == account_to_lock:
-        title: str = f'{INTEGRATION_NAME} - Account `{account_to_lock}` has been locked.'
+    if raw_response.get('locked_account') == account_id:
+        title: str = f'{client.integration_name} - Account `{account_id}` has been locked.'
         context_entry = {
             'IsLocked': True,
-            'ID': account_to_lock
+            'ID': account_id
         }
-        context[f'{INTEGRATION_NAME_CONTEXT}.Account(val.ID && val.ID === obj.ID)'] = context_entry
+        context = {f'{client.integration_context_name}.Account(val.ID && val.ID === obj.ID)': context_entry}
         # Creating human readable for War room
         human_readable: str = tableToMarkdown(title, context_entry)
         # Return data to Demisto
-        return_outputs(human_readable, context, raw_response)
+        return human_readable, context, raw_response
     else:
-        return_error(f'{INTEGRATION_NAME} - Could not lock account `{account_to_lock}`')
+        raise DemistoException(f'{client.integration_name} - Could not lock account `{account_id}`')
 
 
-def unlock_account(client: Client):
+def unlock_account(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Unlocks an account by account ID.
     """
-    Gets details about a raw_response using IDs or some other filters
-    """
-    # Initialize main vars
-    context: Dict = dict()
     # Get arguments from user
-    account_to_unlock: str = demisto.args().get('account_id', '')
+    account_id = args.get('account_id', '')
     # Make request and get raw response
-    unlocked_account: str = client.unlock_account_request(account_to_unlock)
+    raw_response = client.unlock_account_request(account_id)
+    unlocked_account = raw_response.get('account')
     # Parse response into context & content entries
-    if unlocked_account == account_to_unlock:
-        title: str = f'{INTEGRATION_NAME} - Account `{unlocked_account}` has been unlocked.'
+    if unlocked_account == account_id:
+        title = f'{client.integration_name} - Account `{unlocked_account}` has been unlocked.'
         context_entry = {
             'IsLocked': False,
-            'ID': account_to_unlock
+            'ID': account_id
         }
-
-        context[f'{INTEGRATION_NAME_CONTEXT}.Account(val.ID && val.ID === obj.ID)'] = context_entry
+        context = {f'{client.integration_context_name}.Account(val.ID && val.ID === obj.ID)': context_entry}
         # Creating human readable for War room
-        human_readable: str = tableToMarkdown(title, context_entry)
-        # Return data to Demisto
-        return_outputs(human_readable, context)
+        human_readable = tableToMarkdown(title, context_entry)
+        # Return data
+        return human_readable, context, raw_response
     else:
-        return_error(f'{INTEGRATION_NAME} - Could not unlock account `{account_to_unlock}`')
+        raise DemistoException(f'{client.integration_name} - Could not unlock account `{account_id}`')
 
 
-def lock_vault(client: Client):
-    vault_to_lock: str = demisto.args().get('vault', '')
+def lock_vault(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Locks a vault by vault ID.
+    """
+    vault_to_lock = args.get('vault', '')
     raw_response = client.lock_vault_request(vault_to_lock)
-    if 'is_locked' in raw_response and raw_response['is_locked'] is True:
-        title: str = f'{INTEGRATION_NAME} - Vault {vault_to_lock} has been locked'
+    if raw_response.get('is_locked') is True:
+        title = f'{client.integration_name} - Vault {vault_to_lock} has been locked'
         context_entry = {
             'ID': vault_to_lock,
             'IsLocked': True
         }
-        context = {
-            f'{INTEGRATION_NAME_CONTEXT}.Vault(val.ID && val.ID === obj.ID)': context_entry
-        }
+        context = {f'{client.integration_context_name}.Vault(val.ID && val.ID === obj.ID)': context_entry}
         human_readable = tableToMarkdown(title, context_entry)
-        return_outputs(human_readable, context, raw_response)
+        return human_readable, context, raw_response
     else:
-        return_error(f'{INTEGRATION_NAME} - Could not lock vault ID: {vault_to_lock}')
+        raise DemistoException(f'{client.integration_name} - Could not lock vault ID: {vault_to_lock}')
 
 
-def unlock_vault(client: Client):
-    vault_to_lock: str = demisto.args().get('vault', '')
+def unlock_vault(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Unlocks a vault by vault ID.
+    """
+    vault_to_lock = args.get('vault', '')
     raw_response = client.unlock_vault_request(vault_to_lock)
-    if 'is_locked' in raw_response and raw_response['is_locked'] is True:
-        title: str = f'{INTEGRATION_NAME} - Vault {vault_to_lock} has been unlocked'
+    if raw_response.get('is_locked') is False:
+        title = f'{client.integration_name} - Vault {vault_to_lock} has been unlocked'
         context_entry = {
             'ID': vault_to_lock,
             'IsLocked': True
         }
-        context = {
-            f'{INTEGRATION_NAME_CONTEXT}.Vault(val.ID && val.ID === obj.ID)': context_entry
-        }
+        context = {f'{client.integration_context_name}.Vault(val.ID && val.ID === obj.ID)': context_entry}
         human_readable = tableToMarkdown(title, context_entry)
-        return_outputs(human_readable, context, raw_response)
+        return human_readable, context, raw_response
     else:
-        return_error(f'{INTEGRATION_NAME} - Could not lock vault ID: {vault_to_lock}')
+        raise DemistoException(f'{client.integration_name} - Could not lock vault ID: {vault_to_lock}')
 
 
-def reset_account_command(client: Client):
+def reset_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Resets an account by account ID
     """
-    Gets details about a raw_response using IDs or some other filters
-    """
-    # Initialize main vars
-    context: Dict = dict()
     # Get arguments from user
-    account_to_reset: str = demisto.args().get('account_id', '')
+    account_id = args.get('account_id', '')
     # Make request and get raw response
-    defaulted_account: str = client.reset_account_request(account_to_reset)
+    raw_response = client.reset_account_request(account_id)
     # Parse response into context & content entries
-    if defaulted_account == account_to_reset:
-        title: str = f'{INTEGRATION_NAME} - Account `{defaulted_account}` has been returned to default.'
+    if raw_response.get('account') == account_id:
+        title = f'{client.integration_name} - Account `{account_id}` has been returned to default.'
         context_entry = {
             'IsLocked': False,
-            'ID': account_to_reset
+            'ID': account_id
         }
-
-        context[f'{INTEGRATION_NAME_CONTEXT}.Account(val.ID && val.ID === obj.ID)'] = context_entry
+        context = {f'{client.integration_context_name}.Account(val.ID && val.ID === obj.ID)': context_entry}
         # Creating human readable for War room
-        human_readable: str = tableToMarkdown(title, context_entry)
+        human_readable = tableToMarkdown(title, context_entry)
         # Return data to Demisto
-        return_outputs(human_readable, context)
+        return human_readable, context, raw_response
     else:
-        return_error(f'{INTEGRATION_NAME} - Could not reset account `{account_to_reset}`')
+        raise DemistoException(f'{client.integration_name} - Could not reset account `{account_id}`')
 
 
-def list_credentials(client: Client):
-    raw_response: Dict = client.fetch_credentials()
+def list_credentials(client: Client, *_) -> Tuple[str, Dict, Dict]:
+    """Returns credentials to user without passwords.
+    """
+    raw_response = client.list_credentials_request()
+    # Filtering out passwords for list_credentials, so it won't get back to the user
+    raw_response = assign_params(keys_to_ignore=['password'], **raw_response)
     credentials: List[Dict] = raw_response.get('credentials', [])
     if credentials:
-        title: str = f'{INTEGRATION_NAME} - Credentials list.'
-        context_entry = [{
-            'Name': credential.get('name')
-        } for credential in credentials]
-        context = {
-            f'{INTEGRATION_NAME_CONTEXT}.Credential(val.Name && val.Name ==== obj.Name)': context_entry
-        }
+        title = f'{client.integration_name} - Credentials list.'
+        context_entry = build_credentials_context(credentials)
+        context = {f'{client.integration_context_name}.Credential(val.ID && val.ID ==== obj.ID)': context_entry}
         human_readable = tableToMarkdown(title, context_entry)
-        return_outputs(human_readable, context, context)
+        return human_readable, context, raw_response
     else:
-        return_warning(f'{INTEGRATION_NAME} - Could not find any credentials.')
+        return f'{client.integration_name} - Could not find any credentials.', {}, {}
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
 def main():
-    server: str = demisto.getParam('url')
-    use_ssl: bool = not demisto.params().get('insecure', False)
-    proxy: Optional[bool] = demisto.params().get('proxy')
-    client: Client = Client(server, use_ssl, proxy)
-    command: str = demisto.command()
+    integration_name = 'Authentication Integration'
+    # lowercase with `-` dividers
+    integration_command_name = 'authentication'
+    # No dividers
+    integration_context_name = 'AuthenticationIntegration'
+    params = demisto.params()
+    server = params.get('url')
+    base_suffix = '/api/v1'
+    verify = not params.get('insecure', False)
+    proxy = params.get('proxy') == 'true'
+    client = Client(integration_name, integration_command_name, integration_context_name, server,
+                    base_suffix, verify=verify, proxy=proxy)
+    command = demisto.command()
     demisto.info(f'Command being called is {command}')
-    commands: Dict = {
+
+    # Switch case
+    commands = {
         'test-module': test_module,
         'fetch-credentials': fetch_credentials,
-        f'{INTEGRATION_NAME_COMMAND}-list-credentials': list_credentials,
-        f'{INTEGRATION_NAME_COMMAND}-lock-account': lock_account,
-        f'{INTEGRATION_NAME_COMMAND}-unlock-account': unlock_account,
-        f'{INTEGRATION_NAME_COMMAND}-reset-account': reset_account_command,
-        f'{INTEGRATION_NAME_COMMAND}-lock-vault': lock_vault,
-        f'{INTEGRATION_NAME_COMMAND}-unlock-vault': unlock_vault
+        f'{integration_command_name}-list-accounts': list_credentials,
+        f'{integration_command_name}-lock-account': lock_account,
+        f'{integration_command_name}-unlock-account': unlock_account,
+        f'{integration_command_name}-reset-account': reset_account_command,
+        f'{integration_command_name}-lock-vault': lock_vault,
+        f'{integration_command_name}-unlock-vault': unlock_vault
     }
     try:
+        if command == 'fetch-credentials':
+            # Fetch credentials is handled, no return statement.
+            commands[command](client, demisto.args())
         if command in commands:
-            commands[command](client)
+            return_outputs(*commands[command](client, demisto.args()))
     # Log exceptions
     except Exception as e:
         err_msg = f'Error in AuthenticationExample Integration [{e}]'

@@ -16,10 +16,6 @@ urllib3.disable_warnings()
 
 
 class Client(BaseHTTPClient):
-    """
-    Wrapper class for BaseClient with additional functionality for the integration.
-    """
-
     def test_module_request(self) -> Dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
 
@@ -55,10 +51,10 @@ class Client(BaseHTTPClient):
         """Return an event by the event ID.
 
         Args:
-            event_id: event id to get
+            event_id: Event ID to get.
 
         Returns:
-            event details
+            Response JSON
         """
         # The service endpoint to request from
         suffix = 'event'
@@ -68,13 +64,13 @@ class Client(BaseHTTPClient):
         return self._http_request('GET', suffix, params=params)
 
     def close_event_request(self, event_id: AnyStr) -> Dict:
-        """Closes the sepcified event.
+        """Closes the specified event.
 
         Args:
             event_id: The ID of the event to close.
 
         Returns:
-            Response from API
+            Response JSON
         """
         # The service endpoint to request from
         suffix = 'event'
@@ -94,7 +90,7 @@ class Client(BaseHTTPClient):
 
 
         Returns:
-            Response from API
+            Response JSON
         """
         # The service endpoint to request from
         suffix = 'event'
@@ -111,7 +107,7 @@ class Client(BaseHTTPClient):
             assignee: A list of user IDs to assign to the event.
 
         Returns:
-            Response from API
+            Response JSON
         """
         # The service endpoint to request from
         suffix = 'event'
@@ -127,7 +123,7 @@ class Client(BaseHTTPClient):
             **kwargs: The keyword argument for which to search.
 
         Returns:
-            Response from API
+            Response JSON
         """
         # The service endpoint to request from
         suffix = 'query'
@@ -190,7 +186,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
     results = client.test_module_request()
     if 'version' in results:
         return 'ok', {}, {}
-    raise DemistoException('Test module failed, {}'.format(results))
+    raise DemistoException(f'Test module failed, {results}')
 
 
 def fetch_incidents(client: Client, last_run):
@@ -244,8 +240,7 @@ def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def get_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """
-    Gets details about a raw_response using the event ID or other valid filters.
+    """Gets details about a raw_response using the event ID or other valid filters.
     """
     # Get arguments from user
     event_id: str = args.get('event_id', '')
