@@ -19,6 +19,9 @@ BASE_URL = demisto.params().get('server', 'https://otx.alienvault.com')
 # TOKEN
 TOKEN = demisto.params().get('api_token')
 
+# Default threshold
+DEFAULT_THRESHOLD = int(demisto.params().get('default_threshold', 2))
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -62,22 +65,26 @@ def geo_by_ec(lat: str, long_: str):
     return None
 
 
-def dbot_score(pulse_info: dict, default_threshold=2):
+def dbot_score(pulse_info: dict, threshold=None):
     """
     calculate DBot score for query
     :param pulse_info: returned from general section as dictionary
-    :param default_threshold: default threshold for score
+    :param threshold: threshold for malicious score
     :return: score - good (if 0), bad (if grater than default), suspicious if between
     """
+    default_threshold = int(threshold or DEFAULT_THRESHOLD)
     count = pulse_info.get('count')
     if isinstance(count, int) and count >= 0:
         if count == 0:
-            return 'good'
+            return dbotscores['Low']
+
         if 0 < count < default_threshold:
-            return 'suspicious'
+            return dbotscores['Medium']
+
         if count >= default_threshold:
-            return 'bad'
-    return 'unknown'
+            return dbotscores['High']
+
+    return dbotscores['Unknown']
 
 
 def create_page_pulse(page_entry: list) -> list:
@@ -127,7 +134,7 @@ def create_list_by_ec(list_entries: list, list_type: str):
                 'Hash': entry.get('hash')
             })
 
-        # should not
+        # should not get here
         return {}
 
     return [create_entry_by_ec(entry) for entry in list_entries]
@@ -162,7 +169,7 @@ def test_module():
 
 # IP command
 @logger
-def ip_request(ip_address, ip_version):
+def ip_request(ip_address, ip_version, threshold=None):
     api_path = {
         'source': 'indicators',
         'command': ip_version,
@@ -188,8 +195,8 @@ def ip_request(ip_address, ip_version):
         },
         'DBotScore': {
             'Indicator': raw.get('indicator'),
-            'Score': dbot_score(raw.get('pulse_info')),
-            'Type': ip_version,
+            'Score': dbot_score(raw.get('pulse_info'), threshold),
+            'Type': 'ip',
             'Vendor': 'AlienVault OTX'
         }
     }
@@ -200,8 +207,8 @@ def ip_request(ip_address, ip_version):
 
 
 @logger
-def ipv4_command(ip):
-    raw, output = ip_request(ip, 'IPv4')
+def ipv4_command(ip, threshold=None):
+    raw, output = ip_request(ip, 'IPv4', threshold)
 
     human_readable = ''
     # Table 1
@@ -225,7 +232,7 @@ def ipv4_command(ip):
 
 # Domain command
 @logger
-def domain_sub(domain):
+def domain_request(domain, threshold):
     api_path = {
         'source': 'indicators',
         'command': 'domain',
@@ -247,8 +254,8 @@ def domain_sub(domain):
         },
         'DBotScore': {
             'Indicator': raw.get('indicator'),
-            'Score': dbot_score(raw.get('pulse_info')),
-            'Type': 'Domain',
+            'Score': dbot_score(raw.get('pulse_info'), threshold),
+            'Type': 'domain',
             'Vendor': 'AlienVault OTX'
         }
     }
@@ -259,8 +266,8 @@ def domain_sub(domain):
 
 
 @logger
-def domain_command(domain):
-    raw, output = domain_sub(domain)
+def domain_command(domain, threshold):
+    raw, output = domain_request(domain, threshold)
 
     human_readable = ''
     # Table 1
@@ -278,8 +285,8 @@ def domain_command(domain):
 
 
 @logger
-def alienvault_search_ipv6_command(ip):
-    raw, output = ip_request(ip, 'IPv6')
+def alienvault_search_ipv6_command(ip, threshold):
+    raw, output = ip_request(ip, 'IPv6', threshold)
 
     human_readable = ''
     # Table 1
@@ -303,7 +310,7 @@ def alienvault_search_ipv6_command(ip):
 
 # alienvault-search-hostname command
 @logger
-def alienvault_search_hostname(hostname):
+def alienvault_search_hostname(hostname, threshold):
     api_path = {
         'source': 'indicators',
         'command': 'hostname',
@@ -323,8 +330,8 @@ def alienvault_search_hostname(hostname):
         },
         'DBotScore': {
             'Indicator': raw.get('indicator'),
-            'Score': dbot_score(raw.get('pulse_info')),
-            'Type': 'Hostname',
+            'Score': dbot_score(raw.get('pulse_info'), threshold),
+            'Type': 'hostname',
             'Vendor': 'AlienVault OTX'
         }
     }
@@ -335,8 +342,8 @@ def alienvault_search_hostname(hostname):
 
 
 @logger
-def alienvault_search_hostname_command(hostname):
-    raw, output = alienvault_search_hostname(hostname)
+def alienvault_search_hostname_command(hostname, threshold):
+    raw, output = alienvault_search_hostname(hostname, threshold)
     human_readable = ''
 
     # Table 1
@@ -355,7 +362,7 @@ def alienvault_search_hostname_command(hostname):
 
 # file command
 @logger
-def file_sub(file_):
+def file_request(file_, threshold):
     api_path = {
         'source': 'indicators',
         'command': 'file',
@@ -376,7 +383,7 @@ def file_sub(file_):
     output = {
         'File': {
             'MD5': results.get('md5'),
-            'SHA1':  results.get('sha1'),
+            'SHA1': results.get('sha1'),
             'SHA256': results.get('sha256'),
             'SSDeep': results.get('ssdeep'),
             'Size': results.get('filesize'),
@@ -387,8 +394,8 @@ def file_sub(file_):
         },
         'DBotScore': {
             'Indicator': raw_general.get('indicator'),
-            'Score': dbot_score(raw_general.get('pulse_info')),
-            'Type': 'File',
+            'Score': dbot_score(raw_general.get('pulse_info'), threshold),
+            'Type': 'file',
             'Vendor': 'AlienVault OTX'
         }
     }
@@ -400,8 +407,8 @@ def file_sub(file_):
 
 
 @logger
-def file_command(file):
-    raw, output = file_sub(file)
+def file_command(file, threshold):
+    raw, output = file_request(file, threshold)
 
     human_readable = ''
     # Table 1
@@ -420,7 +427,7 @@ def file_command(file):
 
 # alienvault-search-cve command
 @logger
-def alienvault_search_cve(cve_id):
+def alienvault_search_cve(cve_id, threshold):
     api_path = {
         'source': 'indicators',
         'command': 'cve',
@@ -440,8 +447,8 @@ def alienvault_search_cve(cve_id):
         },
         'DBotScore': {
             'Indicator': raw.get('indicator'),
-            'Score': dbot_score(raw.get('pulse_info')),
-            'Type': 'CVE',
+            'Score': dbot_score(raw.get('pulse_info'), threshold),
+            'Type': 'cve',
             'Vendor': 'AlienVault OTX'
         }
     }
@@ -452,8 +459,8 @@ def alienvault_search_cve(cve_id):
 
 
 @logger
-def alienvault_search_cve_command(cve_id):
-    raw, output = alienvault_search_cve(cve_id)
+def alienvault_search_cve_command(cve_id, threshold):
+    raw, output = alienvault_search_cve(cve_id, threshold)
 
     # Table 1
     human_readable = tableToMarkdown(t=output.get('CVE', []),
@@ -477,34 +484,22 @@ def alienvault_get_related_urls_by_indicator(indicator_type, indicator):
     raw = http_request(**api_path)
     # Entry context
     output = {
-        'AlienVaultOTX': {
-            'URL': {
-                'Data': create_list_by_ec(list_entries=raw.get('url_list'), list_type='url_list')
-            }
-        }
+        'URL': create_list_by_ec(list_entries=raw.get('url_list'), list_type='url_list')
     }
 
     return raw, output
 
 
 @logger
-def alienvault_get_related_urls_by_indicator_command(indicator_type, indicator, threshold_results=3):
+def alienvault_get_related_urls_by_indicator_command(indicator_type, indicator):
     raw, output = alienvault_get_related_urls_by_indicator(indicator_type, indicator)
 
-    human_readable = ''
-    # Add three tables at most by threshold 3, change value for more
-    counter = 1
-    entries = output['AlienVaultOTX'].get('URL').get('Data')
-    total_num_entries = len(entries)
-    for entry in entries:
-        human_readable += tableToMarkdown(t=entry,
-                                          name=f'Url list entry {counter}/{total_num_entries}')
-        counter += 1
-        if counter > int(threshold_results):
-            break
+    entries = output.get('URL')
+    human_readable = tableToMarkdown(t=entries,
+                                     name=f'URL related to {indicator}')
 
     return_outputs(readable_output=human_readable,
-                   outputs=output,
+                   outputs={'AlienVaultOTX': output},
                    raw_response=raw)
 
 
@@ -522,34 +517,22 @@ def alienvault_get_related_hashes_by_indicator(indicator_type, indicator):
     raw = http_request(**api_path)
     # Entry context
     output = {
-        'AlienVaultOTX': {
-            'File': {
-                'Hash': create_list_by_ec(list_entries=raw.get('data'), list_type='hash_list')
-            }
-        }
+        'File': create_list_by_ec(list_entries=raw.get('data'), list_type='hash_list')
     }
 
     return raw, output
 
 
 @logger
-def alienvault_get_related_hashes_by_indicator_command(indicator_type, indicator, threshold_results=3):
+def alienvault_get_related_hashes_by_indicator_command(indicator_type, indicator):
     raw, output = alienvault_get_related_hashes_by_indicator(indicator_type, indicator)
 
-    human_readable = ''
-    # Add three tables at most by threshold 3, change value for more
-    counter = 1
-    pulses = output['AlienVaultOTX']['File']['Hash']
-    total_num_pulse = len(pulses)
-    for pulse in pulses:
-        human_readable += tableToMarkdown(t=pulse,
-                                          name=f'Hash number {counter}/{total_num_pulse}')
-        counter += 1
-        if counter > int(threshold_results):
-            break
+    pulses = output['File']
+    human_readable = tableToMarkdown(t=pulses,
+                                     name=f'Hash related to {indicator}')
 
     return_outputs(readable_output=human_readable,
-                   outputs=output,
+                   outputs={'AlienVaultOTX': output},
                    raw_response=raw)
 
 
@@ -566,31 +549,21 @@ def alienvault_get_passive_dns_data_by_indicator(indicator_type, indicator):
     raw = http_request(**api_path)
     # Entry context
     output = {
-        'AlienVaultOTX': {
-            'PassiveDNS': create_list_by_ec(list_entries=raw.get('passive_dns'), list_type='passive_dns')
-        }
+        'PassiveDNS': create_list_by_ec(list_entries=raw.get('passive_dns'), list_type='passive_dns')
     }
     return raw, output
 
 
 @logger
-def alienvault_get_passive_dns_data_by_indicator_command(indicator_type, indicator, threshold_results=3):
+def alienvault_get_passive_dns_data_by_indicator_command(indicator_type, indicator):
     raw, output = alienvault_get_passive_dns_data_by_indicator(indicator_type, indicator)
 
-    human_readable = ''
-    # Add three tables at most by threshold 3, change value for more
-    counter = 1
-    entries = output['AlienVaultOTX'].get('PassiveDNS')
-    total_num_entries = len(entries)
-    for entry in entries:
-        human_readable += tableToMarkdown(t=entry,
-                                          name=f'Passive DNS entry {counter}/{total_num_entries}')
-        counter += 1
-        if counter > int(threshold_results):
-            break
+    entries = output.get('PassiveDNS')
+    human_readable = tableToMarkdown(t=entries,
+                                     name=f'Passive DNS related to {indicator}')
 
     return_outputs(readable_output=human_readable,
-                   outputs=output,
+                   outputs={'AlienVaultOTX': output},
                    raw_response=raw)
 
 
@@ -606,33 +579,22 @@ def alienvault_search_pulses(page):
     raw = http_request(**api_path)
     # Entry context
     output = {
-        'AlienVaultOTX': {
-            'Pulses': create_page_pulse(raw.get('results'))
-        }
+        'Pulses': create_page_pulse(raw.get('results'))
     }
 
     return raw, output
 
 
 @logger
-def alienvault_search_pulses_command(page, threshold_results=3):
+def alienvault_search_pulses_command(page):
     raw, output = alienvault_search_pulses(page)
 
-    human_readable = ''
-    # Add three tables at most by threshold 3, change value for more
-    counter = 1
-    page_num = page
-    pulses = output.get('AlienVaultOTX', {}).get('Pulses')
-    total_num_pulse = len(pulses)
-    for pulse in pulses:
-        human_readable += tableToMarkdown(t=pulse,
-                                          name=f'Pulse number {counter}/{total_num_pulse} from page {page_num}')
-        counter += 1
-        if counter > int(threshold_results):
-            break
+    pulses = output.get('Pulses')
+    human_readable = tableToMarkdown(t=pulses,
+                                     name=f'Pulses (page #{page}):')
 
     return_outputs(readable_output=human_readable,
-                   outputs=output,
+                   outputs={'AlienVaultOTX': output},
                    raw_response=raw)
 
 
@@ -647,18 +609,16 @@ def alienvault_get_pulse_details(pulse_id):
     raw = http_request(**api_path)
     # Entry context
     output = {
-        'AlienVaultOTX': {
-            'Pulses': {
-                'Description': raw.get('description'),
-                'Created': raw.get('created'),
-                'Author': {
-                    'Username': raw.get('author').get('username')
-                },
-                'ID': raw.get('id'),
-                'Name': raw.get('name'),
-                'Tags': raw.get('tags'),
-                'TargetedCountries': raw.get('targeted_countries')
-            }
+        'Pulses': {
+            'Description': raw.get('description'),
+            'Created': raw.get('created'),
+            'Author': {
+                'Username': raw.get('author').get('username')
+            },
+            'ID': raw.get('id'),
+            'Name': raw.get('name'),
+            'Tags': raw.get('tags'),
+            'TargetedCountries': raw.get('targeted_countries')
         }
     }
 
@@ -671,32 +631,17 @@ def alienvault_get_pulse_details(pulse_id):
 def alienvault_get_pulse_details_command(pulse_id):
     raw, output = alienvault_get_pulse_details(pulse_id)
 
-    human_readable = ''
-    if output.get('AlienVaultOTX'):
-        if output.get('AlienVaultOTX', {}).get('Pulses'):
-            if output.get('AlienVaultOTX', {}).get('Pulses').get('Author'):
-                # Table 1
-                human_readable = tableToMarkdown(t=output['AlienVaultOTX']['Pulses']['Author'],
-                                                 name='Pulse author')
-            if output.get('AlienVaultOTX', {}).get('Pulses').get('Tags'):
-                # Table 2
-                human_readable = tableToMarkdown(t={'Tags': output['AlienVaultOTX']['Pulses']['Tags']},
-                                                 name='Tags')
-            key_not_need = ['Author', 'Tags']
-            ec_other = {key: value for key, value in output['AlienVaultOTX']['Pulses'].items()
-                        if key not in key_not_need}
-            # Table 3
-            human_readable += tableToMarkdown(t=ec_other,
-                                              name='Pulses General')
+    human_readable = tableToMarkdown(t=output.get('Pulses'),
+                                     name='Pulses')
 
     return_outputs(readable_output=human_readable,
-                   outputs=output,
+                   outputs={'AlienVaultOTX': output},
                    raw_response=raw)
 
 
 # url command
 @logger
-def url_sub(url):
+def url_request(url, threshold):
     api_path = {
         'source': 'indicators',
         'command': 'url',
@@ -720,8 +665,8 @@ def url_sub(url):
         },
         'DBotScore': {
             'Indicator': raw.get('indicator'),
-            'Score': dbot_score(raw.get('pulse_info')),
-            'Type': 'URL',
+            'Score': dbot_score(raw.get('pulse_info'), threshold),
+            'Type': 'url',
             'Vendor': 'AlienVault OTX'
         }
     }
@@ -731,8 +676,8 @@ def url_sub(url):
 
 
 @logger
-def url_command(url):
-    raw, output = url_sub(url)
+def url_command(url, threshold):
+    raw, output = url_request(url, threshold)
 
     human_readable = ''
     # Table 1

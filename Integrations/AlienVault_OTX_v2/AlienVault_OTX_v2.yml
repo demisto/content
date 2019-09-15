@@ -12,6 +12,11 @@ configuration:
   name: api_token
   required: false
   type: 4
+- display: Indicator Threshold. Minimum number of pulses to consider the indicator malicious.
+  name: default_threshold
+  required: false
+  defaultvalue: "2"
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -32,6 +37,10 @@ script:
       name: ip
       required: true
       secret: false
+    - name: threshold
+      description: If the number of pulses is bigger than the threshold the ip
+        will be considered malicious. If threshold is not specified, the default indicator
+        threshold, as configured in the instance settings, will be used.
     deprecated: false
     description: Query IP in AlienVault OTX.
     execution: false
@@ -71,6 +80,10 @@ script:
       name: domain
       required: true
       secret: false
+    - name: threshold
+      description: If the number of pulses is bigger than the threshold the domain
+        will be considered malicious. If threshold is not specified, the default indicator
+        threshold, as configured in the instance settings, will be used.
     deprecated: false
     description: Query domain in AlienVault OTX.
     execution: false
@@ -104,6 +117,10 @@ script:
       name: ip
       required: true
       secret: false
+    - name: threshold
+      description: If the number of pulses is bigger than the threshold the ip
+        will be considered malicious. If threshold is not specified, the default indicator
+        threshold, as configured in the instance settings, will be used.
     deprecated: false
     description: Query IPv6 in AlienVault OTX
     execution: false
@@ -128,7 +145,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: AlienVault OTX vendor..
+      description: AlienVault OTX vendor.
       type: String
   - arguments:
     - default: true
@@ -137,6 +154,10 @@ script:
       name: hostname
       required: true
       secret: false
+    - name: threshold
+      description: If the number of pulses is bigger than the threshold the hostname
+        will be considered malicious. If threshold is not specified, the default indicator
+        threshold, as configured in the instance settings, will be used.
     deprecated: false
     description: Query hostname in AlienVault OTX.
     execution: false
@@ -170,6 +191,10 @@ script:
       name: file
       required: true
       secret: false
+    - name: threshold
+      description: If the number of pulses is bigger than the threshold the file
+        will be considered malicious. If threshold is not specified, the default indicator
+        threshold, as configured in the instance settings, will be used.
     deprecated: false
     description: Query file in AlienVault OTX.
     execution: false
@@ -215,6 +240,10 @@ script:
       name: cve_id
       required: true
       secret: false
+    - name: threshold
+      description: If the number of pulses is bigger than the threshold the cve
+        will be considered malicious. If threshold is not specified, the default indicator
+        threshold, as configured in the instance settings, will be used.
     deprecated: false
     description: Query CVE in AlienVault OTX.
     execution: false
@@ -427,6 +456,10 @@ script:
       name: url
       required: true
       secret: false
+    - name: threshold
+      description: If the number of pulses is bigger than the threshold the url
+        will be considered malicious. If threshold is not specified, the default indicator
+        threshold, as configured in the instance settings, will be used.
     deprecated: false
     description: Query url in AlienVault OTX.
     execution: false
