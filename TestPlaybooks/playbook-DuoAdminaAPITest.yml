@@ -1,5 +1,5 @@
 id: DuoAdmin API test playbook
-version: 6
+version: -1
 name: DuoAdmin API test playbook
 starttaskid: "0"
 tasks:
@@ -89,18 +89,15 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 013c3ea0-0450-405f-80ed-4e87f8125b83
+    taskid: 8af41ea8-47b3-46b8-88c8-04b67deeae34
     type: title
     task:
-      id: 013c3ea0-0450-405f-80ed-4e87f8125b83
+      id: 8af41ea8-47b3-46b8-88c8-04b67deeae34
       version: -1
-      name: Auth Logs Bug Fix Test
+      name: done
       type: title
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "39"
     separatecontext: false
     view: |-
       {
@@ -822,199 +819,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "37":
-    id: "37"
-    taskid: fa415a39-fef3-45de-8832-a6222012103e
-    type: regular
-    task:
-      id: fa415a39-fef3-45de-8832-a6222012103e
-      version: -1
-      name: Get User Logs
-      description: Returns authentication logs associated with a user. Limited to
-        30 at a time
-      script: DUO Admin|||duoadmin-get-authentication-logs-by-user
-      type: regular
-      iscommand: true
-      brand: DUO Admin
-    nexttasks:
-      '#none#':
-      - "40"
-    scriptarguments:
-      from:
-        simple: 10_years_ago
-      limit: {}
-      username:
-        simple: ${DuoAdmin.UserDetails.[0].username}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2105
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "39":
-    id: "39"
-    taskid: 94556773-3098-4acf-8096-a1cf90c17055
-    type: regular
-    task:
-      id: 94556773-3098-4acf-8096-a1cf90c17055
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "42"
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "40":
-    id: "40"
-    taskid: 8d6c8f41-3491-46e8-8e59-dd576f6d70a6
-    type: condition
-    task:
-      id: 8d6c8f41-3491-46e8-8e59-dd576f6d70a6
-      version: -1
-      name: Are there any outputs? (Shouldn't be)
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "41"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotExists
-          left:
-            value:
-              complex:
-                root: DuoAdmin
-                accessor: UserDetails.auth_logs
-            iscontext: true
-      - - operator: isNotExists
-          left:
-            value:
-              complex:
-                root: DuoAdmin
-                accessor: UserDetails.auth_logs.access_device
-            iscontext: true
-      - - operator: isNotExists
-          left:
-            value:
-              complex:
-                root: DuoAdmin
-                accessor: UserDetails.auth_logs.access_device.location
-            iscontext: true
-      - - operator: isNotExists
-          left:
-            value:
-              complex:
-                root: DuoAdmin
-                accessor: UserDetails.auth_logs.auth_device
-            iscontext: true
-      - - operator: isNotExists
-          left:
-            value:
-              complex:
-                root: DuoAdmin
-                accessor: UserDetails.auth_logs.auth_device.location
-            iscontext: true
-      - - operator: isNotExists
-          left:
-            value:
-              complex:
-                root: DuoAdmin
-                accessor: UserDetails.auth_logs.application
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "41":
-    id: "41"
-    taskid: d5c76165-dc97-4e5b-8ce4-d17c6f2ed56b
-    type: title
-    task:
-      id: d5c76165-dc97-4e5b-8ce4-d17c6f2ed56b
-      version: -1
-      name: done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 2490
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "42":
-    id: "42"
-    taskid: 9f359471-0a2e-41e8-8471-82237809b242
-    type: regular
-    task:
-      id: 9f359471-0a2e-41e8-8471-82237809b242
-      version: -1
-      name: Get Useres Detail
-      description: Return usernames and their user id
-      script: DUO Admin|||duoadmin-get-users
-      type: regular
-      iscommand: true
-      brand: DUO Admin
-    nexttasks:
-      '#none#':
-      - "37"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2715,
+        "height": 1725,
         "width": 1890,
         "x": -100,
         "y": -160

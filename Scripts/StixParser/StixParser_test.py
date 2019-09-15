@@ -17,7 +17,7 @@ def get_files_in_dir(mypath, only_with_ext=None):
 
 
 def mock_demisto(mocker):
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'resu   lts')
 
 
 def _get_stix(
