@@ -89,12 +89,12 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 8af41ea8-47b3-46b8-88c8-04b67deeae34
+    taskid: 013c3ea0-0450-405f-80ed-4e87f8125b83
     type: title
     task:
-      id: 8af41ea8-47b3-46b8-88c8-04b67deeae34
+      id: 013c3ea0-0450-405f-80ed-4e87f8125b83
       version: -1
-      name: done
+      name: Auth Logs Bug Fix Test
       type: title
       iscommand: false
       brand: ""
