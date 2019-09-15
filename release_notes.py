@@ -206,7 +206,7 @@ class Content:
                 section_body += "\n##### Removed {}\n".format(self.get_header())
                 for name in self.deleted_store:
                     print(' - adding release notes (Removed) for - [{}]'.format(name), end='')
-                    section_body += "- __" + name + "__\n"
+                    section_body += "- __" + os.path.splitext(os.path.basename(name))[0] + "__\n"
                     print("Success")
 
             if section_body:
@@ -549,7 +549,8 @@ def get_release_notes_draft(github_token, asset_id):
     drafts = [release for release in res.json() if release.get('draft', False)]
     if drafts:
         if len(drafts) == 1:
-            return re.sub(r'Release Notes for version .* \((\d{5,})\)', asset_id, drafts[0]['body'])
+            return re.sub(r'Release Notes for version .* \((\d{5,})\)',
+                          'Release Notes for version ({})'.format(asset_id), drafts[0]['body'])
 
         print_warning('Too many drafts to choose from ({}), skipping update.'.format(len(drafts)))
 
