@@ -3,12 +3,18 @@ import demistomock as demisto
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string
+    IntegrationLogger, parse_date_string, IS_PY3, DebugLogger
 
 import copy
 import os
 import sys
 import pytest
+
+try:
+    from StringIO import StringIO
+except ImportError:
+    # Python 3
+    from io import StringIO  # noqa
 
 INFO = {'b': 1,
         'a': {
@@ -666,3 +672,36 @@ def test_parse_date_string():
     assert parse_date_string(
         '2019-09-17T06:16:39.4040+05:00', '%Y-%m-%dT%H:%M:%S+02:00'
     ) == datetime(2019, 9, 17, 6, 16, 39, 404000)
+
+
+def test_override_print(mocker):
+    mocker.patch.object(demisto, 'info')
+    int_logger = IntegrationLogger()
+    int_logger.set_buffering(False)
+    int_logger.print_override("test", "this")
+    assert demisto.info.call_count == 1
+    assert demisto.info.call_args[0][0] == "test this"
+    demisto.info.reset_mock()
+    int_logger.print_override("test", "this", file=sys.stderr)
+    assert demisto.info.call_count == 1
+    assert demisto.info.call_args[0][0] == "test this"
+    buf = StringIO()
+    # test writing to custom file (not stdout/stderr)
+    int_logger.print_override("test", "this", file=buf)
+    assert buf.getvalue() == 'test this\n'
+
+
+def test_http_client_debug(mocker):
+    if not IS_PY3:
+        pytest.skip("test not supported in py2")
+        return
+    mocker.patch.object(demisto, 'info')
+    debug_log = DebugLogger()
+    from http.client import HTTPConnection
+    HTTPConnection.debuglevel = 1
+    con = HTTPConnection("google.com")
+    con.request('GET', '/')
+    r = con.getresponse()
+    r.read()
+    assert demisto.info.call_count > 5
+    assert debug_log is not None
