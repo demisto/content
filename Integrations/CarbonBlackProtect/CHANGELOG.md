@@ -1,2 +1,2 @@
 ## [Unreleased]
-Fixed an issue with ***fetch-incidents*** where users got an error when there was nothing to fetch
+Fixed an issue with the ***fetch-incidents*** command where users received an error when there were no incidents to fetch.
