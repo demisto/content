@@ -261,3 +261,5 @@ outputs:
   type: string
 - contextPath: AutoFocus.SamplesResults
   type: string
+- contextPath: AutoFocus.TopTagResults
+  type: string
