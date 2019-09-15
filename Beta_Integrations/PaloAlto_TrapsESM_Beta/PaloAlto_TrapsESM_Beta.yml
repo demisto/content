@@ -1,0 +1,59 @@
+category: Endpoint
+commonfields:
+  id: Palo Alto Traps ESM (Beta)
+  version: -1
+configuration:
+- display: URL of Traps ESM Server
+  name: url
+  required: true
+  type: 0
+- display: Username of Account to be used.
+  name: username
+  required: false
+  type: 0
+- display: Password of Account to be used.
+  name: password
+  required: false
+  type: 4
+description: Palo Alto Traps ESM beta integration.
+display: Palo Alto Traps ESM (Beta)
+name: Palo Alto Traps ESM (Beta)
+beta: true
+script:
+  commands:
+  - arguments:
+    - default: false
+      isArray: false
+      name: hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve details about a specific hash
+    execution: false
+    name: traps-esm-hash-detail
+  - arguments:
+    - default: false
+      description: Hash to be changed.
+      isArray: false
+      name: hash
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Verdict of the hash.
+      isArray: false
+      name: verdict
+      predefined:
+      - Benign
+      - Malware
+      required: true
+      secret: false
+    deprecated: false
+    description: Override a verdict for a specific hash.
+    execution: false
+    name: traps-esm-override-hash-verdict
+  isfetch: false
+  runonce: false
+  script: ''
+  type: python
+  dockerimage: demisto/btfl-soup:1.0.0.925

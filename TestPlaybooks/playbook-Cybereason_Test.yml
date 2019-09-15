@@ -223,7 +223,7 @@ tasks:
     scriptarguments:
       expectedValue: {}
       fields:
-        simple: Name,CreationTime,EndTime,OwnerMachine,User
+        simple: Name,CreationTime,OwnerMachine,User
       path:
         simple: Process
     separatecontext: false
@@ -415,6 +415,14 @@ tasks:
               right:
                 value:
                   simple: Cybereason
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.state
+                iscontext: true
+              right:
+                value:
+                  simple: active
           accessor: name
     separatecontext: false
     view: |-

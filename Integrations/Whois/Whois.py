@@ -5,6 +5,7 @@ import re
 import socket
 import sys
 from codecs import encode, decode
+import socks
 
 ENTRY_TYPE = entryTypes['error'] if demisto.params().get('with_error', False) else entryTypes['warning']
 
@@ -7234,7 +7235,7 @@ def whois_request(domain, server, port=43):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sock.connect((server, port))
-    except socket.error as msg:
+    except Exception as msg:
         context = ({
             outputPaths['domain']: {
                 'Name': domain,
@@ -7248,7 +7249,7 @@ def whois_request(domain, server, port=43):
             {
                 'ContentsFormat': 'text',
                 'Type': ENTRY_TYPE,
-                'Contents': 'Whois returned - Couldnt connect with the socket-server: {}'.format(msg),
+                'Contents': "Whois returned - Couldn't connect with the socket-server: {}".format(msg),
                 'EntryContext': context
             }
         )
@@ -7269,6 +7270,8 @@ def whois_request(domain, server, port=43):
             d = buff.decode("latin-1")
 
         return d
+    finally:        
+        sock.close()
 
 
 airports = {} # type: dict
@@ -8249,29 +8252,43 @@ def whois_command():
 
     md = {'Name': domain}
     ec = {'Name': domain}
+    standard_ec = {}  # type:dict
+    standard_ec['WHOIS'] = {}
     if 'status' in whois_result:
         ec['DomainStatus'] = whois_result.get('status')
+        standard_ec['DomainStatus'] = whois_result.get('status')
+        standard_ec['WHOIS']['DomainStatus'] = whois_result.get('status')
         md['Domain Status'] = whois_result.get('status')
     if 'raw' in whois_result:
         ec['Raw'] = whois_result.get('raw')
     if 'nameservers' in whois_result:
         ec['NameServers'] = whois_result.get('nameservers')
+        standard_ec['NameServers'] = whois_result.get('nameservers')
+        standard_ec['WHOIS']['NameServers'] = whois_result.get('nameservers')
         md['NameServers'] = whois_result.get('nameservers')
 
     try:
         if 'creation_date' in whois_result:
             ec['CreationDate'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
+            standard_ec['CreationDate'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
+            standard_ec['WHOIS']['CreationDate'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
             md['Creation Date'] = whois_result.get('creation_date')[0].strftime('%d-%m-%Y')
         if 'updated_date' in whois_result:
             ec['UpdatedDate'] = whois_result.get('updated_date')[0].strftime('%d-%m-%Y')
+            standard_ec['UpdatedDate'] = whois_result.get('updated_date')[0].strftime('%d-%m-%Y')
+            standard_ec['WHOIS']['UpdatedDate'] = whois_result.get('updated_date')[0].strftime('%d-%m-%Y')
             md['Updated Date'] = whois_result.get('updated_date')[0].strftime('%d-%m-%Y')
         if 'expiration_date' in whois_result:
             ec['ExpirationDate'] = whois_result.get('expiration_date')[0].strftime('%d-%m-%Y')
+            standard_ec['ExpirationDate'] = whois_result.get('expiration_date')[0].strftime('%d-%m-%Y')
+            standard_ec['WHOIS']['ExpirationDate'] = whois_result.get('expiration_date')[0].strftime(
+                '%d-%m-%Y')
             md['Expiration Date'] = whois_result.get('expiration_date')[0].strftime('%d-%m-%Y')
     except ValueError as e:
         return_error('Date could not be parsed. Please check the date again.\n{error}'.format(type(e)))
     if 'registrar' in whois_result:
         ec.update({'Registrar': {'Name': whois_result.get('registrar')}})
+        standard_ec['WHOIS']['Registrar'] = whois_result.get('registrar')
         md['Registrar'] = whois_result.get('registrar')
     if 'id' in whois_result:
         ec['ID'] = whois_result.get('id')
@@ -8280,10 +8297,13 @@ def whois_command():
         contacts = whois_result['contacts']
         if 'registrant' in contacts and contacts['registrant'] is not None:
             md['Registrant'] = contacts['registrant']
+            standard_ec['Registrant'] = contacts['registrant']
             ec['Registrant'] = contacts['registrant']
         if 'admin' in contacts and contacts['admin'] is not None:
             md['Administrator'] = contacts['admin']
             ec['Administrator'] = contacts['admin']
+            standard_ec['Admin'] = contacts['admin']
+            standard_ec['WHOIS']['Admin'] = contacts['admin']
         if 'tech' in contacts and contacts['tech'] is not None:
             md['Tech Admin'] = contacts['tech']
             ec['TechAdmin'] = contacts['tech']
@@ -8297,11 +8317,11 @@ def whois_command():
     ec['QueryStatus'] = 'Success'
     md['QueryStatus'] = 'Success'
 
+    standard_ec['Name'] = domain
+    standard_ec['Whois'] = ec
+
     context = ({
-        outputPaths['domain']: {
-            'Name': domain,
-            'Whois': ec
-        },
+        outputPaths['domain']: standard_ec
     })
 
     demisto.results({
@@ -8322,14 +8342,51 @@ def test_command():
         demisto.results('ok')
 
 
+def setup_proxy():
+    scheme_to_proxy_type = {
+        'socks5': [socks.PROXY_TYPE_SOCKS5, False],
+        'socks5h': [socks.PROXY_TYPE_SOCKS5, True],
+        'socks4': [socks.PROXY_TYPE_SOCKS4, False],
+        'socks4a': [socks.PROXY_TYPE_SOCKS4, True],
+        'http': [socks.PROXY_TYPE_HTTP, True]
+    }
+    proxy_url = demisto.params().get('proxy_url')    
+    def_scheme = 'socks5h'
+    if proxy_url == 'system_http':
+        system_proxy = handle_proxy('proxy_url')
+        # use system proxy. Prefer https and fallback to http
+        proxy_url = system_proxy.get('https') if system_proxy.get('https') else system_proxy.get('http')
+        def_scheme = 'http'
+    if not proxy_url:
+        return
+    scheme, host = (def_scheme, proxy_url) if '://' not in proxy_url else proxy_url.split('://')
+    host, port = (host, None) if ':'  not in host else host.split(':')
+    if port:
+        port = int(port)
+    proxy_type = scheme_to_proxy_type.get(scheme)
+    if not proxy_type:
+        raise ValueError("Un supported proxy scheme: {}".format(scheme))
+    socks.set_default_proxy(proxy_type[0], host, port, proxy_type[1])
+    socket.socket = socks.socksocket  # type: ignore
+    
+
 ''' EXECUTION CODE '''
-LOG('command is {}'.format(str(demisto.command())))
-try:
-    handle_proxy()
-    if demisto.command() == 'test-module':
-        test_command()
-    elif demisto.command() == 'whois':
-        whois_command()
-except Exception as e:
-    LOG(e)
-    return_error(str(e))
+def main():
+    LOG('command is {}'.format(str(demisto.command())))
+    org_socket = socket.socket
+    try:
+        setup_proxy()
+        if demisto.command() == 'test-module':
+            test_command()
+        elif demisto.command() == 'whois':
+            whois_command()
+    except Exception as e:
+        LOG(e)
+        return_error(str(e))
+    finally:
+        socks.set_default_proxy()  # clear proxy settings
+        socket.socket = org_socket  # type: ignore
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()

@@ -3,6 +3,7 @@ import time
 from pprint import pformat
 import uuid
 import urllib
+import requests.exceptions
 
 from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS
 from Tests.scripts.constants import PB_Status
@@ -11,9 +12,6 @@ from Tests.scripts.constants import PB_Status
 DEFAULT_TIMEOUT = 60
 DEFAULT_INTERVAL = 20
 ENTRY_TYPE_ERROR = 4
-
-INC_CREATION_ERR = 'Failed to create incident. Possible reasons are:\nMismatch between playbookID in conf.json and ' \
-                   'the id of the real playbook you were trying to use, or schema problems in the TestPlaybook.'
 
 
 # ----- Functions ----- #
@@ -64,8 +62,8 @@ def __test_integration_instance(client, module_instance):
 
 
 # return instance name if succeed, None otherwise
-def __create_integration_instance(client, integration_name, integration_params, is_byoi):
-    print('Configuring instance for {}'.format(integration_name))
+def __create_integration_instance(client, integration_name, integration_instance_name, integration_params, is_byoi):
+    print('Configuring instance for {} (instance name: {})'.format(integration_name, integration_instance_name))
     # get configuration config (used for later rest api
     configuration = __get_integration_config(client, integration_name)
     if not configuration:
@@ -75,7 +73,7 @@ def __create_integration_instance(client, integration_name, integration_params, 
     if not module_configuration:
         module_configuration = []
 
-    instance_name = (integration_name + '_test' + str(uuid.uuid4())).replace(' ', '_')
+    instance_name = '{}_test_{}'.format(integration_instance_name.replace(' ', '_'), str(uuid.uuid4()))
     # define module instance
     module_instance = {
         'brand': configuration['name'],
@@ -113,7 +111,11 @@ def __create_integration_instance(client, integration_name, integration_params, 
             # param is required - take default value
             param_conf['value'] = param_conf['defaultValue']
         module_instance['data'].append(param_conf)
-    res = client.req('PUT', '/settings/integration', module_instance)
+    try:
+        res = client.req('PUT', '/settings/integration', module_instance)
+    except requests.exceptions.RequestException as conn_err:
+        print_error('Error trying to create instance for integration: {0}:\n {1}'.format(integration_name, conn_err))
+        return None
 
     if res.status_code != 200:
         print_error('create instance failed with status code ' + str(res.status_code))
@@ -150,7 +152,7 @@ def __disable_integrations_instances(client, module_instances):
 
 
 # create incident with given name & playbook, and then fetch & return the incident
-def __create_incident_with_playbook(client, name, playbook_id):
+def __create_incident_with_playbook(client, name, playbook_id, integrations):
     # create incident
     kwargs = {'createInvestigation': True, 'playbookId': playbook_id}
     response_json = {}
@@ -162,7 +164,11 @@ def __create_incident_with_playbook(client, name, playbook_id):
 
     inc_id = response_json.get('id', 'incCreateErr')
     if inc_id == 'incCreateErr':
-        print_error(INC_CREATION_ERR)
+        integration_names = [integration['name'] for integration in integrations if 'name' in integration]
+        print_error('Failed to create incident for integration names: {} and playbookID: {}.'
+                    'Possible reasons are:\nMismatch between playbookID in conf.json and '
+                    'the id of the real playbook you were trying to use,'
+                    'or schema problems in the TestPlaybook.'.format(str(integration_names), playbook_id))
         return False, -1
 
     # get incident
@@ -266,13 +272,15 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
     module_instances = []
     for integration in integrations:
         integration_name = integration.get('name', None)
+        integration_instance_name = integration.get('instance_name', '')
         integration_params = integration.get('params', None)
         is_byoi = integration.get('byoi', True)
 
         if is_mock_run:
             configure_proxy_unsecure(integration_params)
 
-        module_instance = __create_integration_instance(client, integration_name, integration_params, is_byoi)
+        module_instance = __create_integration_instance(client, integration_name, integration_instance_name,
+                                                        integration_params, is_byoi)
         if module_instance is None:
             print_error('Failed to create instance')
             __delete_integrations_instances(client, module_instances)
@@ -282,7 +290,7 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
         print('Create integration %s succeed' % (integration_name, ))
 
     # create incident with playbook
-    incident, inc_id = __create_incident_with_playbook(client, 'inc_%s' % (playbook_id, ), playbook_id)
+    incident, inc_id = __create_incident_with_playbook(client, 'inc_%s' % (playbook_id, ), playbook_id, integrations)
 
     if not incident:
         return False, -1
