@@ -598,7 +598,7 @@ class IntegrationLogger(object):
                 s = demisto.getParam('apikey')
                 self.add_repalce_strs(s, b64_encode(s))
             if demisto.getParam('password'):
-                s = demisto.getParam('apikey')
+                s = demisto.getParam('password')
                 self.add_repalce_strs(s, b64_encode(s))
 
     def encode(self, message):
