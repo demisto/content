@@ -1491,7 +1491,7 @@ def search_mail():
     end = demisto.args().get('end', '').encode('utf-8')
     sender_ip = demisto.args().get('sender_ip', '').encode('utf-8')
     mail_to = demisto.args().get('mail_to', '').encode('utf-8')
-    mail_from_ = demisto.args().get('mail_from', '').encode('utf-8')
+    mail_from = demisto.args().get('mail_from', '').encode('utf-8')
     subject = demisto.args().get('subject', '').encode('utf-8')
     message_id = demisto.args().get('message_id', '').encode('utf-8')
     limit = int(demisto.args().get('limit', 100))
