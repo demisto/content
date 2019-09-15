@@ -1155,8 +1155,15 @@ def delete_devices():
             'Device Name': device_name,
             'Deletion status': True
         })
+    batch_size = demisto.args().get("batch_size", 20)
+    try:
+        batch_size = int(batch_size)
+    except ValueError:
+        return_error("Error: Batch Size specified must represent an int.")
+    for i in range(0, len(device_ids_list), batch_size):
+        current_deleted_devices_batch = device_ids_list[i:i + batch_size]
+        delete_devices_request(current_deleted_devices_batch)
 
-    delete_devices_request(device_ids_list)
     context = {
         'Cylance.Device(val.Id && val.Id == obj.Id)': context_list
     }
