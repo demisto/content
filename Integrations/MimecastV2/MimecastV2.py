@@ -1569,9 +1569,16 @@ def search_mail_request(search_params):
     }
 
     response = http_request('POST', api_endpoint, str(payload))
-    if response.get('fail'):
-        return_error(json.dumps(response.get('fail')[0].get('errors')))
-    return response.get('data')[0].get('trackedEmails')
+    fail = response.get('fail', [])
+    if fail:
+        if isinstance(fail, list) and fail[0]:
+            return_error(json.dumps(response.get('fail')[0].get('errors')))
+        else:
+            return_error("Could not get a reason for failed request.")
+    data = response.get('data', [])
+    if isinstance(data, list) and data[0] and isinstance(data[0], dict):
+        return data[0].get('trackedEmails')
+    return []
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''

@@ -1236,6 +1236,13 @@ script:
       name: message_id
       required: false
       secret: false
+    - default: false
+      defaultValue: '100'
+      description: Limit the amount of emails being fetched from Mimecast at once
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Search for emails
     execution: false
