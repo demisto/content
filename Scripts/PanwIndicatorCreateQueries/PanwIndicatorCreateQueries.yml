@@ -73,6 +73,8 @@ outputs:
   type: String
 script: '-'
 system: false
+tags:
+- Panw
 timeout: '0'
 type: python
 tests:
