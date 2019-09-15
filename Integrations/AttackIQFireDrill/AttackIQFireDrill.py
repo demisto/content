@@ -230,6 +230,33 @@ def update_nested_value(src_dict, to_key, to_val):
     sub_res[to_key_lst[-1]] = to_val
 
 
+def get_page_number_and_page_size(args):
+    """
+    Get arguments page_number and page_size from args
+    Args:
+        args (dict): Argument dictionary, with possible page_number and page_size keys
+
+    Returns (int, int): Return a tuple of (page_number, page_size)
+
+    """
+    page = args.get('page_number', 1)
+    page_size = args.get('page_size', DEFAULT_PAGE_SIZE)
+    err_msg_format = 'Error: Invalid {arg} value. "{val}" Is not a valid value. Please enter a positive integer.'
+    try:
+        page = int(page)
+        if page <= 0:
+            raise ValueError()
+    except (ValueError, TypeError):
+        return_error(err_msg_format.format(arg='page_number', val=page))
+    try:
+        page_size = int(page_size)
+        if page_size <= 0:
+            raise ValueError()
+    except (ValueError, TypeError):
+        return_error(err_msg_format.format(arg='page_size', val=page_size))
+    return page, page_size
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -289,10 +316,12 @@ def get_test_execution_status_command():
         return_error(create_invalid_id_err_msg(str(e), ['500']))
 
 
-def build_test_results_hr(test_results, test_id):
+def build_test_results_hr(test_results, test_id, page, tot_pages):
     """
     Creates test results human readable
     Args:
+        page (int): Current page
+        tot_pages (int): Total pages
         test_results (list): Results of the test (after being transformed)
         test_id (str): ID of the test
 
@@ -314,37 +343,7 @@ def build_test_results_hr(test_results, test_id):
             keys[6]: demisto.get(t_res, 'Outcome.Name')
         }
         test_results_mod.append(hr_items)
-    return tableToMarkdown(f'Test Results for {test_id}', test_results_mod, keys)
-
-
-def get_page_number_and_page_size(args):
-    """
-    Get arguments page_number and page_size from args
-    Args:
-        args (dict): Argument dictionary, with possible page_number and page_size keys
-
-    Returns (int, int): Return a tuple of (page_number, page_size)
-
-    """
-    page = args.get('page_number', 1)
-    page_size = args.get('page_size', DEFAULT_PAGE_SIZE)
-    err_msg_format = 'Error: Invalid {arg} value. "{val}" Is not a valid value. Please enter a positive integer.'
-    try:
-        page = int(page)
-        if page <= 0:
-            raise ValueError()
-    except (ValueError, TypeError):
-        return_error(err_msg_format.format(arg='page_number', val=page))
-    try:
-        page_size = int(page_size)
-        if page_size <= 0:
-            raise ValueError()
-    except (ValueError, TypeError):
-        return_error(err_msg_format.format(arg='page_size', val=page_size))
-    return page, page_size
-
-
-'''  Commands  '''
+    return tableToMarkdown(f'Test Results for {test_id}\n ### Page {page}/{tot_pages}', test_results_mod, keys)
 
 
 def get_test_results_command(args=demisto.args()):
@@ -371,7 +370,7 @@ def get_test_results_command(args=demisto.args()):
             'AttackIQTestResult(val.Count).Count': test_cnt,
             'AttackIQTestResult(val.RemainingPages).RemainingPages': remaining_pages
         }
-        hr = build_test_results_hr(test_res, test_id)
+        hr = build_test_results_hr(test_res, test_id, page, total_pages)
         return_outputs(hr, context, raw_test_res)
     except HTTPError as e:
         return_error(create_invalid_id_err_msg(str(e), ['500']))
@@ -430,15 +429,18 @@ def get_assessment_by_id_command():
         return_error(create_invalid_id_err_msg(str(e), ['403']))
 
 
-def build_tests_hr(tests_res):
+def build_tests_hr(tests_res, ass_id, page_num, tot_pages):
     """
     Creates tests human readable
     Args:
-        tests_res (list): Assignment ID
+        tot_pages (int): Total pages
+        page_num (int): Current page
+        ass_id (str): Assignment ID
+        tests_res (list): Transformed result of test
 
     Returns: Human readable string (md format) of tests
     """
-    hr = ''
+    hr = f'# Assessment {ass_id} tests\n## Page {page_num} / {tot_pages}\n'
     for test in tests_res:
         test = dict(test)
         assets = test.pop('Assets', {})
@@ -480,7 +482,7 @@ def list_tests_by_assessment_command():
         'AttackIQTest(val.Count).Count': test_cnt,
         'AttackIQTest(val.RemainingPages).RemainingPages': remaining_pages
     }
-    hr = build_tests_hr(tests_res)
+    hr = build_tests_hr(tests_res, ass_id, page, total_pages)
     return_outputs(hr, context, raw_res)
 
 
