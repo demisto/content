@@ -432,7 +432,9 @@ def tc_tag_indicator(indicator, tag, owners=None):
 
 def tc_get_indicator_command():
     args = demisto.args()
-    owners = args.get('owners')
+    owners = args.get('owners', demisto.params().get('defaultOrg'))
+    if not owners:
+        return_error('You must specify an owner in the command, or by using the Organization parameter.')
     rating_threshold = int(args.get('ratingThreshold', -1))
     confidence_threshold = int(args.get('confidenceThreshold', -1))
     indicator = args['indicator']
@@ -1299,6 +1301,360 @@ def tc_get_groups():
     )
 
 
+def get_group_request(group_type, group_id):
+    tc = get_client()
+    ro = RequestObject()
+    ro.set_http_method('GET')
+    ro.set_request_uri('/v2/groups/{}/{}'.format(group_type, group_id))
+
+    return tc.api_request(ro).json()
+
+
+def get_group():
+    """
+    Retrieve a single Group
+    """
+    group_type = demisto.args().get('group_type')
+    try:
+        group_id = int(demisto.args().get('group_id'))
+    except TypeError as t:
+        return_error('group_id must be a number', t)
+
+    response = get_group_request(group_type, group_id).get('data', {})
+    if group_type == 'adversaries':
+        data = response.get('adversarie', {})
+    if group_type == 'campaigns':
+        data = response.get('campaign', {})
+    if group_type == 'documents':
+        data = response.get('document', {})
+    if group_type == 'emails':
+        data = response.get('email', {})
+    if group_type == 'events':
+        data = response.get('event', {})
+    if group_type == 'incidents':
+        data = response.get('incident', {})
+    if group_type == 'intrusionSets':
+        data = response.get('intrusionSet', {})
+    if group_type == 'reports':
+        data = response.get('report', {})
+    if group_type == 'signatures':
+        data = response.get('signature', {})
+    if group_type == 'threats':
+        data = response.get('threat', {})
+
+    owner = {
+        'Name': data.get('owner').get('name'),
+        'ID': data.get('owner').get('id'),
+        'Type': data.get('owner').get('type')
+    }
+    contents = {
+        'ID': data.get('id'),
+        'Name': data.get('name'),
+        'Owner': owner,
+        'DateAdded': data.get('dateAdded'),
+        'EventDate': data.get('eventDate'),
+        'Status': data.get('status')
+    }
+
+    context = {
+        'TC.Group(val.ID && val.ID === obj.ID)': contents
+    }
+
+    return_outputs(
+        tableToMarkdown('ThreatConnect Group information', contents, removeNull=True),
+        context,
+        response
+    )
+
+
+def get_group_attributes_request(group_type, group_id):
+    tc = get_client()
+    ro = RequestObject()
+    ro.set_http_method('GET')
+    ro.set_request_uri('/v2/groups/{}/{}/attributes'.format(group_type, group_id))
+
+    return tc.api_request(ro).json()
+
+
+def get_group_attributes():
+    """
+    Retrieve a Group's Attributes
+    """
+    group_type = demisto.args().get('group_type')
+    try:
+        group_id = int(demisto.args().get('group_id'))
+    except TypeError as t:
+        return_error('group_id must be a number', t)
+    contents = []
+    headers = ['AttributeID', 'Type', 'Value', 'DateAdded', 'LastModified', 'Displayed']
+    response = get_group_attributes_request(group_type, group_id)
+    data = response.get('data', {}).get('attribute', [])
+
+    if response.get('status') == 'Success':
+        for attribute in data:
+            contents.append({
+                'GroupID': group_id,
+                'AttributeID': attribute.get('id'),
+                'Type': attribute.get('type'),
+                'Value': attribute.get('value'),
+                'DateAdded': attribute.get('dateAdded'),
+                'LastModified': attribute.get('lastModified'),
+                'Displayed': attribute.get('displayed')
+            })
+
+    else:
+        return_error(response.get('message'))
+
+    context = {
+        'TC.Group.Attribute(val.GroupID && val.GroupID === obj.GroupID && val.AttributeID && val.AttributeID ==='
+        ' obj.AttributeID)': contents
+    }
+
+    return_outputs(
+        tableToMarkdown('ThreatConnect Group Attributes', contents, headers, removeNull=True),
+        context,
+        response
+    )
+
+
+def get_group_security_labels_request(group_type, group_id):
+    tc = get_client()
+    ro = RequestObject()
+    ro.set_http_method('GET')
+    ro.set_request_uri('/v2/groups/{}/{}/securityLabels'.format(group_type, group_id))
+
+    return tc.api_request(ro).json()
+
+
+def get_group_security_labels():
+    """
+    Retrieve a Group's Security Labels
+    """
+    group_type = demisto.args().get('group_type')
+    try:
+        group_id = int(demisto.args().get('group_id'))
+    except TypeError as t:
+        return_error('group_id must be a number', t)
+    contents = []
+    headers = ['Name', 'Description', 'DateAdded']
+    response = get_group_security_labels_request(group_type, group_id)
+    data = response.get('data', {}).get('securityLabel', [])
+
+    if response.get('status') == 'Success':
+        for security_label in data:
+            contents.append({
+                'GroupID': group_id,
+                'Name': security_label.get('name'),
+                'Description': security_label.get('description'),
+                'DateAdded': security_label.get('dateAdded')
+            })
+
+    else:
+        return_error(response.get('message'))
+
+    context = {
+        'TC.Group.SecurityLabel(val.GroupID && val.GroupID === obj.GroupID && val.Name && val.Name === '
+        'obj.Name)': contents
+    }
+
+    return_outputs(
+        tableToMarkdown('ThreatConnect Group Security Labels', contents, headers, removeNull=True),
+        context
+    )
+
+
+def get_group_tags_request(group_type, group_id):
+    tc = get_client()
+    ro = RequestObject()
+    ro.set_http_method('GET')
+    ro.set_request_uri('/v2/groups/{}/{}/tags'.format(group_type, group_id))
+
+    return tc.api_request(ro).json()
+
+
+def get_group_tags():
+    """
+    Retrieve the Tags for a Group
+    """
+    group_type = demisto.args().get('group_type')
+    try:
+        group_id = int(demisto.args().get('group_id'))
+    except TypeError as t:
+        return_error('group_id must be a number', t)
+    contents = []
+    context_entries = []
+    response = get_group_tags_request(group_type, group_id)
+    data = response.get('data', {}).get('tag', [])
+
+    if response.get('status') == 'Success':
+        for tags in data:
+            contents.append({
+                'Name': tags.get('name')
+            })
+
+            context_entries.append({
+                'GroupID': group_id,
+                'Name': tags.get('name')
+            })
+    else:
+        return_error(response.get('message'))
+
+    context = {
+        'TC.Group.Tag(val.GroupID && val.GroupID === obj.GroupID && val.Name && val.Name === obj.Name)': context_entries
+    }
+
+    return_outputs(
+        tableToMarkdown('ThreatConnect Group Tags', contents, removeNull=True),
+        context,
+        response
+    )
+
+
+def get_group_indicator_request(group_type, group_id):
+    tc = get_client()
+    ro = RequestObject()
+    ro.set_http_method('GET')
+    ro.set_request_uri('/v2/groups/{}/{}/indicators'.format(group_type, group_id))
+
+    return tc.api_request(ro).json()
+
+
+def get_group_indicator():
+    """
+    View Indicators associated with a given Group
+    """
+    group_type = demisto.args().get('group_type')
+    try:
+        group_id = int(demisto.args().get('group_id'))
+    except TypeError as t:
+        return_error('group_id must be a number', t)
+    contents = []
+    response = get_group_indicator_request(group_type, group_id)
+    data = response.get('data', {}).get('indicator', [])
+
+    if response.get('status') == 'Success':
+        for indicator in data:
+            contents.append({
+                'GroupID': group_id,
+                'IndicatorID': indicator.get('id'),
+                'OwnerName': indicator.get('ownerName'),
+                'Type': indicator.get('type'),
+                'DateAdded': indicator.get('dateAdded'),
+                'LastModified': indicator.get('lastModified'),
+                'Rating': indicator.get('rating'),
+                'Confidence': indicator.get('confidence'),
+                'ThreatAssertRating': indicator.get('threatAssessRating'),
+                'ThreatAssessConfidence': indicator.get('threatAssessConfidence'),
+                'Summary': indicator.get('summary')
+            })
+
+    else:
+        return_error(response.get('message'))
+
+    context = {
+        'TC.Group.Indicator(val.GroupID && val.GroupID === obj.GroupID && val.IndicatorID && val.IndicatorID === '
+        'obj.IndicatorID)': contents
+    }
+
+    return_outputs(
+        tableToMarkdown('ThreatConnect Group Indicators', contents, removeNull=True),
+        context,
+        response
+    )
+
+
+def get_group_associated_request(group_type, group_id):
+    tc = get_client()
+    ro = RequestObject()
+    ro.set_http_method('GET')
+    ro.set_request_uri('/v2/groups/{}/{}/groups'.format(group_type, group_id))
+
+    return tc.api_request(ro).json()
+
+
+def get_group_associated():
+    """
+    View Indicators associated with a given Group
+    """
+    group_type = demisto.args().get('group_type')
+    try:
+        group_id = int(demisto.args().get('group_id'))
+    except TypeError as t:
+        return_error('group_id must be a number', t)
+    contents = []
+    headers = ['GroupID', 'Name', 'Type', 'OwnerName', 'DateAdded']
+    response = get_group_associated_request(group_type, group_id)
+    data = response.get('data', {}).get('group', [])
+
+    if response.get('status') == 'Success':
+        for group in data:
+            contents.append({
+                'GroupID': group.get('id'),
+                'Name': group.get('name'),
+                'Type': group.get('type'),
+                'DateAdded': group.get('dateAdded'),
+                'OwnerName': group.get('ownerName')
+            })
+
+    else:
+        return_error(response.get('message'))
+
+    context = {
+        'TC.Group.AssociatedGroup(val.GroupID && val.GroupID === obj.GroupID)': contents
+    }
+
+    return_outputs(
+        tableToMarkdown('ThreatConnect Associated Groups', contents, headers, removeNull=True),
+        context,
+        response
+    )
+
+
+def associate_group_to_group_request(group_type, group_id, associated_group_type, associated_group_id):
+    tc = get_client()
+    ro = RequestObject()
+    ro.set_http_method('POST')
+    ro.set_request_uri('/v2/groups/{}/{}/groups/{}/{}'.format(group_type, group_id, associated_group_type,
+                                                              associated_group_id))
+
+    return tc.api_request(ro).json()
+
+
+def associate_group_to_group():
+    """
+    Associate one Group with another
+    """
+
+    group_type = demisto.args().get('group_type')
+    associated_group_type = demisto.args().get('associated_group_type')
+    try:
+        group_id = int(demisto.args().get('group_id'))
+    except TypeError as t:
+        return_error('group_id must be a number', t)
+    try:
+        associated_group_id = int(demisto.args().get('associated_group_id'))
+    except TypeError as t:
+        return_error('associated_group_id must be a number', t)
+
+    response = associate_group_to_group_request(group_type, group_id, associated_group_type, associated_group_id)
+
+    if response.get('status') == 'Success':
+        context_entries = {
+            'GroupID': group_id,
+            'GroupType': group_type,
+            'AssociatedGroupID': associated_group_id,
+            'AssociatedGroupType': associated_group_type
+        }
+        context = {
+            'TC.Group.AssociatedGroup(val.GroupID && val.GroupID === obj.GroupID)': context_entries
+        }
+        return_outputs('The group {} was associated successfully.'.format(associated_group_id),
+                       context,
+                       response)
+    else:
+        return_error(response.get('message'))
+
+
 def create_document_group_request(contents, file_name, name, owner, res, malware, password, security_label,
                                   description):
     tc = get_client()
@@ -1355,6 +1711,43 @@ def create_document_group():
                    raw_document)
 
 
+def get_document_request(document_id):
+
+    tc = get_client()
+    documents = tc.documents()
+    # set a filter to retrieve only the Document with ID: 123456
+    filter1 = documents.add_filter()
+    filter1.add_id(document_id)
+    try:
+        # retrieve the Document
+        documents.retrieve()
+    except RuntimeError as e:
+        return_error('Error: {0}'.format(str(e)))
+
+    # iterate through the retrieved Documents (in this case there should only be one) and print its properties
+    for document in documents:
+        document.download()
+        if document.contents is not None:
+            return document
+        else:
+            return_error('No document was found.')
+
+
+def download_document():
+    """
+    Download the contents of a Document
+    """
+    try:
+        document_id = int(demisto.args().get('document_id'))
+    except TypeError as t:
+        return_error('document_id must be a number', t)
+    document = get_document_request(document_id)
+
+    file_name = document.file_name
+    file_content = document.contents
+    demisto.results(fileResult(file_name, file_content))
+
+
 def test_integration():
     tc = get_client()
     owners = tc.owners()
@@ -1396,7 +1789,15 @@ COMMANDS = {
     'tc-add-group-tag': add_group_tag,
     'tc-get-indicator-types': tc_get_indicator_types,
     'tc-group-associate-indicator': associate_indicator,
-    'tc-create-document-group': create_document_group
+    'tc-create-document-group': create_document_group,
+    'tc-get-group': get_group,
+    'tc-get-group-attributes': get_group_attributes,
+    'tc-get-group-security-labels': get_group_security_labels,
+    'tc-get-group-tags': get_group_tags,
+    'tc-download-document': download_document,
+    'tc-get-group-indicators': get_group_indicator,
+    'tc-get-associated-groups': get_group_associated,
+    'tc-associate-group-to-group': associate_group_to_group
 }
 
 try:
