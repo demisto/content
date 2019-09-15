@@ -191,6 +191,8 @@ def clean_python_code(script_code):
     script_code = script_code.replace("import demistomock as demisto", "")
     script_code = script_code.replace("from CommonServerPython import *", "")
     script_code = script_code.replace("from CommonServerUserPython import *", "")
+    # print function is imported in python loop
+    script_code = script_code.replace("from __future__ import print_function", "")
     return script_code
 
 
