@@ -125,8 +125,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '10'
-      description: The page size as set up in your attackIQ instance.
+      description: The max page size of the results.
       isArray: false
       name: page_size
       required: false
@@ -297,7 +296,6 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: '10'
       description: Max page size for the result.
       isArray: false
       name: page_size
@@ -379,6 +377,13 @@ script:
     - contextPath: AttackIQTest.UsingDefaultSchedule
       description: Does the test use the default schedule.
       type: Boolean
+    - contextPath: AttackIQTest.RemainingPages
+      description: Number of remaining pages left to fetch (e.g. if total pages is
+        6, and the last fetch was page 5, then this value will be 1)
+      type: Number
+    - contextPath: AttackIQTest.Count
+      description: Total number of tests.
+      type: Number
   - arguments:
     - default: false
       description: ID of the test to show results for.
@@ -401,7 +406,13 @@ script:
       defaultValue: '1'
       description: Page number of test results.
       isArray: false
-      name: page
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      description: The max page size of the results.
+      isArray: false
+      name: page_size
       required: false
       secret: false
     deprecated: false
@@ -457,6 +468,13 @@ script:
     - contextPath: AttackIQTestResult.Outcome.Name
       description: Test outcome result.
       type: String
+    - contextPath: AttackIQTestResult.RemainingPages
+      description: Number of remaining pages left to fetch (e.g. if total pages is
+        6, and the last fetch was page 5, then this value will be 1)
+      type: Number
+    - contextPath: AttackIQTestResult.Count
+      description: Total number of tests.
+      type: Number
   dockerimage: demisto/python3:3.7.4.1502
   isfetch: false
   longRunning: false

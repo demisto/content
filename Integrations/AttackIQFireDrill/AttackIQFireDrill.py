@@ -327,14 +327,20 @@ def get_page_number_and_page_size(args):
 
     """
     page = args.get('page_number', 1)
+    page_size = args.get('page_size', DEFAULT_PAGE_SIZE)
+    err_msg_format = 'Error: Invalid {arg} value. "{val}" Is not a valid value. Please enter a positive integer.'
     try:
         page = int(page)
+        if page <= 0:
+            raise ValueError()
     except (ValueError, TypeError):
-        return_error(f'Error: Invalid page_number value. {page} Is not valid. Please enter a positive integer.')
+        return_error(err_msg_format.format(arg='page_number', val=page))
     try:
-        page_size = int(args.get('page_size', DEFAULT_PAGE_SIZE))
+        page_size = int(page_size)
+        if page_size <= 0:
+            raise ValueError()
     except (ValueError, TypeError):
-        page_size = DEFAULT_PAGE_SIZE
+        return_error(err_msg_format.format(arg='page_size', val=page_size))
     return page, page_size
 
 
@@ -345,16 +351,28 @@ def get_test_results_command(args=demisto.args()):
     """ Implements attackiq-get-test-results command
     """
     test_id = args.get('test_id')
+    page, page_size = get_page_number_and_page_size(demisto.args())
     params = {
-        'page': args.get('page', '1'),
+        'page': page,
+        'page_size': page_size,
         'test_id': test_id,
         'show_last_result': args.get('show_last_result') == 'True'
     }
     try:
         raw_test_res = http_request('GET', '/v1/results', params=params)
         test_res = build_transformed_dict(raw_test_res['results'], TEST_RESULT_TRANS)
+        test_cnt = raw_test_res.get('count')
+        total_pages = math.ceil(test_cnt / page_size)
+        remaining_pages = total_pages - page
+        if remaining_pages < 0:
+            remaining_pages = 0
+        context = {
+            'AttackIQTestResult(val.Id === obj.Id)': test_res,
+            'AttackIQTestResult(val.Count).Count': test_cnt,
+            'AttackIQTestResult(val.RemainingPages).RemainingPages': remaining_pages
+        }
         hr = build_test_results_hr(test_res, test_id)
-        return_outputs(hr, {'AttackIQTestResult(val.Id === obj.Id)': test_res}, raw_test_res)
+        return_outputs(hr, context, raw_test_res)
     except HTTPError as e:
         return_error(create_invalid_id_err_msg(str(e), ['500']))
 
@@ -386,6 +404,8 @@ def list_assessments_command():
     ass_cnt = raw_assessments.get('count')
     total_pages = math.ceil(ass_cnt / page_size)
     remaining_pages = total_pages - page
+    if remaining_pages < 0:
+        remaining_pages = 0
     context = {
         'AttackIQ.Assessment(val.Id === obj.Id)': assessments_res,
         'AttackIQ.Assessment(val.Count).Count': ass_cnt,
@@ -410,26 +430,32 @@ def get_assessment_by_id_command():
         return_error(create_invalid_id_err_msg(str(e), ['403']))
 
 
-def build_tests_hr(assessment_res):
+def build_tests_hr(tests_res):
     """
     Creates tests human readable
     Args:
-        assessment_res (list): Assignment ID
+        tests_res (list): Assignment ID
 
     Returns: Human readable string (md format) of tests
     """
     hr = ''
-    for ass in assessment_res:
-        ass_cpy = dict(ass)
-        assets = ass_cpy.pop('Assets', {})
-        scenarios = ass_cpy.pop('Scenarios', {})
-        test_name = ass_cpy.get('Name')
-        hr += tableToMarkdown(f'Test - {test_name}', ass_cpy,
+    for test in tests_res:
+        test = dict(test)
+        assets = test.pop('Assets', {})
+        scenarios = test.pop('Scenarios', {})
+        test_name = test.get('Name')
+        hr += tableToMarkdown(f'Test - {test_name}', test,
                               headers=['Id', 'Name', 'Created', 'Modified', 'Runnable', 'LastResult'],
                               headerTransform=pascalToSpace)
         hr += tableToMarkdown(f'Assets ({test_name})', assets)
         hr += tableToMarkdown(f'Scenarios ({test_name})', scenarios)
+    if not hr:
+        hr = 'Found no tests'
     return hr
+
+
+def list_tests_by_assessment(params):
+    return http_request('GET', f'/v1/tests', params=params)
 
 
 def list_tests_by_assessment_command():
@@ -437,11 +463,18 @@ def list_tests_by_assessment_command():
     """
     page, page_size = get_page_number_and_page_size(demisto.args())
     ass_id = demisto.getArg('assessment_id')
-    raw_res = http_request('GET', f'/v1/tests', params={'project': ass_id})
+    params = {
+        'project': ass_id,
+        'page_size': page_size,
+        'page': page
+    }
+    raw_res = list_tests_by_assessment(params)
     test_cnt = raw_res.get('count')
     tests_res = build_transformed_dict(raw_res.get('results'), TESTS_TRANS)
     total_pages = math.ceil(test_cnt / page_size)
     remaining_pages = total_pages - page
+    if remaining_pages < 0:
+        remaining_pages = 0
     context = {
         'AttackIQTest(val.Id === obj.Id)': tests_res,
         'AttackIQTest(val.Count).Count': test_cnt,

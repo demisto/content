@@ -3,7 +3,7 @@ import pytest
 from AttackIQFireDrill import build_transformed_dict, activate_assessment_command, create_invalid_id_err_msg, \
     get_assessment_execution_status_command, get_test_execution_status_command, get_test_results_command, \
     list_assessments_command, get_assessment_by_id_command, list_tests_by_assessment_command, \
-    run_all_tests_in_assessment_command, get_page_number_and_page_size, DEFAULT_PAGE_SIZE
+    run_all_tests_in_assessment_command, get_page_number_and_page_size
 
 from test_data.constants import DICT_1to5, TRANS_DICT_134, DICT_NESTED_123, TRANS_DICT_NESTED_12, \
     TRANS_DICT_NESTED_VAL_12, DICT_LST_AAB2B, TRANS_DICT_LST_A2B, DICT_LST_NESTED, TRANS_DICT_LST_NESTED, \
@@ -74,14 +74,6 @@ def test_get_page_number_and_page_size_valid_str():
         'page_number': '4'
     }
     assert get_page_number_and_page_size(args) == (4, 5)
-
-
-def test_get_page_number_and_page_size_invalid_page_size():
-    args = {
-        'page_size': 'a',
-        'page_number': 5
-    }
-    assert get_page_number_and_page_size(args) == (args.get('page_number'), DEFAULT_PAGE_SIZE)
 
 
 @pytest.mark.parametrize('command,args,response,expected_result', [
