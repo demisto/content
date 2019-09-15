@@ -142,7 +142,7 @@
             "playbookID": "CompareIncidentsLabels-test-playbook"
         },
         {
-            "integrations": "Pwned",
+            "integrations": "Have I Been Pwned? V2",
             "playbookID": "Pwned test",
             "nightly": true
         },
@@ -1340,7 +1340,7 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned",
+                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Palo Alto Minemeld",
                 "Rasterize"
@@ -1352,7 +1352,7 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned",
+                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Palo Alto Minemeld",
                 "Rasterize"
@@ -1364,7 +1364,7 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned",
+                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Palo Alto Minemeld",
                 "Rasterize"
@@ -1376,7 +1376,7 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned",
+                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Palo Alto Minemeld",
                 "Rasterize"
@@ -1482,6 +1482,11 @@
             "playbookID": "TestShowScheduledEntries"
         },
         {
+            "playbookID": "Calculate Severity - Standard - Test",
+            "integrations": "Palo Alto Minemeld",
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "Symantec Advanced Threat Protection",
             "playbookID": "Symantec ATP Test"
 
@@ -1533,7 +1538,7 @@
         },
         {
             "playbookID": "EmailReputationTest",
-            "integrations": "Pwned"
+            "integrations": "Have I Been Pwned? V2"
         },
         {
             "integrations": "Symantec Deepsight Intelligence",
@@ -1859,7 +1864,10 @@
         "CarbonBlackLiveResponseTest": "Task: cb-session-create-and-wait fails (issue 18691)",
         "nexpose_test": "Failed to create site (issue 18694)",
         "Recorded Future Test": "Looks like a bug in the product, pending support answer (issue 18922)",
-        "IntSights Mssp Test": "Account Expired (issue #16351)"
+        "IntSights Mssp Test": "Account Expired (issue #16351)",
+        "CarbonBlackResponseTest": "Instance content has been altered causing test failure #19180",
+        "Pwned test": "API Deprecated, use Pwned test v2 instead",
+        "CheckPhish-Test": "Test is unstable, requires redesign #19188"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
