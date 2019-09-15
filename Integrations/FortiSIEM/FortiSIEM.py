@@ -17,6 +17,7 @@ VERIFY_SSL = not demisto.params().get('unsecure', False)
 HOST = demisto.params()['host']
 QUERY_URL = HOST + "/phoenix/rest/query/"
 REST_ADDRESS = HOST + "/phoenix/rest/h5"
+SESSION = requests.session()
 
 EXTENDED_KEYS = {}  # type: dict
 
@@ -31,9 +32,9 @@ def load_extended_keys():
         EXTENDED_KEYS = integration_context.get('extended_keys', {})
 
     if not EXTENDED_KEYS:
-        session = login()
+        login()
         url = REST_ADDRESS + '/eventAttributeType/all'
-        response = session.get(url, verify=VERIFY_SSL, auth=AUTH)
+        response = SESSION.get(url, verify=VERIFY_SSL, auth=AUTH)
         EXTENDED_KEYS = dict((attr['attributeId'], attr['displayName']) for attr in response.json())
 
         if demisto.command() != 'fetch-incidents':
@@ -70,10 +71,10 @@ def validateSuccessfulResponse(resp, error_text):
 
 @logger
 def login():
-    session = requests.session()
+    global SESSION
     login_url = HOST + '/phoenix/login-html.jsf'
 
-    response = session.get(login_url, verify=VERIFY_SSL)
+    response = SESSION.get(login_url, verify=VERIFY_SSL)
 
     # get the VIEW_STATE from the xml returned in the UI login page.
     p = re.compile('(value=".{1046}==")')
@@ -96,8 +97,17 @@ def login():
         'javax.faces.ViewState': VIEW_STATE
     }
 
-    response = session.post(login_url, headers=headers, data=data, verify=VERIFY_SSL)  # type: ignore
-    return session
+    response = SESSION.post(login_url, headers=headers, data=data, verify=VERIFY_SSL)  # type: ignore
+
+
+def logout():
+    """
+    Due to limited amount of simultaneous connections we log out after each API request.
+    Simple post request to /logout endpoint without params.
+    """
+    logout_url = HOST + '/logout.jsf'
+    params = {}  # type: dict
+    SESSION.post(logout_url, data=params, verify=VERIFY_SSL)
 
 
 def clear_incident_command():
@@ -111,12 +121,12 @@ def clear_incident_command():
 
 @logger
 def clear_incident(incident_id, reason):
-    session = login()
+    login()
     headers = {
         'Accept': 'application/json, text/plain, */*',
         'Content-Type': 'application/json'
     }
-    response = session.put(
+    response = SESSION.put(
         HOST + '/phoenix/rest/h5/incident/clear',
         params={'ids': [incident_id], 'user': USERNAME},
         headers=headers,
@@ -129,8 +139,8 @@ def clear_incident(incident_id, reason):
 
 @logger
 def getEventsByIncident(incident_id, max_results, extended_data, max_wait_time):
-    session = login()
-    response = session.get(HOST + '/phoenix/rest/h5/report/triggerEvent?rawMsg=' + incident_id)
+    login()
+    response = SESSION.get(HOST + '/phoenix/rest/h5/report/triggerEvent?rawMsg=' + incident_id)
     validateSuccessfulResponse(response, "triggering events report")
 
     try:
@@ -140,18 +150,18 @@ def getEventsByIncident(incident_id, max_results, extended_data, max_wait_time):
         return_error("Got wrong response format when triggering events report. "
                      "Expected a json array but got:\n" + response.text)
 
-    return getEventsByQuery(session, queryData, max_results, extended_data, max_wait_time,
+    return getEventsByQuery(queryData, max_results, extended_data, max_wait_time,
                             "FortiSIEM events for Incident " + incident_id, incident_id=incident_id)
 
 
 @logger
-def getEventsByQuery(session, queryData, max_results, extended_data, max_wait_time, tableTitle, incident_id=None):
+def getEventsByQuery(queryData, max_results, extended_data, max_wait_time, tableTitle, incident_id=None):
     headers = {
         'Accept': 'application/json, text/plain, */*',
         'Content-Type': 'application/json'
     }
 
-    response = session.post(REST_ADDRESS + '/report/run', headers=headers, data=json.dumps(queryData),
+    response = SESSION.post(REST_ADDRESS + '/report/run', headers=headers, data=json.dumps(queryData),
                             verify=VERIFY_SSL)
     validateSuccessfulResponse(response, "running report")
 
@@ -160,11 +170,11 @@ def getEventsByQuery(session, queryData, max_results, extended_data, max_wait_ti
     data = json.dumps(data)
 
     # poll until report progress reaches 100
-    response = session.post(REST_ADDRESS + '/report/reportProgress', headers=headers, data=data, verify=VERIFY_SSL)
+    response = SESSION.post(REST_ADDRESS + '/report/reportProgress', headers=headers, data=data, verify=VERIFY_SSL)
 
     # response contain the percentage of the report loading
     while response.text != "100" and max_wait_time > 0:
-        response = session.post(REST_ADDRESS + '/report/reportProgress', headers=headers, data=data, verify=VERIFY_SSL)
+        response = SESSION.post(REST_ADDRESS + '/report/reportProgress', headers=headers, data=data, verify=VERIFY_SSL)
         max_wait_time = int(max_wait_time) - 1
         time.sleep(1)
 
@@ -174,7 +184,7 @@ def getEventsByQuery(session, queryData, max_results, extended_data, max_wait_ti
         'allData': extended_data,
     }
 
-    response = session.post(REST_ADDRESS + '/report/resultByReport', params=params, headers=headers, data=data,
+    response = SESSION.post(REST_ADDRESS + '/report/resultByReport', params=params, headers=headers, data=data,
                             verify=VERIFY_SSL)
 
     try:
@@ -367,7 +377,7 @@ def buildQueryString(args):
 
 @logger
 def getEventsByFilter(maxResults, extendedData, maxWaitTime, reportWindow, reportWindowUnit):
-    session = login()
+    login()
 
     args = demisto.args()
     del args["maxResults"]
@@ -390,7 +400,6 @@ def getEventsByFilter(maxResults, extendedData, maxWaitTime, reportWindow, repor
         "custId": 1
     }
     return getEventsByQuery(
-        session,
         query_data,
         maxResults,
         extendedData,
@@ -466,7 +475,7 @@ def get_cmdb_devices(device_ip=None, limit=100):
 @logger
 def get_events_by_query(query, report_window="60", interval_type="Minute", limit="20", extended_data='false',
                         max_wait_time=60):
-    session = login()
+    login()
 
     query_data = {
         "isReportService": True,
@@ -481,7 +490,6 @@ def get_events_by_query(query, report_window="60", interval_type="Minute", limit
         "custId": 1
     }
     return getEventsByQuery(
-        session,
         query_data,
         limit,
         extended_data,
@@ -510,9 +518,9 @@ def get_lists_command():
 
 @logger
 def get_lists():
-    session = login()
+    login()
     url = REST_ADDRESS + '/group/resource'
-    response = session.get(url, verify=VERIFY_SSL, auth=AUTH)
+    response = SESSION.get(url, verify=VERIFY_SSL, auth=AUTH)
 
     return response.json()
 
@@ -540,13 +548,13 @@ def add_item_to_resource_list_command():
 
 @logger
 def add_item_to_resource_list(resource_type, group_id, object_info):
-    session = login()
+    login()
     url = '{}/{}/save'.format(REST_ADDRESS, resource_type)
     object_info['groupId'] = group_id
     object_info['active'] = True
     object_info['sysDefined'] = False
 
-    response = session.post(url, data=json.dumps(object_info), verify=VERIFY_SSL, auth=AUTH)
+    response = SESSION.post(url, data=json.dumps(object_info), verify=VERIFY_SSL, auth=AUTH)
     response = response.json()
 
     if response.get('code', 0) == -1:
@@ -567,10 +575,10 @@ def remove_item_from_resource_list_command():
 
 @logger
 def remove_item_from_resource_list(resource_type, deleted_ids):
-    session = login()
+    login()
     url = '{}/{}/del'.format(REST_ADDRESS, resource_type)
 
-    response = session.delete(url, params={'ids': json.dumps(deleted_ids)}, verify=VERIFY_SSL, auth=AUTH)
+    response = SESSION.delete(url, params={'ids': json.dumps(deleted_ids)}, verify=VERIFY_SSL, auth=AUTH)
 
     if response.text != '"OK"':
         return_error(response.text)
@@ -599,7 +607,7 @@ def get_resource_list_command():
 
 @logger
 def get_resource_list(resource_type, group_id):
-    session = login()
+    login()
     url = '{}/{}/list'.format(REST_ADDRESS, resource_type)
 
     params = {
@@ -608,7 +616,7 @@ def get_resource_list(resource_type, group_id):
         'size': 50,
     }
 
-    response = session.get(url, params=params, verify=VERIFY_SSL, auth=AUTH)
+    response = SESSION.get(url, params=params, verify=VERIFY_SSL, auth=AUTH)
     response = response.json()
 
     if response.get('code', 0) == -1:
@@ -704,6 +712,9 @@ def main():
             raise
         else:
             return_error(str(e))
+
+    finally:
+        logout()
 
 
 # python2 uses __builtin__ python3 uses builtins
