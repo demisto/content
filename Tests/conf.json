@@ -1856,7 +1856,8 @@
         "Recorded Future Test": "Looks like a bug in the product, pending support answer (issue 18922)",
         "IntSights Mssp Test": "Account Expired (issue #16351)",
         "CarbonBlackResponseTest": "Instance content has been altered causing test failure #19180",
-        "Pwned test": "API Deprecated, use Pwned test v2 instead"
+        "Pwned test": "API Deprecated, use Pwned test v2 instead",
+        "CheckPhish-Test": "Test is unstable, requires redesign #19188"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
