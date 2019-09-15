@@ -51,7 +51,7 @@ configuration:
   defaultvalue: "65"
   type: 0
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: unsecure
   defaultvalue: "true"
   type: 8
