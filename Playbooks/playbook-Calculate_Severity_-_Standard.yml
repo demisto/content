@@ -1196,4 +1196,4 @@ inputs:
   description: A list of DBotScores of indicators.
 outputs: []
 tests:
-  - Severity Reevaluation Based on Indicator Reputation - Test
+  - Calculate Severity - Standard - Test
