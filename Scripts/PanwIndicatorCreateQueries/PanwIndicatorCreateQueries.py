@@ -99,9 +99,9 @@ def generate_domain_queries(domains):
     queries = {}
 
     # Cortex Threat Domain
-    domain_fields = [" misc LIKE'{}'".format(domain) for domain in domains]
+    domain_fields = ["misc LIKE '{}'".format(domain) for domain in domains]
     query_cortex_threat_domain = ' OR '.join(domain_fields)
-    queries['CortexThreatDomain'] = 'SELECT * from panw.threat where {}'.format(query_cortex_threat_domain)
+    queries['CortexThreatDomain'] = 'SELECT * from panw.threat where{}'.format(query_cortex_threat_domain)
 
     # Autofocus Domain
     children = [{
