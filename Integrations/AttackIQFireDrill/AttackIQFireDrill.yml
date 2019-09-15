@@ -113,12 +113,13 @@ script:
       description: Total number of assessments.
       type: Number
     - contextPath: AttackIQ.Assessment.RemainingPages
-      description: Number of remaining pages left to fetch (e.g. if total pages is 6, and the last fetch was page 5, then this value will be 1)
+      description: Number of remaining pages left to fetch (e.g. if total pages is
+        6, and the last fetch was page 5, then this value will be 1)
       type: Number
   - arguments:
     - default: false
       defaultValue: '1'
-      description: Assessment page. Each page contains by default up to 10 assessments.
+      description: Assessment page to get.
       isArray: false
       name: page_number
       required: false
@@ -131,7 +132,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get all assessments in a page (up to 10 assessments per page).
+    description: Get all assessments in a page.
     execution: false
     name: attackiq-list-assessments
     outputs:
@@ -295,8 +296,22 @@ script:
       name: assessment_id
       required: true
       secret: false
+    - default: false
+      defaultValue: '10'
+      description: Max page size for the result.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: Page number to fetch.
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
     deprecated: false
-    description: Get assessment's test. Will get by default up to 10 test per call.
+    description: Get assessment's test. Will get up to page_size tests per call.
     execution: false
     name: attackiq-list-tests-by-assessment
     outputs:
@@ -384,15 +399,13 @@ script:
       secret: false
     - default: false
       defaultValue: '1'
-      description: Page number of test results (by default there are 10 results per
-        page).
+      description: Page number of test results.
       isArray: false
       name: page
       required: false
       secret: false
     deprecated: false
-    description: Get assessment's test result by page (by default, a page consists
-      of 10 tests).
+    description: Get assessment's test result by page.
     execution: false
     name: attackiq-get-test-results
     outputs:

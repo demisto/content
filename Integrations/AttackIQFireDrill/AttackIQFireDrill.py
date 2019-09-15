@@ -10,6 +10,7 @@ from json.decoder import JSONDecodeError
 import json
 import traceback
 import requests
+import math
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -316,6 +317,30 @@ def build_test_results_hr(test_results, test_id):
     return tableToMarkdown(f'Test Results for {test_id}', test_results_mod, keys)
 
 
+def get_page_number_and_page_size(args):
+    """
+    Get arguments page_number and page_size from args
+    Args:
+        args (dict): Argument dictionary, with possible page_number and page_size keys
+
+    Returns (int, int): Return a tuple of (page_number, page_size)
+
+    """
+    page = args.get('page_number', 1)
+    try:
+        page = int(page)
+    except (ValueError, TypeError):
+        return_error(f'Error: Invalid page_number value. {page} Is not valid. Please enter a positive integer.')
+    try:
+        page_size = int(args.get('page_size', DEFAULT_PAGE_SIZE))
+    except (ValueError, TypeError):
+        page_size = DEFAULT_PAGE_SIZE
+    return page, page_size
+
+
+'''  Commands  '''
+
+
 def get_test_results_command(args=demisto.args()):
     """ Implements attackiq-get-test-results command
     """
@@ -334,7 +359,7 @@ def get_test_results_command(args=demisto.args()):
         return_error(create_invalid_id_err_msg(str(e), ['500']))
 
 
-def get_assessments(page='1', assessment_id=None):
+def get_assessments(page='1', assessment_id=None, page_size=DEFAULT_PAGE_SIZE):
     """
     Fetches assessments from attackIQ
     Args:
@@ -343,28 +368,24 @@ def get_assessments(page='1', assessment_id=None):
 
     Returns: Assessments from attackIQ
     """
+    params = {
+        'page_size': page_size,
+        'page': page
+    }
     if assessment_id:
         return http_request('GET', f'/v1/assessments/{assessment_id}')
-    return http_request('GET', '/v1/assessments', params={'page': page})
+    return http_request('GET', '/v1/assessments', params=params)
 
 
 def list_assessments_command():
     """ Implements attackiq-list-assessments command
     """
-    page = demisto.args().get('page_number')
-    try:
-        page_size = int(demisto.args().get('page_size', DEFAULT_PAGE_SIZE))
-        page = int(page)
-    except (ValueError, TypeError):
-        page_size = DEFAULT_PAGE_SIZE
-    raw_assessments = get_assessments(page=page)
+    page, page_size = get_page_number_and_page_size(demisto.args())
+    raw_assessments = get_assessments(page=page, page_size=page_size)
     assessments_res = build_transformed_dict(raw_assessments.get('results'), ASSESSMENTS_TRANS)
     ass_cnt = raw_assessments.get('count')
-    total_pages = (ass_cnt // page_size) + 1
-    try:
-        remaining_pages = total_pages - page
-    except (ValueError, TypeError):
-        remaining_pages = None
+    total_pages = math.ceil(ass_cnt / page_size)
+    remaining_pages = total_pages - page
     context = {
         'AttackIQ.Assessment(val.Id === obj.Id)': assessments_res,
         'AttackIQ.Assessment(val.Count).Count': ass_cnt,
@@ -414,12 +435,20 @@ def build_tests_hr(assessment_res):
 def list_tests_by_assessment_command():
     """ Implements attackiq-list-tests-by-assessment command
     """
+    page, page_size = get_page_number_and_page_size(demisto.args())
     ass_id = demisto.getArg('assessment_id')
     raw_res = http_request('GET', f'/v1/tests', params={'project': ass_id})
-    assessment_res = build_transformed_dict(raw_res.get('results'), TESTS_TRANS)
-    ec = {'AttackIQTest(val.Id === obj.Id)': assessment_res}
-    hr = build_tests_hr(assessment_res)
-    return_outputs(hr, ec, raw_res)
+    test_cnt = raw_res.get('count')
+    tests_res = build_transformed_dict(raw_res.get('results'), TESTS_TRANS)
+    total_pages = math.ceil(test_cnt / page_size)
+    remaining_pages = total_pages - page
+    context = {
+        'AttackIQTest(val.Id === obj.Id)': tests_res,
+        'AttackIQTest(val.Count).Count': test_cnt,
+        'AttackIQTest(val.RemainingPages).RemainingPages': remaining_pages
+    }
+    hr = build_tests_hr(tests_res)
+    return_outputs(hr, context, raw_res)
 
 
 def run_all_tests_in_assessment_command():
