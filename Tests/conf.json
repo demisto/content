@@ -1858,7 +1858,8 @@
         "CarbonBlackLiveResponseTest": "Task: cb-session-create-and-wait fails (issue 18691)",
         "nexpose_test": "Failed to create site (issue 18694)",
         "Recorded Future Test": "Looks like a bug in the product, pending support answer (issue 18922)",
-        "IntSights Mssp Test": "Account Expired (issue #16351)"
+        "IntSights Mssp Test": "Account Expired (issue #16351)",
+        "CarbonBlackResponseTest": "Instance content has been altered causing test failure #19180"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
