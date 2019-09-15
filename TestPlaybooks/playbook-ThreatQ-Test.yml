@@ -36,7 +36,7 @@ tasks:
       id: 2807d534-00d5-44f1-8585-42ced959cf86
       version: -1
       name: Create adversary with sources
-      description: Create a new adversary in ThreatQ
+      description: Creates a new adversary in ThreatQ.
       script: ThreatQ v2|||threatq-create-adversary
       type: regular
       iscommand: true
@@ -45,13 +45,11 @@ tasks:
       '#none#':
       - "77"
     scriptarguments:
-      attr_lst: {}
-      attr_names_lst: {}
-      attr_vals: {}
-      attr_values_lst: {}
+      attribute_names: {}
+      attribute_values: {}
       name:
         simple: TestAdversary-26-08
-      source_lst:
+      sources:
         simple: Test Source,arian@demisto.com
     separatecontext: false
     view: |-
@@ -72,7 +70,7 @@ tasks:
       id: de88163c-a582-47c1-83c4-0af5e9fac30a
       version: -1
       name: Create an event
-      description: Create a new event in ThreatQ
+      description: Creates a new event in ThreatQ.
       script: ThreatQ v2|||threatq-create-event
       type: regular
       iscommand: true
@@ -81,13 +79,13 @@ tasks:
       '#none#':
       - "78"
     scriptarguments:
-      attr_names_lst: {}
-      attr_values_lst: {}
+      attributes_names: {}
+      attributes_values: {}
       date:
         simple: 2019-08-26 04:23:55
-      event_type:
+      type:
         simple: Watering Hole
-      source_lst: {}
+      sources: {}
       title:
         simple: NewEvent-26-08
     separatecontext: false
@@ -109,7 +107,7 @@ tasks:
       id: a0b45220-913a-4d06-8776-312f84a7800a
       version: -1
       name: Add an attribute to the event
-      description: Add an attribute to an object in ThreatQ
+      description: Adds an attribute to an object in ThreatQ.
       script: ThreatQ v2|||threatq-add-attribute
       type: regular
       iscommand: true
@@ -118,9 +116,9 @@ tasks:
       '#none#':
       - "49"
     scriptarguments:
-      attr_name:
+      name:
         simple: TestAttributeName
-      attr_value:
+      value:
         simple: TestAttributeValue
       obj_id:
         simple: ${ThreatQ.Event.ID}
@@ -145,7 +143,7 @@ tasks:
       id: 180b3bf6-d348-4a3e-82f3-5ad45d26479d
       version: -1
       name: Delete the event's attribute
-      description: Delete an attribute from an object in ThreatQ
+      description: Deletes an attribute from an object in ThreatQ.
       script: ThreatQ v2|||threatq-delete-attribute
       type: regular
       iscommand: true
@@ -154,7 +152,7 @@ tasks:
       '#none#':
       - "50"
     scriptarguments:
-      attr_id:
+      attribute_id:
         simple: ${ThreatQ.Event.Attribute.ID}
       obj_id:
         simple: ${ThreatQ.Event.ID}
@@ -179,7 +177,7 @@ tasks:
       id: 926336ab-6620-4ff9-8692-7cbd664af429
       version: -1
       name: Add a source to the adversary
-      description: Add a source to an object in ThreatQ
+      description: Adds a source to an object in ThreatQ.
       script: ThreatQ v2|||threatq-add-source
       type: regular
       iscommand: true
@@ -213,7 +211,7 @@ tasks:
       id: b022fdab-53d5-497d-8113-c0e1a0f48db9
       version: -1
       name: Delete a source of the adversary
-      description: Delete a source from an object in ThreatQ
+      description: Deletes a source from an object in ThreatQ.
       script: ThreatQ v2|||threatq-delete-source
       type: regular
       iscommand: true
@@ -263,8 +261,7 @@ tasks:
       id: b2163f04-7b34-4839-8190-9a6c6ee591b2
       version: -1
       name: Search the event by name
-      description: Search ThreatQ repository by keywords. Search result default limit
-        is 10 records.
+      description: Searches for objects by name in the ThreatQ repository.
       script: ThreatQ v2|||threatq-search-by-name
       type: regular
       iscommand: true
@@ -273,7 +270,7 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      keyword:
+      name:
         simple: NewEvent-01-08
       limit:
         simple: "7"
@@ -296,8 +293,8 @@ tasks:
       id: a0195294-69ed-4db0-82e0-d48e427463ab
       version: -1
       name: Search the event by ID
-      description: Search for an object by it's type and ID. When possible, generic
-        and DBotScore contexts will be generated as well.
+      description: Searches for an object by object type and ID. Generic
+        and DBotScore contexts also may be generated.
       script: ThreatQ v2|||threatq-search-by-id
       type: regular
       iscommand: true
@@ -328,8 +325,8 @@ tasks:
     task:
       id: c4196356-3d4b-4a88-89dc-9e949b6adf37
       version: -1
-      name: Update IOC status
-      description: Update an Indicator status in ThreatQ
+      name: Update indicator status
+      description: Updates an indicator status in ThreatQ.
       script: ThreatQ v2|||threatq-update-status
       type: regular
       iscommand: true
@@ -338,7 +335,7 @@ tasks:
       '#none#':
       - "68"
     scriptarguments:
-      ioc_id:
+      id:
         complex:
           root: ThreatQ
           accessor: Indicator.ID
@@ -362,8 +359,8 @@ tasks:
     task:
       id: 15df2812-c1e8-4437-8788-f94c82b4f797
       version: -1
-      name: Link event + IOC
-      description: Link between two objects in ThreatQ
+      name: Link event + indicator
+      description: Links two objects together in ThreatQ.
       script: ThreatQ v2|||threatq-link-objects
       type: regular
       iscommand: true
@@ -405,7 +402,7 @@ tasks:
       version: -1
       name: Run generic command - domain
       description: |-
-        Run domain check against ThreatQ
+        Checks the reputation of a domain in ThreatQ.
 
         The domain should be marked as malicious since its TQ score is greater than 7.
       script: ThreatQ v2|||domain
@@ -443,7 +440,7 @@ tasks:
       id: b9b9b2c4-39df-4565-808a-7df4d3fef940
       version: -1
       name: Run generic command - ip
-      description: Run ip check against ThreatQ
+      description: Checks the reputation of an IP address in ThreatQ.
       script: ThreatQ v2|||ip
       type: regular
       iscommand: true
@@ -513,7 +510,7 @@ tasks:
       id: d812e621-6133-4e72-8764-2cbbf43c5a83
       version: -1
       name: Run generic command - email
-      description: Run email check against ThreatQ
+      description: Checks the reputation of an email address in ThreatQ.
       script: ThreatQ v2|||email
       type: regular
       iscommand: true
@@ -543,7 +540,7 @@ tasks:
       id: c0430cde-47c3-4d03-850e-ac25aca85f8a
       version: -1
       name: Run generic command - file
-      description: Run file check against ThreatQ
+      description: Checks the reputation of a file in ThreatQ.
       script: ThreatQ v2|||file
       type: regular
       iscommand: true
@@ -577,7 +574,7 @@ tasks:
       id: f2fa6bac-2289-4042-8002-9b82cf3c7b18
       version: -1
       name: Run generic command - url
-      description: Run url check against ThreatQ
+      description: Checks the reputation of a URL in ThreatQ.
       script: ThreatQ v2|||url
       type: regular
       iscommand: true
@@ -918,9 +915,9 @@ tasks:
     task:
       id: fa3630eb-4884-42b9-89c5-a7562a743665
       version: -1
-      name: Create IOC with attributes
-      description: Create a new indicator in ThreatQ
-      script: ThreatQ v2|||threatq-create-ioc
+      name: Create indicator with attributes
+      description: Creates a new indicator in ThreatQ.
+      script: ThreatQ v2|||threatq-create-indicator
       type: regular
       iscommand: true
       brand: ThreatQ v2
@@ -928,17 +925,13 @@ tasks:
       '#none#':
       - "83"
     scriptarguments:
-      attr_lst:
+      attributes_names:
         simple: test_attr,another Attr
-      attr_names_lst:
-        simple: test_attr,another Attr
-      attr_vals:
+      attributes_values:
         simple: test_attr_val,another Value
-      attr_values_lst:
-        simple: test_attr_val,another Value
-      ioc_type:
+      type:
         simple: String
-      source_lst: {}
+      sources: {}
       status:
         simple: Indirect
       value:
@@ -995,8 +988,8 @@ tasks:
     task:
       id: f65ce789-3f7e-4841-87cf-cf3c09f710c0
       version: -1
-      name: Get IOC related events
-      description: Get related Events in ThreatQ
+      name: Get indicator related events
+      description: Retrieves related events of an object in ThreatQ.
       script: ThreatQ v2|||threatq-get-related-events
       type: regular
       iscommand: true
@@ -1109,7 +1102,7 @@ tasks:
       id: c01902fe-5c0b-43fd-8acc-dce41f2c56b8
       version: -1
       name: Modify the event's attribute
-      description: Modify an attribute on an object in ThreatQ
+      description: Modifies an attribute for an object in ThreatQ.
       script: ThreatQ v2|||threatq-modify-attribute
       type: regular
       iscommand: true
@@ -1118,11 +1111,11 @@ tasks:
       '#none#':
       - "51"
     scriptarguments:
-      attr_id:
+      attribute_id:
         complex:
           root: ThreatQ
           accessor: Event.Attribute.ID
-      attr_value:
+      attribute_value:
         simple: NewAttr
       obj_id:
         simple: ${ThreatQ.Event.ID}
@@ -1195,8 +1188,8 @@ tasks:
       id: 6b5af6f1-2ef8-430f-8875-cac21b804a15
       version: -1
       name: Update context (search by ID)
-      description: Search for an object by it's type and ID. When possible, generic
-        and DBotScore contexts will be generated as well.
+      description: Searches for an object by object type and ID. Generic
+        and DBotScore contexts also may be generated.
       script: ThreatQ v2|||threatq-search-by-id
       type: regular
       iscommand: true
@@ -1228,8 +1221,8 @@ tasks:
       id: d94357b4-93b6-42f7-8913-00310929b726
       version: -1
       name: Update context (search by ID)
-      description: Search for an object by it's type and ID. When possible, generic
-        and DBotScore contexts will be generated as well.
+      description: Searches for an object by object type and ID. Generic
+        and DBotScore contexts also may be generated.
       script: ThreatQ v2|||threatq-search-by-id
       type: regular
       iscommand: true
@@ -1309,8 +1302,8 @@ tasks:
       id: 91675e65-1cf7-4bec-83ac-6e72216fc7b0
       version: -1
       name: Update context (search by ID)
-      description: Search for an object by it's type and ID. When possible, generic
-        and DBotScore contexts will be generated as well.
+      description: Searches for an object by object type and ID. Generic
+        and DBotScore contexts also may be generated.
       script: ThreatQ v2|||threatq-search-by-id
       type: regular
       iscommand: true
@@ -1342,8 +1335,8 @@ tasks:
       id: d4e2ddf7-0f8d-4881-8562-17b0334ce96e
       version: -1
       name: Update context (search by ID)
-      description: Search for an object by it's type and ID. When possible, generic
-        and DBotScore contexts will be generated as well.
+      description: Searches for an object by object type and ID. Generic
+        and DBotScore contexts also may be generated.
       script: ThreatQ v2|||threatq-search-by-id
       type: regular
       iscommand: true
@@ -1423,8 +1416,8 @@ tasks:
       id: f7021f70-14b8-4f0c-87e5-ebe02d16d2ec
       version: -1
       name: Update context (search by ID)
-      description: Search for an object by it's type and ID. When possible, generic
-        and DBotScore contexts will be generated as well.
+      description: Searches for an object by object type and ID. Generic
+        and DBotScore contexts also may be generated.
       script: ThreatQ v2|||threatq-search-by-id
       type: regular
       iscommand: true
@@ -1504,7 +1497,7 @@ tasks:
       id: 25f6ac61-aa60-41ba-8f87-b6b9952cdf19
       version: -1
       name: Delete event
-      description: Delete an object in ThreatQ
+      description: Deletes an object in ThreatQ.
       script: ThreatQ v2|||threatq-delete-object
       type: regular
       iscommand: true
@@ -1536,8 +1529,7 @@ tasks:
       id: f880b1de-d9f6-4984-8f9b-884aab039f3a
       version: -1
       name: Update context  - event (Search by name)
-      description: Search ThreatQ repository by keywords. Search result default limit
-        is 10 records.
+      description: Searches for objects by name in the ThreatQ repository.
       script: ThreatQ v2|||threatq-search-by-name
       type: regular
       iscommand: true
@@ -1546,7 +1538,7 @@ tasks:
       '#none#':
       - "71"
     scriptarguments:
-      keyword:
+      name:
         simple: NewEvent-01-08
       limit: {}
     separatecontext: false
@@ -1601,7 +1593,7 @@ tasks:
     task:
       id: bfa1f73b-ef2a-48c8-81ce-ec91afd4dea7
       version: -1
-      name: Verify deletion - event + IOC
+      name: Verify deletion - event + indicator
       type: condition
       iscommand: false
       brand: ""
@@ -1636,8 +1628,8 @@ tasks:
       id: b08f994d-6982-4c24-8abc-8709cdc4570a
       version: -1
       name: Get event related indicators
-      description: Get related Indicators in ThreatQ
-      script: ThreatQ v2|||threatq-get-related-ioc
+      description: Retrieves related indicators for an object in ThreatQ.
+      script: ThreatQ v2|||threatq-get-related-indicators
       type: regular
       iscommand: true
       brand: ThreatQ v2
@@ -1712,8 +1704,8 @@ tasks:
     task:
       id: 0be58e57-b5f9-42a7-89fe-e1fb27589e37
       version: -1
-      name: Unlink event + IOC
-      description: Unlink two objects in ThreatQ
+      name: Unlink event + indicator
+      description: Unlinks two objects in ThreatQ.
       script: ThreatQ v2|||threatq-unlink-objects
       type: regular
       iscommand: true
@@ -1777,8 +1769,8 @@ tasks:
     task:
       id: 7a03a750-5e54-4f4b-83aa-51112e9e10fb
       version: -1
-      name: Get IOC related events
-      description: Get related Events in ThreatQ
+      name: Get indicator related events
+      description: Retrieves related events of an object in ThreatQ.
       script: ThreatQ v2|||threatq-get-related-events
       type: regular
       iscommand: true
@@ -1856,9 +1848,9 @@ tasks:
     task:
       id: 141947ba-78d7-4ba4-8fbd-345dd60e9c1a
       version: -1
-      name: Update context - IOC (search by ID)
-      description: Search for an object by it's type and ID. When possible, generic
-        and DBotScore contexts will be generated as well.
+      name: Update context - indicator (search by ID)
+      description: Searches for an object by object type and ID. Generic
+        and DBotScore contexts also may be generated.
       script: ThreatQ v2|||threatq-search-by-id
       type: regular
       iscommand: true
@@ -1891,7 +1883,7 @@ tasks:
       id: 03ac0dc2-a598-4dbe-893b-474faec3e0a4
       version: -1
       name: Delete the adversary
-      description: Delete an object in ThreatQ
+      description: Deletes an object in ThreatQ.
       script: ThreatQ v2|||threatq-delete-object
       type: regular
       iscommand: true
@@ -1922,8 +1914,8 @@ tasks:
     task:
       id: 8dd84c4a-b2d8-4c16-8762-8ca5553e6d95
       version: -1
-      name: Delete IOC
-      description: Delete an object in ThreatQ
+      name: Delete indicator
+      description: Deletes an object in ThreatQ.
       script: ThreatQ v2|||threatq-delete-object
       type: regular
       iscommand: true
@@ -1954,9 +1946,8 @@ tasks:
     task:
       id: eca25919-2e8b-4606-8282-3a5a7ae171c0
       version: -1
-      name: Update context  - IOC (Search by name)
-      description: Search ThreatQ repository by keywords. Search result default limit
-        is 10 records.
+      name: Update context  - indicator (Search by name)
+      description: Searches for objects by name in the ThreatQ repository.
       script: ThreatQ v2|||threatq-search-by-name
       type: regular
       iscommand: true
@@ -1965,7 +1956,7 @@ tasks:
       '#none#':
       - "61"
     scriptarguments:
-      keyword:
+      name:
         simple: 9.9.4.4
       limit: {}
     separatecontext: false
@@ -2022,8 +2013,8 @@ tasks:
       id: 1aa202d2-a33a-458a-816f-7192859c9ae6
       version: -1
       name: Get event related indicators
-      description: Get related Indicators in ThreatQ
-      script: ThreatQ v2|||threatq-get-related-ioc
+      description: Retrieves related indicators for an object in ThreatQ.
+      script: ThreatQ v2|||threatq-get-related-indicators
       type: regular
       iscommand: true
       brand: ThreatQ v2
@@ -2078,8 +2069,7 @@ tasks:
       id: 52d06846-7778-42ef-8ad7-46baa813f6b5
       version: -1
       name: Update context  - event (Search by name)
-      description: Search ThreatQ repository by keywords. Search result default limit
-        is 10 records.
+      description: Searches for objects by name in the ThreatQ repository.
       script: ThreatQ v2|||threatq-search-by-name
       type: regular
       iscommand: true
@@ -2088,7 +2078,7 @@ tasks:
       '#none#':
       - "73"
     scriptarguments:
-      keyword:
+      name:
         simple: NewEvent-01-08
       limit:
         simple: "7"
@@ -2110,9 +2100,8 @@ tasks:
     task:
       id: 824856ab-768b-4340-887d-0f99e5a3e4f3
       version: -1
-      name: Update context  - IOC (Search by name)
-      description: Search ThreatQ repository by keywords. Search result default limit
-        is 10 records.
+      name: Update context - indicator (Search by name)
+      description: Searches for objects by name in the ThreatQ repository.
       script: ThreatQ v2|||threatq-search-by-name
       type: regular
       iscommand: true
@@ -2121,7 +2110,7 @@ tasks:
       '#none#':
       - "66"
     scriptarguments:
-      keyword:
+      name:
         simple: 9.9.4.4
       limit:
         simple: "7"
@@ -2144,7 +2133,7 @@ tasks:
       id: dd25bd58-8007-4d8c-8909-15f8b72580ec
       version: -1
       name: Edit adversary
-      description: Update an adversary name in ThreatQ
+      description: Updates an adversary name in ThreatQ.
       script: ThreatQ v2|||threatq-edit-adversary
       type: regular
       iscommand: true
@@ -2153,7 +2142,7 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      adversary_id:
+      id:
         simple: ${ThreatQ.Adversary.ID}
       name:
         simple: TestAdversary-01-08
@@ -2176,7 +2165,7 @@ tasks:
       id: 7b3cab6d-baaf-4720-81cb-0e54d3b9d561
       version: -1
       name: Edit event
-      description: Update an event in ThreatQ
+      description: Updates an event in ThreatQ.
       script: ThreatQ v2|||threatq-edit-event
       type: regular
       iscommand: true
@@ -2188,9 +2177,9 @@ tasks:
       date:
         simple: ${ThreatQ.Event.CreatedAt}
       description: {}
-      event_id:
+      id:
         simple: ${ThreatQ.Event.ID}
-      event_type:
+      type:
         simple: Malware
       title:
         simple: NewEvent-01-08
@@ -2250,9 +2239,9 @@ tasks:
     task:
       id: 64eebac2-aa10-4095-8a95-230efdad7c1f
       version: -1
-      name: Update IOC score
-      description: Modify an indicator's score in ThreatQ. Notice that final TQ Score
-        would be the maximum between manual and generated scores.
+      name: Update indicator score
+      description: Modifies an indicator's score in ThreatQ. The final indicator score is the highest of
+        the manual and generated scores.
       script: ThreatQ v2|||threatq-update-score
       type: regular
       iscommand: true
@@ -2261,7 +2250,7 @@ tasks:
       '#none#':
       - "68"
     scriptarguments:
-      ioc_id:
+      id:
         simple: ${ThreatQ.Indicator.ID}
       score:
         simple: "8"
@@ -2319,9 +2308,9 @@ tasks:
     task:
       id: 87a0ebe5-76ab-4596-836c-0c2d834d7706
       version: -1
-      name: Edit IOC
-      description: Update an indicator in ThreatQ.
-      script: ThreatQ v2|||threatq-edit-ioc
+      name: Edit indicator
+      description: Updates an indicator in ThreatQ.
+      script: ThreatQ v2|||threatq-edit-indicator
       type: regular
       iscommand: true
       brand: ThreatQ v2
@@ -2330,9 +2319,9 @@ tasks:
       - "84"
     scriptarguments:
       description: {}
-      ioc_id:
+      id:
         simple: ${ThreatQ.Indicator.ID}
-      ioc_type:
+      type:
         simple: IP Address
       value: {}
     separatecontext: false
@@ -2353,7 +2342,7 @@ tasks:
     task:
       id: 9f6d5318-ba23-4b8f-8e99-fef051b1f13e
       version: -1
-      name: Verify IOC editing
+      name: Verify indicator editing
       type: condition
       iscommand: false
       brand: ""
@@ -2469,7 +2458,7 @@ tasks:
       id: 8c264b7e-3ada-4a0c-80e5-0433dc9f5355
       version: -1
       name: Upload file to ThreatQ
-      description: Upload a file in ThreatQ
+      description: Uploads a file in ThreatQ.
       script: ThreatQ v2|||threatq-upload-file
       type: regular
       iscommand: true
@@ -2480,7 +2469,7 @@ tasks:
     scriptarguments:
       entry_id:
         simple: ${File.EntryID}
-      file_type:
+      file_category:
         simple: Cuckoo
       malware_safety_lock:
         simple: "off"
@@ -2506,7 +2495,7 @@ tasks:
       id: ee92e8b4-be5d-46c6-8f73-adbe909527de
       version: -1
       name: Delete the file
-      description: Delete an object in ThreatQ
+      description: Deletes an object in ThreatQ.
       script: ThreatQ v2|||threatq-delete-object
       type: regular
       iscommand: true
@@ -2538,7 +2527,7 @@ tasks:
       id: cd845bbe-0944-44ad-8a85-4c4d88795eb4
       version: -1
       name: Download file
-      description: Download a file from ThreatQ to Demisto
+      description: Downloads a file from ThreatQ to Demisto.
       script: ThreatQ v2|||threatq-download-file
       type: regular
       iscommand: true
@@ -2547,7 +2536,7 @@ tasks:
       '#none#':
       - "88"
     scriptarguments:
-      file_id:
+      id:
         simple: ${ThreatQ.File.ID}
     separatecontext: false
     view: |-
@@ -2568,8 +2557,8 @@ tasks:
       id: c9253612-39a3-4d24-8394-4924a204159a
       version: -1
       name: Get all indicators
-      description: Get all indicators in ThreatQ
-      script: ThreatQ v2|||threatq-get-all-iocs
+      description: Retrieves all indicators in ThreatQ.
+      script: ThreatQ v2|||threatq-get-all-indicators
       type: regular
       iscommand: true
       brand: ThreatQ v2
@@ -2598,7 +2587,7 @@ tasks:
       id: a1c94de0-17a8-41ce-80c1-d33689961cd0
       version: -1
       name: Get all adveraries
-      description: Get all adversaries in ThreatQ
+      description: Retrieves all adversaries in ThreatQ.
       script: ThreatQ v2|||threatq-get-all-adversaries
       type: regular
       iscommand: true
@@ -2628,7 +2617,7 @@ tasks:
       id: 3bd4a3ee-1982-4759-8225-5b8d9c7d151d
       version: -1
       name: Get all events
-      description: Get all events in ThreatQ
+      description: Retrieves all events in ThreatQ.
       script: ThreatQ v2|||threatq-get-all-events
       type: regular
       iscommand: true
