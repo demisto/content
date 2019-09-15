@@ -1504,8 +1504,8 @@ def search_mail():
         search_params['end'] = end
     if message_id:
         search_params['messageId'] = message_id
-    if mail_from_:
-        advanced_params['from'] = mail_from_
+    if mail_from:
+        advanced_params['from'] = mail_from
     if mail_to:
         advanced_params['to'] = mail_to
     if subject:
