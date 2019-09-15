@@ -509,12 +509,12 @@ tasks:
           right:
             value:
               simple: Test_playbook_address2_DO_NOT_DELETE
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               complex:
                 root: Panorama
-                accessor: Addresses.Tag
+                accessor: Addresses.Tags
             iscontext: true
           right:
             value:
