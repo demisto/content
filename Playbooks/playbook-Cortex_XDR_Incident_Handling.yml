@@ -179,7 +179,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "36"
+      - "38"
       "yes":
       - "31"
     separatecontext: false
@@ -220,7 +220,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "36"
+      - "38"
     scriptarguments:
       coverage: {}
       filter_data: {}
@@ -459,7 +459,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "36"
+      - "38"
       "yes":
       - "15"
     separatecontext: false
@@ -569,16 +569,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "36":
-    id: "36"
-    taskid: 69f4ffc5-4337-42c4-84c4-14d7c5bd6072
+  "38":
+    id: "38"
+    taskid: 5cad4ba7-6c85-4f82-8ed3-734fd059eb25
     type: playbook
     task:
-      id: 69f4ffc5-4337-42c4-84c4-14d7c5bd6072
+      id: 5cad4ba7-6c85-4f82-8ed3-734fd059eb25
       version: -1
-      name: Severity Reevaluation Based on Indicator Reputation
-      playbookName: Severity Reevaluation Based on Indicator Reputation
-      description: ""
+      name: Calculate Severity - Standard
+      playbookName: Calculate Severity - Standard
       type: playbook
       iscommand: false
       brand: ""
@@ -600,9 +599,9 @@ view: |-
   {
     "linkLabelsPosition": {
       "12_31_yes": 0.6,
-      "12_36_#default#": 0.72,
+      "12_38_#default#": 0.71,
       "31_15_yes": 0.66,
-      "31_36_#default#": 0.31
+      "31_38_#default#": 0.3
     },
     "paper": {
       "dimensions": {
