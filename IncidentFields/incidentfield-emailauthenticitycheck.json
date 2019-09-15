@@ -5,7 +5,7 @@
     "name": "Email Authenticity Check",
     "ownerOnly": false,
     "placeholder": "",
-    "description": "The verdict regarding the authenticity of the email. This check is done using the CheckEmailAuthenticity script.",
+    "description": "Indicates the authenticity of the email. This check is done using the CheckEmailAuthenticity script.",
     "cliName": "emailauthenticitycheck",
     "type": "singleSelect",
     "closeForm": false,
