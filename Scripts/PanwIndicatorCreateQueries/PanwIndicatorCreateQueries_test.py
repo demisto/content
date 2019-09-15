@@ -23,7 +23,7 @@ def test_generate_hash_queries():
     }
     expected2 = {
         'CortexTrapsHash': "SELECT * from tms.threat where messageData.files.sha256='ababababababababab' OR "
-                           "messageData.files.sha256 ='cbcbcbcbcbcbcbcbcb'"
+                           "messageData.files.sha256='cbcbcbcbcbcbcbcbcb'"
     }
     queries1_1 = generate_hash_queries(['ababababababababab'])
     queries2_1 = generate_hash_queries(['ababababababababab', 'cbcbcbcbcbcbcbcbcb'])
