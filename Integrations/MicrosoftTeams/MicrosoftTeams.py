@@ -11,6 +11,8 @@ import time
 from threading import Thread
 from typing import Match, Union, Optional, cast, Dict, Any, List
 import re
+from jwt.algorithms import RSAAlgorithm
+from tempfile import NamedTemporaryFile
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -537,46 +539,86 @@ def validate_auth_header(headers: dict) -> bool:
     scehma: str = parts[0]
     jwt_token: str = parts[1]
     if scehma != 'Bearer' or not jwt_token:
+        demisto.info('Authorization header validation - failed to verify schema')
         return False
+
     decoded_payload: dict = jwt.decode(jwt_token, verify=False)
     issuer: str = decoded_payload.get('iss', '')
     if issuer != 'https://api.botframework.com':
+        demisto.info('Authorization header validation - failed to verify issuer')
         return False
-    # integration_context: dict = demisto.getIntegrationContext()
-    # open_id_metadata: dict = integration_context.get('open_id_metadata', {})
-    # keys: list = open_id_metadata.get('keys', [])
-    # last_updated: int = open_id_metadata.get('last_updated', 0)
-    # if last_updated < datetime.timestamp(datetime.now() + timedelta(days=5)):
-    #     open_id_url: str = 'https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration'
-    #     response: dict = http_request('GET', open_id_url, api='bot')
-    #     jwks_uri: str = response.get('jwks_uri', '')
-    #     keys_response: dict = http_request('GET', jwks_uri, api='bot')
-    #     keys = keys_response.get('keys', [])
-    #     last_updated = datetime.timestamp(datetime.now())
-    #     open_id_metadata['keys'] = keys
-    #     open_id_metadata['last_updated'] = last_updated
-    # if not keys:
-    #     return False
-    # unverified_headers: dict = jwt.get_unverified_header(jwt_token)
-    # key_id: str = unverified_headers.get('kid', '')
-    # key_object: dict = dict()
-    # for key in keys:
-    #     if key.get('kid') == key_id:
-    #         key_object = key
-    #         break
-    # if not key_object:
-    #     return False
-    # public_key: str = RSAAlgorithm.from_jwk(json.dumps(key_object))
-    # options = {
-    #     'verify_aud': False,
-    #     'verify_exp': True
-    # }
-    # decoded_payload = jwt.decode(jwt_token, public_key, options=options)
+
+    integration_context: dict = demisto.getIntegrationContext()
+    open_id_metadata: dict = json.loads(integration_context.get('open_id_metadata', '{}'))
+    keys: list = open_id_metadata.get('keys', [])
+
+    unverified_headers: dict = jwt.get_unverified_header(jwt_token)
+    key_id: str = unverified_headers.get('kid', '')
+    key_object: dict = dict()
+
+    # Check if we got the requested key in cache
+    for key in keys:
+        if key.get('kid') == key_id:
+            key_object = key
+            break
+
+    if not key_object:
+        # Didn't find requested key in cache, getting new keys
+        try:
+            open_id_url: str = 'https://login.botframework.com/v1/.well-known/openidconfiguration'
+            response: requests.Response = requests.get(open_id_url, verify=USE_SSL)
+            if not response.ok:
+                demisto.info(f'Authorization header validation failed to fetch open ID config - {response.reason}')
+                return False
+            response_json: dict = response.json()
+            jwks_uri: str = response_json.get('jwks_uri', '')
+            keys_response: requests.Response = requests.get(jwks_uri, verify=USE_SSL)
+            if not keys_response.ok:
+                demisto.info(f'Authorization header validation failed to fetch keys - {response.reason}')
+                return False
+            keys_response_json: dict = keys_response.json()
+            keys = keys_response_json.get('keys', [])
+            open_id_metadata['keys'] = keys
+        except ValueError:
+            demisto.info('Authorization header validation - failed to parse keys response')
+            return False
+
+    if not keys:
+        # Didn't get new keys
+        demisto.info('Authorization header validation - failed to get keys')
+        return False
+
+    # Find requested key in new keys
+    for key in keys:
+        if key.get('kid') == key_id:
+            key_object = key
+            break
+
+    if not key_object:
+        # Didn't find requested key in new keys
+        demisto.info('Authorization header validation - failed to find relevant key')
+        return False
+
+    endorsements: list = key_object.get('endorsements', [])
+    if not endorsements or 'msteams' not in endorsements:
+        demisto.info('Authorization header validation - failed to verify endorsements')
+        return False
+
+    public_key: str = RSAAlgorithm.from_jwk(json.dumps(key_object))
+    options = {
+        'verify_aud': False,
+        'verify_exp': True
+    }
+    decoded_payload = jwt.decode(jwt_token, public_key, options=options)
+
     audience_claim: str = decoded_payload.get('aud', '')
     if audience_claim != demisto.params().get('bot_id'):
+        demisto.info('Authorization header validation - failed to verify audience_claim')
         return False
-    # integration_context['open_id_metadata'] = json.dumps(open_id_metadata)
-    # demisto.setIntegrationContext(integration_context)
+
+    integration_context['open_id_metadata'] = json.dumps(open_id_metadata)
+    demisto.setIntegrationContext(integration_context)
+
     return True
 
 
@@ -1330,6 +1372,10 @@ def long_running_loop():
     """
     The infinite loop which runs the mirror loop and the bot app in two different threads
     """
+
+    certificate: str = demisto.params().get('certificate', '')
+    private_key: str = demisto.params().get('key', '')
+
     try:
         port_mapping: str = PARAMS.get('longRunningPort', '')
         if port_mapping:
@@ -1338,9 +1384,35 @@ def long_running_loop():
             raise ValueError('No port mapping was provided')
         Thread(target=channel_mirror_loop, daemon=True).start()
         demisto.info('Started channel mirror loop thread')
-        http_server = WSGIServer(('', port), APP)
-        http_server.serve_forever()
+
+        ssl_args = dict()
+        certificate_path = str()
+        private_key_path = str()
+
+        if certificate and private_key:
+            certificate_file = NamedTemporaryFile(delete=False)
+            certificate_path = certificate_file.name
+            certificate_file.write(bytes(certificate, 'utf-8'))
+            certificate_file.close()
+            ssl_args['certfile'] = certificate_path
+
+            private_key_file = NamedTemporaryFile(delete=False)
+            private_key_path = private_key_file.name
+            private_key_file.write(bytes(private_key, 'utf-8'))
+            private_key_file.close()
+            ssl_args['keyfile'] = private_key_path
+
+            demisto.info('Starting HTTPS Server')
+        else:
+            demisto.info('Starting HTTP Server')
+
+        server = WSGIServer(('', port), APP, **ssl_args)
+        server.serve_forever()
     except Exception as e:
+        if certificate_path:
+            os.unlink(certificate_path)
+        if private_key_path:
+            os.unlink(private_key_path)
         demisto.error(f'An error occurred in long running loop: {str(e)}')
         raise ValueError(str(e))
 

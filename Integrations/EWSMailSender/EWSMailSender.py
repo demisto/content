@@ -40,6 +40,7 @@ log_handler = None
 
 
 def start_logging():
+    logging.raiseExceptions = False
     global log_stream
     global log_handler
     if log_stream is None:
@@ -61,7 +62,7 @@ IS_TEST_MODULE = False
 
 # load arguments
 USE_PROXY = demisto.params().get('proxy', False)
-NON_SECURE = demisto.params().get('insecure', True)
+NON_SECURE = demisto.params().get('insecure', False)
 AUTH_METHOD_STR = demisto.params().get('authType', 'Basic').lower()
 EWS_SERVER = demisto.params().get('ewsServer', 'https://outlook.office365.com/EWS/Exchange.asmx/')
 VERSION_STR = demisto.params().get('defaultServerVersion', '2013')
@@ -258,7 +259,7 @@ config = None  # type: ignore
 
 
 def main():
-    global USERNAME, PASSWORD, ACCOUNT_EMAIL
+    global USERNAME, PASSWORD, ACCOUNT_EMAIL, log_stream
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
     ACCOUNT_EMAIL = demisto.params().get('mailbox', None)
@@ -318,6 +319,7 @@ def main():
             try:
                 logging.getLogger().removeHandler(log_handler)  # type: ignore
                 log_stream.close()
+                log_stream = None
             except Exception as ex:
                 demisto.error("EWS Mail Sender: unexpected exception when trying to remove log handler: {}".format(ex))
 
