@@ -1829,12 +1829,12 @@ def assign_params(keys_to_ignore=None, values_to_ignore=None, **kwargs):
 
     """
     if values_to_ignore is None:
-        values_to_ignore = tuple()
+        values_to_ignore = (None, '', [], {}, ())
     if keys_to_ignore is None:
         keys_to_ignore = tuple()
     return {
         key: value for key, value in kwargs.items()
-        if value and value not in values_to_ignore and key not in keys_to_ignore
+        if value not in values_to_ignore and key not in keys_to_ignore
     }
 
 
