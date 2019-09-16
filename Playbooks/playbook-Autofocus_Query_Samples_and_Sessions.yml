@@ -485,7 +485,7 @@ tasks:
       script: '|||autofocus-top-tags-search'
       type: regular
       iscommand: true
-      brand: AutoFocus V3
+      brand: ""
     nexttasks:
       '#none#':
       - "13"
