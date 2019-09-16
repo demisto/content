@@ -127,7 +127,6 @@ def http_request(method, url_suffix, data=None, json=None, headers=HEADERS):
     except Exception, e:
         LOG(e)
         raise
-
     return res
 
 
@@ -468,7 +467,7 @@ def query_malops_command():
             'filterType': 'GreaterThan'
         })
 
-    response = query_malops(total_result_limit, per_group_limit, template_context, None, guid_list=guid_list)
+    response = query_malops(total_result_limit, per_group_limit, template_context, filters, guid_list=guid_list)
     data = response['data']
     malops_map = data.get('resultIdToElementDataMap')
     if not data or not malops_map:
@@ -798,7 +797,7 @@ def prevent_file_command():
         }
         demisto.results(entry)
     else:
-        return_error('Failed to prevent file')
+        raise Exception('Failed to prevent file')
 
 
 def prevent_file(file_hash):
@@ -868,9 +867,10 @@ def kill_process_command():
     for process_guid in processes:
         response = kill_process(malop_guid, machine_guid, process_guid)
         status_log = response['statusLog'][0]
-        status_log['status']
+        status = status_log['status']
         # response
-        # demisto.results('Request to kill process {0} was sent successfully and now in status {1}')
+        demisto.results('Request to kill process {0} was sent successfully and now in status {1}'.format(process_guid,
+                                                                                                         status))
 
 
 def kill_process(malop_guid, machine_guid, process_guid):
@@ -1039,8 +1039,7 @@ def query_file_command():
                 'Path': path,
                 'Machine': machine,
                 'SuspicionsCount': machine_details['suspicionCount'],
-                'IsConnected': True if
-                machine_simple_values['ownerMachine.isActiveProbeConnected']['values'][0] == 'true' else False,
+                'IsConnected': (machine_simple_values['ownerMachine.isActiveProbeConnected']['values'][0] == 'true'),
                 'OSVersion': os_version,
                 'Suspicion': suspicions,
                 'Evidence': evidences,
@@ -1147,10 +1146,9 @@ def query_domain_command():
             simple_values = domains[domain]['simpleValues']
 
             reputation = simple_values['maliciousClassificationType']['values'][0]
-            is_internal_domain = True if simple_values['isInternalDomain']['values'][0] == 'true' else False
-            was_ever_resolved = True if simple_values['everResolvedDomain']['values'][0] == 'true' else False
-            was_ever_resolved_as = True if simple_values['everResolvedSecondLevelDomain']['values'][0] == 'true' \
-                else False
+            is_internal_domain = simple_values['isInternalDomain']['values'][0] == 'true'
+            was_ever_resolved = simple_values['everResolvedDomain']['values'][0] == 'true'
+            was_ever_resolved_as = simple_values['everResolvedSecondLevelDomain']['values'][0] == 'true'
             malicious = domains[domain].get('isMalicious')
             suspicions_count = domains[domain].get('suspicionCount')
 
@@ -1467,10 +1465,10 @@ try:
     elif demisto.command() == 'cybereason-query-user':
         query_user_command()
 
-except Exception, e:
+except Exception as e:
     LOG(e.message)
     LOG.print_log()
-    raise
+    return_error(e.message)
 finally:
     logout()
     if AUTH == 'CERT':

@@ -3,11 +3,11 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-import requests
 import json
 import re
 import base64
 import time
+import requests
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -20,8 +20,8 @@ def load_server_url():
     Cleans and loads the server url from the configuration
     """
     url = demisto.params().get('baseUrl')
-    url = re.sub('/[\/]+$/', '', url)
-    url = re.sub('\/$', '', url)
+    url = re.sub(r'/[/]+$/', '', url)
+    url = re.sub(r'/$', '', url)
     return url
 
 
@@ -46,8 +46,9 @@ API_HEADERS = None
 
 def get_session_credentials():
     result = http_request('php/session.php', 'get', LOGIN_HEADERS)
-    if result:
-        return result['results']
+    if not result:
+        return_error('Failed getting session credentials.')
+    return result['results']
 
 
 @logger
@@ -63,7 +64,7 @@ def get_headers():
     }
 
 
-def http_request(uri, method, headers={}, body={}, params={}, files={}):
+def http_request(uri, method, headers=None, body=None, params=None, files=None):
     """
     Makes an API call with the supplied uri, method, headers, body
     """
@@ -80,11 +81,15 @@ def http_request(uri, method, headers={}, body={}, params={}, files={}):
     )
     if res.status_code < 200 or res.status_code >= 300:
         if res.status_code == 401:
-            return_error('Request Failed with status: 401 Unauthorized - Invalid Username or Password')
+            return_error(
+                'Request Failed with status: 401 Unauthorized - Invalid Username or Password')
         elif res.status_code == 415:
-            return_error('Request Failed with status: 415 - Invalid accept header or content type header')
+            return_error(
+                'Request Failed with status: 415 - Invalid accept header or content type header')
         else:
-            return_error('Request Failed with status: ' + str(res.status_code) + '. Reason is: ' + str(res.reason))
+            return_error(
+                'Request Failed with status: ' + str(res.status_code)
+                + '. Reason is: ' + str(res.reason))
     result = res.content
 
     if not uri.startswith('php/showreport.php?'):
@@ -111,13 +116,12 @@ def prettify_current_user_res(current_user):
 
 
 def prettify_list_users_res(users):
-    if len(users) > 0:
+    if users:
         pretty_users = []
     else:
         return ''
 
-    for i in range(len(users)):
-        user = users[i]
+    for user in users:
         pretty_users.append({
             'FullName': user['fullName'],
             'UserId': user['idx'],
@@ -130,19 +134,19 @@ def prettify_list_users_res(users):
 
 def prettify_list_profiles_res(profiles):
     pretty_profiles = []
-    for i in range(len(profiles)):
+    for profile in profiles:
         pretty_profiles.append({
-            'Name': profiles[i]['name'],
-            'AnalyzerProfileId': profiles[i]['vmProfileid'],
-            'Description': profiles[i]['vmDesc'],
-            'Sandbox': 'True' if profiles[i]['sandbox'] == 1 else 'False',
-            'Internet': 'True' if profiles[i]['internet'] == 1 else 'False',
-            'LocalBlackList': 'True' if profiles[i]['locBlackList'] == 1 else 'False'
+            'Name': profile['name'],
+            'AnalyzerProfileId': profile['vmProfileid'],
+            'Description': profile['vmDesc'],
+            'Sandbox': 'True' if profile['sandbox'] == 1 else 'False',
+            'Internet': 'True' if profile['internet'] == 1 else 'False',
+            'LocalBlackList': 'True' if profile['locBlackList'] == 1 else 'False'
         })
     return pretty_profiles
 
 
-def prettify_task_status_by_taskId_res(task_status):
+def prettify_task_status_by_task_id(task_status):
     pretty_task_status = {
         'taskId': task_status['taskid'],
         'jobId': task_status['jobid'],
@@ -185,14 +189,14 @@ def get_session():
 def get_session_command():
     result = get_session()
     result = result['results']
-    md = tableToMarkdown('ATD Current User', prettify_current_user_res(result),
-                         ['APIVersion', 'IsAdmin', 'SessionId', 'UserId'])
+    human_readable = tableToMarkdown('ATD Current User', prettify_current_user_res(result),
+                                     ['APIVersion', 'IsAdmin', 'SessionId', 'UserId'])
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': md,
+        'HumanReadable': human_readable,
         'EntryContext': {
             'ATD.Session(val.SessionId == obj.SessionId)': prettify_current_user_res(result)
         }
@@ -211,7 +215,7 @@ def list_users_command():
     users = list_users(demisto.args()['userType'])
 
     pretty_users = prettify_list_users_res(users)
-    md = tableToMarkdown(
+    human_readable = tableToMarkdown(
         'ATD User List',
         pretty_users,
         ['FullName', 'UserId', 'LoginId', 'UserType']
@@ -222,7 +226,7 @@ def list_users_command():
         'ContentsFormat': formats['json'],
         'Contents': users,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': md,
+        'HumanReadable': human_readable,
         'EntryContext': {
             'ATD.Users(val.UserId == obj.UserId)': pretty_users,
         }
@@ -238,7 +242,7 @@ def list_profiles():
 def list_profiles_command():
     result = list_profiles()
 
-    md = tableToMarkdown(
+    human_readable = tableToMarkdown(
         'ATD Analyzers Profile List', prettify_list_profiles_res(result),
         ['Name', 'AnalyzerProfileId', 'Description',
          'Sandbox', 'Internet', 'LocalBlackList'])
@@ -248,26 +252,26 @@ def list_profiles_command():
         'ContentsFormat': formats['json'],
         'Contents': result,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': md,
+        'HumanReadable': human_readable,
         'EntryContext': {
-            'ATD.ListAnalyzerProfiles(val.AnalyzerProfileId == obj.AnalyzerProfileId)': prettify_list_profiles_res(
-                result)
+            'ATD.ListAnalyzerProfiles(val.AnalyzerProfileId == obj.AnalyzerProfileId)':
+                prettify_list_profiles_res(result)
         }
     })
 
 
 @logger
-def check_task_status_by_taskId(task_ids):
+def check_task_status_by_task_id(task_ids):
     result = {}  # type: dict
     multiple_results = []
     tasks = []
 
-    for i in range(len(task_ids)):
-        request_suffix = 'iTaskId=' + str(task_ids[i])
+    for task_id in task_ids:
+        request_suffix = 'iTaskId=' + str(task_id)
         result = http_request('php/samplestatus.php?' + request_suffix, 'get', API_HEADERS)
 
         # when you use TaskID, you get results in res.results
-        tasks.append(prettify_task_status_by_taskId_res(result['results']))
+        tasks.append(prettify_task_status_by_task_id(result['results']))
         multiple_results.append(result['results'])
 
     status = result['results']['status']  # backward compatibility
@@ -279,13 +283,13 @@ def check_task_status_by_taskId(task_ids):
 
 
 @logger
-def check_task_status_by_jobId(job_ids):
-    taskIds = []
-    for i in range(len(job_ids)):
-        result = http_request('php/getTaskIdList.php?jobId=' + job_ids[i], 'get', API_HEADERS)
+def check_task_status_by_job_id(job_ids):
+    task_ids = []
+    for job_id in job_ids:
+        result = http_request('php/getTaskIdList.php?jobId=' + job_id, 'get', API_HEADERS)
         task_id = result['result']['taskIdList']
-        taskIds.append(task_id)
-    return check_task_status_by_taskId(taskIds)
+        task_ids.append(task_id)
+    return check_task_status_by_task_id(task_ids)
 
 
 def check_task_status_command():
@@ -297,13 +301,13 @@ def check_task_status_command():
 
     if 'jobId' in args:
         ids = argToList(args['jobId'])
-        result = check_task_status_by_jobId(ids)
+        result = check_task_status_by_job_id(ids)
 
     elif 'taskId' in args:
         ids = argToList(args['taskId'])
-        result = check_task_status_by_taskId(ids)
+        result = check_task_status_by_task_id(ids)
 
-    md = tableToMarkdown(
+    human_readable = tableToMarkdown(
         'ATD Sandbox Task Status',
         result['tasks'],
         (result['tasks'][0]).keys()
@@ -314,7 +318,7 @@ def check_task_status_command():
         'ContentsFormat': formats['json'],
         'Contents': result['multipleResults'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': md,
+        'HumanReadable': human_readable,
         'EntryContext': {
             'ATD.status': result['status'],  # backward compatibility
             'ATD.Task(val.taskId == obj.taskId)': result['tasks']
@@ -323,40 +327,41 @@ def check_task_status_command():
 
 
 @logger
-def get_taskIds(job_ids):
+def get_task_ids(job_ids):
     results = []
-    for i in range(len(job_ids)):
-        result = http_request('php/getTaskIdList.php?jobId=' + str(job_ids[i]), 'get', API_HEADERS)
+    for job_id in job_ids:
+        result = http_request('php/getTaskIdList.php?jobId=' + str(job_id), 'get', API_HEADERS)
         results.append(result)
     return results
 
 
-def get_taskIds_command():
+def get_task_ids_command():
     job_ids = argToList(demisto.args()['jobId'])
-    results = get_taskIds(job_ids)
+    results = get_task_ids(job_ids)
 
-    multiple_md = []
-    ec = []
-    for i in range(len(results)):
-        multiple_md.append({
-            'taskId': results[i]['result']['taskIdList'],
+    multiple_human_readable = []
+    entry_context = []
+    for i, result in enumerate(results):
+        multiple_human_readable.append({
+            'taskId': result['result']['taskIdList'],
             'jobId': job_ids[i]
         })
-        ec.append({
-            'taskId': results[i]['result']['taskIdList'],
+        entry_context.append({
+            'taskId': result['result']['taskIdList'],
             'jobId': job_ids[i]
         })
 
-    md = tableToMarkdown('ATD TaskIds and JobIds List', multiple_md, ['taskId', 'jobId'])
+    human_readable = tableToMarkdown(
+        'ATD TaskIds and JobIds List', multiple_human_readable, ['taskId', 'jobId'])
 
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': results,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': md,
+        'HumanReadable': human_readable,
         'EntryContext': {
-            'ATD.Task(val.jobId == obj.jobId)': ec
+            'ATD.Task(val.jobId == obj.jobId)': entry_context
         }
     })
 
@@ -364,17 +369,19 @@ def get_taskIds_command():
 @logger
 def file_upload_raw(body, file_entry_id, filename_to_upload):
     uri = 'php/fileupload.php'
-    if len(filename_to_upload) == 0:  # first priority for the file name is user's argument
+    if not filename_to_upload:  # first priority for the file name is user's argument
         # second priority for the file name is the file name in the context
-        filenameDq = demisto.dt(demisto.context(), 'File(val=val.EntryID=="' + file_entry_id + '")=val.Name')
-        if filenameDq and filenameDq[0]:
-            filename_to_upload = filenameDq
+        filename_dq = demisto.dt(
+            demisto.context(), 'File(val=val.EntryID=="' + file_entry_id + '")=val.Name')
+        if filename_dq and filename_dq[0]:
+            filename_to_upload = filename_dq
         else:
-            filename_to_upload = file_entry_id  # last priority for the file name is demisto's entryID
+            # last priority for the file name is demisto's entryID
+            filename_to_upload = file_entry_id
 
-    with open(demisto.getFilePath(file_entry_id)['path'], 'rb') as f:
-        file_up = {'amas_filename': f}
-        res = http_request(
+    with open(demisto.getFilePath(file_entry_id)['path'], 'rb') as file_to_upload:
+        file_up = {'amas_filename': file_to_upload}
+        result = http_request(
             uri,
             'post',
             API_HEADERS,
@@ -383,9 +390,9 @@ def file_upload_raw(body, file_entry_id, filename_to_upload):
             files=file_up,
         )
 
-    if not res['success']:
-        return_error('Failed to upload sample due to: ' + res['errorMessage'])
-    return res
+    if not result['success']:
+        return_error('Failed to upload sample due to: ' + result['errorMessage'])
+    return result
 
 
 def url_upload_raw(body):
@@ -429,10 +436,10 @@ def file_upload(submit_type, sample, vm_profile_list,
     data['data']['filePriorityQ'] = file_priority_q if file_priority_q else 'run_now'
 
     body['data'] = json.dumps(data)
-    file = sample if submit_type == 0 else ''
+    file_entry_id = sample if submit_type == 0 else ''
     filename_to_upload = file_name if (submit_type == 0 and file_name) else ''
     if submit_type == 0:
-        result_obj = file_upload_raw(body, file, filename_to_upload)
+        result_obj = file_upload_raw(body, file_entry_id, filename_to_upload)
     elif submit_type == 1:
         result_obj = url_upload_raw(body)
     return {
@@ -446,10 +453,13 @@ def file_upload_command():
 
     if ('entryID' in args and 'url' in args) or ('entryID' not in args and 'url' not in args):
         return_error('You must submit one and only one of the following: url, entryID')
-    if ('entryID' in args and args['submitType'] != '0') or ('url' in args and args['submitType'] != '1'):
+    if ('entryID' in args and args['submitType'] != '0') or\
+            ('url' in args and args['submitType'] != '1'):
         return_error(
-            'In order to detonate a file submitType must be 0 and an entryID of a file must be given.\n'
-            'In order to detonate a url submitType must be 1 and a url must be given.')
+            'In order to detonate a file submitType must be 0'
+            ' and an entryID of a file must be given.\n'
+            'In order to detonate a url submitType must be 1'
+            ' and a url must be given.')
 
     sample = args['entryID'] if 'entryID' in args else args['url']
     vm_profile_list = int(args['vmProfileList']) if 'vmProfileList' in args else None
@@ -465,9 +475,10 @@ def file_upload_command():
     result = file_upload(int(args['submitType']), sample, vm_profile_list,
                          skip_task_id, analyze_again, x_mode, message_id, file_priority_q,
                          src_ip, dest_ip, file_name)
-    md = tableToMarkdown('ATD sandbox sample submission', prettify_file_upload_res(result['resultObj']),
-                         ['taskId', 'jobId', 'messageId', 'url', 'dest_ip', 'src_ip', 'MD5', 'SHA1', 'SHA256'],
-                         removeNull=True)
+    human_readable = tableToMarkdown(
+        'ATD sandbox sample submission', prettify_file_upload_res(result['resultObj']),
+        ['taskId', 'jobId', 'messageId', 'url', 'dest_ip', 'src_ip', 'MD5', 'SHA1', 'SHA256'],
+        removeNull=True)
 
     upload_file_output = {
         'ATD.Task(val.taskId == obj.taskId)': prettify_file_upload_res(result['resultObj']),
@@ -481,7 +492,7 @@ def file_upload_command():
         'ContentsFormat': formats['json'],
         'Contents': result['resultObj'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': md,
+        'HumanReadable': human_readable,
         'EntryContext': upload_file_output
     })
 
@@ -534,7 +545,8 @@ def build_report_context(report_summary, upload_data, status, threshold, task_id
 
         else:  # detonation did not return any data
             # retrieve submission url by the task ID, if exist
-            submission_dt = demisto.dt(demisto.context(), 'ATD.Task(val.taskId === "{}")'.format(task_id))
+            submission_dt = demisto.dt(
+                demisto.context(), 'ATD.Task(val.taskId === "{}")'.format(task_id))
             if isinstance(submission_dt, list):
                 submission = submission_dt[0]
             else:
@@ -596,37 +608,39 @@ def get_report(uri_suffix, task_id, report_type, upload_data, status, threshold)
     summary = json_res['Summary']
     summary['VerdictDescription'] = summary['Verdict']['Description']
     summary['VerdictSeverity'] = summary['Verdict']['Severity']
-    ec = build_report_context(summary, upload_data, status, threshold, task_id)
+    entry_context = build_report_context(summary, upload_data, status, threshold, task_id)
     json_res_string = json.dumps(json_res)
     if report_type == 'json':
-        md = tableToMarkdown('McAfee ATD Sandbox Report', summary, summary.keys(), None, True)
+        human_readable = tableToMarkdown(
+            'McAfee ATD Sandbox Report', summary, summary.keys(), None, removeNull=True)
         return {
             'content': json_res_string,
-            'md': md,
-            'ec': ec
+            'md': human_readable,
+            'ec': entry_context
         }
 
-    res = http_request('php/showreport.php?' + uri_suffix + '&iType=' + report_type, 'get', API_HEADERS)
+    result = http_request(
+        'php/showreport.php?' + uri_suffix + '&iType=' + report_type, 'get', API_HEADERS)
 
     if report_type == 'pdf' or report_type == 'zip':
         filename = str(task_id) + '.' + report_type
         return {
-            'content': res,
+            'content': result,
             'filename': filename,
-            'ec': ec
+            'ec': entry_context
         }
 
     if report_type == 'sample':
         return {
-            'content': res,
+            'content': result,
             'filename': task_id + '.zip',
-            'ec': ec
+            'ec': entry_context
         }
-    return res
+    return result
 
 
 def get_report_command():
-    uri_suffix = job_or_taskId()
+    uri_suffix = job_or_task_id()
     args = demisto.args()
     report_type = args['type'] if 'type' in args else 'pdf'
     threshold = args['threshold']
@@ -636,7 +650,7 @@ def get_report_command():
     return_report(uri_suffix, filename, report_type, '', '', threshold)
 
 
-def job_or_taskId():
+def job_or_task_id():
     args = demisto.args()
     if ('jobId' not in args and 'taskId' not in args) or ('jobId' in args and 'taskId' in args):
         return_error('You must specify one (and only one) of the following: jobId, taskId.')
@@ -655,8 +669,8 @@ def detonate(submit_type, sample, timeout, report_type, threshold, file_name):
     upload_data = result['resultObj']['results'][0]
 
     timeout = int(timeout)
-    while 0 < timeout:
-        status = str(check_task_status_by_taskId([task_id])['status'])
+    while timeout > 0:
+        status = str(check_task_status_by_task_id([task_id])['status'])
         if status == 'Completed':
             uri_suffix = 'iTaskId=' + str(task_id)
             return_report(uri_suffix, task_id, report_type, upload_data, status, threshold)
@@ -670,9 +684,10 @@ def detonate(submit_type, sample, timeout, report_type, threshold, file_name):
 
 
 def return_report(uri_suffix, task_id, report_type, upload_data, status, threshold):
-    current_status = check_task_status_by_taskId([task_id])['status']
+    current_status = check_task_status_by_task_id([task_id])['status']
     if current_status != 'Completed':
-        demisto.results('Please wait in order to download the report, the sample is still being analyzed.')
+        demisto.results(
+            'Please wait in order to download the report, the sample is still being analyzed.')
     else:
         res = get_report(uri_suffix, task_id, report_type, upload_data, status, threshold)
 
@@ -696,8 +711,8 @@ def return_report(uri_suffix, task_id, report_type, upload_data, status, thresho
         elif report_type == 'sample':
             # used to retrieve a sample from McAfee ATD to demisto
             file_type = entryTypes['file']
-            result = fileResult(res['filename'], res['content'],
-                                file_type)  # will be saved under 'File' in the context, can be farther investigated.
+            # will be saved under 'File' in the context, can be farther investigated.
+            result = fileResult(res['filename'], res['content'], file_type)
             demisto.results(result)
 
         else:
@@ -738,7 +753,7 @@ def main():
             check_task_status_command()
 
         elif demisto.command() == 'atd-get-task-ids':
-            get_taskIds_command()
+            get_task_ids_command()
 
         elif demisto.command() == 'atd-file-upload':
             file_upload_command()
@@ -746,14 +761,20 @@ def main():
         elif demisto.command() == 'atd-get-report':
             get_report_command()
 
-        elif demisto.command() == 'detonate-file':  # deprecated, please use 'ATD - Detonate File' playbook
-            detonate(0, demisto.args().get('upload'), demisto.args().get('timeout'), demisto.args().get('format'),
-                     demisto.args().get('threshold'), demisto.args().get('fileName'))
+        # deprecated, please use 'ATD - Detonate File' playbook
+        elif demisto.command() == 'detonate-file':
+            detonate(
+                0, demisto.args().get('upload'), demisto.args().get('timeout'),
+                demisto.args().get('format'), demisto.args().get('threshold'),
+                demisto.args().get('fileName'))
             # submit type for regular file is 0
 
-        elif demisto.command() == 'detonate-url':  # deprecated, please use 'Detonate URL - McAfee ATD_python' playbook
-            detonate(1, demisto.args().get('url'), demisto.args().get('timeout'), demisto.args().get('format'),
-                     demisto.args().get('threshold'), demisto.args().get('fileName'))
+        # deprecated, please use 'Detonate URL - McAfee ATD_python' playbook
+        elif demisto.command() == 'detonate-url':
+            detonate(
+                1, demisto.args().get('url'), demisto.args().get('timeout'),
+                demisto.args().get('format'), demisto.args().get('threshold'),
+                demisto.args().get('fileName'))
             # submit type for url submission is 1
 
         # elif demisto.command() == 'detonate-file-remote':
