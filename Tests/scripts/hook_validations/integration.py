@@ -3,8 +3,8 @@ import os
 import requests
 import yaml
 
+from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES, INTEGRATION_CATEGORIES
 from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare
-from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -68,6 +68,7 @@ class IntegrationValidator(object):
         self.is_default_arguments()
         self.is_proxy_configured_correctly()
         self.is_insecure_configured_correctly()
+        self.is_valid_category()
 
         return self._is_valid
 
@@ -117,6 +118,16 @@ class IntegrationValidator(object):
 
         if insecure_field_name:
             return self.is_valid_param(insecure_field_name, 'Trust any certificate (not secure)')
+
+    def is_valid_category(self):
+        """Check that the integration category is in the schema."""
+        category = self.current_integration.get('category', None)
+        if not category or category not in INTEGRATION_CATEGORIES:
+            self._is_valid = False
+            print_error("The category '{}' is not in the integration schemas, the valid options are:\n{}".format(
+                category, '\n'.join(INTEGRATION_CATEGORIES)))
+
+        return self._is_valid
 
     def is_default_arguments(self):
         """Check if a reputation command (domain/email/file/ip/url)
