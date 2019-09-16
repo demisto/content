@@ -714,7 +714,6 @@ class TestBuildDBotEntry(object):
         with raises(DemistoException, match='Wrong indicator type'):
             build_malicious_dbot_entry('8.8.8.8', 'notindicator', 'Vendor', 'Google DNS')
 
-
     @staticmethod
     def test_illegal_dbot_score():
         from CommonServerPython import build_dbot_entry, DemistoException
