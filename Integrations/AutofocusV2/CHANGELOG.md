@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Handle empty responses of the  ***autofocus-samples-search***, ***autofocus-sessions-search*** commands.
+  - Improved handling of empty responses for the  ***autofocus-samples-search*** and ***autofocus-sessions-search*** commands.
   - Added several arguments to the ***autofocus-samples-search*** and ***autofocus-sessions-search*** commands.
       - *file_hash*
       - *domain*
