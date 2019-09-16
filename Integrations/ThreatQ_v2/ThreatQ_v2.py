@@ -22,13 +22,17 @@ THRESHOLD = int(demisto.params().get('threshold', '0'))
 if THRESHOLD:
     THRESHOLD = int(THRESHOLD)
 
+domain_regex = r'(?i)(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-A-Z0-9]+\[?\.\]?)+[-A-Z0-9]+' \
+              r'(?::[0-9]+)?(?:(?:\/|\?)[-A-Z0-9+&@#\/%=~_$?!:,.\(\);\*|]*[-A-Z0-9+&@#\/%=~_$\(\);\*|])?|' \
+              r'\b[-A-Za-z0-9._%+\*|]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b'
+
 REGEX_MAP = {
     'email': re.compile(emailRegex, regexFlags),
     'url': re.compile(urlRegex, regexFlags),
     'md5': re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags),
     'sha1': re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags),
     'sha256': re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags),
-    'domain': re.compile(domainRegex, regexFlags)
+    'domain': re.compile(domain_regex, regexFlags)
 }
 
 TQ_TO_DEMISTO_INDICATOR_TYPES = {
