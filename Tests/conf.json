@@ -354,6 +354,11 @@
             "integrations": "Luminate"
         },
         {
+            "playbookID": "Palo Alto Networks - Malware Remediation Test",
+            "integrations": "Palo Alto Minemeld",
+            "fromversion": "4.5.0"
+        },
+        {
             "playbookID": "SumoLogic-Test",
             "integrations": "SumoLogic",
             "fromversion": "4.1.0"
@@ -1433,6 +1438,14 @@
             "nightly": true
         },
         {
+            "playbookID": "Calculate Severity - Generic v2 - Test",
+            "integrations": [
+                "Palo Alto Minemeld",
+                "Active Directory Query v2"
+            ],
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "Freshdesk",
             "playbookID": "Freshdesk-Test",
             "timeout": 500,
@@ -1806,6 +1819,16 @@
             "playbookID": "HybridAnalysis-Test",
             "timeout": 500,
             "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "es_v7",
+            "playbookID": "Elasticsearch_v2_test"
+        },
+        {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "es_v6",
+            "playbookID": "Elasticsearch_v2_test-v6"
         }
     ],
     "skipped_tests": {

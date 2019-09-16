@@ -42,7 +42,7 @@ class FilesValidator(object):
     Attributes:
         _is_valid (bool): saves the status of the whole validation(instead of mingling it between all the functions).
         is_circle (bool): whether we are running on circle or local env.
-        conf_json_validator (ConfJsonValidator): object for validating the conf.json file.
+        conf_json_validator (ConfJsonValidator): object for validating the conf.json file.i
         id_set_validator (IDSetValidator): object for validating the id_set.json file(Created in Circle only).
     """
 
@@ -249,8 +249,7 @@ class FilesValidator(object):
                 if not image_validator.is_valid():
                     self._is_valid = False
 
-            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(INCIDENT_FIELDS_REGEX, file_path, re.IGNORECASE):
+            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE):
                 incident_field_validator = IncidentFieldValidator(file_path, old_file_path=old_file_path,
                                                                   old_git_branch=old_branch)
                 if not incident_field_validator.is_valid():
