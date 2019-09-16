@@ -24,7 +24,7 @@ type: python
 tags:
 - Elasticsearch
 comment: |-
-  Deprecated, use Elasticsearch v2 integration.
+  Deprecated. Use the Elasticsearch v2 integration instead.
 
   Run a search query using Elasticsearch
 enabled: true

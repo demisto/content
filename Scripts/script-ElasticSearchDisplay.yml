@@ -39,9 +39,9 @@ type: javascript
 tags:
 - Elasticsearch
 comment: |-
-  Deprecated, use Elasticsearch v2 integration.
+  Deprecated. Use the Elasticsearch v2 integration instead.
 
-  Runs an elasticsearch query and displays results in a nice table.
+  Runs an Elasticsearch query and displays results in a table.
 enabled: true
 args:
 - name: query

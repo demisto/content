@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Deprecated script - please use Elasticsearch v2 integration
+- Deprecated. Use the Elasticsearch v2 integration instead.
