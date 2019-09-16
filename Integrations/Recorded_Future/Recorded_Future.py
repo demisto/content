@@ -505,7 +505,7 @@ def get_related_entities_command():
     if response and ('error' not in response):
         hr = []  # type: list
         entity_result_type = entity_result_type.split(',')
-        entity_types = []
+        entity_types = []  # type: list
         if 'All' in entity_result_type:
             entity_types = ['RelatedIpAddress', 'RelatedInternetDomainName', 'RelatedHash', 'RelatedMalware',
                             'RelatedAttackVector', 'RelatedURL']  # type: list
