@@ -1815,6 +1815,11 @@
             "playbookID": "Test-VulnDB"
         },
         {
+            "integrations": "Shodan_v2",
+            "playbookID": "Test-Shodan_v2",
+            "timeout": 1000
+        },
+        {
             "integrations": "Threat Crowd",
             "playbookID": "ThreatCrowd - Test"
         },
