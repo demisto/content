@@ -51,12 +51,11 @@ def get_credentials():
         return_error(err_msg)
 
 
-def get_http_client_with_proxy():
+def get_http_client_with_proxy(proxies):
     """
     Gets an HTTP client that is able to handle proxy and broken SSL.
     Default is secure but for weird test environments SSL validation might be disabled.
     """
-    proxies = handle_proxy()
     if not proxies or not proxies['https']:
         raise Exception('https proxy value is empty. Check Demisto server configuration')
     https_proxy = proxies['https']
@@ -72,7 +71,7 @@ def get_http_client_with_proxy():
     return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=DISABLE_SSL)
 
 
-def get_service():
+def get_service(proxies):
     """
     Builds a Google API server client.
     Would be simpler to use google.cloud.vision.ImageAnnotatorClient directly,
@@ -80,7 +79,7 @@ def get_service():
     """
     credentials = get_credentials()
     if PROXY or DISABLE_SSL:
-        http_client = credentials.authorize(get_http_client_with_proxy())
+        http_client = credentials.authorize(get_http_client_with_proxy(proxies))
         return discovery.build(SERVICE_NAME, SERVICE_VERSION, http=http_client)
     return discovery.build(SERVICE_NAME, SERVICE_VERSION, credentials=credentials)
 
@@ -93,9 +92,9 @@ def get_file_path(entry_id):
     return file_obj['path']
 
 
-def perform_logo_detection_service_request(file_bytes, max_results=10):
+def perform_logo_detection_service_request(file_bytes, proxies, max_results=10):
     image_content = base64.b64encode(file_bytes)
-    service_request = get_service().images().annotate(body={
+    service_request = get_service(proxies).images().annotate(body={
         'requests': [{
             'image': {
                 'content': image_content.decode('UTF-8')
@@ -125,12 +124,12 @@ def convert_to_output(result):
 '''MAIN FUNCTIONS'''
 
 
-def detect_logos(file_id):
+def detect_logos(file_id, proxies):
     """Detects logos in the file."""
     file_path = get_file_path(file_id)
     with open(file_path, 'rb') as f:
         content = f.read()
-        return perform_logo_detection_service_request(content)
+        return perform_logo_detection_service_request(content, proxies)
 
 
 def is_logo_detected(results):
@@ -142,9 +141,9 @@ def is_logo_detected(results):
     return False
 
 
-def detect_logos_command():
+def detect_logos_command(proxies):
     entry_id = demisto.args().get('entry_id', '')
-    results = detect_logos(entry_id)
+    results = detect_logos(entry_id, proxies)
     logo_detected = is_logo_detected(results)
     if logo_detected:
         output = convert_to_output(results)
@@ -157,7 +156,7 @@ def detect_logos_command():
     return_outputs(human_readable, output)
     
 
-def test_module():
+def test_module(proxies):
     """
     This is the call made when pressing the integration test button.
     """
@@ -219,7 +218,7 @@ def test_module():
                 b'\xfd~\xdd\xb5@\xe2E5\xce\x00\x12\xb8uR\x97\x8b\xd7\xdf\xf5\xdd_O\xc5\x7f\x86\xa3\xd8Q\xec/\xe1(' \
                 b'v\x14\xfbK8\xf7\xf9j\x8a\xcfW/\xc1\x8b\x8f\xd7\xd2\xfcCb?\x01\xc7\xf5]\n\x11\xa0Y\x98\x00\x00\x00' \
                 b'\x00IEND\xaeB`\x82 '
-    response = perform_logo_detection_service_request(content)
+    response = perform_logo_detection_service_request(content, proxies)
     output = convert_to_output(response)
     logo_found = output.get('GoogleVisionAPI', {}).get('Logo', [{'description', ''}])[0].get('description', '')
     if 'microsoft' in logo_found.lower():
@@ -235,12 +234,12 @@ def main():
     """Main Execution Block"""
 
     try:
-        handle_proxy()
+        proxies = handle_proxy()
 
         if demisto.command() == 'test-module':
-            test_module()
+            test_module(proxies)
         elif demisto.command() == 'google-vision-detect-logos':
-            detect_logos_command()
+            detect_logos_command(proxies)
 
     except Exception as e:
         if 'Quota exceeded for quota metric' in str(e):
