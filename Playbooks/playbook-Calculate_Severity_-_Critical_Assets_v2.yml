@@ -4,7 +4,7 @@ fromversion: 4.5.0
 name: Calculate Severity - Critical Assets v2
 description: |-
   Determines if a critical assest is associated with the invesigation. The playbook returns a severity level of "Critical" if at least one critical asset is associated with the investigation.
-  Critical assets in the network refer to: users, user groups, endpoints and endpoint groups.
+  Critical assets refer to: users, user groups, endpoints and endpoint groups.
 starttaskid: "0"
 tasks:
   "0":
@@ -39,9 +39,9 @@ tasks:
     task:
       id: 2c486317-f20e-4b4a-86cc-91efde156f01
       version: -1
-      name: Are there a username and a defined critical username?
-      description: Checks whether there is at least one username involved in the incident
-        and at least one user-defined critical username.
+      name: Do required user inputs exist?
+      description: Checks whether there is at least one user involved in the incident
+        and at least one user defined as a critical asset.
       type: condition
       iscommand: false
       brand: ""
@@ -83,7 +83,7 @@ tasks:
       id: c9a031f3-ec9f-49f4-8f4a-871c4219e358
       version: -1
       name: Is a critical user involved in the incident?
-      description: Check if at least one username is on the user-defined "CriticalUsers"
+      description: Checks if at least one of the usernames involved in the incident is listed in the "CriticalUsers"
         list.
       type: condition
       iscommand: false
@@ -155,8 +155,8 @@ tasks:
       id: 9a724e04-a52d-4b62-8de8-681ef944d8f3
       version: -1
       name: Is a critical endpoint involved in the incident?
-      description: Checks if a hostname is part of "CriticalEndpoints" defined in
-        the playbook inputs.
+      description: Checks if at least one of the endpoints involved in the incident is listed in the "CriticalEndpoints"
+        list..
       type: condition
       iscommand: false
       brand: ""
@@ -763,9 +763,9 @@ tasks:
     task:
       id: 77a335ad-2d43-4d77-8cfe-013184f3fcb0
       version: -1
-      name: Are there a hostname and a defined critical endpoint?
-      description: Checks whether there is at least one endpoint hostname involved
-        in the incident.
+      name: Do required endpoint inputs exist?
+      description: Checks whether there is at least one endpoint involved in the incident
+        and at least one hostname defined as a critical asset.
       type: condition
       iscommand: false
       brand: ""
@@ -1256,11 +1256,11 @@ inputs:
   value:
     simple: admin,administrator
   required: false
-  description: CSV of usernames of critical users.
+  description: CSV of critical users.
 - key: CriticalEndpoints
   value: {}
   required: false
-  description: CSV of hostnames of critical endpoints.
+  description: CSV of critical endpoints.
 - key: CriticalGroups
   value:
     simple: Administrators, Domain Admins, Enterprise Admins, Schema Admins
@@ -1284,7 +1284,7 @@ inputs:
   description: Endpoints to check against the CriticalEndpoints list.
 outputs:
 - contextPath: Severities.CriticalAssetsSeverity
-  description: The score evaluated by the Calculate Severity - Critical Assets v2
+  description: The score returned by the Calculate Severity - Critical Assets v2
     playbook.
   type: number
 - contextPath: CriticalAssets
