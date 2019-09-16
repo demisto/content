@@ -325,7 +325,7 @@ def get_fields_from_hit_object(result_object, response_dict_name):
 
 
 def parse_hits_response(hits, response_dict_name):
-    parsed_objects = []
+    parsed_objects = []  # type: ignore
     if not hits:
         return parsed_objects
     else:
@@ -386,7 +386,7 @@ def validate_if_line_needed(category, info_line):
 def get_data_from_line(line, category_name):
     category_indexes = SAMPLE_ANALYSIS_LINE_KEYS.get(category_name).get('indexes')  # type: ignore
     values = line.split(',')
-    sub_categories = {}
+    sub_categories = {}  # type: ignore
     if not category_indexes:
         return sub_categories
     else:
@@ -535,7 +535,7 @@ def autofocus_top_tags_search(scope, tag_class_display, private, public, commodi
 
 
 def parse_top_tags_response(response):
-    top_tags_list = []
+    top_tags_list = []  # type: ignore
     top_tags = response.get('top_tags')
     if not top_tags:
         top_tags_list
