@@ -1,6 +1,7 @@
 id: Autofocus Query Samples, Sessions and Tags Test Playbook
 version: -1
 name: Autofocus Query Samples, Sessions and Tags Test Playbook
+fromversion: 4.5.0
 description: |-
   This is a test playbook to the the functionality of the Autofocus Query
   Samples and Sessions playbook. The test playbook checks for Autofocus query inputs,
