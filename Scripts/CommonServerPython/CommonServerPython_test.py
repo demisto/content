@@ -6,7 +6,6 @@ import sys
 import requests
 from pytest import raises, mark
 
-import CommonServerPython
 import demistomock as demisto
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
