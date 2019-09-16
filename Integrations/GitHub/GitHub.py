@@ -716,6 +716,31 @@ def test_module():
     demisto.results("ok")
 
 
+def create_pull_request(create_vals: dict = {}) -> dict:
+    suffix = PULLS_SUFFIX
+    response = http_request('POST', url_suffix=suffix, data=create_vals)
+    return response
+
+
+def create_pull_request_command():
+    args = demisto.args()
+    create_vals = {key: val for key, val in args.items()}
+    maintainer_can_modify = args.get('maintainer_can_modify')
+    if maintainer_can_modify:
+        create_vals['maintainer_can_modify'] = maintainer_can_modify == 'true'
+    draft = args.get('draft')
+    if draft:
+        create_vals['draft'] = draft == 'true'
+    response = create_pull_request(create_vals)
+
+    ec_object = format_pr_outputs(response)
+    ec = {
+        'GitHub.PR(val.Number === obj.Number)': ec_object
+    }
+    human_readable = tableToMarkdown(f'Created Pull Request #{response.get("number")}', ec_object, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
 def is_pr_merged(pull_number: Union[int, str]):
     suffix = PULLS_SUFFIX + f'/{pull_number}/merge'
     response = http_request('GET', url_suffix=suffix)
@@ -1125,7 +1150,8 @@ COMMANDS = {
     'GitHub-delete-branch': delete_branch_command,
     'GitHub-list-pr-review-comments': list_pr_review_comments_command,
     'GitHub-update-pull-request': update_pull_request_command,
-    'GitHub-is-pr-merged': is_pr_merged_command
+    'GitHub-is-pr-merged': is_pr_merged_command,
+    'GitHub-create-pull-request': create_pull_request_command
 }
 
 
