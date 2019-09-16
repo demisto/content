@@ -716,6 +716,32 @@ def test_module():
     demisto.results("ok")
 
 
+def update_pull_request(pull_number: Union[int, str], update_vals: dict = {}) -> dict:
+    suffix = PULLS_SUFFIX + f'/{pull_number}'
+    response = http_request('PATCH', url_suffix=suffix, data=update_vals)
+    return response
+
+
+def update_pull_request_command():
+    args = demisto.args()
+    pull_number = args.get('pull_number')
+    update_vals = {key: val for key, val in args.items() if key != 'pull_number'}
+    if not update_vals:
+        return_error('You must provide a value for at least one of the command\'s arguments "title", "body", "state",'
+                     ' "base" or "maintainer_can_modify" that you would like to update the pull request with')
+    maintainer_can_modify = update_vals.get('maintainer_can_modify')
+    if maintainer_can_modify:
+        update_vals['maintainer_can_modify'] = maintainer_can_modify == 'true'
+    response = update_pull_request(pull_number, update_vals)
+
+    ec_object = format_pr_outputs(response)
+    ec = {
+        'GitHub.PR(val.Number === obj.Number)': ec_object
+    }
+    human_readable = tableToMarkdown(f'Updated Pull Request #{pull_number}', ec_object, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
 def list_teams_command():
     args = demisto.args()
     organization = args.get('organization')
@@ -1082,7 +1108,8 @@ COMMANDS = {
     'GitHub-get-pull-request': get_pull_request_command,
     'GitHub-list-teams': list_teams_command,
     'GitHub-delete-branch': delete_branch_command,
-    'GitHub-list-pr-review-comments': list_pr_review_comments_command
+    'GitHub-list-pr-review-comments': list_pr_review_comments_command,
+    'GitHub-update-pull-request': update_pull_request_command
 }
 
 
