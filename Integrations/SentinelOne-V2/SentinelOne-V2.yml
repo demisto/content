@@ -43,8 +43,8 @@ configuration:
   name: fetch_threat_rank
   required: false
   type: 0
-- defaultvalue: '20'
-  display: Fetch limit
+- defaultvalue: '10'
+  display: 'Fetch limit: the maximum number of incidents to fetch'
   name: fetch_limit
   required: false
   type: 0
