@@ -10,6 +10,7 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
+    description:  'Playbook started.'
     taskid: e8ee09a9-34a1-43ee-8c08-9edf45216daf
     type: start
     task:
@@ -34,6 +35,7 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
+    description:  'Submit search to autofocus-search-samples.'
     taskid: ade63761-4ed2-44da-8246-d32f6eb9ee95
     type: regular
     task:
@@ -86,6 +88,7 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
+    description:  'Done'
     taskid: 6ebdfaf2-50e7-4556-8ae8-7efe5eafd785
     type: title
     task:
@@ -108,6 +111,7 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
+    description:  'Checks if Autofocus is enabled.'
     taskid: 62073e57-db22-415c-89df-a6b33b1d3710
     type: condition
     task:
@@ -164,6 +168,7 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
+    description:  'Autofocus polling for samples.'
     taskid: 1edda0bc-b651-4c41-8fcf-42e97c0bcfe7
     type: playbook
     task:
@@ -220,6 +225,7 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
+    description:  'Checks if search for samples is relevant.'
     taskid: 06767924-b513-45ff-84a3-df65b1f39e5a
     type: condition
     task:
@@ -268,6 +274,7 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
+    description:  'Checks if search for sessions is relevant.'
     taskid: 095dedd7-669e-4094-8b3a-8712dedf83b3
     type: condition
     task:
@@ -314,6 +321,7 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
+    description:  'Submit search to autofocus-search-sessions.'
     taskid: 0b8f2a9f-93f2-45c3-8e3f-ac1e0d40f251
     type: regular
     task:
@@ -514,6 +522,7 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
+    description:  'Autofocus polling for tags.'
     taskid: b45dbf6c-95ee-4e2a-8041-9f3904b7260b
     type: playbook
     task:
