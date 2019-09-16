@@ -263,3 +263,5 @@ outputs:
   type: string
 - contextPath: AutoFocus.TopTagResults
   type: string
+tests:
+- Autofocus Query Samples & Sessions & Tags Test Playbook
