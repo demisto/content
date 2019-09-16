@@ -1,6 +1,6 @@
 {
   "ContentsFormat": "json",
-  "HumanReadable": "### one_lined_csv.csv\n|CSV list|\n|---|\n|yarden|\n|sade|\n|bar|\n|hochman|\n|van|\n|helsing|\n|shelly|\n|berman|\n",
+  "HumanReadable": "### one_lined_csv.csv\n|CSV list|\n|---|\n| yarden |\n| sade |\n| bar |\n| hochman |\n| van |\n| helsing |\n| shelly |\n| berman |\n",
   "EntryContext": {
     "ParseCSV.ParsedCSV": [
       "yarden",
