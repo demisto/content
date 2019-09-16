@@ -18,7 +18,7 @@ PASSWORD = demisto.params().get('credentials').get('password')
 TOKEN = demisto.params().get('token')
 SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) \
     else demisto.params()['url']
-USE_SSL = not demisto.params().get('insecure', False)
+USE_SSL = not demisto.params().get('insecure', '')
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 FETCH_THREAT_RANK = int(demisto.params().get('fetch_threshold', 5))
 BASE_URL = SERVER + '/web/api/v2.0/'
