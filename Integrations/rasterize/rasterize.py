@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, InvalidArgumentException
 import sys
 import base64
 
@@ -17,10 +17,22 @@ WITH_ERRORS = demisto.params().get('with_error', True)
 DEFAULT_STDOUT = sys.stdout
 
 URL_ERROR_MSG = "Can't access the URL. It might be malicious, or unreachable for one of several reasons. " \
-                "You can choose to receive this message as error/warning in the instance settings"
+                "You can choose to receive this message as error/warning in the instance settings\n"
+EMPTY_RESPONSE_ERROR_MSG = "There is nothing to render. This can occur when there is a refused connection." \
+                           " Please check your URL."
+DEFAULT_W, DEFAULT_H = 600, 800
+
+
+def check_response(driver):
+    EMPTY_PAGE = '<html><head></head><body></body></html>'
+    if driver.page_source == EMPTY_PAGE:
+        return_error(EMPTY_RESPONSE_ERROR_MSG) if WITH_ERRORS else return_warning(EMPTY_RESPONSE_ERROR_MSG, exit=True)
 
 
 def init_driver():
+    """
+    Creates headless Google Chrome Web Driver
+    """
     demisto.debug('Creating chrome driver')
     try:
         with open('log.txt', 'w') as log:
@@ -36,6 +48,10 @@ def init_driver():
             chrome_options.add_argument('--ignore-certificate-errors')
 
             driver = webdriver.Chrome(options=chrome_options)
+
+            # remove log
+            os.remove(os.path.realpath(log.name))
+
     except Exception as ex:
         return_error(str(ex))
     finally:
@@ -46,15 +62,23 @@ def init_driver():
 
 
 def rasterize(path: str, width: int, height: int, r_type='png'):
+    """
+    Capturing a snapshot of a path (url/file), using Chrome Driver
+    :param path: file path, or website url
+    :param width: desired snapshot width in pixels
+    :param height: desired snapshot height in pixels
+    :param r_type: result type: .png/.pdf
+    """
     driver = init_driver()
 
     try:
-        demisto.debug('Navigating to url')
+        demisto.debug('Navigating to path')
 
         driver.get(path)
         driver.implicitly_wait(5)
+        check_response(driver)
 
-        demisto.debug('Navigating to url - COMPLETED')
+        demisto.debug('Navigating to path - COMPLETED')
 
         if r_type.lower() == 'pdf':
             output = get_pdf(driver, width, height)
@@ -63,14 +87,19 @@ def rasterize(path: str, width: int, height: int, r_type='png'):
 
         return output
 
-    except NoSuchElementException as ex:
+    except (InvalidArgumentException, NoSuchElementException) as ex:
         if 'invalid argument' in str(ex):
-            return_error(URL_ERROR_MSG) if WITH_ERRORS else return_warning(URL_ERROR_MSG)
-
-        return_error(str(ex)) if WITH_ERRORS else return_warning(str(ex))
+            err_msg = URL_ERROR_MSG + str(ex)
+            return_error(err_msg) if WITH_ERRORS else return_warning(err_msg, exit=True)
+        else:
+            return_error(str(ex)) if WITH_ERRORS else return_warning(str(ex), exit=True)
 
 
 def get_image(driver, width: int, height: int):
+    """
+    Uses the Chrome driver to generate an image out of a currently loaded path
+    :return: .png file of the loaded path
+    """
     demisto.debug('Capturing screenshot')
 
     # Set windows size
@@ -85,6 +114,10 @@ def get_image(driver, width: int, height: int):
 
 
 def get_pdf(driver, width: int, height: int):
+    """
+    Uses the Chrome driver to generate an pdf file out of a currently loaded path
+    :return: .pdf file of the loaded path
+    """
     demisto.debug('Generating PDF')
 
     driver.set_window_size(width, height)
@@ -104,8 +137,8 @@ def get_pdf(driver, width: int, height: int):
 
 def rasterize_command():
     url = demisto.getArg('url')
-    w = demisto.args().get('width', 600)
-    h = demisto.args().get('height', 800)
+    w = demisto.args().get('width', DEFAULT_W)
+    h = demisto.args().get('height', DEFAULT_H)
     r_type = demisto.args().get('type', 'png')
 
     if not (url.startswith('http')):
@@ -118,14 +151,15 @@ def rasterize_command():
 
     output = rasterize(path=url, r_type=r_type, width=w, height=h)
     file = fileResult(filename=filename, data=output)
+    file['Type'] = entryTypes['image']
 
     demisto.results(file)
 
 
 def rasterize_image_command():
     entry_id = demisto.args().get('EntryID')
-    w = demisto.args().get('width', 600)
-    h = demisto.args().get('height', 800)
+    w = demisto.args().get('width', DEFAULT_W)
+    h = demisto.args().get('height', DEFAULT_H)
 
     file_path = demisto.getFilePath(entry_id).get('path')
     filename = 'image.png'  # type: ignore
@@ -142,8 +176,8 @@ def rasterize_image_command():
 
 def rasterize_email_command():
     html_body = demisto.args().get('htmlBody')
-    w = demisto.args().get('width', 600)
-    h = demisto.args().get('height', 800)
+    w = demisto.args().get('width', DEFAULT_W)
+    h = demisto.args().get('height', DEFAULT_H)
     r_type = demisto.args().get('type', 'png')
 
     filename = f'email.{"pdf" if r_type.lower() == "pdf" else "png"}'  # type: ignore
@@ -165,12 +199,7 @@ def test():
         file_path = f'file://{os.path.realpath(test_file.name)}'
 
     # rasterizing the file
-    driver = init_driver()
-    driver.get(file_path)
-    driver.implicitly_wait(5)
-    driver.set_window_size(250, 250)
-    driver.get_screenshot_as_png()
-    driver.quit()
+    rasterize(path=file_path, width=250, height=250)
 
     demisto.results('ok')
 
@@ -199,5 +228,5 @@ def main():
         sys.stdout = DEFAULT_STDOUT
 
 
-if __name__ in ["__builtin__", "builtins"]:
+if __name__ in ["__builtin__", "builtins", '__main__']:
     main()
