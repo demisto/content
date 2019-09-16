@@ -90,12 +90,12 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 61d2af40-0f4e-4179-850d-5f1fdd026d96
+    taskid: 26dcdc13-0858-4d4d-8f85-a909410cfd0f
     type: title
     task:
-      id: 61d2af40-0f4e-4179-850d-5f1fdd026d96
+      id: 26dcdc13-0858-4d4d-8f85-a909410cfd0f
       version: -1
-      name: Bug Fix Test
+      name: Check if two different users have different auth logs
       type: title
       iscommand: false
       brand: ""
@@ -887,7 +887,7 @@ tasks:
     task:
       id: 6d2ab6bd-cf01-47b6-87ba-a640566d8e58
       version: -1
-      name: Check if User0 doesn't exist and User2 does exsit
+      name: Check if User0 doesn't exists and User2 does exsits
       type: condition
       iscommand: false
       brand: ""
@@ -926,12 +926,12 @@ tasks:
     ignoreworker: false
   "46":
     id: "46"
-    taskid: 50771d8a-f46e-4cff-850a-ab4ac26a57bd
+    taskid: 09668ea7-38b0-4527-8ca9-8ad7a2fd04d7
     type: regular
     task:
-      id: 50771d8a-f46e-4cff-850a-ab4ac26a57bd
+      id: 09668ea7-38b0-4527-8ca9-8ad7a2fd04d7
       version: -1
-      name: Print Error in case of unfixed bug
+      name: Print Error in case of two users have the same auth logs
       description: Prints an error entry with a given message
       scriptName: PrintErrorEntry
       type: regular
