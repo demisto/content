@@ -141,3 +141,9 @@ BETA_INTEGRATION_DISCLAIMER = 'Note: This is a beta Integration,' \
                               'non-backward compatible features. We appreciate your feedback on ' \
                               'the quality and usability of the integration to help us identify issues, ' \
                               'fix them, and continually improve.'
+
+# Integration categories according to the schema
+INTEGRATION_CATEGORIES = ['Analytics & SIEM', 'Utilities', 'Messaging', 'Endpoint', 'Network Security',
+                          'Vulnerability Management', 'Case Management', 'Forensics & Malware Analysis',
+                          'IT Services', 'Data Enrichment & Threat Intelligence', 'Authentication', 'Database',
+                          'Deception', 'Email Gateway']
