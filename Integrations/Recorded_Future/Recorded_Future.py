@@ -6,7 +6,6 @@ import requests
 import os
 import json
 import urllib
-import time
 from datetime import datetime
 
 if not demisto.params()['proxy']:
@@ -1103,7 +1102,6 @@ def vulnlist_command():
         risk = result['risk']
         rf_score = risk['score']
         sightings = result['sightings']
-        vtype = result['entity']['type']
         hr = '### Recorded Future Vulnerability info for ' + vuln + '\n'
         hr += 'Risk score: ' + str(rf_score) + ' out of 99\n'
         hr += 'Criticality label: ' + risk.get('criticalityLabel') + '\n'
@@ -1686,8 +1684,8 @@ try:
     if demisto.command() == 'test-module':
         try:
             res = json.loads(ip_lookup('8.8.8.8'))
-        except:
-            demisto.results('Failed to get response. The URL might be incorrect.')
+        except Exception as ex:
+            return_error('Failed to get response. The URL might be incorrect.' + str(ex))
         demisto.results('ok')
 
     elif demisto.command() == 'fetch-incidents':
