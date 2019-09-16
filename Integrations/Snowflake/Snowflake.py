@@ -66,6 +66,37 @@ if IS_FETCH and not (FETCH_QUERY and DATETIME_COLUMN):
 '''HELPER FUNCTIONS'''
 
 
+def parse_time(time_str: str):
+    regex_to_format = {
+        r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z': '%Y-%m-%dT%H:%M:%SZ',
+        r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z': '%Y-%m-%dT%H:%M:%S.%fZ'
+    }
+
+    selected_format = '%Y-%m-%dT%H:%M:%SZ'
+    for regex, date_format in regex_to_format.items():
+        if re.match(regex, time_str):
+            selected_format = date_format
+            break
+
+    return selected_format
+
+
+def dict_value_to_int(target_dict: dict, key: str):
+    """
+    :param target_dict: A dictionary which has the key param
+    :param key: The key that we need to convert it's value to integer
+    :return: The integer representation of the key's value in the dict params
+    """
+    try:
+        if target_dict:
+            value = target_dict.get(key)
+            if value:
+                target_dict[key] = int(value)
+                return target_dict[key]
+    except ValueError:
+        raise ValueError(f'The value for {key} must be an integer.')
+
+
 def convert_datetime_to_string(v):
     """
     Parses date, time, timedelta, or datetime object into string
@@ -331,8 +362,11 @@ def fetch_incidents():
 def snowflake_query(args):
     params = get_connection_params(args)
     query = args.get('query')
-    limit = args.get('limit', '100')
-    limit = int(limit)
+    limit = args.get('limit')
+    if limit:
+        limit = dict_value_to_int(args, 'limit')
+    else:
+        limit = 100
     if limit > MAX_ROWS:
         limit = MAX_ROWS
     with snowflake.connector.connect(**params) as connection:
