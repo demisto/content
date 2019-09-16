@@ -151,7 +151,8 @@ def rasterize_command():
 
     output = rasterize(path=url, r_type=r_type, width=w, height=h)
     file = fileResult(filename=filename, data=output)
-    file['Type'] = entryTypes['image']
+    if r_type == 'png':
+        file['Type'] = entryTypes['image']
 
     demisto.results(file)
 
@@ -187,6 +188,8 @@ def rasterize_email_command():
 
     output = rasterize(path=path, r_type=r_type, width=w, height=h)
     file = fileResult(filename=filename, data=output)
+    if r_type == 'png':
+        file['Type'] = entryTypes['image']
 
     demisto.results(file)
 
