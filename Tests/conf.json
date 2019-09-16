@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "ThreatQ v2",
+            "playbookID": "ThreatQ - Test"
+        },
+        {
             "integrations": "AttackIQFireDrill",
             "playbookID": "AttackIQ - Test"
         },
