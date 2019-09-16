@@ -2,8 +2,8 @@ id: Calculate Severity By Email Authenticity
 version: -1
 fromversion: 4.5.0
 name: Calculate Severity By Email Authenticity
-description: Calculates and outputs a severity according to the verdict coming from
-  the CheckEmailAuthenticity script.
+description: Calculates a severity according to the verdict coming from the
+ CheckEmailAuthenticity script.
 starttaskid: "0"
 tasks:
   "0":
@@ -61,9 +61,9 @@ tasks:
     task:
       id: 75107f50-55da-459d-8ee1-cc86e21b0cdb
       version: -1
-      name: Is there an email authenticity verdict?
-      description: Checks if there is a verdict regarding the authenticity of the
-        investigated email, in the playbook inputs, which comes from the CheckEmailAuthenticity
+      name: Email authenticity verdict exists?
+      description: Checks the playbook inputs for a verdict regarding the authenticity of the
+        investigated email. The verdict comes from the CheckEmailAuthenticity
         script.
       type: condition
       iscommand: false
@@ -125,7 +125,7 @@ tasks:
     task:
       id: 8a89986f-7d9c-4fd0-8d44-8cd692b436d1
       version: -1
-      name: Evaluate score based on email authenticity verdict
+      name: Evaluate score 
       description: Evaluates the severity score for this playbook, according to the
         verdict returned from CheckEmailAuthenticity.
       type: condition
