@@ -604,8 +604,7 @@
         },
         {
             "integrations": "Shodan",
-            "playbookID": "ShodanTest",
-            "timeout": 1000
+            "playbookID": "ShodanTest"
         },
         {
             "playbookID": "Extract Indicators From File - test",
@@ -1795,7 +1794,8 @@
         },
         {
             "integrations": "Shodan_v2",
-            "playbookID": "Test-Shodan_v2"
+            "playbookID": "Test-Shodan_v2",
+            "timeout": 1000
         },
         {
             "integrations": "Threat Crowd",
