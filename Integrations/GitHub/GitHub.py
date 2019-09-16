@@ -725,14 +725,10 @@ def is_pr_merged(pull_number: Union[int, str]):
 def is_pr_merged_command():
     args = demisto.args()
     pull_number = args.get('pull_number')
-    try:
-        is_pr_merged(pull_number)
-        demisto.results(f'Pull Request #{pull_number} was Merged')
-    except Exception as e:
-        if str(e).startswith('Error in API call to the GitHub Integration [404]'):
-            demisto.results(f'Pull Request #{pull_number} was not Merged')
-        else:
-            raise e
+
+    # raises 404 not found error if the pr was not merged
+    is_pr_merged(pull_number)
+    demisto.results(f'Pull Request #{pull_number} was Merged')
 
 
 def update_pull_request(pull_number: Union[int, str], update_vals: dict = {}) -> dict:
