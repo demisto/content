@@ -134,7 +134,7 @@ def createPyDocumentation(path, origin, language):
     isErrorPy = False
 
     with open(path, 'r') as file:
-        pyScript = clean_python_code(file.read(), False)
+        pyScript = clean_python_code(file.read(), remove_print_future=False)
 
     code = compile(pyScript, '<string>', 'exec')
     ns = {'demisto': demistomock}
