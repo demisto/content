@@ -1,6 +1,6 @@
-id: Autofocus Query Samples and Sessions and Tags Test Playbook
+id: Autofocus Query Samples, Sessions and Tags Test Playbook
 version: -1
-name: Autofocus Query Samples and Sessions and Tags Test Playbook
+name: Autofocus Query Samples, Sessions and Tags Test Playbook
 description: |-
   This is a test playbook to the the functionality of the Autofocus Query
   Samples and Sessions playbook. The test playbook checks for Autofocus query inputs,
@@ -44,7 +44,7 @@ tasks:
         This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IP's, hashes, domains to run basic queries or mode advanced queries that can leverage several query parameters. In order to run the more advanced queries its recommended to use the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to created a query and than use the export search button. The result can be used as a playbook input.
 
         The playbook supports searching both the Samples API and the sessions API.
-      playbookName: Autofocus Query Samples and Sessions
+      playbookName: Autofocus Query Samples, Sessions and Tags
       type: playbook
       iscommand: false
       brand: ""
@@ -196,7 +196,7 @@ tasks:
         This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IP's, hashes, domains to run basic queries or mode advanced queries that can leverage several query parameters. In order to run the more advanced queries its recommended to use the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to created a query and than use the export search button. The result can be used as a playbook input.
 
         The playbook supports searching both the Samples API and the sessions API.
-      playbookName: Autofocus Query Samples and Sessions
+      playbookName: Autofocus Query Samples, Sessions and Tags
       type: playbook
       iscommand: false
       brand: ""
