@@ -507,8 +507,8 @@ def get_related_entities_command():
         entity_result_type = entity_result_type.split(',')
         entity_types = []  # type: list
         if 'All' in entity_result_type:
-            entity_types = ['RelatedIpAddress', 'RelatedInternetDomainName', 'RelatedHash', 'RelatedMalware',
-                            'RelatedAttackVector', 'RelatedURL']  # type: list
+            entity_types += ['RelatedIpAddress', 'RelatedInternetDomainName', 'RelatedHash', 'RelatedMalware',
+                            'RelatedAttackVector', 'RelatedURL']
         else:
             if 'IP' in entity_result_type:
                 entity_types.append('RelatedIpAddress')
