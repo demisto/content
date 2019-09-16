@@ -58,3 +58,5 @@ dependson:
   must:
   - elasticsearch|||search
 timeout: 0s
+tests:
+  - No test - deprecated
