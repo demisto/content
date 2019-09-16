@@ -61,7 +61,7 @@ tasks:
     task:
       id: 75107f50-55da-459d-8ee1-cc86e21b0cdb
       version: -1
-      name: Email authenticity verdict exists?
+      name: Is there an email authenticity verdict?
       description: Checks the playbook inputs for a verdict regarding the authenticity of the
         investigated email. The verdict comes from the CheckEmailAuthenticity
         script.
