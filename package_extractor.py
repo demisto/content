@@ -152,7 +152,7 @@ def migrate(yml_path, output_path, demisto_mock, commonserver=None, yml_type=Non
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Extract code file from a demmisto integration or script yaml file',
+    parser = argparse.ArgumentParser(description='Extract code file from a demisto integration or script yaml file',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-i", "--infile", help="The yml file to extract from", required=True)
     parser.add_argument("-o", "--outfile", help="The output file or dir (if doing migrate) to write the code to", required=True)

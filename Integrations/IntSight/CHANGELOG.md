@@ -1,1 +1,2 @@
-set default encoding to utf-8
+## [Unreleased]
+Improved the error message in cases where the URL address is incorrect.
