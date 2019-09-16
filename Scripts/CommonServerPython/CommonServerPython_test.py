@@ -3,7 +3,7 @@ import demistomock as demisto
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger
+    IntegrationLogger, parse_date_string, parse_date_range
 
 import copy
 import os
@@ -291,6 +291,33 @@ def test_tbl_to_md_list_of_strings_instead_of_dict_and_string_header():
 |katz|
 '''
     assert table_string_array_string_header == expected_string_array_string_header_tbl
+
+
+def test_tbl_to_md_dict_with_special_character():
+    data = {
+        'header_1': u'foo',
+        'header_2': [u'\xe2.rtf']
+    }
+    table_with_character = tableToMarkdown('tableToMarkdown test with special character', data)
+    expected_string_with_special_character = '''### tableToMarkdown test with special character
+|header_1|header_2|
+|---|---|
+|foo|â.rtf|
+'''
+    assert table_with_character == expected_string_with_special_character
+
+
+def test_tbl_to_md_header_with_special_character():
+    data = {
+        'header_1': u'foo'
+    }
+    table_with_character = tableToMarkdown('tableToMarkdown test with special character Ù', data)
+    expected_string_with_special_character = '''### tableToMarkdown test with special character Ù
+|header_1|
+|---|
+|foo|
+'''
+    assert table_with_character == expected_string_with_special_character
 
 
 def test_flatten_cell():
@@ -603,7 +630,6 @@ def test_exception_in_return_error(mocker):
 
 
 def test_get_demisto_version(mocker):
-
     # verify expected server version and build returned in case Demisto class has attribute demistoVersion
     mocker.patch.object(
         demisto,
@@ -617,3 +643,39 @@ def test_get_demisto_version(mocker):
         'version': '5.0.0',
         'buildNumber': '50000'
     }
+
+
+def test_parse_date_string():
+    # test unconverted data remains: Z
+    assert parse_date_string('2019-09-17T06:16:39Z') == datetime(2019, 9, 17, 6, 16, 39)
+
+    # test unconverted data remains: .22Z
+    assert parse_date_string('2019-09-17T06:16:39.22Z') == datetime(2019, 9, 17, 6, 16, 39, 220000)
+
+    # test time data without ms does not match format with ms
+    assert parse_date_string('2019-09-17T06:16:39Z', '%Y-%m-%dT%H:%M:%S.%f') == datetime(2019, 9, 17, 6, 16, 39)
+
+    # test time data with timezone Z does not match format with timezone +05:00
+    assert parse_date_string('2019-09-17T06:16:39Z', '%Y-%m-%dT%H:%M:%S+05:00') == datetime(2019, 9, 17, 6, 16, 39)
+
+    # test time data with timezone +05:00 does not match format with timezone Z
+    assert parse_date_string('2019-09-17T06:16:39+05:00', '%Y-%m-%dT%H:%M:%SZ') == datetime(2019, 9, 17, 6, 16, 39)
+
+    # test time data with timezone -05:00 and with ms does not match format with timezone +02:00 without ms
+    assert parse_date_string(
+        '2019-09-17T06:16:39.4040+05:00', '%Y-%m-%dT%H:%M:%S+02:00'
+    ) == datetime(2019, 9, 17, 6, 16, 39, 404000)
+
+
+def test_parse_date_range():
+    utc_now = datetime.utcnow()
+    utc_start_time, utc_end_time = parse_date_range('2 days', utc=True)
+    # testing UTC date time and range of 2 days
+    assert utc_now.replace(microsecond=0) == utc_end_time.replace(microsecond=0)
+    assert abs(utc_start_time - utc_end_time).days == 2
+
+    local_now = datetime.now()
+    local_start_time, local_end_time = parse_date_range('73 minutes', utc=False)
+    # testing local datetime and range of 73 minutes
+    assert local_now.replace(microsecond=0) == local_end_time.replace(microsecond=0)
+    assert abs(local_start_time - local_end_time).seconds / 60 == 73
