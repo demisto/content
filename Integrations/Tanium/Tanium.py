@@ -303,7 +303,7 @@ def deploy_action(handler):
     for key, value in demisto.args().items():
         kwargs[key] = value
 
-    kwargs["get_results"] = True if kwargs.get('get_results').lower() == 'true' else False
+    kwargs["get_results"] = True if str(kwargs.get('get_results')).lower() == 'true' else False
 
     callbacks = {}
     callbacks['PreAddAction'] = handle_cgs
