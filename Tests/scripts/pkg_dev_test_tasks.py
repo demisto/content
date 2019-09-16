@@ -247,7 +247,7 @@ def run_mypy(project_dir, py_num):
     lint_files = get_lint_files(project_dir)
     print("========= Running mypy on: {} ===============".format(lint_files))
     sys.stdout.flush()
-    subprocess.check_c -all(['bash', RUN_MYPY_SCRIPT, str(py_num), lint_files], cwd=project_dir)
+    subprocess.check_call(['bash', RUN_MYPY_SCRIPT, str(py_num), lint_files], cwd=project_dir)
     print("mypy completed")
 
 
