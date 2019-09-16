@@ -30,6 +30,16 @@ configuration:
   name: credentials
   required: false
   type: 9
+- defaultvalue: ""
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
 description: Perch is a co-managed threat detection and response platform.
 display: Perch
 name: Perch
