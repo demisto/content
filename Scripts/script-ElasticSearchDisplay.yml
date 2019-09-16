@@ -36,10 +36,13 @@ script: |-
   }
   return res;
 type: javascript
-comment: "Runs an elasticsearch query and displays results in a nice table. - Deprecated, use Elasticsearch v2 integration"
 tags:
 - Elasticsearch
-system: true
+comment: |-
+  Deprecated, use Elasticsearch v2 integration.
+
+  Runs an elasticsearch query and displays results in a nice table.
+enabled: true
 args:
 - name: query
   required: true
