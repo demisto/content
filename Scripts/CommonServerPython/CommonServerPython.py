@@ -83,7 +83,7 @@ dbotscores = {
     'Informational': 0.5
 }
 
-INDICATOR_TYPES = {
+INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ip': 'Address',
     'email': 'Address',
     'url': 'Data',
@@ -94,7 +94,8 @@ INDICATOR_TYPES = {
     'sha256': 'file',
     'crc32': 'file',
     'sha512': 'file',
-    'ctph': 'file'
+    'ctph': 'file',
+    'ssdeep': 'file'
 }
 # ===== Fix fetching credentials from vault instances =====
 # ====================================================================================
@@ -1972,9 +1973,9 @@ def build_dbot_entry(indicator, indicator_type, vendor, score, description=None,
     if not 0 <= score <= 3:
         raise DemistoException('illegal DBot score, expected 0-3, got `{}`'.format(score))
     indicator_type_lower = indicator_type.lower()
-    if indicator_type_lower not in INDICATOR_TYPES:
+    if indicator_type_lower not in INDICATOR_TYPE_TO_CONTEXT_KEY:
         raise DemistoException('illegal indicator type, expected one of {}, got `{}`'.format(
-            INDICATOR_TYPES.keys(), indicator_type_lower
+            INDICATOR_TYPE_TO_CONTEXT_KEY.keys(), indicator_type_lower
         ))
     dbot_entry = {
         outputPaths['dbotscore']: {
@@ -1982,7 +1983,8 @@ def build_dbot_entry(indicator, indicator_type, vendor, score, description=None,
             'Type': indicator_type_lower,
             'Vendor': vendor,
             'Score': score
-        }}
+        }
+    }
     if score == 3 and build_malicious:
         dbot_entry.update(build_malicious_dbot_entry(indicator, indicator_type, vendor, description))
     return dbot_entry
@@ -2017,11 +2019,11 @@ H || val.SSDeep && val.SSDeep == obj.SSDeep)': {'Malicious': {'Vendor': 'Vendor'
     :rtype: ``dict``
     """
     indicator_type_lower = indicator_type.lower()
-    if indicator_type_lower in INDICATOR_TYPES:
-        key = INDICATOR_TYPES[indicator_type_lower]
+    if indicator_type_lower in INDICATOR_TYPE_TO_CONTEXT_KEY:
+        key = INDICATOR_TYPE_TO_CONTEXT_KEY[indicator_type_lower]
         # `file` indicator works a little different
         if key == 'file':
-            key = indicator_type_lower.upper()
+            key = indicator_type.upper()
             indicator_type_lower = 'file'
         entry = {
             key: indicator,
@@ -2033,7 +2035,7 @@ H || val.SSDeep && val.SSDeep == obj.SSDeep)': {'Malicious': {'Vendor': 'Vendor'
         return {outputPaths[indicator_type_lower]: entry}
     else:
         raise DemistoException('Wrong indicator type supplied: {}, expected {}'
-                               .format(indicator_type, INDICATOR_TYPES))
+                               .format(indicator_type, INDICATOR_TYPE_TO_CONTEXT_KEY.keys()))
 
 
 class BaseClient(object):
@@ -2066,7 +2068,7 @@ class BaseClient(object):
         self._integration_context_name = str(integration_context_name)
 
     @property
-    def integration_name(self):
+    def integration_name(self):  # pragma: no cover
         """Property of integration name
         return: Integration command name.
         :rtype: ``str``
@@ -2074,7 +2076,7 @@ class BaseClient(object):
         return self._integration_name
 
     @property
-    def integration_context_name(self):
+    def integration_context_name(self):  # pragma: no cover
         """Property of integration name context
         return: Integration command name
         :rtype: ``str``
@@ -2082,7 +2084,7 @@ class BaseClient(object):
         return self._integration_context_name
 
     @property
-    def integration_command_name(self):
+    def integration_command_name(self):  # pragma: no cover
         """Property of integration name command
         return: Integration command name
         :rtype: ``str``
@@ -2257,7 +2259,7 @@ if 'requests' in sys.modules:
                     .format(err_type, exception.errno, exception.strerror)
                 raise DemistoException(err_msg, exception)
 
-        def _is_status_code_valid(self, response, ok_codes):
+        def _is_status_code_valid(self, response, ok_codes=None):
             """If the status code is OK, return 'True'.
 
             :type response: ``requests.Response``

@@ -6,6 +6,7 @@ import sys
 import requests
 from pytest import raises, mark
 
+import CommonServerPython
 import demistomock as demisto
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
@@ -699,6 +700,13 @@ class TestBuildDBotEntry(object):
             'Address': '8.8.8.8', 'Malicious': {'Vendor': 'Vendor', 'Description': 'Google DNS'}}}
 
     @staticmethod
+    def test_build_malicious_dbot_entry_wrong_indicator_type():
+        from CommonServerPython import build_malicious_dbot_entry, DemistoException
+        with raises(DemistoException, match='Wrong indicator type'):
+            build_malicious_dbot_entry('8.8.8.8', 'notindicator', 'Vendor', 'Google DNS')
+
+
+    @staticmethod
     def test_illegal_dbot_score():
         from CommonServerPython import build_dbot_entry, DemistoException
         with raises(DemistoException, match='illegal DBot score'):
@@ -785,9 +793,11 @@ class TestHTTPBaseClient(object):
 
     def test_is_valid_ok_codes_empty(self):
         from requests import Response
+        from CommonServerPython import BaseHTTPClient
+        new_client = BaseHTTPClient('Name', 'name', 'name', 'http://example.com', '/api/v2/')
         response = Response()
         response.status_code = 200
-        assert self.client._is_status_code_valid(response, None)
+        assert new_client._is_status_code_valid(response, None)
 
     def test_is_valid_ok_codes_from_function(self):
         from requests import Response
@@ -817,7 +827,7 @@ class TestHTTPBaseClient(object):
         from requests import Response
         response = Response()
         response.status_code = 400
-        assert not self.client._is_status_code_valid(response, None)
+        assert not self.client._is_status_code_valid(response)
 
 
 def test_parse_date_string():
