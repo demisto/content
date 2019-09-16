@@ -88,12 +88,12 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    description:  'Done'
     taskid: 6ebdfaf2-50e7-4556-8ae8-7efe5eafd785
     type: title
     task:
       id: 6ebdfaf2-50e7-4556-8ae8-7efe5eafd785
       version: -1
+      description:  'Done'
       name: Done
       type: title
       iscommand: false
@@ -431,6 +431,7 @@ tasks:
     type: condition
     task:
       id: 9d33c2b5-32d7-4e24-8e98-19446b845ddb
+      description:  'Checks if search for tags is relevant.'
       version: -1
       name: Search Tags?
       type: condition
