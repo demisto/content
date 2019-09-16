@@ -14,7 +14,7 @@ tasks:
     type: start
     task:
       id: e8ee09a9-34a1-43ee-8c08-9edf45216daf
-      description:  'Playbook started.'
+      description: Playbook started.
       version: -1
       name: ""
       iscommand: false
@@ -39,7 +39,7 @@ tasks:
     type: regular
     task:
       id: ade63761-4ed2-44da-8246-d32f6eb9ee95
-      description:  'Submit search to autofocus-search-samples.'
+      description: Submit search to autofocus-search-samples.
       version: -1
       name: Submit search to Autofocus - sample hash
       script: '|||autofocus-search-samples'
@@ -93,7 +93,7 @@ tasks:
     task:
       id: 6ebdfaf2-50e7-4556-8ae8-7efe5eafd785
       version: -1
-      description:  'Done'
+      description: Done
       name: Done
       type: title
       iscommand: false
@@ -115,7 +115,7 @@ tasks:
     type: condition
     task:
       id: 62073e57-db22-415c-89df-a6b33b1d3710
-      description:  'Checks if Autofocus is enabled.'
+      description: Checks if Autofocus is enabled.
       version: -1
       name: Is Autofocus enabled?
       type: condition
@@ -172,7 +172,6 @@ tasks:
     type: playbook
     task:
       id: 1edda0bc-b651-4c41-8fcf-42e97c0bcfe7
-      description:  'Autofocus polling for samples.'
       version: -1
       name: AutoFocusPolling
       description: |-
@@ -229,7 +228,7 @@ tasks:
     type: condition
     task:
       id: 06767924-b513-45ff-84a3-df65b1f39e5a
-      description:  'Checks if search for samples is relevant.'
+      description: Checks if search for samples is relevant.
       version: -1
       name: Search samples?
       type: condition
@@ -278,7 +277,7 @@ tasks:
     type: condition
     task:
       id: 095dedd7-669e-4094-8b3a-8712dedf83b3
-      description:  'Checks if search for sessions is relevant.'
+      description: Checks if search for sessions is relevant.
       version: -1
       name: Search Sessions?
       type: condition
@@ -327,7 +326,7 @@ tasks:
       id: 0b8f2a9f-93f2-45c3-8e3f-ac1e0d40f251
       version: -1
       name: Submit search to Autofocus - Sessions hash
-      description:  'Submit search to autofocus-search-sessions.'
+      description: Submit search to autofocus-search-sessions.
       script: '|||autofocus-search-sessions'
       type: regular
       iscommand: true
@@ -431,7 +430,7 @@ tasks:
     type: condition
     task:
       id: 9d33c2b5-32d7-4e24-8e98-19446b845ddb
-      description:  'Checks if search for tags is relevant.'
+      description: Checks if search for tags is relevant.
       version: -1
       name: Search Tags?
       type: condition
@@ -708,12 +707,12 @@ inputs:
 outputs:
 - contextPath: AutoFocus.SessionsResults
   type: string
-  description:  'Results of Autofocus sessions search.'
+  description: Results of Autofocus sessions search.
 - contextPath: AutoFocus.SamplesResults
   type: string
-  description:  'Results of Autofocus samples search.'
+  description: Results of Autofocus samples search.
 - contextPath: AutoFocus.TopTagResults
   type: string
-  description:  'Results of Autofocus tags search.'
+  description: Results of Autofocus tags search.
 tests:
 - Autofocus Query Samples and Sessions and Tags Test Playbook
