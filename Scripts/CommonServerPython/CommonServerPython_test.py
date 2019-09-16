@@ -693,6 +693,16 @@ class TestBuildDBotEntry(object):
         }
 
     @staticmethod
+    def test_build_malicious_dbot_entry_file():
+        from CommonServerPython import build_malicious_dbot_entry
+        res = build_malicious_dbot_entry('md5hash', 'MD5', 'Vendor', 'Google DNS')
+        assert res == {
+            "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj"
+            ".SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val"
+            ".CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)":
+                {"Malicious": {"Vendor": "Vendor", "Description": "Google DNS"}, "MD5": "md5hash"}}
+
+    @staticmethod
     def test_build_malicious_dbot_entry():
         from CommonServerPython import build_malicious_dbot_entry
         res = build_malicious_dbot_entry('8.8.8.8', 'ip', 'Vendor', 'Google DNS')
