@@ -10,7 +10,7 @@ import demistomock as demisto
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string
+    IntegrationLogger, parse_date_string, parse_date_range
 
 INFO = {'b': 1,
         'a': {
@@ -858,3 +858,17 @@ def test_parse_date_string():
     assert parse_date_string(
         '2019-09-17T06:16:39.4040+05:00', '%Y-%m-%dT%H:%M:%S+02:00'
     ) == datetime(2019, 9, 17, 6, 16, 39, 404000)
+
+
+def test_parse_date_range():
+    utc_now = datetime.utcnow()
+    utc_start_time, utc_end_time = parse_date_range('2 days', utc=True)
+    # testing UTC date time and range of 2 days
+    assert utc_now.replace(microsecond=0) == utc_end_time.replace(microsecond=0)
+    assert abs(utc_start_time - utc_end_time).days == 2
+
+    local_now = datetime.now()
+    local_start_time, local_end_time = parse_date_range('73 minutes', utc=False)
+    # testing local datetime and range of 73 minutes
+    assert local_now.replace(microsecond=0) == local_end_time.replace(microsecond=0)
+    assert abs(local_start_time - local_end_time).seconds / 60 == 73

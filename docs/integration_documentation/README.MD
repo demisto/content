@@ -6,13 +6,13 @@ Within Demisto, exists the ability to generate documentation for your integratio
 
 First, take the YAML file of your integration and upload it to the War Room. Please note the entry ID as you will need it in the next step.
 
-To use the DocumentationAutomation script, navigate to the War Room and execute the command:
+To use the HTMLDocsAutomation script, navigate to the War Room and execute the command:
  ```
-!DocumentationAutomation entryID="the_entry_id_of_the_uploaded_yml_integration"
+!HTMLDocsAutomation entryID="the_entry_id_of_the_uploaded_yml_integration"
 ```
 You may choose to include the other arguments depending on what you may need.
 
-Once the command has been executed, you will see the documentation markdown in the War Room as a new entry and a copy of it as a file entry. Review the generated document.
+Once the command has been executed, you will see the documentation html in the War Room as a new entry and a copy of it as a file entry. Review the generated document.
 
 Where there is missing information, be sure to fill out the document completely. It is advised to include use-cases, screenshots, and examples of the context. 
 
@@ -22,7 +22,7 @@ Where there is missing information, be sure to fill out the document completely.
 3.  If the integration is existing and some of the integration has changed. For example, a new command was added, context was changed, or anything else; please update the documentation.
 
 
-**The documentation must conform to [this format](https://github.com/demisto/etc/wiki/Document-structure:-Integrations)**
+**The documentation must conform to [this format](https://github.com/demisto/content/blob/master/docs/integration_documentation/integration_documentation_structure.MD)**
 
 
 ### Using commands parameter
