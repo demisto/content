@@ -699,9 +699,12 @@ inputs:
 outputs:
 - contextPath: AutoFocus.SessionsResults
   type: string
+  description:  'Results of Autofocus sessions search.'
 - contextPath: AutoFocus.SamplesResults
   type: string
+  description:  'Results of Autofocus samples search.'
 - contextPath: AutoFocus.TopTagResults
   type: string
+  description:  'Results of Autofocus tags search.'
 tests:
 - Autofocus Query Samples & Sessions & Tags Test Playbook
