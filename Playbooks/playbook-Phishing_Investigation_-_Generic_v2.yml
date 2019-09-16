@@ -1203,7 +1203,7 @@ tasks:
       id: d18654f5-16fd-441e-8db0-4e55f0df0f43
       version: -1
       name: Should the email be authenticated?
-      description: "Whether the email should be authenticated using DKIM, SPF and DMARC checks.
+      description: "Whether the email should be authenticated using DKIM, SPF and DMARC.
       This checks whether \"AuthenticateEmail\" output is set to \"True\" and whether there are headers from an email to authenticate."
       type: condition
       iscommand: false
@@ -1332,7 +1332,7 @@ tasks:
       id: e80e3f5a-a74f-44a8-8e83-8eee96def1d0
       version: -1
       name: Save authenticity check result to incident field
-      description: Save the verdict regarding the authenticity of the email, in an
+      description: Save the verdict, regarding the authenticity of the email, in an
         incident field.
       script: Builtin|||setIncident
       type: regular
@@ -1610,7 +1610,7 @@ inputs:
     simple: "False"
   required: false
   description: Whether the authenticity of the email should be verified, using SPF,
-    DKIM and DMARC checks.
+    DKIM and DMARC.
 outputs: []
 tests:
   - Phishing v2 Test - Attachment
