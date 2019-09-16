@@ -115,8 +115,8 @@ TEST_RESULT_TRANS = {
     'asset.product_name': 'Asset.ProductName',
     'asset.modified': 'Asset.Modified',
     'asset_group': 'Asset.AssetGroup',
-    'job_state_name': 'JobState.Name',
-    'outcome_name': 'Outcome.Name'
+    'job_state_name': 'JobState',
+    'outcome_name': 'Outcome'
 }
 
 ''' HELPER FUNCTIONS '''
@@ -346,32 +346,49 @@ def build_test_results_hr(test_results, test_id, page, tot_pages):
     return tableToMarkdown(f'Test Results for {test_id}\n ### Page {page}/{tot_pages}', test_results_mod, keys)
 
 
+def get_test_results(page, page_size, test_id, show_last_res):
+    """
+    Get test results response
+    Args:
+        page (int): Page number
+        page_size (int): Page size
+        test_id (int): ID of test
+        show_last_res (bool): Flag for showing only last result
+
+    Returns: Test results
+    """
+    params = {
+        'page': page,
+        'page_size': page_size,
+        'test_id': test_id,
+        'show_last_result': show_last_res
+    }
+    return http_request('GET', '/v1/results', params=params)
+
+
 def get_test_results_command(args=demisto.args()):
     """ Implements attackiq-get-test-results command
     """
     test_id = args.get('test_id')
     page, page_size = get_page_number_and_page_size(demisto.args())
-    params = {
-        'page': page,
-        'page_size': page_size,
-        'test_id': test_id,
-        'show_last_result': args.get('show_last_result') == 'True'
-    }
     try:
-        raw_test_res = http_request('GET', '/v1/results', params=params)
-        test_res = build_transformed_dict(raw_test_res['results'], TEST_RESULT_TRANS)
+        raw_test_res = get_test_results(page, page_size, test_id, args.get('show_last_result') == 'True')
         test_cnt = raw_test_res.get('count')
-        total_pages = math.ceil(test_cnt / page_size)
-        remaining_pages = total_pages - page
-        if remaining_pages < 0:
-            remaining_pages = 0
-        context = {
-            'AttackIQTestResult(val.Id === obj.Id)': test_res,
-            'AttackIQTestResult(val.Count).Count': test_cnt,
-            'AttackIQTestResult(val.RemainingPages).RemainingPages': remaining_pages
-        }
-        hr = build_test_results_hr(test_res, test_id, page, total_pages)
-        return_outputs(hr, context, raw_test_res)
+        if test_cnt == 0:
+            return_outputs('No results were found', {})
+        else:
+            total_pages = math.ceil(test_cnt / page_size)
+            remaining_pages = total_pages - page
+            if remaining_pages < 0:
+                remaining_pages = 0
+            test_res = build_transformed_dict(raw_test_res['results'], TEST_RESULT_TRANS)
+            context = {
+                'AttackIQTestResult(val.Id === obj.Id)': test_res,
+                'AttackIQTestResult(val.Count).Count': test_cnt,
+                'AttackIQTestResult(val.RemainingPages).RemainingPages': remaining_pages
+            }
+            hr = build_test_results_hr(test_res, test_id, page, total_pages)
+            return_outputs(hr, context, raw_test_res)
     except HTTPError as e:
         return_error(create_invalid_id_err_msg(str(e), ['500']))
 
@@ -472,18 +489,21 @@ def list_tests_by_assessment_command():
     }
     raw_res = list_tests_by_assessment(params)
     test_cnt = raw_res.get('count')
-    tests_res = build_transformed_dict(raw_res.get('results'), TESTS_TRANS)
-    total_pages = math.ceil(test_cnt / page_size)
-    remaining_pages = total_pages - page
-    if remaining_pages < 0:
-        remaining_pages = 0
-    context = {
-        'AttackIQTest(val.Id === obj.Id)': tests_res,
-        'AttackIQTest(val.Count).Count': test_cnt,
-        'AttackIQTest(val.RemainingPages).RemainingPages': remaining_pages
-    }
-    hr = build_tests_hr(tests_res, ass_id, page, total_pages)
-    return_outputs(hr, context, raw_res)
+    if test_cnt == 0:
+        return_outputs('No results were found', {})
+    else:
+        tests_res = build_transformed_dict(raw_res.get('results'), TESTS_TRANS)
+        total_pages = math.ceil(test_cnt / page_size)
+        remaining_pages = total_pages - page
+        if remaining_pages < 0:
+            remaining_pages = 0
+        context = {
+            'AttackIQTest(val.Id === obj.Id)': tests_res,
+            'AttackIQTest(val.Count).Count': test_cnt,
+            'AttackIQTest(val.RemainingPages).RemainingPages': remaining_pages
+        }
+        hr = build_tests_hr(tests_res, ass_id, page, total_pages)
+        return_outputs(hr, context, raw_res)
 
 
 def run_all_tests_in_assessment_command():

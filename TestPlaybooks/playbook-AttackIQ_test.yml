@@ -187,10 +187,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 00274e08-352c-48de-86c9-fdeb7b2bd86e
+    taskid: bf61f624-2730-44f5-8db8-e65bc4514a2a
     type: condition
     task:
-      id: 00274e08-352c-48de-86c9-fdeb7b2bd86e
+      id: bf61f624-2730-44f5-8db8-e65bc4514a2a
       version: -1
       name: Assert test results
       type: condition
@@ -238,7 +238,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AttackIQTestResult.JobState.Name
+              simple: AttackIQTestResult.JobState
             iscontext: true
           right:
             value:
@@ -246,7 +246,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AttackIQTestResult.Outcome.Name
+              simple: AttackIQTestResult.Outcome
             iscontext: true
           right:
             value:
