@@ -19,193 +19,192 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: AttackIQ offers continuous validation for security controls, processes
-  and people.
+description: An attack simulation platform that provides validations for security controls, responses, and remediation exercises.
 display: AttackIQ FireDrill
 name: AttackIQFireDrill
 script:
   commands:
   - arguments:
     - default: true
-      description: ID of the assessment to get.
+      description: The ID of the assessment to return.
       isArray: false
       name: assessment_id
       required: true
       secret: false
     deprecated: false
-    description: Get all assessments in a page or by assessment id.
+    description: Returns all assessments by its ID in the AttackIQ FireDrill platform.
     execution: false
     name: attackiq-get-assessment-by-id
     outputs:
     - contextPath: AttackIQ.Assessment.Id
-      description: Assessment ID.
+      description: The ID of the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.Name
-      description: Assessment Name.
+      description: The name of the assessment name.
       type: String
     - contextPath: AttackIQ.Assessment.Description
-      description: Assessment description.
+      description: The description of the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.StartDate
-      description: When the assessment started.
+      description: The start date of the assessment.
       type: Date
     - contextPath: AttackIQ.Assessment.EndDate
-      description: When the assessment ended
+      description: The end date of the assessment.
       type: Date
     - contextPath: AttackIQ.Assessment.AssessmentState
-      description: Assessment's state. Can be Active or Inactive.
+      description: The state of the assessment. Can be Active or Inactive.
       type: String
     - contextPath: AttackIQ.Assessment.DefaultSchedule
-      description: Assessment's default schedule timing (cron).
+      description: The default schedule timing (cron) of the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.AssessmentTemplateId
-      description: Assessment template ID.
+      description: The template ID of the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.AssessmentTemplateName
-      description: Assessment template Name.
+      description: The template name of the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.AssessmentTemplateDescription
-      description: Assessment template description.
+      description: The template description of the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.AssessmentTemplateDefaultSchedule
-      description: Assessment's template default schedule timing (cron).
+      description: The assessment's template default schedule timing (cron).
       type: Unknown
     - contextPath: AttackIQ.Assessment.AssessmentTemplateCompany
       description: The owner of the template.
       type: String
     - contextPath: AttackIQ.Assessment.AssessmentTemplateCreated
-      description: The date the template was created at.
+      description: The date that the template was created.
       type: Date
     - contextPath: AttackIQ.Assessment.AssessmentTemplateModified
       description: The date the template was last modified.
       type: Date
     - contextPath: AttackIQ.Assessment.Creator
-      description: User who created the assessment.
+      description: The user who created the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.Owner
-      description: User who owns the assessment.
+      description: The user who owns the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.User
-      description: The user that ran the assessment.
+      description: The user who ran the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.Created
-      description: The time the assessment was created at.
+      description: The time that the assessment was created.
       type: String
     - contextPath: AttackIQ.Assessment.Modified
-      description: The time the assessment was last modified at.
+      description: The time that the assessment was last modified.
       type: String
     - contextPath: AttackIQ.Assessment.Users
-      description: User ids that can access the assessment.
+      description: The user IDs that can access the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.Groups
-      description: User groups who can access the assessment.
+      description: The user groups who can access the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.DefaultAssetCount
-      description: Number of machines (assets) that are connected to the assessment.
+      description: The number of machines (assets) that are connected to the assessment.
       type: Number
     - contextPath: AttackIQ.Assessment.DefaultAssetGroupCount
-      description: Number of asset groups that are connected to the assessment.
+      description: The number of asset groups that are connected to the assessment.
       type: Number
     - contextPath: AttackIQ.Assessment.MasterJobCount
-      description: Number of tests that ran in the assessment.
+      description: The number of tests that ran in the assessment.
       type: Number
     - contextPath: AttackIQ.Assessment.Count
-      description: Total number of assessments.
+      description: The total number of assessments.
       type: Number
     - contextPath: AttackIQ.Assessment.RemainingPages
-      description: Number of remaining pages left to fetch (e.g. if total pages is
-        6, and the last fetch was page 5, then this value will be 1)
+      description: The number of remaining pages to return. For example, if the total number of pages is
+        6, and the last fetch was page 5, the value is 1.
       type: Number
   - arguments:
     - default: false
       defaultValue: '1'
-      description: Assessment page to get.
+      description: The page number to return.
       isArray: false
       name: page_number
       required: false
       secret: false
     - default: false
-      description: The max page size of the results.
+      description: The maximum page size of the results.
       isArray: false
       name: page_size
       required: false
       secret: false
     deprecated: false
-    description: Get all assessments in a page.
+    description: Returns all assessments in a page.
     execution: false
     name: attackiq-list-assessments
     outputs:
     - contextPath: AttackIQ.Assessment.Id
-      description: Assessment ID.
+      description: The ID of the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.Name
-      description: Assessment Name.
+      description: The name of the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.Description
-      description: Assessment description.
+      description: The description of the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.StartDate
-      description: When the assessment started.
+      description: The start date of the assessment.
       type: Date
     - contextPath: AttackIQ.Assessment.EndDate
-      description: When the assessment ended.
+      description: The end date of the assessment.
       type: Date
     - contextPath: AttackIQ.Assessment.AssessmentState
-      description: Assessment's state. Can be Active or Inactive.
+      description: The state of the assessment. Can be Active or Inactive.
       type: String
     - contextPath: AttackIQ.Assessment.DefaultSchedule
-      description: Assessment's default schedule timing (cron).
+      description: The default schedule timing (cron) of the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.AssessmentTemplateId
-      description: Assessment template ID.
+      description: The template ID of the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.AssessmentTemplateName
-      description: Assessment template Name.
+      description: The template name of the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.AssessmentTemplateDescription
-      description: Assessment template description.
+      description: The template description of the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.AssessmentTemplateDefaultSchedule
-      description: Assessment's template default schedule timing (cron).
+      description: The default schedule timing (cron) of the template assessment.
       type: Unknown
     - contextPath: AttackIQ.Assessment.AssessmentTemplateCompany
       description: The owner of the template.
       type: String
     - contextPath: AttackIQ.Assessment.AssessmentTemplateCreated
-      description: The date the template was created at.
+      description: The date that the template was created.
       type: Date
     - contextPath: AttackIQ.Assessment.AssessmentTemplateModified
       description: The date the template was last modified.
       type: Date
     - contextPath: AttackIQ.Assessment.Creator
-      description: User who created the assessment.
+      description: The user who created the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.Owner
-      description: User who owns the assessment.
+      description: The user who owned the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.User
       description: The user that ran the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.Created
-      description: The time the assessment was created at.
+      description: The time that the assessment was created.
       type: String
     - contextPath: AttackIQ.Assessment.Modified
-      description: The time the assessment was last modified at.
+      description: The time that the assessment was last modified.
       type: String
     - contextPath: AttackIQ.Assessment.Users
-      description: User ids that can access the assessment.
+      description: The User IDs that can access the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.Groups
-      description: User groups who can access the assessment.
+      description: The user groups who can access the assessment.
       type: String
     - contextPath: AttackIQ.Assessment.DefaultAssetCount
-      description: Number of machines (assets) that are connected to the assessment.
+      description: The number of machines (assets) that are connected to the assessment.
       type: Number
     - contextPath: AttackIQ.Assessment.DefaultAssetGroupCount
-      description: Number of asset groups that are connected to the assessment.
+      description: The number of asset groups that are connected to the assessment.
       type: Number
     - contextPath: AttackIQ.Assessment.MasterJobCount
-      description: Number of tests that ran in the assessment.
+      description: The number of tests that ran in the assessment.
       type: Number
   - arguments:
     - default: true
@@ -215,178 +214,177 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Activates the assessment. This is required for execution.
+    description: Activates the assessment, which is required for execution.
     execution: false
     name: attackiq-activate-assessment
   - arguments:
     - default: false
-      description: ID of the assessment to run its tests.
+      description: The ID of the assessment.
       isArray: false
       name: assessment_id
       required: true
       secret: false
     - default: false
-      description: Run only on-demand tests in the assessment, or all tests\ntrue
-        - Execute only the on-demand tests in the assessment\nfalse - Execute all
-        tests in the assessment (including scheduled tests)
+      description: Runs only on-demand tests in the assessment. True executes  
+        tests in the assessment that are not scheduled to run. False executes all
+        tests in the assessment including scheduled tests. Default is false.
       isArray: false
       name: on_demand_only
       required: false
       secret: false
     deprecated: false
-    description: Runs all of the tests in the assessment.
+    description: Runs all tests in the assessment.
     execution: false
     name: attackiq-run-all-tests-in-assessment
   - arguments:
     - default: true
-      description: The assessment to check status
+      description: The assessment to check status.
       isArray: false
       name: assessment_id
       required: true
       secret: false
     deprecated: false
-    description: Get assessment execution status - supports only on demand runs.
+    description: Returns an assessment execution status when running an on-demand execution only.
     execution: false
     name: attackiq-get-assessment-execution-status
     outputs:
     - contextPath: AttackIQ.Assessment.Running
-      description: Is the assessment running.
+      description: Whether the assessment is running.
       type: Boolean
     - contextPath: AttackIQ.Assessment.Id
-      description: Assessment Id.
+      description: The ID of the assessment.
       type: String
   - arguments:
     - default: true
-      description: Test ID to check its status.
+      description: The ID of the Test.
       isArray: false
       name: test_id
       required: true
       secret: false
     deprecated: false
-    description: Get test run status.
+    description: Returns the status of the test.
     execution: false
     name: attackiq-get-test-execution-status
     outputs:
     - contextPath: AttackIQTest.Detected
-      description: Number of detections in the test.
+      description: The number of detections in the test.
       type: Number
     - contextPath: AttackIQTest.Failed
-      description: Number of failures in the test.
+      description: The number of failures in the test.
       type: Number
     - contextPath: AttackIQTest.Finished
-      description: Is the test finished.
+      description: Whether the test is finished.
       type: Boolean
     - contextPath: AttackIQTest.Passed
-      description: Number of passed tests.
+      description: The number of passed tests.
       type: Number
     - contextPath: AttackIQTest.Errored
-      description: Number of errored tests.
+      description: The number of tests that returned errors.
       type: Number
     - contextPath: AttackIQTest.Total
-      description: Total number of tests ran.
+      description: The total number of tests that ran.
       type: Number
     - contextPath: AttackIQTest.Id
-      description: ID of the assessment test.
+      description: The ID of the assessment test.
       type: String
   - arguments:
     - default: true
-      description: ID of the assessment that contains the tests.
+      description: The ID of the assessment that contains the tests.
       isArray: false
       name: assessment_id
       required: true
       secret: false
     - default: false
-      description: Max page size for the result.
+      description: The Maximum page size for the results.
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
       defaultValue: '1'
-      description: Page number to fetch.
+      description: The page number to return.
       isArray: false
       name: page_number
       required: false
       secret: false
     deprecated: false
-    description: Get assessment's test. Will get up to page_size tests per call.
+    description: Returns a list of tests by an assessment.
     execution: false
     name: attackiq-list-tests-by-assessment
     outputs:
     - contextPath: AttackIQTest.Id
-      description: Test ID.
+      description: ID of the test.
       type: String
     - contextPath: AttackIQTest.Name
-      description: Test name.
+      description: The name of the test.
       type: String
     - contextPath: AttackIQTest.Description
-      description: Test description.
+      description: The description of the test.
       type: String
     - contextPath: AttackIQTest.Scenarios.Id
-      description: Test scenario ID.
+      description: The ID of the test scenario.
       type: String
     - contextPath: AttackIQTest.Scenarios.Name
-      description: Test scenario name.
+      description: The name of the test scenario.
       type: String
     - contextPath: AttackIQTest.Assets.Id
-      description: Test asset ID.
+      description: The ID of the test asset.
       type: String
     - contextPath: AttackIQTest.Assets.Ipv4Address
-      description: Test asset IP version 4 address.
+      description: The IP version 4 address of the test asset.
       type: String
     - contextPath: AttackIQTest.Assets.Hostname
-      description: Test asset host name.
+      description: The host name of the test asset.
       type: String
     - contextPath: AttackIQTest.Assets.ProductName
-      description: Test asset product name.
+      description: The product name of the test asset. 
       type: String
     - contextPath: AttackIQTest.Assets.Modified
-      description: Test asset last modified date.
+      description: The last modified date of the test asset.
       type: String
     - contextPath: AttackIQTest.Assets.Status
-      description: Test asset status can be Active or Inactive.
+      description: The status of the test asset. Can be Active or Inactive.
       type: Date
     - contextPath: AttackIQTest.TotalAssetCount
-      description: Number of assets the test ran on.
+      description: The number of assets in which the test ran.
       type: Number
     - contextPath: AttackIQTest.CronExpression
-      description: Cron expression of the test.
+      description: The Cron expression of the test.
       type: String
     - contextPath: AttackIQTest.Runnable
-      description: Is the test runnable.
+      description: Whether the test can run.
       type: Boolean
     - contextPath: AttackIQTest.LastResult
-      description: Test's last result.
+      description: The last result of the test.
       type: String
     - contextPath: AttackIQTest.User
-      description: The user that ran the test in the assessment, should be the same
-        as assessment user.
+      description: The name of the user that ran the test in the assessment.
       type: String
     - contextPath: AttackIQTest.Created
-      description: Date the test was created.
+      description: The date that the test was created.
       type: Date
     - contextPath: AttackIQTest.Modified
-      description: Date of the last time the test was modified.
+      description: The date that the test was last modified.
       type: Date
     - contextPath: AttackIQTest.LatestInstanceId
       description: The ID of the most recent run of the test.
       type: Number
     - contextPath: AttackIQTest.UsingDefaultAssets
-      description: Does the test use default assets.
+      description: Whether the test uses default assets.
       type: Boolean
     - contextPath: AttackIQTest.UsingDefaultSchedule
-      description: Does the test use the default schedule.
+      description: Whether the test uses the default schedule.
       type: Boolean
     - contextPath: AttackIQTest.RemainingPages
-      description: Number of remaining pages left to fetch (e.g. if total pages is
-        6, and the last fetch was page 5, then this value will be 1)
+      description:  The number of remaining pages to return. For example, if the total number of pages is
+        6, and the last fetch was page 5, the value is 1.
       type: Number
     - contextPath: AttackIQTest.Count
-      description: Total number of tests.
+      description: The total number of tests.
       type: Number
   - arguments:
     - default: false
-      description: ID of the test to show results for.
+      description: ID of the test in which to show results.
       isArray: false
       name: test_id
       required: true
@@ -394,7 +392,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Set to True to show the last result.
+      description: Shows the last result. True shows the last result.
       isArray: false
       name: show_last_result
       predefined:
@@ -404,19 +402,19 @@ script:
       secret: false
     - default: false
       defaultValue: '1'
-      description: Page number of test results.
+      description: The page number of the test results.
       isArray: false
       name: page_number
       required: false
       secret: false
     - default: false
-      description: The max page size of the results.
+      description: The maximum page size of the results.
       isArray: false
       name: page_size
       required: false
       secret: false
     deprecated: false
-    description: Get assessment's test result by page.
+    description: Returns the test results of an assessment.
     execution: false
     name: attackiq-get-test-results
     outputs:
@@ -424,56 +422,56 @@ script:
       description: ID of the test result.
       type: String
     - contextPath: AttackIQTestResult.Modified
-      description: Date the test result was last modified.
+      description: The date the test result was last modified.
       type: Date
     - contextPath: AttackIQTestResult.Assessment.Id
-      description: ID of the test's assessment.
+      description: The ID of the test assessment.
       type: String
     - contextPath: AttackIQTestResult.Assessment.Name
-      description: Name of the test's assessment.
+      description: The name of the test assessment.
       type: String
     - contextPath: AttackIQTestResult.LastResult
-      description: Result of the test's last run.
+      description: The result of the test's last run.
       type: String
     - contextPath: AttackIQTestResult.Scenario.Id
-      description: ID of the test results' scenario.
+      description: The scenario ID of the test results.
       type: String
     - contextPath: AttackIQTestResult.Scenario.Name
-      description: Name of the test results' scenario.
+      description: The scenario name of the test results.
       type: String
     - contextPath: AttackIQTestResult.Scenario.Description
-      description: Description of the test results' scenario.
+      description: The scenario description of the test results.
       type: String
     - contextPath: AttackIQTestResult.Asset.Id
-      description: ID of the test results' asset.
+      description: The ID of the test results asset.
       type: String
     - contextPath: AttackIQTestResult.Asset.Ipv4Address
-      description: IP address of the test results' scenario asset.
+      description: The IP address of the test results scenario asset.
       type: String
     - contextPath: AttackIQTestResult.Asset.Hostname
-      description: Host name of the test results' asset.
+      description: The host name of the test results asset.
       type: String
     - contextPath: AttackIQTestResult.Asset.ProductName
-      description: Product name of the test results' asset.
+      description: The product name of the test results asset.
       type: String
     - contextPath: AttackIQTestResult.Asset.Modified
-      description: Date the asset was last modified.
+      description: The date that the asset was last modified.
       type: Date
     - contextPath: AttackIQTestResult.AssetGroup
-      description: Asset group of the test.
+      description: The asset group of the test.
       type: String
     - contextPath: AttackIQTestResult.JobState.Name
-      description: Job state.
+      description: The state of the job.
       type: String
     - contextPath: AttackIQTestResult.Outcome.Name
-      description: Test outcome result.
+      description: The result outcome of the test.
       type: String
     - contextPath: AttackIQTestResult.RemainingPages
-      description: Number of remaining pages left to fetch (e.g. if total pages is
-        6, and the last fetch was page 5, then this value will be 1)
+      description: The number of remaining pages to return. For example, if the total number pages is
+        6, and the last fetch was page 5, the value is 1.
       type: Number
     - contextPath: AttackIQTestResult.Count
-      description: Total number of tests.
+      description: The total number of tests.
       type: Number
   dockerimage: demisto/python3:3.7.4.1502
   isfetch: false
