@@ -21,7 +21,7 @@ incident1 = {
     'status': 1,
     'created': '2019-01-02',
     'closed': '0001-01-01T00:00:00Z',
-    'labels': [{'type': 'subject', 'value': 'This subject1'}],
+    'labels': [{'type': 'subject', 'value': 'This subject1'}, {'type': 'unique', 'value': 'This subject1'}],
     'attachment': [{'name': 'Test word1 word2'}]
 }
 
@@ -135,6 +135,19 @@ def test_similar_incidents_list_field(mocker):
     assert len(result['EntryContext']['similarIncidentList']) == 2
     assert result['EntryContext']['similarIncidentList'][0]['rawId'] == 3
     assert result['EntryContext']['similarIncidentList'][1]['rawId'] == 2
+
+
+def test_similar_incidents_no_results(mocker):
+    args = dict(default_args)
+    args.update({'similarIncidentFields': 'name', 'similarLabelsKeys': 'unique'})
+
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'incidents', return_value=[incident1])
+    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
+
+    with pytest.raises(SystemExit) as err:
+        main()
+    assert err.type == SystemExit
 
 
 def test_similar_context(mocker):
