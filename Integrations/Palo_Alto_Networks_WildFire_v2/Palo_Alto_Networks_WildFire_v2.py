@@ -493,6 +493,10 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
     evidence_md5 = []
     evidence_text = []
 
+    # When only one report is in response, it's returned as a single json object and not a list.
+    if not isinstance(reports, list):
+        reports = [reports]
+
     for report in reports:
         if 'network' in report and report["network"]:
             if 'UDP' in report["network"]:

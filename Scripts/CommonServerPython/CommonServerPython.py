@@ -1701,6 +1701,9 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
       :type timezone: ``int``
       :param timezone: timezone should be passed in hours (e.g if +0300 then pass 3, if -0200 then pass -2).
 
+      :type utc: ``bool``
+      :param utc: If set to True, utc time will be used, otherwise local time.
+
       :return: The parsed date range.
       :rtype: ``(datetime.datetime, datetime.datetime)`` or ``(int, int)`` or ``(str, str)``
     """
@@ -1717,11 +1720,11 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
         return_error('Invalid timezone "{}" - must be a number (of type int or float).'.format(timezone))
 
     if utc:
-        end_time = datetime.now() + timedelta(hours=timezone)
-        start_time = datetime.now() + timedelta(hours=timezone)
-    else:
         end_time = datetime.utcnow() + timedelta(hours=timezone)
         start_time = datetime.utcnow() + timedelta(hours=timezone)
+    else:
+        end_time = datetime.now() + timedelta(hours=timezone)
+        start_time = datetime.now() + timedelta(hours=timezone)
 
     unit = range_split[1]
     if 'minute' in unit:
