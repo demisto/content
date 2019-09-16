@@ -346,11 +346,13 @@ def get_package(client, data_args):
     package = client.get_package_item(raw_response.get('data'))
     params = package.get('Parameters')
     files = package.get('Files')
-    del package['Parameters']
-    del package['Files']
+
 
     context = createContext(package, removeNull=True)
     outputs = {'TaniumPackage(val.ID === obj.ID)': context}
+
+    del package['Parameters']
+    del package['Files']
 
     human_readable = tableToMarkdown('Package information', package)
     human_readable += tableToMarkdown('Parameters information', params)
@@ -387,11 +389,13 @@ def create_package(client, data_args):
 
     params = package.get('Parameters')
     files = package.get('Files')
-    del package['Parameters']
-    del package['Files']
 
     context = createContext(package, removeNull=True)
     outputs = {'TaniumPackage(val.ID === obj.ID)': context}
+
+    del package['Parameters']
+    del package['Files']
+
     human_readable = tableToMarkdown('Package information', package)
     human_readable += tableToMarkdown('Parameters information', params)
     human_readable += tableToMarkdown('Files information', files)
@@ -432,7 +436,8 @@ def get_sensors(client, data_args):
 
     sensors=[]
     for sensor in res.get('data')[:-1][:count]:
-        sensor = client.update_id(sensor)
+        sensor = client.get_sensor_item(sensor)
+        del sensor['Parameters']
         sensors.append(sensor)
 
     context = createContext(sensors, removeNull=True)
@@ -487,7 +492,7 @@ def get_saved_questions(client, data_args):
 
     questions=[]
     for question in raw_response.get('data')[:-1][:count]:
-        question = client.update_id(question)
+        question = client.get_saved_question_item(question)
         questions.append(question)
 
     context = createContext(questions, removeNull=True)
@@ -611,9 +616,9 @@ def create_saved_action(client, data_args):
 
 
 def create_action(client, data_args):
-    package_id = data_args.get('package-id')
+    package_id = data_args.get('package-name')
 
-    body = {'package_spec': {'id': package_id}}
+    body = {'package_spec': {'name': package_id}}
     raw_response = client.do_request('POST', 'actions', body)
     action = client.get_action_item(raw_response.get('data'))
 
@@ -661,10 +666,8 @@ def get_saved_actions_pending(client,data_args):
 
     context = createContext(actions, removeNull=True)
     outputs = {'Tanium.PendingSavedAction(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Saved actions peding approval:', actions)
+    human_readable = tableToMarkdown('Saved actions pending approval:', actions)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
-
-
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -731,7 +734,7 @@ def main():
         elif demisto.command() == 'tn-get-action':
             get_action(client, demisto.args())
         elif demisto.command() == 'tn-list-saved-actions-pending-approval':
-            get_saved_actions_pending(client,demisto.args())
+            get_saved_actions_pending(client, demisto.args())
 
     # Log exceptions
     except Exception as e:
