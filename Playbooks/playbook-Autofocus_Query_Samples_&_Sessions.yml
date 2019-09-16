@@ -1,4 +1,4 @@
-id: Autofocus Query Samples & Sessions & Tags
+id: Autofocus Query Samples and Sessions and Tags
 version: -1
 name: Autofocus Query Samples & Sessions & Tags
 fromversion: 4.0.0
@@ -716,4 +716,4 @@ outputs:
   type: string
   description:  'Results of Autofocus tags search.'
 tests:
-- Autofocus Query Samples & Sessions & Tags Test Playbook
+- Autofocus Query Samples and Sessions and Tags Test Playbook

@@ -268,4 +268,4 @@ outputs:
   type: string
   description: 'Results of Autofocus tags search.'
 tests:
-- Autofocus Query Samples & Sessions & Tags Test Playbook
+- Autofocus Query Samples and Sessions and Tags Test Playbook
