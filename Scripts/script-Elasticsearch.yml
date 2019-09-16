@@ -23,7 +23,7 @@ script: |+
 type: python
 tags:
 - Elasticsearch
-comment: Run a search query using Elasticsearch
+comment: Run a search query using Elasticsearch - Deprecated, use the Elasticsearch v2 integration
 system: true
 args:
 - name: explain
@@ -45,6 +45,7 @@ args:
 - name: sort
   description: Sort field[:order] order = true for ascending, default true
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - elasticsearch|||search
