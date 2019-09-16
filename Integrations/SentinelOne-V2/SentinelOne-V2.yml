@@ -31,13 +31,13 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: 7 days
+- defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
     months, 1 year)
   name: fetch_time
   required: false
   type: 0
-- defaultvalue: '3'
+- defaultvalue: '5'
   display: Minimum risk score for importing incidents (0-10), where 0 is low risk
     and 10 is high risk
   name: fetch_threat_rank
