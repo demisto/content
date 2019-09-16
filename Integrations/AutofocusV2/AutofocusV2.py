@@ -879,7 +879,7 @@ def sessions_search_results_command():
         md = results = 'No entries found that match the query'
         status = 'complete'
     else:
-        md = tableToMarkdown(f'Search Samples Results is {status}', results)
+        md = tableToMarkdown(f'Search Sessions Results is {status}', results)
     context = {
         'AutoFocus.SessionsResults(val.ID === obj.ID)': results,
         'AutoFocus.SessionsSearch(val.AFCookie === obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
