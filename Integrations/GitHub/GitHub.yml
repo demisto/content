@@ -2012,6 +2012,19 @@ script:
     - contextPath: GitHub.PR.ChangedFiles
       description: The number of changed files in the pull request
       type: Number
+  - arguments:
+    - default: false
+      description: The issue number of the pull request to check
+      isArray: false
+      name: pull_number
+      required: true
+      secret: false
+    deprecated: false
+    description: 'Get if a pull request has been merged. If the pull request has been
+      merged the API returns ''Status: 204 No Content''. If the pull request has not
+      been merged the API returns ''Status: 404 Not Found'''
+    execution: false
+    name: GitHub-is-pr-merged
   dockerimage: demisto/python3:3.7.3.286
   subtype: python3
   isfetch: true

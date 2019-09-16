@@ -716,6 +716,25 @@ def test_module():
     demisto.results("ok")
 
 
+def is_pr_merged(pull_number: Union[int, str]):
+    suffix = PULLS_SUFFIX + f'/{pull_number}/merge'
+    response = http_request('GET', url_suffix=suffix)
+    return response
+
+
+def is_pr_merged_command():
+    args = demisto.args()
+    pull_number = args.get('pull_number')
+    try:
+        is_pr_merged(pull_number)
+        demisto.results(f'Pull Request #{pull_number} was Merged')
+    except Exception as e:
+        if str(e).startswith('Error in API call to the GitHub Integration [404]'):
+            demisto.results(f'Pull Request #{pull_number} was not Merged')
+        else:
+            raise e
+
+
 def update_pull_request(pull_number: Union[int, str], update_vals: dict = {}) -> dict:
     suffix = PULLS_SUFFIX + f'/{pull_number}'
     response = http_request('PATCH', url_suffix=suffix, data=update_vals)
@@ -1109,7 +1128,8 @@ COMMANDS = {
     'GitHub-list-teams': list_teams_command,
     'GitHub-delete-branch': delete_branch_command,
     'GitHub-list-pr-review-comments': list_pr_review_comments_command,
-    'GitHub-update-pull-request': update_pull_request_command
+    'GitHub-update-pull-request': update_pull_request_command,
+    'GitHub-is-pr-merged': is_pr_merged_command
 }
 
 
