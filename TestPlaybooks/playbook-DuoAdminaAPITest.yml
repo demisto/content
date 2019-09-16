@@ -1,5 +1,5 @@
 id: DuoAdmin API test playbook
-version: 22
+version: -1
 name: DuoAdmin API test playbook
 starttaskid: "0"
 tasks:
@@ -887,7 +887,7 @@ tasks:
     task:
       id: 6d2ab6bd-cf01-47b6-87ba-a640566d8e58
       version: -1
-      name: Check if User0 doesn't exists and User2 does exsits
+      name: Check if User0 doesn't exist and User2 does exsit
       type: condition
       iscommand: false
       brand: ""
