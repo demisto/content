@@ -1,5 +1,5 @@
-id: GoogleVisionAPITest
-version: 1
+id: GoogleVisionAPI-Test
+version: -1
 name: Google Vision API Test
 starttaskid: "0"
 tasks:
@@ -117,7 +117,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "33"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -160,7 +160,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -195,12 +195,45 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "33":
+    id: "33"
+    taskid: f5780469-d422-4e36-8870-17b726daf3e7
+    type: regular
+    task:
+      id: f5780469-d422-4e36-8870-17b726daf3e7
+      version: -1
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id:
+        simple: ${incident.id}
+      ticket: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
+        "height": 1085,
         "width": 380,
         "x": 50,
         "y": 50
