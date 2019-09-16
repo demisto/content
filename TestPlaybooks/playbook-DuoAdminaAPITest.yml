@@ -1,5 +1,5 @@
 id: DuoAdmin API test playbook
-version: -1
+version: 21
 name: DuoAdmin API test playbook
 starttaskid: "0"
 tasks:
@@ -58,12 +58,12 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 18a3696e-f6fe-4b70-8c25-21e4c225fd90
+    taskid: 7ed5425d-04fa-48a9-8785-7337a94c3e7a
     type: regular
     task:
-      id: 18a3696e-f6fe-4b70-8c25-21e4c225fd90
+      id: 7ed5425d-04fa-48a9-8785-7337a94c3e7a
       version: -1
-      name: Get User Logs
+      name: Get User2 Logs
       script: '|||duoadmin-get-authentication-logs-by-user'
       type: regular
       iscommand: true
@@ -74,6 +74,7 @@ tasks:
     scriptarguments:
       from:
         simple: 10_years_ago
+      limit: {}
       username:
         simple: ${DuoAdmin.UserDetails.[2].username}
     separatecontext: false
@@ -89,15 +90,18 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 013c3ea0-0450-405f-80ed-4e87f8125b83
+    taskid: 61d2af40-0f4e-4179-850d-5f1fdd026d96
     type: title
     task:
-      id: 013c3ea0-0450-405f-80ed-4e87f8125b83
+      id: 61d2af40-0f4e-4179-850d-5f1fdd026d96
       version: -1
-      name: Auth Logs Bug Fix Test
+      name: Bug Fix Test
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
     separatecontext: false
     view: |-
       {
@@ -819,12 +823,111 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "40":
+    id: "40"
+    taskid: 9efcf80c-6ec7-4c27-83a3-16735e0eb8ad
+    type: regular
+    task:
+      id: 9efcf80c-6ec7-4c27-83a3-16735e0eb8ad
+      version: -1
+      name: Get User0 Logs
+      description: Returns authentication logs associated with a user. Limited to
+        30 at a time
+      script: DUO Admin|||duoadmin-get-authentication-logs-by-user
+      type: regular
+      iscommand: true
+      brand: DUO Admin
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      from:
+        simple: 5_years_ago
+      limit: {}
+      username:
+        simple: ${DuoAdmin.UserDetails.[0].username}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "43":
+    id: "43"
+    taskid: f5ae69a7-0a39-484d-8eb4-8c68eed25435
+    type: title
+    task:
+      id: f5ae69a7-0a39-484d-8eb4-8c68eed25435
+      version: -1
+      name: done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "45":
+    id: "45"
+    taskid: 6d2ab6bd-cf01-47b6-87ba-a640566d8e58
+    type: condition
+    task:
+      id: 6d2ab6bd-cf01-47b6-87ba-a640566d8e58
+      version: -1
+      name: Check if User0 doesn't exists and User2 does exsits
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: DuoAdmin
+                accessor: UserDetails.[0].auth_logs
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DuoAdmin
+                accessor: UserDetails.[2].auth_logs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1725,
+        "height": 2255,
         "width": 1890,
         "x": -100,
         "y": -160
