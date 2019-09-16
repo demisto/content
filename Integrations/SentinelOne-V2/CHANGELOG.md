@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+- Fixed Fetch-incidents command
+- Fixes date parameters in get-threats command
 
 ## [19.8.2] - 2019-08-22
 - Added 5 commands.
