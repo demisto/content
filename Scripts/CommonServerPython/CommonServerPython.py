@@ -2023,16 +2023,23 @@ H || val.SSDeep && val.SSDeep == obj.SSDeep)': {'Malicious': {'Vendor': 'Vendor'
         key = INDICATOR_TYPE_TO_CONTEXT_KEY[indicator_type_lower]
         # `file` indicator works a little different
         if key == 'file':
-            key = indicator_type.upper()
-            indicator_type_lower = 'file'
-        entry = {
-            key: indicator,
-            'Malicious': {
-                'Vendor': vendor,
-                'Description': description
+            entry = {
+                indicator_type.upper(): indicator,
+                'Malicious': {
+                    'Vendor': vendor,
+                    'Description': description
+                }
             }
-        }
-        return {outputPaths[indicator_type_lower]: entry}
+            return {outputPaths[key]: entry}
+        else:
+            entry = {
+                key: indicator,
+                'Malicious': {
+                    'Vendor': vendor,
+                    'Description': description
+                }
+            }
+            return {outputPaths[indicator_type_lower]: entry}
     else:
         raise DemistoException('Wrong indicator type supplied: {}, expected {}'
                                .format(indicator_type, INDICATOR_TYPE_TO_CONTEXT_KEY.keys()))
