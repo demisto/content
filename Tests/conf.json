@@ -5,7 +5,8 @@
         {
             "integrations": "AutoFocus V2",
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
-            "fromversion": "4.5.0"
+            "fromversion": "4.5.0",
+            "timeout": 500
         },
         {
             "integrations": "ThreatQ v2",
