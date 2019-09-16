@@ -774,7 +774,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Date that the event happened. Can be: YYYY-mm-dd HH:MM:SS'
+      description: 'Date that event happened. Can be: YYYY-mm-dd HH:MM:SS, YYYY-mm-dd'
       isArray: false
       name: date
       required: true
