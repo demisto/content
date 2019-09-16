@@ -144,7 +144,7 @@ def get_all_users():
 
 
 def get_authentication_logs_by_user(username, mintime):
-    limit = demisto.args().get('limit')
+    limit = demisto.args().get('limit', '50')
     res = admin_api.get_authentication_log(
         2,
         users=get_user_id(username),
