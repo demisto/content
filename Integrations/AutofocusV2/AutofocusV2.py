@@ -538,7 +538,7 @@ def parse_top_tags_response(response):
     top_tags_list = []  # type: ignore
     top_tags = response.get('top_tags')
     if not top_tags:
-        top_tags_list
+        return top_tags_list
     else:
         for tag in top_tags:
             fields_to_extract_from_top_tags = ['tag_name', 'public_tag_name', 'count', 'lasthit']
