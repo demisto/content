@@ -12,6 +12,7 @@ from threading import Thread
 from typing import Match, Union, Optional, cast, Dict, Any, List
 import re
 from jwt.algorithms import RSAAlgorithm
+from tempfile import NamedTemporaryFile
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -1371,6 +1372,10 @@ def long_running_loop():
     """
     The infinite loop which runs the mirror loop and the bot app in two different threads
     """
+
+    certificate: str = demisto.params().get('certificate', '')
+    private_key: str = demisto.params().get('key', '')
+
     try:
         port_mapping: str = PARAMS.get('longRunningPort', '')
         if port_mapping:
@@ -1379,9 +1384,35 @@ def long_running_loop():
             raise ValueError('No port mapping was provided')
         Thread(target=channel_mirror_loop, daemon=True).start()
         demisto.info('Started channel mirror loop thread')
-        http_server = WSGIServer(('', port), APP)
-        http_server.serve_forever()
+
+        ssl_args = dict()
+        certificate_path = str()
+        private_key_path = str()
+
+        if certificate and private_key:
+            certificate_file = NamedTemporaryFile(delete=False)
+            certificate_path = certificate_file.name
+            certificate_file.write(bytes(certificate, 'utf-8'))
+            certificate_file.close()
+            ssl_args['certfile'] = certificate_path
+
+            private_key_file = NamedTemporaryFile(delete=False)
+            private_key_path = private_key_file.name
+            private_key_file.write(bytes(private_key, 'utf-8'))
+            private_key_file.close()
+            ssl_args['keyfile'] = private_key_path
+
+            demisto.info('Starting HTTPS Server')
+        else:
+            demisto.info('Starting HTTP Server')
+
+        server = WSGIServer(('', port), APP, **ssl_args)
+        server.serve_forever()
     except Exception as e:
+        if certificate_path:
+            os.unlink(certificate_path)
+        if private_key_path:
+            os.unlink(private_key_path)
         demisto.error(f'An error occurred in long running loop: {str(e)}')
         raise ValueError(str(e))
 
