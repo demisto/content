@@ -124,7 +124,7 @@ class IntegrationValidator(object):
         category = self.current_integration.get('category', None)
         if not category or category not in INTEGRATION_CATEGORIES:
             self._is_valid = False
-            print_error("The category '{}' is not in the integration schemas".format(category))
+            print_error("The category '{}' is not in the integration schemas, the valid options are:\n{}".format(category, '\n'.join(INTEGRATION_CATEGORIES)))
 
         return self._is_valid
 
