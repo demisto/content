@@ -275,7 +275,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "52"
     separatecontext: false
     view: |-
       {
@@ -1696,7 +1696,7 @@ tasks:
       {
         "position": {
           "x": 980,
-          "y": 750
+          "y": 390
         }
       }
     note: false
@@ -1704,10 +1704,10 @@ tasks:
     ignoreworker: false
   "53":
     id: "53"
-    taskid: 8c934d57-3181-460a-8389-1455507b887d
+    taskid: 0d3b0145-c73d-4a38-8130-e93dd4b07d07
     type: condition
     task:
-      id: 8c934d57-3181-460a-8389-1455507b887d
+      id: 0d3b0145-c73d-4a38-8130-e93dd4b07d07
       version: -1
       name: Check that it doesn't exist
       type: condition
@@ -1715,26 +1715,36 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+      - "2"
       "yes":
       - "54"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: startWith
           left:
             value:
               simple: Account.Gmail.Address
             iscontext: true
           right:
             value:
-              simple: JohnS@demistodev.com
+              simple: johns
+    - label: condition-2
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              simple: Account.Gmail.Address
+            iscontext: true
+          right:
+            value:
+              simple: JohnS
     view: |-
       {
         "position": {
           "x": 980,
-          "y": 930
+          "y": 560
         }
       }
     note: false
@@ -1755,7 +1765,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "2"
     scriptarguments:
       user-id:
         simple: JohnS@demistodev.com
@@ -1764,7 +1774,7 @@ tasks:
       {
         "position": {
           "x": 980,
-          "y": 1110
+          "y": 785
         }
       }
     note: false
@@ -1875,7 +1885,7 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "53_5_#default#": 0.51,
+      "53_2_#default#": 0.28,
       "56_30_#default#": 0.42
     },
     "paper": {
