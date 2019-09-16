@@ -4,7 +4,7 @@
     "tests": [
         {
             "integrations": "AutoFocus V2",
-            "playbookID": "Autofocus Query Samples & Sessions & Tags Test Playbook",
+            "playbookID": "Autofocus Query Samples and Sessions and Tags Test Playbook",
             "fromversion": "4.5.0"
         },
         {
