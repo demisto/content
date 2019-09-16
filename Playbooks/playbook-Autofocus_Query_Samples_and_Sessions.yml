@@ -482,7 +482,7 @@ tasks:
       version: -1
       name: Submit search to Autofocus - tags
       description: Performs a search to identify the most popular tags.
-      script: AutoFocus V3|||autofocus-top-tags-search
+      script: '|||autofocus-top-tags-search'
       type: regular
       iscommand: true
       brand: AutoFocus V3
