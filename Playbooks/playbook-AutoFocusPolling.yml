@@ -245,9 +245,8 @@ inputs:
 - key: dt
   value: {}
   required: true
-  description: |-
-  DT filter for polling IDs. Polling will stop when no results are returned.
-  Use single quotes, e.g WildFire.Report(val.Status!==''Success'').SHA256.
+  description: DT filter for polling IDs. Polling will stop when no results are returned.
+    Use single quotes, e.g WildFire.Report(val.Status!==''Success'').SHA256.
 - key: AdditionalPollingCommandArgNames
   value: {}
   required: false
