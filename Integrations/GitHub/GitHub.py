@@ -1082,7 +1082,7 @@ COMMANDS = {
     'GitHub-get-pull-request': get_pull_request_command,
     'GitHub-list-teams': list_teams_command,
     'GitHub-delete-branch': delete_branch_command,
-    'GitHub-list-pr-review-comments': list_pr_reveiw_comments_command
+    'GitHub-list-pr-review-comments': list_pr_review_comments_command
 }
 
 
