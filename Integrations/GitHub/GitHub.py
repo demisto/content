@@ -295,6 +295,35 @@ def format_user_outputs(user: dict = {}) -> dict:
     return ec_user
 
 
+def format_pr_review_comment_outputs(review_comment: dict = {}) -> dict:
+    """Take GitHub API pr review comment data and format to expected context outputs
+
+    Args:
+        review_comment (dict): pre review comment data returned from GitHub API
+
+    Returns:
+        (dict): pr review comment object formatted to expected context outputs
+    """
+    ec_pr_review_comment = {
+        'ID': review_comment.get('id'),
+        'NodeID': review_comment.get('node_id'),
+        'PullRequestReviewID': review_comment.get('pull_request_review_id'),
+        'DiffHunk': review_comment.get('diff_hunk'),
+        'Path': review_comment.get('path'),
+        'Position': review_comment.get('position'),
+        'OriginalPosition': review_comment.get('original_position'),
+        'CommitID': review_comment.get('commit_id'),
+        'OriginalCommitID': review_comment.get('original_commit_id'),
+        'InReplyToID': review_comment.get('in_reply_to_id'),
+        'User': format_user_outputs(review_comment.get('user')),
+        'Body': review_comment.get('body'),
+        'CreatedAt': review_comment.get('created_at'),
+        'UpdatedAt': review_comment.get('updated_at'),
+        'AuthorAssociation': review_comment.get('author_association')
+    }
+    return ec_pr_review_comment
+
+
 def format_team_outputs(team: dict = {}) -> dict:
     """Take GitHub API team data and format to expected context outputs
 
@@ -791,6 +820,30 @@ def list_pr_files_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
+def list_pr_review_comments(pull_number: Union[int, str]) -> list:
+    suffix = PULLS_SUFFIX + f'/{pull_number}/comments'
+    response = http_request('GET', url_suffix=suffix)
+    return response
+
+
+def list_pr_review_comments_command():
+    args = demisto.args()
+    pull_number = args.get('pull_number')
+    response = list_pr_review_comments(pull_number)
+
+    formatted_pr_review_comments = [format_pr_review_comment_outputs(review_comment) for review_comment in response]
+    ec_object = {
+        'Number': pull_number,
+        'ReviewComment': formatted_pr_review_comments
+    }
+    ec = {
+        'GitHub.PR(val.Number === obj.Number)': ec_object
+    }
+    human_readable = tableToMarkdown(f'Pull Request Review Comments for #{pull_number}', formatted_pr_review_comments,
+                                     removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
 def list_issue_comments_command():
     args = demisto.args()
     issue_number = args.get('issue_number')
@@ -1028,7 +1081,8 @@ COMMANDS = {
     'GitHub-add-label': add_label_command,
     'GitHub-get-pull-request': get_pull_request_command,
     'GitHub-list-teams': list_teams_command,
-    'GitHub-delete-branch': delete_branch_command
+    'GitHub-delete-branch': delete_branch_command,
+    'GitHub-list-pr-review-comments': list_pr_reveiw_comments_command
 }
 
 
