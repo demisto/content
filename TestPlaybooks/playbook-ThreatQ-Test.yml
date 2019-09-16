@@ -1,0 +1,2703 @@
+id: ThreatQ - Test
+version: 75
+name: ThreatQ - Test
+description: Test playbook for Threat Quotient
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4550e91a-0b74-479e-8f2a-4fe6f900b198
+    type: start
+    task:
+      id: 4550e91a-0b74-479e-8f2a-4fe6f900b198
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 2807d534-00d5-44f1-8585-42ced959cf86
+    type: regular
+    task:
+      id: 2807d534-00d5-44f1-8585-42ced959cf86
+      version: -1
+      name: Create adversary with sources
+      description: Creates a new adversary in ThreatQ.
+      script: ThreatQ v2|||threatq-create-adversary
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      attribute_names: {}
+      attribute_values: {}
+      name:
+        simple: TestAdversary-26-08
+      sources:
+        simple: Test Source,arian@demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: de88163c-a582-47c1-83c4-0af5e9fac30a
+    type: regular
+    task:
+      id: de88163c-a582-47c1-83c4-0af5e9fac30a
+      version: -1
+      name: Create an event
+      description: Creates a new event in ThreatQ.
+      script: ThreatQ v2|||threatq-create-event
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      attributes_names: {}
+      attributes_values: {}
+      date:
+        simple: 2019-08-26 04:23:55
+      type:
+        simple: Watering Hole
+      sources: {}
+      title:
+        simple: NewEvent-26-08
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: a0b45220-913a-4d06-8776-312f84a7800a
+    type: regular
+    task:
+      id: a0b45220-913a-4d06-8776-312f84a7800a
+      version: -1
+      name: Add an attribute to the event
+      description: Adds an attribute to an object in ThreatQ.
+      script: ThreatQ v2|||threatq-add-attribute
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      name:
+        simple: TestAttributeName
+      value:
+        simple: TestAttributeValue
+      obj_id:
+        simple: ${ThreatQ.Event.ID}
+      obj_type:
+        simple: event
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 180b3bf6-d348-4a3e-82f3-5ad45d26479d
+    type: regular
+    task:
+      id: 180b3bf6-d348-4a3e-82f3-5ad45d26479d
+      version: -1
+      name: Delete the event's attribute
+      description: Deletes an attribute from an object in ThreatQ.
+      script: ThreatQ v2|||threatq-delete-attribute
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      attribute_id:
+        simple: ${ThreatQ.Event.Attribute.ID}
+      obj_id:
+        simple: ${ThreatQ.Event.ID}
+      obj_type:
+        simple: event
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 926336ab-6620-4ff9-8692-7cbd664af429
+    type: regular
+    task:
+      id: 926336ab-6620-4ff9-8692-7cbd664af429
+      version: -1
+      name: Add a source to the adversary
+      description: Adds a source to an object in ThreatQ.
+      script: ThreatQ v2|||threatq-add-source
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      obj_id:
+        simple: ${ThreatQ.Adversary.ID}
+      obj_type:
+        simple: adversary
+      source:
+        simple: Test Source 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: b022fdab-53d5-497d-8113-c0e1a0f48db9
+    type: regular
+    task:
+      id: b022fdab-53d5-497d-8113-c0e1a0f48db9
+      version: -1
+      name: Delete a source of the adversary
+      description: Deletes a source from an object in ThreatQ.
+      script: ThreatQ v2|||threatq-delete-source
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      obj_id:
+        simple: ${ThreatQ.Adversary.ID}
+      obj_type:
+        simple: adversary
+      source:
+        simple: Test Source
+      source_id:
+        complex:
+          root: ThreatQ
+          accessor: Adversary.Source
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: Test Source
+              field:
+                value:
+                  simple: Name
+              getField:
+                value:
+                  simple: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: b2163f04-7b34-4839-8190-9a6c6ee591b2
+    type: regular
+    task:
+      id: b2163f04-7b34-4839-8190-9a6c6ee591b2
+      version: -1
+      name: Search the event by name
+      description: Searches for objects by name in the ThreatQ repository.
+      script: ThreatQ v2|||threatq-search-by-name
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      name:
+        simple: NewEvent-01-08
+      limit:
+        simple: "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: a0195294-69ed-4db0-82e0-d48e427463ab
+    type: regular
+    task:
+      id: a0195294-69ed-4db0-82e0-d48e427463ab
+      version: -1
+      name: Search the event by ID
+      description: Searches for an object by object type and ID. Generic
+        and DBotScore contexts also may be generated.
+      script: ThreatQ v2|||threatq-search-by-id
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "79"
+    scriptarguments:
+      obj_id:
+        simple: ${ThreatQ.Event.ID}
+      obj_type:
+        simple: event
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: c4196356-3d4b-4a88-89dc-9e949b6adf37
+    type: regular
+    task:
+      id: c4196356-3d4b-4a88-89dc-9e949b6adf37
+      version: -1
+      name: Update indicator status
+      description: Updates an indicator status in ThreatQ.
+      script: ThreatQ v2|||threatq-update-status
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      id:
+        complex:
+          root: ThreatQ
+          accessor: Indicator.ID
+      status:
+        simple: Whitelisted
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 15df2812-c1e8-4437-8788-f94c82b4f797
+    type: regular
+    task:
+      id: 15df2812-c1e8-4437-8788-f94c82b4f797
+      version: -1
+      name: Link event + indicator
+      description: Links two objects together in ThreatQ.
+      script: ThreatQ v2|||threatq-link-objects
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "42"
+      - "62"
+    scriptarguments:
+      obj1_id:
+        complex:
+          root: ThreatQ
+          accessor: Event.ID
+      obj1_type:
+        simple: event
+      obj2_id:
+        complex:
+          root: ThreatQ
+          accessor: Indicator.ID
+      obj2_type:
+        simple: indicator
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 7020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 00c021be-be84-46a8-8db4-ad7aa7daa459
+    type: regular
+    task:
+      id: 00c021be-be84-46a8-8db4-ad7aa7daa459
+      version: -1
+      name: Run generic command - domain
+      description: |-
+        Checks the reputation of a domain in ThreatQ.
+
+        The domain should be marked as malicious since its TQ score is greater than 7.
+      script: ThreatQ v2|||domain
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      domain:
+        simple: www.testdomain.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: b9b9b2c4-39df-4565-808a-7df4d3fef940
+    type: regular
+    task:
+      id: b9b9b2c4-39df-4565-808a-7df4d3fef940
+      version: -1
+      name: Run generic command - ip
+      description: Checks the reputation of an IP address in ThreatQ.
+      script: ThreatQ v2|||ip
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        simple: 9.9.4.4
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 983dd243-5b4d-45f6-8674-d4e9fb54968b
+    type: regular
+    task:
+      id: 983dd243-5b4d-45f6-8674-d4e9fb54968b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: d812e621-6133-4e72-8764-2cbbf43c5a83
+    type: regular
+    task:
+      id: d812e621-6133-4e72-8764-2cbbf43c5a83
+      version: -1
+      name: Run generic command - email
+      description: Checks the reputation of an email address in ThreatQ.
+      script: ThreatQ v2|||email
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      email:
+        simple: rony@demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: c0430cde-47c3-4d03-850e-ac25aca85f8a
+    type: regular
+    task:
+      id: c0430cde-47c3-4d03-850e-ac25aca85f8a
+      version: -1
+      name: Run generic command - file
+      description: Checks the reputation of a file in ThreatQ.
+      script: ThreatQ v2|||file
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      file:
+        simple: a94a8fe5ccb19ba61c4c0873d391e987982fbbd3
+      long: {}
+      retries: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: f2fa6bac-2289-4042-8002-9b82cf3c7b18
+    type: regular
+    task:
+      id: f2fa6bac-2289-4042-8002-9b82cf3c7b18
+      version: -1
+      name: Run generic command - url
+      description: Checks the reputation of a URL in ThreatQ.
+      script: ThreatQ v2|||url
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      long: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      url:
+        simple: https://stackoverflow.com/questions/32264559/http-delete-with-python-requests-module
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: bb361e89-b89b-43ce-8e88-fb18ae1fe849
+    type: condition
+    task:
+      id: bb361e89-b89b-43ce-8e88-fb18ae1fe849
+      version: -1
+      name: Verify domain context
+      description: |-
+        Domain is in the database and TQ score is 9, therefore:
+        1. Domain.Malicious exists
+        2. ThreatQ has length 2
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Name
+            iscontext: true
+          right:
+            value:
+              simple: www.testdomain.com
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Malicious
+            iscontext: true
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: ThreatQ
+                accessor: Indicator
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 03514eb1-0c73-451a-8fbf-e361fab140c3
+    type: condition
+    task:
+      id: 03514eb1-0c73-451a-8fbf-e361fab140c3
+      version: -1
+      name: Verify email context
+      description: Email is in the database, therefore ThreatQ contains now data.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Account
+                accessor: Email.Address
+            iscontext: true
+          right:
+            value:
+              simple: rony@demisto.com
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ThreatQ
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 794b37d6-cada-4f2a-8717-45f39b457e3c
+    type: condition
+    task:
+      id: 794b37d6-cada-4f2a-8717-45f39b457e3c
+      version: -1
+      name: Verify IP context
+      description: |-
+        The entered IP is not in the TQ database, therefore:
+        1. IP path should contain only Address
+        2. ThreatQ path should stay empty
+        3. DBotScore.Score should be 0
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: IP
+                accessor: Address
+            iscontext: true
+          right:
+            value:
+              simple: 9.9.4.4
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: ThreatQ
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 4f07dd0f-9635-4785-8971-8fda150b2741
+    type: condition
+    task:
+      id: 4f07dd0f-9635-4785-8971-8fda150b2741
+      version: -1
+      name: Verify file context
+      description: File as SHA1 type exists, therefore ThreatQ has size 3
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: ThreatQ
+                accessor: Indicator
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ThreatQ
+                accessor: Indicator
+                transformers:
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: SHA-1
+                    field:
+                      value:
+                        simple: Type
+                    getField:
+                      value:
+                        simple: Value
+            iscontext: true
+          right:
+            value:
+              simple: a94a8fe5ccb19ba61c4c0873d391e987982fbbd3
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA1
+            iscontext: true
+          right:
+            value:
+              simple: a94a8fe5ccb19ba61c4c0873d391e987982fbbd3
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 056719d9-0f76-4546-8549-9025d5e4e6c9
+    type: condition
+    task:
+      id: 056719d9-0f76-4546-8549-9025d5e4e6c9
+      version: -1
+      name: Verify URL context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: URL
+                accessor: Data
+            iscontext: true
+          right:
+            value:
+              simple: https://stackoverflow.com/questions/32264559/http-delete-with-python-requests-module
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "36":
+    id: "36"
+    taskid: a0b5c3f7-18b4-4e0b-870b-7ceebbb7ad8b
+    type: regular
+    task:
+      id: a0b5c3f7-18b4-4e0b-870b-7ceebbb7ad8b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "37":
+    id: "37"
+    taskid: fa3630eb-4884-42b9-89c5-a7562a743665
+    type: regular
+    task:
+      id: fa3630eb-4884-42b9-89c5-a7562a743665
+      version: -1
+      name: Create indicator with attributes
+      description: Creates a new indicator in ThreatQ.
+      script: ThreatQ v2|||threatq-create-indicator
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "83"
+    scriptarguments:
+      attributes_names:
+        simple: test_attr,another Attr
+      attributes_values:
+        simple: test_attr_val,another Value
+      type:
+        simple: String
+      sources: {}
+      status:
+        simple: Indirect
+      value:
+        simple: 9.9.4.4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "40":
+    id: "40"
+    taskid: 1b28b42f-2b62-43a8-8f76-68c7dcaf356e
+    type: regular
+    task:
+      id: 1b28b42f-2b62-43a8-8f76-68c7dcaf356e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "42":
+    id: "42"
+    taskid: f65ce789-3f7e-4841-87cf-cf3c09f710c0
+    type: regular
+    task:
+      id: f65ce789-3f7e-4841-87cf-cf3c09f710c0
+      version: -1
+      name: Get indicator related events
+      description: Retrieves related events of an object in ThreatQ.
+      script: ThreatQ v2|||threatq-get-related-events
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      obj_id:
+        complex:
+          root: ThreatQ
+          accessor: Indicator.ID
+      obj_type:
+        simple: indicator
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "43":
+    id: "43"
+    taskid: f16de171-504b-4d9e-815d-a1e5c26acb6d
+    type: condition
+    task:
+      id: f16de171-504b-4d9e-815d-a1e5c26acb6d
+      version: -1
+      name: Verify linking
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "65"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ThreatQ
+                accessor: Indicator.RelatedEvent.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: ThreatQ
+                accessor: Event.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "44":
+    id: "44"
+    taskid: 16f44ce3-1ebb-4336-8481-980c1df2ea6f
+    type: condition
+    task:
+      id: 16f44ce3-1ebb-4336-8481-980c1df2ea6f
+      version: -1
+      name: Verify score update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ThreatQ.Indicator.TQScore
+            iscontext: true
+          right:
+            value:
+              simple: "8"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "46":
+    id: "46"
+    taskid: c01902fe-5c0b-43fd-8acc-dce41f2c56b8
+    type: regular
+    task:
+      id: c01902fe-5c0b-43fd-8acc-dce41f2c56b8
+      version: -1
+      name: Modify the event's attribute
+      description: Modifies an attribute for an object in ThreatQ.
+      script: ThreatQ v2|||threatq-modify-attribute
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      attribute_id:
+        complex:
+          root: ThreatQ
+          accessor: Event.Attribute.ID
+      attribute_value:
+        simple: NewAttr
+      obj_id:
+        simple: ${ThreatQ.Event.ID}
+      obj_type:
+        simple: event
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "48":
+    id: "48"
+    taskid: b32391c7-fb6e-4762-8c47-14ecafecedaa
+    type: condition
+    task:
+      id: b32391c7-fb6e-4762-8c47-14ecafecedaa
+      version: -1
+      name: Verify add attribute
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ThreatQ
+                accessor: Event.Attribute.Name
+            iscontext: true
+          right:
+            value:
+              simple: TestAttributeName
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ThreatQ
+                accessor: Event.Attribute.Value
+            iscontext: true
+          right:
+            value:
+              simple: TestAttributeValue
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "49":
+    id: "49"
+    taskid: 6b5af6f1-2ef8-430f-8875-cac21b804a15
+    type: regular
+    task:
+      id: 6b5af6f1-2ef8-430f-8875-cac21b804a15
+      version: -1
+      name: Update context (search by ID)
+      description: Searches for an object by object type and ID. Generic
+        and DBotScore contexts also may be generated.
+      script: ThreatQ v2|||threatq-search-by-id
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      obj_id:
+        simple: ${ThreatQ.Event.ID}
+      obj_type:
+        simple: event
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "50":
+    id: "50"
+    taskid: d94357b4-93b6-42f7-8913-00310929b726
+    type: regular
+    task:
+      id: d94357b4-93b6-42f7-8913-00310929b726
+      version: -1
+      name: Update context (search by ID)
+      description: Searches for an object by object type and ID. Generic
+        and DBotScore contexts also may be generated.
+      script: ThreatQ v2|||threatq-search-by-id
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      obj_id:
+        simple: ${ThreatQ.Event.ID}
+      obj_type:
+        simple: event
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "51":
+    id: "51"
+    taskid: 7df12cfb-99f0-45f5-8126-ead7ab3c43e4
+    type: condition
+    task:
+      id: 7df12cfb-99f0-45f5-8126-ead7ab3c43e4
+      version: -1
+      name: Verify modify attribute
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ThreatQ
+                accessor: Event.Attribute.Name
+            iscontext: true
+          right:
+            value:
+              simple: TestAttributeName
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ThreatQ
+                accessor: Event.Attribute.Value
+            iscontext: true
+          right:
+            value:
+              simple: TestAttributeValue
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "52":
+    id: "52"
+    taskid: 91675e65-1cf7-4bec-83ac-6e72216fc7b0
+    type: regular
+    task:
+      id: 91675e65-1cf7-4bec-83ac-6e72216fc7b0
+      version: -1
+      name: Update context (search by ID)
+      description: Searches for an object by object type and ID. Generic
+        and DBotScore contexts also may be generated.
+      script: ThreatQ v2|||threatq-search-by-id
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      obj_id:
+        simple: ${ThreatQ.Event.ID}
+      obj_type:
+        simple: event
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "53":
+    id: "53"
+    taskid: d4e2ddf7-0f8d-4881-8562-17b0334ce96e
+    type: regular
+    task:
+      id: d4e2ddf7-0f8d-4881-8562-17b0334ce96e
+      version: -1
+      name: Update context (search by ID)
+      description: Searches for an object by object type and ID. Generic
+        and DBotScore contexts also may be generated.
+      script: ThreatQ v2|||threatq-search-by-id
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      obj_id:
+        simple: ${ThreatQ.Adversary.ID}
+      obj_type:
+        simple: adversary
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "54":
+    id: "54"
+    taskid: 9a0bc91c-f050-4a8a-8ba9-10164d9723f4
+    type: condition
+    task:
+      id: 9a0bc91c-f050-4a8a-8ba9-10164d9723f4
+      version: -1
+      name: Verify add source command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: ThreatQ
+                accessor: Adversary.Source.Name
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: ThreatQ
+                accessor: Adversary.Source.Name
+            iscontext: true
+          right:
+            value:
+              simple: Test Source 2
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "55":
+    id: "55"
+    taskid: f7021f70-14b8-4f0c-87e5-ebe02d16d2ec
+    type: regular
+    task:
+      id: f7021f70-14b8-4f0c-87e5-ebe02d16d2ec
+      version: -1
+      name: Update context (search by ID)
+      description: Searches for an object by object type and ID. Generic
+        and DBotScore contexts also may be generated.
+      script: ThreatQ v2|||threatq-search-by-id
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      obj_id:
+        simple: ${ThreatQ.Adversary.ID}
+      obj_type:
+        simple: adversary
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "56":
+    id: "56"
+    taskid: 96e9043b-5b48-45b3-8367-8127fe288902
+    type: condition
+    task:
+      id: 96e9043b-5b48-45b3-8367-8127fe288902
+      version: -1
+      name: Verify delete source
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "69"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: ThreatQ
+                accessor: Adversary.Source.Name
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+        - operator: notContainsGeneral
+          left:
+            value:
+              complex:
+                root: ThreatQ
+                accessor: Adversary.Source.Name
+            iscontext: true
+          right:
+            value:
+              simple: Test Source
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "58":
+    id: "58"
+    taskid: 25f6ac61-aa60-41ba-8f87-b6b9952cdf19
+    type: regular
+    task:
+      id: 25f6ac61-aa60-41ba-8f87-b6b9952cdf19
+      version: -1
+      name: Delete event
+      description: Deletes an object in ThreatQ.
+      script: ThreatQ v2|||threatq-delete-object
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      obj_id:
+        simple: ${ThreatQ.Event.ID}
+      obj_type:
+        simple: event
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 9090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "59":
+    id: "59"
+    taskid: f880b1de-d9f6-4984-8f9b-884aab039f3a
+    type: regular
+    task:
+      id: f880b1de-d9f6-4984-8f9b-884aab039f3a
+      version: -1
+      name: Update context  - event (Search by name)
+      description: Searches for objects by name in the ThreatQ repository.
+      script: ThreatQ v2|||threatq-search-by-name
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      name:
+        simple: NewEvent-01-08
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 9615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "60":
+    id: "60"
+    taskid: a84861e1-8362-40e8-87f6-4927c7fd09eb
+    type: regular
+    task:
+      id: a84861e1-8362-40e8-87f6-4927c7fd09eb
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 9440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "61":
+    id: "61"
+    taskid: bfa1f73b-ef2a-48c8-81ce-ec91afd4dea7
+    type: condition
+    task:
+      id: bfa1f73b-ef2a-48c8-81ce-ec91afd4dea7
+      version: -1
+      name: Verify deletion - event + indicator
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "86"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: ThreatQ
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 9965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "62":
+    id: "62"
+    taskid: b08f994d-6982-4c24-8abc-8709cdc4570a
+    type: regular
+    task:
+      id: b08f994d-6982-4c24-8abc-8709cdc4570a
+      version: -1
+      name: Get event related indicators
+      description: Retrieves related indicators for an object in ThreatQ.
+      script: ThreatQ v2|||threatq-get-related-indicators
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      obj_id:
+        complex:
+          root: ThreatQ
+          accessor: Event.ID
+      obj_type:
+        simple: event
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 7195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "63":
+    id: "63"
+    taskid: 984eaaa9-326e-400f-8a34-9d92b20e82de
+    type: condition
+    task:
+      id: 984eaaa9-326e-400f-8a34-9d92b20e82de
+      version: -1
+      name: Verify linking
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "65"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ThreatQ
+                accessor: Event.RelatedIndicator.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: ThreatQ
+                accessor: Indicator.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 7370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "64":
+    id: "64"
+    taskid: 0be58e57-b5f9-42a7-89fe-e1fb27589e37
+    type: regular
+    task:
+      id: 0be58e57-b5f9-42a7-89fe-e1fb27589e37
+      version: -1
+      name: Unlink event + indicator
+      description: Unlinks two objects in ThreatQ.
+      script: ThreatQ v2|||threatq-unlink-objects
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      obj1_id:
+        complex:
+          root: ThreatQ
+          accessor: Indicator.ID
+      obj1_type:
+        simple: indicator
+      obj2_id:
+        complex:
+          root: ThreatQ
+          accessor: Event.ID
+      obj2_type:
+        simple: event
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 7690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "65":
+    id: "65"
+    taskid: 05e0eb4b-37f6-45f3-8eb3-e86273051a73
+    type: title
+    task:
+      id: 05e0eb4b-37f6-45f3-8eb3-e86273051a73
+      version: -1
+      name: Linking veified
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 7545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "66":
+    id: "66"
+    taskid: 7a03a750-5e54-4f4b-83aa-51112e9e10fb
+    type: regular
+    task:
+      id: 7a03a750-5e54-4f4b-83aa-51112e9e10fb
+      version: -1
+      name: Get indicator related events
+      description: Retrieves related events of an object in ThreatQ.
+      script: ThreatQ v2|||threatq-get-related-events
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      obj_id:
+        complex:
+          root: ThreatQ
+          accessor: Indicator.ID
+      obj_type:
+        simple: indicator
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "67":
+    id: "67"
+    taskid: 6c8c48ea-6b96-455a-890c-edfcadacaaa4
+    type: condition
+    task:
+      id: 6c8c48ea-6b96-455a-890c-edfcadacaaa4
+      version: -1
+      name: Verify unlinking
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+      - "80"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: ThreatQ
+                accessor: Indicator.RelatedEvent
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: ThreatQ
+                accessor: Event.RelatedIndicator
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 8390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "68":
+    id: "68"
+    taskid: 141947ba-78d7-4ba4-8fbd-345dd60e9c1a
+    type: regular
+    task:
+      id: 141947ba-78d7-4ba4-8fbd-345dd60e9c1a
+      version: -1
+      name: Update context - indicator (search by ID)
+      description: Searches for an object by object type and ID. Generic
+        and DBotScore contexts also may be generated.
+      script: ThreatQ v2|||threatq-search-by-id
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "44"
+      - "82"
+    scriptarguments:
+      obj_id:
+        simple: ${ThreatQ.Indicator.ID}
+      obj_type:
+        simple: indicator
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 8740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "69":
+    id: "69"
+    taskid: 03ac0dc2-a598-4dbe-893b-474faec3e0a4
+    type: regular
+    task:
+      id: 03ac0dc2-a598-4dbe-893b-474faec3e0a4
+      version: -1
+      name: Delete the adversary
+      description: Deletes an object in ThreatQ.
+      script: ThreatQ v2|||threatq-delete-object
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "85"
+    scriptarguments:
+      obj_id:
+        simple: ${ThreatQ.Adversary.ID}
+      obj_type:
+        simple: adversary
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "70":
+    id: "70"
+    taskid: 8dd84c4a-b2d8-4c16-8762-8ca5553e6d95
+    type: regular
+    task:
+      id: 8dd84c4a-b2d8-4c16-8762-8ca5553e6d95
+      version: -1
+      name: Delete indicator
+      description: Deletes an object in ThreatQ.
+      script: ThreatQ v2|||threatq-delete-object
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      obj_id:
+        simple: ${ThreatQ.Indicator.ID}
+      obj_type:
+        simple: indicator
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 9265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "71":
+    id: "71"
+    taskid: eca25919-2e8b-4606-8282-3a5a7ae171c0
+    type: regular
+    task:
+      id: eca25919-2e8b-4606-8282-3a5a7ae171c0
+      version: -1
+      name: Update context  - indicator (Search by name)
+      description: Searches for objects by name in the ThreatQ repository.
+      script: ThreatQ v2|||threatq-search-by-name
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      name:
+        simple: 9.9.4.4
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 9790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "72":
+    id: "72"
+    taskid: b1c9c6d9-8ca1-48d7-86d0-86427d3a6661
+    type: regular
+    task:
+      id: b1c9c6d9-8ca1-48d7-86d0-86427d3a6661
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "75"
+      - "76"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 7865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "73":
+    id: "73"
+    taskid: 1aa202d2-a33a-458a-816f-7192859c9ae6
+    type: regular
+    task:
+      id: 1aa202d2-a33a-458a-816f-7192859c9ae6
+      version: -1
+      name: Get event related indicators
+      description: Retrieves related indicators for an object in ThreatQ.
+      script: ThreatQ v2|||threatq-get-related-indicators
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      obj_id:
+        complex:
+          root: ThreatQ
+          accessor: Event.ID
+      obj_type:
+        simple: event
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 8215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "74":
+    id: "74"
+    taskid: d9d7a1c8-29e0-4cd3-8764-445c9e64aa84
+    type: title
+    task:
+      id: d9d7a1c8-29e0-4cd3-8764-445c9e64aa84
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 11540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "75":
+    id: "75"
+    taskid: 52d06846-7778-42ef-8ad7-46baa813f6b5
+    type: regular
+    task:
+      id: 52d06846-7778-42ef-8ad7-46baa813f6b5
+      version: -1
+      name: Update context  - event (Search by name)
+      description: Searches for objects by name in the ThreatQ repository.
+      script: ThreatQ v2|||threatq-search-by-name
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      name:
+        simple: NewEvent-01-08
+      limit:
+        simple: "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 8040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "76":
+    id: "76"
+    taskid: 824856ab-768b-4340-887d-0f99e5a3e4f3
+    type: regular
+    task:
+      id: 824856ab-768b-4340-887d-0f99e5a3e4f3
+      version: -1
+      name: Update context - indicator (Search by name)
+      description: Searches for objects by name in the ThreatQ repository.
+      script: ThreatQ v2|||threatq-search-by-name
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      name:
+        simple: 9.9.4.4
+      limit:
+        simple: "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "77":
+    id: "77"
+    taskid: dd25bd58-8007-4d8c-8909-15f8b72580ec
+    type: regular
+    task:
+      id: dd25bd58-8007-4d8c-8909-15f8b72580ec
+      version: -1
+      name: Edit adversary
+      description: Updates an adversary name in ThreatQ.
+      script: ThreatQ v2|||threatq-edit-adversary
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      id:
+        simple: ${ThreatQ.Adversary.ID}
+      name:
+        simple: TestAdversary-01-08
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "78":
+    id: "78"
+    taskid: 7b3cab6d-baaf-4720-81cb-0e54d3b9d561
+    type: regular
+    task:
+      id: 7b3cab6d-baaf-4720-81cb-0e54d3b9d561
+      version: -1
+      name: Edit event
+      description: Updates an event in ThreatQ.
+      script: ThreatQ v2|||threatq-edit-event
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      date:
+        simple: ${ThreatQ.Event.CreatedAt}
+      description: {}
+      id:
+        simple: ${ThreatQ.Event.ID}
+      type:
+        simple: Malware
+      title:
+        simple: NewEvent-01-08
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "79":
+    id: "79"
+    taskid: 67b183bb-d93b-4bce-806c-9d60f7bca711
+    type: condition
+    task:
+      id: 67b183bb-d93b-4bce-806c-9d60f7bca711
+      version: -1
+      name: Verify edit event
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ThreatQ
+                accessor: Event.Type
+            iscontext: true
+          right:
+            value:
+              simple: Malware
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "80":
+    id: "80"
+    taskid: 64eebac2-aa10-4095-8a95-230efdad7c1f
+    type: regular
+    task:
+      id: 64eebac2-aa10-4095-8a95-230efdad7c1f
+      version: -1
+      name: Update indicator score
+      description: Modifies an indicator's score in ThreatQ. The final indicator score is the highest of
+        the manual and generated scores.
+      script: ThreatQ v2|||threatq-update-score
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      id:
+        simple: ${ThreatQ.Indicator.ID}
+      score:
+        simple: "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 8565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "82":
+    id: "82"
+    taskid: a5401d54-e128-45ed-84d7-9fe9dfef4dd8
+    type: condition
+    task:
+      id: a5401d54-e128-45ed-84d7-9fe9dfef4dd8
+      version: -1
+      name: Verify status update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ThreatQ.Indicator.Status
+            iscontext: true
+          right:
+            value:
+              simple: Whitelisted
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 8915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "83":
+    id: "83"
+    taskid: 87a0ebe5-76ab-4596-836c-0c2d834d7706
+    type: regular
+    task:
+      id: 87a0ebe5-76ab-4596-836c-0c2d834d7706
+      version: -1
+      name: Edit indicator
+      description: Updates an indicator in ThreatQ.
+      script: ThreatQ v2|||threatq-edit-indicator
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      description: {}
+      id:
+        simple: ${ThreatQ.Indicator.ID}
+      type:
+        simple: IP Address
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "84":
+    id: "84"
+    taskid: 9f6d5318-ba23-4b8f-8e99-fef051b1f13e
+    type: condition
+    task:
+      id: 9f6d5318-ba23-4b8f-8e99-fef051b1f13e
+      version: -1
+      name: Verify indicator editing
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ThreatQ
+                accessor: Indicator.Type
+            iscontext: true
+          right:
+            value:
+              simple: IP Address
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "85":
+    id: "85"
+    taskid: 2dbb4e00-48ac-4c0c-816c-a0f0df0c7117
+    type: regular
+    task:
+      id: 2dbb4e00-48ac-4c0c-816c-a0f0df0c7117
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "86":
+    id: "86"
+    taskid: dcdeeafa-4dd6-4d0d-820d-bdc01aafeb1a
+    type: regular
+    task:
+      id: dcdeeafa-4dd6-4d0d-820d-bdc01aafeb1a
+      version: -1
+      name: Upload file to war room
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "87"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: testfile.jpg
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Baked_apple_dumplings_in_a_pan_%28square_crop%29.jpg/150px-Baked_apple_dumplings_in_a_pan_%28square_crop%29.jpg
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 10140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "87":
+    id: "87"
+    taskid: 8c264b7e-3ada-4a0c-80e5-0433dc9f5355
+    type: regular
+    task:
+      id: 8c264b7e-3ada-4a0c-80e5-0433dc9f5355
+      version: -1
+      name: Upload file to ThreatQ
+      description: Uploads a file in ThreatQ.
+      script: ThreatQ v2|||threatq-upload-file
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "89"
+    scriptarguments:
+      entry_id:
+        simple: ${File.EntryID}
+      file_category:
+        simple: Cuckoo
+      malware_safety_lock:
+        simple: "off"
+      source: {}
+      title:
+        simple: TestFile
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 10315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "88":
+    id: "88"
+    taskid: ee92e8b4-be5d-46c6-8f73-adbe909527de
+    type: regular
+    task:
+      id: ee92e8b4-be5d-46c6-8f73-adbe909527de
+      version: -1
+      name: Delete the file
+      description: Deletes an object in ThreatQ.
+      script: ThreatQ v2|||threatq-delete-object
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "92"
+    scriptarguments:
+      obj_id:
+        simple: ${ThreatQ.File.ID}
+      obj_type:
+        simple: attachment
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 10665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "89":
+    id: "89"
+    taskid: cd845bbe-0944-44ad-8a85-4c4d88795eb4
+    type: regular
+    task:
+      id: cd845bbe-0944-44ad-8a85-4c4d88795eb4
+      version: -1
+      name: Download file
+      description: Downloads a file from ThreatQ to Demisto.
+      script: ThreatQ v2|||threatq-download-file
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      id:
+        simple: ${ThreatQ.File.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 10490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "90":
+    id: "90"
+    taskid: c9253612-39a3-4d24-8394-4924a204159a
+    type: regular
+    task:
+      id: c9253612-39a3-4d24-8394-4924a204159a
+      version: -1
+      name: Get all indicators
+      description: Retrieves all indicators in ThreatQ.
+      script: ThreatQ v2|||threatq-get-all-indicators
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      limit: {}
+      page: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 11190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "91":
+    id: "91"
+    taskid: a1c94de0-17a8-41ce-80c1-d33689961cd0
+    type: regular
+    task:
+      id: a1c94de0-17a8-41ce-80c1-d33689961cd0
+      version: -1
+      name: Get all adveraries
+      description: Retrieves all adversaries in ThreatQ.
+      script: ThreatQ v2|||threatq-get-all-adversaries
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      limit: {}
+      page: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 11015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "92":
+    id: "92"
+    taskid: 3bd4a3ee-1982-4759-8225-5b8d9c7d151d
+    type: regular
+    task:
+      id: 3bd4a3ee-1982-4759-8225-5b8d9c7d151d
+      version: -1
+      name: Get all events
+      description: Retrieves all events in ThreatQ.
+      script: ThreatQ v2|||threatq-get-all-events
+      type: regular
+      iscommand: true
+      brand: ThreatQ v2
+    nexttasks:
+      '#none#':
+      - "91"
+    scriptarguments:
+      limit:
+        simple: "10"
+      page:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 10840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "93":
+    id: "93"
+    taskid: cd5427c4-d0fd-42bf-868f-13df31ee613c
+    type: condition
+    task:
+      id: cd5427c4-d0fd-42bf-868f-13df31ee613c
+      version: -1
+      name: Verify get-all-objects commands
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "74"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatQ.Indicator
+            iscontext: true
+      - - operator: hasLength
+          left:
+            value:
+              simple: ThreatQ.Event
+            iscontext: true
+          right:
+            value:
+              simple: "10"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatQ.Adversary
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 11365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 11555,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
