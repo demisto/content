@@ -1,9 +1,15 @@
-version: 2.1
+version: 2
 
-commands:
-  prepare_environment:
-    description: "Setup, and update execution permissions"
+jobs:
+  validation_and_testing:
+    docker:
+      - image: devdemisto/content-build-2and3:2.0.0.1785  # disable-secrets-detection
+    environment:
+      CONTENT_VERSION: "19.9.0"
+      SERVER_VERSION: "5.0.0"
+      GIT_SHA1: "bc047ac819b733774d73b8041a60d2a11981cdb0" # guardrails-disable-line disable-secrets-detection
     steps:
+      - checkout
       - run:
           name: Prepare Environment
           command: |
@@ -19,36 +25,6 @@ commands:
             python --version
             python3 --version
             echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME"
-  early_return_for_forked_pull_requests:
-    description: >-
-      If this build is from a fork, stop executing the current job and return success.
-      This is useful to avoid steps that will fail due to missing credentials.
-    steps:
-      - run:
-          name: Early return if this build is from a forked PR
-          command: |
-            # CIRCLE_PR_NUMBER env var is documented as “the number of the associated GitHub or Bitbucket pull request. Only available on forked PRs.”
-            # If CIRCLE_PR_NUMBER exists, then we know we are running a build for a forked PR that does not have access to secrets.
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              echo "Nothing to do for forked PRs, so marking this step successful"
-              circleci step halt
-            fi
-
-executors:
-  content-builder:
-    docker:
-      - image: devdemisto/content-build-2and3:2.0.0.1785  # disable-secrets-detection
-    environment:
-      CONTENT_VERSION: "19.9.0"
-      SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "bc047ac819b733774d73b8041a60d2a11981cdb0" # guardrails-disable-line disable-secrets-detection
-
-jobs:
-  validation_and_testing:
-    executor: content-builder
-    steps:
-      - checkout
-      - prepare_environment
       - run:
           name: Create ID Set
           when: always
@@ -94,13 +70,31 @@ jobs:
             - Documentation/doc-CommonServer.json
   
   instance_testing:
-    executor: content-builder
+    docker:
+      - image: devdemisto/content-build-2and3:2.0.0.1785  # disable-secrets-detection
+    environment:
+      CONTENT_VERSION: "19.9.0"
+      SERVER_VERSION: "5.0.0"
+      GIT_SHA1: "bc047ac819b733774d73b8041a60d2a11981cdb0" # guardrails-disable-line disable-secrets-detection
     resource_class: medium+
     steps:
-      - early_return_for_forked_pull_requests
       - checkout
       - setup_remote_docker
-      - prepare_environment
+      - run:
+          name: Prepare Environment
+          command: |
+            echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
+            echo 'export PATH="/home/circleci/.pyenv/shims:/home/circleci/.local/bin:/home/circleci/.pyenv/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
+            echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
+            echo "=== sourcing $BASH_ENV ==="
+            source $BASH_ENV
+            sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
+            chmod +x ./Tests/scripts/*
+            chmod +x ./Tests/lastest_server_build_scripts/*
+            pyenv versions
+            python --version
+            python3 --version
+            echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME"
       - add_ssh_keys:
           fingerprints:
               - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
@@ -260,3 +254,7 @@ workflows:
       - instance_testing:
           requires:
             - validation_and_testing
+          filters:
+            branches:
+              # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
+              ignore: /pull\/[0-9]+/
