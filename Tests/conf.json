@@ -146,7 +146,7 @@
             "playbookID": "CompareIncidentsLabels-test-playbook"
         },
         {
-            "integrations": "Pwned",
+            "integrations": "Have I Been Pwned? V2",
             "playbookID": "Pwned test",
             "nightly": true
         },
@@ -358,12 +358,41 @@
             "integrations": "Luminate"
         },
         {
+            "playbookID": "Palo Alto Networks - Malware Remediation Test",
+            "integrations": "Palo Alto Minemeld",
+            "fromversion": "4.5.0"
+        },
+        {
             "playbookID": "SumoLogic-Test",
             "integrations": "SumoLogic",
             "fromversion": "4.1.0"
         },
         {
             "playbookID": "ParseEmailFiles-test"
+        },
+        {
+            "playbookID": "PAN-OS - Block IP and URL - External Dynamic List Test",
+            "integrations": "palo_alto_networks_pan_os_edl_management",
+            "fromversion": "4.0.0"
+
+        },
+        {
+            "playbookID": "PAN-OS - Block IP - Custom Block Rule Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "fromversion": "4.0.0"
+        },
+        {
+            "playbookID": "PAN-OS - Block IP - Static Address Group Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "fromversion": "4.0.0"
+        },
+        {
+            "playbookID": "PAN-OS - Block URL - Custom URL Category Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "fromversion": "4.0.0"
         },
         {
             "playbookID": "ParseExcel-test"
@@ -1315,7 +1344,7 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned",
+                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Palo Alto Minemeld",
                 "Rasterize"
@@ -1327,7 +1356,7 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned",
+                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Palo Alto Minemeld",
                 "Rasterize"
@@ -1339,7 +1368,7 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned",
+                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Palo Alto Minemeld",
                 "Rasterize"
@@ -1351,7 +1380,7 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned",
+                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Palo Alto Minemeld",
                 "Rasterize"
@@ -1457,6 +1486,11 @@
             "playbookID": "TestShowScheduledEntries"
         },
         {
+            "playbookID": "Calculate Severity - Standard - Test",
+            "integrations": "Palo Alto Minemeld",
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "Symantec Advanced Threat Protection",
             "playbookID": "Symantec ATP Test"
 
@@ -1508,7 +1542,7 @@
         },
         {
             "playbookID": "EmailReputationTest",
-            "integrations": "Pwned"
+            "integrations": "Have I Been Pwned? V2"
         },
         {
             "integrations": "Symantec Deepsight Intelligence",
@@ -1775,11 +1809,26 @@
         {
             "integrations": "Threat Crowd",
             "playbookID": "ThreatCrowd - Test"
+        },
+        {
+            "integrations": "Hybrid Analysis",
+            "playbookID": "HybridAnalysis-Test",
+            "timeout": 500,
+            "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "es_v7",
+            "playbookID": "Elasticsearch_v2_test"
+        },
+        {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "es_v6",
+            "playbookID": "Elasticsearch_v2_test-v6"
         }
     ],
     "skipped_tests": {
         "TestParseEmailHeaders": "Fails on conditional task (Issue 18815)",
-        "Extract Indicators From File - Generic v2 - Test": "issue with extract indicators. (probably regex) (Issue 18795)",
         "Pwned v2 test": "Pwned v2 test fails on conditional task (Issue 18793).",
         "CheckpointFW-test": "Test is not stable (Issue 18643)",
         "search_endpoints_by_hash_-_tie_-_test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
@@ -1828,7 +1877,11 @@
         "Test - Windows Defender Advanced Threat Protection": "One of the commands has an internal server error. Check again 20/08/2019. Issue - #18552",
         "CarbonBlackLiveResponseTest": "Task: cb-session-create-and-wait fails (issue 18691)",
         "nexpose_test": "Failed to create site (issue 18694)",
-        "Recorded Future Test": "Looks like a bug in the product, pending support answer (issue 18922)"
+        "Recorded Future Test": "Looks like a bug in the product, pending support answer (issue 18922)",
+        "IntSights Mssp Test": "Account Expired (issue #16351)",
+        "CarbonBlackResponseTest": "Instance content has been altered causing test failure #19180",
+        "Pwned test": "API Deprecated, use Pwned test v2 instead",
+        "CheckPhish-Test": "Test is unstable, requires redesign #19188"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1846,6 +1899,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "ZeroFox": "No data (Alerts) in the product, which is required because record isn't working (issue 19161)",
         "Jask": "Returning 401 (issue 18879)",
         "SumoLogic": "No credentials (Issue 18441)",
         "Lastline": "Temporally moved to skipped in order to not fail nightly",
@@ -1869,7 +1923,6 @@
         "Threat Grid": "instance problem (issue 16197)",
         "Kafka V2": "Can not connect to instance from remote",
         "Check Point Sandblast": "No access (issue 15948)",
-        "IntSights": "Account Expired (issue #16351)",
         "Remedy AR": "getting 'Not Found' in test button",
         "XFE": "License expired",
         "RedLock": "Credentials and API problems (issue 15493)",
