@@ -1,5 +1,5 @@
 id: DuoAdmin API test playbook
-version: -1
+version: 22
 name: DuoAdmin API test playbook
 starttaskid: "0"
 tasks:
@@ -892,6 +892,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "46"
       "yes":
       - "43"
     separatecontext: false
@@ -917,6 +919,37 @@ tasks:
         "position": {
           "x": 450,
           "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "46":
+    id: "46"
+    taskid: 50771d8a-f46e-4cff-850a-ab4ac26a57bd
+    type: regular
+    task:
+      id: 50771d8a-f46e-4cff-850a-ab4ac26a57bd
+      version: -1
+      name: Print Error in case of unfixed bug
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      message:
+        simple: There are two users with the same logs. The bug haven't been fixed
+          (issue 19141).
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 1920
         }
       }
     note: false
