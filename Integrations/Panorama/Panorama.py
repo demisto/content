@@ -2245,6 +2245,8 @@ def prettify_rule(rule):
         pretty_rule['To'] = rule['to']['member']
     if 'source' in rule and 'member' in rule['source']:
         pretty_rule['Source'] = rule['source']['member']
+    if 'log-setting' in rule and '#text' in rule['log-setting']:
+        pretty_rule['LogForwardingProfile'] = rule['log-setting']['#text']
 
     return pretty_rule
 
