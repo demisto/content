@@ -3,7 +3,7 @@ version: -1
 fromversion: 4.5.0
 name: Calculate Severity - Generic v2
 description: |-
-  Calculate and assign the incident severity based on the highest returned severity level from the following severity calculations:
+  Calculate and assign the incident severity based on the highest returned severity level from the following calculations:
 
   - DBotScores of indicators
   - Critical assets
@@ -46,7 +46,7 @@ tasks:
     task:
       id: 016add21-2f55-4108-8a61-18fc346d5bfd
       version: -1
-      name: Set the incident severity level  to "Low"
+      name: Set incident severity to "Low"
       description: Sets the incident severity to "Low".
       script: Builtin|||setIncident
       type: regular
@@ -227,7 +227,7 @@ tasks:
     task:
       id: 7c197cbc-c107-49e4-8744-4907a39ee6c5
       version: -1
-      name: Set the incident severity level  to "Medium"
+      name: Set incident severity to "Medium"
       description: Sets the incident severity to "Medium".
       script: Builtin|||setIncident
       type: regular
@@ -408,7 +408,7 @@ tasks:
     task:
       id: 9bca9c1e-ea09-4015-8e64-f40b4c3e2fa2
       version: -1
-      name: Set the incident severity level to "High"
+      name: Set incident severity to "High"
       description: Sets the incident severity to "High".
       script: Builtin|||setIncident
       type: regular
@@ -608,7 +608,7 @@ tasks:
     task:
       id: 8a3a57a3-6b38-44e5-8d33-3b4dfc0965ab
       version: -1
-      name: Set the incident severity level  to "Critical"
+      name: Set incident severity to "Critical"
       description: Sets the incident severity to "Critical".
       script: Builtin|||setIncident
       type: regular
@@ -782,7 +782,7 @@ tasks:
     task:
       id: 2bcd5d89-5bdc-4d12-8c97-97400decb679
       version: -1
-      name: Determine severity based on the highest returned severity level
+      name: Determine severity 
       description: Determines the severity level based on the highest result of all
         severity calculations.
       type: condition
@@ -1394,7 +1394,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: The email authenticity-check verdict taken from the result of EmailAuthenticityCheck.
+  description: Indicates the email authenticity resulting from EmailAuthenticityCheck script.
 outputs:
 - contextPath: CriticalAssets
   description: All critical assets involved in the incident.
