@@ -266,4 +266,4 @@ outputs:
   type: string
   description: Results of Autofocus tags search
 tests:
-- Autofocus Query Samples and Sessions and Tags Test Playbook
+- Autofocus Query Samples, Sessions and Tags Test Playbook
