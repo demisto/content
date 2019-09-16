@@ -42,7 +42,8 @@ def get_credentials():
         if not isinstance(json_keyfile, dict):
             json_keyfile = json.loads(json_keyfile)
             if not isinstance(json_keyfile, dict):
-                raise Exception('Something is wrong with your provided auth_json parameter. Please follow the instructions to obtain a credentials JSON file.')
+                raise Exception('Something is wrong with your provided auth_json parameter. \
+                Please follow the instructions to obtain a credentials JSON file.')
         return service_account.ServiceAccountCredentials.from_json_keyfile_dict(json_keyfile, scopes=SERVICE_SCOPES)
     except Exception as e:
         err_msg = 'An error occurred while trying to construct an OAuth2 ' \
@@ -113,15 +114,11 @@ def convert_to_output(result):
     Convert to an output dict skipping all empty results.
     Also uses capitalizes context keys to follow Demisto defaults.
     """
-    output = {}
-    output['GoogleVisionAPI'] = {}
-    output['GoogleVisionAPI']['Logo'] = []
-    
+    output = {'GoogleVisionAPI': {'Logo': []}}
     for res in result.get('responses', []):
         logos = res.get('logoAnnotations', [])
         if logos:
             output['GoogleVisionAPI']['Logo'].extend(logos)
-
     return output
 
 
@@ -136,20 +133,27 @@ def detect_logos(file_id):
         return perform_logo_detection_service_request(content)
 
 
+def is_logo_detected(results):
+    if results:
+        for res in results.get('responses', []):
+            logo_annotations = res.get('logoAnnotations', [])
+            if len(logo_annotations) > 0:
+                return True
+    return False
+
+
 def detect_logos_command():
     entry_id = demisto.args().get('entry_id', '')
-
     results = detect_logos(entry_id)
-
-    output = convert_to_output(results)
-    if output['GoogleVisionAPI'] and len(output['GoogleVisionAPI']['Logo']) > 0:
+    logo_detected = is_logo_detected(results)
+    if logo_detected:
+        output = convert_to_output(results)
         human_readable = 'Logos found: '
-        for l in output['GoogleVisionAPI']['Logo']:
-            human_readable += l['description'] + ', '
+        for logo in output.get('GoogleVisionAPI', {}).get('Logo', []):
+            human_readable += logo.get('description') + ', '
         human_readable = human_readable[:-2]
     else:
         human_readable = 'No Logos found'
-
     return_outputs(human_readable, output)
     
 
@@ -216,12 +220,9 @@ def test_module():
                 b'v\x14\xfbK8\xf7\xf9j\x8a\xcfW/\xc1\x8b\x8f\xd7\xd2\xfcCb?\x01\xc7\xf5]\n\x11\xa0Y\x98\x00\x00\x00' \
                 b'\x00IEND\xaeB`\x82 '
     response = perform_logo_detection_service_request(content)
-
     output = convert_to_output(response)
-
-    logo_found = output['GoogleVisionAPI']['Logo'][0]['description']
-
-    if logo_found == 'microsoft':
+    logo_found = output.get('GoogleVisionAPI', {}).get('Logo', [{'description', ''}])[0].get('description', '')
+    if 'microsoft' in logo_found.lower():
         demisto.results('ok')
     else:
         return_error(str(response))
