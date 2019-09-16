@@ -604,7 +604,8 @@
         },
         {
             "integrations": "Shodan",
-            "playbookID": "ShodanTest"
+            "playbookID": "ShodanTest",
+            "timeout": 1000
         },
         {
             "playbookID": "Extract Indicators From File - test",
