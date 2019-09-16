@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Fixed bug in command: duoadmin-get-authentication-logs-by-user
+Fixed an issue in the ***duoadmin-get-authentication-logs-by-user*** command.
