@@ -58,7 +58,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum numner of authentication logs to return.
+      description: The maximum number of authentication logs to return.
       isArray: false
       name: limit
       required: false
