@@ -21,21 +21,23 @@ def test_geo_by_ec(lat: str, long: str, point_ec: str):
 
 
 # DBot calculation Test
-arg_names_dbot = "count, score"
+arg_names_dbot = "pulse, threshold, score"
 
 arg_values_dbot = [
-    ({}, 'unknown'),
-    ({'count': -1}, 'unknown'),
-    ({'count': 0}, 'good'),
-    ({'count': 1}, 'suspicious'),
-    ({'count': 2}, 'bad'),
-    ({'count': 1000}, 'bad'),
+    ({}, 2, 0),
+    ({'count': -1}, 2, 0),
+    ({'count': 0}, 2, 1),
+    ({'count': 1}, 2, 2),
+    ({'count': 2}, 2, 3),
+    ({'count': 1000}, 2, 3),
+    ({'count': 10}, 20, 2),
+    ({'count': 10}, 20, 2),
 ]
 
 
 @pytest.mark.parametrize(argnames=arg_names_dbot, argvalues=arg_values_dbot)
-def test_dbot_score(count: dict, score: str):
-    assert dbot_score(count) == score, f"Error calculate DBot Score {count}"
+def test_dbot_score(pulse: dict, threshold: int, score: int):
+    assert dbot_score(pulse, threshold) == score, f"Error calculate DBot Score {pulse.get('count')}"
 
 
 arg_names_to_remove = "to_remove, after_remove"
