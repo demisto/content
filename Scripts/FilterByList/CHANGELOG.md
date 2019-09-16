@@ -1,2 +1,2 @@
 ## [Unreleased]
-regex expressions are now completable with the automation
+Regular expressions are now completable with the automation
