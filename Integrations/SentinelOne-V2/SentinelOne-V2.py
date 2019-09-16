@@ -21,6 +21,7 @@ SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.pa
 USE_SSL = not demisto.params().get('insecure', '')
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 FETCH_THREAT_RANK = int(demisto.params().get('fetch_threshold', 5))
+FETCH_LIMIT = int(demisto.params().get('fetch_limit'))
 BASE_URL = SERVER + '/web/api/v2.0/'
 HEADERS = {
     'Authorization': 'ApiToken ' + TOKEN,
@@ -1749,10 +1750,15 @@ def fetch_incidents():
     current_fetch = last_fetch
     incidents = []
     last_fetch_date_string = timestamp_to_datestring(last_fetch, '%Y-%m-%dT%H:%M:%S.%fZ')
-    threats = get_threats_request(created_after=last_fetch_date_string)
+    threats = get_threats_request(limit=FETCH_LIMIT, created_after=last_fetch_date_string)
     for threat in threats:
+        rank = threat.get('rank')
+        try:
+            rank = int(rank)
+        except TypeError:
+            rank = 0
         # If no fetch threat rank is provided, bring everything, else only fetch above the threshold
-        if not FETCH_THREAT_RANK or (FETCH_THREAT_RANK and threat.get('rank') >= FETCH_THREAT_RANK):
+        if FETCH_THREAT_RANK and rank >= FETCH_THREAT_RANK:
             incident = threat_to_incident(threat)
             incident_date = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%S.%fZ')
             # update last run

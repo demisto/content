@@ -1,0 +1,24 @@
+args:
+- default: true
+  description: List or single object
+  isArray: false
+  name: value
+  required: true
+  secret: false
+comment: |-
+  In case of a list or tuple, get the first object.
+  otherwise, return the original object
+commonfields:
+  id: GetFirstObject
+  version: -1
+enabled: true
+name: GetFirstObject
+script: ''
+system: false
+tags:
+- transformer
+- general
+- entirelist
+timeout: '0'
+type: python
+runonce: false

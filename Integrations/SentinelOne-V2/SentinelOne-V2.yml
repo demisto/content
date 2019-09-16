@@ -15,8 +15,7 @@ configuration:
   name: token
   required: true
   type: 4
-- defaultvalue: ''
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -42,6 +41,11 @@ configuration:
   display: Minimum risk score for importing incidents (0-10), where 0 is low risk
     and 10 is high risk
   name: fetch_threat_rank
+  required: false
+  type: 0
+- defaultvalue: '20'
+  display: Fetch limit
+  name: fetch_limit
   required: false
   type: 0
 description: End point protection
