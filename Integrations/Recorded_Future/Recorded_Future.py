@@ -503,12 +503,12 @@ def get_related_entities_command():
 
     ec = {}
     if response and ('error' not in response):
-        hr = []
+        hr = []  # type: list
         entity_result_type = entity_result_type.split(',')
         entity_types = []
         if 'All' in entity_result_type:
             entity_types = ['RelatedIpAddress', 'RelatedInternetDomainName', 'RelatedHash', 'RelatedMalware',
-                            'RelatedAttackVector', 'RelatedURL']
+                            'RelatedAttackVector', 'RelatedURL']  # type: list
         else:
             if 'IP' in entity_result_type:
                 entity_types.append('RelatedIpAddress')
@@ -522,12 +522,12 @@ def get_related_entities_command():
                 entity_types.append('RelatedMalware')
             if 'URL' in entity_result_type:
                 entity_types.append('RelatedURL')
-        ip_outputs = []
-        hash_outputs = []
-        domain_outputs = []
-        attacker_outputs = []
-        malware_outputs = []
-        url_outputs = []
+        ip_outputs = []  # type: list
+        hash_outputs = []  # type: list
+        domain_outputs = []  # type: list
+        attacker_outputs = []  # type: list
+        malware_outputs = []  # type: list
+        url_outputs = []  # type: list
 
         output_map = {
             'RelatedIpAddress': ip_outputs,
@@ -553,35 +553,35 @@ def get_related_entities_command():
                         hr_entity['Name'] = entity['entity']['name']
 
                     output_map[related_entity['type']].append(hr_entity)
-        hr = ''
+        hr_md = ''
 
         related_entities_ec = {}
         if ip_outputs:
-            hr += tableToMarkdown('IP Address', ip_outputs)
+            hr_md += tableToMarkdown('IP Address', ip_outputs)
             related_entities_ec['IPAddress'] = ip_outputs
 
         if hash_outputs:
-            hr += tableToMarkdown('Hash', hash_outputs)
+            hr_md += tableToMarkdown('Hash', hash_outputs)
             related_entities_ec['Hash'] = hash_outputs
 
         if domain_outputs:
-            hr += tableToMarkdown('Domain', domain_outputs)
+            hr_md += tableToMarkdown('Domain', domain_outputs)
             related_entities_ec['Domain'] = domain_outputs
 
         if attacker_outputs:
-            hr += tableToMarkdown('Attacker', attacker_outputs)
+            hr_md += tableToMarkdown('Attacker', attacker_outputs)
             related_entities_ec['Attacker'] = attacker_outputs
 
         if malware_outputs:
-            hr += tableToMarkdown('Malware', malware_outputs)
+            hr_md += tableToMarkdown('Malware', malware_outputs)
             related_entities_ec['Malware'] = malware_outputs
 
         if url_outputs:
-            hr += tableToMarkdown('URL', url_outputs)
+            hr_md += tableToMarkdown('URL', url_outputs)
             related_entities_ec['URL'] = url_outputs
 
-        if hr:
-            hr = '### Recorded Future related entities to ' + entity_value + '\n' + hr
+        if hr_md:
+            hr_md = '### Recorded Future related entities to ' + entity_value + '\n' + hr
             if entity_type == 'ip':
                 ec[outputPaths['ip']] = {
                     'Address': entity_value,
@@ -611,16 +611,16 @@ def get_related_entities_command():
                     }
                 }
         else:
-            hr = 'No results found'
+            hr_md = 'No results found'
     else:
-        hr = 'No results found'
+        hr_md = 'No results found'
 
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': response,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': hr,
+        'HumanReadable': hr_md,
         'EntryContext': ec
     })
 
@@ -1636,14 +1636,14 @@ def fetch_incidents():
     triggered_time = '[{},)'.format(datetime.strftime(current_time, '%Y-%m-%d %H:%M:%S'))
     max_time = current_time
 
-    rule_ids = []
+    rule_ids = []  # type: list
 
     for rule in rule_names:
         rules = json.loads(get_alert_rules(rule))
         if rules and 'data' in rules:
             rule_ids += map(lambda r: r['id'], rules['data'].get('results', []))
 
-    all_alerts = []
+    all_alerts = []  # type: list
     if rule_ids:
         for rule_id in rule_ids:
             alerts = json.loads(get_alerts(rule_id, triggered_time))
