@@ -1,9 +1,10 @@
 id: Autofocus Query Samples and Sessions and Tags Test Playbook
 version: -1
-name: Autofocus Query Samples & Sessions & Tags Test Playbook
-description: "This is a test playbook to the the functionality of the Autofocus Query
+name: Autofocus Query Samples and Sessions and Tags Test Playbook
+description: |-
+  This is a test playbook to the the functionality of the Autofocus Query
   Samples & Sessions playbook. The test playbook checks for Autofocus query inputs,
-  Direct queries for IP and also tag searches.\n "
+  Direct queries for IP and also tag searches.
 starttaskid: "0"
 tasks:
   "0":
