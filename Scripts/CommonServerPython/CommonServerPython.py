@@ -592,16 +592,16 @@ class IntegrationLogger(object):
             # add common params
             if isinstance(demisto.getParam('credentials'), dict) and demisto.getParam('credentials').get('password'):
                 pswrd = self.encode(demisto.getParam('credentials').get('password'))
-                self.add_repalce_strs(pswrd, b64_encode(pswrd))
+                self.add_replace_strs(pswrd, b64_encode(pswrd))
             if demisto.getParam('api_key'):
                 s = demisto.getParam('api_key')
-                self.add_repalce_strs(s, b64_encode(s))
+                self.add_replace_strs(s, b64_encode(s))
             if demisto.getParam('apikey'):
                 s = demisto.getParam('apikey')
-                self.add_repalce_strs(s, b64_encode(s))
+                self.add_replace_strs(s, b64_encode(s))
             if demisto.getParam('password'):
                 s = demisto.getParam('password')
-                self.add_repalce_strs(s, b64_encode(s))
+                self.add_replace_strs(s, b64_encode(s))
 
     def encode(self, message):
         try:
@@ -627,7 +627,7 @@ class IntegrationLogger(object):
         else:
             demisto.info(text)
 
-    def add_repalce_strs(self, *args):
+    def add_replace_strs(self, *args):
         '''
             Add strings which will be replaced when logging.
             Meant for avoiding passwords and so forth in the log.
@@ -680,8 +680,8 @@ class IntegrationLogger(object):
         except ImportError:
             # Python 3
             import builtins as __builtin__  # type: ignore
-        file = kwargs.get('file')
-        if (not file) or file == sys.stdout or file == sys.stderr:
+        file_ = kwargs.get('file')
+        if (not file_) or file_ == sys.stdout or file_ == sys.stderr:
             kwargs['file'] = self
         __builtin__.print(*args, **kwargs)
 
