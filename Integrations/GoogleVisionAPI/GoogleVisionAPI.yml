@@ -32,8 +32,14 @@ script:
     description: Detects brand logos in the given image
     execution: false
     name: google-vision-detect-logos
+    outputs:
+    - contextPath: GoogleVisionAPI
+      description: The results provided by the Google Vision API, e.g. detected logos.
+      type: Unknown
   dockerimage: demisto/google-vision-api:1.0.0.1388
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   type: python
