@@ -568,3 +568,501 @@ def test_duplicated_argss():
 
     assert validator.is_there_duplicate_args(), \
         "The integration validator did not find duplicated args although there are duplicates"
+
+
+def test_is_changed_subtype_non_changed():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "script": {
+            "type": "python",
+            "subtype": "python3"
+        }
+    }
+    validator.old_integration = {
+        "script": {
+            "type": "python",
+            "subtype": "python3"
+        }
+    }
+
+    assert validator.is_changed_subtype(), \
+        "The integration validator found changed subtype while it is valid"
+
+
+def test_is_changed_subtype_changed():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "script": {
+            "type": "python",
+            "subtype": "python3"
+        }
+    }
+    validator.old_integration = {
+        "script": {
+            "type": "python",
+            "subtype": "python2"
+        }
+    }
+
+    assert validator.is_changed_subtype() is False, \
+        "The integration validator did not find changed subtype while it is changed"
+
+
+def test_valid_subtype_lies():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "script": {
+            "type": "python",
+            "subtype": "lies"
+        }
+    }
+    validator.old_integration = None
+
+    assert validator.is_valid_subtype() is False, \
+        "The integration validator found valid subtype while it is invalid"
+
+
+def test_is_default_arguments_non_default():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "file",
+                    "arguments": [
+                        {
+                            "name": "file",
+                            "required": True,
+                            "default": False
+                        },
+                        {
+                            "name": "verbose"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    validator.old_integration = None
+
+    assert validator.is_default_arguments() is False, \
+        "The integration validator did not find invalid arg (needed to be default and not required)"
+
+
+def test_is_default_arguments_ok():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "email",
+                    "arguments": [
+                        {
+                            "name": "email",
+                            "required": False,
+                            "default": True
+                        },
+                        {
+                            "name": "verbose"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    validator.old_integration = None
+
+    assert validator.is_default_arguments() is True, \
+        "The integration validator found an invalid command arg while it is valid"
+
+
+def test_is_outputs_for_reputations_commands_valid():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "panorama-commit-status",
+                    "outputs": [
+                        {
+                            "contextPath": "Panorama.Commit.JobID",
+                            "description": "Job ID of the configuration to be committed",
+                            "type": "number"
+                        },
+                        {
+                            "contextPath": "DBotScore.does.not.matter"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    validator.old_integration = None
+
+    assert validator.is_outputs_for_reputations_commands_valid() is True, \
+        "The integration validator found invalid command outputs while it is valid"
+
+    validator_email = IntegrationValidator("temp_file", check_git=False)
+    validator_email.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "email",
+                    "outputs": [
+                        {
+                            "contextPath": "DBotScore.Indicator",
+                            "description": "The indicator that was tested.",
+                            "type": "string"
+                        },
+                        {
+                            "contextPath": "DBotScore.Type",
+                            "description": "The indicator type.",
+                            "type": "string"
+                        },
+                        {
+                            "contextPath": "DBotScore.Vendor",
+                            "description": "Vendor used to calculate the score.",
+                            "type": "string"
+                        },
+                        {
+                            "contextPath": "DBotScore.Sc0re",
+                            "description": "The actual score.",
+                            "type": "int"
+                        },
+                        {
+                            "contextPath": "Email.To",
+                            "description": "email to",
+                            "type": "string"
+                        },
+                    ]
+                }
+            ]
+        }
+    }
+    validator_email.old_integration = None
+
+    assert validator_email.is_outputs_for_reputations_commands_valid() is False, \
+        "The integration validator did not find the invalid command output - DBotScore.Sc0re"
+
+    validator_file = IntegrationValidator("temp_file", check_git=False)
+    validator_file.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "file",
+                    "outputs": [
+                        {
+                            "contextPath": "DBotScore.Indicator",
+                            "description": "The indicator that was tested.",
+                            "type": "string"
+                        },
+                        {
+                            "contextPath": "DBotScore.Type",
+                            "description": "The indicator type.",
+                            "type": "string"
+                        },
+                        {
+                            "contextPath": "DBotScore.Vendor",
+                            "description": "Vendor used to calculate the score.",
+                            "type": "string"
+                        },
+                        {
+                            "contextPath": "DBotScore.Score",
+                            "description": "The actual score.",
+                            "type": "int"
+                        },
+                        {
+                            "contextPath": "File.Md5",
+                            "description": "The MD5 hash of the file.",
+                            "type": "string"
+                        },
+                    ]
+                }
+            ]
+        }
+    }
+    validator_file.old_integration = None
+
+    assert validator_file.is_outputs_for_reputations_commands_valid() is False, \
+        "The integration validator did not find the invalid command output - File.Md5"
+
+    validator_ip = IntegrationValidator("temp_file", check_git=False)
+    validator_ip.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "ip",
+                    "outputs": [
+                        {
+                            "contextPath": "DBotScore.Indicator",
+                            "description": "The indicator that was tested.",
+                            "type": "string"
+                        },
+                        {
+                            "contextPath": "DBotScore.Type",
+                            "description": "The indicator type.",
+                            "type": "string"
+                        },
+                        {
+                            "contextPath": "DBotScore.Vendor",
+                            "description": "Vendor used to calculate the score.",
+                            "type": "string"
+                        },
+                        {
+                            "contextPath": "DBotScore.Score",
+                            "description": "The actual score.",
+                            "type": "int"
+                        },
+                        {
+                            "contextPath": "IP.Address",
+                            "description": "IP address",
+                            "type": "string"
+                        },
+                    ]
+                }
+            ]
+        }
+    }
+    validator_ip.old_integration = None
+
+    assert validator_ip.is_outputs_for_reputations_commands_valid() is True, \
+        "The integration validator found invalid command outputs while it is valid"
+
+
+def test_valid_new_beta_integration():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.old_integration = {}
+    validator.current_integration = {
+        "commonfields": {
+            "id": "newIntegration"
+        },
+        "name": "newIntegration",
+        "display": "newIntegration (Beta)",
+        "beta": True,
+    }
+
+    assert validator.is_valid_beta_integration(is_new=True) is True, \
+        "The Beta validator did not validate a new valid integration"
+
+
+def test_new_beta_integration_missing_beta_in_display():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.old_integration = {}
+    validator.current_integration = {
+        "commonfields": {
+            "id": "newIntegration"
+        },
+        "name": "newIntegration",
+        "display": "newIntegration",
+        "beta": True,
+    }
+
+    assert validator.is_valid_beta_integration(is_new=True) is False, \
+        "The Beta validator approved the integration" \
+        "but it should have fail it for missing beta substring in 'display' field"
+
+
+def test_new_beta_integration_with_beta_substring_in_id():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.old_integration = {}
+    validator.current_integration = {
+        "commonfields": {
+            "id": "newIntegration beta"
+        },
+        "name": "newIntegration",
+        "display": "newIntegration (Beta)",
+        "beta": True,
+    }
+
+    assert validator.is_valid_beta_integration(is_new=True) is False, \
+        "The beta validator approved the new beta integration," \
+        " but it should fail it because the 'id' field has a 'beta' substring in it. " \
+        "the validator should not allow it for new integration"
+
+
+def test_new_beta_integration_with_beta_substring_in_name():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.old_integration = {}
+    validator.current_integration = {
+        "commonfields": {
+            "id": "newIntegration"
+        },
+        "name": "newIntegration beta",
+        "display": "newIntegration (Beta)",
+        "beta": True,
+    }
+
+    assert validator.is_valid_beta_integration(is_new=True) is False, \
+        "The beta validator approved the new beta integration," \
+        " but it should fail it because the 'name' field has a 'beta' substring in it. " \
+        "the validator should not allow it for new integration"
+
+
+def test_cahnged_beta_integration_with_beta_substring_in_is_and_name():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.old_integration = {
+        "commonfields": {
+            "id": "newIntegration beta"
+        },
+        "name": "newIntegration beta",
+        "display": "newIntegration (Beta)",
+        "beta": True,
+    }
+    validator.current_integration = {
+        "commonfields": {
+            "id": "newIntegration beta"
+        },
+        "name": "newIntegration beta",
+        "display": "newIntegration changed (Beta)",
+        "beta": True,
+    }
+
+    assert validator.is_valid_beta_integration() is True, \
+        "The Beta validator failed the integration" \
+        "but it should have approved"
+
+
+def test_changed_beta_integration_without_beta_field():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.old_integration = {
+        "commonfields": {
+            "id": "newIntegration beta"
+        },
+        "name": "newIntegration beta",
+        "display": "newIntegration (Beta)",
+    }
+    validator.current_integration = {
+        "commonfields": {
+            "id": "newIntegration beta"
+        },
+        "name": "newIntegration beta",
+        "display": "newIntegration changed (Beta)",
+    }
+
+    assert validator.is_valid_beta_integration() is False, \
+        "The Beta validator approved the integration" \
+        "but it should have fail it because it is missing 'beta' field with the value true"
+
+
+def test_proxy_sanity_check():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "proxy",
+                "type": 8,
+                "display": "Use system proxy settings",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_proxy_configured_correctly()
+
+
+def test_proxy_wrong_type():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "proxy",
+                "type": 9,
+                "display": "Use system proxy settings",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_proxy_configured_correctly() is False
+
+
+def test_proxy_wrong_display():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "proxy",
+                "type": 8,
+                "display": "bla",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_proxy_configured_correctly() is False
+
+
+def test_proxy_wrong_required():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "proxy",
+                "type": 8,
+                "display": "Use system proxy settings",
+                "required": True
+            }
+        ]
+    }
+
+    assert validator.is_proxy_configured_correctly() is False
+
+
+def test_insecure_wrong_display():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "insecure",
+                "type": 8,
+                "display": "Use system proxy settings",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_insecure_configured_correctly() is False
+
+
+def test_unsecure_wrong_display():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "unsecure",
+                "type": 8,
+                "display": "Use system proxy settings",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_insecure_configured_correctly() is False
+
+
+def test_unsecure_correct_display():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "configuration": [
+            {
+                "name": "unsecure",
+                "type": 8,
+                "display": "Trust any certificate (not secure)",
+                "required": False
+            }
+        ]
+    }
+
+    assert validator.is_insecure_configured_correctly()
+
+
+def test_is_valid_category():
+    validator_siem = IntegrationValidator("temp_file", check_git=False)
+    validator_siem.current_integration = {"category": "Analytics & SIEMM"}
+
+    assert validator_siem.is_valid_category() is False
+
+    validator_endpoint = IntegrationValidator("temp_file", check_git=False)
+    validator_endpoint.current_integration = {"category": "Endpoint"}
+
+    assert validator_endpoint.is_valid_category()

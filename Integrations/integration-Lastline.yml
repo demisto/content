@@ -48,7 +48,7 @@ script:
         pushToPortal:true
     };
 
-    LAST_LINE_DEFAULTS.threshold = params.threshold ? params.threshold : 70; //70 is Lastline default
+    LAST_LINE_DEFAULTS.threshold = params.threshold ? params.threshold : 70; // 70 is Lastline default
 
     var SERVER_URL = params.url;
     if (SERVER_URL[SERVER_URL.length - 1] !== '/') {
@@ -410,6 +410,7 @@ script:
                 MD5: analysis.md5,
                 SHA1: analysis.sha1,
                 SHA256: analysis.sha256,
+                Type: analysis.mime_type,
                 Malicious: {
                     Vendor: 'Lastline',
                     Description: 'Score above ' + threshold,
@@ -517,6 +518,7 @@ script:
                         MD5: analysis.md5,
                         SHA1: analysis.sha1,
                         SHA256: analysis.sha256,
+                        Type: analysis.mime_type,
                         Malicious: {
                             Vendor: 'Lastline',
                             Description: 'Score above ' + threshold,
@@ -668,344 +670,350 @@ script:
     arguments:
     - name: uuid
       required: true
-      description: Task UUID of submitted Lastline analysis
+      description: The task UUID of the submitted Lastline analysis.
     - name: timeout
-      description: Timeout (in seconds) to wait for analysis to complete
+      description: The timeout (in seconds) to wait for an analysis to complete.
       defaultValue: "0"
     - name: interval
-      description: Interval (in seconds) to poll for the analysis status
+      description: The interval (in seconds) to poll for the analysis status.
       defaultValue: "10"
     - name: threshold
-      description: Score threshold to identify file as malicious
+      description: The score threshold to identify a file as malicious.
       defaultValue: "50"
     outputs:
     - contextPath: URL.Data
-      description: List of malicious URLs identified by Lastline analysis
+      description: A list of malicious URLs identified by the Lastline analysis.
       type: string
     - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision
+      description: For malicious URLs, the vendor that made the decision.
       type: string
     - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason for the vendor to make the decision
+      description: For malicious URLs, the reason that the vendor made the decision.
       type: string
     - contextPath: URL.Malicious.Score
-      description: For malicious URLs, the score from the vendor
+      description: For malicious URLs, the score from the vendor.
       type: number
     - contextPath: File.MD5
-      description: Bad hash MD5
+      description: Bad MD5 hash.
       type: string
     - contextPath: File.SHA1
-      description: Bad hash SHA1
+      description: Bad SHA1 hash.
       type: string
     - contextPath: File.SHA256
-      description: Bad hash SHA256
+      description: Bad SHA256 hash.
       type: string
     - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
+      description: For malicious files, the vendor that made the decision.
       type: string
     - contextPath: File.Malicious.Description
-      description: For malicious files, the reason for the vendor to make the decision
+      description: For malicious files, the reason that the vendor made the decision.
       type: string
     - contextPath: File.Malicious.Score
-      description: For malicious files, the score from the vendor
+      description: For malicious files, the score from the vendor.
       type: number
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The type of indicator.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The Vendor that was used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
       description: The actual score
       type: number
-    description: Deprecated, please use lastline-get-report instead
+    description: This command is deprecated. Use the lastline-get-report command.
   - name: url
     deprecated: true
     arguments:
     - name: url
       required: true
-      description: 'URL to be analyzed '
+      description: 'URL to analyze.'
     - name: timeout
-      description: Timeout (in seconds) to wait for analysis to complete
+      description: Timeout (in seconds) to wait for an analysis to complete.
       defaultValue: "0"
     - name: interval
-      description: Interval (in seconds) to poll for the analysis status
+      description: Interval (in seconds) to poll for the analysis status.
       defaultValue: "10"
     - name: threshold
-      description: Score threshold to identify file as malicious
+      description: The score threshold that determines if the file is malicious. Lastline default is 70.
       defaultValue: "70"
     - name: pushToPortal
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Add the request to the Lastline portal
+      description: Whether to add the request to the Lastline portal.
     outputs:
     - contextPath: lastlineTasks
-      description: List of the submitted Lastline analysis tasks
+      description: A list of the submitted Lastline analysis tasks.
     - contextPath: URL.Data
-      description: List of malicious URLs identified by Lastline analysis
+      description: A list of malicious URLs identified by the Lastline analysis.
       type: string
     - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision
+      description: For malicious URLs, the vendor that made the decision.
       type: string
     - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason for the vendor to make the decision
+      description: For malicious URLs, the reason that the vendor to made the decision.
       type: string
     - contextPath: URL.Malicious.Score
-      description: For malicious URLs, the score from the vendor
+      description: For malicious URLs, the score from the vendor.
       type: number
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The type of indicator.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: Lastline.Submission.URL
-      description: The URL to upload
+      description: The URL to upload.
       type: string
     - contextPath: Lastline.Submission.UUID
       description: ID of the submission
       type: string
-    description: Deprecated, please use lastline-upload-url instead
+    description: This command is deprecated. Use the lastline-upload-url command.
   - name: file
     arguments:
     - name: file
       required: true
       default: true
-      description: File hash to check (MD5, SHA-1 or SHA-256)
+      description: File hash to check (MD5, SHA-1 or SHA-256).
     - name: threshold
-      description: Score threshold to identify file as malicious
+      description: Score threshold that determines if the file is malicious.
       defaultValue: "70"
     outputs:
     - contextPath: File.MD5
-      description: Bad hash MD5
+      description: Bad MD5 hash.
       type: string
     - contextPath: File.SHA1
-      description: Bad hash SHA1
+      description: Bad SHA1 hash.
       type: string
     - contextPath: File.SHA256
-      description: Bad hash SHA256
+      description: Bad SHA256 hash.
       type: string
     - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
+      description: For malicious files, the vendor that made the decision.
       type: string
     - contextPath: File.Malicious.Description
-      description: For malicious files, the reason for the vendor to make the decision
+      description: For malicious files, the reason that the vendor made the decision.
       type: string
     - contextPath: File.Malicious.Score
-      description: For malicious files, the score from the vendor
+      description: For malicious files, the score from the vendor.
       type: number
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
-    description: Check file reputation of the given hash
+    - contextPath: File.Type
+      description: The file type.
+      type: string
+    description: Checks the file reputation of the specified hash.
   - name: lastline-upload
     deprecated: true
     arguments:
     - name: file_id
       required: true
-      description: File ID to be uploaded
+      description: The ID of the file ID to upload.
     - name: threshold
-      description: Score threshold to identify file as malicious
+      description: The score threshold that determines if the file is malicious.
       defaultValue: "70"
     - name: timeout
-      description: Timeout (in seconds) to wait for analysis to complete
+      description: The timeout (in seconds) to wait for the analysis to complete.
       defaultValue: "0"
     - name: interval
-      description: Interval (in seconds) to poll for the analysis status
+      description: The interval (in seconds) to poll for the analysis status.
       defaultValue: "10"
     - name: pushToPortal
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Add the request to the Lastline portal
+      description: Whether to add the request to the Lastline portal.
     outputs:
     - contextPath: lastlineTasks.file_id
-      description: File ID of submitted Lastline analysis tasks
+      description: The ID of the file submitted to the Lastline analysis tasks.
       type: string
     - contextPath: lastlineTasks.uuid
-      description: Task UUID of submitted Lastline analysis
+      description: The task UUID of the submitted Lastline analysis.
       type: string
-    description: Deprecated, please use lastline-upload-file instead
+    description: This command is deprecated. Use the lastline-upload-file command.
   - name: lastline-upload-url
     arguments:
     - name: url
       required: true
-      description: 'URL to analyze. Example: https://www.demisto.com'
+      description: 'The URL to analyze. For example, https://www.demisto.com'
     - name: threshold
-      description: Score threshold to identify file as malicious. Lastline default
+      description: The score threshold that determines if the file is malicious. Lastline default
         is 70.
       defaultValue: "70"
     outputs:
     - contextPath: Lastline.Submission.URL
-      description: The URL to upload
+      description: The URL to upload.
       type: string
     - contextPath: Lastline.Submission.UUID
-      description: ID of the submission
+      description: The ID of the submission.
       type: string
     - contextPath: Lastline.Submission.Status
-      description: Status of the submission
+      description: The status of the submission.
       type: string
     description: Submit URL for analysis.
   - name: lastline-upload-file
     arguments:
     - name: EntryID
       required: true
-      description: Entry ID of the file to upload
+      description: The entry ID of the file to upload.
     - name: threshold
-      description: Score threshold to identify file as malicious. Lastline default
+      description: The score threshold that determines if the file is malicious. Lastline default
         is 70.
       defaultValue: "70"
     outputs:
     - contextPath: Lastline.Submission.Filename
-      description: File name of the submitted sample
+      description: The file name of the submitted sample.
       type: string
     - contextPath: Lastline.Submission.UUID
-      description: Task UUID of submitted sample
+      description: The task UUID of the submitted sample.
       type: string
     - contextPath: Lastline.Submission.Status
-      description: Status of the submission
+      description: The status of the submission.
       type: string
-    description: Upload file for analysis
+    description: Submits a URL for analysis.
   - name: lastline-get-report
     arguments:
     - name: uuid
       required: true
-      description: Task UUID of the submitted Lastline analysis
+      description: The task UUID of the submitted Lastline analysis.
     - name: threshold
-      description: Score threshold to identify file as malicious. Lastline default
+      description: The score threshold that determines if the file is malicious. Lastline default
         is 70.
     outputs:
     - contextPath: URL.Data
-      description: List of malicious URLs identified by Lastline analysis
+      description: A list of malicious URLs identified by the lastline analysis.
       type: string
     - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision
+      description: For malicious URLs, the vendor that made the decision.
       type: string
     - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason for the vendor to make the decision
+      description: For malicious URLs, the reason that the vendor made the decision.
       type: string
     - contextPath: URL.Malicious.Score
-      description: For malicious URLs, the score from the vendor
+      description: For malicious URLs, the score from the vendor.
       type: number
     - contextPath: File.MD5
-      description: Bad hash MD5
+      description: Bad MD5 hash.
       type: string
     - contextPath: File.SHA1
-      description: Bad hash SHA1
+      description: Bad SHA1 hash.
       type: string
     - contextPath: File.SHA256
-      description: Bad hash SHA256
+      description: Bad SHA256 hash.
       type: string
     - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
+      description: For malicious files, the vendor that made the decision.
       type: string
     - contextPath: File.Malicious.Description
-      description: For malicious files, the reason for the vendor to make the decision
+      description: For malicious files, the reason that the vendor made the decision.
       type: string
     - contextPath: File.Malicious.Score
-      description: For malicious files, the score from the vendor
+      description: For malicious files, the score from the vendor.
       type: number
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The type of indicator.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: Lastline.Submission.Status
-      description: Status of the submission
+      description: Status of the submission.
       type: string
     - contextPath: Lastline.Submission.YaraSignatures.name
-      description: Yara signatures name
+      description: Yara signatures name.
       type: string
     - contextPath: Lastline.Submission.YaraSignatures.score
-      description: The score according to the yara signatures. from 0 to 100.
+      description: The score according to the yara signatures (0 to 100).
       type: number
     - contextPath: Lastline.Submission.YaraSignatures.internal
-      description: True if the signature is only for internal usage
+      description: Whether the signature is for internal usage only.
       type: boolean
     - contextPath: Lastline.Submission.DNSqueries
-      description: List of DNS queries done by the analysis subject
+      description: List of DNS queries executed by the analysis subject.
       type: string
     - contextPath: Lastline.Submission.NetworkConnections
-      description: ist of network connections done by the analysis subject
+      description: A list of network connections executed by the analysis subject.
       type: string
     - contextPath: Lastline.Submission.DownloadedFiles
-      description: List of files that were downloaded using the Microsoft Windows
+      description: A list of files that were downloaded using the Microsoft Windows
         file-download API functions. Each element is a tuple of file-origin URL and
         a File element.
       type: string
     - contextPath: Lastline.Submission.Process
-      description: Information on a Windows process
+      description: Information on a Windows process.
     - contextPath: Lastline.Submission.Process.arguments
-      description: Argument of the process
+      description: The argument of the process.
       type: string
     - contextPath: Lastline.Submission.Process.executable
-      description: Executable of the process
+      description: The executable of the process.
     - contextPath: Lastline.Submission.Process.executable.abs_path
-      description: Absolute path of the executable of the process
+      description: The absolute path of the executable of the process.
       type: string
     - contextPath: Lastline.Submission.Process.executable.filename
-      description: Filename of the executable
+      description: The filename of the executable.
       type: string
     - contextPath: Lastline.Submission.Process.executable.yara_signature_hits
-      description: Yara signature of the executable of the process
+      description: The Yara signature of the executable of the process.
       type: string
     - contextPath: Lastline.Submission.Process.executable.ext_info
-      description: Executable info of the process
+      description: The Executable information of the process.
       type: unknown
     - contextPath: Lastline.Submission.Process.process_id
-      description: The process ID
+      description: The process ID.
       type: string
-    description: Get analysis report
+    - contextPath: File.Type
+      description: File type
+      type: string
+    description: Returns an analysis report.
   - name: lastline-get-task-list
     arguments:
     - name: before
-      description: 'Tasks before in UTC. format: %Y-%m-%d %H:%M:%S. Example: 2018-07-08
-        12:00:00'
+      description: 'Tasks before in UTC format %Y-%m-%d %H:%M:%S. For example, 2018-07-08
+        12:00:00.'
     - name: after
       required: true
-      description: 'Tasks after in UTC. format: %Y-%m-%d %H:%M:%S. Example: 2018-07-10
-        12:00:00'
-    description: Gets a list of tasks
+      description: 'Tasks after in UTC format %Y-%m-%d %H:%M:%S. For example, 2018-07-10
+        12:00:00.'
+    description: Returns a list of tasks.
   - name: lastline-check-status
     arguments:
     - name: uuid
       required: true
-      description: Task UUID of the submitted Lastline analysis. Recieved from lastline-upload-file or lastline-upload-url.
+      description: The task UUID of the submitted Lastline analysis. 
       isArray: true
     outputs:
     - contextPath: Lastline.Submission.UUID
-      description: Task UUID of submitted sample
+      description: The task UUID of submitted sample.
       type: string
     - contextPath: Lastline.Submission.Status
-      description: Status of the submission
+      description: The status of the submission.
       type: string
-    description: Check submissions status
+    description: Checks the status of a submission.
   runonce: false

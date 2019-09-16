@@ -1,0 +1,555 @@
+id: PAN-OS Commit Configuration
+version: -1
+name: PAN-OS Commit Configuration
+fromversion: 4.0.0
+description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified as Panorama,
+  it also pushes the Policies to the specified Device Group in the instance.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 72f6ac89-7d29-48cd-8fc8-a87a469d368e
+    type: start
+    task:
+      id: 72f6ac89-7d29-48cd-8fc8-a87a469d368e
+      version: -1
+      name: ""
+      description: '-'
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 3cdca23e-0cc3-4d3f-8f27-aef7c980e40d
+    type: condition
+    task:
+      id: 3cdca23e-0cc3-4d3f-8f27-aef7c980e40d
+      version: -1
+      name: Is Palo Alto Networks PAN-OS enabled?
+      description: Verify that there is a valid instance of Palo Alto Networks PAN-OS
+        enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Panorama
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 589c547f-febf-4966-8f03-92b3510be974
+    type: regular
+    task:
+      id: 589c547f-febf-4966-8f03-92b3510be974
+      version: -1
+      name: Commit to Panorama
+      description: Commit Palo Alto Firewall or Panorama
+      script: '|||panorama-commit'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 16b55e1b-edf4-4495-8acd-ec822793a904
+    type: playbook
+    task:
+      id: 16b55e1b-edf4-4495-8acd-ec822793a904
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Ids:
+        complex:
+          root: Panorama
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Panorama.Commit.Status
+                iscontext: true
+              right:
+                value:
+                  simple: Pending
+          accessor: Commit.JobID
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: job_id
+      PollingCommandName:
+        simple: panorama-commit-status
+      Timeout:
+        simple: "60"
+      dt:
+        simple: Panorama.Commit(val.Status != 'Completed' && val.Status != 'Failed').JobID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 1075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 952b0224-dd79-4eca-8721-d93bd8edd76a
+    type: title
+    task:
+      id: 952b0224-dd79-4eca-8721-d93bd8edd76a
+      version: -1
+      name: Done
+      description: '-'
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 4100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 358f0fa5-163a-4c92-8f77-7f743207c155
+    type: regular
+    task:
+      id: 358f0fa5-163a-4c92-8f77-7f743207c155
+      version: -1
+      name: Push rules to the Panorama device group
+      description: Push rules from Palo Alto Panorama to the Palo Alto configured
+        device group.
+      script: '|||panorama-push-to-device-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      device-group: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: d7c1b22b-2529-494e-8959-dd33edd07e6e
+    type: playbook
+    task:
+      id: d7c1b22b-2529-494e-8959-dd33edd07e6e
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      Ids:
+        complex:
+          root: Panorama
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Panorama.Push.Status
+                iscontext: true
+              right:
+                value:
+                  simple: Pending
+          accessor: Push.JobID
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: job_id
+      PollingCommandName:
+        simple: panorama-push-status
+      Timeout:
+        simple: "60"
+      dt:
+        simple: Panorama.Push(val.Status != 'Completed' && val.Status != 'Failed').JobID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 3050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 7872718f-5cce-4129-804c-a6307ee51c62
+    type: regular
+    task:
+      id: 7872718f-5cce-4129-804c-a6307ee51c62
+      version: -1
+      name: Check Panorama commit status
+      description: Get commit status
+      script: '|||panorama-commit-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      job_id:
+        complex:
+          root: Panorama
+          accessor: Commit.JobID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 3d04bc47-7374-43a7-88d3-07eb59e141c3
+    type: regular
+    task:
+      id: 3d04bc47-7374-43a7-88d3-07eb59e141c3
+      version: -1
+      name: Check Panorama push status
+      description: Get push status
+      script: '|||panorama-push-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      job_id:
+        complex:
+          root: Panorama
+          accessor: Push.JobID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 3230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 9af18cb1-8e90-40a7-88aa-30ee4ef8a796
+    type: condition
+    task:
+      id: 9af18cb1-8e90-40a7-88aa-30ee4ef8a796
+      version: -1
+      name: Filter JobID
+      description: Filter JobID to validate only new push configuration JobIDs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Panorama.Commit(val.Status != 'Completed' && val.Status != 'Failed').JobID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 3123d9ad-2650-478e-8746-3401631faa14
+    type: condition
+    task:
+      id: 3123d9ad-2650-478e-8746-3401631faa14
+      version: -1
+      name: Filter JobID
+      description: Filter JobID to validate only new push configuration JobIDs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Panorama.Push(val.Status != 'Completed' && val.Status != 'Failed').JobID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 2740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: b319325d-4649-4d0a-85b6-ca86878fe32f
+    type: regular
+    task:
+      id: b319325d-4649-4d0a-85b6-ca86878fe32f
+      version: -1
+      name: Fetch instance info
+      description: Run any command supported in the API.
+      script: Panorama|||panorama
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      action: {}
+      category: {}
+      cmd:
+        simple: <show><system><info></info></system></show>
+      command: {}
+      dst: {}
+      element: {}
+      extend-context:
+        simple: panorama.model=response.result.system.model
+      from: {}
+      job-id: {}
+      key: {}
+      log-type: {}
+      pcap-id: {}
+      period: {}
+      query: {}
+      reportname: {}
+      reporttype: {}
+      search-time: {}
+      serialno: {}
+      target: {}
+      to: {}
+      type:
+        simple: op
+      where: {}
+      xpath: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: bca42b7d-262b-46d2-8ac7-d7674e346173
+    type: condition
+    task:
+      id: bca42b7d-262b-46d2-8ac7-d7674e346173
+      version: -1
+      name: Identify the instance type
+      description: Automatically detects the product (Panorama/Firewall).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Firewall:
+      - "5"
+      Panorama:
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: Firewall
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: panorama.model
+            iscontext: true
+          right:
+            value:
+              simple: PA-VM
+    - label: Panorama
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: panorama.model
+            iscontext: true
+          right:
+            value:
+              simple: Panorama
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 2070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_3_yes": 0.82,
+      "10_5_#default#": 0.1,
+      "11_5_#default#": 0.1,
+      "13_5_Firewall": 0.1,
+      "13_6_Panorama": 0.73,
+      "1_5_#default#": 0.17
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4415,
+        "width": 1780,
+        "x": -190,
+        "y": -250
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+  - No Tests
