@@ -225,7 +225,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Runs only on-demand tests in the assessment. True executes  
+      description: Runs only on-demand tests in the assessment. True executes
         tests in the assessment that are not scheduled to run. False executes all
         tests in the assessment including scheduled tests. Default is false.
       isArray: false
@@ -337,7 +337,7 @@ script:
       description: The host name of the test asset.
       type: String
     - contextPath: AttackIQTest.Assets.ProductName
-      description: The product name of the test asset. 
+      description: The product name of the test asset.
       type: String
     - contextPath: AttackIQTest.Assets.Modified
       description: The last modified date of the test asset.
@@ -413,6 +413,16 @@ script:
       name: page_size
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filters results according to user choice. If set to Passed will return only Passed tests and vice versa.
+      isArray: false
+      name: outcome_filter
+      predefined:
+        - Passed
+        - Failed
+      required: false
+      secret: false
     deprecated: false
     description: Returns the test results of an assessment.
     execution: false
@@ -460,10 +470,10 @@ script:
     - contextPath: AttackIQTestResult.AssetGroup
       description: The asset group of the test.
       type: String
-    - contextPath: AttackIQTestResult.JobState.Name
+    - contextPath: AttackIQTestResult.JobState
       description: The state of the job.
       type: String
-    - contextPath: AttackIQTestResult.Outcome.Name
+    - contextPath: AttackIQTestResult.Outcome
       description: The result outcome of the test.
       type: String
     - contextPath: AttackIQTestResult.RemainingPages

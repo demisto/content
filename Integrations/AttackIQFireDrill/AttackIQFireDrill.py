@@ -370,6 +370,7 @@ def get_test_results_command(args=demisto.args()):
     """ Implements attackiq-get-test-results command
     """
     test_id = args.get('test_id')
+    outcome_filter = args.get('outcome_filter')
     page, page_size = get_page_number_and_page_size(demisto.args())
     try:
         raw_test_res = get_test_results(page, page_size, test_id, args.get('show_last_result') == 'True')
@@ -382,6 +383,8 @@ def get_test_results_command(args=demisto.args()):
             if remaining_pages < 0:
                 remaining_pages = 0
             test_res = build_transformed_dict(raw_test_res['results'], TEST_RESULT_TRANS)
+            if outcome_filter:
+                test_res = list(filter(lambda x: x.get('Outcome') == outcome_filter, test_res))
             context = {
                 'AttackIQTestResult(val.Id === obj.Id)': test_res,
                 'AttackIQTestResult(val.Count).Count': test_cnt,

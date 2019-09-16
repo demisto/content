@@ -583,7 +583,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 3440
         }
       }
     note: false
@@ -666,7 +666,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "13"
+      - "17"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -697,14 +697,295 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "17":
+    id: "17"
+    taskid: d12fe2d7-a496-4daa-8a97-a0b518e42c55
+    type: regular
+    task:
+      id: d12fe2d7-a496-4daa-8a97-a0b518e42c55
+      version: -1
+      name: Get task results with Failed
+      description: Returns the test results of an assessment.
+      script: '|||attackiq-get-test-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      outcome_filter:
+        simple: Failed
+      page_number: {}
+      page_size: {}
+      show_last_result: {}
+      test_id:
+        simple: 1c350a5a-84f2-4938-93d8-cc31f0a99482
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: aed13010-8a4a-4946-896a-6ed3711c5d4a
+    type: condition
+    task:
+      id: aed13010-8a4a-4946-896a-6ed3711c5d4a
+      version: -1
+      name: Assert results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      All Results:
+      - "21"
+      No Results:
+      - "19"
+      Some Results:
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: No Results
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: AttackIQTestResult.Id
+            iscontext: true
+    - label: All Results
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: AttackIQTestResult
+                accessor: Id
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "10"
+    - label: Some Results
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: AttackIQTestResult
+                accessor: Id
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "10"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: f9a58bb5-effc-4831-836d-6ac20b2d5e72
+    type: regular
+    task:
+      id: f9a58bb5-effc-4831-836d-6ac20b2d5e72
+      version: -1
+      name: Get task results with Passed
+      description: Returns the test results of an assessment.
+      script: '|||attackiq-get-test-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      outcome_filter:
+        simple: Passed
+      page_number: {}
+      page_size: {}
+      show_last_result: {}
+      test_id:
+        simple: 1c350a5a-84f2-4938-93d8-cc31f0a99482
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 93db5183-ebce-40ad-8846-58629f497c45
+    type: condition
+    task:
+      id: 93db5183-ebce-40ad-8846-58629f497c45
+      version: -1
+      name: Assert all results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: AttackIQTestResult
+                accessor: Id
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "10"
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 3030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: d47e1d0d-118d-460d-840f-69dd96371948
+    type: regular
+    task:
+      id: d47e1d0d-118d-460d-840f-69dd96371948
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 48dd9355-d0ca-47b2-8261-20988350ae4e
+    type: regular
+    task:
+      id: 48dd9355-d0ca-47b2-8261-20988350ae4e
+      version: -1
+      name: Get task results with Passed
+      description: Returns the test results of an assessment.
+      script: '|||attackiq-get-test-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      outcome_filter:
+        simple: Passed
+      page_number: {}
+      page_size: {}
+      show_last_result: {}
+      test_id:
+        simple: 1c350a5a-84f2-4938-93d8-cc31f0a99482
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: ba335ecf-33ba-4c20-867e-477068e749c2
+    type: condition
+    task:
+      id: ba335ecf-33ba-4c20-867e-477068e749c2
+      version: -1
+      name: Assert no results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: AttackIQTestResult
+                accessor: Id
+                transformers:
+                - operator: count
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": 3195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2485,
-        "width": 380,
-        "x": 50,
+        "height": 3455,
+        "width": 1230,
+        "x": -350,
         "y": 50
       }
     }
