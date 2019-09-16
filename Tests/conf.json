@@ -7,6 +7,10 @@
             "playbookID": "ThreatQ - Test"
         },
         {
+            "integrations": "AttackIQFireDrill",
+            "playbookID": "AttackIQ - Test"
+        },
+        {
             "integrations": "ZeroFox",
             "playbookID": "ZeroFox-Test",
             "fromversion": "4.1.0"
@@ -1440,6 +1444,14 @@
             "playbookID": "GCS - Test",
             "timeout": 500,
             "nightly": true
+        },
+        {
+            "playbookID": "Calculate Severity - Generic v2 - Test",
+            "integrations": [
+                "Palo Alto Minemeld",
+                "Active Directory Query v2"
+            ],
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "Freshdesk",
