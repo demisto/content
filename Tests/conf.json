@@ -3,7 +3,7 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "ThreatQ",
+            "integrations": "ThreatQ v2",
             "playbookID": "ThreatQ - Test"
         },
         {

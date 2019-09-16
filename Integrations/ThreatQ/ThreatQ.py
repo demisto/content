@@ -659,7 +659,6 @@ def search_by_id_command():
 
     ec = {CONTEXT_PATH[obj_type]: createContext(raw, removeNull=True)}
 
-    dbot_score = None
     if obj_type == 'indicator':
         indicator_type = TQ_TO_DEMISTO_INDICATOR_TYPES.get(raw['Type'])
         if indicator_type is not None:
@@ -1239,4 +1238,3 @@ try:
 
 except Exception as ex:
     return_error(str(ex))
-
