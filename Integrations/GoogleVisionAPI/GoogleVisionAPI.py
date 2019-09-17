@@ -22,7 +22,7 @@ requests.packages.urllib3.disable_warnings()
 
 '''GLOBAL VARS'''
 
-PRIVATE_KEY_CONTENT = demisto.params()['auth_json'].encode('utf-8')
+PRIVATE_KEY_CONTENT = demisto.params().get('auth_json', '').encode('utf-8')
 DISABLE_SSL = demisto.params().get('insecure', False)
 PROXY = demisto.params().get('proxy')
 SERVICE_NAME = 'vision'
