@@ -86,13 +86,16 @@ def get_service(proxies):
 
 def get_file_path(entry_id):
     """
-    Gets the file path for the given entry_id
+    Gets the file path for the given entry id
     """
     file_obj = demisto.getFilePath(entry_id)
     return file_obj['path']
 
 
 def perform_logo_detection_service_request(file_bytes, proxies, max_results=10):
+    """
+    Encode the given file bytes and do a remote call to Google API to retrieve the results
+    """
     image_content = base64.b64encode(file_bytes)
     service_request = get_service(proxies).images().annotate(body={
         'requests': [{
@@ -121,18 +124,10 @@ def convert_to_output(result):
     return output
 
 
-'''MAIN FUNCTIONS'''
-
-
-def detect_logos(file_id, proxies):
-    """Detects logos in the file."""
-    file_path = get_file_path(file_id)
-    with open(file_path, 'rb') as f:
-        content = f.read()
-        return perform_logo_detection_service_request(content, proxies)
-
-
 def is_logo_detected(results):
+    """
+    Indicates logos were detected or not
+    """
     if results:
         for res in results.get('responses', []):
             logo_annotations = res.get('logoAnnotations', [])
@@ -141,7 +136,23 @@ def is_logo_detected(results):
     return False
 
 
+'''MAIN FUNCTIONS'''
+
+
+def detect_logos(entry_id, proxies):
+    """
+    Detects logos in the given entry_id.
+    """
+    file_path = get_file_path(entry_id)
+    with open(file_path, 'rb') as f:
+        content = f.read()
+        return perform_logo_detection_service_request(content, proxies)
+
+
 def detect_logos_command(proxies):
+    """
+    Detects brand logos from a given entry id.
+    """
     entry_id = demisto.args().get('entry_id', '')
     results = detect_logos(entry_id, proxies)
     logo_detected = is_logo_detected(results)
@@ -232,7 +243,6 @@ def test_module(proxies):
 
 def main():
     """Main Execution Block"""
-
     try:
         proxies = handle_proxy()
 
