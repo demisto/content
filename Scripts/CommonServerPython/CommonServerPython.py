@@ -873,13 +873,14 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         for entry in t:
             vals = [stringEscapeMD((formatCell(entry.get(h, ''), False) if entry.get(h) is not None else ''),
                                    True, True) for h in headers]
-            mdResult += '|'
+            # this pipe is optional
+            mdResult += '| '
             try:
-                mdResult += '|'.join(vals)
+                mdResult += ' | '.join(vals)
             except UnicodeDecodeError:
                 vals = [str(v) for v in vals]
-                mdResult += '|'.join(vals)
-            mdResult += '|\n'
+                mdResult += ' | '.join(vals)
+            mdResult += ' |\n'
 
     else:
         mdResult += '**No entries.**\n'
