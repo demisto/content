@@ -2,7 +2,8 @@ commonfields:
   id: Proofpoint TAP
   version: -1
 name: Proofpoint TAP
-display: Proofpoint TAP
+deprecated: true
+display: Proofpoint TAP (Deprecated)
 category: Email Gateway
 image: data:image/png;base64,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
 description: Proofpoint's Targeted Attack Protection (TAP) helps protect against and
@@ -47,9 +48,9 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
@@ -433,6 +434,7 @@ script:
   type: javascript
   commands:
   - name: proofpoint-get-events
+    deprecated: true
     arguments:
     - name: interval
       description: 'A string containing an ISO8601-formatted interval. If this interval
@@ -487,3 +489,5 @@ script:
       within the specified time period. Details as per clicks/blocked.
   isfetch: true
   runonce: false
+tests:
+  - No test
