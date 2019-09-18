@@ -1054,3 +1054,15 @@ def test_unsecure_correct_display():
     }
 
     assert validator.is_insecure_configured_correctly()
+
+
+def test_is_valid_category():
+    validator_siem = IntegrationValidator("temp_file", check_git=False)
+    validator_siem.current_integration = {"category": "Analytics & SIEMM"}
+
+    assert validator_siem.is_valid_category() is False
+
+    validator_endpoint = IntegrationValidator("temp_file", check_git=False)
+    validator_endpoint.current_integration = {"category": "Endpoint"}
+
+    assert validator_endpoint.is_valid_category()
