@@ -489,3 +489,5 @@ script:
       within the specified time period. Details as per clicks/blocked.
   isfetch: true
   runonce: false
+tests:
+  - No test
