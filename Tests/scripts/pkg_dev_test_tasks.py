@@ -313,6 +313,9 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
                 docker_run(project_dir, docker_image_created, args.no_test, args.no_pylint, args.keep_container, args.root)
         except subprocess.CalledProcessError as ex:
             sys.stderr.write("[FAILED {}] Error: {}\n".format(project_dir, str(ex)))
+            if not LOG_VERBOSE:
+                sys.stderr.write("Need a more detailed log?"
+                                 " try running with the -v options as so: \n{} -v\n".format(" ".join(sys.argv[:])))
             return 2
         finally:
             sys.stdout.flush()
