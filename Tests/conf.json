@@ -3,6 +3,14 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "ThreatQ v2",
+            "playbookID": "ThreatQ - Test"
+        },
+        {
+            "integrations": "AttackIQFireDrill",
+            "playbookID": "AttackIQ - Test"
+        },
+        {
             "integrations": "ZeroFox",
             "playbookID": "ZeroFox-Test",
             "fromversion": "4.1.0"
@@ -1809,6 +1817,11 @@
         {
             "integrations": "VulnDB",
             "playbookID": "Test-VulnDB"
+        },
+        {
+            "integrations": "Shodan_v2",
+            "playbookID": "Test-Shodan_v2",
+            "timeout": 1000
         },
         {
             "integrations": "Threat Crowd",

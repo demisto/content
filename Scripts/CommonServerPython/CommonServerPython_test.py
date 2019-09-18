@@ -79,9 +79,9 @@ def test_tbl_to_md_only_data():
     expected_table = '''### tableToMarkdown test
 |header_1|header_2|header_3|
 |---|---|---|
-|a1|b1|c1|
-|a2|b2|c2|
-|a3|b3|c3|
+| a1 | b1 | c1 |
+| a2 | b2 | c2 |
+| a3 | b3 | c3 |
 '''
     assert table == expected_table
 
@@ -93,9 +93,9 @@ def test_tbl_to_md_header_transform_underscoreToCamelCase():
     expected_table = '''### tableToMarkdown test with headerTransform
 |Header1|Header2|Header3|
 |---|---|---|
-|a1|b1|c1|
-|a2|b2|c2|
-|a3|b3|c3|
+| a1 | b1 | c1 |
+| a2 | b2 | c2 |
+| a3 | b3 | c3 |
 '''
     assert table == expected_table
 
@@ -111,9 +111,9 @@ def test_tbl_to_md_multiline():
     expected_table = '''### tableToMarkdown test with multiline
 |header_1|header_2|header_3|
 |---|---|---|
-|a1|b1.1<br>b1.2|c1\|1|
-|a2|b2.1<br>b2.2|c2\|1|
-|a3|b3.1<br>b3.2|c3\|1|
+| a1 | b1.1<br>b1.2 | c1\|1 |
+| a2 | b2.1<br>b2.2 | c2\|1 |
+| a3 | b3.1<br>b3.2 | c3\|1 |
 '''
     assert table == expected_table
 
@@ -128,9 +128,9 @@ def test_tbl_to_md_url():
     expected_table_url_missing_info = '''### tableToMarkdown test with url and missing info
 |header_1|header_2|header_3|
 |---|---|---|
-|a1||[url](https:\\demisto.com)|
-|a2||[url](https:\\demisto.com)|
-|a3||[url](https:\\demisto.com)|
+| a1 |  | [url](https:\\demisto.com) |
+| a2 |  | [url](https:\\demisto.com) |
+| a3 |  | [url](https:\\demisto.com) |
 '''
     assert table_url_missing_info == expected_table_url_missing_info
 
@@ -141,9 +141,9 @@ def test_tbl_to_md_single_column():
     expected_table_single_column = '''### tableToMarkdown test with single column
 |header_1|
 |---|
-|a1|
-|a2|
-|a3|
+| a1 |
+| a2 |
+| a3 |
 '''
     assert table_single_column == expected_table_single_column
 
@@ -177,9 +177,9 @@ def test_tbl_to_md_list_values():
     expected_table_list_field = '''### tableToMarkdown test with list field
 |header_1|header_2|header_3|
 |---|---|---|
-|a1|hi|1,<br>second item|
-|a2|hi|2,<br>second item|
-|a3|hi|3,<br>second item|
+| a1 | hi | 1,<br>second item |
+| a2 | hi | 2,<br>second item |
+| a3 | hi | 3,<br>second item |
 '''
     assert table_list_field == expected_table_list_field
 
@@ -197,9 +197,9 @@ def test_tbl_to_md_empty_fields():
     expected_table_all_none = '''### tableToMarkdown test with all none fields
 |a|b|c|
 |---|---|---|
-||||
-||||
-||||
+|  |  |  |
+|  |  |  |
+|  |  |  |
 '''
     assert table_all_none == expected_table_all_none
 
@@ -220,9 +220,9 @@ def test_tbl_to_md_header_not_on_first_object():
     expected_table_extra_header = '''### tableToMarkdown test with extra header
 |header_1|header_2|extra_header|
 |---|---|---|
-|a1|b1||
-|a2|b2|sample|
-|a3|b3||
+| a1 | b1 |  |
+| a2 | b2 | sample |
+| a3 | b3 |  |
 '''
     assert table_extra_header == expected_table_extra_header
 
@@ -246,9 +246,9 @@ def test_tbl_to_md_dict_value():
     expected_dict_record = '''### tableToMarkdown test with dict record
 |header_1|header_2|extra_header|
 |---|---|---|
-|a1|b1||
-|a2|b2|sample: qwerty<br>sample2: asdf|
-|a3|b3||
+| a1 | b1 |  |
+| a2 | b2 | sample: qwerty<br>sample2: asdf |
+| a3 | b3 |  |
 '''
     assert table_dict_record == expected_dict_record
 
@@ -259,9 +259,9 @@ def test_tbl_to_md_string_header():
     expected_string_header_tbl = '''### tableToMarkdown string header
 |header_1|
 |---|
-|a1|
-|a2|
-|a3|
+| a1 |
+| a2 |
+| a3 |
 '''
     assert table_string_header == expected_string_header_tbl
 
@@ -272,9 +272,9 @@ def test_tbl_to_md_list_of_strings_instead_of_dict():
     expected_string_array_tbl = '''### tableToMarkdown test with string array
 |header_1|
 |---|
-|foo|
-|bar|
-|katz|
+| foo |
+| bar |
+| katz |
 '''
     assert table_string_array == expected_string_array_tbl
 
@@ -286,9 +286,9 @@ def test_tbl_to_md_list_of_strings_instead_of_dict_and_string_header():
     expected_string_array_string_header_tbl = '''### tableToMarkdown test with string array and string header
 |header_1|
 |---|
-|foo|
-|bar|
-|katz|
+| foo |
+| bar |
+| katz |
 '''
     assert table_string_array_string_header == expected_string_array_string_header_tbl
 
@@ -302,7 +302,7 @@ def test_tbl_to_md_dict_with_special_character():
     expected_string_with_special_character = '''### tableToMarkdown test with special character
 |header_1|header_2|
 |---|---|
-|foo|â.rtf|
+| foo | â.rtf |
 '''
     assert table_with_character == expected_string_with_special_character
 
@@ -315,7 +315,7 @@ def test_tbl_to_md_header_with_special_character():
     expected_string_with_special_character = '''### tableToMarkdown test with special character Ù
 |header_1|
 |---|
-|foo|
+| foo |
 '''
     assert table_with_character == expected_string_with_special_character
 
