@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.9.1] - 2019-09-18
   - Fixed an issue in which the ***wildfire-report*** command failed for specific hash values.
   - Fixed an issue in which the ***wildfire-report*** command failed when issuing it for an in-progress analysis.
 
