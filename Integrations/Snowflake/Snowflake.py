@@ -335,7 +335,7 @@ def snowflake_query(args):
     try:
         limit = int(limit)
     except ValueError:
-        raise ValueError(f'The value for limit must be an integer.')
+        raise ValueError('The value for limit must be an integer.')
     if limit > MAX_ROWS:
         limit = MAX_ROWS
     with snowflake.connector.connect(**params) as connection:
