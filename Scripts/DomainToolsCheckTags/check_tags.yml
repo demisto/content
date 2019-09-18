@@ -1,0 +1,32 @@
+args:
+- default: false
+  description: Incident ID
+  isArray: false
+  name: incident_id
+  required: true
+  secret: false
+- default: false
+  description: String of tags in the form of 'tag1,tag2,tag3'
+  isArray: true
+  name: domain_tags
+  required: true
+  secret: false
+- default: false
+  description: Array of tags ['tag1','tag2','tag3']
+  isArray: false
+  name: bad_tags
+  required: true
+  secret: false
+comment: Check DomainTools domain tags and if a tag is found mark incident as high
+  severity
+commonfields:
+  id: 0f7c406e-112a-4563-8b39-e63ad1bce29c
+  version: -1
+enabled: false
+name: CheckTags
+script: '-'
+system: false
+tags:
+- DomainTools
+timeout: '0'
+type: python

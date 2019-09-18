@@ -1,0 +1,568 @@
+id: b2d25200-8ff2-4e18-887d-c21276756dfd
+version: 9
+name: GuidedPivotEnrichment
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 15c5600b-5842-49e6-8dac-d9e37d268d25
+    type: start
+    task:
+      id: 15c5600b-5842-49e6-8dac-d9e37d268d25
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "11"
+      - "12"
+      - "13"
+      - "14"
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 4d1813a8-e19e-437c-8f29-1be1aba3be69
+    type: regular
+    task:
+      id: 4d1813a8-e19e-437c-8f29-1be1aba3be69
+      version: -1
+      name: SetIndicatorTableData
+      scriptName: SetIndicatorTableData
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      domain:
+        simple: ${inputs.Domain}
+      domaintools_data:
+        simple: ${PivotedDomains.DomainTools}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 4205bc82-9411-4d45-870d-9f26b3a69ae3
+    type: title
+    task:
+      id: 4205bc82-9411-4d45-870d-9f26b3a69ae3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: bfd123c0-8253-4bb7-88f4-99fdd38914e7
+    type: condition
+    task:
+      id: bfd123c0-8253-4bb7-88f4-99fdd38914e7
+      version: -1
+      name: Auto Pivot Email Check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      technical_email:
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: technical_email
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${inputs.domaintools_data.Identity.TechnicalContact.Email}
+            iscontext: true
+      - - operator: lessThan
+          left:
+            value:
+              simple: ${inputs.domaintools_data.Identity.TechnicalContact.Email.count}
+            iscontext: true
+          right:
+            value:
+              simple: "500"
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: fafea4aa-d561-4a09-8a5f-2216c5e615f4
+    type: regular
+    task:
+      id: fafea4aa-d561-4a09-8a5f-2216c5e615f4
+      version: -1
+      name: Email Pivot
+      script: DomainTools Iris|||domain-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      email:
+        simple: ${inputs.domaintools_data.Identity.TechnicalContact.Email.value}
+      ip: {}
+      mailserver_host: {}
+      nameserver_host: {}
+      nameserver_ip: {}
+      ssl_hash: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: f5b12d49-3af7-4998-81c2-9d756b542ccd
+    type: regular
+    task:
+      id: f5b12d49-3af7-4998-81c2-9d756b542ccd
+      version: -1
+      name: IP Pivot
+      script: DomainTools Iris|||domain-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      email: {}
+      ip:
+        simple: ${inputs.domaintools_data.IPAddresses.address.value}
+      mailserver_host: {}
+      nameserver_host: {}
+      nameserver_ip: {}
+      ssl_hash: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: b3624f90-67b7-44eb-8b4b-210ac051a848
+    type: regular
+    task:
+      id: b3624f90-67b7-44eb-8b4b-210ac051a848
+      version: -1
+      name: NameServer IP Pivot
+      script: DomainTools Iris|||domain-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      email: {}
+      ip: {}
+      mailserver_host: {}
+      nameserver_host: {}
+      nameserver_ip:
+        simple: ${inputs.domaintools_data.Hosting.NameServers.ip.value}
+      ssl_hash: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: c5437de7-64ce-41ea-8660-2dba82f9e7aa
+    type: regular
+    task:
+      id: c5437de7-64ce-41ea-8660-2dba82f9e7aa
+      version: -1
+      name: SSL Hash Pivot
+      script: DomainTools Iris|||domain-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      email: {}
+      ip: {}
+      mailserver_host: {}
+      nameserver_host: {}
+      nameserver_ip: {}
+      ssl_hash:
+        simple: ${inputs.domaintools_data.SSLCertificate.hash.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: b75faa59-90cb-4929-895c-e9c529219d7f
+    type: regular
+    task:
+      id: b75faa59-90cb-4929-895c-e9c529219d7f
+      version: -1
+      name: NameServer HostName Pivot
+      script: DomainTools Iris|||domain-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      email: {}
+      ip: {}
+      mailserver_host: {}
+      nameserver_host:
+        simple: ${inputs.domaintools_data.Hosting.NameServers.host.value}
+      nameserver_ip: {}
+      ssl_hash: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1460,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: f6b003bc-61c4-407e-8436-3a2993a364c7
+    type: regular
+    task:
+      id: f6b003bc-61c4-407e-8436-3a2993a364c7
+      version: -1
+      name: MailServer HostName
+      script: DomainTools Iris|||domain-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      email: {}
+      ip: {}
+      mailserver_host:
+        simple: ${inputs.domaintools_data.Hosting.MailServers.host.value}
+      nameserver_host: {}
+      nameserver_ip: {}
+      ssl_hash: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 9eaec83c-e2f6-422f-850c-1bd4c7387715
+    type: condition
+    task:
+      id: 9eaec83c-e2f6-422f-850c-1bd4c7387715
+      version: -1
+      name: Auto Pivot IP Check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      ip:
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: ip
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${inputs.domaintools_data.IPAddresses.address}
+            iscontext: true
+      - - operator: lessThan
+          left:
+            value:
+              simple: ${inputs.domaintools_data.IPAddresses.address.count}
+            iscontext: true
+          right:
+            value:
+              simple: "500"
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 866edffd-3117-4ffa-82a7-af19bd66537f
+    type: condition
+    task:
+      id: 866edffd-3117-4ffa-82a7-af19bd66537f
+      version: -1
+      name: Auto Pivot NameServer IP Check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      nameserver_ip:
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: nameserver_ip
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${inputs.domaintools_data.Hosting.NameServers.ip}
+            iscontext: true
+      - - operator: lessThan
+          left:
+            value:
+              simple: ${inputs.domaintools_data.Hosting.NameServers.ip.count}
+            iscontext: true
+          right:
+            value:
+              simple: "500"
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 1a3c79ff-e65b-43b7-867b-7dad3c7e9041
+    type: condition
+    task:
+      id: 1a3c79ff-e65b-43b7-867b-7dad3c7e9041
+      version: -1
+      name: Auto Pivot SSL Hash Check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      ssl_hash:
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: ssl_hash
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${inputs.domaintools_data.SSLCertificate.hash}
+            iscontext: true
+      - - operator: lessThan
+          left:
+            value:
+              simple: ${inputs.domaintools_data.SSLCertificate.hash.count}
+            iscontext: true
+          right:
+            value:
+              simple: "500"
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: d64b69b7-27de-4bfb-8aa7-96bc22aa9939
+    type: condition
+    task:
+      id: d64b69b7-27de-4bfb-8aa7-96bc22aa9939
+      version: -1
+      name: Auto Pivot NameServer HostName Check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      nameserver_host:
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: nameserver_host
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${inputs.domaintools_data.Hosting.NameServers.host}
+            iscontext: true
+      - - operator: lessThan
+          left:
+            value:
+              simple: ${inputs.domaintools_data.Hosting.NameServers.host.count}
+            iscontext: true
+          right:
+            value:
+              simple: "500"
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 0e5722e5-1a7f-416a-8b30-18e413077be6
+    type: condition
+    task:
+      id: 0e5722e5-1a7f-416a-8b30-18e413077be6
+      version: -1
+      name: Auto Pivot MailServer HostName Check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      mailserver_host:
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: mailserver_host
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${inputs.domaintools_data.Hosting.MailServers.host}
+            iscontext: true
+      - - operator: lessThan
+          left:
+            value:
+              simple: ${inputs.domaintools_data.Hosting.MailServers.host.count}
+            iscontext: true
+          right:
+            value:
+              simple: "500"
+    view: |-
+      {
+        "position": {
+          "x": 1910,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1355,
+        "width": 2610,
+        "x": -320,
+        "y": -170
+      }
+    }
+  }
+inputs:
+- key: domaintools_data
+  value:
+    simple: ${Domain.DomainTools}
+  required: false
+  description: ""
+outputs: []

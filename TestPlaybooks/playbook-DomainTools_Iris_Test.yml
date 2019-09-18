@@ -1,0 +1,194 @@
+id: eb5bb557-9de5-4bfc-8dbc-f1bebddd342a
+version: 6
+name: DomainToolsTestPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 53d74169-6427-4c5c-8bbf-871209b8c9ec
+    type: start
+    task:
+      id: 53d74169-6427-4c5c-8bbf-871209b8c9ec
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 2a0be799-978e-42c8-8ead-712265c2116d
+    type: regular
+    task:
+      id: 2a0be799-978e-42c8-8ead-712265c2116d
+      version: -1
+      name: Profile Domain
+      description: Get a complete profile of the domain provided.
+      script: DomainTools Iris|||domain
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      domain:
+        simple: ${inputs.domain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 92a0f809-f9e4-4e19-8902-21574950c0e8
+    type: regular
+    task:
+      id: 92a0f809-f9e4-4e19-8902-21574950c0e8
+      version: -1
+      name: Get Analytics Data for Domain
+      script: DomainTools Iris|||domain-analytics
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      domain:
+        simple: ${inputs.domain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: c8cedd50-d4ac-4861-8378-14d88d6feeb0
+    type: regular
+    task:
+      id: c8cedd50-d4ac-4861-8378-14d88d6feeb0
+      version: -1
+      name: Get Threat Profile for Domain
+      script: DomainTools Iris|||threat-profile
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      domain:
+        simple: ${inputs.domain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: c326acce-7fa6-4aca-89b9-030b2f24359f
+    type: regular
+    task:
+      id: c326acce-7fa6-4aca-89b9-030b2f24359f
+      version: -1
+      name: Pivot on IP Addresses
+      script: DomainTools Iris|||domain-pivot
+      type: regular
+      iscommand: true
+      brand: DomainTools Iris
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      email: {}
+      ip:
+        simple: ${Domain.DomainTools.Hosting.IPAddresses.address.value}
+      mailserver_host: {}
+      nameserver_host: {}
+      nameserver_ip: {}
+      ssl_hash: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 5df9928f-78a9-4867-8430-7ab8c650cf4e
+    type: title
+    task:
+      id: 5df9928f-78a9-4867-8430-7ab8c650cf4e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 755,
+        "width": 1200,
+        "x": 160,
+        "y": -90
+      }
+    }
+  }
+inputs:
+- key: domain
+  value:
+    simple: ${Domain.Name}
+  required: true
+  description: ""
+outputs: []

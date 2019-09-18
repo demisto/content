@@ -1,0 +1,24 @@
+args:
+- default: false
+  description: Date domain was last enriched '%Y-%m-%d'
+  isArray: false
+  name: last_enrichment
+  required: true
+  secret: false
+commonfields:
+  id: 106f0fc3-eefd-4a72-bc07-91a9a33c725e
+  version: -1
+enabled: false
+name: CheckLastEnrichment
+outputs:
+- contextPath: 'yes'
+  type: Unknown
+- contextPath: 'no'
+  type: Unknown
+script: '-'
+system: false
+tags:
+- DomainTools
+- Condition
+timeout: '0'
+type: python

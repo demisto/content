@@ -1686,6 +1686,11 @@
             "playbookID": "DomainTools-Test"
         },
         {
+            "integrations": "DomainTools_Iris",
+            "playbookID": "eb5bb557-9de5-4bfc-8dbc-f1bebddd342a",
+            "fromversion": "4.1.0"
+        },
+        {
             "integrations": "Cisco Spark",
             "playbookID": "efc817d2-6660-4d4f-890d-90513ca1e180"
         },

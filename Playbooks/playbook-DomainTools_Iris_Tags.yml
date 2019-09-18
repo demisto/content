@@ -1,0 +1,147 @@
+id: 07d67398-c9c2-4060-8050-e20835f2572d
+version: 10
+name: IrisTags
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9a881d0c-3b56-4d44-80c3-c9561eac4708
+    type: start
+    task:
+      id: 9a881d0c-3b56-4d44-80c3-c9561eac4708
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 152c9203-dc5a-4bb0-8c9a-0988402debec
+    type: regular
+    task:
+      id: 152c9203-dc5a-4bb0-8c9a-0988402debec
+      version: -1
+      name: CheckTags
+      description: Check DomainTools domain tags and if a tag is found mark incident
+        as high severity
+      scriptName: CheckTags
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      bad_tags:
+        simple: ${lists.tags}
+      domain:
+        simple: ${inputs.domain}
+      domain_tags:
+        simple: ${Domain.DomainTools.Analytics.Tags}
+      incident_id:
+        simple: ${incident.id}
+      tags:
+        simple: ${lists.tags}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: c6c1e22a-674e-4fa7-8de6-e973c60c92ee
+    type: title
+    task:
+      id: c6c1e22a-674e-4fa7-8de6-e973c60c92ee
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: b5359def-f6af-49d6-8f1d-6ff547ff3ef0
+    type: condition
+    task:
+      id: b5359def-f6af-49d6-8f1d-6ff547ff3ef0
+      version: -1
+      name: Check Domain has Tags
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Domain.DomainTools.Analytics.Tags}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 805,
+        "width": 580,
+        "x": 240,
+        "y": -100
+      }
+    }
+  }
+inputs:
+- key: domain
+  value:
+    simple: ${Domain.Name}
+  required: false
+  description: ""
+outputs:
+- contextPath: domain
+  description: domain
+  type: unknown

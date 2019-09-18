@@ -1,0 +1,59 @@
+args:
+- default: false
+  description: The creation date of the domain in the format of %Y-%m-%d
+  isArray: false
+  name: create_date
+  required: true
+  secret: false
+- default: false
+  description: Proximity risk score
+  isArray: false
+  name: proximity_score
+  required: true
+  secret: false
+- default: false
+  description: Threat profile risk score
+  isArray: false
+  name: threat_profile_score
+  required: true
+  secret: false
+- default: false
+  defaultValue: This domain
+  description: Provide domain name for print out
+  isArray: false
+  name: domain_name
+  required: false
+  secret: false
+- default: false
+  defaultValue: '70'
+  description: Proximity score given based on closeness to other risky domains.
+  isArray: false
+  name: proximity_score_threshold
+  required: false
+  secret: false
+- default: false
+  defaultValue: '7'
+  description: Threshold for domain age as younger domains are riskier.
+  isArray: false
+  name: age_threshold
+  required: false
+  secret: false
+- default: false
+  defaultValue: '70'
+  description: Threshold for threat profile score based on many evidence based findings.
+  isArray: false
+  name: threat_profile_score_threshold
+  required: false
+  secret: false
+comment: Calculates the indicator's reputation.
+commonfields:
+  id: 4661bbc0-b5a8-482a-9778-7e36ce586b64
+  version: -1
+enabled: false
+name: CalculateIndicatorReputation
+script: '-'
+system: false
+tags:
+- DomainTools
+timeout: '0'
+type: python

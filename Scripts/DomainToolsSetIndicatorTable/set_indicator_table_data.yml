@@ -1,0 +1,18 @@
+args:
+- default: false
+  description: DomainTools context data for a domain
+  isArray: false
+  name: domaintools_data
+  required: true
+  secret: false
+commonfields:
+  id: 50154cec-492d-418d-a5ac-09102eb57fbb
+  version: -1
+enabled: false
+name: SetIndicatorTableData
+script: '-'
+system: false
+tags:
+- DomainTools
+timeout: '0'
+type: python
