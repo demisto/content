@@ -8,7 +8,7 @@ BASE_URL = 'https://example.com/v1/'
 
 def get_credentials():
     return {
-        'credentials': [
+        'credential': [
             {'username': 'User1', 'password': 'mj54bk32gb', 'name': 'DBot Demisto'},
             {'username': 'User2', 'password': 'mj54bk32gb', 'name': 'Demisto DBot'}
         ]
@@ -16,7 +16,12 @@ def get_credentials():
 
 
 def get_user_list():
-    pass
+    return {
+        'account': [
+            {'username': 'User1', 'name': 'DBot Demisto', 'isLocked': False},
+            {'username': 'User2', 'name': 'Demisto DBot', 'isLocked': True}
+        ]
+    }
 
 
 def get_client():
@@ -33,9 +38,12 @@ class TestBuildContext:
         results = build_credentials_fetch([{'username': 'user1', 'name': 'name1', 'password': 'password'}])
         assert results == [{'name': 'name1', 'password': 'password', 'user': 'user1'}]
 
-    def test_build_credentials_context(self):
-        from Authentication import build_credentials_context
-        # results = build_credentials_context()
+    def test_build_account_context(self):
+        from Authentication import build_account_context
+        results = build_account_context(get_user_list()['account'])
+        assert results == [
+            {'IsLocked': False, 'Name': 'DBot Demisto', 'Username': 'User1'},
+            {'IsLocked': True, 'Name': 'Demisto DBot', 'Username': 'User2'}]
 
 
 class TestCredentialsOperations:
@@ -46,7 +54,7 @@ class TestCredentialsOperations:
         mocker.patch.object(demisto, 'credentials')
         # list
         requests_mock.get(
-            f'{BASE_URL}credentials',
+            f'{BASE_URL}credential',
             json=get_credentials())
         fetch_credentials(self.client)
         results = demisto.credentials.call_args[0][0]
@@ -58,23 +66,23 @@ class TestCredentialsOperations:
         mocker.patch.object(demisto, 'credentials')
         # list
         requests_mock.get(
-            f'{BASE_URL}credentials',
+            f'{BASE_URL}credential',
             json={})
         with raises(DemistoException, match='`fetch-incidents` failed in'):
             fetch_credentials(self.client)
 
-    def test_list_credentials_full(self, mocker):
-        from Authentication import list_credentials
-        mocker.patch.object(self.client, 'list_credentials_request', return_value=get_credentials())
-        _, _, raw_response = list_credentials(self.client)
-        assert raw_response == {'credentials': [{'username': 'User1', 'name': 'DBot Demisto'},
-                                                {'username': 'User2', 'name': 'Demisto DBot'}]}
+    def test_list_accounts_full(self, mocker):
+        from Authentication import list_accounts
+        mocker.patch.object(self.client, 'list_accounts_request', return_value=get_user_list())
+        _, _, raw_response = list_accounts(self.client)
+        assert raw_response == {'account': [{'username': 'User1', 'name': 'DBot Demisto', 'isLocked': False},
+                                            {'username': 'User2', 'name': 'Demisto DBot', 'isLocked': True}]}
 
-    def test_list_credentials_negative(self, mocker):
-        from Authentication import list_credentials
-        mocker.patch.object(self.client, 'list_credentials_request', return_value={'credentials': []})
-        human_readable, _, _ = list_credentials(self.client)
-        assert 'Could not find any credentials' in human_readable
+    def test_list_accounts_negative(self, mocker):
+        from Authentication import list_accounts
+        mocker.patch.object(self.client, 'list_accounts_request', return_value={'account': []})
+        human_readable, _, _ = list_accounts(self.client)
+        assert 'Could not find any users' in human_readable
 
 
 class TestTestModule:
@@ -98,7 +106,7 @@ class TestAccountOperations:
 
     def test_lock_account_positive(self, mocker):
         from Authentication import lock_account
-        mocker.patch.object(self.client, 'lock_account_request', return_value={'account': '111', 'isLocked': True})
+        mocker.patch.object(self.client, 'lock_account_request', return_value={'username': '111', 'isLocked': True})
         results = lock_account(self.client, {'account_id': '111'})
         assert 'Authentication Integration - Account `111`' in results[0]
 
@@ -110,7 +118,7 @@ class TestAccountOperations:
 
     def test_unlock_account_positive(self, mocker):
         from Authentication import unlock_account
-        mocker.patch.object(self.client, 'unlock_account_request', return_value={'account': '111', 'isLocked': True})
+        mocker.patch.object(self.client, 'unlock_account_request', return_value={'username': '111', 'isLocked': True})
         results = unlock_account(self.client, {'account_id': '111'})
         assert 'Authentication Integration - Account `111`' in results[0]
 

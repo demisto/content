@@ -27,7 +27,16 @@ class Client(BaseHTTPClient):
         Returns:
             Response JSON
         """
-        suffix = 'credentials'
+        suffix = 'credential'
+        return self._http_request('GET', suffix)
+
+    def list_accounts_request(self) -> Dict:
+        """Uses to fetch incidents into Demisto
+        Documentation:https://github.com/demisto/content/tree/master/docs/fetching_incidents
+        Returns:
+            Response JSON
+        """
+        suffix = 'account'
         return self._http_request('GET', suffix)
 
     def lock_account_request(self, account_id: AnyStr) -> Dict:
@@ -107,7 +116,7 @@ class Client(BaseHTTPClient):
 ''' HELPER FUNCTIONS '''
 
 
-def build_credentials_context(credentials: Union[Dict, List]) -> Union[Dict, List]:
+def build_account_context(credentials: Union[Dict, List]) -> Union[Dict, List]:
     """Formats the API response to Demisto context.
 
     Args:
@@ -117,8 +126,8 @@ def build_credentials_context(credentials: Union[Dict, List]) -> Union[Dict, Lis
         The formatted Dict or List.
 
     Examples:
-        >>> build_credentials_context([{'username': 'user', 'name': 'demisto', 'isLocked': False}])
-        [{'User': 'user', 'Group': 'demisto', 'IsLocked': False}]
+        >>> build_account_context([{'username': 'user', 'name': 'demisto', 'isLocked': False}])
+        [{'User': 'user', 'Name': 'demisto', 'IsLocked': False}]
     """
 
     def build_dict(credential: Dict) -> Dict:
@@ -131,7 +140,7 @@ def build_credentials_context(credentials: Union[Dict, List]) -> Union[Dict, Lis
             A Dict formatted for Demisto context.
         """
         return assign_params(
-            User=credential.get('username'),
+            Username=credential.get('username'),
             Name=credential.get('name'),
             IsLocked=credential.get('isLocked')
         )
@@ -193,8 +202,8 @@ def fetch_credentials(client: Client):
     """
     # Get credentials from api
     raw_response = client.list_credentials_request()
-    if 'credentials' in raw_response:
-        raw_credentials = raw_response.get('credentials', [])
+    if 'credential' in raw_response:
+        raw_credentials = raw_response.get('credential')
         # Creates credentials entry
         credentials = build_credentials_fetch(raw_credentials)
         demisto.credentials(credentials)
@@ -207,15 +216,17 @@ def lock_account(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Locks an account by account ID.
     """
     # Get arguments from user
-    account_id = args.get('account_id', '')
+    username = args.get('username')
     # Make request and get raw response
-    raw_response = client.lock_account_request(account_id)
+    raw_response = client.lock_account_request(username)
+    # Safe get account from raw_response
+    user_object = raw_response.get('account', [{}])[0]
     # Parse response into context & content entries
-    if raw_response.get('account') == account_id:
-        title: str = f'{client.integration_name} - Account `{account_id}` has been locked.'
+    if user_object.get('username') == username and user_object.get('isLocked') is True:
+        title: str = f'{client.integration_name} - Account `{username}` has been locked.'
         context_entry = {
             'IsLocked': True,
-            'ID': account_id
+            'Username': username
         }
         context = {f'{client.integration_context_name}.Account(val.ID && val.ID === obj.ID)': context_entry}
         # Creating human readable for War room
@@ -223,23 +234,24 @@ def lock_account(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
-        raise DemistoException(f'{client.integration_name} - Could not lock account `{account_id}`')
+        raise DemistoException(f'{client.integration_name} - Could not lock account `{username}`')
 
 
 def unlock_account(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Unlocks an account by account ID.
     """
     # Get arguments from user
-    account_id = args.get('account_id', '')
+    username = args.get('username')
     # Make request and get raw response
-    raw_response = client.unlock_account_request(account_id)
-    unlocked_account = raw_response.get('account')
+    raw_response = client.lock_account_request(username)
+    # Safe get account from raw_response
+    user_object = raw_response.get('account', [{}])[0]
     # Parse response into context & content entries
-    if unlocked_account == account_id:
-        title = f'{client.integration_name} - Account `{unlocked_account}` has been unlocked.'
+    if user_object.get('username') == username and user_object.get('isLocked') is False:
+        title = f'{client.integration_name} - Account `{username}` has been unlocked.'
         context_entry = {
             'IsLocked': False,
-            'ID': account_id
+            'Username': username
         }
         context = {f'{client.integration_context_name}.Account(val.ID && val.ID === obj.ID)': context_entry}
         # Creating human readable for War room
@@ -309,24 +321,23 @@ def unlock_vault(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         raise DemistoException(f'{client.integration_name} - Could not unlock vault ID: {vault_to_lock}')
 
 
-def list_credentials(client: Client, *_) -> Tuple[str, Dict, Dict]:
+def list_accounts(client: Client, *_) -> Tuple[str, Dict, Dict]:
     """Returns credentials to user without passwords.
     """
-    raw_response = client.list_credentials_request()
+    raw_response = client.list_accounts_request()
     # Filtering out passwords for list_credentials, so it won't get back to the user
-
-    raw_response['credentials'] = [
-        assign_params(keys_to_ignore=['password'], **credential) for credential in raw_response.get('credentials', [])
+    raw_response['account'] = [
+        assign_params(keys_to_ignore=['password'], **credential) for credential in raw_response.get('account')
     ]
-    credentials = raw_response['credentials']
-    if credentials:
-        title = f'{client.integration_name} - Credentials list.'
-        context_entry = build_credentials_context(credentials)
-        context = {f'{client.integration_context_name}.Credential(val.ID && val.ID ==== obj.ID)': context_entry}
+    accounts = raw_response['account']
+    if accounts:
+        title = f'{client.integration_name} - Account list.'
+        context_entry = build_account_context(accounts)
+        context = {f'{client.integration_context_name}.Account(val.ID && val.ID ==== obj.ID)': context_entry}
         human_readable = tableToMarkdown(title, context_entry)
         return human_readable, context, raw_response
     else:
-        return f'{client.integration_name} - Could not find any credentials.', {}, {}
+        return f'{client.integration_name} - Could not find any users.', {}, {}
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -352,7 +363,7 @@ def main():
     commands = {
         'test-module': test_module,
         'fetch-credentials': fetch_credentials,
-        f'{integration_command_name}-list-accounts': list_credentials,
+        f'{integration_command_name}-list-accounts': list_accounts,
         f'{integration_command_name}-lock-account': lock_account,
         f'{integration_command_name}-unlock-account': unlock_account,
         f'{integration_command_name}-reset-account': reset_account,

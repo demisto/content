@@ -29,11 +29,13 @@ script:
   - deprecated: false
     description: lists all credentials
     execution: false
-    name: authentication-list-credentials
+    name: authentication-list-accounts
     outputs:
     - contextPath: AuthenticationIntegration.Account.Name
       description: Account Name
       type: String
+    - contextPath: AuthenticationIntegration.Account.Username
+      type: Unknown
   - arguments:
     - default: false
       description: account ID to lock
