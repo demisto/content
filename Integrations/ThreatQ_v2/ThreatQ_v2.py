@@ -137,7 +137,7 @@ TABLE_HEADERS = {
                   'TQScore', 'CreatedAt', 'UpdatedAt', 'URL'],
     'adversary': ['ID', 'Name', 'CreatedAt', 'UpdatedAt', 'URL'],
     'event': ['ID', 'Type', 'Title', 'Description', 'Occurred', 'CreatedAt', 'UpdatedAt', 'URL'],
-    'attachment': ['ID', 'Name', 'Title', 'FileType', 'Size', 'Description', 'MD5', 'CreatedAt', 'UpdatedAt',
+    'attachment': ['ID', 'Name', 'Title', 'Type', 'Size', 'Description', 'MD5', 'CreatedAt', 'UpdatedAt',
                    'MalwareLocked', 'ContentType', 'URL'],
     'attributes': ['ID', 'Name', 'Value'],
     'sources': ['ID', 'Name']
@@ -486,7 +486,7 @@ def adversary_data_to_demisto_format(data):
         'UpdatedAt': data.get('updated_at'),
         'CreatedAt': data.get('created_at'),
         'Name': data.get('name'),
-        'URL': '{0}/indicators/{1}/details'.format(SERVER_URL, data.get('id')),
+        'URL': '{0}/adversaries/{1}/details'.format(SERVER_URL, data.get('id')),
         'Source': sources_to_demisto_format(data.get('sources')),
         'Attribute': attributes_to_demisto_format(data.get('attributes'))
     }
@@ -501,7 +501,7 @@ def event_data_to_demisto_format(data):
         'Title': data.get('title'),
         'Occurred': data.get('happened_at'),
         'Type': TYPE_ID_TO_EVENT_TYPE[data.get('type_id')],
-        'URL': '{0}/indicators/{1}/details'.format(SERVER_URL, data.get('id')),
+        'URL': '{0}/events/{1}/details'.format(SERVER_URL, data.get('id')),
         'Description': clean_html_from_string(data.get('description')),
         'Source': sources_to_demisto_format(data.get('sources')),
         'Attribute': attributes_to_demisto_format(data.get('attributes'))
@@ -517,6 +517,7 @@ def file_data_to_demisto_format(data):
         'Size': data.get('file_size'),
         'MD5': data.get('hash'),
         'Type': TYPE_ID_TO_FILE_TYPE[data.get('type_id')],
+        'URL': '{0}/files/{1}/details'.format(SERVER_URL, data.get('id')),
         'Name': data.get('name'),
         'Title': data.get('title'),
         'Description': data.get('description'),
