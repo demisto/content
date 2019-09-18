@@ -347,11 +347,11 @@ def fetch_incidents():
 def snowflake_query(args):
     params = get_connection_params(args)
     query = args.get('query')
-    limit = args.get('limit')
-    if limit:
-        limit = dict_value_to_int(args, 'limit')
-    else:
-        limit = 100
+    limit = args.get('limit', '100')
+    try:
+        limit = int(limit)
+    except ValueError:
+        raise ValueError(f'The value for limit must be an integer.')
     if limit > MAX_ROWS:
         limit = MAX_ROWS
     with snowflake.connector.connect(**params) as connection:
