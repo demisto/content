@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added spaces between cells for ***tableToMarkdown*** function output, to prevent auto-extract over multiple cells.
 
 ## [19.9.1] - 2019-09-18
 Added the ***parse_date_string*** function, which parses the date string to a datetime object.
