@@ -103,6 +103,9 @@ BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
 AUTO_DISCOVERY = False
 SERVER_BUILD = ""
 MARK_AS_READ = demisto.params().get('markAsRead', False)
+MAX_FETCH = demisto.params().get('maxFetch', 50)
+if MAX_FETCH > 50:
+    MAX_FETCH = 50
 
 START_COMPLIANCE = """
 [CmdletBinding()]
@@ -1164,6 +1167,9 @@ def fetch_emails_as_incidents(account_email, folder_name):
                 ids.append(item.message_id)
                 incident = parse_incident_from_item(item, True)
                 incidents.append(incident)
+                if len(incidents) >= MAX_FETCH:
+                    break
+
 
         new_last_run = {
             LAST_RUN_TIME: start_time.ewsformat(),
