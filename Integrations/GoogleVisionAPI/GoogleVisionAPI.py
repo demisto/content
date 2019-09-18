@@ -151,12 +151,18 @@ def detect_logos_command(proxies):
             for res in results.get('responses', []):
                 logos = res.get('logoAnnotations', [])
                 if logos:
-                    output.get('GoogleVisionAPI').get('Logo').extend(logos)
+                    for logo in logos:
+                        context_logo = {
+                            'Description': logo['description'],
+                            'MID': logo['mid'],
+                            'Score': logo['score']
+                        }
+                        output.get('GoogleVisionAPI').get('Logo').append(context_logo)
 
     if hit:
         human_readable = 'Logos found: '
         for logo in output.get('GoogleVisionAPI', {}).get('Logo', []):
-            human_readable += logo.get('description') + ', '
+            human_readable += logo.get('Description') + ', '
         human_readable = human_readable[:-2]
     else:
         human_readable = 'No Logos found'

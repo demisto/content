@@ -33,8 +33,14 @@ script:
     execution: false
     name: google-vision-detect-logos
     outputs:
-    - contextPath: GoogleVisionAPI
-      description: The results provided by the Google Vision API, e.g. detected logos.
+    - contextPath: GoogleVisionAPI.Logo.Description
+      description: The logo description provided by the Google Vision API
+      type: Unknown
+    - contextPath: GoogleVisionAPI.Logo.MID
+      description: The unique logo MID provided by the Google Vision API
+      type: Unknown
+    - contextPath: GoogleVisionAPI.Logo.Score
+      description: The certainty score provided by the Google Vision API
       type: Unknown
   dockerimage: demisto/google-vision-api:1.0.0.1388
   isfetch: false
@@ -43,4 +49,3 @@ script:
   runonce: false
   script: '-'
   type: python
-  subtype: python3
