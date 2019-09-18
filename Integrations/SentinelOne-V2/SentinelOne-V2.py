@@ -21,6 +21,7 @@ SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.pa
 USE_SSL = not demisto.params().get('insecure', False)
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 FETCH_THREAT_RANK = int(demisto.params().get('fetch_threshold', 5))
+FETCH_LIMIT = int(demisto.params().get('fetch_limit', 10))
 BASE_URL = SERVER + '/web/api/v2.0/'
 HEADERS = {
     'Authorization': 'ApiToken ' + TOKEN,
@@ -449,10 +450,10 @@ def get_threats_request(content_hash=None, mitigation_status=None, created_befor
     params = {
         'contentHash': content_hash,
         'mitigationStatus': mitigation_status,
-        'created_at__lt': created_before,
-        'created_at__gt': created_after,
-        'created_at__lte': created_until,
-        'created_at__gte': created_from,
+        'createdAt__lt': created_before,
+        'createdAt__gt': created_after,
+        'createdAt__lte': created_until,
+        'createdAt__gte': created_from,
         'resolved': resolved,
         'displayName__like': display_name,
         'query': query,
@@ -1747,12 +1748,17 @@ def fetch_incidents():
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
     current_fetch = last_fetch
-
     incidents = []
-    threats = get_threats_request()
+    last_fetch_date_string = timestamp_to_datestring(last_fetch, '%Y-%m-%dT%H:%M:%S.%fZ')
+    threats = get_threats_request(limit=FETCH_LIMIT, created_after=last_fetch_date_string)
     for threat in threats:
+        rank = threat.get('rank')
+        try:
+            rank = int(rank)
+        except TypeError:
+            rank = 0
         # If no fetch threat rank is provided, bring everything, else only fetch above the threshold
-        if not FETCH_THREAT_RANK or (FETCH_THREAT_RANK and threat.get('rank') >= FETCH_THREAT_RANK):
+        if FETCH_THREAT_RANK and rank >= FETCH_THREAT_RANK:
             incident = threat_to_incident(threat)
             incident_date = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%S.%fZ')
             # update last run
