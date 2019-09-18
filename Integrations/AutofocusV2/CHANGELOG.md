@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.9.1] - 2019-09-18
 Added several arguments to the ***autofocus-samples-search*** and ***autofocus-sessions-search*** commands.
   - *file_hash*
   - *domain*

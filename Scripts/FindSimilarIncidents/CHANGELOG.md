@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.9.1] - 2019-09-18
 Added support for list values in context keys and incident fields. 
 
 ## [19.9.0] - 2019-09-04
