@@ -10,10 +10,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e8ee09a9-34a1-43ee-8c08-9edf45216daf
+    taskid: 9745a269-e023-4903-88ec-065a56f9775e
     type: start
     task:
-      id: e8ee09a9-34a1-43ee-8c08-9edf45216daf
+      id: 9745a269-e023-4903-88ec-065a56f9775e
       description: Playbook started.
       version: -1
       name: ""
@@ -26,8 +26,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": -10
+          "x": 387.5,
+          "y": 30
         }
       }
     note: false
@@ -35,20 +35,20 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: ade63761-4ed2-44da-8246-d32f6eb9ee95
+    taskid: 321ce51e-70fb-49d5-8ada-25f4d2c411e5
     type: regular
     task:
-      id: ade63761-4ed2-44da-8246-d32f6eb9ee95
-      description: Submit search to autofocus-search-samples.
+      id: 321ce51e-70fb-49d5-8ada-25f4d2c411e5
       version: -1
       name: Submit search to Autofocus - sample hash
+      description: Submit search to autofocus-search-samples.
       script: '|||autofocus-search-samples'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "15"
     scriptarguments:
       domain:
         complex:
@@ -79,8 +79,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 540
+          "x": 50,
+          "y": 565
         }
       }
     note: false
@@ -88,13 +88,13 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 6ebdfaf2-50e7-4556-8ae8-7efe5eafd785
+    taskid: b4492bfe-cd15-4815-835e-e926c94aba72
     type: title
     task:
-      id: 6ebdfaf2-50e7-4556-8ae8-7efe5eafd785
+      id: b4492bfe-cd15-4815-835e-e926c94aba72
       version: -1
-      description: Done
       name: Done
+      description: Done
       type: title
       iscommand: false
       brand: ""
@@ -102,8 +102,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 970
+          "x": 387.5,
+          "y": 1250
         }
       }
     note: false
@@ -111,13 +111,13 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 62073e57-db22-415c-89df-a6b33b1d3710
+    taskid: d8d223e4-96dd-4069-81f5-adad2ff8759a
     type: condition
     task:
-      id: 62073e57-db22-415c-89df-a6b33b1d3710
-      description: Checks if Autofocus is enabled.
+      id: d8d223e4-96dd-4069-81f5-adad2ff8759a
       version: -1
       name: Is Autofocus enabled?
+      description: Checks if Autofocus is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -159,8 +159,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 135
+          "x": 387.5,
+          "y": 155
         }
       }
     note: false
@@ -168,10 +168,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 1edda0bc-b651-4c41-8fcf-42e97c0bcfe7
+    taskid: d8565659-495d-4e14-8d80-387359ac0af6
     type: playbook
     task:
-      id: 1edda0bc-b651-4c41-8fcf-42e97c0bcfe7
+      id: d8565659-495d-4e14-8d80-387359ac0af6
       version: -1
       name: AutoFocusPolling
       description: |-
@@ -215,8 +215,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 730
+          "x": 50,
+          "y": 930
         }
       }
     note: false
@@ -224,13 +224,13 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 06767924-b513-45ff-84a3-df65b1f39e5a
+    taskid: a341cc83-185a-4401-87a7-3a742402f2f0
     type: condition
     task:
-      id: 06767924-b513-45ff-84a3-df65b1f39e5a
-      description: Checks if search for samples is relevant.
+      id: a341cc83-185a-4401-87a7-3a742402f2f0
       version: -1
       name: Search samples?
+      description: Checks if search for samples is relevant.
       type: condition
       iscommand: false
       brand: ""
@@ -264,8 +264,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 320
+          "x": 50,
+          "y": 360
         }
       }
     note: false
@@ -273,13 +273,13 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 095dedd7-669e-4094-8b3a-8712dedf83b3
+    taskid: 743f013d-bcca-4b2a-86fe-ccbb8c873394
     type: condition
     task:
-      id: 095dedd7-669e-4094-8b3a-8712dedf83b3
-      description: Checks if search for sessions is relevant.
+      id: 743f013d-bcca-4b2a-86fe-ccbb8c873394
       version: -1
       name: Search Sessions?
+      description: Checks if search for sessions is relevant.
       type: condition
       iscommand: false
       brand: ""
@@ -311,8 +311,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -330,
-          "y": 320
+          "x": 735,
+          "y": 360
         }
       }
     note: false
@@ -320,10 +320,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 0b8f2a9f-93f2-45c3-8e3f-ac1e0d40f251
+    taskid: 6157126e-ff31-4e10-872e-4a1c8fede04d
     type: regular
     task:
-      id: 0b8f2a9f-93f2-45c3-8e3f-ac1e0d40f251
+      id: 6157126e-ff31-4e10-872e-4a1c8fede04d
       version: -1
       name: Submit search to Autofocus - Sessions hash
       description: Submit search to autofocus-search-sessions.
@@ -333,7 +333,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "14"
     scriptarguments:
       domain:
         complex:
@@ -361,8 +361,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -330,
-          "y": 540
+          "x": 735,
+          "y": 545
         }
       }
     note: false
@@ -370,10 +370,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 28517789-1702-4915-8727-c9307c2ecf16
+    taskid: ecc5d644-5a48-4d9b-82c2-30e927febd19
     type: playbook
     task:
-      id: 28517789-1702-4915-8727-c9307c2ecf16
+      id: ecc5d644-5a48-4d9b-82c2-30e927febd19
       version: -1
       name: AutoFocusPolling
       description: |-
@@ -417,8 +417,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -330,
-          "y": 730
+          "x": 720,
+          "y": 930
         }
       }
     note: false
@@ -426,13 +426,13 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 9d33c2b5-32d7-4e24-8e98-19446b845ddb
+    taskid: 5aa339af-876f-43e9-8060-3668730316e6
     type: condition
     task:
-      id: 9d33c2b5-32d7-4e24-8e98-19446b845ddb
-      description: Checks if search for tags is relevant.
+      id: 5aa339af-876f-43e9-8060-3668730316e6
       version: -1
       name: Search Tags?
+      description: Checks if search for tags is relevant.
       type: condition
       iscommand: false
       brand: ""
@@ -466,8 +466,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1050,
-          "y": 320
+          "x": 1307.5,
+          "y": 360
         }
       }
     note: false
@@ -475,10 +475,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: e34c323b-1c9d-4552-8b2c-c28b4013faa7
+    taskid: b0eae75d-921d-4f6e-822f-10a2b0d20934
     type: regular
     task:
-      id: e34c323b-1c9d-4552-8b2c-c28b4013faa7
+      id: b0eae75d-921d-4f6e-822f-10a2b0d20934
       version: -1
       name: Submit search to Autofocus - tags
       description: Performs a search to identify the most popular tags.
@@ -488,7 +488,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "16"
     scriptarguments:
       class:
         complex:
@@ -513,8 +513,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1230,
-          "y": 540
+          "x": 1307.5,
+          "y": 545
         }
       }
     note: false
@@ -522,10 +522,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: b45dbf6c-95ee-4e2a-8041-9f3904b7260b
+    taskid: c2b392ae-5a29-474a-80fb-16416eef4c7c
     type: playbook
     task:
-      id: b45dbf6c-95ee-4e2a-8041-9f3904b7260b
+      id: c2b392ae-5a29-474a-80fb-16416eef4c7c
       version: -1
       name: AutoFocusPolling
       description: |-
@@ -569,8 +569,140 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1230,
-          "y": 730
+          "x": 1307.5,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: b410308b-959c-469a-8b69-18b972fb9d7c
+    type: condition
+    task:
+      id: b410308b-959c-469a-8b69-18b972fb9d7c
+      version: -1
+      name: Was submit session search to AutoFocus successful?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: AutoFocus
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: AutoFocus.SessionsSearch.AFCookie
+                      iscontext: true
+                accessor: SessionsSearch
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 735,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: c05bd427-2b75-4af6-8099-b55eb79a62d8
+    type: condition
+    task:
+      id: c05bd427-2b75-4af6-8099-b55eb79a62d8
+      version: -1
+      name: Was submit sample search to AutoFocus successful?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: AutoFocus
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: AutoFocus.SamplesSearch.AFCookie
+                      iscontext: true
+                accessor: SamplesSearch
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: ce2d7194-c6b9-4341-83a0-bf7b564f1ddf
+    type: condition
+    task:
+      id: ce2d7194-c6b9-4341-83a0-bf7b564f1ddf
+      version: -1
+      name: Was submit tags search to AutoFocus successful?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: AutoFocus
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: AutoFocus.TopTagsSearch.AFCookie
+                      iscontext: true
+                accessor: TopTagsSearch
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1307.5,
+          "y": 720
         }
       }
     note: false
@@ -583,10 +715,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1045,
-        "width": 1940,
-        "x": -330,
-        "y": -10
+        "height": 1285,
+        "width": 1637.5,
+        "x": 50,
+        "y": 30
       }
     }
   }
@@ -706,13 +838,13 @@ inputs:
     analyzed by Palo Alto's Unit 42 global threat intelligence team.
 outputs:
 - contextPath: AutoFocus.SessionsResults
-  type: string
   description: Results of Autofocus sessions search.
+  type: string
 - contextPath: AutoFocus.SamplesResults
-  type: string
   description: Results of Autofocus samples search.
-- contextPath: AutoFocus.TopTagResults
   type: string
+- contextPath: AutoFocus.TopTagResults
   description: Results of Autofocus tags search.
+  type: string
 tests:
 - Autofocus Query Samples, Sessions and Tags Test Playbook
