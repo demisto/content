@@ -1,5 +1,7 @@
 ## [Unreleased]
-
+  - Fixed an issue in the **Fetch incidents*** function.
+  - Fixed date parameters in the ***sentinelone-get-threats*** command.
+  - Added the ***fetch_limit*** parameter, which specifies the maximum number of incidents to fetch.
 
 ## [19.8.2] - 2019-08-22
 - Added 5 commands.
