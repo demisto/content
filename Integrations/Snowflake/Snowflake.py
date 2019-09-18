@@ -66,22 +66,6 @@ if IS_FETCH and not (FETCH_QUERY and DATETIME_COLUMN):
 '''HELPER FUNCTIONS'''
 
 
-def dict_value_to_int(target_dict: dict, key: str):
-    """
-    :param target_dict: A dictionary which has the key param
-    :param key: The key that we need to convert it's value to integer
-    :return: The integer representation of the key's value in the dict params
-    """
-    try:
-        if target_dict:
-            value = target_dict.get(key)
-            if value:
-                target_dict[key] = int(value)
-                return target_dict[key]
-    except ValueError:
-        raise ValueError(f'The value for {key} must be an integer.')
-
-
 def convert_datetime_to_string(v):
     """
     Parses date, time, timedelta, or datetime object into string
