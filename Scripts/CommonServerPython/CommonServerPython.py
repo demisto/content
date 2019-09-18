@@ -632,7 +632,7 @@ class IntegrationLogger(object):
             Add strings which will be replaced when logging.
             Meant for avoiding passwords and so forth in the log.
         '''
-        to_add = list(filter(None, [self.encode(a) for a in args]))  # type: list
+        to_add = [self.encode(a) for a in args if a]
         self.replace_strs.extend(to_add)
 
     def set_buffering(self, state):
