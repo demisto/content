@@ -1,7 +1,7 @@
 version: 2
 
 jobs:
-  validation_and_testing:
+  build:
     docker:
       - image: devdemisto/content-build-2and3:2.0.0.1785  # disable-secrets-detection
     environment:
@@ -250,10 +250,10 @@ workflows:
   version: 2
   commit:
     jobs:
-      - validation_and_testing
+      - build
       - instance_testing:
           requires:
-            - validation_and_testing
+            - build
           filters:
             branches:
               # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
