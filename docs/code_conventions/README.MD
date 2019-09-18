@@ -207,7 +207,7 @@ def main():
         raise
 ```
 
-## Test module
+## test-module
 - `test-module` will execute when the **Test** button pressed in the integration instance setting page.
 - if test module returns the string `"ok"` then the test will be green success, any other string the test will show red.
 ```python
@@ -309,6 +309,41 @@ def main():
         return_error(str(e), e)
 ```
 
+
+## Unit Tests
+Every integration must have unit tests.
+
+- Unit test must be in separate file called the same as the integration but with `_test.py` for example `HelloWorld_test.py`
+- In order to mock http requests use [requests_mock](https://requests-mock.readthedocs.io/en/latest/)
+- For mocks use [mocker](https://github.com/pytest-dev/pytest-mock/)
+
+For example:
+```python
+from HelloWorld import Client, say_hello_command, say_hello_over_http_command
+
+
+def test_say_hello():
+    client = Client(url="https://test.com", verify=False, username="test", password="test")
+    args = {
+        "name": "Dbot"
+    }
+    _, outputs, _ = say_hello_command(client, args)
+
+    assert outputs["hello"] == "Hello Dbot"
+
+
+def test_say_hello_over_http(requests_mock):
+    mock_response = {"result": "Hello Dbot"}
+    requests_mock.get("https://test.com/api/v1/suffix/hello/Dbot", json=mock_response)
+
+    client = Client(url="https://test.com", verify=False, username="test", password="test")
+    args = {
+        "name": "Dbot"
+    }
+    _, outputs, _ = say_hello_over_http_command(client, args)
+
+    assert outputs["hello"] == "Hello Dbot"
+```
 
 ## Variable Naming
 When we name variables, we prefer to keep them named as below:
