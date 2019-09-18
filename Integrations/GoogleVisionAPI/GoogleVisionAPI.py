@@ -109,19 +109,6 @@ def perform_logo_detection_service_request(file_bytes, proxies, max_results=10):
     return service_request.execute()
 
 
-def convert_to_output(result):
-    """
-    Convert to an output dict skipping all empty results.
-    Also uses capitalizes context keys to follow Demisto defaults.
-    """
-    output = {'GoogleVisionAPI': {'Logo': []}}
-    for res in result.get('responses', []):
-        logos = res.get('logoAnnotations', [])
-        if logos:
-            output['GoogleVisionAPI']['Logo'].extend(logos)
-    return output
-
-
 def is_logo_detected(results):
     """
     Indicates logos were detected or not
@@ -151,11 +138,22 @@ def detect_logos_command(proxies):
     """
     Detects brand logos from a given entry id.
     """
-    entry_id = demisto.args().get('entry_id', '')
-    results = detect_logos(entry_id, proxies)
-    logo_detected = is_logo_detected(results)
-    if logo_detected:
-        output = convert_to_output(results)
+    entry_ids = argToList(demisto.args().get('entry_id'))
+
+    output = {'GoogleVisionAPI': {'Logo': []}}
+    hit = False
+
+    for entry_id in entry_ids:
+        results = detect_logos(entry_id, proxies)
+        logo_detected = is_logo_detected(results)
+        if logo_detected:
+            hit = True
+            for res in results.get('responses', []):
+                logos = res.get('logoAnnotations', [])
+                if logos:
+                    output.get('GoogleVisionAPI').get('Logo').extend(logos)
+
+    if hit:
         human_readable = 'Logos found: '
         for logo in output.get('GoogleVisionAPI', {}).get('Logo', []):
             human_readable += logo.get('description') + ', '
