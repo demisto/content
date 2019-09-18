@@ -249,11 +249,11 @@ def get_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     # Parse response into context & content entries
     event: Dict = raw_response.get('event', {})
     if event:
-        title: str = f'{client.integration_name} - Event `{event_id}`:'
+        title = f'{client.integration_name} - Event `{event_id}`:'
         context_entry = build_context(event)
         context = {f'{client.integration_context_name}.Event(val.ID && val.ID === obj.ID)': context_entry}
         # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry)
+        human_readable = tableToMarkdown(title, context_entry, headers=[])
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
