@@ -1938,7 +1938,6 @@ except Exception as ex:
     # Should fail silently so that if there is a problem with the logger it will
     # not affect the execution of commands and playbooks
     demisto.info('Failed initializing DebugLogger: {}'.format(ex))
-    pass
 
 
 def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
