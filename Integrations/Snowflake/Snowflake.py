@@ -66,21 +66,6 @@ if IS_FETCH and not (FETCH_QUERY and DATETIME_COLUMN):
 '''HELPER FUNCTIONS'''
 
 
-def parse_time(time_str: str):
-    regex_to_format = {
-        r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z': '%Y-%m-%dT%H:%M:%SZ',
-        r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z': '%Y-%m-%dT%H:%M:%S.%fZ'
-    }
-
-    selected_format = '%Y-%m-%dT%H:%M:%SZ'
-    for regex, date_format in regex_to_format.items():
-        if re.match(regex, time_str):
-            selected_format = date_format
-            break
-
-    return selected_format
-
-
 def dict_value_to_int(target_dict: dict, key: str):
     """
     :param target_dict: A dictionary which has the key param
@@ -294,7 +279,7 @@ def row_to_incident(column_descriptions, row):
         name = 'Snowflake Incident -- '
         name += convert_datetime_to_string(occurred) + '- ' + str(datetime.now().timestamp())
     incident['name'] = name
-    incident['occurred'] = occurred.strftime('%Y-%m-%dT%H:%M:%SZ%z')
+    incident['occurred'] = occurred.isoformat()
     # Incident occurrence time as timestamp - the datetime field specified in the integration parameters
     incident['timestamp'] = timestamp
     # The raw response for the row (reformatted to be json serializable) returned by the db query
