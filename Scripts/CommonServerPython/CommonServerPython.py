@@ -593,15 +593,12 @@ class IntegrationLogger(object):
             if isinstance(demisto.getParam('credentials'), dict) and demisto.getParam('credentials').get('password'):
                 pswrd = self.encode(demisto.getParam('credentials').get('password'))
                 self.add_replace_strs(pswrd, b64_encode(pswrd))
-            if demisto.getParam('api_key'):
-                s = demisto.getParam('api_key')
-                self.add_replace_strs(s, b64_encode(s))
-            if demisto.getParam('apikey'):
-                s = demisto.getParam('apikey')
-                self.add_replace_strs(s, b64_encode(s))
-            if demisto.getParam('password'):
-                s = demisto.getParam('password')
-                self.add_replace_strs(s, b64_encode(s))
+            sensitive_params = ('api_key', 'apikey', 'password', 'secret')
+            for (k, v) in demisto.params().items():
+                k_lower = k.lower()
+                for p in sensitive_params:
+                    if p in k_lower and v:
+                        self.add_replace_strs(v, b64_encode(v))
 
     def encode(self, message):
         try:
