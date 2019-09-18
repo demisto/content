@@ -1885,7 +1885,10 @@
         "IntSights Mssp Test": "Account Expired (issue #16351)",
         "CarbonBlackResponseTest": "Instance content has been altered causing test failure #19180",
         "Pwned test": "API Deprecated, use Pwned test v2 instead",
-        "CheckPhish-Test": "Test is unstable, requires redesign #19188"
+        "CheckPhish-Test": "Test is unstable, requires redesign #19188",
+        "PAN-OS DAG Configuration Test": "Test failing on permission denied error #19205",
+        "AlphaSOC-Wisdom-Test": "Test is unstable. #19235"
+
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
