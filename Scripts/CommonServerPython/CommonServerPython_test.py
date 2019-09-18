@@ -658,21 +658,18 @@ def test_assign_params():
 
 
 class TestBuildDBotEntry(object):
-    @staticmethod
-    def test_build_dbot_entry():
+    def test_build_dbot_entry(self):
         from CommonServerPython import build_dbot_entry
         res = build_dbot_entry('user@example.com', 'Email', 'Vendor', 1)
         assert res == {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 1}}
 
-    @staticmethod
-    def test_build_dbot_entry_no_malicious():
+    def test_build_dbot_entry_no_malicious(self):
         from CommonServerPython import build_dbot_entry
         res = build_dbot_entry('user@example.com', 'Email', 'Vendor', 3, build_malicious=False)
         assert res == {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 3}}
 
-    @staticmethod
-    def test_build_dbot_entry_malicious():
-        from CommonServerPython import build_dbot_entry
+    def test_build_dbot_entry_malicious(self):
+        from CommonServerPython import build_dbot_entry, outputPaths
         res = build_dbot_entry('user@example.com', 'Email', 'Vendor', 3, 'Malicious email')
 
         assert res == {
@@ -682,7 +679,7 @@ class TestBuildDBotEntry(object):
                 "Score": 3,
                 "Type": "email"
             },
-            "Account.Email(val.Address && val.Address == obj.Address)": {
+            outputPaths['email']: {
                 "Malicious": {
                     "Vendor": "Vendor",
                     "Description": "Malicious email"
@@ -691,40 +688,52 @@ class TestBuildDBotEntry(object):
             }
         }
 
-    @staticmethod
-    def test_build_malicious_dbot_entry_file():
-        from CommonServerPython import build_malicious_dbot_entry
+    def test_build_malicious_dbot_entry_file(self):
+        from CommonServerPython import build_malicious_dbot_entry, outputPaths
         res = build_malicious_dbot_entry('md5hash', 'MD5', 'Vendor', 'Google DNS')
         assert res == {
-            "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj"
-            ".SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val"
-            ".CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)":
+            outputPaths['file']:
                 {"Malicious": {"Vendor": "Vendor", "Description": "Google DNS"}, "MD5": "md5hash"}}
 
-    @staticmethod
-    def test_build_malicious_dbot_entry():
-        from CommonServerPython import build_malicious_dbot_entry
+    def test_build_malicious_dbot_entry(self):
+        from CommonServerPython import build_malicious_dbot_entry, outputPaths
         res = build_malicious_dbot_entry('8.8.8.8', 'ip', 'Vendor', 'Google DNS')
-        assert res == {'IP(val.Address && val.Address == obj.Address)': {
+        assert res == {outputPaths['ip']: {
             'Address': '8.8.8.8', 'Malicious': {'Vendor': 'Vendor', 'Description': 'Google DNS'}}}
 
-    @staticmethod
-    def test_build_malicious_dbot_entry_wrong_indicator_type():
+    def test_build_malicious_dbot_entry_wrong_indicator_type(self):
         from CommonServerPython import build_malicious_dbot_entry, DemistoException
         with raises(DemistoException, match='Wrong indicator type'):
             build_malicious_dbot_entry('8.8.8.8', 'notindicator', 'Vendor', 'Google DNS')
 
-    @staticmethod
-    def test_illegal_dbot_score():
+    def test_illegal_dbot_score(self):
         from CommonServerPython import build_dbot_entry, DemistoException
         with raises(DemistoException, match='illegal DBot score'):
             build_dbot_entry('1', 'ip', 'Vendor', 8)
 
-    @staticmethod
-    def test_illegal_indicator_type():
+    def test_illegal_indicator_type(self):
         from CommonServerPython import build_dbot_entry, DemistoException
         with raises(DemistoException, match='illegal indicator type'):
             build_dbot_entry('1', 'NOTHING', 'Vendor', 2)
+
+    def test_file_indicators(self):
+        from CommonServerPython import build_dbot_entry, outputPaths
+        res = build_dbot_entry('md5hash', 'md5', 'Vendor', 3)
+        assert res == {
+            "DBotScore": {
+                "Indicator": "md5hash",
+                "Type": "file",
+                "Vendor": "Vendor",
+                "Score": 3
+            },
+            outputPaths['file']: {
+                "MD5": "md5hash",
+                "Malicious": {
+                    "Vendor": "Vendor",
+                    "Description": None
+                }
+            }
+        }
 
 
 class TestHTTPBaseClient(object):

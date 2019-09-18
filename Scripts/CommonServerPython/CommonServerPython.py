@@ -1941,15 +1941,18 @@ def build_dbot_entry(indicator, indicator_type, vendor, score, description=None,
     """Build a dbot entry. if score is 3 adds malicious
     Examples:
         >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 1)
-        {'DBotScore': {'Vendor': 'Vendor', 'Indicator': 'user@example.com', 'Score': 1, 'Type': 'email'}}
+        {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 1}}
 
         >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 3,  build_malicious=False)
-        {'DBotScore': {'Vendor': 'Vendor', 'Indicator': 'user@example.com', 'Score': 3, 'Type': 'email'}}
+        {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 3}}
 
-        >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 3, 'Malicious email')
+        >>> build_dbot_entry('user@example.com', 'email', 'Vendor', 3, 'Malicious email')
         {'DBotScore': {'Vendor': 'Vendor', 'Indicator': 'user@example.com', 'Score': 3, 'Type': 'email'}, \
 'Account.Email(val.Address && val.Address == obj.Address)': {'Malicious': {'Vendor': 'Vendor', 'Description': \
 'Malicious email'}, 'Address': 'user@example.com'}}
+
+        >>> build_dbot_entry('md5hash', 'md5', 'Vendor', 1)
+        {'DBotScore': {'Indicator': 'md5hash', 'Type': 'file', 'Vendor': 'Vendor', 'Score': 1}}
 
     :type indicator: ``str``
     :param indicator: indicator field. if using file hashes, can be dict
@@ -1980,6 +1983,9 @@ def build_dbot_entry(indicator, indicator_type, vendor, score, description=None,
         raise DemistoException('illegal indicator type, expected one of {}, got `{}`'.format(
             INDICATOR_TYPE_TO_CONTEXT_KEY.keys(), indicator_type_lower
         ))
+    # handle files
+    if INDICATOR_TYPE_TO_CONTEXT_KEY[indicator_type_lower] == 'file':
+        indicator_type_lower = 'file'
     dbot_entry = {
         outputPaths['dbotscore']: {
             'Indicator': indicator,
