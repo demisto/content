@@ -2058,8 +2058,7 @@ H || val.SSDeep && val.SSDeep == obj.SSDeep)': {'Malicious': {'Vendor': 'Vendor'
 # Will add only if 'requests' module imported
 if 'requests' in sys.modules:
     class BaseClient(object):
-        def __init__(self, base_url, base_suffix,
-                     verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
+        def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
             """Client to use in integrations with powerful _http_request
             :type base_url: ``str``
             :param base_url: Base server address with suffix, for example: https://example.com/api/v2/.
@@ -2088,9 +2087,8 @@ if 'requests' in sys.modules:
             :return: No data returned
             :rtype: ``None``
             """
-            self._server = base_url
+            self._base_url = base_url
             self._verify = verify
-            self._base_url = '{}{}'.format(self._server, base_suffix)
             self._ok_codes = ok_codes
             self._headers = headers
             self._auth = auth
@@ -2177,8 +2175,8 @@ if 'requests' in sys.modules:
                 )
                 # Handle error responses gracefully
                 if not self._is_status_code_valid(res, ok_codes):
-                    err_msg = 'Error in {} API call [{}] - {}' \
-                        .format(self._integration_name, res.status_code, res.reason)
+                    err_msg = 'Error in API call [{}] - {}' \
+                        .format(res.status_code, res.reason)
                     try:
                         # Try to parse json error response
                         error_entry = res.json()
