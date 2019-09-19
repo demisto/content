@@ -142,7 +142,7 @@ class Client:
         initiates a http request to test url
         """
         data = self.http_request("GET", "/hello/" + name)
-        return data["result"]
+        return data.get('result')
 
     def list_incidents(self):
         """
