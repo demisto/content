@@ -3,6 +3,7 @@ from pytest import raises
 from AnalyticsAndSIEM import Client
 
 CONTEXT_PREFIX = 'AnalyticsAndSIEM.Event(val.ID && val.ID === obj.ID)'
+BASE_URL = 'http://api.service.com/v1/'
 
 
 def event_dict_input(*args, **kwargs):
@@ -58,16 +59,11 @@ def mock_client() -> Client:
         'Analytics And SIEM',
         'analytics-and-siem',
         'AnalyticsAndSIEM',
-        'http://api.service.com',
-        'v1',
+        BASE_URL,
+        '/',
         False,
         False
     )
-
-
-def raise_exception(*args, **kwargs):
-    from AnalyticsAndSIEM import DemistoException
-    raise DemistoException('error')
 
 
 """ TESTS FUNCTION """
@@ -86,26 +82,26 @@ class TestBuildContext:
 
 
 class TestTestModule:
-    def test_test_module(self, monkeypatch):
-        from AnalyticsAndSIEM import test_module
-        client = mock_client()
-        monkeypatch.setattr(client, 'test_module_request', lambda: {'version': '1.0.0'})
-        assert test_module(client) == ('ok', {}, {})
+    client = mock_client()
 
-    def test_test_module_negative(self, monkeypatch):
+    def test_test_module(self, requests_mock):
+        from AnalyticsAndSIEM import test_module
+        requests_mock.get(BASE_URL + 'version', json={'version': '1.0.0'})
+        assert test_module(self.client) == ('ok', {}, {})
+
+    def test_test_module_negative(self, requests_mock):
         from AnalyticsAndSIEM import test_module, DemistoException
-        client = mock_client()
-        monkeypatch.setattr(client, '_http_request', raise_exception)
-        with raises(DemistoException) as e:
-            test_module(client)
-            assert str(e) == 'error'
+        requests_mock.get(BASE_URL + 'version', json={})
+        with raises(DemistoException, match='Test module failed'):
+            test_module(self.client)
 
 
 class TestListEvents:
-    def test_list_events(self, monkeypatch):
+    client = mock_client()
+
+    def test_list_events(self, requests_mock):
         from AnalyticsAndSIEM import list_events
-        client = mock_client()
-        monkeypatch.setattr(client, 'list_events_request', event_list_input)
-        _, context, _ = list_events(client, dict())
+        requests_mock.get(BASE_URL + 'event', json=event_list_input())
+        _, context, _ = list_events(self.client, dict())
         context = context['AnalyticsAndSIEM.Event(val.ID && val.ID === obj.ID)']
         assert context == event_list_output()['Event']

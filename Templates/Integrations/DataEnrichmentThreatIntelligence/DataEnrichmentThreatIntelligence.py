@@ -3,7 +3,7 @@ from CommonServerUserPython import *
 import demistomock as demisto
 
 ''' IMPORTS '''
-from typing import Dict, Tuple, Optional
+from typing import Dict, Tuple, Optional, List, Union
 import urllib3
 
 # Disable insecure warnings
@@ -16,9 +16,6 @@ FILE_HASHES: Tuple = ('md5', 'ssdeep', 'sha1', 'sha256')  # hashes as described 
 
 
 class Client(BaseClient):
-    """
-    """
-
     def __init__(self, server, base_suffix, integration_name, integration_command_name, integration_context_name,
                  threshold: int, **kwargs):
         # added threshold
@@ -61,6 +58,14 @@ class Client(BaseClient):
         return True
 
     def get_ip_request(self, ip: str) -> Dict:
+        """Gets an analysis from the API for given ןפ.
+
+        Args:
+            ip:
+
+        Returns:
+
+        """
         suffix = 'ip'
         params = {'ip': ip}
         return self._http_request('GET', suffix, params=params)
@@ -92,38 +97,56 @@ class Client(BaseClient):
         return self._http_request('GET', suffix, params=params)
 
 
+def build_context(results: Union[Dict, List], indicator_type: str) -> Union[Dict, List]:
+    """Formatting results from API to Demisto Context
+
+    Args:
+        results: raw results from raw_response
+        indicator_type: type of indicator
+
+    Returns:
+        Results formatted to Demisto Context
+    """
+
+    def build_entry_context(entry: Dict):
+        return {
+            'ID': entry.get('id'),
+            'Severity': entry.get('severity'),
+            indicator_type: entry.get('indicator'),
+            'Description': entry.get('description')
+        }
+
+    if isinstance(results, list):
+        return [build_entry_context(entry) for entry in results]
+    return build_entry_context(results)
+
+
 ''' COMMANDS '''
 
 
-def search_ip(client: Client, args: Dict):
+def search_ip(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Gets results for the API.
     """
     ip = args.get('ip', '')
-    raw_response: Dict = client.get_ip_request(ip)
-    results = raw_response.get('results')
+    raw_response = client.get_ip_request(ip)
+    results = raw_response.get('results', {})
     if results:
         title = f'{client.integration_name} - Analysis results for IP: {ip}'
-        context_entry = {
-            'ID': results.get('id'),
-            'Severity': results.get('severity'),
-            'IP': ip,
-            'Description': results.get('description')
-        }
+        context_entry = build_context(results, 'IP')
         # Building a score for DBot
         score = client.calculate_dbot_score(results.get('severity'))
-        dbot_entry = build_dbot_entry(ip, 'ip', score, client.integration_name, results.get('description'))
+        dbot_entry = build_dbot_entry(ip, 'ip', client.integration_name, score, results.get('description'))
         context = {
             f'{client.integration_context_name}.Analysis(val.ID && val.ID === obj.ID)': context_entry
         }
         context.update(dbot_entry)
-
         human_readable: str = tableToMarkdown(title, context_entry, removeNull=True)
         return human_readable, context, raw_response
     else:
         return f'{client.integration_name} - Found no results for IP: {ip}', {}, raw_response
 
 
-def search_url(client: Client, args: Dict):
+def search_url(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Gets a job from the API. Used mostly for polling playbook
     """
     url = args.get('url', '')
@@ -131,41 +154,37 @@ def search_url(client: Client, args: Dict):
     results = raw_response.get('results', {})
     if results:
         title: str = f'{client.integration_name} - Analysis results for URL: {url}'
-        context_entry = {
-            'ID': results.get('id'),
-            'Severity': results.get('severity'),
-            'URL': url,
-            'Description': results.get('description')
-        }
+        context_entry = build_context(results, 'URL')
         # Building a score for DBot
         score = client.calculate_dbot_score(results.get('severity'))
-        dbot_entry = build_dbot_entry(url, 'url', score,
-                                      client.integration_name, results.get('description'))
+        dbot_entry = build_dbot_entry(url, 'url', client.integration_name, score, results.get('description'))
         context = {
             f'{client.integration_context_name}.Analysis(val.ID && val.ID === obj.ID)': context_entry
         }
         context.update(dbot_entry)
         human_readable: str = tableToMarkdown(title, context_entry, removeNull=True)
-        return_outputs(human_readable, context, results)
+        return human_readable, context, raw_response
     else:
         return_warning(f'{client.integration_name} - Found no results for URL: {url}')
+        return '', {}, {}
 
 
-def search_file(client: Client, args: Dict):
+def search_file(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Searching for given file hash
     """
-    file_hash: str = args.get('file')
-    raw_response: Dict = client.search_file_request(file_hash)
+    file_hash = args.get('file')
+    raw_response = client.search_file_request(file_hash)
+    results = raw_response.get('results', [{}])[0]
     if raw_response:
-        title: str = f'{client.integration_name} - Analysis results for file hash: {file_hash}'
-        context_entry: Dict = {
-            'ID': raw_response.get('id'),
-            'Severity': raw_response.get('severity'),
-            'MD5': raw_response.get('md5'),
-            'SHA1': raw_response.get('sha1'),
-            'SHA256': raw_response.get('sha256'),
-            'SSDeep': raw_response.get('ssdeep'),
-            'Description': raw_response.get('description')
+        title = f'{client.integration_name} - Analysis results for file hash: {file_hash}'
+        context_entry = {
+            'ID': results.get('id'),
+            'Severity': results.get('severity'),
+            'MD5': results.get('md5'),
+            'SHA1': results.get('sha1'),
+            'SHA256': results.get('sha256'),
+            'SSDeep': results.get('ssdeep'),
+            'Description': results.get('description')
         }
         # Gets DBot score
         score = client.calculate_dbot_score(raw_response.get('severity', ''))
@@ -178,7 +197,7 @@ def search_file(client: Client, args: Dict):
                 'Score': score
             } for hash_name in FILE_HASHES if raw_response.get(hash_name)
         ]
-        context: Dict = {
+        context = {
             outputPaths['dbotscore']: dbot_score,
             f'{client.integration_context_name}.Analysis(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -191,10 +210,11 @@ def search_file(client: Client, args: Dict):
                     'Description': raw_response.get('description')
                 }
             } for hash_name in FILE_HASHES if raw_response.get(hash_name)]
-        human_readable: str = tableToMarkdown(title, context_entry, removeNull=True)
-        return_outputs(human_readable, context, raw_response)
+        human_readable = tableToMarkdown(title, context_entry, removeNull=True)
+        return human_readable, context, raw_response
     else:
         return_warning(f'{client.integration_name} - Could not find results for file hash: [{file_hash}')
+        return '', {}, {}
 
 
 def test_module(client: Client, *args):
@@ -241,8 +261,7 @@ def main():
     }
     try:
         if command in commands:
-            human_readable, context, raw_response = commands[command](client, demisto.args())
-            return_outputs(human_readable, context, raw_response)
+            return_outputs(*commands[command](client, demisto.args()))
 
     # Log exceptions
     except Exception as e:

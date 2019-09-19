@@ -236,7 +236,7 @@ def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
-        raise DemistoException(f'{client.integration_name} - Could not find any events.')
+        return f'{client.integration_name} - Could not find any events.', {}, {}
 
 
 def get_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -257,7 +257,7 @@ def get_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
-        raise DemistoException(f'{client.integration_name} - Could not find event `{event_id}`')
+        return f'{client.integration_name} - Could not find event `{event_id}`', {}, {}
 
 
 def close_event(client: Client, args: Dict) -> Tuple[str, Dict, None]:
