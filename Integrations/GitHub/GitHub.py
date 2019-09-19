@@ -523,191 +523,6 @@ def format_comment_outputs(comment: dict, issue_number: Union[int, str]) -> dict
     return ec_object
 
 
-''' REQUESTS FUNCTIONS '''
-
-
-def list_teams(organization: str) -> list:
-    suffix = f'/orgs/{organization}/teams'
-    response = http_request('GET', url_suffix=suffix)
-    return response
-
-
-def get_branch(branch: str) -> dict:
-    suffix = USER_SUFFIX + f'/branches/{branch}'
-    response = http_request('GET', url_suffix=suffix)
-    return response
-
-
-def create_branch(name: str, sha: str) -> dict:
-    suffix = USER_SUFFIX + '/git/refs'
-    data = {
-        'ref': f'refs/heads/{name}',
-        'sha': sha
-    }
-    response = http_request('POST', url_suffix=suffix, data=data)
-    return response
-
-
-def delete_branch(name: str):
-    suffix = USER_SUFFIX + f'/git/refs/heads/{name}'
-    http_request('DELETE', url_suffix=suffix)
-
-
-def get_team_membership(team_id: Union[int, str], user_name: str) -> dict:
-    suffix = f'/teams/{team_id}/memberships/{user_name}'
-    response = http_request('GET', url_suffix=suffix)
-    return response
-
-
-def request_review(pull_number: Union[int, str], reviewers: list) -> dict:
-    """Make an API call to GitHub to request reviews from a list of users for a given PR
-
-    Args:
-        pull_number (int): The number of the PR for which the review request(s) is/are being made
-        reviewers (list): The list of GitHub usernames from which you wish to request a review
-
-    Returns:
-        dict: API response
-
-    Raises:
-        Exception: An exception will be raised if one or more of the requested reviewers is not
-            a collaborator of the repo and therefore the API call returns a 'Status: 422 Unprocessable Entity'
-    """
-    suffix = PULLS_SUFFIX + f'/{pull_number}/requested_reviewers'
-    response = http_request('POST', url_suffix=suffix, data={'reviewers': reviewers})
-    return response
-
-
-def create_comment(issue_number: Union[int, str], msg: str) -> dict:
-    suffix = ISSUE_SUFFIX + f'/{issue_number}/comments'
-    response = http_request('POST', url_suffix=suffix, data={'body': msg})
-    return response
-
-
-def list_issue_comments(issue_number: Union[int, str]) -> list:
-    suffix = ISSUE_SUFFIX + f'/{issue_number}/comments'
-    response = http_request('GET', url_suffix=suffix)
-    return response
-
-
-def list_pr_files(pull_number: Union[int, str]) -> list:
-    suffix = PULLS_SUFFIX + f'/{pull_number}/files'
-    response = http_request('GET', url_suffix=suffix)
-    return response
-
-
-def list_pr_reviews(pull_number: Union[int, str]) -> list:
-    suffix = PULLS_SUFFIX + f'/{pull_number}/reviews'
-    response = http_request('GET', url_suffix=suffix)
-    return response
-
-
-def get_commit(commit_sha: str) -> dict:
-    suffix = USER_SUFFIX + f'/git/commits/{commit_sha}'
-    response = http_request('GET', url_suffix=suffix)
-    return response
-
-
-def add_label(issue_number: Union[int, str], labels: list):
-    suffix = ISSUE_SUFFIX + f'/{issue_number}/labels'
-    response = http_request('POST', url_suffix=suffix, data={'labels': labels})
-    return response
-
-
-def get_pull_request(pull_number: Union[int, str]):
-    suffix = PULLS_SUFFIX + f'/{pull_number}'
-    response = http_request('GET', url_suffix=suffix)
-    return response
-
-
-def create_issue(title, body, labels, assignees):
-    data = data_formatting(title=title,
-                           body=body,
-                           labels=labels,
-                           assignees=assignees,
-                           state=None)
-
-    response = http_request(method='POST',
-                            url_suffix=ISSUE_SUFFIX,
-                            data=data)
-    return response
-
-
-def close_issue(id):
-    response = http_request(method='PATCH',
-                            url_suffix=ISSUE_SUFFIX + '/{}'.format(str(id)),
-                            data={'state': 'closed'})
-    return response
-
-
-def update_issue(id, title, body, state, labels, assign):
-    data = data_formatting(title=title,
-                           body=body,
-                           labels=labels,
-                           assignees=assign,
-                           state=state)
-
-    response = http_request(method='PATCH',
-                            url_suffix=ISSUE_SUFFIX + '/{}'.format(str(id)),
-                            data=data)
-    return response
-
-
-def list_all_issue(state):
-    params = {'state': state}
-    response = http_request(method='GET',
-                            url_suffix=ISSUE_SUFFIX,
-                            params=params)
-    return response
-
-
-def search_issue(query):
-    response = http_request(method='GET',
-                            url_suffix='/search/issues',
-                            params={'q': query})
-    return response
-
-
-def get_download_count():
-    response = http_request(method='GET',
-                            url_suffix=RELEASE_SUFFIX)
-
-    count_per_release = []
-    for release in response:
-        total_download_count = 0
-        for asset in release.get('assets', []):
-            total_download_count = total_download_count + asset['download_count']
-
-        release_info = {
-            'ID': release.get('id'),
-            'Download_count': total_download_count,
-            'Name': release.get('name'),
-            'Body': release.get('body'),
-            'Created_at': release.get('created_at'),
-            'Published_at': release.get('published_at')
-        }
-        count_per_release.append(release_info)
-
-    ec = {
-        'GitHub.Release( val.ID == obj.ID )': count_per_release
-    }
-    return_outputs(tableToMarkdown('Releases:', count_per_release, headers=RELEASE_HEADERS, removeNull=True), ec,
-                   response)
-
-
-def get_stale_prs(stale_time: str, label: str) -> list:
-    time_range_start, _ = parse_date_range(stale_time)
-    # regex for removing the digits from the end of the isoformat timestamp that don't conform to API expectations
-    timestamp_regex = re.compile('\.\d{6}$')
-    timestamp, _ = timestamp_regex.subn('', time_range_start.isoformat())
-    query = f'repo:{USER}/{REPOSITORY} is:open updated:<{timestamp} is:pr'
-    if label:
-        query += f' label:{label}'
-    matching_issues = search_issue(query).get('items', [])
-    relevant_prs = [get_pull_request(issue.get('number')) for issue in matching_issues]
-    return relevant_prs
-
-
 ''' COMMANDS '''
 
 
@@ -782,6 +597,12 @@ def update_pull_request_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
+def list_teams(organization: str) -> list:
+    suffix = f'/orgs/{organization}/teams'
+    response = http_request('GET', url_suffix=suffix)
+    return response
+
+
 def list_teams_command():
     args = demisto.args()
     organization = args.get('organization')
@@ -793,6 +614,12 @@ def list_teams_command():
     }
     human_readable = tableToMarkdown(f'Teams for Organization "{organization}"', ec_object, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
+def get_pull_request(pull_number: Union[int, str]):
+    suffix = PULLS_SUFFIX + f'/{pull_number}'
+    response = http_request('GET', url_suffix=suffix)
+    return response
 
 
 def get_pull_request_command():
@@ -808,6 +635,12 @@ def get_pull_request_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
+def add_label(issue_number: Union[int, str], labels: list):
+    suffix = ISSUE_SUFFIX + f'/{issue_number}/labels'
+    response = http_request('POST', url_suffix=suffix, data={'labels': labels})
+    return response
+
+
 def add_label_command():
     args = demisto.args()
     issue_number = args.get('issue_number')
@@ -817,6 +650,12 @@ def add_label_command():
     msg = f'{" and ".join(labels_for_msg)} Successfully Added to Issue #{issue_number}'
     msg = 'Labels ' + msg if 'and' in msg else 'Label ' + msg
     demisto.results(msg)
+
+
+def get_commit(commit_sha: str) -> dict:
+    suffix = USER_SUFFIX + f'/git/commits/{commit_sha}'
+    response = http_request('GET', url_suffix=suffix)
+    return response
 
 
 def get_commit_command():
@@ -830,6 +669,12 @@ def get_commit_command():
     }
     human_readable = tableToMarkdown(f'Commit *{commit_sha[:10]}*', ec_object, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
+def list_pr_reviews(pull_number: Union[int, str]) -> list:
+    suffix = PULLS_SUFFIX + f'/{pull_number}/reviews'
+    response = http_request('GET', url_suffix=suffix)
+    return response
 
 
 def list_pr_reviews_command():
@@ -857,6 +702,12 @@ def list_pr_reviews_command():
     }
     human_readable = tableToMarkdown(f'Pull Request Reviews for #{pull_number}', formatted_pr_reviews, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
+def list_pr_files(pull_number: Union[int, str]) -> list:
+    suffix = PULLS_SUFFIX + f'/{pull_number}/files'
+    response = http_request('GET', url_suffix=suffix)
+    return response
 
 
 def list_pr_files_command():
@@ -910,6 +761,12 @@ def list_pr_review_comments_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
+def list_issue_comments(issue_number: Union[int, str]) -> list:
+    suffix = ISSUE_SUFFIX + f'/{issue_number}/comments'
+    response = http_request('GET', url_suffix=suffix)
+    return response
+
+
 def list_issue_comments_command():
     args = demisto.args()
     issue_number = args.get('issue_number')
@@ -921,6 +778,12 @@ def list_issue_comments_command():
     }
     human_readable = tableToMarkdown(f'Comments for Issue #{issue_number}', ec_object, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
+def create_comment(issue_number: Union[int, str], msg: str) -> dict:
+    suffix = ISSUE_SUFFIX + f'/{issue_number}/comments'
+    response = http_request('POST', url_suffix=suffix, data={'body': msg})
+    return response
 
 
 def create_comment_command():
@@ -935,6 +798,25 @@ def create_comment_command():
     }
     human_readable = tableToMarkdown('Created Comment', ec_object, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
+def request_review(pull_number: Union[int, str], reviewers: list) -> dict:
+    """Make an API call to GitHub to request reviews from a list of users for a given PR
+
+    Args:
+        pull_number (int): The number of the PR for which the review request(s) is/are being made
+        reviewers (list): The list of GitHub usernames from which you wish to request a review
+
+    Returns:
+        dict: API response
+
+    Raises:
+        Exception: An exception will be raised if one or more of the requested reviewers is not
+            a collaborator of the repo and therefore the API call returns a 'Status: 422 Unprocessable Entity'
+    """
+    suffix = PULLS_SUFFIX + f'/{pull_number}/requested_reviewers'
+    response = http_request('POST', url_suffix=suffix, data={'reviewers': reviewers})
+    return response
 
 
 def request_review_command():
@@ -955,6 +837,12 @@ def request_review_command():
     human_readable = tableToMarkdown(f'Requested Reviewers for #{response.get("number")}',
                                      formatted_requested_reviewers, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
+def get_team_membership(team_id: Union[int, str], user_name: str) -> dict:
+    suffix = f'/teams/{team_id}/memberships/{user_name}'
+    response = http_request('GET', url_suffix=suffix)
+    return response
 
 
 def get_team_membership_command():
@@ -982,6 +870,12 @@ def get_team_membership_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
+def get_branch(branch: str) -> dict:
+    suffix = USER_SUFFIX + f'/branches/{branch}'
+    response = http_request('GET', url_suffix=suffix)
+    return response
+
+
 def get_branch_command():
     args = demisto.args()
     branch_name = args.get('branch_name')
@@ -1006,6 +900,16 @@ def get_branch_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
+def create_branch(name: str, sha: str) -> dict:
+    suffix = USER_SUFFIX + '/git/refs'
+    data = {
+        'ref': f'refs/heads/{name}',
+        'sha': sha
+    }
+    response = http_request('POST', url_suffix=suffix, data=data)
+    return response
+
+
 def create_branch_command():
     args = demisto.args()
     branch_name = args.get('branch_name')
@@ -1015,12 +919,30 @@ def create_branch_command():
     demisto.results(msg)
 
 
+def delete_branch(name: str):
+    suffix = USER_SUFFIX + f'/git/refs/heads/{name}'
+    http_request('DELETE', url_suffix=suffix)
+
+
 def delete_branch_command():
     args = demisto.args()
     branch_name = args.get('branch_name')
     delete_branch(branch_name)
     msg = f'Branch "{branch_name}" Deleted Successfully'
     demisto.results(msg)
+
+
+def get_stale_prs(stale_time: str, label: str) -> list:
+    time_range_start, _ = parse_date_range(stale_time)
+    # regex for removing the digits from the end of the isoformat timestamp that don't conform to API expectations
+    timestamp_regex = re.compile('\.\d{6}$')
+    timestamp, _ = timestamp_regex.subn('', time_range_start.isoformat())
+    query = f'repo:{USER}/{REPOSITORY} is:open updated:<{timestamp} is:pr'
+    if label:
+        query += f' label:{label}'
+    matching_issues = search_issue(query).get('items', [])
+    relevant_prs = [get_pull_request(issue.get('number')) for issue in matching_issues]
+    return relevant_prs
 
 
 def get_stale_prs_command():
@@ -1049,12 +971,32 @@ def get_stale_prs_command():
         demisto.results('No stale external PRs found')
 
 
+def create_issue(title, body, labels, assignees):
+    data = data_formatting(title=title,
+                           body=body,
+                           labels=labels,
+                           assignees=assignees,
+                           state=None)
+
+    response = http_request(method='POST',
+                            url_suffix=ISSUE_SUFFIX,
+                            data=data)
+    return response
+
+
 def create_command():
     args = demisto.args()
     response = create_issue(args.get('title'), args.get('body'),
                             args.get('labels'), args.get('assignees'))
     issue = issue_format(response)
     context_create_issue(response, issue)
+
+
+def close_issue(id):
+    response = http_request(method='PATCH',
+                            url_suffix=ISSUE_SUFFIX + '/{}'.format(str(id)),
+                            data={'state': 'closed'})
+    return response
 
 
 def close_command():
@@ -1064,12 +1006,33 @@ def close_command():
     context_create_issue(response, issue)
 
 
+def update_issue(id, title, body, state, labels, assign):
+    data = data_formatting(title=title,
+                           body=body,
+                           labels=labels,
+                           assignees=assign,
+                           state=state)
+
+    response = http_request(method='PATCH',
+                            url_suffix=ISSUE_SUFFIX + '/{}'.format(str(id)),
+                            data=data)
+    return response
+
+
 def update_command():
     args = demisto.args()
     response = update_issue(args.get('ID'), args.get('title'), args.get('body'), args.get('state'),
                             args.get('labels'), args.get('assignees'))
     issue = issue_format(response)
     context_create_issue(response, issue)
+
+
+def list_all_issue(state):
+    params = {'state': state}
+    response = http_request(method='GET',
+                            url_suffix=ISSUE_SUFFIX,
+                            params=params)
+    return response
 
 
 def list_all_command():
@@ -1082,6 +1045,13 @@ def list_all_command():
     create_issue_table(response, response, limit)
 
 
+def search_issue(query):
+    response = http_request(method='GET',
+                            url_suffix='/search/issues',
+                            params={'q': query})
+    return response
+
+
 def search_command():
     q = demisto.args().get('query')
     limit = int(demisto.args().get('limit'))
@@ -1090,6 +1060,33 @@ def search_command():
 
     response = search_issue(q)
     create_issue_table(response['items'], response, limit)
+
+
+def get_download_count():
+    response = http_request(method='GET',
+                            url_suffix=RELEASE_SUFFIX)
+
+    count_per_release = []
+    for release in response:
+        total_download_count = 0
+        for asset in release.get('assets', []):
+            total_download_count = total_download_count + asset['download_count']
+
+        release_info = {
+            'ID': release.get('id'),
+            'Download_count': total_download_count,
+            'Name': release.get('name'),
+            'Body': release.get('body'),
+            'Created_at': release.get('created_at'),
+            'Published_at': release.get('published_at')
+        }
+        count_per_release.append(release_info)
+
+    ec = {
+        'GitHub.Release( val.ID == obj.ID )': count_per_release
+    }
+    return_outputs(tableToMarkdown('Releases:', count_per_release, headers=RELEASE_HEADERS, removeNull=True), ec,
+                   response)
 
 
 def fetch_incidents_command():
