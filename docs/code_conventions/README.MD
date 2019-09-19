@@ -125,7 +125,7 @@ class Client:
             proxies=self.proxies
         )
 
-        if res.status_code not in [200, 204]:
+        if not res.ok:
             raise ValueError('Error in API call to url [%s]. Status Code: [%d]. Reason: %s' % (full_url, res.status_code, res.text))
 
         try:
