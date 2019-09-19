@@ -93,7 +93,7 @@ def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
 
 
 def insert_description_to_yml(dir_name, package_path, yml_data, yml_text):
-    desc_data, found_desc_path = get_data(dir_name, package_path, '*md')
+    desc_data, found_desc_path = get_data(dir_name, package_path, '*_description.md')
 
     if yml_data.get('detaileddescription'):
         raise ValueError('Please move the detailed description from the yml to a description file (.md)'

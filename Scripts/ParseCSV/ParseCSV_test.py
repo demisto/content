@@ -110,3 +110,13 @@ class TestParseCSV:
         self.mock_demisto(mocker, args_value=args, file_obj=file_obj)
         with pytest.raises(SystemExit, match="0"):
             main()
+
+    def test_main_with_nullbytes(self, mocker):
+        from ParseCSV import main
+        with open("./TestData/nullbytes_results.json") as f:
+            expeced = json.load(f)
+        file_obj = self.create_file_object("./TestData/nullbytes.csv")
+        self.mock_demisto(mocker, file_obj=file_obj)
+        main()
+        result = self.get_demisto_results()
+        assert result == expeced

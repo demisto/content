@@ -2,7 +2,8 @@
 import demistomock as demisto
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
-    remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid
+    remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
+    IntegrationLogger, parse_date_string, parse_date_range
 
 import copy
 import os
@@ -78,9 +79,9 @@ def test_tbl_to_md_only_data():
     expected_table = '''### tableToMarkdown test
 |header_1|header_2|header_3|
 |---|---|---|
-|a1|b1|c1|
-|a2|b2|c2|
-|a3|b3|c3|
+| a1 | b1 | c1 |
+| a2 | b2 | c2 |
+| a3 | b3 | c3 |
 '''
     assert table == expected_table
 
@@ -92,9 +93,9 @@ def test_tbl_to_md_header_transform_underscoreToCamelCase():
     expected_table = '''### tableToMarkdown test with headerTransform
 |Header1|Header2|Header3|
 |---|---|---|
-|a1|b1|c1|
-|a2|b2|c2|
-|a3|b3|c3|
+| a1 | b1 | c1 |
+| a2 | b2 | c2 |
+| a3 | b3 | c3 |
 '''
     assert table == expected_table
 
@@ -110,9 +111,9 @@ def test_tbl_to_md_multiline():
     expected_table = '''### tableToMarkdown test with multiline
 |header_1|header_2|header_3|
 |---|---|---|
-|a1|b1.1<br>b1.2|c1\|1|
-|a2|b2.1<br>b2.2|c2\|1|
-|a3|b3.1<br>b3.2|c3\|1|
+| a1 | b1.1<br>b1.2 | c1\|1 |
+| a2 | b2.1<br>b2.2 | c2\|1 |
+| a3 | b3.1<br>b3.2 | c3\|1 |
 '''
     assert table == expected_table
 
@@ -127,9 +128,9 @@ def test_tbl_to_md_url():
     expected_table_url_missing_info = '''### tableToMarkdown test with url and missing info
 |header_1|header_2|header_3|
 |---|---|---|
-|a1||[url](https:\\demisto.com)|
-|a2||[url](https:\\demisto.com)|
-|a3||[url](https:\\demisto.com)|
+| a1 |  | [url](https:\\demisto.com) |
+| a2 |  | [url](https:\\demisto.com) |
+| a3 |  | [url](https:\\demisto.com) |
 '''
     assert table_url_missing_info == expected_table_url_missing_info
 
@@ -140,9 +141,9 @@ def test_tbl_to_md_single_column():
     expected_table_single_column = '''### tableToMarkdown test with single column
 |header_1|
 |---|
-|a1|
-|a2|
-|a3|
+| a1 |
+| a2 |
+| a3 |
 '''
     assert table_single_column == expected_table_single_column
 
@@ -176,9 +177,9 @@ def test_tbl_to_md_list_values():
     expected_table_list_field = '''### tableToMarkdown test with list field
 |header_1|header_2|header_3|
 |---|---|---|
-|a1|hi|1,<br>second item|
-|a2|hi|2,<br>second item|
-|a3|hi|3,<br>second item|
+| a1 | hi | 1,<br>second item |
+| a2 | hi | 2,<br>second item |
+| a3 | hi | 3,<br>second item |
 '''
     assert table_list_field == expected_table_list_field
 
@@ -196,9 +197,9 @@ def test_tbl_to_md_empty_fields():
     expected_table_all_none = '''### tableToMarkdown test with all none fields
 |a|b|c|
 |---|---|---|
-||||
-||||
-||||
+|  |  |  |
+|  |  |  |
+|  |  |  |
 '''
     assert table_all_none == expected_table_all_none
 
@@ -219,9 +220,9 @@ def test_tbl_to_md_header_not_on_first_object():
     expected_table_extra_header = '''### tableToMarkdown test with extra header
 |header_1|header_2|extra_header|
 |---|---|---|
-|a1|b1||
-|a2|b2|sample|
-|a3|b3||
+| a1 | b1 |  |
+| a2 | b2 | sample |
+| a3 | b3 |  |
 '''
     assert table_extra_header == expected_table_extra_header
 
@@ -245,9 +246,9 @@ def test_tbl_to_md_dict_value():
     expected_dict_record = '''### tableToMarkdown test with dict record
 |header_1|header_2|extra_header|
 |---|---|---|
-|a1|b1||
-|a2|b2|sample: qwerty<br>sample2: asdf|
-|a3|b3||
+| a1 | b1 |  |
+| a2 | b2 | sample: qwerty<br>sample2: asdf |
+| a3 | b3 |  |
 '''
     assert table_dict_record == expected_dict_record
 
@@ -258,9 +259,9 @@ def test_tbl_to_md_string_header():
     expected_string_header_tbl = '''### tableToMarkdown string header
 |header_1|
 |---|
-|a1|
-|a2|
-|a3|
+| a1 |
+| a2 |
+| a3 |
 '''
     assert table_string_header == expected_string_header_tbl
 
@@ -271,9 +272,9 @@ def test_tbl_to_md_list_of_strings_instead_of_dict():
     expected_string_array_tbl = '''### tableToMarkdown test with string array
 |header_1|
 |---|
-|foo|
-|bar|
-|katz|
+| foo |
+| bar |
+| katz |
 '''
     assert table_string_array == expected_string_array_tbl
 
@@ -285,11 +286,38 @@ def test_tbl_to_md_list_of_strings_instead_of_dict_and_string_header():
     expected_string_array_string_header_tbl = '''### tableToMarkdown test with string array and string header
 |header_1|
 |---|
-|foo|
-|bar|
-|katz|
+| foo |
+| bar |
+| katz |
 '''
     assert table_string_array_string_header == expected_string_array_string_header_tbl
+
+
+def test_tbl_to_md_dict_with_special_character():
+    data = {
+        'header_1': u'foo',
+        'header_2': [u'\xe2.rtf']
+    }
+    table_with_character = tableToMarkdown('tableToMarkdown test with special character', data)
+    expected_string_with_special_character = '''### tableToMarkdown test with special character
+|header_1|header_2|
+|---|---|
+| foo | â.rtf |
+'''
+    assert table_with_character == expected_string_with_special_character
+
+
+def test_tbl_to_md_header_with_special_character():
+    data = {
+        'header_1': u'foo'
+    }
+    table_with_character = tableToMarkdown('tableToMarkdown test with special character Ù', data)
+    expected_string_with_special_character = '''### tableToMarkdown test with special character Ù
+|header_1|
+|---|
+| foo |
+'''
+    assert table_with_character == expected_string_with_special_character
 
 
 def test_flatten_cell():
@@ -493,6 +521,22 @@ def test_logger():
     LOG(SpecialErr(12))
 
 
+def test_logger_write(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'credentials': {'password': 'my_password'},
+    })
+    mocker.patch.object(demisto, 'info')
+    ilog = IntegrationLogger()
+    ilog.write("This is a test with my_password")
+    ilog.print_log()
+    # assert that the print doesn't contain my_password
+    # call_args is tuple (args list, kwargs). we only need the args
+    args = demisto.info.call_args[0]
+    assert 'This is a test' in args[0]
+    assert 'my_password' not in args[0]
+    assert '<XX_REPLACED>' in args[0]
+
+
 def test_is_mac_address():
     from CommonServerPython import is_mac_address
 
@@ -583,3 +627,55 @@ def test_exception_in_return_error(mocker):
     assert expected == results
     # IntegrationLogger = LOG (2 times if exception supplied)
     assert IntegrationLogger.__call__.call_count == 2
+
+
+def test_get_demisto_version(mocker):
+    # verify expected server version and build returned in case Demisto class has attribute demistoVersion
+    mocker.patch.object(
+        demisto,
+        'demistoVersion',
+        return_value={
+            'version': '5.0.0',
+            'buildNumber': '50000'
+        }
+    )
+    assert get_demisto_version() == {
+        'version': '5.0.0',
+        'buildNumber': '50000'
+    }
+
+
+def test_parse_date_string():
+    # test unconverted data remains: Z
+    assert parse_date_string('2019-09-17T06:16:39Z') == datetime(2019, 9, 17, 6, 16, 39)
+
+    # test unconverted data remains: .22Z
+    assert parse_date_string('2019-09-17T06:16:39.22Z') == datetime(2019, 9, 17, 6, 16, 39, 220000)
+
+    # test time data without ms does not match format with ms
+    assert parse_date_string('2019-09-17T06:16:39Z', '%Y-%m-%dT%H:%M:%S.%f') == datetime(2019, 9, 17, 6, 16, 39)
+
+    # test time data with timezone Z does not match format with timezone +05:00
+    assert parse_date_string('2019-09-17T06:16:39Z', '%Y-%m-%dT%H:%M:%S+05:00') == datetime(2019, 9, 17, 6, 16, 39)
+
+    # test time data with timezone +05:00 does not match format with timezone Z
+    assert parse_date_string('2019-09-17T06:16:39+05:00', '%Y-%m-%dT%H:%M:%SZ') == datetime(2019, 9, 17, 6, 16, 39)
+
+    # test time data with timezone -05:00 and with ms does not match format with timezone +02:00 without ms
+    assert parse_date_string(
+        '2019-09-17T06:16:39.4040+05:00', '%Y-%m-%dT%H:%M:%S+02:00'
+    ) == datetime(2019, 9, 17, 6, 16, 39, 404000)
+
+
+def test_parse_date_range():
+    utc_now = datetime.utcnow()
+    utc_start_time, utc_end_time = parse_date_range('2 days', utc=True)
+    # testing UTC date time and range of 2 days
+    assert utc_now.replace(microsecond=0) == utc_end_time.replace(microsecond=0)
+    assert abs(utc_start_time - utc_end_time).days == 2
+
+    local_now = datetime.now()
+    local_start_time, local_end_time = parse_date_range('73 minutes', utc=False)
+    # testing local datetime and range of 73 minutes
+    assert local_now.replace(microsecond=0) == local_end_time.replace(microsecond=0)
+    assert abs(local_start_time - local_end_time).seconds / 60 == 73
