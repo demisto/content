@@ -27,7 +27,7 @@ name: Authentication
 script:
   commands:
   - deprecated: false
-    description: lists all credentials
+    description: lists all accounts.
     execution: false
     name: authentication-list-accounts
     outputs:
@@ -35,7 +35,11 @@ script:
       description: Account Name
       type: String
     - contextPath: AuthenticationIntegration.Account.Username
-      type: Unknown
+      description: Acount Username
+      type: String
+    - contextPath: AuthenticationIntegration.Account.IsLocked
+      description: Account locked status
+      type: Boolean
   - arguments:
     - default: false
       description: account ID to lock
@@ -48,11 +52,14 @@ script:
     execution: false
     name: authentication-lock-account
     outputs:
-    - contextPath: AuthenticationIntegration.Account.ID
-      description: Account ID
+    - contextPath: AuthenticationIntegration.Account.Name
+      description: Account Name
+      type: String
+    - contextPath: AuthenticationIntegration.Account.Username
+      description: Acount Username
       type: String
     - contextPath: AuthenticationIntegration.Account.IsLocked
-      description: Accound state
+      description: Account locked status
       type: Boolean
   - arguments:
     - default: false
@@ -66,11 +73,14 @@ script:
     execution: false
     name: authentication-unlock-account
     outputs:
-    - contextPath: AuthenticationIntegration.Account.ID
-      description: Account ID
+    - contextPath: AuthenticationIntegration.Account.Name
+      description: Account Name
+      type: String
+    - contextPath: AuthenticationIntegration.Account.Username
+      description: Acount Username
       type: String
     - contextPath: AuthenticationIntegration.Account.IsLocked
-      description: Accound state
+      description: Account locked status
       type: Boolean
   - arguments:
     - default: false
@@ -84,11 +94,14 @@ script:
     execution: false
     name: authentication-reset-account
     outputs:
-    - contextPath: AuthenticationIntegration.Account.ID
-      description: Account ID
+    - contextPath: AuthenticationIntegration.Account.Name
+      description: Account Name
+      type: String
+    - contextPath: AuthenticationIntegration.Account.Username
+      description: Acount Username
       type: String
     - contextPath: AuthenticationIntegration.Account.IsLocked
-      description: Accound state
+      description: Account locked status
       type: Boolean
   - arguments:
     - default: false
@@ -117,6 +130,23 @@ script:
     description: locks given vault
     execution: false
     name: authentication-unlock-vault
+    outputs:
+    - contextPath: AuthenticationIntegration.Vault.ID
+      description: ID of vault
+      type: String
+    - contextPath: AuthenticationIntegration.Vault.IsLocked
+      description: Vault state
+      type: Boolean
+  - arguments:
+    - default: false
+      isArray: false
+      name: vault_id
+      required: true
+      secret: false
+    deprecated: false
+    description: locks given vault
+    execution: false
+    name: authentication-list-vaults
     outputs:
     - contextPath: AuthenticationIntegration.Vault.ID
       description: ID of vault

@@ -141,7 +141,7 @@ def build_account_context(credentials: Union[Dict, List]) -> Union[Dict, List]:
 
     Examples:
         >>> build_account_context([{'username': 'user', 'name': 'demisto', 'isLocked': False}])
-        [{'User': 'user', 'Name': 'demisto', 'IsLocked': False}]
+        [{'Username': 'user', 'Name': 'demisto', 'IsLocked': False}]
     """
 
     def build_dict(credential: Dict) -> Dict:
@@ -206,7 +206,7 @@ def build_vaults_context(vaults: Union[List, Dict]) -> Union[List[Dict], Dict]:
         }
 
     if isinstance(vaults, list):
-        return [vault_builder(vault) for vault in vaults]
+        return [vault_builder(vault_entry) for vault_entry in vaults]
     if isinstance(vaults, dict):
         return vault_builder(vaults)
 
@@ -251,11 +251,10 @@ def lock_account(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     # Parse response into context & content entries
     if user_object.get('username') == username and user_object.get('isLocked') is True:
         title: str = f'{client.integration_name} - Account `{username}` has been locked.'
-        context_entry = {
-            'IsLocked': True,
-            'Username': username
+        context_entry = build_account_context(user_object)
+        context = {
+            f'{client.integration_context_name}.Account(val.Username && val.Username === obj.Username)': context_entry
         }
-        context = {f'{client.integration_context_name}.Account(val.ID && val.ID === obj.ID)': context_entry}
         # Creating human readable for War room
         human_readable: str = tableToMarkdown(title, context_entry)
         # Return data to Demisto
@@ -276,11 +275,8 @@ def unlock_account(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     # Parse response into context & content entries
     if user_object.get('username') == username and user_object.get('isLocked') is False:
         title = f'{client.integration_name} - Account `{username}` has been unlocked.'
-        context_entry = {
-            'IsLocked': False,
-            'Username': username
-        }
-        context = {f'{client.integration_context_name}.Account(val.ID && val.ID === obj.ID)': context_entry}
+        context_entry = build_account_context(user_object)
+        context = {f'{client.integration_context_name}.Account(val.Username && val.Username === obj.Username)': context_entry}
         # Creating human readable for War room
         human_readable = tableToMarkdown(title, context_entry)
         # Return data
@@ -301,11 +297,8 @@ def reset_account(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     # Parse response into context & content entries
     if user_object.get('username') == username and user_object.get('isLocked') is False:
         title = f'{client.integration_name} - Account `{username}` has been returned to default.'
-        context_entry = {
-            'IsLocked': False,
-            'ID': username
-        }
-        context = {f'{client.integration_context_name}.Account(val.ID && val.ID === obj.ID)': context_entry}
+        context_entry = build_account_context(user_object)
+        context = {f'{client.integration_context_name}.Account(val.Username && val.Username === obj.Username)': context_entry}
         # Creating human readable for War room
         human_readable = tableToMarkdown(title, context_entry)
         # Return data to Demisto
@@ -341,10 +334,7 @@ def lock_vault(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     vault_object = raw_response.get('vault', [{}])[0]
     if vault_object.get('vaultId') and vault_object.get('isLocked') is True:
         title = f'{client.integration_name} - Vault {vault_to_lock} has been locked'
-        context_entry = {
-            'ID': vault_to_lock,
-            'IsLocked': True
-        }
+        context_entry = build_vaults_context(vault_object)
         context = {f'{client.integration_context_name}.Vault(val.ID && val.ID === obj.ID)': context_entry}
         human_readable = tableToMarkdown(title, context_entry)
         return human_readable, context, raw_response
