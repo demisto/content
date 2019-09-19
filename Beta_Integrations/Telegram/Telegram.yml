@@ -44,4 +44,4 @@ script:
   runonce: false
   script: '-'
   type: python
-  beta: true
+beta: true

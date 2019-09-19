@@ -231,7 +231,7 @@
             "hideName": false,
             "moved": false,
             "maxW": 3,
-            "query": "01dc8416-fd7b-4a5f-8ab9-109a826261c5",
+            "query": "PositiveDetectionsVSDetectionEngines",
             "displayType": "ROW",
             "readOnly": true,
             "h": 2,
@@ -426,7 +426,6 @@
       }
     ],
     "modified": "2019-07-28T12:22:43.658861882Z",
-    "system": false,
     "TypeName": "",
     "version": -1,
     "id": "unifiedFileRep"
