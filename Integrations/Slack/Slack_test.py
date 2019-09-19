@@ -2126,6 +2126,59 @@ def test_send_request_with_entitlement_blocks(mocker):
     assert demisto.getIntegrationContext()['questions'] == json.dumps(questions)
 
 
+def test_send_request_with_entitlement_blocks_message(mocker):
+    import Slack
+
+    # Set
+
+    def users_list(**kwargs):
+        return {'members': json.loads(USERS)}
+
+    def conversations_list(**kwargs):
+        return {'channels': json.loads(CONVERSATIONS)}
+
+    mocker.patch.object(demisto, 'args', return_value={
+        'message': 'wat up',
+        'blocks': json.dumps({
+            'blocks': json.dumps(BLOCK_JSON),
+            'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'}),
+        'to': 'spengler'})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(slack.WebClient, 'users_list', side_effect=users_list)
+    mocker.patch.object(slack.WebClient, 'conversations_list', side_effect=conversations_list)
+    mocker.patch.object(slack.WebClient, 'im_open', return_value={'channel': {'id': 'im_channel'}})
+    mocker.patch.object(Slack, 'send_message', return_value={'ts': 'cool'})
+
+    questions = [{
+        'thread': 'cool',
+        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'
+    }]
+
+    # Arrange
+    Slack.slack_send()
+
+    send_args = Slack.send_message.call_args[0]
+
+    results = demisto.results.call_args_list[0][0]
+
+    # Assert
+    assert slack.WebClient.users_list.call_count == 0
+    assert slack.WebClient.conversations_list.call_count == 0
+    assert Slack.send_message.call_count == 1
+
+    assert send_args[0] == ['im_channel']
+    assert send_args[1] is None
+    assert send_args[2] is False
+    assert send_args[4] == 'wat up'
+    assert send_args[6] == json.dumps(BLOCK_JSON)
+
+    assert results[0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: cool'
+
+    assert demisto.getIntegrationContext()['questions'] == json.dumps(questions)
+
+
 def test_send_to_user_lowercase(mocker):
     import Slack
 

@@ -89,6 +89,7 @@ def main():
             'blocks': blocks,
             'entitlement': entitlement_string
         })
+        args['message'] = demisto.args()['message']
 
     to = demisto.get(demisto.args(), 'user')
     channel = demisto.get(demisto.args(), 'channel')

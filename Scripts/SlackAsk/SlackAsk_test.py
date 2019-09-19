@@ -99,6 +99,7 @@ def test_slack_ask_user(mocker):
             'blocks': json.dumps(BLOCKS),
             'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22'
         }),
+        'message': 'wat up',
         'to': 'alexios'
     }
 
@@ -124,6 +125,7 @@ def test_slack_ask_user_additional(mocker):
             'blocks': json.dumps(BLOCKS_ADDITIONAL),
             'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22'
         }),
+        'message': 'wat up',
         'to': 'alexios'
     }
 
@@ -148,6 +150,7 @@ def test_slack_ask_channel(mocker):
             'blocks': json.dumps(BLOCKS),
             'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22'
         }),
+        'message': 'wat up',
         'channel': 'general'
     }
 

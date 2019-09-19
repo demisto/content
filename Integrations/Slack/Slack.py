@@ -9,6 +9,8 @@ import asyncio
 import concurrent
 import requests
 
+from typing import Union
+
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -404,10 +406,9 @@ def long_running_loop():
         error = ''
         try:
             check_for_mirrors()
-            check_for_answers()
-        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout,
-                requests.exceptions.TooManyRedirects,
-                requests.exceptions.RequestException, requests.exceptions.SSLError) as e:
+            if ENDPOINT_URL:
+                check_for_answers()
+        except requests.exceptions.ConnectionError as e:
             error = 'Could not connect to the Slack endpoint: {}'.format(str(e))
         except Exception as e:
             error = 'An error occurred: {}'.format(str(e))
@@ -442,15 +443,20 @@ def check_for_answers():
             demisto.error('Slack - failed to poll for answers: {}, status code: {}'
                           .format(res.content, res.status_code))
             continue
-        answer = res.json()
+
+        answer = {}
+        try:
+            answer = res.json()
+        except Exception:
+            pass
         if not answer:
             continue
-        payload: dict = answer.get('payload')
+        payload: Union[dict, list] = answer.get('payload')
         if payload and isinstance(payload, list):
             payload = payload[0]
         actions = payload.get('actions', [])
         if actions:
-            demisto.info('Slack - received answer from user.')
+            demisto.info('Slack - received answer from user for entitlement {}.'.format(question.get('entitlement')))
             user_id = payload.get('user', {}).get('id')
             user_filter = list(filter(lambda u: u['id'] == user_id, users))
             if user_filter:
@@ -887,16 +893,7 @@ def slack_send():
     if not (to or group or channel):
         return_error('Either a user, group or channel must be provided.')
 
-    if message:
-        entitlement_match = re.search(ENTITLEMENT_REGEX, message)
-        if entitlement_match:
-            try:
-                parsed_message = json.loads(message)
-                entitlement = parsed_message.get('entitlement')
-                message = parsed_message.get('message')
-            except Exception:
-                pass
-    elif blocks:
+    if blocks:
         entitlement_match = re.search(ENTITLEMENT_REGEX, blocks)
         if entitlement_match:
             try:
@@ -904,6 +901,17 @@ def slack_send():
                 entitlement = parsed_message.get('entitlement')
                 blocks = parsed_message.get('blocks')
             except Exception:
+                demisto.info('Slack - could not parse JSON from entitlement blocks.')
+                pass
+    elif message:
+        entitlement_match = re.search(ENTITLEMENT_REGEX, message)
+        if entitlement_match:
+            try:
+                parsed_message = json.loads(message)
+                entitlement = parsed_message.get('entitlement')
+                message = parsed_message.get('message')
+            except Exception:
+                demisto.info('Slack - could not parse JSON from entitlement message.')
                 pass
 
     response = slack_send_request(to, channel, group, entry, ignore_add_url, thread_id, message=message, blocks=blocks)
@@ -997,6 +1005,7 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
     if not message:
         if blocks:
             message = 'New message from SOC Bot'
+            # This is shown in the notification bubble from Slack
         else:
             message = '\n'
 

@@ -92,6 +92,7 @@ tags:
 - slack
 timeout: '0'
 type: python
+dockerimage: demisto/python3:3.7.3.221
 runonce: false
 tests:
 - no test - Untestable
@@ -100,4 +101,3 @@ dependson:
   - send-notification
 subtype: python3
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.7.3.221
