@@ -810,8 +810,8 @@ class TestBaseClient(object):
 
     def test_is_valid_ok_codes_empty(self):
         from requests import Response
-        from CommonServerPython import BaseHTTPClient
-        new_client = BaseHTTPClient('Name', 'name', 'name', 'http://example.com', '/api/v2/')
+        from CommonServerPython import BaseClient
+        new_client = BaseClient('Name', 'name', 'name', 'http://example.com', '/api/v2/')
         response = Response()
         response.status_code = 200
         assert new_client._is_status_code_valid(response, None)
