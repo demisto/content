@@ -2055,67 +2055,26 @@ H || val.SSDeep && val.SSDeep == obj.SSDeep)': {'Malicious': {'Vendor': 'Vendor'
                                .format(indicator_type, INDICATOR_TYPE_TO_CONTEXT_KEY.keys()))
 
 
-class BaseClient(object):
-    def __init__(self,
-                 integration_name,
-                 integration_command_name,
-                 integration_context_name):
-        """Base Client for use in integrations.
-        The BaseClient ment to be used when using SDKs and not http calls. For integrations using http call, use
-        BaseHTTPClient object.
-
-         :type integration_name: ``str``
-         :param integration_name:
-            Name of the integration as shown in the integration UI, for example: Microsoft Graph User.
-
-         :type integration_command_name: ``str``
-         :param integration_command_name:
-            Command names should be written in all lower-case letters,
-            and each word separated with a hyphen, for example: msgraph-user.
-
-         :type integration_context_name: ``str``
-         :param integration_context_name:
-            Context output names should be written in camel case, for example: MSGraphUser.
-
-         :return: No data returned
-         :rtype: ``None``
-         """
-        self._integration_name = str(integration_name)
-        self._integration_command_name = str(integration_command_name)
-        self._integration_context_name = str(integration_context_name)
-
-    @property
-    def integration_name(self):  # pragma: no cover
-        """Property of integration name
-        return: Integration command name.
-        :rtype: ``str``
-        """
-        return self._integration_name
-
-    @property
-    def integration_context_name(self):  # pragma: no cover
-        """Property of integration name context
-        return: Integration command name
-        :rtype: ``str``
-        """
-        return self._integration_context_name
-
-    @property
-    def integration_command_name(self):  # pragma: no cover
-        """Property of integration name command
-        return: Integration command name
-        :rtype: ``str``
-        """
-        return self._integration_command_name
-
-
 # Will add only if 'requests' module imported
 if 'requests' in sys.modules:
-    class BaseHTTPClient(BaseClient):
+    class BaseClient(object):
         def __init__(self, integration_name, integration_command_name, integration_context_name, server, base_suffix,
                      verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
             """Wrapper of BaseClient with added _http_request functionality
 
+            :type integration_name: ``str``
+            :param integration_name:
+                Name of the integration as shown in the integration UI, for example: Microsoft Graph User.
+
+            :type integration_command_name: ``str``
+                :param integration_command_name:
+                Command names should be written in all lower-case letters,
+                and each word separated with a hyphen, for example: msgraph-user.
+
+            :type integration_context_name: ``str``
+            :param integration_context_name:
+
+            Context output names should be written in camel case, for example: MSGraphUser.
             :type server: ``str``
             :param server: Base server address, for example: https://example.com.
 
@@ -2146,7 +2105,9 @@ if 'requests' in sys.modules:
             :return: No data returned
             :rtype: ``None``
             """
-            super(BaseHTTPClient, self).__init__(integration_name, integration_command_name, integration_context_name)
+            self._integration_name = str(integration_name)
+            self._integration_command_name = str(integration_command_name)
+            self._integration_context_name = str(integration_context_name)
             self._server = server.rstrip('/')
             self._verify = verify
             self._base_url = '{}{}'.format(self._server, base_suffix)
@@ -2157,6 +2118,30 @@ if 'requests' in sys.modules:
                 self._proxies = handle_proxy()
             else:
                 self._proxies = None
+
+        @property
+        def integration_name(self):  # pragma: no cover
+            """Property of integration name
+            return: Integration command name.
+            :rtype: ``str``
+            """
+            return self._integration_name
+
+        @property
+        def integration_context_name(self):  # pragma: no cover
+            """Property of integration name context
+            return: Integration command name
+            :rtype: ``str``
+            """
+            return self._integration_context_name
+
+        @property
+        def integration_command_name(self):  # pragma: no cover
+            """Property of integration name command
+            return: Integration command name
+            :rtype: ``str``
+            """
+            return self._integration_command_name
 
         def _http_request(self, method, url_suffix, full_url=None, headers=None,
                           auth=None, params=None, data=None, files=None,

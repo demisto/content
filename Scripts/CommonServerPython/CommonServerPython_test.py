@@ -736,10 +736,10 @@ class TestBuildDBotEntry(object):
         }
 
 
-class TestHTTPBaseClient(object):
-    from CommonServerPython import BaseHTTPClient
+class TestBaseClient(object):
+    from CommonServerPython import BaseClient
     text = {"status": "ok"}
-    client = BaseHTTPClient('Name', 'name', 'name', 'http://example.com', '/api/v2/', ok_codes=(200, 201))
+    client = BaseClient('Name', 'name', 'name', 'http://example.com', '/api/v2/', ok_codes=(200, 201))
 
     def test_http_request_json(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
@@ -810,8 +810,8 @@ class TestHTTPBaseClient(object):
 
     def test_is_valid_ok_codes_empty(self):
         from requests import Response
-        from CommonServerPython import BaseHTTPClient
-        new_client = BaseHTTPClient('Name', 'name', 'name', 'http://example.com', '/api/v2/')
+        from CommonServerPython import BaseClient
+        new_client = BaseClient('Name', 'name', 'name', 'http://example.com', '/api/v2/')
         response = Response()
         response.status_code = 200
         assert new_client._is_status_code_valid(response, None)
