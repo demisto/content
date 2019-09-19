@@ -8,7 +8,7 @@ The purpose of standardising our code conventions is to ensure uniformity among 
 ```python
 import demistomock as demisto
 from CommonServerPython import *
-
+from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import json
@@ -38,7 +38,7 @@ url = demisto.params().get("url")
 - Create `main` function and in the main extract all the integration parameters
 - Implement **_command** function for each integration command (e.g. `say_hello_command(client, demisto.args())`)
 - Wrap the commands with try/except in the main, in order to handle the exceptions properly. `return_error()` receives error message and returns error entry back into Demisto. It will also print the full error to the Demisto logs. 
-- For logs use `demisto.info()`, `demisto.debug()`, and `LOG()` functions.
+- For logging use `LOG("write some log here")` function.
 - In the main function, initialize the Client instance, and pass that client to `_command` functions.
 ```python
 def main():
@@ -49,20 +49,22 @@ def main():
     password = demisto.params().get('credentials').get('password')
 
     # Remove trailing slash to prevent wrong URL path to service
-    server_url = demisto.params()['url'][:-1] \
-        if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
+    server_url = demisto.params().get('url').rstrip('/')
 
     verify_certificate = not demisto.params().get('insecure', False)
+    proxy = demisto.params().get('proxy', True)
 
     # How many time before the first fetch to retrieve incidents
     first_fetch_time = demisto.params().get('fetch_time', '3 days')
 
-    proxies = handle_proxy()
-
     LOG('Command being called is %s' % (demisto.command()))
 
     try:
-        client = Client(server_url, verify_certificate, username, password, proxies)
+        client = Client(
+            base_url=server_url, 
+            verify=verify_certificate, 
+            auth=(username, password),
+            proxy=proxy)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
@@ -84,8 +86,7 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        return_error("Failed to execute {} command. Error: {}".format(), e)
-        raise
+        return_error("Failed to execute {} command. Error: {}".format(demisto.command(), str(e)))
 
 
 if __name__ in ['__builtin__', 'builtins']:
@@ -94,45 +95,18 @@ if __name__ in ['__builtin__', 'builtins']:
 
 
 ## Client class
+- Client should inherit from **BaseClient**. **BaseClient** defined in **CommonServerPython**.
 - Client is necessary in order to prevent passing arguments from function to function and prevent using global variables
 - Client will contain `_http_request` function
 - Client will implement the 3rd party service API
 - Client will contain all the necessary params to establish connection and authentication with the 3rd party API.
 
 ```python
-class Client:
+class Client(BaseClient):
     """
     Client will implement the service API, should not contain Demisto logic.
     Should do requests and return data
     """
-    def __init__(self, url, verify, username, password, proxies=None):
-        self.base_url = "{}{}".format(url, API_SUFFIX)
-        self.verify = verify
-        self.username = username
-        self.password = password
-        self.proxies = proxies
-
-    def http_request(self, method, url_suffix, params=None, data=None):
-        full_url = self.base_url + url_suffix
-
-        res = requests.request(
-            method,
-            full_url,
-            verify=self.verify,
-            params=params,
-            json=data,
-            auth=(self.username, self.password),
-            proxies=self.proxies
-        )
-
-        if not res.ok:
-            raise ValueError('Error in API call to url [%s]. Status Code: [%d]. Reason: %s' % (full_url, res.status_code, res.text))
-
-        try:
-            return res.json()
-        except Exception:
-            raise ValueError(
-                "Failed to parse http response to JSON format. Original response body: \n{}".format(res.text))
 
     def say_hello(self, name):
         return 'Hello {}'.format(name)
@@ -141,7 +115,10 @@ class Client:
         """
         initiates a http request to test url
         """
-        data = self.http_request('GET', '/hello/' + name)
+        data = self._http_request(
+            method='GET', 
+            url_suffix='/hello/' + name)
+            
         return data.get('result')
 
     def list_incidents(self):
@@ -193,7 +170,11 @@ def main():
     SOME CODE HERE...
     """
     try:
-        client = Client(server_url, verify_certificate, username, password, proxies)
+        client = Client(
+            base_url=server_url, 
+            verify=verify_certificate, 
+            auth=(username, password),
+            proxy=proxy)
         
         """
         SOME CODE HERE...
@@ -203,7 +184,7 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        return_error("Failed to execute {} command. Error: {}".format(), e)
+        return_error("Failed to execute {} command. Error: {}".format(demisto.command(), str(e)))
         raise
 ```
 
@@ -271,7 +252,11 @@ def main():
     SOME CODE HERE
     """
     try:
-        client = Client(server_url, verify_certificate, username, password, proxies)
+        client = Client(
+            base_url=server_url, 
+            verify=verify_certificate, 
+            auth=(username, password),
+            proxy=proxy)
 
         if demisto.command() == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
@@ -323,7 +308,12 @@ from HelloWorld import Client, say_hello_command, say_hello_over_http_command
 
 
 def test_say_hello():
-    client = Client(url="https://test.com", verify=False, username="test", password="test")
+    client = Client(
+        base_url="https://test.com", 
+        verify=False, 
+        auth=("test", "test"),
+        proxy=False)
+
     args = {
         "name": "Dbot"
     }
@@ -336,7 +326,12 @@ def test_say_hello_over_http(requests_mock):
     mock_response = {"result": "Hello Dbot"}
     requests_mock.get("https://test.com/api/v1/suffix/hello/Dbot", json=mock_response)
 
-    client = Client(url="https://test.com", verify=False, username="test", password="test")
+    client = Client(
+        base_url="https://test.com", 
+        verify=False, 
+        auth=("test", "test"),
+        proxy=False)
+
     args = {
         "name": "Dbot"
     }
@@ -362,9 +357,11 @@ When naming outputs for context, we use the below format:
 For example:
 ```IPInfo.IP.ASN```
 
-**Please note:** Your integration may have different design requirements. If you are unsure whether to include something in the context, please consult with a content designer.
+Make sure you read and understand [Context and Outputs](https://github.com/demisto/content/blob/master/docs/context_and_ouputs) article.
 
-## Linking Context
+Also adhere to our [context standards](https://github.com/demisto/content/tree/master/docs/context_standards) when naming indicator outputs.
+
+#### Linking Context
 Wherever possible, we try to link context together. This will prevent a command from overwriting existing data, or from creating duplicate entries in the context. To do this, observe the following:
 
 ```python  
@@ -377,7 +374,7 @@ ec = ({
 ```
 
 In this instance, the ```val.URL && val.URL == obj.URL``` links together the results retrieved from this integration with results already in the context where the value of the URL is the same.
-For more information about the syntax of linking and Demisto Transform Language in general have a look [here](https://github.com/demisto/internal-content/tree/master/documentation/DT) 
+For more information about the syntax of linking and Demisto Transform Language in general have a look [here](https://github.com/demisto/content/blob/master/docs/context_and_ouputs) 
 
 ## Logging
 In some cases, it may be necessary to pass some information to the logs in order to better assist ourselves with debugging in the future. 
