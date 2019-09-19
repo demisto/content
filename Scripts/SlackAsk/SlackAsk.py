@@ -66,7 +66,7 @@ def main():
         user_options += extra_options
     if response_type == 'thread':
         for option in user_options:
-            options.append(option.split(';')[0])
+            options.append(option.split('#')[0])
         string_options = ' or '.join(list(map(lambda o: '`{}`'.format(o), options)))
         message = '{} - Please reply to this thread with {}'.format(demisto.args()['message'], string_options)
         args['message'] = json.dumps({
@@ -75,7 +75,7 @@ def main():
         })
     else:
         for option in user_options:
-            option = option.split(';')
+            option = option.split('#')
             button = {
                 'text': option[0]
             }

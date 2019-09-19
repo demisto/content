@@ -443,7 +443,6 @@ def check_for_answers():
             demisto.error('Slack - failed to poll for answers: {}, status code: {}'
                           .format(res.content, res.status_code))
             continue
-
         answer = {}
         try:
             answer = res.json()
@@ -451,9 +450,9 @@ def check_for_answers():
             pass
         if not answer:
             continue
-        payload: Union[dict, list] = answer.get('payload')
-        if payload and isinstance(payload, list):
-            payload = payload[0]
+        payload_json: str = answer.get('payload')
+        payload = json.loads(payload_json)
+
         actions = payload.get('actions', [])
         if actions:
             demisto.info('Slack - received answer from user for entitlement {}.'.format(question.get('entitlement')))

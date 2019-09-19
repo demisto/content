@@ -234,76 +234,75 @@ BLOCK_JSON = [{
 
 PAYLOAD_JSON = '''
  {
- "payload":[{
-         "type":"block_actions",
-         "team":{
-            "id":"T9XJ4RGNQ",
-            "domain":"dombo60"
-         },
-         "user":{
-            "id":"U012A3CDE",
-            "username":"spengler",
-            "name":"spengler",
-            "team_id":"T9XJ4RGNQ"
-         },
-         "api_app_id":"AMU4M2QL8",
-         "token":"GBGG7mn61zg0a62MT9blXJnn",
-         "container":{
-            "type":"message",
-            "message_ts":"1567945126.000100",
-            "channel_id":"DMGSNFCSX",
-            "is_ephemeral":false
-         },
-         "trigger_id":"754598374743.337616866772.8c4b2dc28ca7fd4c8941247c1a01c7dd",
-         "channel":{
-            "id":"DMGSNFCSX",
-            "name":"directmessage"
-         },
-         "message":{
-            "type":"message",
-            "subtype":"bot_message",
-            "text":"This content can't be displayed.",
-            "ts":"1567945126.000100",
-            "username":"BlockTest",
-            "bot_id":"BMWFS6KSA",
-            "blocks":[
-               {
-                  "type":"section",
-                  "block_id":"F9iYK",
-                  "text":{
-                     "type":"mrkdwn",
-                     "text":"Hopa this is a test. ",
-                     "verbatim":false
-                  },
-                  "accessory":{
-                     "type":"button",
-                     "text":{
-                        "type":"plain_text",
-                        "text":"Eyy",
-                        "emoji":true
-                     },
-                     "value":"e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43",
-                     "action_id":"W9J"
-                  }
-               }
-            ]
-         },
-         "response_url":"hooks.slack.com",
-         "actions":[
-            {
-               "action_id":"W9J",
-               "block_id":"F9iYK",
-               "text":{
-                  "type":"plain_text",
-                  "text":"Eyy",
-                  "emoji":true
-               },
-               "value":"e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43",
-               "type":"button",
-               "action_ts":"1567949681.728426"
-            }
-         ]
-      }]}
+     "type":"block_actions",
+     "team":{
+        "id":"T9XJ4RGNQ",
+        "domain":"dombo60"
+     },
+     "user":{
+        "id":"U012A3CDE",
+        "username":"spengler",
+        "name":"spengler",
+        "team_id":"T9XJ4RGNQ"
+     },
+     "api_app_id":"AMU4M2QL8",
+     "token":"GBGG7mn61zg0a62MT9blXJnn",
+     "container":{
+        "type":"message",
+        "message_ts":"1567945126.000100",
+        "channel_id":"DMGSNFCSX",
+        "is_ephemeral":false
+     },
+     "trigger_id":"754598374743.337616866772.8c4b2dc28ca7fd4c8941247c1a01c7dd",
+     "channel":{
+        "id":"DMGSNFCSX",
+        "name":"directmessage"
+     },
+     "message":{
+        "type":"message",
+        "subtype":"bot_message",
+        "text":"This content can't be displayed.",
+        "ts":"1567945126.000100",
+        "username":"BlockTest",
+        "bot_id":"BMWFS6KSA",
+        "blocks":[
+           {
+              "type":"section",
+              "block_id":"F9iYK",
+              "text":{
+                 "type":"mrkdwn",
+                 "text":"Hopa this is a test. ",
+                 "verbatim":false
+              },
+              "accessory":{
+                 "type":"button",
+                 "text":{
+                    "type":"plain_text",
+                    "text":"Eyy",
+                    "emoji":true
+                 },
+                 "value":"e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43",
+                 "action_id":"W9J"
+              }
+           }
+        ]
+     },
+     "response_url":"hooks.slack.com",
+     "actions":[
+        {
+           "action_id":"W9J",
+           "block_id":"F9iYK",
+           "text":{
+              "type":"plain_text",
+              "text":"Eyy",
+              "emoji":true
+           },
+           "value":"e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43",
+           "type":"button",
+           "action_ts":"1567949681.728426"
+        }
+     ]
+  }
 '''
 
 
@@ -1535,7 +1534,7 @@ def test_check_for_answers(mocker, requests_mock):
 
     requests_mock.post(
         'https://ninja.oproxy.works/slack',
-        json=json.loads(PAYLOAD_JSON)
+        json={'payload': PAYLOAD_JSON}
     )
 
     integration_context = get_integration_context()
@@ -1587,7 +1586,7 @@ def test_check_for_answers_continue(mocker, requests_mock):
         'https://ninja.oproxy.works/slack',
         [{'json': {}, 'status_code': 200},
          {'json': 'error', 'status_code': 401},
-         {'json': json.loads(PAYLOAD_JSON), 'status_code': 200}]
+         {'json': {'payload': PAYLOAD_JSON}, 'status_code': 200}]
 
     )
 

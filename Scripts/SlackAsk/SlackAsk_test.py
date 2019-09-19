@@ -84,7 +84,7 @@ def test_slack_ask_user(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
-        'user': 'alexios', 'message': 'wat up', 'option1': 'yes;red', 'option2': 'no;red'
+        'user': 'alexios', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red'
     })
     mocker.patch.object(demisto, 'results')
 
@@ -109,7 +109,7 @@ def test_slack_ask_user_additional(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
-        'user': 'alexios', 'message': 'wat up', 'option1': 'yes;red', 'option2': 'no;red',
+        'user': 'alexios', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red',
         'additionalOptions': 'maybe'
     })
     mocker.patch.object(demisto, 'results')
@@ -135,7 +135,7 @@ def test_slack_ask_channel(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
-        'channel': 'general', 'message': 'wat up', 'option1': 'yes;red', 'option2': 'no;red'
+        'channel': 'general', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red'
     })
     mocker.patch.object(demisto, 'results')
 
@@ -160,7 +160,7 @@ def test_slack_ask_user_threads(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
-        'user': 'alexios', 'message': 'wat up', 'responseType': 'thread', 'option1': 'yes;red', 'option2': 'no;red'
+        'user': 'alexios', 'message': 'wat up', 'responseType': 'thread', 'option1': 'yes#red', 'option2': 'no#red'
     })
     mocker.patch.object(demisto, 'results')
 
@@ -184,7 +184,7 @@ def test_slack_ask_user_threads_additional(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
-        'user': 'alexios', 'message': 'wat up', 'option1': 'yes;red', 'option2': 'no;red',
+        'user': 'alexios', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red',
         'additionalOptions': 'maybe', 'responseType': 'thread'
     })
     mocker.patch.object(demisto, 'results')
@@ -209,7 +209,7 @@ def test_slack_ask_channel_threads(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
-        'channel': 'general', 'message': 'wat up', 'responseType': 'thread', 'option1': 'yes;red', 'option2': 'no;red'
+        'channel': 'general', 'message': 'wat up', 'responseType': 'thread', 'option1': 'yes#red', 'option2': 'no#red'
     })
     mocker.patch.object(demisto, 'results')
 
