@@ -1,4 +1,5 @@
 ## [Unreleased]
+  - Improved handling of empty responses for the  ***autofocus-samples-search*** and ***autofocus-sessions-search*** commands.
 
 
 ## [19.9.1] - 2019-09-18
