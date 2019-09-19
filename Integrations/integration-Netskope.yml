@@ -167,7 +167,7 @@ script:
         return {
             Type: entryTypes.note,
             ContentsFormat: formats.json,
-            Contents: retArray,
+            Contents: result.data,
             ReadableContensFormat: formats.markdown,
             HumanReadable: tableToMarkdown('Netskope alerts', retArray, headers),
             EntryContext: ec

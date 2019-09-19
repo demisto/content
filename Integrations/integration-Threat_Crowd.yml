@@ -5,7 +5,7 @@ name: Threat Crowd
 display: Threat Crowd
 category: Data Enrichment & Threat Intelligence
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAEWklEQVR4AeyZA5ArSxSG82zbtm3btm3btp1kbdu2bdv2ZtT9vzmZvUZucXuq7l911ugvh33GslJB6iWWYCnWEuQY1A2C2yCd1XnmNRQkf6h/g4sPsLZJjM6+0hPGF4xvmhKGGJbCCaY2YjBJTrjOGfNDGLYZxPQgB0ZLOCdFxilJEnYKMyHIlZkyEgcZFjSsVNc8x5f1KvaJlMwB8kalCg5gUQOCezR8XqfipyYVpRMMpNopjuPiJbFB7shTQCocYzg+Yc3Dbh3swLOlChgHynSo3cIFBdkx1IH6aY7BRY5DYzb8ir9dpYL0fJkiJsj5qTJIn9aqG/0j5IkBHTZnlGELEUGeKTXC6qYc2eUfShpkGJU4do+QxAN5sdwAuSHbNQhVtDEdZA8RQS5Nd4YWVamN/hHqJz0LHPljgoYWHbBphjvj/+CNJPvrlc5kJw+KW37vyt9w+d0q2IEnihXIDJiUDVgRQFyWV+rqvl0aPqpR8UW96oQjjUscpJh+JkCyu7DrsmUkDzLIDCvVv8jxQ6OKw2MlfNNgwKYMMexJMKIPjdQYL0qTcWayjF3X6uQ0d5EyRxjNX+Ye46l5kqiC7RcliQ/iasgkFY8zHBQtmfti9fJSM62cZDgyTjL3DZGGSBINnsesNebvEOrAVZky3tS992+bhr9bNbxSoeDsFBlbBgt41X2yRIHGgbY5jhOX+tCDhYrzDrNCiwogqViprBFGkOLd2e8vUKAwwzP+3RpIHbMc7+n96e6kVjwenYFHo3PwcHo3fmzQMCWBRN4Sb/lwe56CRYMBNj2Mbg3NQ5jbHRi17Q1u3QKadSv0Wg/Gf27P4Ja4ZmQOMpAo14QCoVGHccCm58Oj3t6Yse8KeFkAu262JXPTzduCTvvhuCU0G/nDDA6V44xkWQwQSuzGGY4O3W4Jy8asfRfAnQ6/AfO0oNV6NG5P7oJDA4J6NDFALs+QQaKcCLfebnjC5sJ0z3zt8R4COzSa8agfLT/Iu9UqSPclt2DUujdgdw1CHiuxno2XS+ZAonXUsoP8p+eFQwUei8qgxHYJQUaww//ti2eyu0Gia/eyg/zZokHWgEeic6g6bTJIv/VAPJ3TB9ITxQKAvLDU4e9P60HffwcBbpsA4mFBlvVSvF1p5NcFaQKEFo0dpO/qVdjsTwHerkGoILzt9T1S+p3bGbrjLD8IbSRp5zUpAzfFNqDLdhjgufGKlWO9GA/nToD0e4smTkOkqqNxIG2A4ZaQLDTbjzU8427kgzPcPAxPZNovwy3xLeieNbach8RIYoCsXYZzhhluTerBN17voth2DlUnZ2Jn2S7FWz7f47HcKYJwNsMbc2QxH/S8VqFA0jhUBoR0MrxSOkclVrdevFMpIbmfgUQrqOuzZbGfWJ2lJ39gt9Gx1xYl9h8tGoWTeR690R6McoeaHfWJC9Nk/D8R4KDF6BzicMDDZsHAsFnCMXwW1YDBip/VIIGhvMxp2Cw8AwDuoS89K9EFJQAAAABJRU5ErkJggg==
-description: Query threat crowd for reports
+description: Query threat crowd for reports.
 defaultEnabled: false
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
@@ -54,6 +54,8 @@ script:
                 {to: 'ThreatCrowd-Emails', from: 'emails'},
                 {to: 'ThreatCrowd-SubDomains', from: 'subdomains'},
                 {to: 'ThreatCrowd-References', from: 'references'},
+                {to: 'ThreatCrowd-Votes', from: 'votes'},
+
             ],
             contextKey: 'Domain(val.Name==obj.Name)',
         },
@@ -85,7 +87,7 @@ script:
             translator: [
                 {to: 'MD5', from: 'md5'},
                 {to: 'ThreatCrowd-IPs', from: 'ips'},
-                {to: 'ThreatCrowd-Domains', from: 'ips'},
+                {to: 'ThreatCrowd-Domains', from: 'domains'},
                 {to: 'ThreatCrowd-Resource', from: 'resource'},
                 {to: 'ThreatCrowd-SHA1', from: 'sha1'},
                 {to: 'ThreatCrowd-References', from: 'references'},
@@ -101,7 +103,7 @@ script:
         },
     };
 
-    function createContext(data) {
+    function createContext(data, dbotScore) {
         var createContextSingle = function(obj) {
             var res = {};
             var keys = Object.keys(obj);
@@ -116,12 +118,26 @@ script:
                 }
                 current[values[j]] = obj[k];
             });
+
+            if (dbotScore == 3) {
+                res.Malicious = {
+                   "Vendor": 'Threat Crowd',
+                   "Description": 'Most users have voted this entity malicious'
+                };
+            }
             return res;
         };
         if (data instanceof Array) {
             var res = [];
             for (var j=0; j < data.length; j++) {
                 res.push(createContextSingle(data[j]));
+            }
+
+            if (dbotScore == 3) {
+                res.Malicious = {
+                   "Vendor": 'Threat Crowd',
+                   "Description": 'Most users have voted this entity malicious1'
+                };
             }
             return res;
         }
@@ -166,6 +182,48 @@ script:
         delete(args.file);
     }
 
+    function calculateDBotScore(res, args, commandData) {
+        var dbotScore = 0;
+        if (res.response_code == 1){
+             if ('votes' in res){
+                switch (res.votes) {
+                    case -1: //malicious
+                        dbotScore = 3
+                        break;
+                    case 0: //suspicious
+                        dbotScore = 2;
+                        break;
+                    case 1: //clean
+                        dbotScore = 1;
+                        break;
+                }
+            }
+        }
+        return dbotScore;
+    }
+
+    function createDbotEntry(commandData, dbotScore){
+        var DbotEntry = {};
+            if (commandData.url == 'ip'){
+                DbotEntry = {
+                    "Indicator": args.ip,
+                     "Type": "IP",
+                     "Vendor": "Threat Crowd",
+                     "Score": dbotScore
+                };
+            }
+
+            else {
+                DbotEntry = {
+                    "Indicator": args.domain,
+                     "Type": "Domain",
+                     "Vendor": "Threat Crowd",
+                     "Score": dbotScore
+                };
+            }
+            return DbotEntry;
+    }
+
     function sendRequestAndParse(commandData) {
         res = http(
             server + commandData.url + '/report/' + encodeToURLQuery(args && Object.keys(args).length ? args : commandData.defaultArgs),
@@ -186,7 +244,13 @@ script:
             entry.ReadableContentsFormat = formats.markdown;
             entry.HumanReadable = tableToMarkdown(replaceInTemplates(commandData.title, args), data);
             entry.EntryContext = {};
-            entry.EntryContext[commandData.contextKey] = createContext(data);
+            var dbotScore = -1;
+            if (commandData.url == 'domain' || commandData.url== 'ip') { // the only commands with dbotScore
+                dbotScore = calculateDBotScore(JSON.parse(res.Body), args, commandData);
+                entry.EntryContext = {};
+                entry.EntryContext['DBotScore'] = createDbotEntry(commandData, dbotScore);
+            }
+            entry.EntryContext[commandData.contextKey] = createContext(data, dbotScore);
         }
         return entry;
     }
@@ -203,81 +267,99 @@ script:
     - name: email
       required: true
       default: true
-      description: Email to get report of
+      description: Get a report of an email address. 
     outputs:
     - contextPath: Account.Email.Address
-      description: The email in threat crowd
+      description: The email address.
     - contextPath: Account.Type
-      description: Email type
+      description: The type of the found email address.
     - contextPath: Account.ThreatCrowd.Domains
-      description: Threat crowd domains linked to this account
-    description: Get email report
+      description: The Threat Crowd domains linked to the account.
+    description: Get a report of an email address.
   - name: threat-crowd-domain
     arguments:
     - name: domain
       required: true
-      description: Domain to get report of
+      description: Get a report of a domain.
     outputs:
     - contextPath: Domain.Name
-      description: Domain name
+      description: The domain name.
     - contextPath: Domain.ThreatCrowd.Emails
-      description: Threat crowd emails
+      description: The Threat Crowd emails.
     - contextPath: Domain.ThreatCrowd.SubDomains
-      description: Threat crowd subdomains
+      description: The Threat Crowd subdomains.
     - contextPath: Domain.ThreatCrowd.References
-      description: Threat crowd references
-    description: Get domain report
+      description: The Threat Crowd references.
+    - contextPath: Domain.ThreatCrowd.Votes
+      description: The Threat Crowd vote results.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The type of the indicator.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score of the domain.
+    - contextPath: DBotScore.Score
+      description: The score of the domain.
+    description: Get a report of a domain.
   - name: threat-crowd-ip
     arguments:
     - name: ip
       required: true
-      description: IP to get report of
+      description: Get a report of an IP.
     outputs:
     - contextPath: IP.Address
-      description: IP address
+      description: The IP address.
     - contextPath: IP.ThreatCrowd.Hashes
-      description: Hashes from threat crowd
+      description: The Threat Crowd hashes.
     - contextPath: IP.ThreatCrowd.References
-      description: References from threat crowd
+      description: The Threat Crowd references.
     - contextPath: IP.ThreatCrowd.Resolutions
-      description: Resolutions from threat crowd
+      description: The Threat Crowd resolutions.
     - contextPath: IP.ThreatCrowd.Votes
-      description: Votes from threat crowd
-    description: Get ip report
+      description: The vote results on Threat Crowd.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The type of the indicator.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score of the IP.
+    - contextPath: DBotScore.Score
+      description: The score of the IP.
+    description: Get a report of an IP.
   - name: threat-crowd-antivirus
     arguments:
     - name: antivirus
       required: true
-      description: Antivirus to get report of
+      description: Get a report of an antivirus.
     outputs:
     - contextPath: ThreatCrowd.AntiVirus.Name
-      description: AntiVirus name
+      description: The name of the antivirus.
     - contextPath: ThreatCrowd.AntiVirus.Hashes
-      description: Hashes of the anti virus
+      description: The hashes of the antivirus.
     - contextPath: ThreatCrowd.AntiVirus.References
-      description: References of the anti virus
-    description: Get antivirus report
+      description: The references of the antivirus.
+    description: Get a report of an antivirus.
   - name: threat-crowd-file
     arguments:
     - name: file
       required: true
-      description: hash to get report of
+      description: Get a report of a hash.
     outputs:
     - contextPath: File.MD5
-      description: File MD5
+      description: The MD5 hash of the of the file.
     - contextPath: File.ThreatCrowd.IPs
-      description: IPs from threat crowd
+      description: The Threat Crowd IPs of the file.
     - contextPath: File.ThreatCrowd.Domains
-      description: Domains from threat crowd
+      description: The Threat Crowd domains of the file.
     - contextPath: File.ThreatCrowd.Resource
-      description: Resource from threat crowd
+      description: The Threat Crowd resources of the file.
     - contextPath: File.ThreatCrowd.SHA1
-      description: SHA1 from threat crowd
+      description: The SHA1 hash of the of the file.
     - contextPath: File.ThreatCrowd.References
-      description: References from threat crowd
+      description: The Threat Crowd references of the file.
     - contextPath: File.ThreatCrowd.Scans
-      description: Scans from threat crowd
-    description: Get file report
+      description: The Threat Crowd scans of the file.
+    description: Get a report of a file.
 hidden: false
 tests:
-  - No test
+  - ThreatCrowd - Test
