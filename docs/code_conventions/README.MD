@@ -95,7 +95,7 @@ if __name__ in ['__builtin__', 'builtins']:
 
 ## Client class
 - Client is necessary in order to prevent passing arguments from function to function and prevent using global variables
-- Client will contain `http_request` function
+- Client will contain `_http_request` function
 - Client will implement the 3rd party service API
 - Client will contain all the necessary params to establish connection and authentication with the 3rd party API.
 
