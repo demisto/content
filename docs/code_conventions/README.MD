@@ -135,7 +135,7 @@ class Client:
                 "Failed to parse http response to JSON format. Original response body: \n{}".format(res.text))
 
     def say_hello(self, name):
-        return "Hello {}".format(name)
+        return 'Hello {}'.format(name)
 
     def say_hello_http_request(self, name):
         """
