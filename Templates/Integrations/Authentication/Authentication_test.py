@@ -78,9 +78,9 @@ class TestCredentialsOperations:
         assert raw_response == {'account': [{'username': 'User1', 'name': 'DBot Demisto', 'isLocked': False},
                                             {'username': 'User2', 'name': 'Demisto DBot', 'isLocked': True}]}
 
-    def test_list_accounts_negative(self, mocker):
+    def test_list_accounts_negative(self, requests_mock):
         from Authentication import list_accounts
-        mocker.patch.object(self.client, 'list_accounts_request', return_value={'account': []})
+        requests_mock.get(BASE_URL + 'account', json={'account': []})
         human_readable, _, _ = list_accounts(self.client)
         assert 'Could not find any users' in human_readable
 
@@ -88,15 +88,15 @@ class TestCredentialsOperations:
 class TestTestModule:
     client = get_client()
 
-    def test_test_module_positive(self, mocker):
+    def test_test_module_positive(self, requests_mock):
         from Authentication import test_module
-        mocker.patch.object(self.client, 'test_module_request', return_value={'version': '1'})
-        results = test_module(self.client, None)
-        assert results[0]
+        requests_mock.get(BASE_URL + 'version', json={'version': '1'})
+        human_readable, _, _ = test_module(self.client, None)
+        assert human_readable == 'ok'
 
-    def test_test_module_false(self, mocker):
+    def test_test_module_false(self, requests_mock):
         from Authentication import test_module
-        mocker.patch.object(self.client, 'test_module_request', return_value={})
+        requests_mock.get(BASE_URL + 'version', json={})
         with raises(DemistoException, match='Test module failed'):
             test_module(self.client, None)
 
@@ -104,66 +104,91 @@ class TestTestModule:
 class TestAccountOperations:
     client = get_client()
 
-    def test_lock_account_positive(self, mocker):
+    def test_lock_account_positive(self, requests_mock):
         from Authentication import lock_account
-        mocker.patch.object(self.client, 'lock_account_request', return_value={'username': '111', 'isLocked': True})
-        results = lock_account(self.client, {'account_id': '111'})
-        assert 'Authentication Integration - Account `111`' in results[0]
+        requests_mock.post(BASE_URL + 'account/lock?account=111', json={
+            'account': [{'username': '111', 'isLocked': True}]})
+        human_readable, _, _ = lock_account(self.client, {'username': '111'})
+        assert 'Authentication Integration - Account `111`' in human_readable
 
-    def test_lock_account_negative(self, mocker):
+    def test_lock_account_negative(self, requests_mock):
         from Authentication import lock_account
-        mocker.patch.object(self.client, 'lock_account_request', return_value={})
+        requests_mock.post(BASE_URL + 'account/lock?account=111', json={})
         with raises(DemistoException, match='Could not lock account'):
-            lock_account(self.client, {'account_id': '111'})
+            lock_account(self.client, {'username': '111'})
 
-    def test_unlock_account_positive(self, mocker):
+    def test_unlock_account_positive(self, requests_mock):
         from Authentication import unlock_account
-        mocker.patch.object(self.client, 'unlock_account_request', return_value={'username': '111', 'isLocked': True})
-        results = unlock_account(self.client, {'account_id': '111'})
-        assert 'Authentication Integration - Account `111`' in results[0]
+        requests_mock.post(BASE_URL + 'account/unlock?account=111', json={
+            'account': [{'username': '111', 'isLocked': False}]})
+        human_readable, _, _ = unlock_account(self.client, {'username': '111'})
+        assert 'Authentication Integration - Account `111`' in human_readable
 
-    def test_unlock_account_negative(self, mocker):
+    def test_unlock_account_negative(self, requests_mock):
         from Authentication import unlock_account
-        mocker.patch.object(self.client, 'unlock_account_request', return_value={})
+        requests_mock.post(BASE_URL + 'account/unlock?account=111', json={})
         with raises(DemistoException, match='Could not unlock account'):
-            unlock_account(self.client, {'account_id': '111'})
+            unlock_account(self.client, {'username': '111'})
 
-    def test_reset_account_positive(self, mocker):
+    def test_reset_account_positive(self, requests_mock):
         from Authentication import reset_account
-        mocker.patch.object(self.client, 'reset_account_request', return_value={'account': '111', 'isLocked': False})
-        results = reset_account(self.client, {'account_id': '111'})
-        assert 'Authentication Integration - Account `111`' in results[0]
+        requests_mock.post(BASE_URL + 'account/reset?account=111', json={
+            'account': [{'username': '111', 'isLocked': False}]})
+        human_readable, _, _ = reset_account(self.client, {'username': '111'})
+        assert 'Authentication Integration - Account `111`' in human_readable
 
-    def test_reset_account_negative(self, mocker):
+    def test_reset_account_negative(self, requests_mock):
         from Authentication import reset_account
-        mocker.patch.object(self.client, 'reset_account_request', return_value={})
+        requests_mock.post(BASE_URL + 'account/reset?account=111', json={})
         with raises(DemistoException, match='Could not reset account'):
-            reset_account(self.client, {'account_id': '111'})
+            reset_account(self.client, {'username': '111'})
 
 
 class TestVaultOperations:
     client = get_client()
 
-    def test_lock_vault_positive(self, mocker):
+    def test_lock_vault_positive(self, requests_mock):
         from Authentication import lock_vault
-        mocker.patch.object(self.client, 'lock_vault_request', return_value={'vault_id': '111', 'isLocked': True})
+        requests_mock.post(BASE_URL + 'vault/lock?vaultId=111', json={
+            'vault': [{'vaultId': '111', 'isLocked': True}]})
         results = lock_vault(self.client, {'vault_id': '111'})
         assert 'Vault 111 has been locked' in results[0]
 
-    def test_lock_vault_negative(self, mocker):
+    def test_lock_vault_negative(self, requests_mock):
         from Authentication import lock_vault
-        mocker.patch.object(self.client, 'lock_vault_request', return_value={'vault_id': '111', 'isLocked': False})
+        requests_mock.post(BASE_URL + 'vault/lock?vaultId=111', json={
+            'vault': [{'vaultId': '111', 'isLocked': False}]})
         with raises(DemistoException, match='Could not lock vault'):
             lock_vault(self.client, {'vault_id': '111'})
 
-    def test_unlock_vault_positive(self, mocker):
+    def test_unlock_vault_positive(self, requests_mock):
         from Authentication import unlock_vault
-        mocker.patch.object(self.client, 'unlock_vault_request', return_value={'vault_id': '111', 'isLocked': False})
+        requests_mock.post(BASE_URL + 'vault/unlock?vaultId=111', json={
+            'vault': [{'vaultId': '111', 'isLocked': False}]})
         results = unlock_vault(self.client, {'vault_id': '111'})
         assert 'Vault 111 has been unlocked' in results[0]
 
-    def test_unlock_vault_negative(self, mocker):
+    def test_unlock_vault_negative(self, requests_mock):
         from Authentication import unlock_vault
-        mocker.patch.object(self.client, 'unlock_vault_request', return_value={'vault_id': '111', 'isLocked': True})
+        requests_mock.post(BASE_URL + 'vault/unlock?vaultId=111', json={
+            'vault': [{'vaultId': '111', 'isLocked': True}]})
         with raises(DemistoException, match='Could not unlock vault'):
             unlock_vault(self.client, {'vault_id': '111'})
+
+    def test_list_vaults_positive(self, requests_mock):
+        from Authentication import list_vaults
+        requests_mock.get(BASE_URL + 'vault', json={
+            'vault': [
+                {'vaultId': '111', 'isLocked': True},
+                {'vaultId': '121', 'isLocked': False},
+                {'vaultId': '164', 'isLocked': False}
+            ]})
+        human_readable, _, _ = list_vaults(self.client, {})
+        assert 'Total of 3 has been found' in human_readable
+
+    def test_list_vaults_negative(self, requests_mock):
+        from Authentication import list_vaults
+        requests_mock.get(BASE_URL + 'vault', json={'vault': []})
+        human_readable, _, _ = list_vaults(self.client, {})
+        assert 'No vaults found' in human_readable
+

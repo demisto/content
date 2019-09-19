@@ -96,7 +96,7 @@ class Client(BaseHTTPClient):
             Response JSON
         """
         suffix = 'vault/unlock'
-        params = {'vault_id': vault_to_lock}
+        params = {'vaultId': vault_to_lock}
         return self._http_request('POST', suffix, params=params)
 
     def lock_vault_request(self, vault_to_lock: AnyStr) -> Dict:
@@ -109,8 +109,22 @@ class Client(BaseHTTPClient):
             Response JSON
         """
         suffix = 'vault/lock'
-        params = {'vault_id': vault_to_lock}
+        params = {'vaultId': vault_to_lock}
         return self._http_request('POST', suffix, params=params)
+
+    def list_vaults_request(self, max_results: int) -> Dict:
+        """Return all vaults from API.
+
+        Args:
+            max_results: Vault ID to lock.
+
+        Returns:
+            Response JSON
+        """
+        suffix = 'vault'
+        values_to_ignore = [0]
+        params = assign_params(limit=max_results, values_to_ignore=values_to_ignore)
+        return self._http_request('GET', suffix, params=params)
 
 
 ''' HELPER FUNCTIONS '''
@@ -184,6 +198,19 @@ def build_credentials_fetch(credentials: Union[Dict, List]) -> Union[Dict, List]
     return build_dict(credentials)  # pragma: no cover
 
 
+def build_vaults_context(vaults: Union[List, Dict]) -> Union[List[Dict], Dict]:
+    def vault_builder(vault_entry: Dict):
+        return {
+            'ID': vault_entry.get('vaultId'),
+            'IsLocked': vault_entry.get('isLocked')
+        }
+
+    if isinstance(vaults, list):
+        return [vault_builder(vault) for vault in vaults]
+    if isinstance(vaults, dict):
+        return vault_builder(vaults)
+
+
 ''' COMMANDS '''
 
 
@@ -219,7 +246,7 @@ def lock_account(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     username = args.get('username')
     # Make request and get raw response
     raw_response = client.lock_account_request(username)
-    # Safe get account from raw_response
+    # Get account from raw_response
     user_object = raw_response.get('account', [{}])[0]
     # Parse response into context & content entries
     if user_object.get('username') == username and user_object.get('isLocked') is True:
@@ -243,8 +270,8 @@ def unlock_account(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     # Get arguments from user
     username = args.get('username')
     # Make request and get raw response
-    raw_response = client.lock_account_request(username)
-    # Safe get account from raw_response
+    raw_response = client.unlock_account_request(username)
+    # Get account from raw_response
     user_object = raw_response.get('account', [{}])[0]
     # Parse response into context & content entries
     if user_object.get('username') == username and user_object.get('isLocked') is False:
@@ -259,22 +286,24 @@ def unlock_account(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         # Return data
         return human_readable, context, raw_response
     else:
-        raise DemistoException(f'{client.integration_name} - Could not unlock account `{account_id}`')
+        raise DemistoException(f'{client.integration_name} - Could not unlock account `{username}`')
 
 
 def reset_account(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Resets an account by account ID
     """
     # Get arguments from user
-    account_id = args.get('account_id', '')
+    username = args.get('username', '')
     # Make request and get raw response
-    raw_response = client.reset_account_request(account_id)
+    raw_response = client.reset_account_request(username)
+    # Get account from raw_response
+    user_object = raw_response.get('account', [{}])[0]
     # Parse response into context & content entries
-    if raw_response.get('account') == account_id:
-        title = f'{client.integration_name} - Account `{account_id}` has been returned to default.'
+    if user_object.get('username') == username and user_object.get('isLocked') is False:
+        title = f'{client.integration_name} - Account `{username}` has been returned to default.'
         context_entry = {
             'IsLocked': False,
-            'ID': account_id
+            'ID': username
         }
         context = {f'{client.integration_context_name}.Account(val.ID && val.ID === obj.ID)': context_entry}
         # Creating human readable for War room
@@ -282,43 +311,7 @@ def reset_account(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
-        raise DemistoException(f'{client.integration_name} - Could not reset account `{account_id}`')
-
-
-def lock_vault(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Locks a vault by vault ID.
-    """
-    vault_to_lock = args.get('vault_id', '')
-    raw_response = client.lock_vault_request(vault_to_lock)
-    if raw_response.get('isLocked') is True:
-        title = f'{client.integration_name} - Vault {vault_to_lock} has been locked'
-        context_entry = {
-            'ID': vault_to_lock,
-            'IsLocked': True
-        }
-        context = {f'{client.integration_context_name}.Vault(val.ID && val.ID === obj.ID)': context_entry}
-        human_readable = tableToMarkdown(title, context_entry)
-        return human_readable, context, raw_response
-    else:
-        raise DemistoException(f'{client.integration_name} - Could not lock vault ID: {vault_to_lock}')
-
-
-def unlock_vault(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Unlocks a vault by vault ID.
-    """
-    vault_to_lock = args.get('vault_id', '')
-    raw_response = client.unlock_vault_request(vault_to_lock)
-    if raw_response.get('isLocked') is False:
-        title = f'{client.integration_name} - Vault {vault_to_lock} has been unlocked'
-        context_entry = {
-            'ID': vault_to_lock,
-            'IsLocked': True
-        }
-        context = {f'{client.integration_context_name}.Vault(val.ID && val.ID === obj.ID)': context_entry}
-        human_readable = tableToMarkdown(title, context_entry)
-        return human_readable, context, raw_response
-    else:
-        raise DemistoException(f'{client.integration_name} - Could not unlock vault ID: {vault_to_lock}')
+        raise DemistoException(f'{client.integration_name} - Could not reset account `{username}`')
 
 
 def list_accounts(client: Client, *_) -> Tuple[str, Dict, Dict]:
@@ -340,10 +333,61 @@ def list_accounts(client: Client, *_) -> Tuple[str, Dict, Dict]:
         return f'{client.integration_name} - Could not find any users.', {}, {}
 
 
+def lock_vault(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Locks a vault by vault ID.
+    """
+    vault_to_lock = args.get('vault_id', '')
+    raw_response = client.lock_vault_request(vault_to_lock)
+    vault_object = raw_response.get('vault', [{}])[0]
+    if vault_object.get('vaultId') and vault_object.get('isLocked') is True:
+        title = f'{client.integration_name} - Vault {vault_to_lock} has been locked'
+        context_entry = {
+            'ID': vault_to_lock,
+            'IsLocked': True
+        }
+        context = {f'{client.integration_context_name}.Vault(val.ID && val.ID === obj.ID)': context_entry}
+        human_readable = tableToMarkdown(title, context_entry)
+        return human_readable, context, raw_response
+    else:
+        raise DemistoException(f'{client.integration_name} - Could not lock vault ID: {vault_to_lock}')
+
+
+def unlock_vault(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Unlocks a vault by vault ID.
+    """
+    vault_to_lock = args.get('vault_id', '')
+    raw_response = client.unlock_vault_request(vault_to_lock)
+    vault_object = raw_response.get('vault')[0]
+    if vault_object.get('vaultId') and vault_object.get('isLocked') is False:
+        title = f'{client.integration_name} - Vault {vault_to_lock} has been unlocked'
+        context_entry = build_vaults_context(vault_object)
+        context = {f'{client.integration_context_name}.Vault(val.ID && val.ID === obj.ID)': context_entry}
+        human_readable = tableToMarkdown(title, context_entry)
+        return human_readable, context, raw_response
+    else:
+        raise DemistoException(f'{client.integration_name} - Could not unlock vault ID: {vault_to_lock}')
+
+
+def list_vaults(client: Client, args: Dict = None) -> Tuple[str, Dict, Dict]:
+    """Lists all vaults.
+    """
+    max_results = int(args.get('max_results', 0))
+    raw_response = client.list_vaults_request(max_results)
+    vaults = raw_response.get('vault')
+    if vaults:
+        title = f'{client.integration_name} - Total of {len(vaults)} has been found.'
+        context_entry = build_vaults_context(vaults)
+        context = {f'{client.integration_context_name}.Vault(val.ID && val.ID === obj.ID)': context_entry}
+        human_readable = tableToMarkdown(title, context_entry)
+        return human_readable, context, raw_response
+    else:
+        return f'{client.integration_name} - No vaults found.', {}, {}
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-def main():
+def main():  # pragma: no cover
     integration_name = 'Authentication Integration'
     # lowercase with `-` dividers
     integration_command_name = 'authentication'
@@ -368,7 +412,8 @@ def main():
         f'{integration_command_name}-unlock-account': unlock_account,
         f'{integration_command_name}-reset-account': reset_account,
         f'{integration_command_name}-lock-vault': lock_vault,
-        f'{integration_command_name}-unlock-vault': unlock_vault
+        f'{integration_command_name}-unlock-vault': unlock_vault,
+        f'{integration_command_name}-list-vaults': list_vaults
     }
     try:
         if command == 'fetch-credentials':
