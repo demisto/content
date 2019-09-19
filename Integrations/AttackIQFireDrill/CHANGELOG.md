@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.9.1] - 2019-09-18
   - New Integration AttackIQ - FireDrill:
     - Command ***attackiq-get-assessment-by-id***: Get all assessments in a page or by assessment id.
     - Command ***attackiq-list-assessments***: Get all assessments in a page (up to 10 assessments per page).
