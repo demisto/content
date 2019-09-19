@@ -377,6 +377,7 @@ ec = ({
 ```
 
 In this instance, the ```val.URL && val.URL == obj.URL``` links together the results retrieved from this integration with results already in the context where the value of the URL is the same.
+For more information about the syntax of linking and Demisto Transform Language in general have a look [here](https://github.com/demisto/internal-content/tree/master/documentation/DT) 
 
 ## Logging
 In some cases, it may be necessary to pass some information to the logs in order to better assist ourselves with debugging in the future. 
