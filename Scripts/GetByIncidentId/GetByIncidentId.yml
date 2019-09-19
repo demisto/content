@@ -52,5 +52,5 @@ args:
   description: The key to set (will default to get_key)
 scripttarget: 0
 runonce: false
-dockerimage: demisto/python3:3.7.3.221
+dockerimage: demisto/python3:3.7.4.1900
 runas: DBotWeakRole
