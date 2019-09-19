@@ -549,8 +549,11 @@ def get_release_notes_draft(github_token, asset_id):
     drafts = [release for release in res.json() if release.get('draft', False)]
     if drafts:
         if len(drafts) == 1:
-            return re.sub(r'Release Notes for version .* \((\d{5,})\)',
-                          'Release Notes for version ({})'.format(asset_id), drafts[0]['body'])
+            draft_body = drafts[0]['body']
+            raw_asset = re.findall(r'Release Notes for version .* \((\d{5,}|xxxxx)\)', draft_body, re.IGNORECASE)
+            if raw_asset:
+                draft_body = draft_body.replace(raw_asset[0], asset_id)
+            return draft_body
 
         print_warning('Too many drafts to choose from ({}), skipping update.'.format(len(drafts)))
 
