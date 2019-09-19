@@ -58,9 +58,64 @@ script:
     execution: false
     name: get-notable-users
     outputs:
-    - contextPath: Example.Item.CreatedDate
-      description: Item creation date
-      type: date
+    - contextPath: Exabeam.NotableUser.RiskScore
+      description: Notable user risk score.
+      type: Number
+    - contextPath: Exabeam.NotableUser.UserFullName
+      description: The user's full name.
+      type: String
+    - contextPath: Exabeam.NotableUser.AverageRiskScore
+      description: Notable user avarage risk score.
+      type: Number
+    - contextPath: Exabeam.NotableUser.Executive
+      description: Is the user executive
+      type: Boolean
+    - contextPath: Exabeam.NotableUser.FirstSeen
+      description: Date of the user first seen
+      type: String
+    - contextPath: Exabeam.NotableUser.NotableSessionIds
+      description: Notable session ID.
+      type: String
+    - contextPath: Exabeam.NotableUser.AccountsNumber
+      description: Number of accounts.
+      type: Number
+    - contextPath: Exabeam.NotableUser.LastSeen
+      description: When the user last seen.
+      type: Unknown
+    - contextPath: Exabeam.NotableUser.Location
+      description: User's location.
+      type: String
+    - contextPath: Exabeam.NotableUser.UserName
+      description: User name.
+      type: String
+    - contextPath: Exabeam.NotableUser.Labels
+      description: User's labels.
+      type: String
+    - contextPath: Exabeam.NotableUser.LastActivityType
+      description: User last actibity type.
+      type: String
+  - deprecated: false
+    description: Get all watchlist ids and titles.
+    execution: false
+    name: get-watchlist
+    outputs:
+    - contextPath: Exabeam.Watchlist.Category
+      description: The watchlist category.
+      type: String
+    - contextPath: Exabeam.Watchlist.Title
+      description: The watchlist title.
+      type: String
+    - contextPath: Exabeam.Watchlist.WatchlistId
+      description: Watchlist ID.
+      type: String
+  - deprecated: false
+    description: Get all peer groups.
+    execution: false
+    name: get-peer-groups
+    outputs:
+    - contextPath: Exabeam.PeerGroup.Name
+      description: The name of the peer group.
+      type: String
   dockerimage: demisto/python3:3.7.4.1502
   isfetch: false
   longRunning: false
@@ -68,3 +123,6 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
+tests:
+  - no tests
