@@ -26,7 +26,7 @@ The package is converted into a YAML file, which include all the package compone
      - Size up to 4KB.
      - Dimensions of 120x50.
      - Transparent background.
-     - Dark color logo version.
+     - Dark version of the logo.
    - Note: Since Python 2.7 will not be maintained past 2020, we refer only to Python 3 for the Pipfile.
  
 For example, a package of the integration [Palo Alto Networks Cortex](https://github.com/demisto/content/tree/master/Integrations/PaloAltoNetworksCortex) is stored under Integrations directory in a sub-directory names PaloAltoNetworksCortex and contain the following files:
