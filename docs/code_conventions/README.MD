@@ -88,7 +88,7 @@ def main():
         raise
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ['__builtin__', 'builtins']:
     main()
 ```
 
