@@ -2058,35 +2058,35 @@ H || val.SSDeep && val.SSDeep == obj.SSDeep)': {'Malicious': {'Vendor': 'Vendor'
 # Will add only if 'requests' module imported
 if 'requests' in sys.modules:
     class BaseClient(object):
+        """Client to use in integrations with powerful _http_request
+        :type base_url: ``str``
+        :param base_url: Base server address with suffix, for example: https://example.com/api/v2/.
+
+        :type verify: ``bool``
+        :param verify: Whether the request should verify the SSL certificate.
+
+        :type proxy: ``bool``
+        :param proxy: Whether to run the integration using the system proxy.
+
+        :type ok_codes: ``tuple``
+        :param ok_codes:
+            The request codes to accept as OK, for example: (200, 201, 204).
+            If you specify "None", will use requests.Response.ok
+
+        :type headers: ``dict``
+        :param headers:
+            The request headers, for example: {'Accept`: `application/json`}.
+            Can be None.
+
+        :type auth: ``dict`` or ``tuple``
+        :param auth:
+            The request authorization, for example: (username, password).
+            Can be None.
+
+        :return: No data returned
+        :rtype: ``None``
+        """
         def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
-            """Client to use in integrations with powerful _http_request
-            :type base_url: ``str``
-            :param base_url: Base server address with suffix, for example: https://example.com/api/v2/.
-
-            :type verify: ``bool``
-            :param verify: Whether the request should verify the SSL certificate.
-
-            :type proxy: ``bool``
-            :param proxy: Whether to run the integration using the system proxy.
-
-            :type ok_codes: ``tuple``
-            :param ok_codes:
-                The request codes to accept as OK, for example: (200, 201, 204).
-                If you specify "None", will use requests.Response.ok
-
-            :type headers: ``dict``
-            :param headers:
-                The request headers, for example: {'Accept`: `application/json`}.
-                Can be None.
-
-            :type auth: ``dict`` or ``tuple``
-            :param auth:
-                The request authorization, for example: (username, password).
-                Can be None.
-
-            :return: No data returned
-            :rtype: ``None``
-            """
             self._base_url = base_url
             self._verify = verify
             self._ok_codes = ok_codes
