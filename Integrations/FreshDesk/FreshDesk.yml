@@ -19,6 +19,7 @@ configuration:
   type: 8
 - display: Use system proxy settings
   name: proxy
+  defaultvalue: ""
   required: false
   type: 8
 - defaultvalue: 24 hours
