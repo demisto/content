@@ -315,7 +315,7 @@ def format_pr_review_comment_outputs(review_comment: dict = {}) -> dict:
         'CommitID': review_comment.get('commit_id'),
         'OriginalCommitID': review_comment.get('original_commit_id'),
         'InReplyToID': review_comment.get('in_reply_to_id'),
-        'User': format_user_outputs(review_comment.get('user')),
+        'User': format_user_outputs(review_comment.get('user', {})),
         'Body': review_comment.get('body'),
         'CreatedAt': review_comment.get('created_at'),
         'UpdatedAt': review_comment.get('updated_at'),
