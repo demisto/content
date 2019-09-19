@@ -64,6 +64,14 @@ jobs:
           shell: /bin/bash
           command: ./Tests/scripts/validate_docker_images.sh
           when: always
+      - run:
+          name: Build Content Descriptor
+          when: always
+          command: python release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION $GITHUB_TOKEN
+      - run:
+          name: Create Content Artifacts
+          when: always
+          command: python content_creator.py $CIRCLE_ARTIFACTS
       - store_artifacts:
           path: artifacts
           destination: artifacts
@@ -77,6 +85,10 @@ jobs:
           paths:
             - Tests/id_set.json
             - Documentation/doc-CommonServer.json
+            - content_new.zip
+            - content_test.zip
+            - content_yml.zip
+            - release-notes.md
   
   instance_testing:
     docker:
@@ -117,17 +129,6 @@ jobs:
           command: |
               [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
               python ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
-      - run:
-          name: Build Content Descriptor
-          when: always
-          command: python release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION $GITHUB_TOKEN
-      - run:
-          name: Create Content Artifacts
-          when: always
-          command: python content_creator.py $CIRCLE_ARTIFACTS
-      - store_artifacts:
-          path: artifacts
-          destination: artifacts
       - run:
           name: Download Artifacts
           when: always
