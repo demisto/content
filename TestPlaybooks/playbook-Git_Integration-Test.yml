@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 592.5,
           "y": 50
         }
       }
@@ -45,7 +45,6 @@ tasks:
       - "16"
       - "21"
       - "26"
-      - "48"
     scriptarguments:
       all:
         simple: "yes"
@@ -57,7 +56,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 592.5,
           "y": 195
         }
       }
@@ -110,7 +109,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 592.5,
           "y": 1070
         }
       }
@@ -208,7 +207,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 592.5,
           "y": 1770
         }
       }
@@ -231,8 +230,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1220,
-          "y": 2500
+          "x": 807.5,
+          "y": 3695
         }
       }
     note: false
@@ -265,7 +264,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 592.5,
           "y": 720
         }
       }
@@ -363,7 +362,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 592.5,
           "y": 1595
         }
       }
@@ -403,7 +402,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 592.5,
           "y": 2120
         }
       }
@@ -451,7 +450,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "15"
+      - "54"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -548,7 +547,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "15"
+      - "54"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -573,7 +572,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 592.5,
           "y": 2295
         }
       }
@@ -606,7 +605,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 592.5,
           "y": 895
         }
       }
@@ -636,7 +635,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1565,
+          "x": 1667.5,
           "y": 370
         }
       }
@@ -670,7 +669,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1565,
+          "x": 1667.5,
           "y": 545
         }
       }
@@ -700,7 +699,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1565,
+          "x": 1667.5,
           "y": 720
         }
       }
@@ -731,7 +730,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1565,
+          "x": 1667.5,
           "y": 895
         }
       }
@@ -771,7 +770,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1565,
+          "x": 1667.5,
           "y": 1070
         }
       }
@@ -975,7 +974,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1427.5,
+          "x": 1237.5,
           "y": 1770
         }
       }
@@ -1005,7 +1004,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2047.5,
+          "x": 1882.5,
           "y": 1770
         }
       }
@@ -1043,7 +1042,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1427.5,
+          "x": 1237.5,
           "y": 1945
         }
       }
@@ -1078,7 +1077,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2047.5,
+          "x": 1882.5,
           "y": 1945
         }
       }
@@ -1110,7 +1109,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2047.5,
+          "x": 1882.5,
           "y": 2120
         }
       }
@@ -1140,7 +1139,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1427.5,
+          "x": 1237.5,
           "y": 2120
         }
       }
@@ -1160,7 +1159,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "15"
+      - "54"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1187,7 +1186,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1427.5,
+          "x": 1237.5,
           "y": 2295
         }
       }
@@ -1207,7 +1206,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "15"
+      - "54"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1225,7 +1224,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2047.5,
+          "x": 1882.5,
           "y": 2295
         }
       }
@@ -1260,7 +1259,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 592.5,
           "y": 1945
         }
       }
@@ -1292,8 +1291,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1012.5,
-          "y": 1770
+          "x": 807.5,
+          "y": 2645
         }
       }
     note: false
@@ -1314,7 +1313,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "50"
+      - "52"
     scriptarguments:
       base:
         simple: master
@@ -1330,8 +1329,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1012.5,
-          "y": 1945
+          "x": 807.5,
+          "y": 2820
         }
       }
     note: false
@@ -1352,7 +1351,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "51"
+      - "53"
     scriptarguments:
       base: {}
       body:
@@ -1369,8 +1368,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1012.5,
-          "y": 2120
+          "x": 807.5,
+          "y": 3170
         }
       }
     note: false
@@ -1401,8 +1400,118 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1012.5,
-          "y": 2295
+          "x": 807.5,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "52":
+    id: "52"
+    taskid: b8e2199c-5424-45e4-8fdc-cee4d249a1b4
+    type: condition
+    task:
+      id: b8e2199c-5424-45e4-8fdc-cee4d249a1b4
+      version: -1
+      name: Verify Results - create pull request
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GitHub
+                accessor: PR.Body
+            iscontext: true
+          right:
+            value:
+              simple: CREATED BODY
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "53":
+    id: "53"
+    taskid: 6aa45274-4844-4f93-846b-e19f05281960
+    type: condition
+    task:
+      id: 6aa45274-4844-4f93-846b-e19f05281960
+      version: -1
+      name: Verify Results - update pull request
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GitHub
+                accessor: PR.Body
+            iscontext: true
+          right:
+            value:
+              simple: UPDATED PR
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "54":
+    id: "54"
+    taskid: 85f2146c-e4c7-49e2-8b70-a2e718e4a737
+    type: regular
+    task:
+      id: 85f2146c-e4c7-49e2-8b70-a2e718e4a737
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 2470
         }
       }
     note: false
@@ -1413,7 +1522,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2515,
+        "height": 3710,
         "width": 2427.5,
         "x": 50,
         "y": 50
