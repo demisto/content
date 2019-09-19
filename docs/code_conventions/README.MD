@@ -39,7 +39,7 @@ url = demisto.params().get("url")
 - Implement **_command** function for each integration command (e.g. `say_hello_command(client, demisto.args())`)
 - Wrap the commands with try/except in the main, in order to handle the exceptions properly. `return_error()` receives error message and returns error entry back into Demisto. It will also print the full error to the Demisto logs. 
 - For logs use `demisto.info()`, `demisto.debug()`, and `LOG()` functions.
-- In the main create the Client instance and pass that client to other functions
+- In the main function, initialize the Client instance, and pass that client to `_command` functions.
 ```python
 def main():
     """
