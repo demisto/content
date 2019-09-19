@@ -15,7 +15,7 @@ Todo:
 urllib3.disable_warnings()
 
 
-class Client(BaseHTTPClient):
+class Client(BaseClient):
     def test_module_request(self) -> Dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
 
@@ -382,8 +382,7 @@ def main():
         if command == 'fetch-incidents':
             commands[command](client, last_run=demisto.getLastRun())
         elif command in commands:
-            human_readable, context, raw_response = commands[command](client, demisto.args())
-            return_outputs(human_readable, context, raw_response)
+            return_outputs(*commands[command](client, demisto.args()))
     # Log exceptions
     except Exception as e:
         err_msg = f'Error in {client.integration_name} Integration [{e}]'

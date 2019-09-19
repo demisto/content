@@ -12,7 +12,7 @@ urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 
 
-class Client(BaseHTTPClient):
+class Client(BaseClient):
     def test_module_request(self) -> Dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
 
@@ -230,7 +230,7 @@ def fetch_credentials(client: Client):
     # Get credentials from api
     raw_response = client.list_credentials_request()
     if 'credential' in raw_response:
-        raw_credentials = raw_response.get('credential')
+        raw_credentials = raw_response.get('credential', [])
         # Creates credentials entry
         credentials = build_credentials_fetch(raw_credentials)
         demisto.credentials(credentials)
@@ -243,7 +243,7 @@ def lock_account(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Locks an account by account ID.
     """
     # Get arguments from user
-    username = args.get('username')
+    username = args.get('username', '')
     # Make request and get raw response
     raw_response = client.lock_account_request(username)
     # Get account from raw_response
@@ -268,7 +268,7 @@ def unlock_account(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Unlocks an account by account ID.
     """
     # Get arguments from user
-    username = args.get('username')
+    username = args.get('username', '')
     # Make request and get raw response
     raw_response = client.unlock_account_request(username)
     # Get account from raw_response
@@ -320,7 +320,7 @@ def list_accounts(client: Client, *_) -> Tuple[str, Dict, Dict]:
     raw_response = client.list_accounts_request()
     # Filtering out passwords for list_credentials, so it won't get back to the user
     raw_response['account'] = [
-        assign_params(keys_to_ignore=['password'], **credential) for credential in raw_response.get('account')
+        assign_params(keys_to_ignore=['password'], **account) for account in raw_response.get('account', [])
     ]
     accounts = raw_response['account']
     if accounts:
@@ -357,7 +357,7 @@ def unlock_vault(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     vault_to_lock = args.get('vault_id', '')
     raw_response = client.unlock_vault_request(vault_to_lock)
-    vault_object = raw_response.get('vault')[0]
+    vault_object = raw_response.get('vault', [{}])[0]
     if vault_object.get('vaultId') and vault_object.get('isLocked') is False:
         title = f'{client.integration_name} - Vault {vault_to_lock} has been unlocked'
         context_entry = build_vaults_context(vault_object)
@@ -368,7 +368,7 @@ def unlock_vault(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         raise DemistoException(f'{client.integration_name} - Could not unlock vault ID: {vault_to_lock}')
 
 
-def list_vaults(client: Client, args: Dict = None) -> Tuple[str, Dict, Dict]:
+def list_vaults(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Lists all vaults.
     """
     max_results = int(args.get('max_results', 0))
@@ -423,7 +423,7 @@ def main():  # pragma: no cover
             return_outputs(*commands[command](client, demisto.args()))
     # Log exceptions
     except Exception as e:
-        err_msg = f'Error in {integration_name} [{e}]'
+        err_msg = f'Error in {integration_name} - [{e}]'
         return_error(err_msg, error=e)
 
 
