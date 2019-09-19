@@ -1882,7 +1882,7 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
         >>> parse_date_string('2019-09-17T06:16:39.4040+05:00', '%Y-%m-%dT%H:%M:%S+02:00')
         datetime.datetime(2019, 9, 17, 6, 16, 39, 404000)
 
-\        :type date_string: ``str``
+        :type date_string: ``str``
         :param date_string: The date string to parse. (required)
 
         :type date_format: ``str``
