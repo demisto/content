@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- Fixed bug - Added check for AutoFocus v2 in 'Is AutoFocus Enabled'?
 
 ## [19.9.1] - 2019-09-18
 #### New Playbook
