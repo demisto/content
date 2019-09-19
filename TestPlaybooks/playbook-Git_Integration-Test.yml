@@ -21,7 +21,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 65
+          "y": 50
         }
       }
     note: false
@@ -45,6 +45,7 @@ tasks:
       - "16"
       - "21"
       - "26"
+      - "48"
     scriptarguments:
       all:
         simple: "yes"
@@ -57,7 +58,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 225
+          "y": 195
         }
       }
     note: false
@@ -109,8 +110,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1100
+          "x": 490,
+          "y": 1070
         }
       }
     note: false
@@ -162,8 +163,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1450
+          "x": 377.5,
+          "y": 1420
         }
       }
     note: false
@@ -207,8 +208,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1800
+          "x": 490,
+          "y": 1770
         }
       }
     note: false
@@ -230,8 +231,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1110,
-          "y": 2590
+          "x": 1220,
+          "y": 2500
         }
       }
     note: false
@@ -264,8 +265,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 750
+          "x": 490,
+          "y": 720
         }
       }
     note: false
@@ -295,8 +296,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1275
+          "x": 377.5,
+          "y": 1245
         }
       }
     note: false
@@ -331,8 +332,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 1275
+          "x": 807.5,
+          "y": 1245
         }
       }
     note: false
@@ -362,8 +363,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1625
+          "x": 490,
+          "y": 1595
         }
       }
     note: false
@@ -402,8 +403,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 2150
+          "x": 490,
+          "y": 2120
         }
       }
     note: false
@@ -430,8 +431,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": 2150
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
@@ -474,8 +475,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": 2325
+          "x": 50,
+          "y": 2295
         }
       }
     note: false
@@ -527,8 +528,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 1450
+          "x": 807.5,
+          "y": 1420
         }
       }
     note: false
@@ -572,8 +573,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 2325
+          "x": 490,
+          "y": 2295
         }
       }
     note: false
@@ -605,8 +606,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 925
+          "x": 490,
+          "y": 895
         }
       }
     note: false
@@ -635,8 +636,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1677.5,
-          "y": 400
+          "x": 1565,
+          "y": 370
         }
       }
     note: false
@@ -669,8 +670,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1677.5,
-          "y": 575
+          "x": 1565,
+          "y": 545
         }
       }
     note: false
@@ -699,8 +700,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1677.5,
-          "y": 750
+          "x": 1565,
+          "y": 720
         }
       }
     note: false
@@ -730,8 +731,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1677.5,
-          "y": 925
+          "x": 1565,
+          "y": 895
         }
       }
     note: false
@@ -770,8 +771,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1677.5,
-          "y": 1100
+          "x": 1565,
+          "y": 1070
         }
       }
     note: false
@@ -802,8 +803,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1247.5,
-          "y": 1275
+          "x": 1237.5,
+          "y": 1245
         }
       }
     note: false
@@ -834,8 +835,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1677.5,
-          "y": 1275
+          "x": 1667.5,
+          "y": 1245
         }
       }
     note: false
@@ -866,8 +867,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2107.5,
-          "y": 1275
+          "x": 2097.5,
+          "y": 1245
         }
       }
     note: false
@@ -896,8 +897,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1677.5,
-          "y": 1450
+          "x": 1667.5,
+          "y": 1420
         }
       }
     note: false
@@ -944,8 +945,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1677.5,
-          "y": 1625
+          "x": 1667.5,
+          "y": 1595
         }
       }
     note: false
@@ -974,8 +975,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 1800
+          "x": 1427.5,
+          "y": 1770
         }
       }
     note: false
@@ -1004,8 +1005,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1892.5,
-          "y": 1800
+          "x": 2047.5,
+          "y": 1770
         }
       }
     note: false
@@ -1042,8 +1043,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 1975
+          "x": 1427.5,
+          "y": 1945
         }
       }
     note: false
@@ -1077,8 +1078,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1892.5,
-          "y": 1975
+          "x": 2047.5,
+          "y": 1945
         }
       }
     note: false
@@ -1109,8 +1110,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1892.5,
-          "y": 2150
+          "x": 2047.5,
+          "y": 2120
         }
       }
     note: false
@@ -1139,8 +1140,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 2150
+          "x": 1427.5,
+          "y": 2120
         }
       }
     note: false
@@ -1186,8 +1187,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 2325
+          "x": 1427.5,
+          "y": 2295
         }
       }
     note: false
@@ -1224,8 +1225,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1892.5,
-          "y": 2325
+          "x": 2047.5,
+          "y": 2295
         }
       }
     note: false
@@ -1259,8 +1260,149 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1975
+          "x": 490,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "48":
+    id: "48"
+    taskid: 42238f9a-622d-4a1e-8d5d-5d6e4c381bbd
+    type: regular
+    task:
+      id: 42238f9a-622d-4a1e-8d5d-5d6e4c381bbd
+      version: -1
+      name: GitHub-is-pr-merged
+      description: 'Get if a pull request has been merged. If the pull request has
+        been merged the API returns ''Status: 204 No Content''. If the pull request
+        has not been merged the API returns ''Status: 404 Not Found'''
+      script: '|||GitHub-is-pr-merged'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      pull_number:
+        simple: "82"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1012.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "49":
+    id: "49"
+    taskid: 2c21fbd5-fd5a-4951-8894-146d3aa61928
+    type: regular
+    task:
+      id: 2c21fbd5-fd5a-4951-8894-146d3aa61928
+      version: -1
+      name: GitHub-create-pull-request
+      description: Create a new pull request
+      script: '|||GitHub-create-pull-request'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      base:
+        simple: master
+      body:
+        simple: CREATED BODY
+      draft: {}
+      head:
+        simple: branch-for-pr
+      maintainer_can_modify: {}
+      title:
+        simple: CREATED PR
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1012.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "50":
+    id: "50"
+    taskid: 891d0bf7-f6d0-4853-887e-202f920c15b7
+    type: regular
+    task:
+      id: 891d0bf7-f6d0-4853-887e-202f920c15b7
+      version: -1
+      name: GitHub-update-pull-request
+      description: Update a pull request
+      script: '|||GitHub-update-pull-request'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      base: {}
+      body:
+        simple: UPDATED PR
+      maintainer_can_modify: {}
+      pull_number:
+        complex:
+          root: GitHub
+          accessor: PR.Number
+      state: {}
+      title:
+        simple: UDPATE PR
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1012.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "51":
+    id: "51"
+    taskid: 00411238-5332-4a97-85d3-78faef569396
+    type: regular
+    task:
+      id: 00411238-5332-4a97-85d3-78faef569396
+      version: -1
+      name: GitHub-close-issue
+      description: Closes an existing issue.
+      script: '|||GitHub-close-issue'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      ID:
+        complex:
+          root: GitHub
+          accessor: PR.Number
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1012.5,
+          "y": 2295
         }
       }
     note: false
@@ -1271,10 +1413,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2590,
-        "width": 2325,
-        "x": 162.5,
-        "y": 65
+        "height": 2515,
+        "width": 2427.5,
+        "x": 50,
+        "y": 50
       }
     }
   }
