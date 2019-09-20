@@ -140,7 +140,7 @@ def create_context_output(domain_result):
     email_domains = [x['value'] for x in domain_result['email_domain']]
     additional_whois_emails = domain_result['additional_whois_email']
     domain_registrant = domain_result['registrar'].get('value') if isinstance(domain_result['registrar'], dict) else \
-    domain_result['registrar']
+        domain_result['registrar']
     registrar_status = domain_result['registrar_status']
     ip_data = domain_result['ip']
     ip_country_code = domain_result['ip'][0] if len(domain_result['ip']) else ''

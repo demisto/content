@@ -30,3 +30,4 @@ tags:
 - DomainTools
 timeout: '0'
 type: python
+subtype: python3

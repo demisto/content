@@ -4,7 +4,6 @@ incident_id = demisto.args()['incident_id']
 domain_tags = demisto.args()['domain_tags']
 bad_tags = demisto.args()['bad_tags']
 
-
 bad_tags_set = set(json.loads(bad_tags))
 domain_tags_set = set([x['label'] for x in domain_tags])
 

@@ -1,5 +1,5 @@
 id: cde43cd1-28a5-40e7-891e-52e1d82075ed
-version: 33
+version: -1
 name: AutoEnrichment
 starttaskid: "0"
 tasks:
@@ -159,3 +159,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 4.1.0

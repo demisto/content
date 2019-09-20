@@ -1,5 +1,5 @@
 id: eb5bb557-9de5-4bfc-8dbc-f1bebddd342a
-version: 6
+version: -1
 name: DomainToolsTestPlaybook
 starttaskid: "0"
 tasks:

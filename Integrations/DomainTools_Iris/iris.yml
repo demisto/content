@@ -41,7 +41,7 @@ name: DomainTools Iris
 script:
   commands:
   - arguments:
-    - default: false
+    - default: true
       description: Domain name
       isArray: false
       name: domain
@@ -267,6 +267,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Provides markdown table with DomainTools Analytic data
     execution: false
     name: domain-analytics
   - arguments:
@@ -277,6 +278,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Provides markdown table with DomainTools Threat Profile data
     execution: false
     name: threat-profile
   - arguments:
@@ -317,6 +319,8 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Using one of the arguements allows a use to get back data on domains
+      related to IPs, Email Addresses, etc.
     execution: false
     name: domain-pivot
     outputs:
@@ -533,6 +537,7 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
 - eb5bb557-9de5-4bfc-8dbc-f1bebddd342a
 fromversion: 4.1.0

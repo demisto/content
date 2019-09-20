@@ -5,6 +5,7 @@ args:
   name: last_enrichment
   required: true
   secret: false
+comment: Check if DomainTools Data is in Need of Enrichment
 commonfields:
   id: 106f0fc3-eefd-4a72-bc07-91a9a33c725e
   version: -1
@@ -12,9 +13,12 @@ enabled: false
 name: CheckLastEnrichment
 outputs:
 - contextPath: 'yes'
+  description: Refresh Enrichment Data
   type: Unknown
 - contextPath: 'no'
+  description: Don't Refresh Enrichment Data
   type: Unknown
+- type: Unknown
 script: '-'
 system: false
 tags:
@@ -22,3 +26,4 @@ tags:
 - Condition
 timeout: '0'
 type: python
+subtype: python3

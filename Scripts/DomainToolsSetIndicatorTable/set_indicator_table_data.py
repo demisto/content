@@ -4,7 +4,8 @@ domaintools_data = demisto.args().get('domaintools_data', None)
 
 human_readable_str = "No context data for domain."
 if domaintools_data:
-    create_date = str(datetime.now().date()) if domaintools_data['Registration']['CreateDate'] is None else domaintools_data['Registration']['CreateDate']
+    create_date = str(datetime.now().date()) if domaintools_data['Registration']['CreateDate'] is None else \
+        domaintools_data['Registration']['CreateDate']
     response = demisto.executeCommand("CalculateAge", {"create_date": create_date})
     domain_age = response[0]['Contents'].get('age')
     threat_profile_score = domaintools_data['Analytics']['ThreatProfileRiskScore'].get('RiskScore')

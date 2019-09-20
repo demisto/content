@@ -12,7 +12,8 @@ threat_profile_score_threshold = int(demisto.args().get('threat_profile_score_th
 def find_indicator_reputation(proximity_score, age, threat_profile_score):
     if proximity_score > proximity_score_threshold or threat_profile_score > threat_profile_score_threshold:
         return 'Bad'
-    elif age < age_threshold and (proximity_score < proximity_score_threshold or threat_profile_score < threat_profile_score_threshold):
+    elif age < age_threshold and (
+            proximity_score < proximity_score_threshold or threat_profile_score < threat_profile_score_threshold):
         return 'Suspicious'
     else:
         return 'Good'
@@ -28,5 +29,3 @@ demisto.results({
     "HumanReadable": "{} has a {} Risk Reputation".format(domain_name, reputation),
     "EntryContext": {}
 })
-
-
