@@ -250,7 +250,7 @@ def format_domain_analytics(response):
 
     convert_empty_to_null(human_readable_data)
 
-    outputs = {}
+    outputs = {}  # type: Dict[Any, Any]
 
     headers = ["Overall Risk Score",
                "Proximity Risk Score",
@@ -284,7 +284,7 @@ def format_threat_profile(response):
         "Threat Profile Evidence": threat_profile_evidence
     }
 
-    outputs = {}
+    outputs = {}  # type: Dict[Any, Any]
 
     headers = ['Overall Risk Score', 'Threat Profile Threats', 'Threat Profile Evidence']
     human_readable = tableToMarkdown('DomainTools Threat Profile for {}.'.format(domain_result['domain']),
@@ -342,7 +342,8 @@ def threat_profile():
 
 def domain_pivot():
     res = None
-
+    search_type = ""
+    search_value = ""
     if demisto.args().get('ip'):
         res = http_request('GET', '/v1/iris-investigate/', {'ip': demisto.args().get('ip')})
         search_type, search_value = 'IP', demisto.args().get('ip')
