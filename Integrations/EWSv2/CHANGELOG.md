@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- Introduced a parameter to control fetch limit with a hard limit of 50
 
 ## [19.9.1] - 2019-09-18
 Improved handling of uploaded EMLfiles.
