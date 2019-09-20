@@ -317,7 +317,6 @@ class WidgetContent(Content):
 
 
 class IncidentFieldContent(Content):
-
     def __init__(self):
         super(IncidentFieldContent, self).__init__()
         self.show_secondary_header = False
@@ -329,13 +328,7 @@ class IncidentFieldContent(Content):
         return "Incident Fields"
 
     def added_release_notes(self, file_path, data):
-        release_note = super(IncidentFieldContent, self).added_release_notes(file_path, data)
-
-        if release_note:
-            return add_dot(release_note) + "\n"
-
-        # error
-        return release_note
+        return release_notes_item(data['name'], data['description'])
 
     def modified_release_notes(self, file_path, data):
         release_note = super(IncidentFieldContent, self).modified_release_notes(file_path, data)
