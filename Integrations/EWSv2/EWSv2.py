@@ -1153,8 +1153,7 @@ def parse_incident_from_item(item, is_fetch):
 
 
 def fetch_emails_as_incidents(account_email, folder_name):
-    start_time = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC'))
-    last_run = get_last_run()
+    last_run = get_last_run() # LAST_RUN_TIME instance of EWSDateTime
 
     try:
         account = get_account(account_email)
@@ -1163,7 +1162,10 @@ def fetch_emails_as_incidents(account_email, folder_name):
         ids = []
         incidents = []
         max_occurred = 0
-        new_last_run_time = last_run.get(LAST_RUN_TIME)
+        new_last_run_time = None
+        if last_run.get(LAST_RUN_TIME):
+            new_last_run_time = last_run.get(LAST_RUN_TIME).ewsformat()
+
         for item in last_emails:
             if item.message_id:
                 ids.append(item.message_id)
