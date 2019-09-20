@@ -103,7 +103,7 @@ BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
 AUTO_DISCOVERY = False
 SERVER_BUILD = ""
 MARK_AS_READ = demisto.params().get('markAsRead', False)
-MAX_FETCH = demisto.params().get('maxFetch', 50)
+MAX_FETCH = int(demisto.params().get('maxFetch', 50))
 if MAX_FETCH > 50:
     MAX_FETCH = 50
 
@@ -1162,17 +1162,24 @@ def fetch_emails_as_incidents(account_email, folder_name):
 
         ids = []
         incidents = []
+        max_occurred = 0
+        new_last_run_time = last_run.get(LAST_RUN_TIME)
         for item in last_emails:
             if item.message_id:
                 ids.append(item.message_id)
                 incident = parse_incident_from_item(item, True)
                 incidents.append(incident)
+
+                incident_occurred = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
+                if incident_occurred > max_occurred:
+                    max_occurred = incident_occurred
+                    new_last_run_time = incident['occurred'] # already in ewsformat
+
                 if len(incidents) >= MAX_FETCH:
                     break
 
-
         new_last_run = {
-            LAST_RUN_TIME: start_time.ewsformat(),
+            LAST_RUN_TIME: new_last_run_time,
             LAST_RUN_FOLDER: folder_name,
             LAST_RUN_IDS: ids,
             ERROR_COUNTER: 0
