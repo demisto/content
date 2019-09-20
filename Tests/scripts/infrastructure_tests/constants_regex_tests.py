@@ -32,6 +32,7 @@ def get_test_code_file_paths(folder):
         os.path.join(folder, 'hello', 'world.py'),
         os.path.join(folder, 'hello', 'hello_test.py'),
         os.path.join(folder, 'hello', 'test_data', 'hello.py'),
+        os.path.join(folder, 'RSA-v11.1', 'RSA-v11.1.pysomeextrachars'),
 
         # javascript
         os.path.join(folder, 'A\\A', 'A\\A.js'),
@@ -39,6 +40,7 @@ def get_test_code_file_paths(folder):
         os.path.join(folder, 'hello', 'world.js'),
         os.path.join(folder, 'hello', 'hello_test.js'),
         os.path.join(folder, 'hello', 'test_data', 'hello.js'),
+        os.path.join(folder, 'RSA-v11.1', 'RSA-v11.1.jssomeextrachars'),
     }
 
     return acceptable_code_files, unacceptable_code_files
@@ -76,27 +78,29 @@ def get_test_yml_file_paths(folder, prefix):
         os.path.join(folder, 'Z_as_as-ds', 'Z_as_as-ds.yml'),
         os.path.join(folder, 'RSA-v11.1', 'RSA-v11.1.yml'),
 
+
         # legacy
         os.path.join(folder, '{}-A.yml'.format(prefix)),
         os.path.join(folder, '{}-Gmail_v2.yml'.format(prefix)),
-        os.path.join(folder, '{}-Z_as_as-ds', 'Z_as_as-ds.js'.format(prefix)),
+        os.path.join(folder, '{}-Z_as_as-ds.yml'.format(prefix)),
         os.path.join(folder, '{}-RSA-v11.1.yml'.format(prefix)),
     }
 
     unacceptable_yml_files = {
         # package
-        os.path.join(folder, 'A\\A', 'A\\A.py'),
-        os.path.join(folder, 'A/A', 'A/A.py'),
-        os.path.join(folder, 'hello', 'world.py'),
-        os.path.join(folder, 'hello', 'hello_test.py'),
-        os.path.join(folder, 'hello', 'test_data', 'hello.py'),
+        os.path.join(folder, 'A\\A', 'A\\A.yml'),
+        os.path.join(folder, 'A/A', 'A/A.yml'),
+        os.path.join(folder, 'hello', 'world.yml'),
+        os.path.join(folder, 'hello', 'hello_test.yml'),
+        os.path.join(folder, 'hello', 'test_data', 'hello.yml'),
+        os.path.join(folder, 'RSA-v11.1', 'RSA-v11.1.ymlsomeextrachars'),
 
         # legacy
-        os.path.join(folder, 'A\\A', 'A\\A.js'),
-        os.path.join(folder, 'A/A', 'A/A.js'),
-        os.path.join(folder, 'hello', 'world.js'),
-        os.path.join(folder, 'hello', 'hello_test.js'),
-        os.path.join(folder, 'hello', 'test_data', 'hello.js'),
+        os.path.join(folder, 'A\\A', 'A\\A.yml'),
+        os.path.join(folder, 'A/A', 'A/A.yml'),
+        os.path.join(folder, '{}-hello'.format(prefix), 'hello.yml'),
+        os.path.join(folder, 'hello', '{}-hello.yml'.format(prefix)),
+        os.path.join(folder, '{}-RSA-v11.1.ymlsomeextrachars'.format(prefix)),
     }
 
     return acceptable_yml_files, unacceptable_yml_files
