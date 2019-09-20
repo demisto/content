@@ -341,7 +341,7 @@ def threat_profile():
 
 
 def domain_pivot():
-    res = None
+    res = None  # type: ignore
     search_type = ""
     search_value = ""
     if demisto.args().get('ip'):
