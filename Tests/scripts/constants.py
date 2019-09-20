@@ -1,5 +1,4 @@
 import re
-import os
 
 # dirs
 INTEGRATIONS_DIR = "Integrations"
@@ -25,26 +24,26 @@ DESCRIPTION_REGEX = r".*\.md"
 CONF_REGEX = "Tests/conf.json"
 SCHEMA_REGEX = "Tests/schemas/.*.yml"
 SCRIPT_TYPE_REGEX = ".*script-.*.yml"
-SCRIPT_PY_REGEX = os.path.join(SCRIPTS_DIR, r'([^\\/]+)', r'\1.py')
-SCRIPT_JS_REGEX = os.path.join(SCRIPTS_DIR, r'([^\\/]+)', r'\1.js')
-SCRIPT_YML_REGEX = os.path.join(SCRIPTS_DIR, r'([^\\/]+)', r'\1.yml')
+SCRIPT_PY_REGEX = r'{}/([^\\/]+)/\1.py$'.format(SCRIPTS_DIR)
+SCRIPT_JS_REGEX = r'{}/([^\\/]+)/\1.js$'.format(SCRIPTS_DIR)
+SCRIPT_YML_REGEX = r'{}/([^\\/]+)/\1.yml$'.format(SCRIPTS_DIR)
 TEST_SCRIPT_REGEX = r"{}.*script-.*\.yml$".format(TEST_PLAYBOOKS_DIR)
-SCRIPT_REGEX = r"{}.*script-.*\.yml$".format(SCRIPTS_DIR)
-INTEGRATION_PY_REGEX = os.path.join(INTEGRATIONS_DIR, r'([^\\/]+)', r'\1.py')
-INTEGRATION_JS_REGEX = os.path.join(INTEGRATIONS_DIR, r'([^\\/]+)', r'\1.js')
-INTEGRATION_YML_REGEX = os.path.join(INTEGRATIONS_DIR, r'([^\\/]+)', r'\1.yml')
-INTEGRATION_REGEX = r"{}.*integration-.*\.yml$".format(INTEGRATIONS_DIR)
+SCRIPT_REGEX = r"{}/(script-[^\\/]+)\.yml$".format(SCRIPTS_DIR)
+INTEGRATION_PY_REGEX = r'{}/([^\\/]+)/\1.py$'.format(INTEGRATIONS_DIR)
+INTEGRATION_JS_REGEX = r'{}/([^\\/]+)/\1.js$'.format(INTEGRATIONS_DIR)
+INTEGRATION_YML_REGEX = r'{}/([^\\/]+)/\1.yml$'.format(INTEGRATIONS_DIR)
+INTEGRATION_REGEX = r"{}/(integration-[^\\/]+)\.yml$".format(INTEGRATIONS_DIR)
 PLAYBOOK_REGEX = r"(?!Test){}.*playbook-.*\.yml$".format(PLAYBOOKS_DIR)
 TEST_PLAYBOOK_REGEX = r"{}.*playbook-.*\.yml$".format(TEST_PLAYBOOKS_DIR)
 TEST_NOT_PLAYBOOK_REGEX = r"{}.(?!playbook).*-.*\.yml$".format(TEST_PLAYBOOKS_DIR)
 
 
-WIDGETS_REGEX = os.path.join(WIDGETS_DIR, r'widget-.*\.json$')
+WIDGETS_REGEX = r'{}/widget-.*\.json$'.format(WIDGETS_DIR)
 DASHBOARD_REGEX = r"{}.*dashboard-.*\.json$".format(DASHBOARDS_DIR)
 CONNECTIONS_REGEX = r"{}.*canvas-context-connections.*\.json$".format(CONNECTIONS_DIR)
 CLASSIFIER_REGEX = r"{}.*classifier-.*\.json$".format(CLASSIFIERS_DIR)
 LAYOUT_REGEX = r"{}.*layout-.*\.json$".format(LAYOUTS_DIR)
-INCIDENT_FIELD_REGEX = os.path.join(INCIDENT_FIELDS_DIR, r'incidentfield-.*\.json$')
+INCIDENT_FIELD_REGEX = r'incidentfield-.*\.json$'.format(INCIDENT_FIELDS_DIR)
 MISC_REGEX = r"{}.*reputations.*\.json$".format(MISC_DIR)
 REPUTATION_REGEX = r"{}.*reputation-.*\.json$".format(MISC_DIR)
 REPORT_REGEX = r"{}.*report-.*\.json$".format(REPORTS_DIR)
