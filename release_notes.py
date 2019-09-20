@@ -328,14 +328,13 @@ class IncidentFieldContent(Content):
         return "Incident Fields"
 
     def added_release_notes(self, file_path, data):
-        release_note = release_notes_item(data['name'], data['description'])
-        if release_note:
-            return release_note
+        if data.get('description'):
+            return release_notes_item(data['name'], data['description'])
 
         release_note = super(IncidentFieldContent, self).added_release_notes(file_path, data)
 
         if release_note:
-            return add_dot(release_note) + "\n"
+            return release_notes_item(data['name'], release_note)
 
         # error
         return release_note
