@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added support for sending blocks(graphical attachments) in messages. Please see the documentation for more information.
 
 ## [19.9.1] - 2019-09-18
 Direct message - support multiline JSON in incident creation

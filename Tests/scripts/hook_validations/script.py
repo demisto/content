@@ -169,6 +169,6 @@ class ScriptValidator(object):
             if self.old_script.get('dockerimage', "") != self.current_script.get('dockerimage', ""):
                 print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
                             " this is not allowed.".format(self.file_path))
-            return True
+                return True
 
         return False
