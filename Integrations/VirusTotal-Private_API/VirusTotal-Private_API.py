@@ -189,6 +189,7 @@ def create_file_output(file_hash, threshold, vt_response, short_format):
 
     if vt_response.get('tags', False):
         ec[outputPaths['file']]['VirusTotal'].update({'Tags': vt_response.get('tags')})
+        ec[outputPaths['file']].update({'Tags': vt_response.get('tags')})
     if vt_response.get('magic', False):
         ec[outputPaths['file']]['VirusTotal'].update({'MagicLiteral': vt_response.get('magic')})
     if vt_response.get('first_seen', False):
@@ -199,6 +200,8 @@ def create_file_output(file_hash, threshold, vt_response, short_format):
         ec[outputPaths['file']]['VirusTotal'].update({'CommunityComments': vt_response.get('community_comments')})
     if vt_response.get('authentihash', False):
         ec[outputPaths['file']]['VirusTotal'].update({'AuthentiHash': vt_response.get('authentihash')})
+        ec[outputPaths['file']]['Signature'].update(
+            {'Authentihash': vt_response.get('authentihash')})
     if vt_response.get('imphash', False):
         ec[outputPaths['file']]['VirusTotal'].update({'ImpHash': vt_response.get('imphash')})
 

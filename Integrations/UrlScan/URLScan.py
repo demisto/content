@@ -146,8 +146,12 @@ def poll(target, step, args=(), kwargs=None, timeout=None, max_tries=None, check
 
 def urlscan_submit_url():
     submission_dict = {}
-    if demisto.args().get('public') == 'public':
-        submission_dict['public'] = 'on'
+    if demisto.args().get('public'):
+        if demisto.args().get('public') == 'public':
+            submission_dict['public'] = 'on'
+    else:
+        if demisto.params().get('is_public') is True:
+            submission_dict['public'] = 'on'
 
     submission_dict['url'] = demisto.args().get('url')
     sub_json = json.dumps(submission_dict)
@@ -171,6 +175,7 @@ def format_results(uuid):
             scan_stats = response['stats']
             scan_meta = response['meta']
             url_query = scan_tasks['url']
+            scan_verdicts = response.get('verdicts')
         except Exception:
             pass
 
@@ -247,9 +252,9 @@ def format_results(uuid):
         human_readable['Subdomains'] = subdomains
     if 'asn' in scan_page:
         cont['ASN'] = scan_page['asn']
-    if 'malicious' in scan_stats:
+    if 'overall' in scan_verdicts:
         human_readable['Malicious URLs Found'] = scan_stats['malicious']
-        if int(scan_stats['malicious']) >= THRESHOLD:
+        if scan_verdicts['overall'].get('malicious'):
             human_readable['Malicious'] = 'Malicious'
             url_cont['Data'] = demisto.args().get('url')
             cont['Data'] = demisto.args().get('url')
