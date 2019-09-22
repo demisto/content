@@ -1765,6 +1765,10 @@
         {
             "integrations": "Threat Crowd",
             "playbookID": "ThreatCrowd - Test"
+        },
+        {
+            "integrations": "Tanium-Rest",
+            "playbookID": "Tanium Rest Test"
         }
     ],
     "skipped_tests": {
