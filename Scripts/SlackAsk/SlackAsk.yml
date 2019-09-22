@@ -19,7 +19,7 @@ args:
   required: true
   secret: false
 - default: false
-  defaultValue: Yes;green
+  defaultValue: Yes#green
   description: First reply option. Default is "yes". To change the button color, add
     a semicolon with the desired color - green, red or black (green by default). for
     example - "yes#green".
@@ -28,10 +28,10 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: No;red
+  defaultValue: No#red
   description: Second reply option. Default is "no". To change the button color, add
     a semicolon with the desired color - green, red or black (red by default). for
-    example - "no;red".
+    example - "no#red".
   isArray: false
   name: option2
   required: false
