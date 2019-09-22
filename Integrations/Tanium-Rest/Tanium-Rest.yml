@@ -1210,4 +1210,4 @@ script:
   script: '-'
   type: python
 tests:
-- No test
+- Tanium Rest Test
