@@ -1,6 +1,6 @@
 ## [Unreleased]
   - Added the ***parse_date_string*** function, which parses the date string to a datetime object.
-  - Added requests debugging logger when `debug-mode=true`
+  - Added requests debugging logger when `debug-mode=true`.
   - Added spaces between cells for ***tableToMarkdown*** function output, to prevent auto-extract over multiple cells.
 
 ## [19.9.0] - 2019-09-04
