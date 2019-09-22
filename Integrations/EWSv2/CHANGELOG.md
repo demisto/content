@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [19.9.1] - 2019-09-18
+Improved handling of uploaded EMLfiles.
+
 ## [19.9.0] - 2019-09-04
 - Improved implementation of the ***ews-get-contacts*** command.
 - Improved security for the  Exchange 365 Compliance search.
