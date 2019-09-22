@@ -1,23 +1,34 @@
 commonfields:
   id: PagerDutyAssignOnCallUser
   version: -1
-name: PagerDutyAssignOnCallUser
+name: PagerDutyAssignOnCallUser_dev
 script: |-
-  var res = executeCommand('PagerDuty-get-users-on-call-now', {});
+  var res = executeCommand('PagerDuty-get-users-on-call-now',
+      {
+          escalation_policy_ids: args.escalation_policy_ids,
+          schedule_ids: args.schedule_ids
+      });
+
   if (res[0].Type == entryTypes.error) {
       return res[0]
   }
-  var usersOnCall = res[0].Contents;
-  var selectedUser = usersOnCall[0];
+
+  var usersOnCall = res[0].Contents.oncalls;
+  var selectedUser = usersOnCall[0].user;
+
   if (selectedUser === null) {
       return 'error : could not find user from PagerDuty OnCall now!';
   }
-  res = executeCommand('getUserByEmail', {userEmail: selectedUser.Email});
+
+  res = executeCommand('getUserByEmail', {userEmail: selectedUser.email});
+
   if (res[0].Type == entryTypes.error) {
       return res[0];
   }
+
   var userId = res[0].Contents.id;
   setOwner(userId);
+
   return 'User ' + userId + ' was set as owner to incidents of this investigation';
 type: javascript
 tags:
@@ -25,9 +36,15 @@ tags:
 - communication
 comment: By default assigns the first on-call user to an investigation (all incidents
   in the investigation will be owned by the on call user)
-system: true
+enabled: true
+args:
+- name: escalation_policy_ids
+  description: comma separated escalation policy ids to choose the oncall from
+- name: schedule_ids
+  description: comma separated schedules to choose oncall from
 scripttarget: 0
 dependson:
   must:
   - PagerDuty-get-users-on-call-now
-timeout: 0s
+runonce: false
+runas: DBotWeakRole
