@@ -28,11 +28,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: fetch_time
-  required: false
-  type: 0
 description: Endpoint protection and response stops threats on endpoints and coordinates
   enforcement with network and cloud security to prevent successful cyberattacks.
 display: Palo Alto Networks Traps

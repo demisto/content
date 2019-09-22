@@ -249,7 +249,7 @@ def remove_hash_from_blacklist(hash_id):
     return result.get('status')
 
 
-# TODO: Check if needed error messge
+# TODO: Check if needed error message
 def hashes_blacklist_status(hash_ids):
     path = f'hashes/blacklist-status'
     data = {
