@@ -16,7 +16,7 @@ def generate_ip_queries(ips):
     ip_fields = ["endPointHeader.agentIp='{}'".format(ip) for ip in ips]
     query_cortex_traps_ip = ' OR '.join(ip_fields)
     queries['CortexTrapsIP'] = (f'SELECT * from tms.threat where '  # guardrails-disable-line
-                                + f'{query_cortex_traps_ip}')
+                                f'{query_cortex_traps_ip}')
 
     # Cortex Analytics IP
     ip_fields = ["endPointHeader.agentIp='{}'".format(ip) for ip in ips]
