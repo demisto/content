@@ -203,7 +203,7 @@ def search_url(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 def search_file(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Searching for given file hash
     """
-    file_hash = args.get('file')
+    file_hash = args.get('file', '')
     raw_response = client.search_file_request(file_hash)
     results = raw_response.get('result')
     if results:

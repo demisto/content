@@ -189,4 +189,3 @@ class TestVaultOperations:
         requests_mock.get(BASE_URL + 'vault', json={'vault': []})
         human_readable, _, _ = list_vaults(self.client, {})
         assert 'No vaults found' in human_readable
-

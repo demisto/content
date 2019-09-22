@@ -1,7 +1,7 @@
-""" HELPER FUNCTIONS """
+from CommonServerPython import *
+
 from pytest import raises
 from AnalyticsAndSIEM import Client
-from CommonServerPython import DemistoException
 
 CONTEXT_PREFIX = 'AnalyticsAndSIEM.Event(val.ID && val.ID === obj.ID)'
 BASE_URL = 'http://api.service.com/v1/'
@@ -40,7 +40,7 @@ def event_list_input():
                                     {'name': 'Demisto DBot', 'id': '12'}]}]}
 
 
-def event_list_output(*args, **kwargs):
+def event_list_output():
     return {'Event': [{'Assignee': [{'ID': '11', 'Name': 'DBot Demisto'},
                                     {'ID': '12', 'Name': 'Demisto DBot'}],
                        'Created': '2010-01-01T00:00:00Z',

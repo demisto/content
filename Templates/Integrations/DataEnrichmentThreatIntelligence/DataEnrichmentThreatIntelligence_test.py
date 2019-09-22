@@ -1,3 +1,5 @@
+from typing import Dict
+
 from CommonServerPython import *
 from CommonServerUserPython import *
 import demistomock as demisto
@@ -55,7 +57,7 @@ DOMAIN_RESULTS = {
 
 CLIENT = Client(BASE_URL, threshold=50)
 
-EMPTY_RESPONSE = raw = {'result': []}
+EMPTY_RESPONSE: Dict = {'result': []}
 
 
 class TestDeTi:
