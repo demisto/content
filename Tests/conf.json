@@ -3,6 +3,20 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "AutoFocus V2",
+            "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
+            "fromversion": "4.5.0",
+            "timeout": 500
+        },
+        {
+            "integrations": "ThreatQ v2",
+            "playbookID": "ThreatQ - Test"
+        },
+        {
+            "integrations": "AttackIQFireDrill",
+            "playbookID": "AttackIQ - Test"
+        },
+        {
             "integrations": "ZeroFox",
             "playbookID": "ZeroFox-Test",
             "fromversion": "4.1.0"
@@ -1438,6 +1452,14 @@
             "nightly": true
         },
         {
+            "playbookID": "Calculate Severity - Generic v2 - Test",
+            "integrations": [
+                "Palo Alto Minemeld",
+                "Active Directory Query v2"
+            ],
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "Freshdesk",
             "playbookID": "Freshdesk-Test",
             "timeout": 500,
@@ -1803,6 +1825,11 @@
             "playbookID": "Test-VulnDB"
         },
         {
+            "integrations": "Shodan_v2",
+            "playbookID": "Test-Shodan_v2",
+            "timeout": 1000
+        },
+        {
             "integrations": "Threat Crowd",
             "playbookID": "ThreatCrowd - Test"
         },
@@ -1877,7 +1904,9 @@
         "IntSights Mssp Test": "Account Expired (issue #16351)",
         "CarbonBlackResponseTest": "Instance content has been altered causing test failure #19180",
         "Pwned test": "API Deprecated, use Pwned test v2 instead",
-        "CheckPhish-Test": "Test is unstable, requires redesign #19188"
+        "CheckPhish-Test": "Test is unstable, requires redesign #19188",
+        "PAN-OS DAG Configuration Test": "Test failing on permission denied error #19205",
+        "AlphaSOC-Wisdom-Test": "Test is unstable. #19235"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
