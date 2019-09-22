@@ -123,7 +123,6 @@ script:
             var res = {};
             mapFields.forEach(function(f) {
                 result = dq(obj, f.from);
-                console.log(result)
                 if (result || result === false) {
                     res[f.to] = result;
                 }
@@ -277,3 +276,5 @@ script:
     - contextPath: Jamf.Computers.Room
       description: Computer room
 hidden: false
+tests:
+  - No test

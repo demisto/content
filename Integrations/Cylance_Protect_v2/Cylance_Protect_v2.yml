@@ -40,8 +40,8 @@ configuration:
 - defaultvalue: '-59'
   display: File Threshold
   name: file_threshold
-  required: false
   type: 0
+  required: false
 description: Manage Endpoints using Cylance protect
 display: Cylance Protect v2
 name: Cylance Protect v2
@@ -940,18 +940,16 @@ script:
     - contextPath: Cylance.Policy.Timestamp
       description: The date and time (in UTC) that the policy was created.
       type: string
-  - arguments:
-    - default: false
-      description: The unique identifiers for the devices to delete. The maximum
+  - name: cylance-protect-delete-devices
+    arguments:
+    - name: deviceIds
+      required: true
+      description: The unique identifiers for the devices to be deleted. The maximum
         number of Device IDs per request is 20.
       isArray: true
-      name: deviceIds
-      required: true
-      secret: false
-    deprecated: false
-    description: Deletes one or more devices from an organization.
-    execution: true
-    name: cylance-protect-delete-devices
+    - name: batch_size
+      description: The number of devices to delete per batch. The default is 20, which is also the maximum number of devices that can be deleted per request.
+      defaultValue: "20"
     outputs:
     - contextPath: Cylance.Device.Id
       description: The unique identifier of the deletion request.
@@ -962,10 +960,13 @@ script:
     - contextPath: Cylance.Device.Deleted
       description: A boolean to check if the device was deleted.
       type: boolean
+    description: Delete one or more devices from an organization.
+    execution: true
   dockerimage: demisto/cylance_protect_v2
   isfetch: true
   runonce: false
   script: '-'
   type: python
+  subtype: python2
 tests:
 - Cylance Protect v2 Test
