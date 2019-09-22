@@ -35,6 +35,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
     taskid: 1808d949-f921-4957-8796-7bbedd822ad9
@@ -56,6 +58,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: cea4b9a9-d2a5-42c6-84e7-7eab6d6ab7a8
@@ -83,6 +87,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
     taskid: 077714b6-f53e-4ab4-8679-d2c172e67a59
@@ -118,6 +124,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
     taskid: cc26e2d3-b22c-4e90-819e-5a1dc485c2db
@@ -174,6 +182,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
     taskid: 3f8eeba3-99f9-484c-8f73-a0c6d9bd02bb
@@ -208,6 +218,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
     taskid: bebb5a4e-9e67-4334-86e2-4cf1064abc72
@@ -265,6 +277,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
     taskid: 7e800325-00ed-4c5a-8838-a40f28680299
@@ -298,6 +312,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
     taskid: dbee1e60-454a-4043-8676-7f5bb3006b00
@@ -334,6 +350,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
     taskid: 43617e2e-a00d-4569-8d43-80b6e732798e
@@ -347,6 +365,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "2"
       "yes":
       - "13"
     separatecontext: false
@@ -388,6 +408,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
     taskid: 6c6d1f99-8689-49d7-8c7c-f9ddcdd2a782
@@ -417,9 +439,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "12_2_#default#": 0.32,
+      "7_2_#default#": 0.51
+    },
     "paper": {
       "dimensions": {
         "height": 940,

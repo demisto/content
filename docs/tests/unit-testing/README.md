@@ -91,6 +91,15 @@ Sample output:
 
 **Troubleshooting Tips:**
 * The `pkg_dev_test_tasks.py` by default prints out minimal output. If for some reason it is failing and not clear, run the script with `-v` for verbose output.
+
+* When running mypy against python 2 code and the file contains non-ascii characters it may fail with an error of the sort: 
+  
+  `can't decode file 'ThreatConnect.py': 'ascii' codec can't decode byte 0xe2 in position 47329: ordinal not in range(128)`.
+  
+  To find the character use the following python one liner: 
+  
+  `python -c "index = 47329; f = open('Integrations/ThreatConnect/ThreatConnect.py'); d = f.read(); print(d[index-20:index+20])"`
+  
 * The script creates a container image which is used to run pytest and pylint. The container image will be named: `devtest<origin-image>-[deps hash]`. For example: `devtestdemisto/python:1.3-alpine-1b9f5bee16a24c3f5463e324c1bb075`. You can examine the image if needed by simple using docker run. For example: 
 ```
 docker run --rm -it devtestdemisto/python:1.3-alpine-1b9f5bee16a24c3f5463e324c1bb075e sh
