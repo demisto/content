@@ -1,5 +1,6 @@
 ## [Unreleased]
-Added single port mapping support.
+  - Added single port mapping support.
+  - Added the command ***microsoft-teams-integration-health***.
 
 ## [19.9.1] - 2019-09-18
   - Added verification for the authorization header signature.
