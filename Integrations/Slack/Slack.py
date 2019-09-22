@@ -9,8 +9,6 @@ import asyncio
 import concurrent
 import requests
 
-from typing import Union
-
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -443,14 +441,16 @@ def check_for_answers():
             demisto.error('Slack - failed to poll for answers: {}, status code: {}'
                           .format(res.content, res.status_code))
             continue
-        answer = {}
+        answer: dict = {}
         try:
             answer = res.json()
         except Exception:
             pass
         if not answer:
             continue
-        payload_json: str = answer.get('payload')
+        payload_json: str = answer.get('payload', '')
+        if not payload_json:
+            continue
         payload = json.loads(payload_json)
 
         actions = payload.get('actions', [])
