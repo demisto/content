@@ -1,3 +1,3 @@
 ## [Unreleased]
-  - Limit fetch to 50 incidents at a time
+Limited the incident fetch limit to 50 incidents per fetch.
 
