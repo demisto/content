@@ -1,3 +1,5 @@
+from typing import Dict
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -36,7 +38,13 @@ class Client:
 
     def http_request(self, method, suffix_url, params=None, data=None, headers=None, full_url=None):
         full_url = full_url if full_url else self.base_url + suffix_url
-        session_call = self.session.get if method.lower() == 'get' else self.session.post
+        sessions_list = {
+            'get': self.session.get,
+            'post': self.session.post,
+            'delete': self.session.delete,
+            'put': self.session.put
+        }
+        session_call = sessions_list[method.lower()]
         try:
             res = session_call(
                 full_url,
@@ -111,6 +119,27 @@ class Client:
         response = self.http_request('GET', suffix_url, params)
         return response.json()
 
+    def get_user_info_request(self, username):
+
+        suffix_url = f'user/{username}/info'
+        response = self.http_request('GET', suffix_url)
+
+        return response.json()
+
+    def create_watchlist_request(self, title=None, category=None, description=None, items=None):
+
+        suffix_url = 'watchlist'
+
+        params = {
+            'title': title,
+            'category': category,
+            'description': description,
+            'items': items
+        }
+
+        response = self.http_request('POST', suffix_url, params)
+        return response.json()
+
     def get_watchlist_request(self):
 
         suffix_url = 'watchlist'
@@ -124,6 +153,13 @@ class Client:
 
         response = self.http_request('GET', suffix_url)
         return response.json()
+
+    def delete_watchlist_request(self, watchlist_id):
+
+        suffix_url = f'watchlist/{watchlist_id}/'
+
+        response = self.http_request('DELETE', suffix_url)
+        return response
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -165,23 +201,96 @@ def get_notable_users(client, args):
     return_outputs(tableToMarkdown('Exabeam Notable Users', contents, headers, removeNull=True), context, users)
 
 
+def get_user_info(client, args):
+    """
+    Args:
+        client: Client
+        args: Dict
+
+    Returns: User info data for the given username
+
+    """
+    username = args.get('username')
+    headers = ['Username', 'RiskScore', 'AverageRiskScore', 'LastSessionID', 'Labels', 'FirstSeen',
+               'LastSeen', 'LastActivityType', 'AccountNames', 'PeerGroupFieldName', 'PeerGroupFieldValue',
+               'PeerGroupDisplayName', 'PeerGroupType']
+    user = client.get_user_info_request(username)
+    if user:
+        contents = {
+            'Username': user.get('username'),
+            'RiskScore': user.get('userInfo').get('riskScore'),
+            'AverageRiskScore': user.get('userInfo').get('averageRiskScore'),
+            'LastSessionID': user.get('userInfo').get('lastSessionId'),
+            'FirstSeen': user.get('userinfo').get('firstSeen'),
+            # 'LastSeen': user.get('userinfo').get('lastSeen'),
+            # 'LastActivityType': user.get('userinfo').get('lastActivityType'),
+            # 'Label': user.get('userinfo').get('labels'),
+            'AccountNames': user.get('accountNames'),
+            'PeerGroupFieldName': user.get('peerGroupFieldName'),
+            'PeerGroupFieldValue': user.get('peerGroupFieldValue'),
+            'PeerGroupDisplayName': user.get('peerGroupDisplayName'),
+            'PeerGroupType': user.get('peerGroupType')
+        }
+
+    context = {
+        'Exabeam.User(val.UserName && val.UserName === obj.UserName)': contents
+    }
+
+    return_outputs(tableToMarkdown(f'User {username} information', contents, headers, removeNull=True), context, user)
+
+
 def get_watchlist(client):
 
     watchlist = client.get_watchlist_request()
     contents = []
-    headers = ['WatchlistId', 'Title', 'Category']
+    headers = ['WatchlistID', 'Title', 'Category']
     for list_ in watchlist:
         contents.append({
-            'WatchlistId': list_.get('watchlistId'),
+            'WatchlistID': list_.get('watchlistId'),
             'Title': list_.get('title'),
             'Category': list_.get('category')
         })
 
     context = {
-        'Exabeam.Watchlist(val.WatchlistId && val.WatchlistId === obj.WatchlistId)': contents
+        'Exabeam.Watchlist(val.WatchlistID && val.WatchlistID === obj.WatchlistID)': contents
     }
 
     return_outputs(tableToMarkdown('Exabeam Watchlists', contents, headers), context, watchlist)
+
+
+def create_watchlist(client, args):
+    """
+    Create new watchlist
+    """
+    title = args.get('title')
+    category = args.get('category')
+    description = args.get('description')
+    items = argToList(args.get('items'))
+    headers = ['WatchlistID', 'Title', 'Category']
+
+    watchlist = client.create_watchlist_request(title, category, description, items)
+    if watchlist:
+        contents = {
+            'WatchlistID': watchlist.get('watchlistId'),
+            'Title': watchlist.get('title'),
+            'Category': watchlist.get('category')
+        }
+
+    context = {
+        'Exabeam.Watchlist(val.WatchlistID && val.WatchlistID === obj.WatchlistID)': contents
+    }
+    return_outputs(tableToMarkdown('New watchlist has been created', contents, headers), context, watchlist)
+
+
+def delete_watchlist(client: Client, args: Dict):
+    """
+    Delete a watchlist
+    """
+
+    watchlist_id = args.get('watchlist_id')
+    client.delete_watchlist_request(watchlist_id)
+
+    demisto.results('The watchlist was deleted successfully')
 
 
 def get_peer_groups(client):
@@ -234,6 +343,12 @@ def main():
             get_watchlist(client)
         elif demisto.command() == 'get-peer-groups':
             get_peer_groups(client)
+        elif demisto.command() == 'create-watchlist':
+            create_watchlist(client, demisto.args())
+        elif demisto.command() == 'delete-watchlist':
+            delete_watchlist(client, demisto.args())
+        elif demisto.command() == 'get-user-info':
+            get_user_info(client, demisto.args())
 
     except Exception as e:
         return_error(str(e))

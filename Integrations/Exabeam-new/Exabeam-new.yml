@@ -105,7 +105,7 @@ script:
     - contextPath: Exabeam.Watchlist.Title
       description: The watchlist title.
       type: String
-    - contextPath: Exabeam.Watchlist.WatchlistId
+    - contextPath: Exabeam.Watchlist.WatchlistID
       description: Watchlist ID.
       type: String
   - deprecated: false
@@ -116,6 +116,57 @@ script:
     - contextPath: Exabeam.PeerGroup.Name
       description: The name of the peer group.
       type: String
+  - arguments:
+    - default: false
+      description: The title of the watchlist
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - default: false
+      description: The watchlist category.
+      isArray: false
+      name: category
+      required: true
+      secret: false
+    - default: false
+      description: Watchlist descripiton.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Items to add to the watchlist.
+      isArray: false
+      name: items
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new watchlist
+    execution: false
+    name: create-watchlist
+  - arguments:
+    - default: false
+      description: The watchlist ID.
+      isArray: false
+      name: watchlist_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a watchlist.
+    execution: false
+    name: delete-watchlist
+  - arguments:
+    - default: false
+      description: Username of the user to fetch
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns user info data for the given username
+    execution: false
+    name: get-user-info
   dockerimage: demisto/python3:3.7.4.1502
   isfetch: false
   longRunning: false
@@ -123,6 +174,5 @@ script:
   runonce: false
   script: '-'
   type: python
-  subtype: python3
 tests:
-  - no tests
+- no tests
