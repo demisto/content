@@ -1,3 +1,10 @@
+Demisto offers two IDEs for developing: IntelliJ Plugin and built-in platform IDE.
+
+## Demisto IntelliJ Plugin
+The Demisto Add-on for PyCharm simplifies third-party integration and script development by enabling users to author Python content for Demisto directly in PyCharm.
+
+Read more [here](https://plugins.jetbrains.com/plugin/12093-demisto-add-on-for-pycharm)
+
 ## The Demisto IDE
 It is important to take a moment and familiarise yourself with the Demisto IDE as it may work differently than other IDEs you are familiar with. Some key differences between the Demisto IDE and ,for example pyCharm, is the absence of an interpreter. You will have to be mindful of Demisto reserved variables as you develop your integration. **(See Reserved Variables) **
 
