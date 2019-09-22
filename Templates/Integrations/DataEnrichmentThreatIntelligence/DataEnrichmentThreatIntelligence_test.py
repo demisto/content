@@ -1,9 +1,6 @@
 from typing import Dict
 
 from CommonServerPython import *
-from CommonServerUserPython import *
-import demistomock as demisto
-
 from DataEnrichmentThreatIntelligence import Client
 from pytest import raises
 
