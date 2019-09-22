@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.9.1] - 2019-09-18
   - Fix an issue in the ***custom-field-data*** argument.
   - Fixed an issue in the ***ad-create-contact*** command.
   - Improved description of the ***filter*** argument in the ***ad-search*** command.

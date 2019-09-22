@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.9.1] - 2019-09-18
 - Added the *tag* argument to several commands.
     - List commands - filter by a tag.
     - Create and edit commands
