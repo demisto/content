@@ -736,10 +736,10 @@ class TestBuildDBotEntry(object):
         }
 
 
-class TestBaseClient(object):
+class TestBaseClient:
     from CommonServerPython import BaseClient
     text = {"status": "ok"}
-    client = BaseClient('Name', 'name', 'name', 'http://example.com', '/api/v2/', ok_codes=(200, 201))
+    client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201))
 
     def test_http_request_json(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
@@ -781,7 +781,7 @@ class TestBaseClient(object):
     def test_http_request_not_ok_with_json(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', status_code=500, content=str.encode(json.dumps(self.text)))
-        with raises(DemistoException, match="Error in Name API"):
+        with raises(DemistoException, match="Error in API call"):
             self.client._http_request('get', 'event')
 
     def test_http_request_timeout(self, requests_mock):
@@ -811,7 +811,7 @@ class TestBaseClient(object):
     def test_is_valid_ok_codes_empty(self):
         from requests import Response
         from CommonServerPython import BaseClient
-        new_client = BaseClient('Name', 'name', 'name', 'http://example.com', '/api/v2/')
+        new_client = BaseClient('http://example.com/api/v2/')
         response = Response()
         response.status_code = 200
         assert new_client._is_status_code_valid(response, None)
