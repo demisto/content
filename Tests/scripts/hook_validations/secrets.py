@@ -143,7 +143,13 @@ def search_potential_secrets(secrets_file_paths):
     """
     secrets_found = {}
 
+    # Get generic white list set
+    conf_secrets_white_list, ioc_white_list, files_white_list = get_white_list()
+
     for file_path in secrets_file_paths:
+        if file_path in files_white_list:
+            print("Skipping secrets detection for file: {} as it is white listed".format(file_path))
+            continue
         file_name = os.path.basename(file_path)
         high_entropy_strings = []
         secrets_found_with_regex = []
@@ -151,8 +157,7 @@ def search_potential_secrets(secrets_file_paths):
         file_path_temp, file_extension = os.path.splitext(file_path)
         skip_secrets = False
 
-        # Get generic white list set
-        secrets_white_list, ioc_white_list = get_white_list()
+        secrets_white_list = set(conf_secrets_white_list)
         # get file contents
         file_contents = get_file_contents(file_path, file_extension)
         # if py/js file, search for yml in order to retrieve temp white list
@@ -284,16 +289,19 @@ def get_white_list():
     with io.open('./Tests/secrets_white_list.json', mode="r", encoding="utf-8") as secrets_white_list_file:
         final_white_list = []
         ioc_white_list = []
+        files_while_list = []
         secrets_white_list_file = json.load(secrets_white_list_file)
         for name, white_list in secrets_white_list_file.iteritems():
             if name == 'iocs':
                 for sublist in white_list:
                     ioc_white_list += [white_item for white_item in white_list[sublist] if len(white_item) > 4]
                 final_white_list += ioc_white_list
+            elif name == 'files':
+                files_while_list = white_list
             else:
                 final_white_list += [white_item for white_item in white_list if len(white_item) > 4]
 
-        return set(final_white_list), set(ioc_white_list)
+        return set(final_white_list), set(ioc_white_list), set(files_while_list)
 
 
 def get_file_contents(file_path, file_extension):
