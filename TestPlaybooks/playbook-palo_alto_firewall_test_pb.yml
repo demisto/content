@@ -319,10 +319,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 6b95cdd8-2967-4312-8926-b8f26ba10546
+    taskid: 32d5cf14-b4a4-4951-8ea8-e1b7a944240f
     type: regular
     task:
-      id: 6b95cdd8-2967-4312-8926-b8f26ba10546
+      id: 32d5cf14-b4a4-4951-8ea8-e1b7a944240f
       version: -1
       name: panorama-list-address-groups
       script: '|||panorama-list-address-groups'
@@ -333,6 +333,10 @@ tasks:
       '#none#':
       - "62"
       - "61"
+    scriptarguments:
+      device-group: {}
+      tag:
+        simple: Bark_FW_test_tag01
     separatecontext: false
     view: |-
       {
@@ -382,10 +386,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: e796820b-42e7-438c-80c5-2455880931af
+    taskid: ac46e325-a17b-4dfd-89b3-49cb0af84a98
     type: regular
     task:
-      id: e796820b-42e7-438c-80c5-2455880931af
+      id: ac46e325-a17b-4dfd-89b3-49cb0af84a98
       version: -1
       name: panorama-create-address-group(static)
       script: '|||panorama-create-address-group'
@@ -400,9 +404,12 @@ tasks:
         simple: Test_playbook_address2_DO_NOT_DELETE
       description:
         simple: blabla
+      device-group: {}
       match: {}
       name:
         simple: static_address_group_test_pb3
+      tags:
+        simple: Bark_FW_test_tag01
       type:
         simple: static
     separatecontext: false
@@ -476,10 +483,10 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: d4728151-2493-4cf3-89e6-146ad21c515d
+    taskid: 7285909b-4d51-4086-8059-b5a58f45f3da
     type: condition
     task:
-      id: d4728151-2493-4cf3-89e6-146ad21c515d
+      id: 7285909b-4d51-4086-8059-b5a58f45f3da
       version: -1
       name: Test panorama-address-group-create(static)
       type: condition
@@ -502,6 +509,16 @@ tasks:
           right:
             value:
               simple: Test_playbook_address2_DO_NOT_DELETE
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Panorama
+                accessor: AddressGroups.Tags
+            iscontext: true
+          right:
+            value:
+              simple: Bark_FW_test_tag01
     view: |-
       {
         "position": {
