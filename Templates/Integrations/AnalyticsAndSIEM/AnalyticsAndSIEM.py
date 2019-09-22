@@ -7,12 +7,30 @@ from typing import Dict, Tuple, List, Optional, Union, AnyStr
 import urllib3
 
 """Example for Analytics and SIEM integration
-    
+
 Todo:
     * pass on it with alex
 """
 # Disable insecure warnings
 urllib3.disable_warnings()
+
+"""GLOBALS/PARAMS
+Attributes:
+    INTEGRATION_NAME:
+        Name of the integration as shown in the integration UI, for example: Microsoft Graph User.
+
+    INTEGRATION_COMMAND_NAME:
+        Command names should be written in all lower-case letters,
+        and each word separated with a hyphen, for example: msgraph-user.
+
+    INTEGRATION_CONTEXT_NAME:
+        Context output names should be written in camel case, for example: MSGraphUser.
+"""
+INTEGRATION_NAME = 'Analytics & SIEM Integration'
+# lowercase with `-` dividers
+INTEGRATION_COMMAND_NAME = 'analytics-and-siem'
+# No dividers
+INTEGRATION_CONTEXT_NAME = 'AnalyticsAndSIEM'
 
 
 class Client(BaseClient):
@@ -200,7 +218,7 @@ def fetch_incidents(client: Client, last_run):
         last_run_string = last_run.strftime(timestamp_format)
     else:
         last_run_string = datetime.strptime(last_run, timestamp_format)
-    incidents = list()
+    incidents: List = list()
     raw_response = client.list_events_request(event_created_date_after=last_run_string)
     events = raw_response.get('event', [])
     if events:
@@ -228,98 +246,103 @@ def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         max_results=max_results)
     events = raw_response.get('event', [])
     if events:
-        title: str = f'{client.integration_name} - List events:'
+        title: str = f'{INTEGRATION_NAME} - List events:'
         context_entry = build_context(events)
-        context = {f'{client.integration_context_name}.Event(val.ID && val.ID === obj.ID)': context_entry}
+        context = {f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry}
         # Creating human readable for War room
         human_readable = tableToMarkdown(title, context_entry)
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
-        return f'{client.integration_name} - Could not find any events.', {}, {}
+        return f'{INTEGRATION_NAME} - Could not find any events.', {}, {}
 
 
 def get_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Gets details about a raw_response using the event ID or other valid filters.
     """
     # Get arguments from user
-    event_id: str = args.get('event_id', '')
+    event_id = args.get('event_id', '')
     # Make request and get raw response
-    raw_response: Dict = client.event_request(event_id)
+    raw_response = client.event_request(event_id)
     # Parse response into context & content entries
-    event: Dict = raw_response.get('event', {})
-    if event:
-        title = f'{client.integration_name} - Event `{event_id}`:'
+    events = raw_response.get('event')
+    if events:
+        event = events[0]
+        title = f'{INTEGRATION_NAME} - Event `{event_id}`:'
         context_entry = build_context(event)
-        context = {f'{client.integration_context_name}.Event(val.ID && val.ID === obj.ID)': context_entry}
+        context = {f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry}
         # Creating human readable for War room
         human_readable = tableToMarkdown(title, context_entry, headers=[])
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
-        return f'{client.integration_name} - Could not find event `{event_id}`', {}, {}
+        return f'{INTEGRATION_NAME} - Could not find event `{event_id}`.', {}, {}
 
 
-def close_event(client: Client, args: Dict) -> Tuple[str, Dict, None]:
+def close_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     Gets details about a raw_response using the event ID or other valid filters.
     """
     # Get arguments from user
-    event_id: str = args.get('event_id', '')
+    event_id = args.get('event_id', '')
     # Make request and get raw response
-    event = client.close_event_request(event_id)
+    raw_response = client.close_event_request(event_id)
     # Parse response into context & content entries
-    if event:
-        title = f'{client.integration_name} - Event `{event_id}` has been deleted.'
+    events = raw_response.get('event')
+    if events and events[0].get('isActive') is False:
+        event = events[0]
+        title = f'{INTEGRATION_NAME} - Event `{event_id}` has been deleted.'
         context_entry = build_context(event)
-        context = {f'{client.integration_context_name}.Event(val.ID && val.ID === obj.ID)': context_entry}
+        context = {f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry}
         # Creating human readable for War room
-        human_readable: str = tableToMarkdown(title, context_entry)
+        human_readable = tableToMarkdown(title, context_entry)
         # Return data to Demisto
-        return human_readable, context, None
+        return human_readable, context, raw_response
     else:
-        raise DemistoException(f'{client.integration_name} - Could not delete event `{event_id}`')
+        raise DemistoException(f'{INTEGRATION_NAME} - Could not delete event `{event_id}`')
 
 
 def update_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     # Get arguments from user
-    event_id: str = args.get('event_id', '')
-    description: str = args.get('description', '')
-    assignee: List[str] = argToList(args.get('assignee', ''))
+    event_id = args.get('event_id', '')
+    description = args.get('description')
+    assignee = argToList(args.get('assignee', ''))
     # Make request and get raw response
     raw_response = client.update_event_request(event_id, description=description, assignee=assignee)
-    event = raw_response.get('event')
+    events = raw_response.get('event')
     # Parse response into context & content entries
-    if event:
-        title: str = f'{client.integration_name} - Event `{event_id}` has been updated.'
+    if events:
+        event = events[0]
+        title = f'{INTEGRATION_NAME} - Event `{event_id}` has been updated.'
         context_entry = build_context(event)
-        context = {f'{client.integration_context_name}.Event(val.ID && val.ID === obj.ID)': context_entry}
+        context = {f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry}
         human_readable = tableToMarkdown(title, context_entry)
         return human_readable, context, raw_response
     else:
-        raise DemistoException(f'{client.integration_name} - Could not update event `{event_id}`')
+        raise DemistoException(f'{INTEGRATION_NAME} - Could not update event `{event_id}`')
 
 
 def create_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     # Get arguments from user
-    description: str = args.get('description', '')
-    assignee: List[str] = argToList(demisto.args().get('assignee', ''))
+    description = args.get('description', '')
+    assignee = argToList(demisto.args().get('assignee', ''))
     # Make request and get raw response
-    raw_response: Dict = client.create_event_request(description, assignee)
-    event: Dict = raw_response.get('event', {})
+    raw_response = client.create_event_request(description, assignee)
+    events = raw_response.get('event')
     # Parse response into context & content entries
-    if event:
+    if events:
+        event = events[0]
         event_id: str = event.get('eventId', '')
-        title = f'{client.integration_name} - Event `{event_id}` has been created.'
+        title = f'{INTEGRATION_NAME} - Event `{event_id}` has been created.'
         context_entry = build_context(event)
-        context = {f'{client.integration_context_name}.Event(val.ID && val.ID === obj.ID)': context_entry}
+        context = {f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry}
         human_readable = tableToMarkdown(title, context_entry)
         return human_readable, context, raw_response
     else:
-        raise DemistoException(f'{client.integration_name} - Could not create new event.')
+        raise DemistoException(f'{INTEGRATION_NAME} - Could not create new event.')
 
 
-def query(client: Client, args: Dict):
+def query(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     # Get arguments from user
     query_dict = assign_params(
         eventId=argToList(args.get('event_id')),
@@ -333,37 +356,24 @@ def query(client: Client, args: Dict):
     events = raw_response.get('event', [])
     # Parse response into context & content entries
     if events:
-        title = f'{client.integration_name} - Results for given query'
+        title = f'{INTEGRATION_NAME} - Results for given query'
         context_entry = build_context(events)
-        context = {f'{client.integration_context_name}.Event(val.ID && val.ID === obj.ID)': context_entry}
-        human_readable: str = tableToMarkdown(title, context_entry)
+        context = {f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry}
+        human_readable = tableToMarkdown(title, context_entry)
         return human_readable, context, raw_response
     else:
-        return_warning(f'{client.integration_name} - Could not find any results for given query')
+        return_warning(f'{INTEGRATION_NAME} - Could not find any results for given query')
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
 def main():
-    """ GLOBALS/PARAMS """
-    integration_name = 'Analytics & SIEM Integration'
-    # lowercase with `-` dividers
-    integration_command_name = 'analytics-and-siem'
-    # No dividers
-    integration_context_name = 'AnalyticsAndSIEM'
     params = demisto.params()
-    server = params.get('url', '')
+    base_url = f"{params.get('url', '').rstrip('/')}'/api/v2/'"
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy')
-    base_suffix = '/api/v2/'
-    client = Client(integration_name=integration_name,
-                    integration_command_name=integration_command_name,
-                    integration_context_name=integration_context_name,
-                    server=server,
-                    base_suffix=base_suffix,
-                    verify=verify_ssl,
-                    proxy=proxy)
+    client = Client(base_url=base_url, verify=verify_ssl, proxy=proxy)
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
@@ -371,12 +381,12 @@ def main():
     commands = {
         'test-module': test_module,
         'fetch-incidents': fetch_incidents,
-        f'{client.integration_command_name}-list-events': list_events,
-        f'{client.integration_command_name}-get-event': get_event,
-        f'{client.integration_command_name}-delete-event': close_event,
-        f'{client.integration_command_name}-update-event': update_event,
-        f'{client.integration_command_name}-create-event': create_event,
-        f'{client.integration_command_name}-query': query
+        f'{INTEGRATION_COMMAND_NAME}-list-events': list_events,
+        f'{INTEGRATION_COMMAND_NAME}-get-event': get_event,
+        f'{INTEGRATION_COMMAND_NAME}-delete-event': close_event,
+        f'{INTEGRATION_COMMAND_NAME}-update-event': update_event,
+        f'{INTEGRATION_COMMAND_NAME}-create-event': create_event,
+        f'{INTEGRATION_COMMAND_NAME}-query': query
     }
     try:
         if command == 'fetch-incidents':
@@ -385,11 +395,9 @@ def main():
             return_outputs(*commands[command](client, demisto.args()))
     # Log exceptions
     except Exception as e:
-        err_msg = f'Error in {client.integration_name} Integration [{e}]'
+        err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg, error=e)
 
 
 if __name__ == 'builtins':
     main()
-
-# TODO: add pip file

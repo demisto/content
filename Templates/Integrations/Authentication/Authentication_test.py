@@ -25,9 +25,7 @@ def get_user_list():
 
 
 def get_client():
-    return Client('Authentication Integration', 'authentication', 'AuthenticationIntegration',
-                  'https://example.com',
-                  '/v1/')
+    return Client('https://example.com/v1/')
 
 
 class TestBuildContext:
