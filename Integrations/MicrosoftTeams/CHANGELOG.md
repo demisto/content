@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added single port mapping support.
 
 ## [19.9.1] - 2019-09-18
   - Added verification for the authorization header signature.

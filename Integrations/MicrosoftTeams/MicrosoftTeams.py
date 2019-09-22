@@ -1376,18 +1376,23 @@ def long_running_loop():
     certificate: str = demisto.params().get('certificate', '')
     private_key: str = demisto.params().get('key', '')
 
+    certificate_path = str()
+    private_key_path = str()
+
     try:
         port_mapping: str = PARAMS.get('longRunningPort', '')
+        port: int
         if port_mapping:
-            port: int = int(port_mapping.split(':')[0])
+            if ':' in port_mapping:
+                port = int(port_mapping.split(':')[0])
+            else:
+                port = int(port_mapping)
         else:
             raise ValueError('No port mapping was provided')
         Thread(target=channel_mirror_loop, daemon=True).start()
         demisto.info('Started channel mirror loop thread')
 
         ssl_args = dict()
-        certificate_path = str()
-        private_key_path = str()
 
         if certificate and private_key:
             certificate_file = NamedTemporaryFile(delete=False)
