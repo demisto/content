@@ -1,2 +1,2 @@
 ## [Unreleased]
-  - Fixed `url` command
+Fixed an issue in the ***url*** command.
