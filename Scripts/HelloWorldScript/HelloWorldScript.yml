@@ -1,0 +1,24 @@
+args:
+- default: false
+  description: 'Say hello to:'
+  isArray: false
+  name: name
+  required: false
+  secret: false
+comment: Hello World Script
+commonfields:
+  id: 579e06da-9776-4706-85f5-639b7b305195
+  version: -1
+enabled: false
+name: HelloWorldScript
+outputs:
+- contextPath: HelloWorld.hello
+  description: 'The result of hello '
+  type: String
+script: '-'
+system: false
+tags:
+- hello
+- world
+timeout: '0'
+type: python
