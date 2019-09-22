@@ -33,7 +33,7 @@ configuration:
   defaultvalue: '2000'
   type: 0
   required: false
-- display: The maximum number of incidents to fetch each time.
+- display: The maximum number of incidents to fetch each time. Maximum is 50.
   name: fetch_chunk_size
   defaultvalue: '50'
   type: 0
@@ -48,9 +48,9 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "true"
+  defaultvalue: ''
   type: 8
   required: false
 - display: Use system proxy settings
@@ -61,6 +61,7 @@ configuration:
 script:
   script: ''
   type: python
+  subtype: python2
   commands:
   - name: as-get-all-cases
     arguments: []
