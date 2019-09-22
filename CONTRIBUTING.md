@@ -25,6 +25,11 @@ If you are a first time GitHub contributor, please look at these links explainin
 
 **Working on your first Pull Request?** You can learn how from this *free* series [How to Contribute to an Open Source Project on GitHub](https://egghead.io/series/how-to-contribute-to-an-open-source-project-on-github)
 
+## Contributor License Agreement
+Before merging any PRs, we need all contributors to sign a contributor license agreement. By signing a contributor license agreement, we ensure that the community is free to use your contributions.
+
+When you contribute a new pull request, a bot will evaluate whether you have signed the CLA. If required, the bot will comment on the pull request, including a link to accept the agreement. The CLA document is available for review as a [PDF](docs/cla.pdf).
+
 ## Contributing Playbooks
 
 You can edit or create playbooks visually inside the Demisto Platform and then export to a yaml file.
