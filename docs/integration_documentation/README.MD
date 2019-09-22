@@ -22,7 +22,7 @@ Where there is missing information, be sure to fill out the document completely.
 3.  If the integration is existing and some of the integration has changed. For example, a new command was added, context was changed, or anything else; please update the documentation.
 
 
-**The documentation must conform to [this format](https://github.com/demisto/etc/wiki/Document-structure:-Integrations)**
+**The documentation must conform to [this format](https://github.com/demisto/content/blob/master/docs/integration_documentation/integration_documentation_structure.MD)**
 
 
 ### Using commands parameter

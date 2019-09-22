@@ -796,7 +796,7 @@
 			"useAsKpi": false,
 			"locked": false,
 			"system": false,
-			"content": false,
+			"content": true,
 			"group": 0,
 			"hidden": false,
 			"associatedTypes": [

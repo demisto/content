@@ -531,6 +531,10 @@ def get_release_notes_draft(github_token, asset_id):
     :param asset_id: content build's asset id.
     :return: draft text (or empty string on error).
     """
+    if github_token is None:
+        print_warning('unable to download draft without github token.')
+        return ''
+
     # Disable insecure warnings
     requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -549,8 +553,11 @@ def get_release_notes_draft(github_token, asset_id):
     drafts = [release for release in res.json() if release.get('draft', False)]
     if drafts:
         if len(drafts) == 1:
-            return re.sub(r'Release Notes for version .* \((\d{5,})\)',
-                          'Release Notes for version ({})'.format(asset_id), drafts[0]['body'])
+            draft_body = drafts[0]['body']
+            raw_asset = re.findall(r'Release Notes for version .* \((\d{5,}|xxxxx)\)', draft_body, re.IGNORECASE)
+            if raw_asset:
+                draft_body = draft_body.replace(raw_asset[0], asset_id)
+            return draft_body
 
         print_warning('Too many drafts to choose from ({}), skipping update.'.format(len(drafts)))
 
@@ -591,7 +598,7 @@ def main():
     arg_parser.add_argument('git_sha1', help='commit sha1 to compare changes with')
     arg_parser.add_argument('asset_id', help='Asset ID')
     arg_parser.add_argument('server_version', help='Server version')
-    arg_parser.add_argument('github_token', help='Github token')
+    arg_parser.add_argument('--github-token', help='Github token')
     args = arg_parser.parse_args()
 
     tag = get_last_release_version()
