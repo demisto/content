@@ -15,22 +15,26 @@ def generate_ip_queries(ips):
     # Cortex traps IP
     ip_fields = ["endPointHeader.agentIp='{}'".format(ip) for ip in ips]
     query_cortex_traps_ip = ' OR '.join(ip_fields)
-    queries['CortexTrapsIP'] = 'SELECT * from tms.threat where {}'.format(query_cortex_traps_ip)
+    queries['CortexTrapsIP'] = (f'SELECT * from tms.threat where '  # guardrails-disable-line
+                                f'{query_cortex_traps_ip}')
 
     # Cortex Analytics IP
     ip_fields = ["endPointHeader.agentIp='{}'".format(ip) for ip in ips]
     query_cortex_analytics_ip = ' OR '.join(ip_fields)
-    queries['CortexAnalyticsIP'] = 'SELECT * from tms.analytics where {}'.format(query_cortex_analytics_ip)
+    queries['CortexAnalyticsIP'] = (f'SELECT * from tms.analytics where '  # guardrails-disable-line
+                                    f'{query_cortex_analytics_ip}')
 
     # Cortex Traffic IP
     ip_fields = ["src='{0}' OR dst='{0}'".format(ip) for ip in ips]
     query_cortex_traffic_ip = ' OR '.join(ip_fields)
-    queries['CortexTrafficIP'] = 'SELECT * from panw.traffic where {}'.format(query_cortex_traffic_ip)
+    queries['CortexTrafficIP'] = (f'SELECT * from panw.traffic where '  # guardrails-disable-line
+                                  f'{query_cortex_traffic_ip}')
 
     # Cortex Threat IP
     ip_fields = ["src='{0}' OR dst='{0}'".format(ip) for ip in ips]
     query_cortex_threat_ip = ' OR '.join(ip_fields)
-    queries['CortexThreatIP'] = 'SELECT * from panw.threat where {}'.format(query_cortex_threat_ip)
+    queries['CortexThreatIP'] = (f'SELECT * from panw.threat where '  # guardrails-disable-line
+                                 f'{query_cortex_threat_ip}')
 
     # Autofocus Sessions IP
     children = [{
@@ -60,17 +64,20 @@ def generate_hash_queries(hashes):
     # Cortex traps Hash
     hash_fields = ["messageData.files.sha256='{}'".format(hash) for hash in hashes]
     query_cortex_traps_hash = ' OR '.join(hash_fields)
-    queries['CortexTrapsHash'] = 'SELECT * from tms.threat where {}'.format(query_cortex_traps_hash)
+    queries['CortexTrapsHash'] = (f'SELECT * from tms.threat where '  # guardrails-disable-line
+                                  f'{query_cortex_traps_hash}')
 
     # Cortex Analytics Hash
     hash_fields = ["messageData.sha256='{}'".format(hash) for hash in hashes]
     query_cortex_analytics_hash = ' OR '.join(hash_fields)
-    queries['CortexAnalyticsHash'] = 'SELECT * from tms.analytics where {}'.format(query_cortex_analytics_hash)
+    queries['CortexAnalyticsHash'] = (f'SELECT * from tms.analytics where '  # guardrails-disable-line
+                                      f'{query_cortex_analytics_hash}')
 
     # Cortex Threat Hash
     hash_fields = ["filedigest='{}'".format(hash) for hash in hashes]
     query_cortex_threat_hash = ' OR '.join(hash_fields)
-    queries['CortexThreatHash'] = 'SELECT * from panw.threat where {}'.format(query_cortex_threat_hash)
+    queries['CortexThreatHash'] = (f'SELECT * from panw.threat where '  # guardrails-disable-line
+                                   f'{query_cortex_threat_hash}')
 
     # Autofocus Hash
     children = [{
@@ -101,7 +108,8 @@ def generate_domain_queries(domains):
     # Cortex Threat Domain
     domain_fields = ["misc LIKE '{}'".format(domain) for domain in domains]
     query_cortex_threat_domain = ' OR '.join(domain_fields)
-    queries['CortexThreatDomain'] = 'SELECT * from panw.threat where {}'.format(query_cortex_threat_domain)
+    queries['CortexThreatDomain'] = (f'SELECT * from panw.threat where '  # guardrails-disable-line
+                                     f'{query_cortex_threat_domain}')
 
     # Autofocus Domain
     children = [{
