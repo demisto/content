@@ -325,14 +325,17 @@ def get_fields_from_hit_object(result_object, response_dict_name):
 
 
 def parse_hits_response(hits, response_dict_name):
-    parsed_objects = []
-    for hit in hits:
-        flattened_obj = {}  # type: ignore
-        flattened_obj.update(hit.get('_source'))
-        flattened_obj['_id'] = hit.get('_id')
-        parsed_obj = get_fields_from_hit_object(flattened_obj, response_dict_name)
-        parsed_objects.append(parsed_obj)
-    return parsed_objects
+    parsed_objects = []  # type: ignore
+    if not hits:
+        return parsed_objects
+    else:
+        for hit in hits:
+            flattened_obj = {}  # type: ignore
+            flattened_obj.update(hit.get('_source'))
+            flattened_obj['_id'] = hit.get('_id')
+            parsed_obj = get_fields_from_hit_object(flattened_obj, response_dict_name)
+            parsed_objects.append(parsed_obj)
+        return parsed_objects
 
 
 def get_search_results(search_object, af_cookie):
@@ -383,13 +386,16 @@ def validate_if_line_needed(category, info_line):
 def get_data_from_line(line, category_name):
     category_indexes = SAMPLE_ANALYSIS_LINE_KEYS.get(category_name).get('indexes')  # type: ignore
     values = line.split(',')
-    sub_categories = {}
-    for sub_category in category_indexes:  # type: ignore
-        sub_category_index = category_indexes.get(sub_category)  # type: ignore
-        sub_categories.update({
-            sub_category: values[sub_category_index]
-        })
-    return sub_categories
+    sub_categories = {}  # type: ignore
+    if not category_indexes:
+        return sub_categories
+    else:
+        for sub_category in category_indexes:  # type: ignore
+            sub_category_index = category_indexes.get(sub_category)  # type: ignore
+            sub_categories.update({
+                sub_category: values[sub_category_index]
+            })
+        return sub_categories
 
 
 def get_data_from_coverage_sub_category(sub_category_name, sub_category_data):
@@ -409,7 +415,7 @@ def parse_coverage_sub_categories(coverage_data):
         if sub_category_name in SAMPLE_ANALYSIS_COVERAGE_KEYS:
             new_sub_category_data = get_data_from_coverage_sub_category(sub_category_name, sub_category_data)
             new_sub_category_name = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get(  # type: ignore
-                'display_name')
+                'display_name')  # type: ignore
             new_coverage[new_sub_category_name] = new_sub_category_data
     return {'coverage': new_coverage}
 
@@ -529,14 +535,18 @@ def autofocus_top_tags_search(scope, tag_class_display, private, public, commodi
 
 
 def parse_top_tags_response(response):
-    top_tags_list = []
-    for tag in response.get('top_tags'):
-        fields_to_extract_from_top_tags = ['tag_name', 'public_tag_name', 'count', 'lasthit']
-        new_tag = {}
-        for field in fields_to_extract_from_top_tags:
-            new_tag[field] = tag[field]
-        top_tags_list.append(new_tag)
-    return top_tags_list
+    top_tags_list = []  # type: ignore
+    top_tags = response.get('top_tags')
+    if not top_tags:
+        return top_tags_list
+    else:
+        for tag in top_tags:
+            fields_to_extract_from_top_tags = ['tag_name', 'public_tag_name', 'count', 'lasthit']
+            new_tag = {}
+            for field in fields_to_extract_from_top_tags:
+                new_tag[field] = tag[field]
+            top_tags_list.append(new_tag)
+        return top_tags_list
 
 
 def get_top_tags_results(af_cookie):
@@ -588,10 +598,11 @@ def get_files_data_from_results(results):
     :return: a list of file objects
     """
     files = []
-    for result in results:
-        raw_file = get_fields_from_hit_object(result, 'file_indicators')
-        file_data = filter_object_entries_by_dict_values(raw_file, 'file_indicators')
-        files.append(file_data)
+    if results:
+        for result in results:
+            raw_file = get_fields_from_hit_object(result, 'file_indicators')
+            file_data = filter_object_entries_by_dict_values(raw_file, 'file_indicators')
+            files.append(file_data)
     return files
 
 
@@ -629,7 +640,7 @@ def filter_object_entries_by_dict_values(result_object, response_dict_name):
     """
     af_params_dict = API_PARAM_DICT.get(response_dict_name)
     result_object_filtered = {}
-    if af_params_dict:
+    if af_params_dict and isinstance(result_object, dict) and isinstance(af_params_dict, dict):
         for key in result_object.keys():
             if key in af_params_dict.values():  # type: ignore
                 result_object_filtered[key] = result_object.get(key)
@@ -842,6 +853,7 @@ def samples_search_results_command():
     files = get_files_data_from_results(results)
     if len(results) < 1:
         md = results = 'No entries found that match the query'
+        status = 'complete'
     else:
         md = tableToMarkdown(f'Search Samples Results is {status}', results)
     context = {
@@ -865,6 +877,7 @@ def sessions_search_results_command():
     files = get_files_data_from_results(results)
     if len(results) < 1:
         md = results = 'No entries found that match the query'
+        status = 'complete'
     else:
         md = tableToMarkdown(f'Search Sessions Results is {status}', results)
     context = {
