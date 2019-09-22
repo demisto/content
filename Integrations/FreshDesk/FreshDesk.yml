@@ -1316,6 +1316,7 @@ script:
     - contextPath: Freshdesk.Ticket.Attachment.Size
       description: Size of the file attached to the ticket
       type: String
+  subtype: python2
   isfetch: true
   runonce: false
   script: '-'
