@@ -302,13 +302,13 @@ script:
     - contextPath: IP.Malicious.Description
       description: For malicious IPs, the reason for the vendor to make the decision
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
     description: Check IP reputation
   - name: domain
     arguments:
@@ -324,13 +324,13 @@ script:
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason for the vendor to make the decision
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
     description: Check domain reputation
   - name: url
     arguments:
@@ -346,13 +346,13 @@ script:
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason for the vendor to make the decision
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
     description: Check URL reputation
   - name: idefense-general
     arguments:
@@ -380,13 +380,13 @@ script:
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason for the vendor to make the decision
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
     description: Get threats from iDefense database. Returns all records of ip/url/domain
   - name: uuid
     arguments:
@@ -414,12 +414,12 @@ script:
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason for the vendor to make the decision
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
     description: Get specific indicator reputation
   runonce: false
