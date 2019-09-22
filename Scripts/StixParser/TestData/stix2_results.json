@@ -21,8 +21,15 @@
     "URL": [
       "http://demisto.com"
     ],
-    "Registry Path Reputation": ["HKEY_LOCAL_MACHINE\\\\SOFTWARE\\\\RKey"],
-    "CVE CVSS Score": ["CVE-2019-7312"]
+    "Username": [
+      "krbtgt"
+    ],
+    "Registry Path Reputation": [
+      "HKEY_LOCAL_MACHINE\\\\SOFTWARE\\\\RKey"
+    ],
+    "CVE CVSS Score": [
+      "CVE-2019-7312"
+    ]
   },
   {
     "http://demisto.com": {

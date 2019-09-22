@@ -44,6 +44,7 @@ configuration:
 script:
   script: ''
   type: python
+  subtype: python2
   commands:
   - name: send-mail
     arguments:
@@ -98,6 +99,9 @@ script:
         values are in the form of a JSON document like {"varname": {"value": "some
         value", "key": "context key"}}. Each var name can either be provided with
         the value or a context key to retrieve the value from.'
+    - name: additionalHeader
+      description: 'A CSV list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2".'
+      isArray: true
     description: Send an email
   runonce: false
 tests:

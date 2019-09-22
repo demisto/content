@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0c927714-3336-4b72-8981-1b6ec67e8f9e
+    taskid: f28ada42-66bd-4b88-8303-f36ab2c389d8
     type: start
     task:
-      id: 0c927714-3336-4b72-8981-1b6ec67e8f9e
+      id: f28ada42-66bd-4b88-8303-f36ab2c389d8
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +32,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: d1733ec7-b7da-4892-88ab-6f2276d75553
+    taskid: 7b533a1d-017d-4d13-875e-e63cc8b5a603
     type: regular
     task:
-      id: d1733ec7-b7da-4892-88ab-6f2276d75553
+      id: 7b533a1d-017d-4d13-875e-e63cc8b5a603
       version: -1
       name: wildfire-upload-file-url
       description: Upload a URL of remote file to WildFire for analysis
@@ -62,10 +62,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 66c534ad-b587-4ced-832b-aafa9497e3df
+    taskid: ae094baf-b9ad-4e21-8bbe-00343b7167d9
     type: regular
     task:
-      id: 66c534ad-b587-4ced-832b-aafa9497e3df
+      id: ae094baf-b9ad-4e21-8bbe-00343b7167d9
       version: -1
       name: wildfire-report
       description: Retrieve results for a file hash using WildFire
@@ -81,7 +81,9 @@ tasks:
       hash:
         simple: ebb031c3945e884e695dbc63c52a5efcd075375046c49729980073585ee13c52
       md5: {}
-      verbose: {}
+      sha256: {}
+      verbose:
+        simple: "true"
     separatecontext: false
     view: |-
       {
@@ -95,10 +97,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: c79c46ab-67c7-4ed5-81c7-94b436759171
+    taskid: 034fe1de-9dbd-4b24-83cf-81688ddf5f1b
     type: condition
     task:
-      id: c79c46ab-67c7-4ed5-81c7-94b436759171
+      id: 034fe1de-9dbd-4b24-83cf-81688ddf5f1b
       version: -1
       name: test wildfire-report
       description: Verifies context
@@ -134,10 +136,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: ba70ee63-2a61-430d-8ff9-a876cf1fca7d
+    taskid: a0ec8492-aa5b-4027-866b-b17cdd5fda63
     type: regular
     task:
-      id: ba70ee63-2a61-430d-8ff9-a876cf1fca7d
+      id: a0ec8492-aa5b-4027-866b-b17cdd5fda63
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -168,10 +170,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 84ae56a3-af55-455f-8183-146507522370
+    taskid: a2c8bca0-4796-4f11-88eb-d93cc369a94e
     type: regular
     task:
-      id: 84ae56a3-af55-455f-8183-146507522370
+      id: a2c8bca0-4796-4f11-88eb-d93cc369a94e
       version: -1
       name: wildfire-upload
       description: Upload file to WildFire for analysis.
@@ -198,10 +200,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 72ea09c1-bde6-489c-832b-556d88d53703
+    taskid: d73c25ef-a475-4b40-8dc6-b0a89c437d0c
     type: regular
     task:
-      id: 72ea09c1-bde6-489c-832b-556d88d53703
+      id: d73c25ef-a475-4b40-8dc6-b0a89c437d0c
       version: -1
       name: wildfire-report
       description: Retrieve results for a file hash using WildFire
@@ -213,13 +215,16 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
-      format: {}
+      format:
+        simple: xml
       hash:
         complex:
           root: WildFire
           accessor: Report.SHA256
       md5: {}
-      verbose: {}
+      sha256: {}
+      verbose:
+        simple: "true"
     separatecontext: false
     view: |-
       {
@@ -233,10 +238,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 6efa7e72-6f2b-4f2e-8e8c-34c6304df2ee
+    taskid: c16ea510-fc2d-4328-8d3c-b8780c2dda56
     type: title
     task:
-      id: 6efa7e72-6f2b-4f2e-8e8c-34c6304df2ee
+      id: c16ea510-fc2d-4328-8d3c-b8780c2dda56
       version: -1
       name: Done
       type: title
@@ -255,10 +260,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 254998ea-beb2-44bc-8235-70482b34cfca
+    taskid: 82eb1ada-e80f-4d78-8710-25d3fd79d9d0
     type: condition
     task:
-      id: 254998ea-beb2-44bc-8235-70482b34cfca
+      id: 82eb1ada-e80f-4d78-8710-25d3fd79d9d0
       version: -1
       name: Search for hashes for report download
       type: condition
@@ -298,10 +303,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 48601c72-c422-4591-891d-a23bb8ba4f69
+    taskid: f6ad491e-bb93-472e-8465-312f789e054c
     type: regular
     task:
-      id: 48601c72-c422-4591-891d-a23bb8ba4f69
+      id: f6ad491e-bb93-472e-8465-312f789e054c
       version: -1
       name: wildfire-report
       description: Retrieve results for a file hash using WildFire
@@ -339,10 +344,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 5a434c5e-5ba4-4853-8192-df3aa13621b2
+    taskid: 9f74ff3c-4383-4742-80dd-8e2a1ff2b9c4
     type: regular
     task:
-      id: 5a434c5e-5ba4-4853-8192-df3aa13621b2
+      id: 9f74ff3c-4383-4742-80dd-8e2a1ff2b9c4
       version: -1
       name: wildfire-report - no network data
       description: Retrieve results for a file hash using WildFire
@@ -354,10 +359,12 @@ tasks:
       '#none#':
       - "41"
     scriptarguments:
-      format: {}
+      format:
+        simple: xml
       hash:
         simple: bf31789a028bfbc44e5c1ae05d8e412dd521bedc7f0c7ec6df3dc4078210a25e
       md5: {}
+      sha256: {}
       verbose: {}
     separatecontext: false
     view: |-
@@ -372,10 +379,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 1e70cea5-de42-45c8-86aa-19f5a5e7d10f
+    taskid: f08c6029-a877-4509-882d-0c340dbcbf13
     type: regular
     task:
-      id: 1e70cea5-de42-45c8-86aa-19f5a5e7d10f
+      id: f08c6029-a877-4509-882d-0c340dbcbf13
       version: -1
       name: http download test data file
       description: Sends http request. Returns the response as json.
@@ -415,10 +422,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: 681f4648-1b0f-4a9b-8f40-d1aec0b1cbf0
+    taskid: 3c5545c5-3e96-4478-860d-44d1fcc3bb0f
     type: regular
     task:
-      id: 681f4648-1b0f-4a9b-8f40-d1aec0b1cbf0
+      id: 3c5545c5-3e96-4478-860d-44d1fcc3bb0f
       version: -1
       name: wildfire-get-verdicts
       description: Get a verdict regarding multiple hashes
@@ -445,10 +452,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: 3b52f5dc-c335-4f1d-8bf8-b74fcb892417
+    taskid: a35fe886-f7f0-494e-80c6-aca8089e532f
     type: regular
     task:
-      id: 3b52f5dc-c335-4f1d-8bf8-b74fcb892417
+      id: a35fe886-f7f0-494e-80c6-aca8089e532f
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -479,10 +486,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: 1d7e0b28-d40e-479d-8614-2db776814439
+    taskid: 88d4fad7-d40e-4c7c-863c-5b78c77a2692
     type: condition
     task:
-      id: 1d7e0b28-d40e-479d-8614-2db776814439
+      id: 88d4fad7-d40e-4c7c-863c-5b78c77a2692
       version: -1
       name: test wildfire-get-verdicts
       type: condition
@@ -514,10 +521,10 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: 60b078db-0e39-45ae-84c9-3c4cbf70d5a6
+    taskid: a002b378-fed8-475a-8857-97c4631c505d
     type: regular
     task:
-      id: 60b078db-0e39-45ae-84c9-3c4cbf70d5a6
+      id: a002b378-fed8-475a-8857-97c4631c505d
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -548,10 +555,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: d134e5a1-eab7-46b9-80bd-95a28a6768de
+    taskid: 07894136-5607-410e-81ed-3ce0112d29dc
     type: regular
     task:
-      id: d134e5a1-eab7-46b9-80bd-95a28a6768de
+      id: 07894136-5607-410e-81ed-3ce0112d29dc
       version: -1
       name: wildfire-get-verdict
       description: Get a verdict regarding a hash
@@ -578,10 +585,10 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: b3376600-f4b7-4282-816b-523c6a2806ca
+    taskid: ad4a7fd8-b470-46e7-8624-dc323756d235
     type: condition
     task:
-      id: b3376600-f4b7-4282-816b-523c6a2806ca
+      id: ad4a7fd8-b470-46e7-8624-dc323756d235
       version: -1
       name: test wildfire-get-verdict
       type: condition
@@ -616,10 +623,10 @@ tasks:
     ignoreworker: false
   "28":
     id: "28"
-    taskid: 91c4cb9b-1656-4e69-89fa-b08e8a55834b
+    taskid: e9fa97a1-6b91-4349-8580-daa2f19986d4
     type: regular
     task:
-      id: 91c4cb9b-1656-4e69-89fa-b08e8a55834b
+      id: e9fa97a1-6b91-4349-8580-daa2f19986d4
       version: -1
       name: file (with sha1 value in the argument file)
       description: Retrieve results for a file hash using WildFire
@@ -655,10 +662,10 @@ tasks:
     ignoreworker: false
   "29":
     id: "29"
-    taskid: 3ae138b5-4b9f-43d2-815c-d0a3130223ec
+    taskid: d92da024-988b-4b5b-8079-18284bb63b77
     type: regular
     task:
-      id: 3ae138b5-4b9f-43d2-815c-d0a3130223ec
+      id: d92da024-988b-4b5b-8079-18284bb63b77
       version: -1
       name: commentsToContext
       description: "Takes the comments of a given entry ID and stores them in the
@@ -691,10 +698,10 @@ tasks:
     ignoreworker: false
   "30":
     id: "30"
-    taskid: ce1c6a33-e6ab-466d-84ff-86189cfeb0b8
+    taskid: 7f57c5b7-cc18-46dd-8933-964da95e90f0
     type: regular
     task:
-      id: ce1c6a33-e6ab-466d-84ff-86189cfeb0b8
+      id: 7f57c5b7-cc18-46dd-8933-964da95e90f0
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -725,10 +732,10 @@ tasks:
     ignoreworker: false
   "31":
     id: "31"
-    taskid: c9de5f40-ba4c-48ff-8e4e-3711d1486ee2
+    taskid: 50b553cd-c03c-494b-8ac8-044e0bbabd2e
     type: condition
     task:
-      id: c9de5f40-ba4c-48ff-8e4e-3711d1486ee2
+      id: 50b553cd-c03c-494b-8ac8-044e0bbabd2e
       version: -1
       name: test file with sha1 input
       type: condition
@@ -761,10 +768,10 @@ tasks:
     ignoreworker: false
   "32":
     id: "32"
-    taskid: f16a7183-fd9f-4732-893b-6b274855a6c7
+    taskid: ba16d27c-a964-47e4-845d-4902f579b186
     type: regular
     task:
-      id: f16a7183-fd9f-4732-893b-6b274855a6c7
+      id: ba16d27c-a964-47e4-845d-4902f579b186
       version: -1
       name: file_command_enrichment_test_script_helper
       script: file_command_enrichment_test_script_helper
@@ -788,10 +795,10 @@ tasks:
     ignoreworker: false
   "33":
     id: "33"
-    taskid: 66941884-223b-4e6a-8c25-786487551128
+    taskid: 90f1e1a1-4467-4793-86b4-ddcd46494d57
     type: condition
     task:
-      id: 66941884-223b-4e6a-8c25-786487551128
+      id: 90f1e1a1-4467-4793-86b4-ddcd46494d57
       version: -1
       name: Test enrichment of md5 does exist
       type: condition
@@ -835,10 +842,10 @@ tasks:
     ignoreworker: false
   "34":
     id: "34"
-    taskid: 0568a960-4bce-4023-8727-3b5b51576db0
+    taskid: c91990dd-bc80-4ab8-8950-ab4c472e7a2b
     type: condition
     task:
-      id: 0568a960-4bce-4023-8727-3b5b51576db0
+      id: c91990dd-bc80-4ab8-8950-ab4c472e7a2b
       version: -1
       name: Test enrichment of sha1 does not exist
       type: condition
@@ -886,10 +893,10 @@ tasks:
     ignoreworker: false
   "35":
     id: "35"
-    taskid: a6623f8a-9a4d-456a-8062-2053915842a0
+    taskid: 00d53aa9-a814-45f0-8ca2-ed0e69c84510
     type: regular
     task:
-      id: a6623f8a-9a4d-456a-8062-2053915842a0
+      id: 00d53aa9-a814-45f0-8ca2-ed0e69c84510
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -920,10 +927,10 @@ tasks:
     ignoreworker: false
   "36":
     id: "36"
-    taskid: f93ee62c-f444-499b-8abb-1f5f86e32030
+    taskid: afdddb48-288d-429d-86f8-fdafd9c5c734
     type: regular
     task:
-      id: f93ee62c-f444-499b-8abb-1f5f86e32030
+      id: afdddb48-288d-429d-86f8-fdafd9c5c734
       version: -1
       name: wildfire-get-sample
       description: Retrieve a sample from WildFire
@@ -951,10 +958,10 @@ tasks:
     ignoreworker: false
   "37":
     id: "37"
-    taskid: a74d3838-214e-4f4a-8dbb-5c965644f839
+    taskid: b0601e85-2589-46cd-8192-cf68e7c51d75
     type: condition
     task:
-      id: a74d3838-214e-4f4a-8dbb-5c965644f839
+      id: b0601e85-2589-46cd-8192-cf68e7c51d75
       version: -1
       name: Test wildfire-get-sample
       type: condition
@@ -989,10 +996,10 @@ tasks:
     ignoreworker: false
   "38":
     id: "38"
-    taskid: 419de3b0-580d-42dd-8be4-86651afa913f
+    taskid: 5930f444-8e1e-4759-82f6-8e9bd1782588
     type: regular
     task:
-      id: 419de3b0-580d-42dd-8be4-86651afa913f
+      id: 5930f444-8e1e-4759-82f6-8e9bd1782588
       version: -1
       name: wildfire-get-sample benign
       description: Retrieve a sample
@@ -1020,10 +1027,10 @@ tasks:
     ignoreworker: false
   "39":
     id: "39"
-    taskid: 789c5249-ef3e-40e2-875d-314e263ff9f5
+    taskid: 2e5d657c-347e-4f5d-81e4-3470ec43280d
     type: regular
     task:
-      id: 789c5249-ef3e-40e2-875d-314e263ff9f5
+      id: 2e5d657c-347e-4f5d-81e4-3470ec43280d
       version: -1
       name: comments to context
       description: "Takes the comments of a given entry ID and stores them in the
@@ -1056,10 +1063,10 @@ tasks:
     ignoreworker: false
   "40":
     id: "40"
-    taskid: 06ce4eea-3c3c-4902-803b-7605f9a38c20
+    taskid: 436df450-694f-43fc-8f89-59ccd186e0cb
     type: condition
     task:
-      id: 06ce4eea-3c3c-4902-803b-7605f9a38c20
+      id: 436df450-694f-43fc-8f89-59ccd186e0cb
       version: -1
       name: info message of sample not found
       type: condition
@@ -1093,10 +1100,10 @@ tasks:
     ignoreworker: false
   "41":
     id: "41"
-    taskid: c6794c7e-1786-48a3-89df-56275974d978
+    taskid: 3686af6e-04e1-4793-8d6e-cf6c15429768
     type: regular
     task:
-      id: c6794c7e-1786-48a3-89df-56275974d978
+      id: 3686af6e-04e1-4793-8d6e-cf6c15429768
       version: -1
       name: wildfire-file
       description: Retrieve results for a file hash using WildFire
@@ -1125,10 +1132,10 @@ tasks:
     ignoreworker: false
   "42":
     id: "42"
-    taskid: 32b19684-cc6f-43fa-8a8d-a693d9e566b3
+    taskid: 7d8748a9-407c-400c-8d3e-e42e8039a41f
     type: regular
     task:
-      id: 32b19684-cc6f-43fa-8a8d-a693d9e566b3
+      id: 7d8748a9-407c-400c-8d3e-e42e8039a41f
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1159,10 +1166,10 @@ tasks:
     ignoreworker: false
   "43":
     id: "43"
-    taskid: 48978961-f56f-4b37-8302-389f0e4971e3
+    taskid: 0e736599-1fab-45e9-8a5f-7172593632c6
     type: regular
     task:
-      id: 48978961-f56f-4b37-8302-389f0e4971e3
+      id: 0e736599-1fab-45e9-8a5f-7172593632c6
       version: -1
       name: FileCreateAndUpload
       description: |
@@ -1193,10 +1200,10 @@ tasks:
     ignoreworker: false
   "44":
     id: "44"
-    taskid: 91586d36-8928-46c8-8317-1203d07a7d69
+    taskid: 4b7416d2-ddbc-4b83-858b-45256381b4cb
     type: regular
     task:
-      id: 91586d36-8928-46c8-8317-1203d07a7d69
+      id: 4b7416d2-ddbc-4b83-858b-45256381b4cb
       version: -1
       name: wildfire-upload non supported file type
       description: Uploads a file to WildFire for analysis.
@@ -1225,10 +1232,10 @@ tasks:
     ignoreworker: false
   "45":
     id: "45"
-    taskid: 26a05e42-a4f2-4e1f-8c22-fa6edb47e433
+    taskid: adcfac59-aaf3-46f0-8687-057aec3dfc31
     type: regular
     task:
-      id: 26a05e42-a4f2-4e1f-8c22-fa6edb47e433
+      id: adcfac59-aaf3-46f0-8687-057aec3dfc31
       version: -1
       name: Comments of warning message to context
       description: "Takes the comments of a given entry ID and stores them in the
@@ -1261,10 +1268,10 @@ tasks:
     ignoreworker: false
   "46":
     id: "46"
-    taskid: fd8b2ff0-578b-4dbc-8069-57fd42783766
+    taskid: 23e83811-29a0-4baf-8cd9-eb6124e7c68b
     type: condition
     task:
-      id: fd8b2ff0-578b-4dbc-8069-57fd42783766
+      id: 23e83811-29a0-4baf-8cd9-eb6124e7c68b
       version: -1
       name: Warning message of not supported file type
       type: condition

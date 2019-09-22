@@ -4,7 +4,7 @@ import sys
 
 from Tests.scripts.constants import *
 from Tests.test_utils import print_error, print_warning, run_command, get_yaml, get_json, checked_type, \
-    get_release_notes_file_path
+    get_release_notes_file_path, get_latest_release_notes_text
 
 try:
     from pykwalify.core import Core
@@ -45,7 +45,8 @@ class StructureValidator(object):
         SCRIPT_JS_REGEX,
         INTEGRATION_JS_REGEX,
         INTEGRATION_PY_REGEX,
-        REPUTATION_REGEX
+        REPUTATION_REGEX,
+        BETA_INTEGRATION_YML_REGEX
     ]
     REGEXES_TO_SCHEMA_DICT = {
         INTEGRATION_REGEX: "integration",
@@ -83,8 +84,8 @@ class StructureValidator(object):
         if not self.is_added_file:  # In case the file is modified
             self.is_id_not_modified()
             self.is_valid_fromversion_on_modified()
-
-            if not self.is_release_branch():  # In case of release branch we allow to remove release notes
+            # In case of release branch we allow to remove release notes
+            if not self.is_release_branch() and not self._is_beta_integration():
                 self.validate_file_release_notes()
 
         return self._is_valid
@@ -215,6 +216,11 @@ class StructureValidator(object):
 
         return False
 
+    def _is_beta_integration(self):
+        """Checks if file is under Beta_integration dir"""
+        return re.match(BETA_INTEGRATION_REGEX, self.file_path, re.IGNORECASE) or \
+            re.match(BETA_INTEGRATION_YML_REGEX, self.file_path, re.IGNORECASE)
+
     def validate_file_release_notes(self):
         """Validate that the file has proper release notes when modified.
 
@@ -226,8 +232,10 @@ class StructureValidator(object):
 
         if os.path.isfile(self.file_path):
             rn_path = get_release_notes_file_path(self.file_path)
+            rn = get_latest_release_notes_text(rn_path)
+
             # check rn file exists and contain text
-            if not os.path.isfile(rn_path) or os.stat(rn_path).st_size == 0:
+            if rn is None:
                 print_error('File {} is missing releaseNotes, Please add it under {}'.format(self.file_path, rn_path))
                 self._is_valid = False
 
