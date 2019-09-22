@@ -40,5 +40,9 @@ Example:
 ![image](https://user-images.githubusercontent.com/7270217/40935354-8406dcc4-6840-11e8-9b0c-b0a9c4bd8a99.png)
 
 
+### Posting Documentation
+The documentation should be posted in the integration/automation script package directory as `README.md`
+
+
 ***
 [Next step - Mapping](https://github.com/demisto/etc/wiki/Creating-an-Integration-in-Demisto-%5BMapping%5D)
