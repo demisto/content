@@ -390,8 +390,6 @@ def get_threats_command():
 
     # Parse response into context & content entries
     if threats:
-        title = 'Sentinel One - Getting Threat List \n' + \
-                'Provides summary information and details for all the threats that matched your search criteria.'
         for threat in threats:
             if not rank or (rank and threat.get('rank') >= rank):
                 contents.append({
@@ -437,7 +435,10 @@ def get_threats_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
+        'HumanReadable': tableToMarkdown('Sentinel One - Getting Threat List \n' +
+                                         'Provides summary information and details for all the threats '
+                                         'that matched your search criteria.',
+                                         contents, removeNull=True),
         'EntryContext': context
     })
 
@@ -1429,7 +1430,7 @@ def disconnect_agent_from_network():
     agents_id = demisto.args().get('agent_id')
 
     # Make request and get raw response
-    agents = connect_to_network_request(agents_id)
+    agents = disconnect_from_network_request(agents_id)
     agents_affected = agents.get('data', {}).get('affected', 0)
 
     # Parse response into context & content entries
