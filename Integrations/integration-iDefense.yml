@@ -107,7 +107,7 @@ script:
     function check_threats(type, value, uniq_field, results) {
         if (!results) {
             var cmd_url = 'threatindicator/v0/' + type.toLowerCase();
-            var query = {'key.query' : value};
+            var query = {'key.values' : value};
             results = get_full_data(cmd_url, query);
 
             if (results.length === 0) {
@@ -337,7 +337,7 @@ script:
     - name: url
       required: true
       default: true
-      description: URL to check
+      description: URL to check, (must start with http://)
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
