@@ -49,7 +49,7 @@ class Client:
             headers=headers
         )
 
-        if res.status_code ==404:
+        if res.status_code == 404:
             return_error(res.json().get('text'))
 
         # Handle error responses gracefully
@@ -71,9 +71,9 @@ class Client:
 
         self.session = res.json().get('data').get('session')
 
-    def parse_parameters(self, parameters):
+    def parse_sensor_parameters(self, parameters):
         sensors = parameters.split(';')
-        parameter_conditions=[]
+        parameter_conditions = []
 
         for sensor in sensors:
             sensor_name = sensor.split('{')[0]
@@ -87,6 +87,16 @@ class Client:
                     'value': param.split('=')[1]
                 })
             parameter_conditions.append(tmp_item)
+
+        return parameter_conditions
+
+    def parse_action_parameters(self, parameters):
+        parameters = parameters.split(';')
+        parameter_conditions = []
+        for param in parameters:
+            parameter_conditions.append({
+                'key': param.split('=')[0],
+                'value': param.split('=')[1]})
 
         return parameter_conditions
 
@@ -110,9 +120,9 @@ class Client:
 
         if parameters:
             try:
-                parameters_condition = self.parse_parameters(parameters)
+                parameters_condition = self.parse_sensor_parameters(parameters)
             except Exception:
-                return_error('parameters parsing failed ')
+                return_error('Failed to parse question parameters.')
 
         res = self.do_request('POST', 'parse_question', {'text': text}).get('data')[0]
 
@@ -121,7 +131,7 @@ class Client:
 
     def create_question(self, question_body):
         res = self.do_request('POST', 'questions', question_body)
-        return res.get('data').get('id'),res
+        return res.get('data').get('id'), res
 
     def parse_question_results(self, result):
         results_sets = result.get('data').get('result_sets')[0]
@@ -130,13 +140,13 @@ class Client:
         if results_sets.get('row_count') == 0:
             return []
 
-        rows=[]
+        rows = []
         columns = []
         for column in results_sets.get('columns'):
-            columns.append(column.get('name'))
+            columns.append(column.get('name').replace(' ', ''))
 
         for row in results_sets.get('rows'):
-            i=0
+            i = 0
             tmp_row = {}
             for item in row.get('data'):
                 tmp_row[columns[i]] = item[0].get('text')
@@ -323,12 +333,38 @@ class Client:
         item['OwnerUserId'] = action['owner_user_id']
         return item
 
+    def get_host_item(self, client):
+        item ={}
+        item['ComputerId'] = client['computer_id']
+        item['FullVersion'] = client['full_version']
+        item['HostName'] = client['host_name']
+        item['IpAddressClient'] = client['ipaddress_client']
+        item['IpAddressServer'] = client['ipaddress_server']
+        item['LastRegistration'] = client['last_registration']
+        item['Status'] = client['status']
+        return item
+
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
 def test_module(client):
     client.do_request('GET', 'system_status')
+
+
+def get_system_status(client):
+    raw_response = client.do_request('GET', 'system_status')
+    response = raw_response.get('data')
+
+    context = []
+    for item in response:
+        if item.get('computer_id'):
+            context.append(client.get_host_item(item))
+
+    context = createContext(context, removeNull=True)
+    outputs = {'Tanium.Client(val.ComputerId === obj.ComputerId)': context}
+    human_readable = tableToMarkdown('System status', context)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
 
 def get_package(client, data_args):
@@ -347,7 +383,6 @@ def get_package(client, data_args):
     params = package.get('Parameters')
     files = package.get('Files')
 
-
     context = createContext(package, removeNull=True)
     outputs = {'TaniumPackage(val.ID === obj.ID)': context}
 
@@ -357,25 +392,6 @@ def get_package(client, data_args):
     human_readable = tableToMarkdown('Package information', package)
     human_readable += tableToMarkdown('Parameters information', params)
     human_readable += tableToMarkdown('Files information', files)
-    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
-
-
-def get_packages(client, data_args):
-    count = int(data_args.get('count'))
-    raw_response = client.do_request('GET', 'packages')
-
-    packages = []
-
-    for package in raw_response.get('data')[:-1][:count]:
-        package = client.get_package_item(package)
-
-        del package['Files']
-        del package['Parameters']
-        packages.append(package)
-
-    context = createContext(packages, removeNull=True)
-    outputs = {'TaniumPackage(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Packages', packages)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
 
@@ -393,57 +409,28 @@ def create_package(client, data_args):
     context = createContext(package, removeNull=True)
     outputs = {'TaniumPackage(val.ID === obj.ID)': context}
 
-    del package['Parameters']
-    del package['Files']
-
     human_readable = tableToMarkdown('Package information', package)
     human_readable += tableToMarkdown('Parameters information', params)
     human_readable += tableToMarkdown('Files information', files)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
-def ask_question(client, data_args):
-    question_text = data_args.get('question-text')
-    parameters = data_args.get('parameters')
 
-    body = client.parse_question(question_text, parameters)
-    id, res = client.create_question(body)
-    context = {'ID': id,'text': question_text}
-    context = createContext(context, removeNull=True)
-    outputs = {'Tanium.Question(val.ID === obj.ID)': context}
-    return_outputs(readable_output='New question created. ID: ' + str(id), outputs=outputs, raw_response=res)
-
-
-def get_question_results(client, data_args):
-    id = data_args.get('question-id')
-    res = client.do_request('GET', 'result_data/question/' + str(id))
-
-    rows = client.parse_question_results(res)
-
-    if rows is None:
-        return return_outputs(readable_output='Question is still executing, Question id: ' + str(id),
-                              outputs={}, raw_response=res)
-
-    context = {'QuestionID': id,'Results':rows}
-    context = createContext(context, removeNull=True)
-    outputs = {'Tanium.QuestionResult(val.QuestionID === question_id)': context}
-    human_readable = tableToMarkdown('question results:', rows)
-    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
-
-
-def get_sensors(client, data_args):
+def get_packages(client, data_args):
     count = int(data_args.get('count'))
-    res = client.do_request('GET', 'sensors/')
+    raw_response = client.do_request('GET', 'packages')
+    packages = []
 
-    sensors=[]
-    for sensor in res.get('data')[:-1][:count]:
-        sensor = client.get_sensor_item(sensor)
-        del sensor['Parameters']
-        sensors.append(sensor)
+    for package in raw_response.get('data')[:-1][:count]:
+        package = client.get_package_item(package)
 
-    context = createContext(sensors, removeNull=True)
-    outputs = {'Tanium.Sensor(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Sensors list:', sensors)
-    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+        del package['Files']
+        del package['Parameters']
+        packages.append(package)
+
+    context = createContext(packages, removeNull=True)
+    outputs = {'TaniumPackage(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Packages', packages)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
 
 def get_sensor(client, data_args):
@@ -472,6 +459,64 @@ def get_sensor(client, data_args):
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
 
+def get_sensors(client, data_args):
+    count = int(data_args.get('count'))
+    res = client.do_request('GET', 'sensors/')
+
+    sensors = []
+    for sensor in res.get('data')[:-1][:count]:
+        sensor = client.get_sensor_item(sensor)
+        del sensor['Parameters']
+        sensors.append(sensor)
+
+    context = createContext(sensors, removeNull=True)
+    outputs = {'TaniumSensor(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Sensors', sensors)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
+
+def ask_question(client, data_args):
+    question_text = data_args.get('question-text')
+    parameters = data_args.get('parameters')
+
+    body = client.parse_question(question_text, parameters)
+    id, res = client.create_question(body)
+    context = {'ID': id}
+    context = createContext(context, removeNull=True)
+    outputs = {'Tanium.Question(val.ID === obj.ID)': context}
+    return_outputs(readable_output='New question created. ID = ' + str(id), outputs=outputs, raw_response=res)
+
+
+def get_question_metadata(client, data_args):
+    id = data_args.get('question-id')
+    raw_response = client.do_request('GET', 'questions/' + str(id))
+    question_data = raw_response.get('data')
+    question_data = client.get_question_item(question_data)
+
+    context = createContext(question_data, removeNull=True)
+    outputs = {'Tanium.Question(val.Tanium.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Question results', question_data)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+
+def get_question_result(client, data_args):
+    id = data_args.get('question-id')
+    res = client.do_request('GET', 'result_data/question/' + str(id))
+
+    rows = client.parse_question_results(res)
+
+    if rows is None:
+        context = {'QuestionID': id, 'Status': 'Completed'}
+        return return_outputs(readable_output='Question is still executing, Question id: ' + str(id),
+                              outputs={'Tanium.QuestionResult(val.QuestionID === id)': context}, raw_response=res)
+
+    context = {'QuestionID': id, 'Status': 'Completed', 'Results': rows}
+    context = createContext(context, removeNull=True)
+    outputs = {'Tanium.QuestionResult(val.QuestionID === id)': context}
+    human_readable = tableToMarkdown('Question results', rows)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
+
 def create_saved_question(client, data_args):
     id = data_args.get('question-id')
     name = data_args.get('name')
@@ -484,65 +529,6 @@ def create_saved_question(client, data_args):
     context = createContext(response, removeNull=True)
     outputs = {'Tanium.SavedQuestion(val.ID === obj.ID)': context}
     return_outputs(readable_output='Question saved. ID = ' + str(response['ID']), outputs=outputs, raw_response=raw_response)
-
-
-def get_saved_questions(client, data_args):
-    count = int(data_args.get('count'))
-    raw_response = client.do_request('GET', 'saved_questions')
-
-    questions=[]
-    for question in raw_response.get('data')[:-1][:count]:
-        question = client.get_saved_question_item(question)
-        questions.append(question)
-
-    context = createContext(questions, removeNull=True)
-    outputs = {'Tanium.SavedQuestion(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Saved questions:', questions)
-    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
-
-
-def get_saved_question_results(client, data_args):
-    id = data_args.get('question-id')
-
-    res = client.do_request('GET', 'result_data/saved_question/' + str(id))
-
-    rows = client.parse_question_results(res)
-    if rows is None:
-        return return_outputs(readable_output='Question is still executing, Question id: ' + str(id),
-                              outputs={}, raw_response=res)
-
-    context = {'SavedQuestionID': id, 'Results':rows}
-    context = createContext(context, removeNull=True)
-    outputs = {'Tanium.SavedQuestionResult(val.Tanium.SavedQuestionID === obj.ID)': context}
-    human_readable = tableToMarkdown('question results:', rows)
-    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
-
-
-def get_system_status(client):
-    raw_response = client.do_request('GET', 'system_status')
-    response = raw_response.get('data')
-
-    context = []
-    for item in response:
-        if item.get('computer_id'):
-            context.append(item)
-
-    context = createContext(context, removeNull=True)
-    outputs = {'Tanium.SystemStatus(val.computer_id === obj.computer_id)': context}
-    human_readable = tableToMarkdown('System status:', context)
-    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
-
-
-def get_question_metadata(client, data_args):
-    id = data_args.get('question-id')
-    raw_response = client.do_request('GET', 'questions/' + str(id))
-    question_data = raw_response.get('data')
-    question_data = client.get_question_item(question_data)
-
-    context = createContext(question_data, removeNull=True)
-    outputs = {'Tanium.Question(val.Tanium.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('question results:', question_data)
-    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
 
 def get_saved_question_metadata(client, data_args):
@@ -565,18 +551,104 @@ def get_saved_question_metadata(client, data_args):
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
 
-def get_saved_actions(client, data_args):
+def get_saved_question_result(client, data_args):
+    id = data_args.get('question-id')
+
+    res = client.do_request('GET', 'result_data/saved_question/' + str(id))
+
+    rows = client.parse_question_results(res)
+    if rows is None:
+        return return_outputs(readable_output='Question is still executing, Question id: ' + str(id),
+                              outputs={'Status': 'Pending'}, raw_response=res)
+
+    context = {'SavedQuestionID': id, 'Status': 'Completed', 'Results': rows}
+    context = createContext(context, removeNull=True)
+    outputs = {'Tanium.SavedQuestionResult(val.Tanium.SavedQuestionID === obj.ID)': context}
+    human_readable = tableToMarkdown('question results:', rows)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
+
+
+def get_saved_questions(client, data_args):
     count = int(data_args.get('count'))
-    raw_response = client.do_request('GET', 'saved_actions')
+    raw_response = client.do_request('GET', 'saved_questions')
+
+    questions=[]
+    for question in raw_response.get('data')[:-1][:count]:
+        question = client.get_saved_question_item(question)
+        questions.append(question)
+
+    context = createContext(questions, removeNull=True)
+    outputs = {'Tanium.SavedQuestion(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Saved questions', questions)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+
+def create_action(client, data_args):
+    package_id = data_args.get('package-id')
+    parameters = data_args.get('parameters')
+    parameters_condition = []
+
+    if parameters:
+        try:
+            parameters_condition = client.parse_action_parameters(parameters)
+        except Exception:
+            return_error('Failed to parse action parameters.')
+
+    body = {'package_spec': {'source_id': package_id}}
+
+    if parameters_condition:
+        body['package_spec']['parameters'] = []
+        for param in parameters_condition:
+            body['package_spec']['parameters'].append(param)
+
+    raw_response = client.do_request('POST', 'actions', body)
+    action = client.get_action_item(raw_response.get('data'))
+
+    context = createContext(action, removeNull=True)
+    outputs = {'Tanium.Action(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Action created', action)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+
+def get_action(client, data_args):
+    id = data_args.get('id')
+    raw_response = client.do_request('GET', 'actions/' + str(id))
+    action = raw_response.get('data')
+    action = client.get_action_item(action)
+
+    context = createContext(action, removeNull=True)
+    outputs = {'Tanium.Action(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Action information', action)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+
+def get_actions(client, data_args):
+    count = int(data_args.get('count'))
+    raw_response = client.do_request('GET', 'actions')
 
     actions = []
     for action in raw_response.get('data')[:-1][:count]:
-        action = client.get_saved_action_item(action)
+        action = client.get_action_item(action)
         actions.append(action)
 
     context = createContext(actions, removeNull=True)
+    outputs = {'Tanium.Action(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Actions', actions)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+
+def create_saved_action(client, data_args):
+    action_group_id = data_args.get('action-group-id')
+    package_id = data_args.get('package-id')
+    name = data_args.get('name')
+
+    body = {'name': name, 'action_group': {'id': action_group_id}, 'package_spec': {'id': package_id}}
+    raw_response = client.do_request('POST', 'saved_actions', body)
+    response = client.get_saved_action_item(raw_response.get('data'))
+
+    context = createContext(response, removeNull=True)
     outputs = {'Tanium.SavedAction(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Saved actions:', actions)
+    human_readable = tableToMarkdown('Saved action created', context)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
 
@@ -600,58 +672,18 @@ def get_saved_action(client, data_args):
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
 
-def create_saved_action(client, data_args):
-    action_group_id = data_args.get('action-group-id')
-    package_id = data_args.get('package-id')
-    name = data_args.get('name')
-
-    body = {'name': name, 'action_group': {'id': action_group_id}, 'package_spec': {'id': package_id}}
-    raw_response = client.do_request('POST', 'saved_actions', body)
-    response = client.get_saved_action_item(raw_response.get('data'))
-
-    context = createContext(response, removeNull=True)
-    outputs = {'Tanium.SavedAction(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Saved action created', context)
-    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
-
-
-def create_action(client, data_args):
-    package_id = data_args.get('package-name')
-
-    body = {'package_spec': {'name': package_id}}
-    raw_response = client.do_request('POST', 'actions', body)
-    action = client.get_action_item(raw_response.get('data'))
-
-    context = createContext(action, removeNull=True)
-    outputs = {'Tanium.Action(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Action created', action)
-    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
-
-
-def get_actions(client, data_args):
+def get_saved_actions(client, data_args):
     count = int(data_args.get('count'))
-    raw_response = client.do_request('GET', 'actions')
+    raw_response = client.do_request('GET', 'saved_actions')
 
     actions = []
     for action in raw_response.get('data')[:-1][:count]:
-        action = client.get_action_item(action)
+        action = client.get_saved_action_item(action)
         actions.append(action)
 
     context = createContext(actions, removeNull=True)
-    outputs = {'Tanium.Action(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Actions:', actions)
-    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
-
-
-def get_action(client, data_args):
-    id = data_args.get('id')
-    raw_response = client.do_request('GET', 'actions/' + str(id))
-    action = raw_response.get('data')
-    action = client.get_action_item(action)
-
-    context = createContext(action, removeNull=True)
-    outputs = {'Tanium.Action(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Action information:', action)
+    outputs = {'Tanium.SavedAction(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Saved actions', actions)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
 
@@ -666,7 +698,7 @@ def get_saved_actions_pending(client,data_args):
 
     context = createContext(actions, removeNull=True)
     outputs = {'Tanium.PendingSavedAction(val.ID === obj.ID)': context}
-    human_readable = tableToMarkdown('Saved actions pending approval:', actions)
+    human_readable = tableToMarkdown('Saved actions pending approval', actions)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
 
@@ -695,44 +727,44 @@ def main():
             # This is the call made when pressing the integration test button.
             test_module(client)
             demisto.results('ok')
-        elif demisto.command() == 'tn-get-package':
-            get_package(client, demisto.args())
-        elif demisto.command() == 'tn-ask-question':
-            ask_question(client, demisto.args())
-        elif demisto.command() == 'tn-get-question-result':
-            get_question_results(client, demisto.args())
-        elif demisto.command() == 'tn-list-sensors':
-            get_sensors(client, demisto.args())
-        elif demisto.command() == 'tn-get-sensor':
-            get_sensor(client, demisto.args())
-        elif demisto.command() == 'tn-create-saved-question':
-            create_saved_question(client, demisto.args())
-        elif demisto.command() == 'tn-list-saved-questions':
-            get_saved_questions(client, demisto.args())
-        elif demisto.command() == 'tn-get-saved-question-result':
-            get_saved_question_results(client, demisto.args())
         elif demisto.command() == 'tn-get-system-status':
             get_system_status(client)
+        elif demisto.command() == 'tn-get-package':
+            get_package(client, demisto.args())
         elif demisto.command() == 'tn-create-package':
             create_package(client, demisto.args())
         elif demisto.command() == 'tn-list-packages':
             get_packages(client, demisto.args())
+        elif demisto.command() == 'tn-get-sensor':
+            get_sensor(client, demisto.args())
+        elif demisto.command() == 'tn-list-sensors':
+            get_sensors(client, demisto.args())
+        elif demisto.command() == 'tn-ask-question':
+            ask_question(client, demisto.args())
         elif demisto.command() == 'tn-get-question-metadata':
             get_question_metadata(client, demisto.args())
+        elif demisto.command() == 'tn-get-question-result':
+            get_question_result(client, demisto.args())
+        elif demisto.command() == 'tn-create-saved-question':
+            create_saved_question(client, demisto.args())
         elif demisto.command() == 'tn-get-saved-question-metadata':
             get_saved_question_metadata(client, demisto.args())
-        elif demisto.command() == 'tn-list-saved-actions':
-            get_saved_actions(client, demisto.args())
-        elif demisto.command() == 'tn-get-saved-action':
-            get_saved_action(client, demisto.args())
-        elif demisto.command() == 'tn-create-saved-action':
-            create_saved_action(client, demisto.args())
+        elif demisto.command() == 'tn-get-saved-question-result':
+            get_saved_question_result(client, demisto.args())
+        elif demisto.command() == 'tn-list-saved-questions':
+            get_saved_questions(client, demisto.args())
         elif demisto.command() == 'tn-create-action':
             create_action(client, demisto.args())
-        elif demisto.command() == 'tn-list-actions':
-            get_actions(client, demisto.args())
         elif demisto.command() == 'tn-get-action':
             get_action(client, demisto.args())
+        elif demisto.command() == 'tn-list-actions':
+            get_actions(client, demisto.args())
+        elif demisto.command() == 'tn-create-saved-action':
+            create_saved_action(client, demisto.args())
+        elif demisto.command() == 'tn-get-saved-action':
+            get_saved_action(client, demisto.args())
+        elif demisto.command() == 'tn-list-saved-actions':
+            get_saved_actions(client, demisto.args())
         elif demisto.command() == 'tn-list-saved-actions-pending-approval':
             get_saved_actions_pending(client, demisto.args())
 
@@ -743,20 +775,3 @@ def main():
 
 if __name__ == 'builtins':
     main()
-
-
-#body = parse_question('Get Running Processes from all machines')
-#id =create_question(body)
-#res = get_saved_question_results({'question-id':21144})
-#x=5
-#get_package({'id':132})
-#get_package({'name':'Detect Intel for Unix Revision 4 Delta'})
-#get_saved_question_results({'question-id':'21144'})
-#get_system_status()
-#res = create_package({'name':'testw','command':'cmd'})
-#x=5
-#get_sensors()
-
-#ask_question({'question-text': 'Get File Size from all machines','parameters': 'File Size{filename=c:\\windows\\system32\\cmd.exe}'})
-#parse_parameters('File Size{filename=blah,key2=val2},sensor2{key1=val1}')
-#get_packages({'count':5})
