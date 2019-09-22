@@ -21,13 +21,13 @@ SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.pa
 USE_SSL = not demisto.params().get('insecure', False)
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 FETCH_THREAT_RANK = int(demisto.params().get('fetch_threshold', 5))
+FETCH_LIMIT = int(demisto.params().get('fetch_limit', 10))
 BASE_URL = SERVER + '/web/api/v2.0/'
 HEADERS = {
     'Authorization': 'ApiToken ' + TOKEN,
     'Content-Type': 'application/json',
     'Accept': 'application/json'
 }
-
 
 ''' HELPER FUNCTIONS '''
 
@@ -47,12 +47,16 @@ def http_request(method, url_suffix, params={}, data=None):
             errors = ''
             for error in res.json().get('errors'):
                 errors = '\n' + errors + error.get('detail')
-            return_error(f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}] \n'
-                         f'Error details: [{errors}]')
+            raise ValueError(
+                f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}] \n'
+                f'Error details: [{errors}]'
+            )
         except Exception:
-            return_error(f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}')
-
-    return res.json()
+            raise ValueError(f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}]')
+    try:
+        return res.json()
+    except ValueError:
+        return None
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -70,7 +74,6 @@ def get_activities_request(created_after=None, user_emails=None, group_ids=None,
                            activities_ids=None, include_hidden=None, created_before=None, threats_ids=None,
                            activity_types=None, user_ids=None, created_from=None, created_between=None, agent_ids=None,
                            limit=None):
-
     endpoint_url = 'activities'
 
     params = {
@@ -86,7 +89,7 @@ def get_activities_request(created_after=None, user_emails=None, group_ids=None,
         'userIds': user_ids,
         'created_at__gte': created_from,
         'createdAt_between': created_between,
-        'agentsIds': agent_ids,
+        'agentIds': agent_ids,
         'limit': limit
     }
 
@@ -171,7 +174,6 @@ def get_activities_command():
 
 def get_groups_request(group_type=None, group_ids=None, group_id=None, is_default=None, name=None, query=None,
                        rank=None, limit=None):
-
     endpoint_url = 'groups'
 
     params = {
@@ -237,7 +239,6 @@ def get_groups_command():
 
 
 def delete_group_request(group_id=None):
-
     endpoint_url = f'groups/{group_id}'
 
     response = http_request('DELETE', endpoint_url)
@@ -259,7 +260,6 @@ def delete_group():
 
 
 def move_agent_request(group_id, agents_id):
-
     endpoint_url = f'groups/{group_id}/move-agents'
 
     payload = {
@@ -312,7 +312,6 @@ def move_agent_to_group_command():
 
 
 def get_agent_processes_request(agents_ids=None):
-
     endpoint_url = 'agents/processes'
 
     params = {
@@ -429,8 +428,6 @@ def get_threats_command():
                     'FilePath': threat.get('filePath'),
                     'Username': threat.get('username')
 
-
-
                 })
 
         context['SentinelOne.Threat(val.ID && val.ID === obj.ID)'] = context_entries
@@ -448,16 +445,15 @@ def get_threats_command():
 def get_threats_request(content_hash=None, mitigation_status=None, created_before=None, created_after=None,
                         created_until=None, created_from=None, resolved=None, display_name=None, query=None,
                         threat_ids=None, limit=None, classifications=None):
-
     endpoint_url = 'threats'
 
     params = {
         'contentHash': content_hash,
         'mitigationStatus': mitigation_status,
-        'created_at__lt': created_before,
-        'created_at__gt': created_after,
-        'created_at__lte': created_until,
-        'created_at__gte': created_from,
+        'createdAt__lt': created_before,
+        'createdAt__gt': created_after,
+        'createdAt__lte': created_until,
+        'createdAt__gte': created_from,
         'resolved': resolved,
         'displayName__like': display_name,
         'query': query,
@@ -479,34 +475,38 @@ def get_hash_command():
     Get hash reputation and classification.
     """
     # Init main vars
-    context = {}
-    headers = ['Hash', 'Rank', 'Classification Source', 'Classification']
-
+    headers = ['Hash', 'Rank', 'ClassificationSource', 'Classification']
     # Get arguments
     hash_ = demisto.args().get('hash')
-
+    type_ = get_hash_type(hash_)
+    if type_ == 'Unknown':
+        return_error('Enter a valid hash format.')
     # Make request and get raw response
     hash_reputation = get_hash_reputation_request(hash_)
-    hash_classification = get_hash_classification_request(hash_)
+    reputation = hash_reputation.get('data', {})
+    contents = {
+        'Rank': reputation.get('rank'),
+        'Hash': hash_
+    }
+    # try get classification - might return 404 (classification is not mandatory)
+    try:
+        hash_classification = get_hash_classification_request(hash_)
+        classification = hash_classification.get('data', {})
+        contents['ClassificationSource'] = classification.get('classificationSource')
+        contents['Classification'] = classification.get('classification')
+    except ValueError as e:
+        if '404' in str(e):  # handling case classification not found for the specific hash
+            contents['Classification'] = 'No classification was found.'
+        else:
+            raise e
 
     # Parse response into context & content entries
     title = 'Sentinel One - Hash Reputation and Classification \n' + \
             'Provides hash reputation (rank from 0 to 10):'
-    contents = {
-        'Rank': hash_reputation.get('rank'),
-        'Hash': hash_,
-        'Classification Source': hash_classification.get('classificationSource'),
-        'Classification': hash_classification.get('classification')
-    }
 
-    context_entries = {
-        'Rank': hash_reputation.get('rank'),
-        'Hash': hash_,
-        'Classification Source': hash_classification.get('classificationSource'),
-        'Classification': hash_classification.get('classification')
+    context = {
+        'SentinelOne.Hash(val.Hash && val.Hash === obj.Hash)': contents
     }
-
-    context['SentinelOne.Hash(val.Hash && val.Hash === obj.Hash)'] = context_entries
 
     demisto.results({
         'Type': entryTypes['note'],
@@ -519,30 +519,17 @@ def get_hash_command():
 
 
 def get_hash_reputation_request(hash_):
-
     endpoint_url = f'hashes/{hash_}/reputation'
 
     response = http_request('GET', endpoint_url)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
+    return response
 
 
 def get_hash_classification_request(hash_):
-
     endpoint_url = f'hashes/{hash_}/classification'
 
     response = http_request('GET', endpoint_url)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if response.get('data'):
-        if response.get('data').get('classification'):
-            return response.get('data')
-        else:
-            return {}
-    return {}
+    return response
 
 
 def mark_as_threat_command():
@@ -805,7 +792,6 @@ def get_white_list_command():
 
 
 def get_white_list_request(item_ids, os_types, exclusion_type, limit):
-
     endpoint_url = 'exclusions'
 
     params = {
@@ -981,7 +967,6 @@ def get_sites_command():
 
 def get_sites_request(updated_at, query, site_type, features, state, suite, admin_only, account_id, site_name,
                       created_at, limit, site_ids):
-
     endpoint_url = 'sites'
 
     params = {
@@ -1469,7 +1454,6 @@ def disconnect_agent_from_network():
 
 
 def broadcast_message_request(message, is_active=None, group_id=None, agent_id=None, domain=None):
-
     filters = {}
     endpoint_url = 'agents/actions/broadcast'
 
@@ -1516,6 +1500,245 @@ def broadcast_message():
         return_error('No messages were sent. Verify that the inputs are correct.')
 
 
+def shutdown_agents_request(query, agent_id, group_id):
+    endpoint_url = 'agents/actions/shutdown'
+    filters = {}
+
+    if query:
+        filters['query'] = query
+    if agent_id:
+        filters['ids'] = agent_id
+    if group_id:
+        filters['groupIds'] = group_id
+
+    payload = {
+        'filter': filters
+    }
+
+    response = http_request('POST', endpoint_url, data=json.dumps(payload))
+    if response.get('errors'):
+        return_error(response.get('errors'))
+    else:
+        return response
+
+
+def shutdown_agents():
+    """
+    Sends a shutdown command to all agents matching the input filter
+    """
+    query = demisto.args().get('query', '')
+
+    agent_id = argToList(demisto.args().get('agent_id'))
+    group_id = argToList(demisto.args().get('group_id'))
+    if not (agent_id or group_id):
+        return_error('Expecting at least one of the following arguments to filter by: agent_id, group_id.')
+
+    affected_agents = shutdown_agents_request(query, agent_id, group_id)
+    agents = affected_agents.get('data', {}).get('affected', 0)
+    if agents > 0:
+        demisto.results(f'Shutting down {agents} agent(s).')
+    else:
+        return_error('No agents were shutdown.')
+
+
+def uninstall_agent_request(query=None, agent_id=None, group_id=None):
+    endpoint_url = 'agents/actions/uninstall'
+    filters = {}
+
+    if query:
+        filters['query'] = query
+    if agent_id:
+        filters['ids'] = agent_id
+    if group_id:
+        filters['groupIds'] = group_id
+
+    payload = {
+        'filter': filters
+    }
+
+    response = http_request('POST', endpoint_url, data=json.dumps(payload))
+    if response.get('errors'):
+        return_error(response.get('errors'))
+    else:
+        return response
+
+
+def uninstall_agent():
+    """
+    Sends an uninstall command to all agents matching the input filter.
+    """
+    query = demisto.args().get('query', '')
+
+    agent_id = argToList(demisto.args().get('agent_id'))
+    group_id = argToList(demisto.args().get('group_id'))
+    if not (agent_id or group_id):
+        return_error('Expecting at least one of the following arguments to filter by: agent_id, group_id.')
+
+    affected_agents = shutdown_agents_request(query, agent_id, group_id)
+    agents = affected_agents.get('data', {}).get('affected', 0)
+    if agents > 0:
+        demisto.results(f' Uninstall was sent to {agents} agent(s).')
+    else:
+        return_error('No agents were affected.')
+
+
+# Event Commands
+
+def create_query_request(query, from_date, to_date):
+    endpoint_url = 'dv/init-query'
+    payload = {
+        'query': query,
+        'fromDate': from_date,
+        'toDate': to_date
+    }
+
+    response = http_request('POST', endpoint_url, data=json.dumps(payload))
+    if response.get('errors'):
+        return_error(response.get('errors'))
+    else:
+        return response.get('data', {}).get('queryId')
+
+
+def create_query():
+    query = demisto.args().get('query')
+    from_date = demisto.args().get('from_date')
+    to_date = demisto.args().get('to_date')
+
+    query_id = create_query_request(query, from_date, to_date)
+
+    context_entries = {
+        'Query': query,
+        'FromDate': from_date,
+        'ToDate': to_date,
+        'QueryID': query_id
+    }
+
+    context = {
+        'SentinelOne.Query(val.QueryID && val.QueryID === obj.QueryID)': context_entries
+    }
+    return_outputs('The query ID is ' + str(query_id), context, query_id)
+
+
+def get_events_request(query_id=None, limit=None):
+    endpoint_url = 'dv/events'
+
+    params = {
+        'query_id': query_id,
+        'limit': limit
+    }
+
+    response = http_request('GET', endpoint_url, params)
+    if response.get('errors'):
+        return_error(response.get('errors'))
+    if 'data' in response:
+        return response.get('data')
+    return {}
+
+
+def get_events():
+    """
+    Get all Deep Visibility events from query
+    """
+    contents = []
+    event_standards = []
+    headers = ['EventType', 'AgentName', 'SiteName', 'User', 'Time', 'AgentOS', 'ProcessID', 'ProcessUID',
+               'ProcessName', 'MD5', 'SHA256']
+    query_id = demisto.args().get('query_id')
+    limit = int(demisto.args().get('limit'))
+
+    events = get_events_request(query_id, limit)
+    if events:
+        for event in events:
+            contents.append({
+                'EventType': event.get('eventType'),
+                'Endpoint': event.get('agentName'),
+                'SiteName': event.get('siteName'),
+                'User': event.get('user'),
+                'Time': event.get('processStartTime'),
+                'AgentOS': event.get('agentOs'),
+                'ProcessID': event.get('pid'),
+                'ProcessUID': event.get('processUniqueKey'),
+                'ProcessName': event.get('processName'),
+                'MD5': event.get('md5'),
+                'SHA256': event.get('sha256')
+            })
+
+            event_standards.append({
+                'Type': event.get('eventType'),
+                'Name': event.get('processName'),
+                'ID': event.get('pid'),
+            })
+
+        context = {
+            'SentinelOne.Event(val.ProcessID && val.ProcessID === obj.ProcessID)': contents,
+            'Event': event_standards
+        }
+
+        return_outputs(tableToMarkdown('SentinelOne Events', contents, headers, removeNull=True), context, events)
+    else:
+        demisto.results('No events were found.')
+
+
+def get_processes_request(query_id=None, limit=None):
+    endpoint_url = 'dv/events/process'
+
+    params = {
+        'query_id': query_id,
+        'limit': limit
+    }
+
+    response = http_request('GET', endpoint_url, params)
+    if response.get('errors'):
+        return_error(response.get('errors'))
+    if 'data' in response:
+        return response.get('data')
+    return {}
+
+
+def get_processes():
+    """
+    Get Deep Visibility events from query by event type - process
+    """
+    contents = []
+    headers = ['EventType', 'AgentName', 'SiteName', 'User', 'Time', 'ParentProcessID', 'ParentProcessUID',
+               'ProcessName', 'ParentProcessName', 'ProcessDisplayName', 'ProcessID', 'ProcessUID',
+               'SHA1', 'CMD', 'SubsystemType', 'IntegrityLevel', 'ParentProcessStartTime']
+    query_id = demisto.args().get('query_id')
+    limit = int(demisto.args().get('limit'))
+
+    processes = get_events_request(query_id, limit)
+    if processes:
+        for process in processes:
+            contents.append({
+                'EventType': process.get('eventType'),
+                'Endpoint': process.get('agentName'),
+                'SiteName': process.get('siteName'),
+                'User': process.get('user'),
+                'Time': process.get('processStartTime'),
+                'ParentProcessID': process.get('parentPid'),
+                'ParentProcessUID': process.get('parentProcessUniqueKey'),
+                'ParentProcessName': process.get('parentProcessName'),
+                'ProcessID': process.get('pid'),
+                'ProcessUID': process.get('processUniqueKey'),
+                'ProcessName': process.get('processName'),
+                'ProcessDisplayName': process.get('processDisplayName'),
+                'SHA1': process.get('processImageSha1Hash'),
+                'CMD': process.get('"processCmd'),
+                'SubsystemType': process.get('processSubSystem'),
+                'IntegrityLevel': process.get('processIntegrityLevel'),
+                'ParentProcessStartTime': process.get('parentProcessStartTime')
+            })
+
+        context = {
+            'SentinelOne.Event(val.ProcessID && val.ProcessID === obj.ProcessID)': contents
+        }
+
+        return_outputs(tableToMarkdown('SentinelOne Processes', contents, headers, removeNull=True), context, processes)
+
+    else:
+        demisto.results('No processes were found.')
+
+
 def fetch_incidents():
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
@@ -1525,12 +1748,17 @@ def fetch_incidents():
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
     current_fetch = last_fetch
-
     incidents = []
-    threats = get_threats_request()
+    last_fetch_date_string = timestamp_to_datestring(last_fetch, '%Y-%m-%dT%H:%M:%S.%fZ')
+    threats = get_threats_request(limit=FETCH_LIMIT, created_after=last_fetch_date_string)
     for threat in threats:
+        rank = threat.get('rank')
+        try:
+            rank = int(rank)
+        except TypeError:
+            rank = 0
         # If no fetch threat rank is provided, bring everything, else only fetch above the threshold
-        if not FETCH_THREAT_RANK or (FETCH_THREAT_RANK and threat.get('rank') >= FETCH_THREAT_RANK):
+        if FETCH_THREAT_RANK and rank >= FETCH_THREAT_RANK:
             incident = threat_to_incident(threat)
             incident_date = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%S.%fZ')
             # update last run
@@ -1606,9 +1834,20 @@ try:
         disconnect_agent_from_network()
     elif demisto.command() == 'sentinelone-broadcast-message':
         broadcast_message()
-
+    elif demisto.command() == 'sentinelone-get-events':
+        get_events()
+    elif demisto.command() == 'sentinelone-create-query':
+        create_query()
+    elif demisto.command() == 'sentinelone-get-processes':
+        get_processes()
+    elif demisto.command() == 'sentinelone-shutdown-agent':
+        shutdown_agents()
+    elif demisto.command() == 'sentinelone-uninstall-agent':
+        uninstall_agent()
 
 except Exception as e:
-    LOG(str(e))
-    LOG.print_log()
-    raise
+    if demisto.command() == 'fetch-incidents':
+        LOG(str(e))
+        raise
+    else:
+        return_error(e)

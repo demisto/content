@@ -757,10 +757,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: 9141281e-511e-408d-82b0-5c8ed1bf048b
+    taskid: 0eeb0b05-42f2-4e12-8e63-5f1e1a2e23f9
     type: condition
     task:
-      id: 9141281e-511e-408d-82b0-5c8ed1bf048b
+      id: 0eeb0b05-42f2-4e12-8e63-5f1e1a2e23f9
       version: -1
       name: Verify results from search exist
       type: condition
@@ -780,18 +780,6 @@ tasks:
                 root: ActiveDirectory
                 accessor: Search
             iscontext: true
-      - - operator: isEqualNumber
-          left:
-            value:
-              complex:
-                root: ActiveDirectory
-                accessor: Search.dn
-                transformers:
-                - operator: count
-            iscontext: true
-          right:
-            value:
-              simple: "10"
     view: |-
       {
         "position": {
