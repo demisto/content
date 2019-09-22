@@ -337,7 +337,7 @@ script:
     - name: url
       required: true
       default: true
-      description: URL to check, (must start with http://)
+      description: The URL to check (must start with "http://").
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
