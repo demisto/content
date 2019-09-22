@@ -2129,7 +2129,7 @@ if 'requests' in sys.modules:
             :param data: The data to send in a 'POST' request.
 
             :type json_data: ``dict``
-            :param json_data: The json to send in a 'POST' request.
+            :param json_data: The dictionary to send in a 'POST' request.
 
             :type files: ``dict``
             :param files: The file data to send in a 'POST' request.
