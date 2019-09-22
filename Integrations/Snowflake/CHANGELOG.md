@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Fixed an issue in the ***fetch incidents*** functionality. 
+Fixed an issue in the ***fetch incidents*** functionality. 
