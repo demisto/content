@@ -26,8 +26,8 @@ Where there is missing information, be sure to fill out the document completely.
 
 
 ### Using commands parameter
-In order to generate output (human readable and context) examples automatically, one should create a text file containing command examples, one per line. The command examples should appear the same way they would as in the CLI in Demisto.
-Commands will be executed one after the other. If there are duplicates of a command included in the text file, only the output of the first execution of a command will be included in the generated documentation output.
+To automatically generate example output (human readable and context), you should create a text file containing command examples, one per line. The command examples should appear the same way they would as in the CLI in Demisto, for example `!url url=8.8.8.8`.
+Commands will be executed one at a time, in the order in which they appear in the file. If there are duplicates of a command included in the text file, only the output of the command's first execution  will be included in the generated documentation output.
 
 ![integrationdoc](https://user-images.githubusercontent.com/31018228/65388677-d4492480-dd56-11e9-8cfd-c0cc60790a55.gif)
 
