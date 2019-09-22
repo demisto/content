@@ -207,7 +207,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
     raise DemistoException(f'Test module failed, {results}')
 
 
-def fetch_incidents(client: Client, last_run):
+def fetch_incidents(client: Client, last_run):  # pragma: no cover
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
     """
@@ -220,7 +220,7 @@ def fetch_incidents(client: Client, last_run):
         last_run_string = datetime.strptime(last_run, timestamp_format)
     incidents: List = list()
     raw_response = client.list_events_request(event_created_date_after=last_run_string)
-    events = raw_response.get('event', [])
+    events = raw_response.get('event')
     if events:
         # Creates incident entry
         incidents = [{
@@ -237,14 +237,14 @@ def fetch_incidents(client: Client, last_run):
 
 
 def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    max_results: Optional[str] = args.get('max_results')
-    event_created_date_before: Optional[str] = args.get('event_created_date_before')
-    event_created_date_after: Optional[str] = args.get('event_created_date_after')
+    max_results = args.get('max_results')
+    event_created_date_before = args.get('event_created_date_before')
+    event_created_date_after = args.get('event_created_date_after')
     raw_response = client.list_events_request(
         event_created_date_before=event_created_date_before,
         event_created_date_after=event_created_date_after,
         max_results=max_results)
-    events = raw_response.get('event', [])
+    events = raw_response.get('event')
     if events:
         title: str = f'{INTEGRATION_NAME} - List events:'
         context_entry = build_context(events)
@@ -349,11 +349,11 @@ def query(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         sinceTime=args.get('event_created_date_after'),
         fromTime=args.get('event_created_date_before'),
         assignee=argToList(args.get('assignee')),
-        isActive=args.get('is_active') == 'true'
+        isActive=args.get('is_active') == 'true' if args.get('is_active') else None
     )
     # Make request and get raw response
     raw_response = client.query_request(**query_dict)
-    events = raw_response.get('event', [])
+    events = raw_response.get('event')
     # Parse response into context & content entries
     if events:
         title = f'{INTEGRATION_NAME} - Results for given query'
@@ -362,13 +362,13 @@ def query(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         human_readable = tableToMarkdown(title, context_entry)
         return human_readable, context, raw_response
     else:
-        return_warning(f'{INTEGRATION_NAME} - Could not find any results for given query')
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     base_url = f"{params.get('url', '').rstrip('/')}'/api/v2/'"
     verify_ssl = not params.get('insecure', False)
@@ -399,5 +399,5 @@ def main():
         return_error(err_msg, error=e)
 
 
-if __name__ == 'builtins':
+if __name__ == 'builtins':  # pragma: no cover
     main()

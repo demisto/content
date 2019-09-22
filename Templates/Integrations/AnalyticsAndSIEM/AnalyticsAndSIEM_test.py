@@ -7,7 +7,7 @@ CONTEXT_PREFIX = 'AnalyticsAndSIEM.Event(val.ID && val.ID === obj.ID)'
 BASE_URL = 'http://api.service.com/v1/'
 
 
-def event_dict_input(*args, **kwargs):
+def event_dict_input():
     return {'event': {'eventId': 'ab123',
                       'description': 'Phishing email',
                       'createdAt': '2010-01-01T00:00:00Z',
@@ -16,7 +16,7 @@ def event_dict_input(*args, **kwargs):
                                    {'name': 'Demisto DBot', 'id': '12'}]}}
 
 
-def event_dict_output(*args, **kwargs):
+def event_dict_output():
     return {'Event': {'Assignee': [{'ID': '11', 'Name': 'DBot Demisto'},
                                    {'ID': '12', 'Name': 'Demisto DBot'}],
                       'Created': '2010-01-01T00:00:00Z',
@@ -25,7 +25,7 @@ def event_dict_output(*args, **kwargs):
                       'IsActive': True}}
 
 
-def event_list_input(*args, **kwargs):
+def event_list_input():
     return {'event': [{'eventId': 'ab123',
                        'description': 'Phishing email',
                        'createdAt': '2010-01-01T00:00:00Z',
@@ -174,21 +174,33 @@ class TestEvents:
                                                              )
         assert 'Event `111` has been created' in human_readable
         assert len(context[CONTEXT_PREFIX]['Assignee']) == 2  # Context is not empty
+        assert raw_response == request_json
 
     def test_create_event_fail(self, requests_mock):
         from AnalyticsAndSIEM import create_event
         requests_mock.post(BASE_URL + 'event', json={'event': []})
-        with raises(DemistoException, match='Could not update event `111`'):
+        with raises(DemistoException, match='Could not create new event.'):
             create_event(self.client, {'event_id': '111', 'assignee': '142,143'})
 
     def test_query(self, requests_mock):
         from AnalyticsAndSIEM import query
-        event__to_query = {'events': [
-            {'eventId': '1', 'assignee': [{'id': 123}]}
-        ]
-                           }
-        requests_mock.get(BASE_URL + 'query', json={'event': []})
-        query(self.client, {
+        event__to_query = {'event': [
+            {'eventId': '1', 'assignee': [{'id': 123}]},
+            {'eventId': '2', 'assignee': [{'id': 123}]}
+        ]}
+        requests_mock.get(BASE_URL + 'query?eventId=1&eventId=2&eventId=3&assignee=123', json=event__to_query)
+        human_readable, context, _ = query(self.client, {
             'event_id': '1,2,3',
             'assignee': '123'
         })
+        assert 'Results for given query' in human_readable
+        assert context[CONTEXT_PREFIX][0]['Assignee'][0]['ID'] == 123
+
+    def test_query_empty(self, requests_mock, mocker):
+        from AnalyticsAndSIEM import query
+        requests_mock.get(BASE_URL + 'query', json={'event': []})
+        human_readable, _, _ = query(self.client, {
+            'event_id': '1,2,3',
+            'assignee': '123'
+        })
+        assert 'Could not find any results for given query' in human_readable
