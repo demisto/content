@@ -3,10 +3,11 @@ version: -1
 name: Block URL - Generic
 fromversion: 4.0.0
 description: |-
-  This playbook blocks malicious URLs using all integrations that you have enabled.
+  This playbook blocks malicious URLs using all integrations that are enabled.
 
   Supported integrations for this playbook:
   * Palo Alto Networks Minemeld
+  * Palo Alto Networks PAN-OS
   * Zscaler
 starttaskid: "0"
 tasks:
@@ -33,6 +34,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
     taskid: 1808d949-f921-4957-8796-7bbedd822ad9
@@ -49,11 +52,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -80,
-          "y": 900
+          "x": 377.5,
+          "y": 1150
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: f414f4c2-03f8-4219-8428-048557b1758b
@@ -68,17 +73,20 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
-      - "12"
+      - "16"
+      - "17"
+      - "18"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 377.5,
-          "y": 370
+          "y": 425
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
     taskid: ad6bb4b2-ea87-4c6e-893c-a31e27e82e55
@@ -113,6 +121,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
     taskid: 2d0fc7d4-b827-43c9-8b7a-bf592e7a1c1f
@@ -144,11 +154,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 150,
-          "y": 550
+          "x": 110,
+          "y": 710
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
     taskid: a2108a1a-7365-45e7-8c07-a5a6fcdd8b95
@@ -200,11 +212,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 550
+          "x": 810,
+          "y": 730
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
     taskid: adb7b441-33c8-4fe9-8883-7af9a776e0d3
@@ -229,19 +243,188 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 720
+          "x": 810,
+          "y": 980
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 2b812a9e-5f84-40cb-8cb9-67bcc0537ee7
+    type: playbook
+    task:
+      id: 2b812a9e-5f84-40cb-8cb9-67bcc0537ee7
+      version: -1
+      name: PAN-OS - Block URL - Custom URL Category
+      playbookName: PAN-OS - Block URL - Custom URL Category
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomURLCategory: {}
+      LogForwarding: {}
+      URL:
+        complex:
+          root: inputs.URL
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: bc52f173-2761-41cc-8342-6c5b462c3011
+    type: playbook
+    task:
+      id: bc52f173-2761-41cc-8342-6c5b462c3011
+      version: -1
+      name: PAN-OS - Block IP and URL - External Dynamic List
+      playbookName: PAN-OS - Block IP and URL - External Dynamic List
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      EDLServerIP: {}
+      IP: {}
+      IPListName: {}
+      LogForwarding: {}
+      URL:
+        complex:
+          root: inputs.URL
+          transformers:
+          - operator: uniq
+      URLListName: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 864f7b0f-798c-40d8-862d-c1b41fce36f0
+    type: title
+    task:
+      id: 864f7b0f-798c-40d8-862d-c1b41fce36f0
+      version: -1
+      name: MineMeld
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 59c2b2cb-4d8f-4e00-8140-751aec8dc2aa
+    type: title
+    task:
+      id: 59c2b2cb-4d8f-4e00-8140-751aec8dc2aa
+      version: -1
+      name: PAN-OS
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -510,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 99eec4e5-301a-4b0a-83e3-d7c2f973eeea
+    type: title
+    task:
+      id: 99eec4e5-301a-4b0a-83e3-d7c2f973eeea
+      version: -1
+      name: Zscaler
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "12_2_#default#": 0.48,
+      "8_2_#default#": 0.43
+    },
     "paper": {
       "dimensions": {
-        "height": 925,
-        "width": 1070,
-        "x": -80,
+        "height": 1175,
+        "width": 1900,
+        "x": -710,
         "y": 40
       }
     }

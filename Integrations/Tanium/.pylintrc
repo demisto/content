@@ -1,0 +1,2 @@
+[MASTER]
+init-hook='import sys; sys.path.append("/pytan-2.2.2/lib")'
