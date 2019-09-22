@@ -9,19 +9,36 @@ import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' GLOBALS/PARAMS '''
+"""GLOBALS/PARAMS
+Attributes:
+    INTEGRATION_NAME:
+        Name of the integration as shown in the integration UI, for example: Microsoft Graph User.
+
+    INTEGRATION_COMMAND_NAME:
+        Command names should be written in all lower-case letters,
+        and each word separated with a hyphen, for example: msgraph-user.
+
+    INTEGRATION_CONTEXT_NAME:
+        Context output names should be written in camel case, for example: MSGraphUser.
+"""
+INTEGRATION_NAME = 'Data Enrichment & Threat Intelligence'
+# lowercase with `-` dividers
+INTEGRATION_COMMAND_NAME = 'data-enrichment-threat-and-intelligence'
+# No dividers
+INTEGRATION_CONTEXT_NAME = 'DataEnrichmentAndThreatIntelligence'
 # Setting global params, initiation in main() function
 FILE_HASHES: Tuple = ('md5', 'ssdeep', 'sha1', 'sha256')  # hashes as described in API
 ''' HELPER FUNCTIONS '''
 
 
 class Client(BaseClient):
-    def __init__(self, server, base_suffix, integration_name, integration_command_name, integration_context_name,
-                 threshold: int, **kwargs):
-        # added threshold
+    def __init__(self, base_url, threshold: int = 70, *args, **kwarg):
+        """Wrapper of CommonServerPython.BaseClient
+        Params:
+            threshold: arg will be used in calculate_dbot_score. if None, will use default value of 70.
+        """
         self._threshold = threshold
-        super().__init__(server, base_suffix, integration_name,
-                         integration_command_name, integration_context_name, **kwargs)
+        super().__init__(base_url, *args, **kwarg)
 
     """ HELPER FUNCTIONS """
 
@@ -48,22 +65,22 @@ class Client(BaseClient):
         # Unknown
         return 0
 
-    def test_module_request(self) -> bool:
+    def test_module_request(self) -> Dict:
         """Performs basic get request to see if the API is reachable and authentication works.
 
         Returns:
-            True if request succeeded, else raises exception
+            Response JSON
         """
-        self._http_request('GET', 'version')
-        return True
+        return self._http_request('GET', 'version')
 
     def get_ip_request(self, ip: str) -> Dict:
-        """Gets an analysis from the API for given ןפ.
+        """Gets an analysis from the API for given IP.
 
         Args:
-            ip:
+            ip: IP to get analysis on
 
         Returns:
+            Response JSON
 
         """
         suffix = 'ip'
@@ -77,7 +94,7 @@ class Client(BaseClient):
             url: URL to get analysis on
 
         Returns:
-            Dict:
+            Response JSON
         """
         suffix = 'analysis'
         params = {'url': url}
@@ -90,10 +107,23 @@ class Client(BaseClient):
             file_hash: Hash to search in API
 
         Returns:
-            Dict: results from API
+            Response JSON
         """
         suffix = 'analysis'
         params = {'hash': file_hash}
+        return self._http_request('GET', suffix, params=params)
+
+    def get_domain_request(self, domain):
+        """Building request for file command
+
+        Args:
+            domain: Domain to search in API
+
+        Returns:
+            Response JSON
+        """
+        suffix = 'analysis'
+        params = {'domain': domain}
         return self._http_request('GET', suffix, params=params)
 
 
@@ -117,7 +147,7 @@ def build_context(results: Union[Dict, List], indicator_type: str) -> Union[Dict
         }
 
     if isinstance(results, list):
-        return [build_entry_context(entry) for entry in results]
+        return [build_entry_context(entry) for entry in results]  # pragma: no cover
     return build_entry_context(results)
 
 
@@ -129,21 +159,22 @@ def search_ip(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     ip = args.get('ip', '')
     raw_response = client.get_ip_request(ip)
-    results = raw_response.get('results', {})
+    results = raw_response.get('result')
     if results:
-        title = f'{client.integration_name} - Analysis results for IP: {ip}'
-        context_entry = build_context(results, 'IP')
+        result = results[0]
+        title = f'{INTEGRATION_NAME} - Analysis results for IP: {ip}'
+        context_entry = build_context(result, 'IP')
         # Building a score for DBot
-        score = client.calculate_dbot_score(results.get('severity'))
-        dbot_entry = build_dbot_entry(ip, 'ip', client.integration_name, score, results.get('description'))
+        score = client.calculate_dbot_score(result.get('severity'))
+        dbot_entry = build_dbot_entry(ip, 'ip', INTEGRATION_NAME, score, result.get('description'))
         context = {
-            f'{client.integration_context_name}.Analysis(val.ID && val.ID === obj.ID)': context_entry
+            f'{INTEGRATION_CONTEXT_NAME}.Analysis(val.ID && val.ID === obj.ID)': context_entry
         }
         context.update(dbot_entry)
         human_readable: str = tableToMarkdown(title, context_entry, removeNull=True)
         return human_readable, context, raw_response
     else:
-        return f'{client.integration_name} - Found no results for IP: {ip}', {}, raw_response
+        return f'{INTEGRATION_NAME} - No results found for IP: {ip}', {}, raw_response
 
 
 def search_url(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -151,22 +182,22 @@ def search_url(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     url = args.get('url', '')
     raw_response = client.get_url_request(url)
-    results = raw_response.get('results', {})
+    results = raw_response.get('result')
     if results:
-        title: str = f'{client.integration_name} - Analysis results for URL: {url}'
-        context_entry = build_context(results, 'URL')
+        result = results[0]
+        title = f'{INTEGRATION_NAME} - Analysis results for URL: {url}'
+        context_entry = build_context(result, 'URL')
         # Building a score for DBot
-        score = client.calculate_dbot_score(results.get('severity'))
-        dbot_entry = build_dbot_entry(url, 'url', client.integration_name, score, results.get('description'))
+        score = client.calculate_dbot_score(result.get('severity'))
+        dbot_entry = build_dbot_entry(url, 'url', INTEGRATION_NAME, score, result.get('description'))
         context = {
-            f'{client.integration_context_name}.Analysis(val.ID && val.ID === obj.ID)': context_entry
+            f'{INTEGRATION_CONTEXT_NAME}.Analysis(val.ID && val.ID === obj.ID)': context_entry
         }
         context.update(dbot_entry)
-        human_readable: str = tableToMarkdown(title, context_entry, removeNull=True)
+        human_readable = tableToMarkdown(title, context_entry, removeNull=True)
         return human_readable, context, raw_response
     else:
-        return_warning(f'{client.integration_name} - Found no results for URL: {url}')
-        return '', {}, {}
+        return f'{INTEGRATION_NAME} - No results found for URL: {url}', {}, raw_response
 
 
 def search_file(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -174,90 +205,106 @@ def search_file(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     file_hash = args.get('file')
     raw_response = client.search_file_request(file_hash)
-    results = raw_response.get('results', [{}])[0]
-    if raw_response:
-        title = f'{client.integration_name} - Analysis results for file hash: {file_hash}'
+    results = raw_response.get('result')
+    if results:
+        result = results[0]
+        title = f'{INTEGRATION_NAME} - Analysis results for file hash: {file_hash}'
         context_entry = {
-            'ID': results.get('id'),
-            'Severity': results.get('severity'),
-            'MD5': results.get('md5'),
-            'SHA1': results.get('sha1'),
-            'SHA256': results.get('sha256'),
-            'SSDeep': results.get('ssdeep'),
-            'Description': results.get('description')
+            'ID': result.get('id'),
+            'Severity': result.get('severity'),
+            'MD5': result.get('md5'),
+            'SHA1': result.get('sha1'),
+            'SHA256': result.get('sha256'),
+            'SSDeep': result.get('ssdeep'),
+            'Description': result.get('description')
         }
         # Gets DBot score
-        score = client.calculate_dbot_score(raw_response.get('severity', ''))
+        score = client.calculate_dbot_score(result.get('severity'))
         # Building a score for DBot
         dbot_score = [
             {
-                'Indicator': raw_response.get(hash_name),
+                'Indicator': result.get(hash_name),
                 'Type': 'hash',
-                'Vendor': f'{client.integration_name}',
+                'Vendor': f'{INTEGRATION_NAME}',
                 'Score': score
-            } for hash_name in FILE_HASHES if raw_response.get(hash_name)
+            } for hash_name in FILE_HASHES if result.get(hash_name)
         ]
         context = {
             outputPaths['dbotscore']: dbot_score,
-            f'{client.integration_context_name}.Analysis(val.ID && val.ID === obj.ID)': context_entry
+            f'{INTEGRATION_CONTEXT_NAME}.Analysis(val.ID && val.ID === obj.ID)': context_entry
         }
 
         if score == 3:  # If file is malicious, adds a malicious entry
             context[outputPaths['file']] = [{
                 hash_name.upper(): raw_response.get(hash_name),
                 'Malicious': {
-                    'Vendor': f'{client.integration_name}',
+                    'Vendor': f'{INTEGRATION_NAME}',
                     'Description': raw_response.get('description')
                 }
             } for hash_name in FILE_HASHES if raw_response.get(hash_name)]
         human_readable = tableToMarkdown(title, context_entry, removeNull=True)
         return human_readable, context, raw_response
     else:
-        return_warning(f'{client.integration_name} - Could not find results for file hash: [{file_hash}')
-        return '', {}, {}
+        return f'{INTEGRATION_NAME} - No results found for file hash: [{file_hash}', {}, raw_response
 
 
-def test_module(client: Client, *args):
-    if client.test_module_request():
-        return 'ok'
-    raise DemistoException('Test module failed')
+def search_domain(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Gets a job from the API. Used mostly for polling playbook
+    """
+    url = args.get('domain', '')
+    raw_response = client.get_domain_request(url)
+    results = raw_response.get('result')
+    if results:
+        result = results[0]
+        title = f'{INTEGRATION_NAME} - Analysis results for domain: {url}'
+        context_entry = build_context(result, 'Domain')
+        # Building a score for DBot
+        score = client.calculate_dbot_score(result.get('severity'))
+        dbot_entry = build_dbot_entry(url, 'domain', INTEGRATION_NAME, score, result.get('description'))
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.Analysis(val.ID && val.ID === obj.ID)': context_entry
+        }
+        context.update(dbot_entry)
+        human_readable = tableToMarkdown(title, context_entry, removeNull=True)
+        return human_readable, context, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - No results found for Domain: {url}', {}, raw_response
+
+
+def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
+    raw_response = client.test_module_request()
+    if raw_response.get('version'):
+        return 'ok', {}, raw_response
+    raise DemistoException(f'Test module failed\nraw_response: {raw_response}')
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-def main():
-    integration_name = 'Data Enrichment Threat Intelligence'
-    # lowercase with `-` dividers
-    integration_command_name = 'data-enrichment-threat-intelligence'
-    # No dividers
-    integration_context_name = 'DataEnrichmentThreatIntelligence'
-    suffix = '/api/v2'
+def main():  # pragma: no cover
     params = demisto.params()
-    server = params.get('url')
+    base_url = params.get('url', '').rstrip('/') + '/api/v2'
     verify = not params.get('insecure', False)
     proxy: Optional[bool] = params.get('proxy')
-    threshold = params.get('threshold')
+    threshold = int(params.get('threshold', 70))
     client = Client(
-        server,
-        suffix,
-        integration_name,
-        integration_command_name,
-        integration_context_name,
+        base_url,
         verify=verify,
         proxy=proxy,
         threshold=threshold
     )
-    command: str = demisto.command()
+    command = demisto.command()
     demisto.info(f'Command being called is {command}')
     commands = {
         'test-module': test_module,
-        f'{client.integration_command_name}-search-ip': search_ip,
+        f'{INTEGRATION_COMMAND_NAME}-search-ip': search_ip,
         'ip': search_ip,
-        f'{client.integration_command_name}-search-url': search_url,
+        f'{INTEGRATION_COMMAND_NAME}-search-url': search_url,
         'url': search_url,
-        f'{client.integration_command_name}-search-file': search_file,
+        f'{INTEGRATION_COMMAND_NAME}-search-file': search_file,
         'file': search_file,
+        f'{INTEGRATION_COMMAND_NAME}-search-domain': search_domain,
+        'domain': search_domain,
     }
     try:
         if command in commands:
@@ -265,9 +312,9 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        err_msg = f'Error in {integration_name} Integration [{e}]'
+        err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg, error=e)
 
 
-if __name__ == 'builtins':
+if __name__ == 'builtins':  # pragma: no cover
     main()
