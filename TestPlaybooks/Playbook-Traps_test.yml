@@ -1,5 +1,5 @@
 id: Traps test
-version: 70
+version: -1
 name: Traps test
 starttaskid: "0"
 tasks:
@@ -42,8 +42,8 @@ tasks:
       brand: Traps
     nexttasks:
       '#none#':
-      - "4"
       - "26"
+      - "27"
     scriptarguments:
       endpoint_id:
         simple: d3339851f18f470182bf2bf98ad5db4b
@@ -78,63 +78,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 385
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 974ac014-9c3c-47c7-8f32-13109c392eb2
-    type: regular
-    task:
-      id: 974ac014-9c3c-47c7-8f32-13109c392eb2
-      version: -1
-      name: traps-endpoint-scan
-      description: Perform scan operation on specified endpoint.
-      script: Traps|||traps-endpoint-scan
-      type: regular
-      iscommand: true
-      brand: Traps
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      endpoint_id:
-        simple: d3339851f18f470182bf2bf98ad5db4b
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 787a5d28-2037-4518-81e4-5923fcdc2ec8
-    type: regular
-    task:
-      id: 787a5d28-2037-4518-81e4-5923fcdc2ec8
-      version: -1
-      name: traps-endpoint-scan-result
-      description: Get results of an endpoint scam operation
-      script: Traps|||traps-endpoint-scan-result
-      type: regular
-      iscommand: true
-      brand: Traps
-    scriptarguments:
-      operation_id:
-        simple: ${Traps.Scan.OperationID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 895
         }
       }
     note: false
@@ -540,6 +483,39 @@ tasks:
       {
         "position": {
           "x": 20,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 2ef8ad33-4d9a-419f-84b7-282584ce4e3a
+    type: playbook
+    task:
+      id: 2ef8ad33-4d9a-419f-84b7-282584ce4e3a
+      version: -1
+      name: Traps Scan Endpoint
+      playbookName: Traps Scan Endpoint
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      endpoint_id:
+        simple: d3339851f18f470182bf2bf98ad5db4b
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
           "y": 720
         }
       }
