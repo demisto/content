@@ -60,7 +60,146 @@ COMMON_HEADERS = [
     'SHA256', 'filename'
 ]
 
+PANW_TRAFFIC_FIELDS = [
+    'all', 'container', 'risk-of-app', 'logset', 'bytes_received', 'natsport', 'sessionid', 'url_denied',
+    'type', 'parent_start_time', 'packets', 'characteristic-of-app', 'dg_hier_level_4', 'dg_hier_level_1',
+    'dg_hier_level_3', 'dg_hier_level_2', 'parent_session_id', 'repeatcnt', 'app', 'vsys', 'nat',
+    'technology-of-app', 'pkts_received', 'chunks_sent', 'pbf_s2c', 'pbf_c2s', 'receive_time', 'non-standard-dport',
+    'subcategory-of-app', 'chunks_received', 'users', 'captive_portal', 'is_gpaas', 'proxy', 'fwd',
+    'log_feat_bit1', 'config_ver', 'cloud_hostname', 'is_fwaas', 'customer-id', 'is_dup_log', 'proto',
+    'non_std_dport', 'tunneled-app', 'recon_excluded', 'is-saas-of-app', 'traffic_flags', 'natdport', 'action_source',
+    'assoc_id', 'flag', 'dst', 'natdst', 'chunks', 'flags', 'rule', 'decrypt_mirror', 'dport', 'elapsed',
+    'sanctioned-state-of-app', 'inbound_if', 'device_name', 'mptcp_on', 'subtype', 'time_received', 'actionflags',
+    'tunnelid_imsi', 'session_end_reason', 'sym_return', 'exported', 'natsrc', 'seqno', 'src', 'start',
+    'time_generated', 'outbound_if', 'category-of-app', 'bytes_sent', 'srcloc', 'pkts_sent', 'dstloc',
+    'tunnel_inspected', 'serial', 'bytes', 'vsys_id', 'ui-srcloc', 'to', 'category', 'sport', 'packet_capture',
+    'tunnel', 'ui-dstloc', 'transaction', 'is_phishing'
+]
+
+PANW_THREAT_FIELDS = [
+    'all', 'sessionid', 'url_idx', 'dg_hier_level_4', 'dg_hier_level_3', 'dg_hier_level_2', 'dg_hier_level_1',
+    'action', 'recsize', 'repeatcnt', 'app', 'nat', 'subcategory-of-app', 'pcap_id', 'ppid', 'proxy', 'cloud_hostname',
+    'customer-id', 'natdst', 'flags', 'dport', 'pcap', 'threatid', 'natsrc', 'outbound_if', 'category-of-app',
+    'srcloc', 'dstloc', 'to', 'transaction', 'risk-of-app', 'natsport', 'url_denied', 'characteristic-of-app',
+    'http_method', 'from', 'vsys', 'technology-of-app', 'receive_time', 'users', 'fwd', 'proto', 'natdport', 'dst',
+    'rule', 'category-of-threatid', 'inbound_if', 'device_name', 'subtype', 'time_received', 'actionflags',
+    'direction', 'misc', 'severity', 'seqno', 'src', 'time_generated', 'serial', 'vsys_id', 'url_domain', 'ui-srcloc',
+    'category', 'sport', 'packet_capture', 'ui-dstloc', 'is_phishing'
+]
+
+TMS_THREAT_FIELDS = [
+    'all', 'severity', 'agentId', 'endPointHeader.osType','endPointHeader.isVdi', 'endPointHeader.osVersion',
+    'endPointHeader.is64', 'endPointHeader.agentIp', 'endPointHeader.deviceName', 'endPointHeader.deviceDomain',
+    'endPointHeader.userName', 'endPointHeader.agentTime', 'endPointHeader.tzOffset', 'endPointHeader.agentVersion',
+    'endPointHeader.contentVersion', 'endPointHeader.policyTag', 'endPointHeader.protectionStatus', 
+    'endPointHeader.dataCollectionStatus', 'recordType', 'trapsId', 'eventType', 'uuid', 'serverHost', 'generatedTime',
+    'serverComponentVersion', 'regionId', 'customerId', 'recsize', 'serverTime', 'originalAgentTime', 'facility', 
+    'messageData.eventCategory', 'messageData.moduleId', 'messageData.moduleStatusId', 'messageData.preventionKey',
+    'messageData.processes.pid', 'messageData.processes.parentId', 'messageData.processes.exeFileIdx', 
+    'messageData.processes.userIdx', 'messageData.processes.commandLine', 'messageData.processes.instanceId', 
+    'messageData.processes.terminated', 'messageData.files.rawFullPath', 'messageData.files.fileName', 
+    'messageData.files.sha256', 'messageData.files.fileSize', 'messageData.files.innerObjectSha256', 
+    'messageData.users.userName', 'messageData.postDetected', 'messageData.terminate', 'messageData.block', 
+    'messageData.eventParameters', 'messageData.sourceProcessIdx', 'messageData.fileIdx', 'messageData.verdict',
+    'messageData.canUpload', 'messageData.targetProcessIdx', 'messageData.moduleCategory', 'messageData.preventionMode',
+    'messageData.trapsSeverity', 'messageData.profile', 'messageData.description', 'messageData.cystatusDescription',
+    'messageData.sourceProcess.user.userName', 'messageData.sourceProcess.pid', 'messageData.sourceProcess.parentId',
+    'messageData.sourceProcess.exeFileIdx', 'messageData.sourceProcess.userIdx', 
+    'messageData.sourceProcess.commandLine', 'messageData.sourceProcess.instanceId', 
+    'messageData.sourceProcess.terminated', 'messageData.sourceProcess.rawFullPath', 
+    'messageData.sourceProcess.fileName', 'messageData.sourceProcess.sha256', 'messageData.sourceProcess.fileSize', 
+    'messageData.sourceProcess.innerObjectSha256', 'messageData.class', 'messageData.classId'
+]
+
+TMS_ANALYTICS_FIELDS = [
+    'all', 'agentId', 'endPointHeader.osType', 'endPointHeader.isVdi', 'endPointHeader.osVersion',
+    'endPointHeader.is64', 'endPointHeader.agentIp', 'endPointHeader.deviceName', 'endPointHeader.deviceDomain',
+    'endPointHeader.userName', 'endPointHeader.userDomain', 'endPointHeader.agentTime', 'endPointHeader.tzOffset',
+    'endPointHeader.agentVersion', 'endPointHeader.contentVersion', 'endPointHeader.policyTag',
+    'endPointHeader.protectionStatus', 'endPointHeader.dataCollectionStatus', 'trapsId', 'eventType', 'uuid',
+    'serverHost', 'generatedTime', 'serverComponentVersion', 'regionId', 'customerId', 'recsize', 'serverTime', 
+    'originalAgentTime', 'facility', 'messageData.eventCategory', 'messageData.sha256', 'messageData.type',
+    'messageData.fileName', 'messageData.filePath', 'messageData.fileSize', 'messageData.reported',
+    'messageData.blocked', 'messageData.localAnalysisResult.contentVersion', 'messageData.localAnalysisResult.trusted',
+    'messageData.localAnalysisResult.publishers'
+]
+
+PANW_ARGS_DICT = {
+    'ip': ['src', 'dst'],
+    'rule': ['rule'],
+    'from_zone': ['from'],
+    'to_zone': ['to'],
+    'port': ['sport', 'dport'],
+    'action': ['action'],
+    'hash': ['filedigest'],
+    'url': ['misc LIKE'],
+    'query': []
+}
+
+TMS_ARGS_DICT = {
+    'ip': ['endPointHeader.agentIp'],
+    'host': ['endPointHeader.deviceName'],
+    'user': ['endPointHeader.userName'],
+    'category': ['messageData.eventCategory'],
+    'hash': ['messageData.files.sha256'],
+    'query': []
+}
+
 ''' HELPER FUNCTIONS '''
+
+
+def get_fields_and_check_validity(fields: str, table_fields: list):
+    """
+    This function check if the entered fields are valid (i.e. exists in the table fields) and returns them
+    :param fields: string input of fields list (comma separated)
+    :param table_fields: the fields list of the current table
+    :return: the fields string
+    """
+    fields_list: list = argToList(fields, ',')
+    for field in fields_list:
+        if field == 'all':
+            # if fields=all than we don't need to continue
+            return '*'
+        if field not in table_fields:
+            raise Exception(f'{field} is not a valid field of the query')
+    return fields
+
+
+def get_where(args: dict, table_args_dict: dict):
+    """
+    This function transforms the relevant entries of dict into the where part of a SQL query
+    :param args: a dict
+    :param table_args_dict: the dict of the transformed fields
+    :return: a string represents the where part of a SQL query
+    """
+    where: str = ''
+    for key in args.keys():
+        if key in table_args_dict.keys():
+            if key == 'query' and args[key]:
+                # if query arg is supplied than we just need to parse it and only it
+                return parse_query(args[key])
+            else:
+                values_list = argToList(args[key])
+                for value in values_list:
+                    for field in table_args_dict[key]:
+                        if not where:
+                            # the beginning of the where part should start without OR
+                            where += f'{field}={value}'
+                        else:
+                            where += f' OR {field}={value}'
+    return where
+
+
+def parse_query(query: str):
+    """
+    This function make sure to return only the part of the query after the WHERE word
+    :param query: the query string
+    :return: the part of the query after the WHERE word
+    """
+    if 'WHERE' in query.upper():
+        return query.upper().split('WHERE', 1)[1]
+    else:
+        raise Exception('A compound query must include WHERE word')
 
 
 def get_encrypted(auth_id: str, key: str) -> str:
@@ -671,6 +810,58 @@ def search_by_file_hash_command():
     return entry
 
 
+def query_traffic_logs_command():
+
+    args = demisto.args()
+
+    start_time = args.get('startTime')
+    end_time = args.get('endTime')
+    limit = args.get('logsAmount', '5')
+    time_range = args.get('timeRange')
+    time_value = args.get('rangeValue')
+
+    if time_range:
+        if time_value:
+            service_end_date = datetime.now()
+            service_start_date = get_start_time(time_range, int(time_value))
+        else:
+            raise Exception('Enter timeRange and timeValue, or startTime and endTime')
+    else:
+        # parses user input to datetime object
+        service_start_date = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
+        service_end_date = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
+
+    # transforms datetime object to epoch time
+    service_start_date_epoch = int(service_start_date.strftime("%s"))
+    service_end_date_epoch = int(service_end_date.strftime("%s"))
+
+    fields = args.get('fields', 'all')
+    fields = get_fields_and_check_validity(fields, PANW_TRAFFIC_FIELDS)
+    where = get_where(args, PANW_ARGS_DICT)
+
+    if where:
+        query = f'SELECT {fields} FROM panw.traffic WHERE {where} LIMIT {limit}'
+    else:
+        query = f'SELECT {fields} FROM panw.traffic LIMIT {limit}'
+
+    query_data = {
+        "query": query,
+        "startTime": service_start_date_epoch,
+        "endTime": service_end_date_epoch,
+    }
+
+    response = query_loggings(query_data)
+
+    try:
+        result = response.json()['result']
+        pages = result.get('esResult', {}).get('hits', {}).get('hits', [])
+        table_name = result['esQuery']['table'][0].split('.')[1]
+    except ValueError:
+        raise Exception('Failed to parse the response from Cortex')
+
+    output = []
+
+
 def process_incident_pairs(incident_pairs, max_incidents):
     sorted_pairs = sorted(incident_pairs, key=lambda x: x[1])
     sorted_pairs = sorted_pairs[:max_incidents]
@@ -781,6 +972,8 @@ def main():
             demisto.results(get_social_applications_command())
         elif demisto.command() == 'cortex-search-by-file-hash':
             demisto.results(search_by_file_hash_command())
+        elif demisto.command() == 'cortex-query-traffic-logs':
+            demisto.results(query_traffic_logs_command())
         elif demisto.command() == 'fetch-incidents':
             fetch_incidents()
     except Exception as e:
