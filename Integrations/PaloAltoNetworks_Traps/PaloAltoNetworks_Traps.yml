@@ -235,7 +235,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get blacklist status of guven hashes.
+    description: Get blacklist status of given hashes.
     execution: false
     name: traps-hashes-blacklist-status
     outputs:
@@ -306,7 +306,7 @@ script:
       description: File path on endpoint.
       type: String
     - contextPath: Traps.QuarantineResult.OperationID
-      description: peration ID.
+      description: Operation ID.
       type: String
     - contextPath: Traps.QuarantineResult.Status
       description: Quarantine status.
