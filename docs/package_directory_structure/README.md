@@ -19,6 +19,7 @@ The package is converted into a YAML file, which include all the package compone
 ├── <INTEGRATION-NAME>_image.png       // Integration PNG logo (for integrations only).
 ├── <INTEGRATION-NAME>_description.md  // Detailed instructions markdown file (for integrations only)
 ├── CHANGELOG.md                       // Markdown file which include the script/integration release notes.
+├── README.md                          // Integration / automation script documentation.
 ├── Pipfile                            // Can be copied from Tests/scripts/dev_envs/default_python3
 └── Pipfile.lock                       // Can be copied from Tests/scripts/dev_envs/default_python3    
 ```
@@ -40,6 +41,7 @@ For example, a package of the integration [Palo Alto Networks Cortex](https://gi
 │    ├── PaloAltoNetworksCortex.yml
 │    ├── PaloAltoNetworksCortex_image.png
 │    ├── PaloAltoNetworksCortex_description.md
+│    ├── README.md
 │    ├── Pipfile
 |    └── Pipfile.lock
 ```

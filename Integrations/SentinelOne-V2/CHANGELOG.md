@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+  - Fixed an issue with the ***sentinelone-disconnect-agent*** command.
+  - Fixed human-readable output in the ***sentinelone-get-threat*** command in cases where the content_hash does not exist.
 
 ## [19.9.1] - 2019-09-18
   - Fixed an issue in the **Fetch incidents*** function.
