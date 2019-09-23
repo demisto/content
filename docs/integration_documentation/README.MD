@@ -26,8 +26,11 @@ Where there is missing information, be sure to fill out the document completely.
 
 
 ### Using commands parameter
-In order to generate output (human readable and context) examples automatically, one should create a text file containing command examples, one per line. The command examples should appear the same way they would as in the CLI in Demisto.
-Commands will be executed one after the other. If there are duplicates of a command included in the text file, only the output of the first execution of a command will be included in the generated documentation output.
+To automatically generate example output (human readable and context), you should create a text file containing command examples, one per line. The command examples should appear the same way they would as in the CLI in Demisto, for example `!url url=8.8.8.8`.
+Commands will be executed one at a time, in the order in which they appear in the file. If there are duplicates of a command included in the text file, only the output of the command's first execution  will be included in the generated documentation output.
+
+![ScreenRecording2019-09-22at16241](https://user-images.githubusercontent.com/31018228/65404184-313ced00-dde0-11e9-9257-e61e2943fd75.gif)
+
 
 ### Good documentation examples:
 
@@ -38,6 +41,10 @@ https://support.demisto.com/hc/en-us/articles/360002253814-EWSv2 - Shows an exam
 Example: 
 ![image](https://user-images.githubusercontent.com/7270217/40935346-7ca3b24a-6840-11e8-8540-b00677cd6657.png)
 ![image](https://user-images.githubusercontent.com/7270217/40935354-8406dcc4-6840-11e8-9b0c-b0a9c4bd8a99.png)
+
+
+### Posting Documentation
+The documentation should be posted in the integration/automation script package directory as `README.md`
 
 
 ***
