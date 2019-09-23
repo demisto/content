@@ -115,3 +115,5 @@ script:
     }
   type: javascript
   isfetch: true
+tests:
+    - No test
