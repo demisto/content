@@ -18,6 +18,6 @@ if not current_value:
     current_value = lst
 else:
     current_value += lst
-val = json.dumps({ field_cli_name: current_value })
+val = json.dumps({field_cli_name: current_value})
 
-demisto.results(demisto.executeCommand("setIncident", { 'customFields': val }))
+demisto.results(demisto.executeCommand("setIncident", {'customFields': val}))
