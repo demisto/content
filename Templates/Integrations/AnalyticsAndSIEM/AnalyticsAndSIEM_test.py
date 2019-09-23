@@ -118,7 +118,7 @@ class TestEvents:
             'eventId': '111', 'description': 'event description', 'createdAt':
                 '2019-09-09T08:30:07.959533', 'isActive': True, 'assignee': [{'name': 'user1', 'id': '142'}]}]}
         requests_mock.delete(BASE_URL + 'event', json=request_json)
-        with raises(DemistoException, match='Could not delete event `111`'):
+        with raises(DemistoException, match='Could not close event `111`'):
             close_event(self.client, {'event_id': '111'})
 
     def test_update_event(self, requests_mock):
