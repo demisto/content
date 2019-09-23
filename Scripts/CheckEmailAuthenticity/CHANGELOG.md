@@ -1,2 +1,2 @@
 ## [Unreleased]
-  - Fixed a bug that prevented playbooks from using this script.
+Fixed an issue that prevented playbooks from using this script.
