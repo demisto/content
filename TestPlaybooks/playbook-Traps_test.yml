@@ -99,7 +99,7 @@ tasks:
       brand: Traps
     nexttasks:
       '#none#':
-      - "11"
+      - "28"
     scriptarguments:
       comment: {}
       event_id:
@@ -144,10 +144,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 596f5c10-20d6-4a88-8a82-4ae9d2925ae7
+    taskid: 0d7a5ae1-8800-4cc1-87e4-7605e771ff8f
     type: regular
     task:
-      id: 596f5c10-20d6-4a88-8a82-4ae9d2925ae7
+      id: 0d7a5ae1-8800-4cc1-87e4-7605e771ff8f
       version: -1
       name: traps-event-bulk-update-status
       description: Change the status of multiple events.
@@ -157,18 +157,18 @@ tasks:
       brand: Traps
     nexttasks:
       '#none#':
-      - "25"
+      - "29"
     scriptarguments:
       event_ids:
         simple: df4e60a62515482f98c8ef37e74363df,cfe4d15aca924bfcb7d2fc629b696bdd
       status:
-        simple: new
+        simple: investigating
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1340,
-          "y": 720
+          "y": 900
         }
       }
     note: false
@@ -460,8 +460,8 @@ tasks:
     task:
       id: ef1f1874-e535-45be-88ce-66a231b02352
       version: -1
-      name: Traps Retrieve And Download Files
-      playbookName: Traps Retrieve And Download Files
+      name: Traps Retrieve And Download FIles
+      playbookName: Traps Retrieve And Download FIles
       type: playbook
       iscommand: false
       brand: ""
@@ -518,6 +518,71 @@ tasks:
         "position": {
           "x": 450,
           "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: dd7deec3-0bb0-4f6a-8e07-feabeca09ec1
+    type: regular
+    task:
+      id: dd7deec3-0bb0-4f6a-8e07-feabeca09ec1
+      version: -1
+      name: traps-event-update (revert)
+      description: Change status and add a comment to an existing event.
+      script: Traps|||traps-event-update
+      type: regular
+      iscommand: true
+      brand: Traps
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      comment: {}
+      event_id:
+        simple: 53edb3fa9a3b4b83bcf168390a2ec08d
+      status:
+        simple: new
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 8ac9b8a4-f0bf-4a67-8214-a03b87b982a3
+    type: regular
+    task:
+      id: 8ac9b8a4-f0bf-4a67-8214-a03b87b982a3
+      version: -1
+      name: traps-event-bulk-update-status (revert)
+      description: Change the status of multiple events.
+      script: Traps|||traps-event-bulk-update-status
+      type: regular
+      iscommand: true
+      brand: Traps
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      event_ids:
+        simple: df4e60a62515482f98c8ef37e74363df,cfe4d15aca924bfcb7d2fc629b696bdd
+      status:
+        simple: new
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1075
         }
       }
     note: false
