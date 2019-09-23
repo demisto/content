@@ -145,6 +145,94 @@ TMS_ARGS_DICT = {
     'query': []
 }
 
+PANW_TRAFFIC_CONTEXT_TRANSFORM_DICT = {
+    'risk-of-app': 'RiskOfApp',
+    'natsport': 'Natsport',
+    'sessionid': 'SessionID',
+    'packets': 'Packets',
+    'characteristic-of-app': 'CharacteristicOfApp',
+    'app': 'App',
+    'vsys': 'Vsys',
+    'nat': 'Nat',
+    'receive_time': 'ReceiveTime',
+    'subcategory-of-app': 'SubcategoryOfApp',
+    'users': 'Users',
+    'proto': 'Proto',
+    'tunneled-app': 'TunneledApp',
+    'natdport': 'Natdport',
+    'dst': 'Dst',
+    'natdst': 'Natdst',
+    'rule': 'Rule',
+    'dport': 'Dport',
+    'elapsed': 'Elapsed',
+    'device_name': 'DeviceName',
+    'subtype': 'Subtype',
+    'time_received': 'TimeReceived',
+    'session_end_reason': 'SessionEndReason',
+    'natsrc': 'Natsrc',
+    'src': 'Src',
+    'start': 'Start',
+    'time_generated': 'TimeGenerated',
+    'category-of-app': 'CategoryOfApp',
+    'srcloc': 'Srcloc',
+    'dstloc': 'Dstloc',
+    'serial': 'Serial',
+    'bytes': 'Bytes',
+    'vsys_id': 'VsysID',
+    'to': 'To',
+    'category': 'Category',
+    'sport': 'Sport',
+    'tunnel': 'Tunnel',
+    'is_phishing': 'IsPhishing',
+}
+
+PANW_THREAT_CONTEXT_TRANSFORMER_DICT = {
+    'sessionid': 'SessionID',
+    'action': 'Action',
+    'app': 'App',
+    'nat': 'Nat',
+    'subcategory-of-app': 'SubcategoryOfApp',
+    'pcap_id': 'PcapID',
+    'natdst': 'Natdst',
+    'flags': 'Flags',
+    'dport': 'Dport',
+    'threatid': 'ThreatID',
+    'natsrc': 'Natsrc',
+    'category-of-app': 'CategoryOfApp',
+    'srcloc': 'Srcloc',
+    'dstloc': 'Dstloc',
+    'to': 'To',
+    'risk-of-app': 'RiskOfApp',
+    'natsport': 'Natsport',
+    'url_denied': 'URLDenied',
+    'characteristic-of-app': 'CharacteristicOfApp',
+    'http_method': 'HTTPMethod',
+    'from': 'From',
+    'vsys': 'Vsys',
+    'receive_time': 'ReceiveTime',
+    'users': 'Users',
+    'proto': 'Proto',
+    'natdport': 'Natdport',
+    'dst': 'Dst',
+    'rule': 'Rule',
+    'category-of-threatid': 'CategoryOfThreatID',
+    'device_name': 'DeviceName',
+    'subtype': 'Subtype',
+    'time_received': 'TimeReceived',
+    'direction': 'Direction',
+    'misc': 'Misc',
+    'severity': 'Severity',
+    'src': 'Src',
+    'time_generated': 'TimeGenerated',
+    'serial': 'Serial',
+    'vsys_id': 'VsysID',
+    'url_domain': 'URLDomain',
+    'category': 'Category',
+    'sport': 'Sport',
+    'is_phishing': 'IsPhishing'
+}
+
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -597,7 +685,7 @@ def query_logs_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Logs ' + table_name + ' table', screened_results),
         'EntryContext': {
-            'Cortex.Logging(val.id===obj.id)': output
+            'Cortex.Logging(val.id === obj.id)': output
         }
     }
 
@@ -667,7 +755,7 @@ def get_critical_logs_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Logs ' + table_name + ' table', screened_results),
         'EntryContext': {
-            'Cortex.Logging(val.id==obj.id)': output
+            'Cortex.Logging(val.id === obj.id)': output
         }
     }
     return entry
@@ -734,7 +822,7 @@ def get_social_applications_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Logs ' + table_name + ' table', screened_results),
         'EntryContext': {
-            'Cortex.Logging(val.id===obj.id)': output
+            'Cortex.Logging(val.id === obj.id)': output
         }
     }
     return entry
@@ -804,7 +892,7 @@ def search_by_file_hash_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Logs ' + table_name + ' table', screened_results),
         'EntryContext': {
-            'Cortex.Logging(val.id==obj.id)': output
+            'Cortex.Logging(val.id === obj.id)': output
         }
     }
     return entry
@@ -859,7 +947,21 @@ def query_traffic_logs_command():
     except ValueError:
         raise Exception('Failed to parse the response from Cortex')
 
-    output = []
+    outputs: list = []
+
+    human_readable: list = []
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Cortex.Logging(val.id === obj.id)': outputs
+        }
+    }
+    return entry
 
 
 def process_incident_pairs(incident_pairs, max_incidents):
