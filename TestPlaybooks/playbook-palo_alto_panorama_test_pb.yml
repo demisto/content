@@ -141,10 +141,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: d55f46f7-27ae-4154-8ea3-d837a3a03826
+    taskid: 4a51b6c7-04c2-474a-8521-c7cf6e82ffeb
     type: regular
     task:
-      id: d55f46f7-27ae-4154-8ea3-d837a3a03826
+      id: 4a51b6c7-04c2-474a-8521-c7cf6e82ffeb
       version: -1
       name: panorama-address-add
       script: '|||panorama-create-address'
@@ -157,12 +157,15 @@ tasks:
     scriptarguments:
       description:
         simple: just a desc
+      device-group: {}
       fqdn: {}
       ip_netmask: {}
       ip_range:
         simple: 10.10.10.9-10.10.10.10
       name:
         simple: pano_inst_address_test_pb
+      tag:
+        simple: Bark_test_tag2
     separatecontext: false
     view: |-
       {
@@ -176,10 +179,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 88d65dc5-660b-496a-81b1-74af161a6395
+    taskid: ed6b36ed-5d00-4853-80c1-04c437d05876
     type: condition
     task:
-      id: 88d65dc5-660b-496a-81b1-74af161a6395
+      id: ed6b36ed-5d00-4853-80c1-04c437d05876
       version: -1
       name: Test panorama-create-address
       type: condition
@@ -202,6 +205,16 @@ tasks:
           right:
             value:
               simple: just
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Panorama
+                accessor: Addresses.Tags
+            iscontext: true
+          right:
+            value:
+              simple: Bark_test_tag
     view: |-
       {
         "position": {
@@ -214,12 +227,12 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: db203fe2-6602-44e0-8ed6-a349dac88ae1
+    taskid: af6da855-4729-4a58-8fde-98689ad19e56
     type: regular
     task:
-      id: db203fe2-6602-44e0-8ed6-a349dac88ae1
+      id: af6da855-4729-4a58-8fde-98689ad19e56
       version: -1
-      name: Panorama Addresses get
+      name: panorama-list-addresses
       script: '|||panorama-list-addresses'
       type: regular
       iscommand: true
@@ -227,6 +240,10 @@ tasks:
     nexttasks:
       '#none#':
       - "16"
+    scriptarguments:
+      device-group: {}
+      tag:
+        simple: Bark_test_tag
     separatecontext: false
     view: |-
       {
@@ -522,10 +539,10 @@ tasks:
     ignoreworker: false
   "38":
     id: "38"
-    taskid: 1981e0e4-71b9-4c81-8d30-0086b05e04d0
+    taskid: 64f8bf31-64c6-488d-8945-ca81fc7c94c7
     type: regular
     task:
-      id: 1981e0e4-71b9-4c81-8d30-0086b05e04d0
+      id: 64f8bf31-64c6-488d-8945-ca81fc7c94c7
       version: -1
       name: Delete Context - Finished Objects UC
       scriptName: DeleteContext
@@ -885,10 +902,10 @@ tasks:
     ignoreworker: false
   "67":
     id: "67"
-    taskid: ae5aef98-eb79-4dae-841f-4025ae6359b3
+    taskid: 0fe07ff2-d1df-476c-8697-b596ee2c038a
     type: regular
     task:
-      id: ae5aef98-eb79-4dae-841f-4025ae6359b3
+      id: 0fe07ff2-d1df-476c-8697-b596ee2c038a
       version: -1
       name: panorama-create-rule
       description: Create policy rule in Palo Alto Firewall or Panorama
@@ -907,7 +924,9 @@ tasks:
       description:
         simple: labala
       destination: {}
+      device-group: {}
       disable: {}
+      log_forwarding: {}
       negate_destination: {}
       negate_source: {}
       pre_post:
@@ -917,6 +936,8 @@ tasks:
       service: {}
       source: {}
       source_user: {}
+      tags:
+        simple: Bark_test_tag2
       target: {}
     separatecontext: false
     view: |-
@@ -1022,10 +1043,10 @@ tasks:
     ignoreworker: false
   "75":
     id: "75"
-    taskid: 011925d7-dd06-4e08-8561-4dbd1a3d6304
+    taskid: 3a6b5147-1787-49aa-8b66-017cd86d6032
     type: regular
     task:
-      id: 011925d7-dd06-4e08-8561-4dbd1a3d6304
+      id: 3a6b5147-1787-49aa-8b66-017cd86d6032
       version: -1
       name: panorama-create-service
       description: Creates a service object
@@ -1041,12 +1062,15 @@ tasks:
         simple: foo
       destination_port:
         simple: "33"
+      device-group: {}
       name:
         simple: demi_temp_service_test_pb7
       protocol:
         simple: sctp
       source_port:
         simple: "12"
+      tags:
+        simple: Bark_test_tag
     separatecontext: false
     view: |-
       {
@@ -1168,12 +1192,12 @@ tasks:
     ignoreworker: false
   "81":
     id: "81"
-    taskid: 5dcd2c75-7b6d-43a5-8533-751a18d93d24
+    taskid: 93a4dca0-f17e-4648-8342-1816cd8f71bc
     type: regular
     task:
-      id: 5dcd2c75-7b6d-43a5-8533-751a18d93d24
+      id: 93a4dca0-f17e-4648-8342-1816cd8f71bc
       version: -1
-      name: panorama-get-service-groups
+      name: panorama-get-service-group
       script: '|||panorama-get-service-group'
       type: regular
       iscommand: true
@@ -1182,6 +1206,7 @@ tasks:
       '#none#':
       - "38"
     scriptarguments:
+      device-group: {}
       name:
         simple: demisto_pan_default_service_group
     separatecontext: false
