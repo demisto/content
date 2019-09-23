@@ -241,7 +241,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: JSON string of Slack blocks to send.
+      description: A JSON string of Slack blocks to send in the message.
       isArray: false
       name: blocks
       required: false
