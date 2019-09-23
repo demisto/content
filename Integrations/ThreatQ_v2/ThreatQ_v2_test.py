@@ -315,4 +315,3 @@ def test_get_errors_string_from_bad_request():
     for error_response, expected_result in zip(MOCK_ERROR_RESPONSES, EXPECTED_ERROR_STRINGS):
         res.json.return_value = error_response
         assert expected_result in get_errors_string_from_bad_request(res, 400)
-
