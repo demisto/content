@@ -19,7 +19,7 @@ configuration:
   name: private_key
   required: false
   type: 14
-- defaultvalue: 'true'
+- defaultvalue: ''
   display: Trust any certificate (not secure)
   name: insecure
   required: false
