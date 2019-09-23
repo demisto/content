@@ -237,10 +237,12 @@ def fetch_incidents(
     timestamp_format = '%Y-%m-%dT%H:%M:%S'
     # Get incidents from API
     if not last_run:  # if first time running
-        last_run, _ = parse_date_range(fetch_time)
-        last_run = last_run.strftime(timestamp_format)
-    incidents = list()
-    raw_response = client.list_events_request(event_created_date_after=last_run)
+        new_last_run, _ = parse_date_range(fetch_time)
+        new_last_run = new_last_run.strftime(timestamp_format)
+    else:
+        new_last_run = last_run
+    incidents: List = list()
+    raw_response = client.list_events_request(event_created_date_after=new_last_run)
     events = raw_response.get('event')
     if events:
         # Creates incident entry
@@ -252,9 +254,8 @@ def fetch_incidents(
 
         last_incident_timestamp = incidents[-1].get('occurred')
         new_last_run = datetime.strptime(last_incident_timestamp, timestamp_format)
-        return incidents, new_last_run
-    # Return empty results
-    return incidents, last_run
+    # Return results
+    return incidents, new_last_run
 
 
 def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -276,7 +277,7 @@ def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         max_results=max_results)
     events = raw_response.get('event')
     if events:
-        title: str = f'{INTEGRATION_NAME} - List events:'
+        title = f'{INTEGRATION_NAME} - List events:'
         context_entry = build_context(events)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry
