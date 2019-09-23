@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 55de9b19-3e78-45d3-8b95-e0594179a57e
+    taskid: 1c31af4c-e99f-4180-80ac-7315f9f7e76e
     type: start
     task:
-      id: 55de9b19-3e78-45d3-8b95-e0594179a57e
+      id: 1c31af4c-e99f-4180-80ac-7315f9f7e76e
       version: -1
       name: ""
       iscommand: false
@@ -26,12 +26,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: a30d4ef9-4218-46e8-868c-1b55acfe0492
+    taskid: 934242bc-8659-4451-8b31-b66e97c8e704
     type: regular
     task:
-      id: a30d4ef9-4218-46e8-868c-1b55acfe0492
+      id: 934242bc-8659-4451-8b31-b66e97c8e704
       version: -1
       name: cybereason-is-probe-connected
       description: Checks if the machine is currently connected to the Cybereason
@@ -56,12 +57,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: f48abf9b-cc3e-4797-89d9-2a25a05a40ea
+    taskid: 33b2e52b-e683-4588-851f-7b32707b0c67
     type: regular
     task:
-      id: f48abf9b-cc3e-4797-89d9-2a25a05a40ea
+      id: 33b2e52b-e683-4588-851f-7b32707b0c67
       version: -1
       name: VerifyContext
       description: |-
@@ -93,12 +95,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: b56ab88e-8143-4d7a-8d24-ca6552a5a07d
+    taskid: 61df3be3-2a56-44e6-8d03-5a167910aab4
     type: regular
     task:
-      id: b56ab88e-8143-4d7a-8d24-ca6552a5a07d
+      id: 61df3be3-2a56-44e6-8d03-5a167910aab4
       version: -1
       name: cybereason-query-connections
       description: Searches for connections.
@@ -125,12 +128,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 63424f54-6706-4155-8c00-960c66053645
+    taskid: 6a4f26ee-d00a-4f81-8404-d1af20ece8ef
     type: regular
     task:
-      id: 63424f54-6706-4155-8c00-960c66053645
+      id: 6a4f26ee-d00a-4f81-8404-d1af20ece8ef
       version: -1
       name: VerifyContext
       description: |-
@@ -162,12 +166,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: c2c4bcf7-5b67-4218-8095-5ab9428ec5d0
+    taskid: 2b22cece-4eed-4012-83f9-8f695a545137
     type: regular
     task:
-      id: c2c4bcf7-5b67-4218-8095-5ab9428ec5d0
+      id: 2b22cece-4eed-4012-83f9-8f695a545137
       version: -1
       name: cybereason-query-processes
       description: Searches for processes with various filters.
@@ -199,12 +204,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: cc5376a3-295b-4558-8163-ae60ca98056a
+    taskid: 19f190cc-144d-442f-834c-f626274265ac
     type: regular
     task:
-      id: cc5376a3-295b-4558-8163-ae60ca98056a
+      id: 19f190cc-144d-442f-834c-f626274265ac
       version: -1
       name: VerifyContext
       description: |-
@@ -236,12 +242,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: 7ca1237c-6fe9-4590-850a-73e953afee1e
+    taskid: c34e6d72-f982-4ffd-8169-bf7e2dbc82a3
     type: title
     task:
-      id: 7ca1237c-6fe9-4590-850a-73e953afee1e
+      id: c34e6d72-f982-4ffd-8169-bf7e2dbc82a3
       version: -1
       name: Success!
       type: title
@@ -257,12 +264,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: a971732c-f90e-4f1e-8ab7-2a869f444f49
+    taskid: 4d518bb9-d706-477c-86b8-7cf67b653d64
     type: regular
     task:
-      id: a971732c-f90e-4f1e-8ab7-2a869f444f49
+      id: 4d518bb9-d706-477c-86b8-7cf67b653d64
       version: -1
       name: cybereason-query-malops
       description: Returns a list of all Malops and details on the Malops.
@@ -275,27 +283,30 @@ tasks:
       - "9"
     scriptarguments:
       filters: {}
+      malopGuid: {}
       perGroupLimit: {}
       templateContext: {}
       totalResultLimit:
         simple: "1"
-      withinLastDays: {}
+      withinLastDays:
+        simple: "1000"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1430
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
-    taskid: 3a9cb86f-aa8c-4a23-8413-27b61674a82d
+    taskid: c0e7200f-23b2-40a0-85a7-50447dd5ef73
     type: regular
     task:
-      id: 3a9cb86f-aa8c-4a23-8413-27b61674a82d
+      id: c0e7200f-23b2-40a0-85a7-50447dd5ef73
       version: -1
       name: cybereason-malop-processes
       description: Returns a list of malops
@@ -319,12 +330,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
-    taskid: b9274971-7ee4-4d07-8a6d-610e53131cae
+    taskid: dd92f8c2-bbea-4e71-8d36-6fac8399c57d
     type: regular
     task:
-      id: b9274971-7ee4-4d07-8a6d-610e53131cae
+      id: dd92f8c2-bbea-4e71-8d36-6fac8399c57d
       version: -1
       name: VerifyContext
       description: |-
@@ -356,12 +368,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
-    taskid: 6578e8e9-16e7-47fa-8f2f-87532a92ad74
+    taskid: ed84fd17-cdf0-45e1-89ea-22e6d7465ded
     type: regular
     task:
-      id: 6578e8e9-16e7-47fa-8f2f-87532a92ad74
+      id: ed84fd17-cdf0-45e1-89ea-22e6d7465ded
       version: -1
       name: DeleteContext - Process
       description: Delete field from context
@@ -387,12 +400,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
-    taskid: e7955643-7629-4209-8d14-94301496f1d7
+    taskid: dae944a4-1a95-4c87-8dfc-85cd3f85ceb5
     type: regular
     task:
-      id: e7955643-7629-4209-8d14-94301496f1d7
+      id: dae944a4-1a95-4c87-8dfc-85cd3f85ceb5
       version: -1
       name: Malops fetch test
       scriptName: FetchFromInstance
@@ -434,12 +448,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
-    taskid: 02374c7a-042b-44b9-8cf5-44968bf47848
+    taskid: f1f4b17f-9632-442d-8924-2531f5eba4e5
     type: regular
     task:
-      id: 02374c7a-042b-44b9-8cf5-44968bf47848
+      id: f1f4b17f-9632-442d-8924-2531f5eba4e5
       version: -1
       name: Query File
       description: Query files as part of investigation
@@ -463,12 +478,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: 97dc5b34-2a1b-43fc-8dbb-938cf5c1782a
+    taskid: 2241dc93-920e-416a-86d0-3fff5ff6e33b
     type: condition
     task:
-      id: 97dc5b34-2a1b-43fc-8dbb-938cf5c1782a
+      id: 2241dc93-920e-416a-86d0-3fff5ff6e33b
       version: -1
       name: Verify Query File Outputs
       type: condition
@@ -526,12 +542,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
-    taskid: be0d1cdb-730c-4ebc-8b12-3fd1998239ad
+    taskid: 63f82e7f-5e09-4449-89df-67e464fccad3
     type: regular
     task:
-      id: be0d1cdb-730c-4ebc-8b12-3fd1998239ad
+      id: 63f82e7f-5e09-4449-89df-67e464fccad3
       version: -1
       name: Query Domain
       script: '|||cybereason-query-domain'
@@ -554,12 +571,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
-    taskid: 063c664b-c5f9-4d7d-83b1-7f0dde02843e
+    taskid: c9c278f2-0067-44dc-8202-3b63d488639a
     type: condition
     task:
-      id: 063c664b-c5f9-4d7d-83b1-7f0dde02843e
+      id: c9c278f2-0067-44dc-8202-3b63d488639a
       version: -1
       name: Verify Query Domain Outputs
       type: condition
@@ -612,12 +630,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
-    taskid: 53b22162-ca38-46e0-8792-aafdb9e74bd5
+    taskid: 4e95f874-df25-460d-8da1-2265eec5304a
     type: regular
     task:
-      id: 53b22162-ca38-46e0-8792-aafdb9e74bd5
+      id: 4e95f874-df25-460d-8da1-2265eec5304a
       version: -1
       name: Query User
       script: '|||cybereason-query-user'
@@ -640,12 +659,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "18":
     id: "18"
-    taskid: 2599420f-572d-4693-8aa0-977f9e88016e
+    taskid: 8e94eb16-d4ff-4a72-82be-48badaeeeb6a
     type: condition
     task:
-      id: 2599420f-572d-4693-8aa0-977f9e88016e
+      id: 8e94eb16-d4ff-4a72-82be-48badaeeeb6a
       version: -1
       name: Verify Query User Outputs
       type: condition
@@ -690,6 +710,7 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},

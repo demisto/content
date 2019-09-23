@@ -40,14 +40,50 @@ GROUPS_INFO_DEFAULT_COLUMNS = [
     'created',
     'id'
 ]
-# @@@@@@@@@@@@@@@@@@@@@@@@@@    LITERALS    @@@@@@@@@@@@@@@@@@@@@@@@@@
+
+'''LITERALS'''
+
 EPOCH_MINUTE = 60 * 1000
 EPOCH_HOUR = 60 * EPOCH_MINUTE
 
 
-# @@@@@@@@@@@@@@@@@@@@@@@@@@    HELPER FUNCTIONS    @@@@@@@@@@@@@@@@@@@@@@@@@@
+'''HELPER FUNCTIONS'''
+
+
 def fix_url(base):
     return base if base.endswith('/') else (base + '/')
+
+
+def endpoint_ip_extract(raw_json):
+    ips_array = []
+    for content in raw_json:
+        ip = {'Address': content.get('ipAddresses', [''])[0],
+              'Mac': content.get('computerName')
+              }
+        ip = createContext(ip, removeNull=True)
+        if ip:
+            ips_array.append(ip)
+    return ips_array
+
+
+def endpoint_endpoint_extract(raw_json):
+    endpoints_arr = []
+    for content in raw_json:
+        endpoint = {'Hostname': content.get('computerName'),
+                    'MACAddress': content.get('macAddresses', [''])[0],
+                    'Domain': content.get('domainOrWorkgroup'),
+                    'IPAddress': content.get('ipAddresses', [''])[0],
+                    'DHCPServer': content.get('dhcpServer'),
+                    'OS': content.get('operatingSystem'),
+                    'OSVersion': content.get('osVersion'),
+                    'BIOSVersion': content.get('biosVersion'),
+                    'Memory': content.get('memory'),
+                    'Processors': content.get('processorType')
+                    }
+        endpoint = createContext(endpoint, removeNull=True)
+        if endpoint:
+            endpoints_arr.append(endpoint)
+    return endpoints_arr
 
 
 def build_query_params(params):
@@ -345,7 +381,7 @@ def get_client_content(token, time_zone):
     return client_content_json, client_version, last_update_date
 
 
-def get_endpoints_info(token, computer_name, last_update, os, page_size, columns):
+def get_endpoints_info(token, computer_name, last_update, os, page_size, columns, group_name=None):
     params = {
         'computerName': computer_name,
         'lastUpdate': last_update,
@@ -356,30 +392,44 @@ def get_endpoints_info(token, computer_name, last_update, os, page_size, columns
     params = createContext(params, removeNull=True)
     json_response = do_get(token, False, 'sepm/api/v1/computers' + build_query_params(params))
     filtered_json_response = json_response.get('content')
+    final_json = []
     entry_context = []
     for content in filtered_json_response:
-        # used `set` on the mac address list as it sometimes contained duplicated values
-        content['macAddresses'] = list(set(content.get('macAddresses')))
-        entry_context.append({
-            'Hostname': content.get('computerName'),
-            'Domain': content.get('domainOrWorkgroup'),
-            'IPAddresses': content.get('ipAddresses'),
-            'OS': content.get('operatingSystem') + ' | ' + content.get('osBitness'),
-            'Description': content.get('content.description'),
-            'MACAddresses': content.get('macAddresses'),
-            'BIOSVesrsion': content.get('biosVersion'),
-            'DHCPServer': content.get('dhcpServer'),
-            'HardwareKey': content.get('hardwareKey'),
-            'LastScanTime': epochToTimestamp(content.get('lastScanTime'))
-        })
-    return filtered_json_response, entry_context
+        group = content.get('group', {'name': ''})
+        bool_start = group.get('name').startswith(group_name[:-1]) if group_name and group_name[-1] == '*' else False
+        if (not group_name) or group.get('name') == group_name or bool_start:  # No group name filter
+            # used `set` on the mac address list as it sometimes contained duplicated values
+            content['macAddresses'] = list(set(content.get('macAddresses')))
+            entry_context.append({
+                'Hostname': content.get('computerName'),
+                'Domain': content.get('domainOrWorkgroup'),
+                'IPAddresses': content.get('ipAddresses'),
+                'OS': content.get('operatingSystem', '') + ' | ' + content.get('osBitness', ''),
+                'Description': content.get('content.description'),
+                'MACAddresses': content.get('macAddresses'),
+                'BIOSVesrsion': content.get('biosVersion'),
+                'DHCPServer': content.get('dhcpServer'),
+                'HardwareKey': content.get('hardwareKey'),
+                'LastScanTime': epochToTimestamp(content.get('lastScanTime')),
+                'RunningVersion': content.get('deploymentRunningVersion'),
+                'TargetVersion': content.get('deploymentTargetVersion'),
+                'Group': group.get('name'),
+                'PatternIdx': content.get('patternIdx'),
+                'OnlineStatus': content.get('onlineStatus'),
+                'UpdateTime': epochToTimestamp(content.get('lastUpdateTime')),
+            })
+            final_json.append(content)
+
+    return final_json, entry_context
 
 
-def create_endpints_filter_string(computer_name, last_update, os, page_size):
+def create_endpints_filter_string(computer_name, last_update, os, page_size, group_name=None):
     md = '## Endpoints Information'
-    md += ', filtered for last updated status: {}'.format(last_update) if last_update else ''
+    if last_update != '0':
+        md += ', filtered for last updated status: {}'.format(last_update) if last_update else ''
     md += ', filtered for hostname: {}'.format(computer_name) if computer_name else ''
     md += ', filtered for os: {}'.format(os) if os else ''
+    md += ', filtered for group name: {}'.format(group_name) if group_name else ''
     md += ', page size: {}'.format(page_size) if page_size else ''
     md += '\n'
     return md
@@ -454,6 +504,18 @@ def update_endpoint_content(token, endpoint):
     return command_id
 
 
+def filter_only_old_clients(filtered_json_response, desired_version):
+    filtered = []
+    for content in filtered_json_response:
+        RunningVersion = content.get('deploymentRunningVersion')
+        TargetVersion = content.get('deploymentTargetVersion')
+
+        if (desired_version and RunningVersion != desired_version) or \
+                (not desired_version and RunningVersion != TargetVersion):
+            filtered.append(content)
+    return filtered
+
+
 '''COMMANDS'''
 
 
@@ -481,6 +543,29 @@ def system_info_command(token):
     })
 
 
+def old_clients_command(token):
+    computer_name = demisto.getArg('computerName')
+    last_update = demisto.getArg('lastUpdate')
+    os = demisto.getArg('os')
+    page_size = demisto.getArg('pageSize')
+    columns = demisto.getArg('columns')
+    group_name = demisto.getArg('groupName')
+    desired_version = demisto.getArg('desiredVersion')
+    filtered_json_response, entry_context = get_endpoints_info(token, computer_name, last_update, os, page_size,
+                                                               columns, group_name)
+    columns_list = choose_columns(columns, ENDPOINTS_INFO_DEFAULT_COLUMNS)
+    filtered_json_response = filter_only_old_clients(filtered_json_response, desired_version)
+    md = create_endpints_filter_string(computer_name, last_update, os, page_size, group_name)
+    md += tableToMarkdown('Old Endpoints', filtered_json_response, columns_list)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': filtered_json_response,
+        'HumanReadable': md
+    })
+
+
 def client_content_command(token):
     time_zone = demisto.getParam('timeZone')
     client_content_json, client_version, last_update_date = get_client_content(token, time_zone)
@@ -504,9 +589,11 @@ def endpoints_info_command(token):
     os = demisto.getArg('os')
     page_size = demisto.getArg('pageSize')
     columns = demisto.getArg('columns')
-    filtered_json_response, entry_context = get_endpoints_info(token, computer_name, last_update, os, page_size, columns)
+    group_name = demisto.getArg('groupName')
+    filtered_json_response, entry_context = get_endpoints_info(token, computer_name, last_update, os, page_size,
+                                                               columns, group_name)
     columns_list = choose_columns(columns, ENDPOINTS_INFO_DEFAULT_COLUMNS)
-    md = create_endpints_filter_string(computer_name, last_update, os, page_size)
+    md = create_endpints_filter_string(computer_name, last_update, os, page_size, group_name)
     md += tableToMarkdown('Endpoints', filtered_json_response, columns_list)
     demisto.results({
         'Type': entryTypes['note'],
@@ -515,7 +602,9 @@ def endpoints_info_command(token):
         'HumanReadable': md,
         'IgnoreAutoExtract': True,
         'EntryContext': {
-            'SEPM.Endpoint(val.Hostname: == obj.Hostname:)': createContext(entry_context, removeNull=True)
+            'SEPM.Endpoint(val.Hostname == obj.Hostname)': createContext(entry_context, removeNull=True),
+            'IP(val.Address === obj.Address)': endpoint_ip_extract(filtered_json_response),
+            'Endpoint(val.Hostname == obj.Hostname)': endpoint_endpoint_extract(filtered_json_response)
         }
     })
 
@@ -707,7 +796,8 @@ def move_client_to_group_command(token):
         })
 
 
-# @@@@@@@@@@@@@@@@@@@@@@@@@@    COMMANDS SWITCH    @@@@@@@@@@@@@@@@@@@@@@@@@@
+'''COMMANDS SWITCH'''
+
 current_command = demisto.command()
 try:
     '''
@@ -744,5 +834,7 @@ try:
         update_endpoint_content_command(token)
     if current_command == 'sep-move-client-to-group':
         move_client_to_group_command(token)
+    if current_command == 'sep-identify-old-clients':
+        old_clients_command(token)
 except Exception, ex:
     demisto.results('Cannot perform the command: {}. Error: {}'.format(current_command, ex))

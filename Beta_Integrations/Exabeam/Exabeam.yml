@@ -23,7 +23,7 @@ configuration:
   type: 8
 description: Exabeam Beta integration
 display: Exabeam (Beta)
-name: Exabeam (Beta)
+name: Exabeam
 script:
   commands:
   - deprecated: false

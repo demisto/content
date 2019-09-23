@@ -242,8 +242,8 @@ if demisto.command() == 'test-module':
     sys.exit(0)
 if demisto.command() == 'splunk-search':
     t = datetime.utcnow() - timedelta(days=7)
-    time = t.strftime(SPLUNK_TIME_FORMAT)
-    kwargs_oneshot = {"earliest_time": time}  # type: Dict[str,Any]
+    time_str = t.strftime(SPLUNK_TIME_FORMAT)
+    kwargs_oneshot = {"earliest_time": time_str}  # type: Dict[str,Any]
     if demisto.get(demisto.args(), 'earliest_time'):
         kwargs_oneshot['earliest_time'] = demisto.args()['earliest_time']
     if demisto.get(demisto.args(), 'latest_time'):
