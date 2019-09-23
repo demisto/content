@@ -36,14 +36,14 @@ script:
     arguments:
     - name: entryId
       required: true
-      description: File's entry ID from war room. Supported types are doc, dot, docx,
+      description: The file's entry ID from the War Room. Supported files types are doc, dot, docx,
         docm, dotx, dotm, pdf, rtf, xls, xlt, xlsx, xlsm, xltx, xltm, xlsb, xlam,
         csv, ppt, pptx, pptm, potx, potm, ppam, ppsx, ppsm and pps.
     outputs:
     - contextPath: BitDam.FileScan.SHA1
-      description: SHA 1
+      description: The SHA1 hash of the file.
       type: string
-    description: Upload a file sample to BitDam's service
+    description: Uploads a file sample to the BitDam service.
   - name: bitdam-get-verdict
     arguments:
     - name: idValue
@@ -52,36 +52,36 @@ script:
         SHA1)
     outputs:
     - contextPath: BitDam.Analysis.Status
-      description: Status of the analysis. Can be either 'DONE' or 'IN_PROGRESS'
+      description: The status of the analysis. Can be "DONE" or "IN_PROGRESS".
       type: string
     - contextPath: BitDam.Analysis.Verdict
-      description: Final verdict of the analysis.
+      description: The final verdict of the analysis.
       type: string
     - contextPath: BitDam.Analysis.ID
-      description: Unique identifier
+      description: The unique identifier of the analysis.
       type: string
     - contextPath: DBotScore.Indicator
-      description: The Indicator
+      description: The indicator.
       type: string
     - contextPath: DBotScore.Score
-      description: The DBot score
+      description: The DBot score.
       type: number
     - contextPath: DBotScore.Type
-      description: The Indicator Type
+      description: The indicator Type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: The DBot score vendor
+      description: The DBot score vendor.
       type: string
     - contextPath: File.Malicious.Name
-      description: File's name
+      description: The name of the file.
       type: string
     - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
+      description: For malicious files, the vendor that made the decision.
       type: string
     - contextPath: File.Malicious.Description
-      description: For malicious files, the reason for the vendor to make the decision
+      description: For malicious files, the reason that the vendor made the decision.
       type: string
-    description: Get verdict for a scanned file.
+    description: Returns the verdict for a scanned file.
   runonce: false
 tests:
 - Detonate File - BitDam Test
