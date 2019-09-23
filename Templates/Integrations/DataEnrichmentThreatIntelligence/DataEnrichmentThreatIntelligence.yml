@@ -1,0 +1,331 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: DataEnrichmentThreatIntelligence
+  version: -1
+configuration:
+- defaultvalue: https://example.com
+  display: Server URL (e.g. https://example.com)
+  name: url
+  required: true
+  type: 0
+- defaultvalue: 'true'
+  display: Trust any certificate (insecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+description: Integration Template
+display: DataEnrichmentThreatIntelligence
+name: DataEnrichmentThreatIntelligence
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: ip to search for
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Search for IP
+    execution: false
+    name: data-enrichment-threat-intelligence-search-ip
+    outputs:
+    - contextPath: DataEnrichmentThreatIntelligence.ID
+      description: ID of analysis
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.Severity
+      description: Severity of analysis
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.IP
+      description: IP of sample
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.Description
+      description: Description of analysis.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  - arguments:
+    - default: false
+      description: url to get analysis on
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: Get analysis of given URL
+    execution: false
+    name: data-enrichment-threat-intelligence-search-url
+    outputs:
+    - contextPath: DataEnrichmentThreatIntelligence.ID
+      description: ID of analysis
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.Severity
+      description: Severity of analysis
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.URL
+      description: URL of sample
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.Description
+      description: Description of analysis.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  - arguments:
+    - default: false
+      description: Hash to search for results
+      isArray: false
+      name: file
+      required: true
+      secret: false
+    deprecated: false
+    description: Searching for file
+    execution: false
+    name: data-enrichment-threat-intelligence-search-file
+    outputs:
+    - contextPath: DataEnrichmentThreatIntelligence.ID
+      description: ID of analysis
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.Severity
+      description: Severity of analysis
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.MD5
+      description: MD5 Hash of sample
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.SHA1
+      description: SHA1 Hash of sample.
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.SHA256
+      description: SHA256 Hash of sample.
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.SSDeep
+      description: SSDeep Hash of sample.
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.Description
+      description: Description of analysis.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  - arguments:
+    - default: false
+      description: Domain to check
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks domain reputation.
+    execution: false
+    name: data-enrichment-threat-intelligence-search-domain
+    outputs:
+    - contextPath: DataEnrichmentThreatIntelligence.ID
+      description: ID of analysis
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.Severity
+      description: Severity of analysis
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.Domain
+      description: URL of sample
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.Description
+      description: Description of analysis.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  - deprecated: false
+    description: Checks File hash reputation.
+    execution: false
+    name: file
+    outputs:
+    - contextPath: DataEnrichmentThreatIntelligence.ID
+      description: ID of analysis
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.Severity
+      description: Severity of analysis
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.MD5
+      description: MD5 Hash of sample
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.SHA1
+      description: SHA1 Hash of sample.
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.SHA256
+      description: SHA256 Hash of sample.
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.SSDeep
+      description: SSDeep Hash of sample.
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.Description
+      description: Description of analysis.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  - arguments:
+    - default: false
+      description: IP address to check.
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks IP reputation.
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: DataEnrichmentThreatIntelligence.ID
+      description: ID of analysis
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.Severity
+      description: Severity of analysis
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.IP
+      description: IP of sample
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.Description
+      description: Description of analysis.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  - arguments:
+    - default: false
+      description: URL to check.
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks URL reputation.
+    execution: false
+    name: url
+    outputs:
+    - contextPath: DataEnrichmentThreatIntelligence.ID
+      description: ID of analysis
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.Severity
+      description: Severity of analysis
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.URL
+      description: URL of sample
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.Description
+      description: Description of analysis.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  - arguments:
+    - default: false
+      description: Domain to check
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks domain reputation.
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: DataEnrichmentThreatIntelligence.ID
+      description: ID of analysis
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.Severity
+      description: Severity of analysis
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.Domain
+      description: URL of sample
+      type: String
+    - contextPath: DataEnrichmentThreatIntelligence.Description
+      description: Description of analysis.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  dockerimage: demisto/python3:3.7.4.977
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
