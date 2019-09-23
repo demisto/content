@@ -1,4 +1,4 @@
-category: End Point
+category: Endpoint
 commonfields:
   id: Tanium-Rest
   version: -1
@@ -162,7 +162,8 @@ script:
       description: The question results.
       type: Unknown
     - contextPath: Tanium.QuestionResult.Status
-      type: Unknown
+      description: Status of the question request - Completed or Pending.
+      type: String
   - arguments:
     - default: false
       defaultValue: '5'
@@ -232,11 +233,13 @@ script:
       type: Number
   - arguments:
     - default: false
+      description: The sensor ID.
       isArray: false
       name: id
       required: false
       secret: false
     - default: false
+      description: Name of sensor.
       isArray: false
       name: name
       required: false
@@ -414,6 +417,7 @@ script:
       type: String
   - arguments:
     - default: false
+      description: The saved question ID.
       isArray: false
       name: question-id
       required: true
@@ -430,6 +434,7 @@ script:
       description: The saved question results.
       type: Unknown
     - contextPath: Tanium.SavedQuestionResult.Status
+      description: Status of the question request - Completed or Pending.
       type: Unknown
   - deprecated: false
     description: Gets all clients.
