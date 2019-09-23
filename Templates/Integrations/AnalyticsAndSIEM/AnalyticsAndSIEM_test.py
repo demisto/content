@@ -6,53 +6,31 @@ from AnalyticsAndSIEM import Client
 CONTEXT_PREFIX = 'AnalyticsAndSIEM.Event(val.ID && val.ID === obj.ID)'
 BASE_URL = 'http://api.service.com/v1/'
 
+EVENT_LIST_INPUT = {'event': [{'eventId': 'ab123',
+                               'description': 'Phishing email',
+                               'createdAt': '2010-01-01T00:00:00Z',
+                               'isActive': True,
+                               'assignee': [{'name': 'DBot Demisto', 'id': '11'},
+                                            {'name': 'Demisto DBot', 'id': '12'}]},
+                              {'eventId': 'ab123',
+                               'description': 'Phishing email',
+                               'createdAt': '2010-01-01T00:00:00Z',
+                               'isActive': True,
+                               'assignee': [{'name': 'DBot Demisto', 'id': '11'},
+                                            {'name': 'Demisto DBot', 'id': '12'}]}]}
 
-def event_dict_input():
-    return {'event': {'eventId': 'ab123',
-                      'description': 'Phishing email',
-                      'createdAt': '2010-01-01T00:00:00Z',
-                      'isActive': True,
-                      'assignee': [{'name': 'DBot Demisto', 'id': '11'},
-                                   {'name': 'Demisto DBot', 'id': '12'}]}}
-
-
-def event_dict_output():
-    return {'Event': {'Assignee': [{'ID': '11', 'Name': 'DBot Demisto'},
-                                   {'ID': '12', 'Name': 'Demisto DBot'}],
-                      'Created': '2010-01-01T00:00:00Z',
-                      'Description': 'Phishing email',
-                      'ID': 'ab123',
-                      'IsActive': True}}
-
-
-def event_list_input():
-    return {'event': [{'eventId': 'ab123',
-                       'description': 'Phishing email',
-                       'createdAt': '2010-01-01T00:00:00Z',
-                       'isActive': True,
-                       'assignee': [{'name': 'DBot Demisto', 'id': '11'},
-                                    {'name': 'Demisto DBot', 'id': '12'}]},
-                      {'eventId': 'ab123',
-                       'description': 'Phishing email',
-                       'createdAt': '2010-01-01T00:00:00Z',
-                       'isActive': True,
-                       'assignee': [{'name': 'DBot Demisto', 'id': '11'},
-                                    {'name': 'Demisto DBot', 'id': '12'}]}]}
-
-
-def event_list_output():
-    return {'Event': [{'Assignee': [{'ID': '11', 'Name': 'DBot Demisto'},
-                                    {'ID': '12', 'Name': 'Demisto DBot'}],
-                       'Created': '2010-01-01T00:00:00Z',
-                       'Description': 'Phishing email',
-                       'ID': 'ab123',
-                       'IsActive': True},
-                      {'Assignee': [{'ID': '11', 'Name': 'DBot Demisto'},
-                                    {'ID': '12', 'Name': 'Demisto DBot'}],
-                       'Created': '2010-01-01T00:00:00Z',
-                       'Description': 'Phishing email',
-                       'ID': 'ab123',
-                       'IsActive': True}]}
+EVENT_LIST_OUTPUT = {'Event': [{'Assignee': [{'ID': '11', 'Name': 'DBot Demisto'},
+                                             {'ID': '12', 'Name': 'Demisto DBot'}],
+                                'Created': '2010-01-01T00:00:00Z',
+                                'Description': 'Phishing email',
+                                'ID': 'ab123',
+                                'IsActive': True},
+                               {'Assignee': [{'ID': '11', 'Name': 'DBot Demisto'},
+                                             {'ID': '12', 'Name': 'Demisto DBot'}],
+                                'Created': '2010-01-01T00:00:00Z',
+                                'Description': 'Phishing email',
+                                'ID': 'ab123',
+                                'IsActive': True}]}
 
 
 def mock_client() -> Client:
@@ -60,6 +38,18 @@ def mock_client() -> Client:
 
 
 """ TESTS FUNCTION """
+
+
+class TestBuildContext:
+    def test_build_context_dict(self):
+        from AnalyticsAndSIEM import build_context
+        res = build_context(EVENT_LIST_INPUT['event'][0])
+        assert res == EVENT_LIST_OUTPUT['Event'][0]
+
+    def test_build_context_list(self):
+        from AnalyticsAndSIEM import build_context
+        res = build_context(EVENT_LIST_INPUT['event'])
+        assert res == EVENT_LIST_OUTPUT['Event']
 
 
 class TestTestModule:
@@ -77,27 +67,15 @@ class TestTestModule:
             test_module(self.client)
 
 
-class TestBuildContext:
-    def test_build_context_dict(self):
-        from AnalyticsAndSIEM import build_context
-        res = build_context(event_dict_input()['event'])
-        assert res == event_dict_output()['Event']
-
-    def test_build_context_list(self):
-        from AnalyticsAndSIEM import build_context
-        res = build_context(event_list_input()['event'])
-        assert res == event_list_output()['Event']
-
-
 class TestEvents:
     client = mock_client()
 
     def test_list_events(self, requests_mock):
         from AnalyticsAndSIEM import list_events
-        requests_mock.get(BASE_URL + 'event', json=event_list_input())
+        requests_mock.get(BASE_URL + 'event', json=EVENT_LIST_INPUT)
         _, context, _ = list_events(self.client, dict())
         context = context[CONTEXT_PREFIX]
-        assert context == event_list_output()['Event']
+        assert context == EVENT_LIST_OUTPUT['Event']
 
     def test_list_events_empty(self, requests_mock):
         from AnalyticsAndSIEM import list_events

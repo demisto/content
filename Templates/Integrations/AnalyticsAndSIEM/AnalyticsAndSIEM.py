@@ -346,8 +346,8 @@ def query(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     # Get arguments from user
     query_dict = assign_params(
         eventId=argToList(args.get('event_id')),
-        sinceTime=args.get('event_created_date_after'),
-        fromTime=args.get('event_created_date_before'),
+        fromTime=args.get('event_created_date_after'),
+        toTime=args.get('event_created_date_before'),
         assignee=argToList(args.get('assignee')),
         isActive=args.get('is_active') == 'true' if args.get('is_active') else None
     )
