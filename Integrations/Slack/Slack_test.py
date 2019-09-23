@@ -2124,7 +2124,6 @@ def test_send_request_with_entitlement_blocks(mocker):
     send_args = Slack.send_message.call_args[0]
 
     results = demisto.results.call_args_list[0][0]
-    
     # Assert
     assert slack.WebClient.users_list.call_count == 0
     assert slack.WebClient.conversations_list.call_count == 0
