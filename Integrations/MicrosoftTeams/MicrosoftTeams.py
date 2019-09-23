@@ -567,7 +567,7 @@ def integration_health():
 
     if mirrored_channels_output:
         mirrored_channels_human_readable = tableToMarkdown(
-            'Microsft Teams Mirrored Channels', mirrored_channels_output
+            'Microsoft Teams Mirrored Channels', mirrored_channels_output
         )
     else:
         mirrored_channels_human_readable = 'No mirrored channels.'
