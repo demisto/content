@@ -1501,6 +1501,10 @@
             "playbookID": "DuoAdmin API test playbook"
         },
         {
+            "integrations": "Traps",
+            "playbookID": "Traps test"
+        },
+        {
             "playbookID": "TestShowScheduledEntries"
         },
         {
