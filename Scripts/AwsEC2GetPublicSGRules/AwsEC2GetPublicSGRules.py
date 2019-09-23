@@ -49,14 +49,6 @@ def get_ec2_sg_public_rules(group_id, ip_permissions, checked_protocol=None, che
         from_port = get_dict_value(rule, 'FromPort')
         to_port = get_dict_value(rule, 'ToPort')
         if from_port and to_port:
-            # If checked_from_port or checked_to_port is not specified
-            # it will default to 0-65535
-            if not checked_from_port:
-                checked_from_port = 0
-
-            if not checked_to_port:
-                checked_to_port = 65535
-
             if from_port < checked_from_port and to_port < checked_from_port:
                 continue
             elif from_port > checked_to_port and to_port > checked_to_port:
@@ -103,15 +95,17 @@ def main(args):
         except json.JSONDecodeError:
             demisto.results(raise_error('Unable to parse ipPermissions. Invalid JSON string'))
 
+    # If checked from_port or to_port is not specified
+    # it will default to 0-65535 (all port)
     if args.get('fromPort'):
         from_port = int(args.get('fromPort'))
     else:
-        from_port = None
+        from_port = 0
 
     if args.get('toPort'):
         to_port = int(args.get('toPort'))
     else:
-        to_port = None
+        to_port = 65535
 
     public_rules = get_ec2_sg_public_rules(
         group_id=args.get('groupId'),
