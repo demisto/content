@@ -92,20 +92,16 @@ configuration:
   type: 16
 - display: Severity of alerts to fetch (XDR Analytics)
   name: xdr_severity
-  defaultvalue: ""
-  type: 16
-  required: false
   options:
   - all
   - High
   - Medium
   - Low
   - Info
+  required: false
+  type: 16
 - display: Category of alerts to fetch (XDR Analytics)
   name: xdr_category
-  defaultvalue: ""
-  type: 16
-  required: false
   options:
   - all
   - Consecutive Connections
@@ -141,6 +137,8 @@ configuration:
   - scrons.exe Rare Child Process
   - wmiprsve.exe Rare Child Process
   - wsmprovhost.exe Rare Child Process
+  required: false
+  type: 16
 description: This framework manages all PA's cloud managed products
 display: Palo Alto Networks Cortex
 name: Palo Alto Networks Cortex
@@ -627,10 +625,16 @@ script:
     - contextPath: Cortex.Logging.severity
       description: Threat Severity.
       type: Unknown
+  - deprecated: false
+    description: TO BE DEFINED!
+    execution: false
+    name: cortex-query-traffic-logs
   dockerimage: demisto/python_pancloud:1.0.0.286
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   type: python
   subtype: python3
 tests:
