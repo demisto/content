@@ -1848,6 +1848,10 @@
             "integrations": "Elasticsearch v2",
             "instance_names": "es_v6",
             "playbookID": "Elasticsearch_v2_test-v6"
+        },
+        {
+            "integrations": "Tanium-Rest",
+            "playbookID": "Tanium Rest Test"
         }
     ],
     "skipped_tests": {
