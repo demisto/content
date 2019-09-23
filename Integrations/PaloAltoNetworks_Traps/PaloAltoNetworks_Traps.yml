@@ -94,7 +94,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: File name to retieve (including path)
+      description: File name to retrieve (including path)
       isArray: false
       name: file_name
       required: true
@@ -372,4 +372,4 @@ script:
   script: '-'
   type: python
 tests:
-- No tests
+- Traps test
