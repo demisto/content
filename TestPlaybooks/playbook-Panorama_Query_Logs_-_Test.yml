@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: bb0bbbee-b4d8-439f-8337-13ed98fff035
+    taskid: 2760f496-71b6-4b53-898d-6e2aa97fae8e
     type: start
     task:
-      id: bb0bbbee-b4d8-439f-8337-13ed98fff035
+      id: 2760f496-71b6-4b53-898d-6e2aa97fae8e
       version: -1
       name: ""
       iscommand: false
@@ -16,11 +16,13 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+      - "4"
+      - "5"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 50
         }
       }
@@ -29,12 +31,14 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 7456e61f-27a3-4ae6-8c03-82c6946bd1e7
+    taskid: b2f93b35-2ffc-4087-8da3-09232b0d76cc
     type: playbook
     task:
-      id: 7456e61f-27a3-4ae6-8c03-82c6946bd1e7
+      id: b2f93b35-2ffc-4087-8da3-09232b0d76cc
       version: -1
       name: Panorama Query Logs
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
+        and wildfire.'
       playbookName: Panorama Query Logs
       type: playbook
       iscommand: false
@@ -74,10 +78,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: b7f0068b-88cb-462c-89f0-f17b868126fa
+    taskid: ff373f9d-6ed9-4aae-8d2e-d3641b0bd4ff
     type: condition
     task:
-      id: b7f0068b-88cb-462c-89f0-f17b868126fa
+      id: ff373f9d-6ed9-4aae-8d2e-d3641b0bd4ff
       version: -1
       name: Exist context
       type: condition
@@ -98,7 +102,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 370
         }
       }
@@ -107,10 +111,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 0f95f6ff-42bd-4e34-82e5-5f0a444b7bf9
+    taskid: 965af35a-4198-44ce-8cde-e35fa3b2e8a8
     type: title
     task:
-      id: 0f95f6ff-42bd-4e34-82e5-5f0a444b7bf9
+      id: 965af35a-4198-44ce-8cde-e35fa3b2e8a8
       version: -1
       name: Done
       type: title
@@ -120,8 +124,100 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 30212c61-85cd-4cf8-8137-983238861210
+    type: playbook
+    task:
+      id: 30212c61-85cd-4cf8-8137-983238861210
+      version: -1
+      name: Panorama Query Logs
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
+        and wildfire.'
+      playbookName: Panorama Query Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      action:
+        simple: allow
+      addr-dst: {}
+      addr-src: {}
+      filedigest: {}
+      log_type:
+        simple: traffic
+      port-dst: {}
+      query: {}
+      rule: {}
+      time-generated: {}
+      url: {}
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: acc20095-eddf-42fa-889b-2a45e15d4832
+    type: playbook
+    task:
+      id: acc20095-eddf-42fa-889b-2a45e15d4832
+      version: -1
+      name: Panorama Query Logs
+      playbookName: Panorama Query Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      action: {}
+      addr-dst: {}
+      addr-src:
+        simple: '["1.1.1.1", "2.2.2.2", "192.168.1.11"]'
+      filedigest: {}
+      log_type:
+        simple: traffic
+      port-dst: {}
+      query: {}
+      rule: {}
+      time-generated: {}
+      url: {}
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
         }
       }
     note: false
@@ -133,7 +229,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 560,
-        "width": 380,
+        "width": 1240,
         "x": 50,
         "y": 50
       }

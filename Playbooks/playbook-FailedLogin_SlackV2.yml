@@ -1,6 +1,6 @@
-id: Failed Login Playbook - Slack V2
+id: Failed Login Playbook - Slack v2
 version: -1
-name: Failed Login Playbook - Slack V2
+name: Failed Login Playbook - Slack v2
 fromversion: 5.0.0
 description: When there are three failed login attempts to Demisto that originate from the same user ID, a direct message is sent to the user on Slack requesting that they confirm the activity.
   If the reply is "no", then the incident severity is set to "high". If the reply is "yes", then another direct message is sent to the user asking if they require a password reset in AD.
