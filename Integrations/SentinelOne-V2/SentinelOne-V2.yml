@@ -7,10 +7,6 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username
-  name: credentials
-  required: true
-  type: 9
 - display: API Token
   name: token
   required: true
