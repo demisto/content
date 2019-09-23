@@ -3,6 +3,20 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "AutoFocus V2",
+            "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
+            "fromversion": "4.5.0",
+            "timeout": 500
+        },
+        {
+            "integrations": "ThreatQ v2",
+            "playbookID": "ThreatQ - Test"
+        },
+        {
+            "integrations": "AttackIQFireDrill",
+            "playbookID": "AttackIQ - Test"
+        },
+        {
             "integrations": "ZeroFox",
             "playbookID": "ZeroFox-Test",
             "fromversion": "4.1.0"
@@ -142,7 +156,7 @@
             "playbookID": "CompareIncidentsLabels-test-playbook"
         },
         {
-            "integrations": "Pwned",
+            "integrations": "Have I Been Pwned? V2",
             "playbookID": "Pwned test",
             "nightly": true
         },
@@ -354,12 +368,41 @@
             "integrations": "Luminate"
         },
         {
+            "playbookID": "Palo Alto Networks - Malware Remediation Test",
+            "integrations": "Palo Alto Minemeld",
+            "fromversion": "4.5.0"
+        },
+        {
             "playbookID": "SumoLogic-Test",
             "integrations": "SumoLogic",
             "fromversion": "4.1.0"
         },
         {
             "playbookID": "ParseEmailFiles-test"
+        },
+        {
+            "playbookID": "PAN-OS - Block IP and URL - External Dynamic List Test",
+            "integrations": "palo_alto_networks_pan_os_edl_management",
+            "fromversion": "4.0.0"
+
+        },
+        {
+            "playbookID": "PAN-OS - Block IP - Custom Block Rule Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "fromversion": "4.0.0"
+        },
+        {
+            "playbookID": "PAN-OS - Block IP - Static Address Group Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "fromversion": "4.0.0"
+        },
+        {
+            "playbookID": "PAN-OS - Block URL - Custom URL Category Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "fromversion": "4.0.0"
         },
         {
             "playbookID": "ParseExcel-test"
@@ -1311,7 +1354,7 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned",
+                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Palo Alto Minemeld",
                 "Rasterize"
@@ -1323,7 +1366,7 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned",
+                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Palo Alto Minemeld",
                 "Rasterize"
@@ -1335,7 +1378,7 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned",
+                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Palo Alto Minemeld",
                 "Rasterize"
@@ -1347,7 +1390,7 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned",
+                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Palo Alto Minemeld",
                 "Rasterize"
@@ -1403,6 +1446,20 @@
             "nightly": true
         },
         {
+            "integrations": "Google Cloud Storage",
+            "playbookID": "GCS - Test",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
+            "playbookID": "Calculate Severity - Generic v2 - Test",
+            "integrations": [
+                "Palo Alto Minemeld",
+                "Active Directory Query v2"
+            ],
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "Freshdesk",
             "playbookID": "Freshdesk-Test",
             "timeout": 500,
@@ -1445,6 +1502,11 @@
         },
         {
             "playbookID": "TestShowScheduledEntries"
+        },
+        {
+            "playbookID": "Calculate Severity - Standard - Test",
+            "integrations": "Palo Alto Minemeld",
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "Symantec Advanced Threat Protection",
@@ -1498,7 +1560,7 @@
         },
         {
             "playbookID": "EmailReputationTest",
-            "integrations": "Pwned"
+            "integrations": "Have I Been Pwned? V2"
         },
         {
             "integrations": "Symantec Deepsight Intelligence",
@@ -1763,18 +1825,33 @@
             "playbookID": "Test-VulnDB"
         },
         {
+            "integrations": "Shodan_v2",
+            "playbookID": "Test-Shodan_v2",
+            "timeout": 1000
+        },
+        {
             "integrations": "Threat Crowd",
             "playbookID": "ThreatCrowd - Test"
         },
         {
-            "integrations": "Tanium-Rest",
-            "playbookID": "Tanium Rest Test"
+            "integrations": "Hybrid Analysis",
+            "playbookID": "HybridAnalysis-Test",
+            "timeout": 500,
+            "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "es_v7",
+            "playbookID": "Elasticsearch_v2_test"
+        },
+        {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "es_v6",
+            "playbookID": "Elasticsearch_v2_test-v6"
         }
     ],
     "skipped_tests": {
         "TestParseEmailHeaders": "Fails on conditional task (Issue 18815)",
-        "VxStream Test": "crowdstrike-detonate-file fails with Bad request code (Issue 18791)",
-        "Extract Indicators From File - Generic v2 - Test": "issue with extract indicators. (probably regex) (Issue 18795)",
         "Pwned v2 test": "Pwned v2 test fails on conditional task (Issue 18793).",
         "CheckpointFW-test": "Test is not stable (Issue 18643)",
         "search_endpoints_by_hash_-_tie_-_test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
@@ -1822,7 +1899,14 @@
         "Intezer Testing": "Old test for old version of inteze",
         "Test - Windows Defender Advanced Threat Protection": "One of the commands has an internal server error. Check again 20/08/2019. Issue - #18552",
         "CarbonBlackLiveResponseTest": "Task: cb-session-create-and-wait fails (issue 18691)",
-        "nexpose_test": "Failed to create site (issue 18694)"
+        "nexpose_test": "Failed to create site (issue 18694)",
+        "Recorded Future Test": "Looks like a bug in the product, pending support answer (issue 18922)",
+        "IntSights Mssp Test": "Account Expired (issue #16351)",
+        "CarbonBlackResponseTest": "Instance content has been altered causing test failure #19180",
+        "Pwned test": "API Deprecated, use Pwned test v2 instead",
+        "CheckPhish-Test": "Test is unstable, requires redesign #19188",
+        "PAN-OS DAG Configuration Test": "Test failing on permission denied error #19205",
+        "AlphaSOC-Wisdom-Test": "Test is unstable. #19235"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1836,12 +1920,15 @@
         "FireEye ETP": "No instance",
         "ProofpointTAP_v2": "No instance",
         "remedy_sr_beta": "No instance",
+        "Minerva Labs Anti-Evasion Platform": "No instance (Issue 18835)",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "ZeroFox": "No data (Alerts) in the product, which is required because record isn't working (issue 19161)",
         "Jask": "Returning 401 (issue 18879)",
-        "google-vault": "Error when creating exports (Issue 18866)",
-        "Lastline": "Temporally moved to skipped inorder to not fail nightly",
+        "SumoLogic": "No credentials (Issue 18441)",
+        "Lastline": "Temporally moved to skipped in order to not fail nightly",
+        "vmray": "VMRay license expired (Issue 18752)",
         "Anomali ThreatStream v2": "Credentials are invalid (issue 18561)",
         "Anomali ThreatStream": "Credentials are invalid (issue 18561)",
         "RSA Archer": "Instance does not seem to be working, Arian is checking",
@@ -1861,7 +1948,6 @@
         "Threat Grid": "instance problem (issue 16197)",
         "Kafka V2": "Can not connect to instance from remote",
         "Check Point Sandblast": "No access (issue 15948)",
-        "IntSights": "Account Expired (issue #16351)",
         "Remedy AR": "getting 'Not Found' in test button",
         "XFE": "License expired",
         "RedLock": "Credentials and API problems (issue 15493)",
@@ -1871,10 +1957,10 @@
         "LogRhythm": "Need to fix SOAP api",
         "ANYRUN": "No instance",
         "Snowflake": "Looks like account expired, needs looking into",
-        "Cisco Spark": "No instance",
-        "Minerva Labs Anti-Evasion Platform": "No instance",
-        "Phish.AI": "Unauthorized. will be re-branded soon as Cofense",
+        "Cisco Spark": "No instance (Issue 18940)",
+        "Phish.AI": "Unauthorized. will be re-branded soon as Cofense (Issue 17291)",
         "QRadar": "No license (issue 17794)",
+        "MaxMind GeoIP2": "License has expired (Issue 18932).",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -1885,10 +1971,9 @@
       "_comment": "~~~ OTHER ~~~",
         "EclecticIQ Platform": "Old API is deprecated (Issue 8821)",
         "Pwned": "Old API is deprecated",
-        "SumoLogic": "Shelly working on fixing it",
         "iDefense": "DevOps investigation",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
-        "BitDam": "Changes in service (issue #16247)",
+        "BitDam": "Changes in service (issue #17247)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
         "MailListener - POP3": "Failing test module (issue 18580)",
 
@@ -1903,6 +1988,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
         "Whois": "Mocks does not support sockets",
         "Panorama": "Exception: Proxy process took to long to go up. https://circleci.com/gh/demisto/content/24826",
@@ -1913,7 +1999,6 @@
         "VxStream": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544. Detonate URL: Large mock file.",
         "PagerDuty v2": "Integration requires SSL",
         "TCPIPUtils": "Integration requires SSL",
-        "AWS - S3": "Integration requires SSL",
         "Luminate": "Integration has no proxy checkbox",
         "Pwned": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
@@ -1938,8 +2023,6 @@
         "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
         "Anomali ThreatStream": "'proxy' parameter not working",
         "Palo Alto Networks Cortex": "SDK",
-        "AWS - EC2": "SSL Validation fails for STS",
-        "AWS - Lambda": "AWS not accepting self-signed certs",
         "Recorded Future": "might be dynamic test",
         "AlphaSOC Wisdom": "Test module issue",
         "Microsoft Graph": "Test direct access to oproxy",

@@ -3276,7 +3276,8 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
     md += u"* {0}:\t{1}\n".format('CC', email_data.get('CC') or "")
     md += u"* {0}:\t{1}\n".format('Subject', email_data.get('Subject') or "")
     if 'Text' in email_data:
-        md += u"* {0}:\t{1}\n".format('Body/Text', email_data['Text'] or "")
+        text = email_data['Text'].replace('<', '[').replace('>', ']')
+        md += u"* {0}:\t{1}\n".format('Body/Text', text or "")
     if 'HTML' in email_data:
         md += u"* {0}:\t{1}\n".format('Body/HTML', email_data['HTML'] or "")
 
@@ -3649,7 +3650,7 @@ def main():
             output = create_email_output(email_data, attached_emails)
 
         elif ('ascii text' in file_type_lower or 'unicode text' in file_type_lower
-              or ('data' == file_type_lower and file_name and file_name.lower().endswith('.eml'))):
+              or ('data' == file_type_lower.strip() and file_name and file_name.lower().strip().endswith('.eml'))):
             try:
                 # Try to open the email as-is
                 with open(file_path, 'rb') as f:
@@ -3674,7 +3675,7 @@ def main():
                 return_error("Exception while trying to decode email from within base64: {}\n\nTrace:\n{}"
                              .format(str(e), traceback.format_exc()))
         else:
-            return_error("Unknown file format: " + file_type)
+            return_error("Unknown file format: [{}] for file: [{}]".format(file_type, file_name))
         output = recursive_convert_to_unicode(output)
         email = output  # output may be a single email
         if isinstance(output, list) and len(output) > 0:

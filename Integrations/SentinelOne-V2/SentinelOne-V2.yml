@@ -7,20 +7,15 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username
-  name: credentials
-  required: true
-  type: 9
 - display: API Token
   name: token
   required: true
   type: 4
-- defaultvalue: 'true'
-  display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -42,6 +37,11 @@ configuration:
   display: Minimum risk score for importing incidents (0-10), where 0 is low risk
     and 10 is high risk
   name: fetch_threat_rank
+  required: false
+  type: 0
+- defaultvalue: '10'
+  display: 'Fetch limit: the maximum number of incidents to fetch'
+  name: fetch_limit
   required: false
   type: 0
 description: End point protection
@@ -1264,14 +1264,14 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: 'Maximum number of items to return (1-100). Default is "50".'
+      description: Maximum number of items to return (1-100). Default is "50".
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: 'QueryId obtained when creating a query in the sentinelone-create-query command.
-        Example: "q1xx2xx3".'
+      description: 'QueryId obtained when creating a query in the sentinelone-create-query
+        command. Example: "q1xx2xx3".'
       isArray: false
       name: query_id
       required: true
@@ -1306,8 +1306,8 @@ script:
       description: Site name.
       type: String
     - contextPath: SentinelOne.Event.EventType
-      description: Event type. Can be "events", "file", "ip", "url", "dns", "process", "registry",
-        "scheduled_task", or "logins".
+      description: Event type. Can be "events", "file", "ip", "url", "dns", "process",
+        "registry", "scheduled_task", or "logins".
       type: String
     - contextPath: SentinelOne.Event.ProcessName
       description: The name of the process.
@@ -1344,8 +1344,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Runs a Deep Visibility Query and returns the queryId. You can use the queryId for
-      all other commands, such as the sentinelone-get-events command.
+    description: Runs a Deep Visibility Query and returns the queryId. You can use
+      the queryId for all other commands, such as the sentinelone-get-events command.
     execution: false
     name: sentinelone-create-query
     outputs:
@@ -1363,21 +1363,22 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: 'The queryId that is returned when creating a query under Create Query. Example:
-        "q1xx2xx3". Get the query_id from the "get-query-id" command.'
+      description: 'The queryId that is returned when creating a query under Create
+        Query. Example: "q1xx2xx3". Get the query_id from the "get-query-id" command.'
       isArray: false
       name: query_id
       required: true
       secret: false
     - default: false
       defaultValue: '50'
-      description: 'Maximum number of items to return (1-100). Default is "50".'
+      description: Maximum number of items to return (1-100). Default is "50".
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of Deep Visibility events from query by event type - process.
+    description: Returns a list of Deep Visibility events from query by event type
+      - process.
     execution: false
     name: sentinelone-get-processes
     outputs:
@@ -1434,9 +1435,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: "A free-text search term, will match applicable attributes (sub-string
-        match). Note: A device's physical addresses will only be matched if they start with
-        the search term  (not if they contain the search term)."
+      description: 'A free-text search term, will match applicable attributes (sub-string
+        match). Note: A device''s physical addresses will only be matched if they
+        start with the search term  (not if they contain the search term).'
       isArray: false
       name: query
       required: false
@@ -1463,9 +1464,9 @@ script:
       type: String
   - arguments:
     - default: false
-      description: "A free-text search term, will match applicable attributes (sub-string
-        match). Note: A device's physical addresses will only be matched if they start with
-        the search term  (not if they contain the search term)."
+      description: 'A free-text search term, will match applicable attributes (sub-string
+        match). Note: A device''s physical addresses will only be matched if they
+        start with the search term  (not if they contain the search term).'
       isArray: false
       name: query
       required: false
@@ -1488,8 +1489,11 @@ script:
     name: sentinelone-uninstall-agent
   dockerimage: demisto/python3:3.7.3.286
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
 - SentinelOne V2 - test

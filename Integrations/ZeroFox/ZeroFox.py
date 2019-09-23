@@ -231,8 +231,10 @@ def get_authorization_token() -> str:
                                           api_request=False)
     token = response_content.get('token', '')
     if not token:
+        if 'res_content' in response_content:
+            raise Exception('Failure resolving URL.')
         error_msg_list: List = response_content.get('non_field_errors', [])
-        if not error_msg_list or not isinstance(error_msg_list, List):
+        if not error_msg_list:
             raise Exception('Unable to log in with provided credentials.')
         else:
             raise Exception(error_msg_list[0])
@@ -288,7 +290,17 @@ def http_request(method: str, url_suffix: str, params: Dict = None, data: Union[
         else:
             try:
                 if res.status_code not in {200, 201}:
-                    raise Exception('Failure resolving URL.')
+                    try:
+                        res_data = json.loads(res.text)
+                    except ValueError:
+                        raise Exception('Failure resolving URL.')
+                    if isinstance(res_data, dict) and 'non_field_errors' in res_data:
+                        # case of wrong credentials
+                        err_msg_list = res_data.get('non_field_errors')
+                        if isinstance(err_msg_list, list) and err_msg_list:
+                            raise Exception(err_msg_list[0])
+                    else:
+                        raise Exception('Failure resolving URL.')
                 return res.json()
             except ValueError:
                 return {'res_content': res.content}
