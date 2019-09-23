@@ -40,8 +40,9 @@ class Client(BaseClient):
         return self._http_request('GET', 'version')
 
     def list_events_request(self, max_results: Union[int, str] = None,
-                            event_created_date_after: Optional[str] = None,
-                            event_created_date_before: Optional[str] = None) -> Dict:
+                            event_created_date_after: Optional[Union[str, datetime]] = None,
+                            event_created_date_before: Optional[Union[str, datetime]] = None
+                            ) -> Dict:
         """Returns all events by sending a GET request.
 
         Args:
@@ -204,33 +205,34 @@ def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
     raise DemistoException(f'Test module failed, {results}')
 
 
-def fetch_incidents(client: Client, last_run):
+def fetch_incidents(
+        client: Client,
+        fetch_time: str,
+        last_run: Optional[datetime] = None) -> Tuple[List, datetime]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
     """
-    timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ"'
+    timestamp_format = '%Y-%m-%dT%H:%M:%S'
     # Get incidents from API
     if not last_run:  # if first time running
-        last_run, _ = parse_date_range(demisto.params().get('fetch_time'))
-        last_run_string = last_run.strftime(timestamp_format)
-    else:
-        last_run_string = datetime.strptime(last_run, timestamp_format)
-    incidents: List = list()
-    raw_response = client.list_events_request(event_created_date_after=last_run_string)
+        last_run, _ = parse_date_range(fetch_time)
+        last_run = last_run.strftime(timestamp_format)
+    incidents = list()
+    raw_response = client.list_events_request(event_created_date_after=last_run)
     events = raw_response.get('event')
     if events:
         # Creates incident entry
         incidents = [{
-            'name': event.get('title'),
-            'occurred': event.get('created'),
+            'name': f"{INTEGRATION_NAME}: {event.get('eventId')}",
+            'occurred': event.get('createdAt'),
             'rawJSON': json.dumps(event)
         } for event in events]
 
         last_incident_timestamp = incidents[-1].get('occurred')
-        demisto.setLastRun(last_incident_timestamp)
-    demisto.incidents(incidents)
+        new_last_run = datetime.strptime(last_incident_timestamp, timestamp_format)
+        return incidents, new_last_run
     # Return empty results
-    return '', {}, {}
+    return incidents, last_run
 
 
 def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -448,7 +450,9 @@ def main():  # pragma: no cover
     }
     try:
         if command == 'fetch-incidents':
-            commands[command](client, last_run=demisto.getLastRun())
+            incidents, new_last_run = commands[command](client, last_run=demisto.getLastRun())
+            demisto.incidents(incidents)
+            demisto.setLastRun(new_last_run)
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))
     # Log exceptions
