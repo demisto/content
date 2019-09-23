@@ -115,7 +115,7 @@ script:
       description: Endpoint ID.
       type: String
     - contextPath: Traps.FileRetrieve.OperationID
-      description: Operation ID. Use this to retreive status / results.
+      description: Operation ID. Use this to retrieve status / results.
       type: String
     - contextPath: Traps.FileRetrieve.Type
       description: Operation type.
@@ -136,7 +136,7 @@ script:
       description: Endpoint ID.
       type: String
     - contextPath: Traps.Scan.OperationID
-      description: Operation ID. Use this to retreive status / results.
+      description: Operation ID. Use this to retrieve status / results.
       type: String
     - contextPath: Traps.Scan.Type
       description: Operation type.
@@ -261,7 +261,7 @@ script:
       description: Event ID.
       type: String
     - contextPath: Traps.Quarantine.OperationID
-      description: Operation ID. Use this to retreive status / results.
+      description: Operation ID. Use this to retrieve status / results.
       type: String
     - contextPath: Traps.Quarantine.Type
       description: Operation type.
@@ -282,14 +282,14 @@ script:
       description: Endpoint ID.
       type: String
     - contextPath: Traps.Isolate.OperationID
-      description: Operation ID. Use this to retreive status / results.
+      description: Operation ID. Use this to retrieve status / results.
       type: String
     - contextPath: Traps.Isolate.Type
       description: Operation type.
       type: String
   - arguments:
     - default: false
-      description: Operation ID. Use this to retreive status / results.
+      description: Operation ID. Use this to retrieve status / results.
       isArray: false
       name: operation_id
       required: true
@@ -313,7 +313,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Operation ID. Use this to retreive status / results.
+      description: Operation ID. Use this to retrieve status / results.
       isArray: false
       name: operation_id
       required: true
@@ -324,14 +324,14 @@ script:
     name: traps-endpoint-isolate-status
     outputs:
     - contextPath: Traps.IsolateResult.OperationID
-      description: Operation ID. Use this to retreive status / results.
+      description: Operation ID. Use this to retrieve status / results.
       type: String
     - contextPath: Traps.IsolateResult.Status
       description: Isolation status.
       type: String
   - arguments:
     - default: false
-      description: Operation ID. Use this to retreive status / results.
+      description: Operation ID. Use this to retrieve status / results.
       isArray: false
       name: operation_id
       required: true
@@ -342,7 +342,7 @@ script:
     name: traps-endpoint-files-retrieve-result
   - arguments:
     - default: false
-      description: Operation ID. Use this to retreive status / results.
+      description: Operation ID. Use this to retrieve status / results.
       isArray: false
       name: operation_id
       required: true
@@ -362,7 +362,7 @@ script:
       description: Amount of malware found
       type: Number
     - contextPath: Traps.ScanResult.OperationID
-      description: Operation ID. Use this to retreive status / results.
+      description: Operation ID. Use this to retrieve status / results.
       type: String
     - contextPath: Traps.ScanResult.Status
       description: Scan status
