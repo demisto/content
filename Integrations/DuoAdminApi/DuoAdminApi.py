@@ -50,7 +50,8 @@ def create_api_call():
     return duo_client.Admin(
         ikey=INTEGRATION_KEY,
         skey=SECRET_KEY,
-        host=HOST
+        host=HOST,
+        ca_certs='DISABLE'
     )
 
 
@@ -67,8 +68,6 @@ def set_proxy():
             else:
                 host = proxy_settings_str_args[0]
                 port = proxy_settings_str_args[1]
-
-            # demisto.results(host + ' ' + port)
 
             if USE_PROXY:
                 admin_api.set_proxy(host=host, port=port)
