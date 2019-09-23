@@ -32,7 +32,7 @@ HEADERS = {
 
 # Error messages
 INVALID_ID_ERR_MSG = 'Error in API call. This may be happen if you provided an invalid id.'
-API_ERR_MSG = 'Error in API call to AttackIQ. '
+API_ERR_MSG = 'Error in API call to AttackIQ.'
 DEFAULT_PAGE_SIZE = 10
 
 # Transformation dicts
