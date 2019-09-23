@@ -54,14 +54,26 @@ class ScriptValidator(object):
         if not self.old_script:
             return True
 
-        is_bc_broke = any([
-            self.is_context_path_changed(),
+        backwards_checks = [
             self.is_docker_image_changed(),
+            self.is_context_path_changed(),
             self.is_added_required_args(),
             self.is_arg_changed(),
             self.is_there_duplicates_args(),
             self.is_changed_subtype()
-        ])
+        ]
+
+        # Add sane-doc-report exception
+        # Sane-doc-report uses docker and every fix/change
+        # requiers a docker tag change, thus it won't be
+        # backwards compatible.
+        # All other tests should be False (no problems)
+        sane_doc_checks = all([not c for c in backwards_checks[1:]])
+        if sane_doc_checks and \
+                self.file_path == 'Scripts/SaneDocReport/SaneDocReport.yml':
+            return True
+
+        is_bc_broke = any(backwards_checks)
 
         return not is_bc_broke
 
