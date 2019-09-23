@@ -1,7 +1,7 @@
 commonfields:
   id: PagerDutyAssignOnCallUser
   version: -1
-name: PagerDutyAssignOnCallUser_dev
+name: PagerDutyAssignOnCallUser
 script: |-
   var res = executeCommand('PagerDuty-get-users-on-call-now',
       {
@@ -48,3 +48,5 @@ dependson:
   - PagerDuty-get-users-on-call-now
 runonce: false
 runas: DBotWeakRole
+tests:
+  - No tests
