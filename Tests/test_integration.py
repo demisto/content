@@ -115,6 +115,7 @@ def __create_integration_instance(client, integration_name, integration_instance
         res = client.req('PUT', '/settings/integration', module_instance)
     except requests.exceptions.RequestException as conn_err:
         print_error('Error trying to create instance for integration: {0}:\n {1}'.format(integration_name, conn_err))
+        return None
 
     if res.status_code != 200:
         print_error('create instance failed with status code ' + str(res.status_code))

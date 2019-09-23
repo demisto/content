@@ -55,7 +55,7 @@ In some cases, it will be necessary to create a docker image to enable your inte
 Demisto Platform support flexible reports written in JSON. All of our standard reports calculating various incident statistics and metrics are stored in this repo.
 
 ## Contributing Content
-For instructions about adding/modifying playbooks and scripts please see our [contributor guide](https://github.com/demisto/content/blob/master/docs/contributing/README.MD).
+For instructions about adding/modifying playbooks and scripts please see our [contributor guide](https://github.com/demisto/content/blob/master/CONTRIBUTING.md).
 
 Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/), or at [info@demisto.com](mailto:info@demisto.com)
 
@@ -79,7 +79,7 @@ cp .hooks/* .git/hooks
 | [Code Conventions](https://github.com/demisto/content/blob/master/docs/code_conventions/README.MD) | Our Code Conventions |
 | [Context and Outputs](https://github.com/demisto/content/blob/master/docs/context_and_ouputs/README.MD) | Brief overview of Context and Outputs |
 | [Context Conventions](https://github.com/demisto/content/blob/master/docs/context_standards/README.MD) | Conventions for the Demisto Standard Context |
-| [Contributing](https://github.com/demisto/content/blob/master/docs/contributing/README.MD) | How to contribute to the Content Repo |
+| [Contributing](https://github.com/demisto/content/blob/master/CONTRIBUTING.md) | How to contribute to the Content Repo |
 | [Creating Playbooks](https://github.com/demisto/content/blob/master/docs/creating_playbooks/README.MD) | How to create a Playbook |
 | [DBot Score](https://github.com/demisto/content/blob/master/docs/dbot/README.md) | How the DBot Score works |
 | [Demisto Transform Language (DT)](https://github.com/demisto/content/blob/master/docs/DT/README.MD) | Understanding Demisto Transform Language (DT) |
