@@ -1,5 +1,3 @@
-from typing import Dict
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -9,6 +7,7 @@ import json
 import requests
 from distutils.util import strtobool
 from datetime import datetime
+from typing import Dict
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -18,6 +17,14 @@ requests.packages.urllib3.disable_warnings()
 
 class DemistoException(Exception):
     pass
+
+
+def convert_unix_to_date(d):
+    """ Convert millise since epoch to date formatted MM/DD/YYYY HH:MI:SS """
+    if d:
+        dt = datetime.utcfromtimestamp(d / 1000)
+        return dt.strftime('%m/%d/%Y %H:%M:%S')
+    return 'N/A'
 
 
 class Client:
@@ -31,10 +38,10 @@ class Client:
         self.headers = headers
         self.session = requests.Session()
         self.session.headers = headers
-        self.login()
+        self._login()
 
     def __del__(self):
-        self.logout()
+        self._logout()
 
     def http_request(self, method, suffix_url, params=None, data=None, headers=None, full_url=None):
         full_url = full_url if full_url else self.base_url + suffix_url
@@ -87,14 +94,14 @@ class Client:
                 .format(err_type, exception.errno, exception.strerror)
             raise DemistoException(err_msg, exception)
 
-    def login(self):
+    def _login(self):
         """ Login using the credentials and store the cookie """
         self.http_request('POST', '', full_url=self.server + '/api/auth/login', data={
             'username': self.username,
             'password': self.password
         })
 
-    def logout(self):
+    def _logout(self):
         """ Logout from the session """
         self.http_request('GET', self.server + '/api/auth/logout', None)
 
@@ -104,7 +111,6 @@ class Client:
         """
         suffix_url = 'ping'
         self.http_request('GET', suffix_url)
-        return True
 
     def get_notable_users_request(self, unit=None, num=None, limit=None):
 
@@ -156,7 +162,7 @@ class Client:
 
     def delete_watchlist_request(self, watchlist_id):
 
-        suffix_url = f'watchlist/{watchlist_id}/'
+        suffix_url = f'watchlist/{watchlist_id}'
 
         response = self.http_request('DELETE', suffix_url)
         return response
@@ -190,6 +196,24 @@ class Client:
         response = self.http_request('GET', suffix_url, params)
         return response.json()
 
+    def user_sequence_request(self, username=None, start_time=None, end_time=None):
+
+        suffix_url = f'user/{username}/sequences'
+        params = {
+            'username': username,
+            'startTime': start_time,
+            'endTime': end_time
+        }
+
+        response = self.http_request('GET', suffix_url, params)
+        return response.json()
+
+    def get_asset_data_request(self, asset_id=None):
+
+        suffix_url = f'asset/{asset_id}/data'
+        response = self.http_request('GET', suffix_url)
+        return response.json()
+
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
@@ -205,20 +229,21 @@ def get_notable_users(client, args):
     contents = []
     headers = ['UserFullName', 'UserName', 'RiskScore', 'AverageRiskScore', 'Labels', 'NotableSessionIds',
                'AccountsNumber', 'FirstSeen', 'LastSeen', 'LastActivityType', 'Executive', 'Location']
-    users = client.get_notable_users_request(unit, num, limit).get('users', {})
+    users = client.get_notable_users_request(unit, num, limit).get('users', [])
 
     for user in users:
+        user_ = user.get('user', {})
         contents.append({
-            'UserName': user.get('user').get('username'),
-            'RiskScore': user.get('user').get('riskScore'),
-            'AverageRiskScore': user.get('user').get('averageRiskScore'),
-            'FirstSeen': user.get('user').get('firstSeen'),
-            'LastSeen': user.get('user').get('lastSeen'),
-            'LastActivityType': user.get('user').get('lastActivityType'),
-            'Labels': user.get('user').get('labels'),
+            'UserName': user_.get('username'),
+            'RiskScore': user_.get('riskScore'),
+            'AverageRiskScore': user_.get('averageRiskScore'),
+            'FirstSeen': convert_unix_to_date(user_.get('firstSeen')),
+            'LastSeen': convert_unix_to_date(user_.get('lastSeen')),
+            'LastActivityType': user_.get('lastActivityType'),
+            'Labels': user_.get('labels'),
             'UserFullName': user.get('userFullName'),
             'AccountsNumber': user.get('numOfAccounts'),
-            'Location': user.get('user').get('info')['location'],
+            'Location': user_.get('info')['location'],
             'NotableSessionIds': user.get('notableSessionIds'),
             'Executive': user.get('isExecutive')
         })
@@ -245,15 +270,16 @@ def get_user_info(client, args):
                'PeerGroupDisplayName', 'PeerGroupType']
     user = client.get_user_info_request(username)
     if user:
+        user_info = user.get('userInfo', {})
         contents = {
             'Username': user.get('username'),
-            'RiskScore': user.get('userInfo').get('riskScore'),
-            'AverageRiskScore': user.get('userInfo').get('averageRiskScore'),
-            'LastSessionID': user.get('userInfo').get('lastSessionId'),
-            'FirstSeen': user.get('userInfo').get('firstSeen'),
-            'LastSeen': user.get('userInfo').get('lastSeen'),
-            'LastActivityType': user.get('userInfo').get('lastActivityType'),
-            'Label': user.get('userInfo').get('labels'),
+            'RiskScore': user_info.get('riskScore'),
+            'AverageRiskScore': user_info.get('averageRiskScore'),
+            'LastSessionID': user_info.get('lastSessionId'),
+            'FirstSeen': convert_unix_to_date(user_info.get('firstSeen')),
+            'LastSeen': convert_unix_to_date(user_info.get('lastSeen')),
+            'LastActivityType': user_info.get('lastActivityType'),
+            'Label': user_info.get('labels'),
             'AccountNames': user.get('accountNames'),
             'PeerGroupFieldName': user.get('peerGroupFieldName'),
             'PeerGroupFieldValue': user.get('peerGroupFieldValue'),
@@ -268,11 +294,50 @@ def get_user_info(client, args):
     return_outputs(tableToMarkdown(f'User {username} information', contents, headers, removeNull=True), context, user)
 
 
-def watchlist_add_user(client, args):
+def get_user_sequences(client: Client, args: Dict):
     """
 
     Args:
         client: Client
+        args: Dict
+
+    Returns: sessions for the given username and time range
+
+    """
+    username = args.get('username')
+    start_time = args.get('start_time')
+    end_time = args.get('end_time')
+    contents = []
+    headers = ['SessionID', 'RiskScore', 'InitialRiskScore', 'StartTime', 'EndTime', 'LoginHost', 'Label']
+
+    user = client.user_sequence_request(username, start_time, end_time)
+    if user:
+        session = user.get('sessions')
+        for session_ in session:
+            contents.append({
+                'SessionID': session_.get('sessionId'),
+                'StartTime': convert_unix_to_date(session_.get('startTime')),
+                'EndTime': convert_unix_to_date(session_.get('endTime')),
+                'InitialRiskScore': session_.get('initialRiskScore'),
+                'RiskScore': session_.get('riskScore'),
+                'LoginHost': session_.get('loginHost'),
+                'Label': session_.get('label')
+            })
+
+    context = {
+        'Exabeam.User(val.SessionID && val.SessionID === obj.SessionID)': contents
+    }
+
+    return_outputs(tableToMarkdown(f'User {username} sequence information', contents, headers, removeNull=True),
+                   context, user)
+
+
+def watchlist_add_user(client, args: Dict):
+    """
+
+    Args:
+        client: Client
+        args: Dict
 
     Add user to a watchlist
 
@@ -294,7 +359,15 @@ def watchlist_add_user(client, args):
     return_outputs(tableToMarkdown('The user was added successfully to the watchlist', contents), context, response)
 
 
-def get_watchlist(client):
+def get_watchlist(client: Client):
+    """
+
+    Args:
+        client: Client
+
+    Returns: All watchlist ids and titles.
+
+    """
 
     watchlist = client.get_watchlist_request()
     contents = []
@@ -313,9 +386,15 @@ def get_watchlist(client):
     return_outputs(tableToMarkdown('Exabeam Watchlists', contents, headers), context, watchlist)
 
 
-def create_watchlist(client, args):
+def create_watchlist(client: Client, args: Dict):
     """
+
+    Args:
+        client: Client
+        args: Dict
+
     Create new watchlist
+
     """
     title = args.get('title')
     category = args.get('category')
@@ -339,7 +418,13 @@ def create_watchlist(client, args):
 
 def delete_watchlist(client: Client, args: Dict):
     """
+
+    Args:
+        client: Client
+        args: Dict
+
     Delete a watchlist
+
     """
 
     watchlist_id = args.get('watchlist_id')
@@ -348,7 +433,15 @@ def delete_watchlist(client: Client, args: Dict):
     demisto.results('The watchlist was deleted successfully')
 
 
-def get_peer_groups(client):
+def get_peer_groups(client: Client):
+    """
+
+    Args:
+        client: Client
+
+    Returns: All peer groups.
+
+    """
 
     groups = client.get_peergroups_request()
     peer_group = ', '.join(groups)
@@ -366,7 +459,7 @@ def get_peer_groups(client):
     return_outputs(tableToMarkdown('Exabeam Peer Groups', contents), context, groups)
 
 
-def get_user_labels(client):
+def get_user_labels(client: Client):
     """
 
     Args:
@@ -392,11 +485,12 @@ def get_user_labels(client):
     return_outputs(tableToMarkdown('Exabeam User Labels', contents), context, labels)
 
 
-def get_users(client, args):
+def get_users(client: Client, args: Dict):
     """
 
     Args:
         client: Client
+        args: Dict
 
     Returns: A list of user ids matching user labels.
 
@@ -421,35 +515,62 @@ def get_users(client, args):
     return_outputs(tableToMarkdown('Exabeam Users Ids', contents), context, users)
 
 
+def get_asset_data(client: Client, args: Dict):
+    """
+
+    Args:
+        client: Client
+        args: Dict
+
+    Returns: Asset data for given asset ID (hostname or IP address)
+
+    """
+    asset_id = args.get('asset_id')
+    data = client.get_asset_data_request(asset_id)
+
+    if data:
+        asset = data.get('asset', {})
+        contents = {
+            'HostName': asset.get('hostName'),
+            'IPAddress': asset.get('ipAddress'),
+            'AssetType': asset.get('assetType'),
+            'FirstSeen': convert_unix_to_date(asset.get('firstSeen')),
+            'LastSeen': convert_unix_to_date(asset.get('lastSeen')),
+            'Labels': data.get('labels')
+        }
+
+    context = {
+        'Exabeam.Asset(val.IPAddress && val.IPAddress === obj.IPAddress)': contents
+    }
+
+    return_outputs(tableToMarkdown('Exabeam Asset Data', contents, removeNull=True), context, data)
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     username = demisto.params().get('credentials').get('identifier')
     password = demisto.params().get('credentials').get('password')
-
-    # Remove trailing slash to prevent wrong URL path to service
     server_url = demisto.params()['url'][:-1] \
         if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
     verify_certificate = not demisto.params().get('insecure', False)
     headers = {
         'Accept': 'application/json'
     }
-
-    # Remove proxy if not set to true in params
     proxies = handle_proxy()
 
     LOG('Command being called is %s' % (demisto.command()))
 
     try:
-        client = Client(server_url, verify=verify_certificate, username=username, password=password, proxies=proxies, headers=headers)
+        client = Client(server_url, verify=verify_certificate, username=username, password=password, proxies=proxies,
+                        headers=headers)
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration test button.
             client.test_module()
             demisto.results('ok')
         elif demisto.command() == 'get-notable-users':
             get_notable_users(client, demisto.args())
-        elif demisto.command() == 'get-watchlist':
+        elif demisto.command() == 'get-watchlists':
             get_watchlist(client)
         elif demisto.command() == 'get-peer-groups':
             get_peer_groups(client)
@@ -463,8 +584,12 @@ def main():
             watchlist_add_user(client, demisto.args())
         elif demisto.command() == 'get-user-labels':
             get_user_labels(client)
-        elif demisto.command() == 'get-users-ids':
+        elif demisto.command() == 'get-users':
             get_users(client, demisto.args())
+        elif demisto.command() == 'get-asset-data':
+            get_asset_data(client, demisto.args())
+        elif demisto.command() == 'get-user-sequences':
+            get_user_sequences(client, demisto.args())
 
     except Exception as e:
         return_error(str(e))
