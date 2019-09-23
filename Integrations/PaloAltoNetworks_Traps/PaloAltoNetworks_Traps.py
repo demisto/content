@@ -6,6 +6,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import json
 import requests
+import copy
 import jwt
 
 # Disable insecure warnings
@@ -25,7 +26,7 @@ BASE_URL = SERVER + '/xapi/v1/'
 APPLICATION_ID = PARAMS.get('application_id')
 PRIVATE_KEY = PARAMS.get('private_key')
 # Headers to be sent in requests
-HEADERS = {
+REQUEST_HEADERS = {
     'Content-Type': 'application/json'
 }
 # Remove proxy if not set to true in params
@@ -80,14 +81,16 @@ OUTPUTS = {
 ''' HELPER FUNCTIONS '''
 
 
-def create_headers():
-    headers = HEADERS
-    token = generate_auth_token().decode('utf-8')
-    headers['Authorization'] = f'Bearer {token}'
+def create_headers(with_auth):
+    headers = copy.deepcopy(REQUEST_HEADERS)
+    if with_auth:
+        token = generate_auth_token().decode('utf-8')
+        headers['Authorization'] = f'Bearer {token}'
     return headers
 
 
-def http_request(method, url_suffix, plain_url=False, params=None, data=None, operation_err=None, parse_response=True):
+def http_request(method, url_suffix, plain_url=False, params=None, data=None, operation_err=None, parse_response=True,
+                 with_auth=True):
     # A wrapper for requests lib to send our requests and handle requests and responses better
     try:
         res = requests.request(
@@ -96,7 +99,7 @@ def http_request(method, url_suffix, plain_url=False, params=None, data=None, op
             verify=USE_SSL,
             params=params,
             data=json.dumps(data) if data else data,
-            headers=create_headers(),
+            headers=create_headers(with_auth),
         )
     except requests.exceptions.ConnectionError:
         return_error(f'Error connecting to Traps server check your connection and you server address')
@@ -317,9 +320,9 @@ def endpoint_files_retrieve_result(operation_id):
         file_info = additional_data.get('uploadData')
         file_name = file_info.get('fileName')
         url = file_info.get('downloadUrl')
-        data = http_request('GET', url, plain_url=True, operation_err=f'Unable to download file.')
+        data = http_request('GET', url, plain_url=True, operation_err=f'Unable to download file.', with_auth=False)
         demisto.results(fileResult(filename=file_name, data=data))
-    return {'Status': status, 'OperationId': operation_id}
+    return {'Status': status, 'OperationID': operation_id}
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -428,7 +431,7 @@ def hash_blacklist_command():
     args = demisto.args()
     hash_id = args.get('hash_id')
     status = hash_blacklist(hash_id)
-    context = {}
+    context = {}    # type: dict
     if status == 'success':
         md = f'#### Successfully blacklisted: {hash_id}'
         status_obj = {
@@ -448,7 +451,7 @@ def hash_blacklist_remove_command():
     args = demisto.args()
     hash_id = args.get('hash_id')
     status = remove_hash_from_blacklist(hash_id)
-    context = {}
+    context = {}    # type: dict
     if status == 'success':
         md = f'#### Successfully removed {hash_id} from blacklist'
         status_obj = {
