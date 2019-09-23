@@ -100,7 +100,7 @@ def main(args):
     if isinstance(ip_perms, str):
         try:
             ip_perms = json.loads(ip_perms)
-        except json.JSONDecodeError as e:
+        except json.JSONDecodeError:
             demisto.results(raise_error('Unable to parse ipPermissions. Invalid JSON string'))
 
     if args.get('fromPort'):
@@ -122,7 +122,6 @@ def main(args):
         region=args.get('region'),
         include_ipv6=args.get('includeIPv6')
     )
-
 
     demisto.results({
         'ContentsFormat': formats['json'],
