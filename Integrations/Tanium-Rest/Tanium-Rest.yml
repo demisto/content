@@ -3,7 +3,7 @@ commonfields:
   id: Tanium-Rest
   version: -1
 configuration:
-- display: Server URL
+- display: Hostname, IP address, or server URL.
   name: url
   required: true
   type: 0
@@ -12,36 +12,38 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-- display: domain
+- display: Domain
   name: domain
   required: false
   type: 0
-- display: credentials
+- display: Credentials
   name: credentials
   required: false
   type: 9
+description: Tanium endpoint security and systems management
 display: Tanium Rest
 name: Tanium-Rest
 script:
   commands:
   - arguments:
     - default: false
-      description: name
+      description: Name of package.
       isArray: false
       name: name
       required: false
       secret: false
     - default: false
-      description: id
+      description: The package ID.
       isArray: false
       name: id
       required: false
       secret: false
     deprecated: false
+    description: Get a package object based on name or ID.
     execution: false
     name: tn-get-package
     outputs:
@@ -122,17 +124,20 @@ script:
       type: Number
   - arguments:
     - default: false
+      description: The question text.
       isArray: false
       name: question-text
       required: true
       secret: false
     - default: false
-      description: For example - sensor1{key1=val1,key2=val2},sensor2{key1=val1}
+      description: Question parameters. For example - sensor1{key1=val1,key2=val2},sensor2{key1=val1}
       isArray: false
       name: parameters
       required: false
       secret: false
     deprecated: false
+    description: Ask the server to parse the question text and choose the first parsed
+      result as the question to run.
     execution: false
     name: tn-ask-question
     outputs:
@@ -146,6 +151,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Get the question result based on question ID.
     execution: false
     name: tn-get-question-result
     outputs:
@@ -160,11 +166,13 @@ script:
   - arguments:
     - default: false
       defaultValue: '5'
+      description: Number of sensors to return.
       isArray: false
       name: count
       required: false
       secret: false
     deprecated: false
+    description: Gets all sensors.
     execution: false
     name: tn-list-sensors
     outputs:
@@ -234,6 +242,7 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Get a sensor object based on name or ID.
     execution: false
     name: tn-get-sensor
     outputs:
@@ -305,16 +314,19 @@ script:
       type: Number
   - arguments:
     - default: false
+      description: The question ID.
       isArray: false
       name: question-id
       required: true
       secret: false
     - default: false
+      description: Name of saved question to create.
       isArray: false
       name: name
       required: true
       secret: false
     deprecated: false
+    description: Create a saved question object.
     execution: false
     name: tn-create-saved-question
     outputs:
@@ -327,11 +339,13 @@ script:
   - arguments:
     - default: false
       defaultValue: '5'
+      description: Number of saved questions to return.
       isArray: false
       name: count
       required: false
       secret: false
     deprecated: false
+    description: Gets all saved questions.
     execution: false
     name: tn-list-saved-questions
     outputs:
@@ -405,6 +419,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Get the saved question result based on saved question ID.
     execution: false
     name: tn-get-saved-question-result
     outputs:
@@ -417,6 +432,7 @@ script:
     - contextPath: Tanium.SavedQuestionResult.Status
       type: Unknown
   - deprecated: false
+    description: Gets all clients.
     execution: false
     name: tn-get-system-status
     outputs:
@@ -444,16 +460,19 @@ script:
       type: String
   - arguments:
     - default: false
+      description: Command to execute.
       isArray: false
       name: command
       required: true
       secret: false
     - default: false
+      description: Name of package to create.
       isArray: false
       name: name
       required: true
       secret: false
     deprecated: false
+    description: Create a package object.
     execution: false
     name: tn-create-package
     outputs:
@@ -514,11 +533,13 @@ script:
   - arguments:
     - default: false
       defaultValue: '5'
+      description: Number of packages to return.
       isArray: false
       name: count
       required: false
       secret: false
     deprecated: false
+    description: Gets all packages.
     execution: false
     name: tn-list-packages
     outputs:
@@ -578,11 +599,13 @@ script:
       type: Number
   - arguments:
     - default: false
+      description: The question ID.
       isArray: false
       name: question-id
       required: true
       secret: false
     deprecated: false
+    description: Get a question object based on question ID.
     execution: false
     name: tn-get-question-metadata
     outputs:
@@ -618,11 +641,13 @@ script:
   - arguments:
     - default: false
       defaultValue: '5'
+      description: Number of saved actions to return.
       isArray: false
       name: count
       required: false
       secret: false
     deprecated: false
+    description: Gets all saved actions.
     execution: false
     name: tn-list-saved-actions
     outputs:
@@ -696,16 +721,19 @@ script:
       type: String
   - arguments:
     - default: false
+      description: The aved action ID.
       isArray: false
       name: id
       required: false
       secret: false
     - default: false
+      description: The aved action name.
       isArray: false
       name: name
       required: false
       secret: false
     deprecated: false
+    description: Get a saved action object based on name or ID.
     execution: false
     name: tn-get-saved-action
     outputs:
@@ -779,16 +807,19 @@ script:
       type: String
   - arguments:
     - default: false
+      description: The saved question ID.
       isArray: false
       name: question-id
       required: false
       secret: false
     - default: false
+      description: The saved question name.
       isArray: false
       name: question-name
       required: false
       secret: false
     deprecated: false
+    description: Get a saved question object based on name or ID.
     execution: false
     name: tn-get-saved-question-metadata
     outputs:
@@ -857,21 +888,25 @@ script:
       type: String
   - arguments:
     - default: false
+      description: The action group ID.
       isArray: false
       name: action-group-id
       required: true
       secret: false
     - default: false
+      description: The package ID.
       isArray: false
       name: package-id
       required: true
       secret: false
     - default: false
+      description: Name of action.
       isArray: false
       name: name
       required: false
       secret: false
     deprecated: false
+    description: Create a saved action object.
     execution: false
     name: tn-create-saved-action
     outputs:
@@ -945,17 +980,19 @@ script:
       type: String
   - arguments:
     - default: false
+      description: The package ID.
       isArray: false
       name: package-id
       required: true
       secret: false
     - default: false
-      description: For example - $1=Value1;$2=Value2;$3=Value3
+      description: Package parameters. For example - $1=Value1;$2=Value2;$3=Value3
       isArray: false
       name: parameters
       required: false
       secret: false
     deprecated: false
+    description: Create action object.
     execution: false
     name: tn-create-action
     outputs:
@@ -1029,11 +1066,13 @@ script:
   - arguments:
     - default: false
       defaultValue: '5'
+      description: Number ofactions to return.
       isArray: false
       name: count
       required: false
       secret: false
     deprecated: false
+    description: Gets all actions.
     execution: false
     name: tn-list-actions
     outputs:
@@ -1106,11 +1145,13 @@ script:
       type: String
   - arguments:
     - default: false
+      description: The action ID.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
+    description: Get a action object based on ID.
     execution: false
     name: tn-get-action
     outputs:
@@ -1184,11 +1225,13 @@ script:
   - arguments:
     - default: false
       defaultValue: '5'
+      description: Number of saved actions to return.
       isArray: false
       name: count
       required: false
       secret: false
     deprecated: false
+    description: Retrieve all saved action approval definitions on the server.
     execution: false
     name: tn-list-saved-actions-pending-approval
     outputs:
