@@ -1,2 +1,6 @@
-In order to generate an API token, log in to BitDam Dashboard.
-  Navigate to your profile, click on 'API token' tab and then 'Generate API Token'.
+## Generate an API Token
+This integration requires an API token.
+
+1. Log in to your BitDam Dashboard.
+2. Navigate to your profile and click the **API token** tab.
+3. Click **Generate API Token**.
