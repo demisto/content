@@ -1093,8 +1093,8 @@ def get_all_objs_command(obj_type):
         url_suffix += ',score'
     res = tq_request('GET', url_suffix)
 
-    from_index = page
-    to_index = min(page + limit, len(res['data']))
+    from_index = min(page, len(res['data']))
+    to_index = min(from_index + limit, len(res['data']))
 
     data = [data_to_demisto_format(obj, obj_type) for obj in res['data'][from_index:to_index]]
     ec = {CONTEXT_PATH[obj_type]: createContext(data, removeNull=True)} if data else {}
